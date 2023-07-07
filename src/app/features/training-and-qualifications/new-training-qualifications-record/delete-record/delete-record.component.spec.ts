@@ -6,12 +6,12 @@ import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockWorkerService, qualificationRecord, trainingRecord } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { establishmentBuilder } from '../../../../../../server/test/factories/models';
 import { WorkersModule } from '../../../workers/workers.module';
 import { DeleteRecordComponent } from './delete-record.component';
 

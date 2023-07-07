@@ -4,17 +4,18 @@ import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { establishmentBuilder, workerBuilder } from '../../../../../../server/test/factories/models';
 import { WdfModule } from '../wdf.module';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 
@@ -33,7 +34,7 @@ describe('WdfStaffSummaryComponent', () => {
       ],
       componentProperties: {
         workplace: establishmentBuilder() as Establishment,
-        workers: [workerBuilder(), workerBuilder(), workerBuilder()],
+        workers: [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[],
       },
     });
     const component = fixture.componentInstance;

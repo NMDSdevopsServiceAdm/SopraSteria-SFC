@@ -3,13 +3,15 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { workerWithWdf } from '@core/test-utils/MockWorkerService';
 import { SummaryRecordChangeComponent } from '@shared/components/summary-record-change/summary-record-change.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../../server/test/factories/models';
 import { BasicRecordComponent } from './basic-record.component';
 
 describe('BasicRecordComponent', () => {
@@ -28,7 +30,7 @@ describe('BasicRecordComponent', () => {
         canEditWorker: true,
         mandatoryDetailsPage,
         workplace: establishmentBuilder() as Establishment,
-        worker: workerBuilderWithWdf(),
+        worker: workerWithWdf() as Worker,
       },
     });
 

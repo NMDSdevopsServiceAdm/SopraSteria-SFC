@@ -10,13 +10,13 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WindowRef } from '@core/services/window.ref';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { BenchmarksSelectViewPanelComponent } from '../benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { DataAreaTabComponent } from './data-area-tab.component';
 
@@ -100,7 +100,7 @@ describe('DataAreaTabComponent', () => {
   });
 
   it('should check the pay benchmarks data to see if there is comparison data', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
+    const { component } = await setup();
     const noCompData = {
       value: 0,
       stateMessage: 'no-data',

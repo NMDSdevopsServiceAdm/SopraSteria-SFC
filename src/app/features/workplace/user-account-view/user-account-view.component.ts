@@ -12,10 +12,9 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
+import { isAdminRole } from '@core/utils/check-role-util';
 import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
-
-import { isAdminRole } from '../../../../../server/utils/adminUtils';
 
 @Component({
   selector: 'app-user-account-view',
