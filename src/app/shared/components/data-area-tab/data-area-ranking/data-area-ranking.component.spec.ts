@@ -44,7 +44,7 @@ describe('DataAreaRankingComponent', () => {
     expect(getByTestId('ranking-data')).toBeTruthy();
   });
 
-  fdescribe('no workplace data message', () => {
+  describe('no workplace data message', () => {
     it('should show when no pay workplace data is provided', async () => {
       const { fixture, component, getByTestId } = await setup();
       component.workplaceRankNumber = null;

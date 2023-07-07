@@ -74,7 +74,7 @@ describe('DataAreaBarchartComponent', () => {
     expect(queryByTestId('no-comparison-data')).toBeTruthy();
   });
 
-  fdescribe('no workplace data message', () => {
+  describe('no workplace data message', () => {
     it('should show when no pay workplace data is provided', async () => {
       const { component, queryByTestId, fixture } = await setup();
       component.rankingsData = {
