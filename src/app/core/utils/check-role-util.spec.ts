@@ -1,6 +1,6 @@
 import { isAdminRole } from './check-role-util';
 
-fdescribe('check-role-util', () => {
+describe('check-role-util', () => {
   describe('isAdminRole', () => {
     it('should return true if the role is an Admin', () => {
       const isAdmin = isAdminRole('Admin');

@@ -2,12 +2,12 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WdfStaffMismatchMessageComponent } from './wdf-staff-mismatch-message.component';
 
 describe('WdfStaffMismatchMessageComponent', () => {
@@ -29,7 +29,7 @@ describe('WdfStaffMismatchMessageComponent', () => {
             },
           },
         ],
-        componentProperties: { workplace: establishmentBuilder(), workerCount: 1 },
+        componentProperties: { workplace: establishmentBuilder() as Establishment, workerCount: 1 },
       },
     );
 

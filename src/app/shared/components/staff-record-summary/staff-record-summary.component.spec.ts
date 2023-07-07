@@ -7,19 +7,19 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
-import { WorkerDays, WorkerEditResponse } from '@core/model/worker.model';
+import { Worker, WorkerDays, WorkerEditResponse } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, workerWithWdf } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { establishmentBuilder, workerBuilderWithWdf } from '../../../../../server/test/factories/models';
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
 describe('StaffRecordSummaryComponent', () => {
@@ -41,7 +41,7 @@ describe('StaffRecordSummaryComponent', () => {
       componentProperties: {
         wdfView: true,
         workplace: establishmentBuilder() as Establishment,
-        worker: workerBuilderWithWdf(),
+        worker: workerWithWdf() as Worker,
       },
     });
 
@@ -340,6 +340,7 @@ describe('StaffRecordSummaryComponent', () => {
 
     fixture.detectChanges();
 
+    expect(true).toBeTruthy();
     expect(getByText('Is this still correct?')).toBeTruthy();
     expect(getByText('Yes, it is')).toBeTruthy();
     expect(getByText('No, change it')).toBeTruthy();
