@@ -44,13 +44,49 @@ describe('DataAreaRankingComponent', () => {
     expect(getByTestId('ranking-data')).toBeTruthy();
   });
 
-  it('should show no workplace data message when no workplace data is provided', async () => {
-    const { fixture, component, queryByTestId, getByTestId } = await setup();
-    component.workplaceRankNumber = null;
-    component.workplacesNumber = 10;
-    fixture.detectChanges();
+  describe('no workplace data message', () => {
+    it('should show when no pay workplace data is provided', async () => {
+      const { fixture, component, getByTestId } = await setup();
+      component.workplaceRankNumber = null;
+      component.workplacesNumber = 10;
+      component.isPay = true;
+      fixture.detectChanges();
 
-    expect(getByTestId('no-workplace-data')).toBeTruthy();
+      expect(getByTestId('no-workplace-pay-data')).toBeTruthy();
+    });
+
+    it('should show when no vacancy workplace data is provided', async () => {
+      const { fixture, component, getByTestId } = await setup();
+      component.workplaceRankNumber = null;
+      component.workplacesNumber = 10;
+      component.isPay = false;
+      component.type = 'vacancy';
+      fixture.detectChanges();
+
+      expect(getByTestId('no-workplace-vacancy-data')).toBeTruthy();
+    });
+
+    it('should show when no turnover workplace data is provided', async () => {
+      const { fixture, component, getByTestId } = await setup();
+      component.workplaceRankNumber = null;
+      component.workplacesNumber = 10;
+      component.isPay = false;
+      component.type = 'turnover';
+      fixture.detectChanges();
+
+      expect(getByTestId('no-workplace-turnover-or-percent-data')).toBeTruthy();
+    });
+
+    it('should show when no turnover workplace data is provided', async () => {
+      const { fixture, component, getByTestId } = await setup();
+      component.workplaceRankNumber = null;
+      component.workplacesNumber = 10;
+      component.isPay = false;
+      component.type = 'timeInRole';
+      fixture.detectChanges();
+
+      expect(getByTestId('no-workplace-turnover-or-percent-data')).toBeTruthy();
+    });
   });
 
   it('should show no comparison data message when no comparison data is provided', async () => {

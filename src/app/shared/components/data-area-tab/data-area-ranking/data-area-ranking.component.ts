@@ -13,7 +13,9 @@ export class DataAreaRankingComponent implements OnInit, OnChanges {
   @Input() rankingTitle: string;
   @Input() workplaceRankNumber: number;
   @Input() workplacesNumber: number;
-  @Input() noWorkplaceData: boolean = false;
+  @Input() noWorkplaceData = false;
+  @Input() isPay: boolean;
+  @Input() type: string;
 
   public noRankingData: boolean;
   public options: Highcharts.Options;

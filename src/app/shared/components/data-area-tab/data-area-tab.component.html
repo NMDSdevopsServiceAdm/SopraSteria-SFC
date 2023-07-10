@@ -26,13 +26,7 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
-      <a
-        class="asc-font-19"
-        data-html2canvas-ignore
-        [routerLink]="['/workplace', workplace.uid, 'benchmarks', 'about-the-data']"
-        (click)="setReturn()"
-        >About the data</a
-      >
+      <app-about-the-data-link></app-about-the-data-link>
       <div *ngIf="tilesData?.meta.lastUpdated" data-testid="benchmarksLastUpdatedDate" class="govuk-!-margin-top-5">
         <p class="govuk-body">
           The comparison group data was refreshed on {{ tilesData?.meta.lastUpdated | date: 'd MMMM y' }}.

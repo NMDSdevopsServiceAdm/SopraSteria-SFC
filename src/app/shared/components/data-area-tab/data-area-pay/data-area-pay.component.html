@@ -117,12 +117,14 @@
           [workplaceRankNumber]="rankings.careWorkerPay.workplacesRankNumber"
           [workplacesNumber]="rankings.careWorkerPay.totalWorkplaces"
           [noWorkplaceData]="rankings.careWorkerPay.noWorkplaceData"
+          [isPay]="true"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="rankings.seniorCareWorkerPay.title"
           [workplaceRankNumber]="rankings.seniorCareWorkerPay.workplacesRankNumber"
           [workplacesNumber]="rankings.seniorCareWorkerPay.totalWorkplaces"
           [noWorkplaceData]="rankings.seniorCareWorkerPay.noWorkplaceData"
+          [isPay]="true"
         ></app-data-area-ranking>
         <app-data-area-ranking
           *ngIf="showRegisteredNurseSalary"
@@ -130,12 +132,14 @@
           [workplaceRankNumber]="rankings.registeredNursePay.workplacesRankNumber"
           [workplacesNumber]="rankings.registeredNursePay.totalWorkplaces"
           [noWorkplaceData]="rankings.registeredNursePay.noWorkplaceData"
+          [isPay]="true"
         ></app-data-area-ranking>
         <app-data-area-ranking
           [rankingTitle]="rankings.registeredManagerPay.title"
           [workplaceRankNumber]="rankings.registeredManagerPay.workplacesRankNumber"
           [workplacesNumber]="rankings.registeredManagerPay.totalWorkplaces"
           [noWorkplaceData]="rankings.registeredManagerPay.noWorkplaceData"
+          [isPay]="true"
         ></app-data-area-ranking>
       </div>
     </ng-template>

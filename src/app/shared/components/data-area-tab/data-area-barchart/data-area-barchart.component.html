@@ -36,9 +36,28 @@
       </ng-template>
     </ng-container>
     <ng-template #hasComparisonData>
-      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="no-workplace-data">
-        You've not added any {{ section | lowercase }} data, so we <br />cannot show you where you're positioned.
-      </p>
+      <ng-container *ngIf="isPay; else recrAndRet">
+        <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="no-workplace-pay-data">
+          You've not added any {{ section | lowercase }} data, so we <br />cannot show you where you're positioned.
+        </p>
+      </ng-container>
+      <ng-template #recrAndRet>
+        <ng-container *ngIf="type == 'vacancy'; else turnoverOrPerecent">
+          <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-vacancy-data">
+            You've not added any vacancies, so we cannot show<br />
+            where you're positioned.
+          </p>
+        </ng-container>
+        <ng-template #turnoverOrPerecent>
+          <p
+            class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2"
+            data-testid="no-workplace-turnover-or-percent-data"
+          >
+            You've not added the data we need to show where <br />you're positioned (see '<app-about-the-data-link
+            ></app-about-the-data-link>').
+          </p>
+        </ng-template>
+      </ng-template>
     </ng-template>
   </ng-template>
   <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
