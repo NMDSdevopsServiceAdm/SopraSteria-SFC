@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -7,7 +7,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
   selector: 'app-about-the-data-link',
   templateUrl: './about-the-data-link.component.html',
 })
-export class AboutTheDataLinkComponent implements OnInit, OnChanges {
+export class AboutTheDataLinkComponent implements OnInit {
   public workplaceUid: string;
 
   constructor(
@@ -18,10 +18,6 @@ export class AboutTheDataLinkComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.workplaceUid = this.establishmentService ? this.establishmentService.primaryWorkplace.uid : null;
-  }
-
-  ngOnChanges(): void {
-    //this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
   }
 
   public setReturn(): void {
