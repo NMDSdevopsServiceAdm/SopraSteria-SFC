@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-new-training-and-qualifications-record-summary',
@@ -8,4 +8,5 @@ import { Component, Input } from '@angular/core';
 export class NewTrainingAndQualificationsRecordSummaryComponent {
   @Input() trainingCount: number;
   @Input() qualificationsCount: number;
+  @ViewChild('content') public content: ElementRef;
 }
