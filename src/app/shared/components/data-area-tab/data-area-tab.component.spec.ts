@@ -15,7 +15,8 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { BenchmarksSelectViewPanelComponent } from '../benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { DataAreaTabComponent } from './data-area-tab.component';
@@ -42,6 +43,10 @@ describe('DataAreaTabComponent', () => {
         {
           provide: BenchmarksService,
           useClass: MockBenchmarksService,
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
         },
       ],
       declarations: [BenchmarksSelectViewPanelComponent],

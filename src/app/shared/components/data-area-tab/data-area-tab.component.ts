@@ -82,13 +82,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.downloadRecruitmentBenchmarksText = `Download ${section} benchmarks (PDF, ${fileSize}, 2 pages)`;
   }
 
-  public setReturn(): void {
-    this.benchmarksService.setReturnTo({
-      url: [this.router.url.split('#')[0]],
-      fragment: 'benchmarks',
-    });
-  }
-
   public handleViewBenchmarksByCategory(visible: boolean): void {
     this.viewBenchmarksByCategory = visible;
     this.setDownloadBenchmarksText();

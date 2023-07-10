@@ -2,14 +2,18 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RankingsResponse } from '@core/model/benchmarks.model';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { DataAreaBarchartComponent } from './data-area-barchart.component';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('DataAreaBarchartComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getByTestId, queryByTestId, queryByText } = await render(DataAreaBarchartComponent, {
-      imports: [SharedModule],
-      providers: [],
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [{ provide: EstablishmentService, useClass: MockEstablishmentService }],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
         isPay: false,
@@ -127,6 +131,7 @@ describe('DataAreaBarchartComponent', () => {
       component.type = 'timeInRole';
 
       fixture.detectChanges();
+
       expect(queryByTestId('no-workplace-turnover-or-percent-data')).toBeTruthy();
     });
   });
