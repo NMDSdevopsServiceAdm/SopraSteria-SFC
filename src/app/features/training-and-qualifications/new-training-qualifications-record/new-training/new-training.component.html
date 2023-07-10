@@ -1,4 +1,4 @@
-<div class="govuk-grid-row">
+<div class="govuk-grid-row" #content>
   <ng-container *ngIf="trainingCategories.length > 0; else noTraining">
     <h1 class="govuk-heading-l govuk-!-font-size-27">{{ trainingType }}</h1>
     <div *ngFor="let trainingCategory of trainingCategories">
