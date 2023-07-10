@@ -5,6 +5,7 @@ import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { build, fake, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
 
 import { subsid1, subsid2, subsid3 } from './MockUserService';
@@ -15,6 +16,81 @@ interface EmployerTypeRequest {
     other?: string;
   };
 }
+
+export const establishmentBuilder = build('Establishment', {
+  fields: {
+    id: sequence(),
+    uid: fake((f) => f.datatype.uuid()),
+    name: fake((f) => f.lorem.sentence()),
+    address: fake((f) => f.address.streetAddress()),
+    postcode: fake((f) => f.address.zipCode('??# #??')),
+    isRegulated: perBuild(() => false),
+    nmdsId: fake((f) => f.lorem.word()),
+    created: new Date(),
+    updated: new Date(),
+    updatedBy: fake((f) => f.name.firstName()),
+    isParent: perBuild(() => false),
+    parentId: null,
+    mainService: {
+      id: 16,
+      name: fake((f) => f.lorem.sentence()),
+    },
+    employerType: {
+      value: fake((f) => f.company.companyName()),
+    },
+    numberOfStaff: 3,
+    totalWorkers: 4,
+    otherServices: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
+    serviceUsers: [],
+    capacities: [],
+    shareWith: { cqc: null, localAuthorities: null },
+    localAuthorities: [],
+    primaryAuthority: undefined,
+    vacancies: undefined,
+    totalVacancies: 0,
+    starters: undefined,
+    totalStarters: 0,
+    leavers: undefined,
+    totalLeavers: 0,
+    dataOwner: undefined,
+    dataPermissions: undefined,
+    dataOwnershipRequested: fake((f) => f.name.firstName()),
+    moneySpentOnAdvertisingInTheLastFourWeeks: fake((f) => f.finance.amount(1, 10000, 2)),
+    peopleInterviewedInTheLastFourWeeks: fake((f) => f.datatype.number(1000)),
+    doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: 'Yes, always',
+    wouldYouAcceptCareCertificatesFromPreviousEmployment: 'No, never',
+    careWorkersCashLoyaltyForFirstTwoYears: fake((f) => f.finance.amount(1, 10000, 2)),
+    sickPay: 'Yes',
+    careWorkersLeaveDaysPerYear: fake((f) => f.datatype.number(1000)),
+    wdf: null,
+  },
+});
+
+export const establishmentWithShareWith = (shareWith) => {
+  return establishmentBuilder({
+    overrides: {
+      shareWith,
+      otherService: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
+    },
+  });
+};
+
+export const establishmentWithWdfBuilder = () => {
+  return establishmentBuilder({
+    overrides: {
+      wdf: {
+        mainService: { isEligible: false, updatedSinceEffectiveDate: true },
+        starters: { isEligible: false, updatedSinceEffectiveDate: true },
+        leavers: { isEligible: false, updatedSinceEffectiveDate: true },
+        vacancies: { isEligible: false, updatedSinceEffectiveDate: true },
+        capacities: { isEligible: false, updatedSinceEffectiveDate: true },
+        serviceUsers: { isEligible: false, updatedSinceEffectiveDate: true },
+        numberOfStaff: { isEligible: false, updatedSinceEffectiveDate: true },
+        employerType: { isEligible: false, updatedSinceEffectiveDate: true },
+      },
+    },
+  });
+};
 
 @Injectable()
 export class MockEstablishmentService extends EstablishmentService {

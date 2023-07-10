@@ -2,11 +2,12 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Roles } from '@core/model/roles.enum';
+import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
@@ -17,13 +18,12 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { ProgressBarComponent } from '@shared/components/progress-bar/progress-bar.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { workerBuilder } from '../../../../../server/test/factories/models';
 import { StaffDetailsComponent } from './staff-details.component';
 
 describe('StaffDetailsComponent', () => {
@@ -283,7 +283,7 @@ describe('StaffDetailsComponent', () => {
 
       const createWorkerSpy = spyOn(workerService, 'createWorker').and.callThrough();
       spyOn(workerService, 'setState').and.callFake(() => {
-        component.worker = workerBuilder();
+        component.worker = workerBuilder() as Worker;
         component.worker.nameOrId = 'Someone';
         component.worker.contract = 'Temporary' as Contracts;
         component.worker.mainJob = { jobId: 1 };
@@ -324,7 +324,7 @@ describe('StaffDetailsComponent', () => {
 
       spyOn(workerService, 'createWorker').and.callThrough();
       spyOn(workerService, 'setState').and.callFake(() => {
-        component.worker = workerBuilder();
+        component.worker = workerBuilder() as Worker;
         component.worker.nameOrId = 'Someone';
         component.worker.contract = 'Temporary' as Contracts;
         component.worker.mainJob = { jobId: 1 };
@@ -354,7 +354,7 @@ describe('StaffDetailsComponent', () => {
 
       spyOn(workerService, 'createWorker').and.callThrough();
       spyOn(workerService, 'setState').and.callFake(() => {
-        component.worker = workerBuilder();
+        component.worker = workerBuilder() as Worker;
         component.worker.nameOrId = 'Someone';
         component.worker.contract = 'Temporary' as Contracts;
         component.worker.mainJob = { jobId: 1 };

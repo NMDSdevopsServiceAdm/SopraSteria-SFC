@@ -2,17 +2,17 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, workerBuilder, workerWithWdf } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable } from 'rxjs';
 
-import { workerBuilder, workerBuilderWithWdf } from '../../../../../../server/test/factories/models';
 import { WdfModule } from '../wdf.module';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 
@@ -58,8 +58,8 @@ describe('WdfStaffRecordComponent', () => {
     const expectedStatusMessage = 'Update this staff record to save yourself time next year';
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
-    component.worker = workerBuilder();
-    component.updatedWorker = workerBuilder();
+    component.worker = workerBuilder() as Worker;
+    component.updatedWorker = workerBuilder() as Worker;
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = true;
     component.workerList = ['1', '2', '3', '4'];
@@ -75,8 +75,8 @@ describe('WdfStaffRecordComponent', () => {
     const expectedStatusMessage = 'This record does not meet the WDF 2021 to 2022 requirements';
     const redCrossVisuallyHiddenMessage = 'Red cross';
 
-    component.worker = workerBuilder();
-    component.updatedWorker = workerBuilder();
+    component.worker = workerBuilder() as Worker;
+    component.updatedWorker = workerBuilder() as Worker;
 
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = false;
@@ -98,8 +98,8 @@ describe('WdfStaffRecordComponent', () => {
     const orangeFlagStatusMessage = 'Update this staff record to save yourself time next year';
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
-    component.worker = workerBuilderWithWdf();
-    component.updatedWorker = workerBuilderWithWdf();
+    component.worker = workerWithWdf() as Worker;
+    component.updatedWorker = workerWithWdf() as Worker;
 
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = true;

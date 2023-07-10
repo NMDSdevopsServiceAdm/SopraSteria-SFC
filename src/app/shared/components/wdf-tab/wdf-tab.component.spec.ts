@@ -3,12 +3,12 @@ import { BrowserModule } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { ReportService } from '@core/services/report.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { WdfTabComponent } from './wdf-tab.component';
 
 describe('WdfTabComponent', () => {

@@ -9,13 +9,12 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { StaffRecordsTabComponent } from './staff-records-tab.component';
 
 describe('StaffRecordsTab', () => {
