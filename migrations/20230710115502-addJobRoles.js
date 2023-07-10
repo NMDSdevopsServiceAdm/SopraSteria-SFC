@@ -32,7 +32,7 @@ module.exports = {
   down: (queryInterface) => {
     return queryInterface.sequelize.transaction(async (transaction) => {
       await promise.all([
-        queryInterface.sequelize.query('delete cqc."Job" ("JobID", "JobName") where "JobID" IN (30, 31, 32)', {
+        queryInterface.sequelize.query('delete from cqc."Job" ("JobID", "JobName") where "JobID" IN (30, 31, 32)', {
           transaction,
         }),
         queryInterface.sequelize.query('update cqc."Job" set "JobName"=\'Registered Manager\' where "JobID"=22', {
