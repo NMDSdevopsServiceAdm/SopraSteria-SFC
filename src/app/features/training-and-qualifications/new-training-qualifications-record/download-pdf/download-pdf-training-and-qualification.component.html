@@ -8,15 +8,7 @@
   (click)="downloadAsPDF($event)"
 >
   <img alt="" src="/assets/images/icon-download.svg" />
-  <!-- <ng-container *ngIf="viewBenchmarksByCategory; else benchmarksPayDownload">
-    <span class="govuk-!-margin-left-1" data-testid="rAndRDownloadLink"
-      >Download recruitment and retention benchmarks <br />
-      (PDF, 385KB, 2 pages)</span
-    >
-  </ng-container>
-  <ng-template #benchmarksPayDownload> -->
-  <span class="govuk-!-margin-left-1" data-testid="payDownloadLink">
-    Download training and qualifications (PDF, 430KB, 2 pages)
+  <span class="govuk-!-margin-left-1" data-testid="DownloadLink">
+    Download training and qualifications (PDF, 430KB, {{ pdfCount }} pages)
   </span>
-  <!-- </ng-template> -->
 </a>

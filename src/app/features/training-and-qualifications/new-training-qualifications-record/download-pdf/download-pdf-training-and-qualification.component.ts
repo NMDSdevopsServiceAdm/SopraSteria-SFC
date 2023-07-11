@@ -6,6 +6,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 })
 export class DownloadPdfTrainingAndQualificationComponent {
   @Input() linkUrl: string;
+  @Input() pdfCount: number;
   @Output() downloadPDF = new EventEmitter();
 
   public downloadAsPDF(event: Event): void {
