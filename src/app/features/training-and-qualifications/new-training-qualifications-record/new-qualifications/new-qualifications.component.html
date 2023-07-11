@@ -1,4 +1,4 @@
-<div class="govuk-grid-row">
+<div class="govuk-grid-row section" #content>
   <ng-container *ngIf="qualificationsByGroup.count > 0; else noQualifications">
     <h1 class="govuk-heading-l govuk-!-font-size-27">Qualifications</h1>
     <div *ngFor="let qualificationType of qualificationsByGroup.groups">
