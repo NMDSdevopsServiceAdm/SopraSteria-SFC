@@ -48,21 +48,25 @@
           <div *ngIf="worker.expiredTrainingCount > 0" class="govuk-!-margin-bottom-0">
             <img
               src="/assets/images/flag-red.png"
-              alt=""
+              alt="red-flag"
               class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
             />
             {{ worker.expiredTrainingCount }}
             expired
           </div>
           <div *ngIf="worker.missingMandatoryTrainingCount > 0" class="govuk-!-margin-bottom-0">
-            <img src="/assets/images/flag-red.png" class="govuk-!-margin-right-1 govuk-util__vertical-align-top" />
+            <img
+              src="/assets/images/flag-red.png"
+              alt="red-flag"
+              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+            />
             {{ worker.missingMandatoryTrainingCount }}
             missing
           </div>
           <div *ngIf="worker.expiringTrainingCount > 0" class="govuk-!-margin-bottom-0">
             <img
               src="/assets/images/flag-orange.png"
-              alt=""
+              alt="Orange-flag"
               class="govuk-!-margin-right-2 govuk-util__vertical-align-top"
             />
             <ng-container [ngPlural]="worker.expiringTrainingCount">
