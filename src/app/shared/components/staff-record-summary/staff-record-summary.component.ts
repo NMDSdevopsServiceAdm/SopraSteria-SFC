@@ -189,6 +189,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
       'recruitedFrom',
       'careCertificate',
       'qualificationInSocialCare',
+      'otherQualification',
     ];
 
     const props = {};
@@ -200,7 +201,8 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
           this.worker.wdf?.[fieldCheck].isEligible === 'Yes' &&
           !this.worker.wdf?.[fieldCheck].updatedSinceEffectiveDate &&
           !(fieldCheck === 'careCertificate' && this.worker.careCertificate !== 'Yes, completed') &&
-          !(fieldCheck === 'qualificationInSocialCare' && this.worker.qualificationInSocialCare !== 'Yes')
+          !(fieldCheck === 'qualificationInSocialCare' && this.worker.qualificationInSocialCare !== 'Yes') &&
+          !(fieldCheck === 'otherQualification' && this.worker.otherQualification !== 'Yes')
         ) {
           return (props[fieldCheck] = this.worker[fieldCheck]);
         }
