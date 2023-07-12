@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 
 @Component({
@@ -8,4 +8,5 @@ import { QualificationsByGroup } from '@core/model/qualification.model';
 export class NewQualificationsComponent {
   @Input() qualificationsByGroup: QualificationsByGroup;
   @Input() canEditWorker: boolean;
+  @ViewChild('content') public content: ElementRef;
 }

@@ -1,0 +1,45 @@
+<div *ngIf="actionsListData.length > 0" class="govuk-grid-row" #content>
+  <div class="govuk-grid-column-full">
+    <table class="govuk-table">
+      <caption class="govuk-table__caption govuk-table__caption--m">
+        Actions list
+      </caption>
+      <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+          <th scope="col" class="govuk-table__header">Training category</th>
+          <th scope="col" class="govuk-table__header">Training type</th>
+          <th scope="col" class="govuk-table__header">Status</th>
+          <th scope="col" class="govuk-table__header"></th>
+        </tr>
+      </thead>
+      <tbody class="govuk-table__body">
+        <tr class="govuk-table__row" *ngFor="let actionListItem of actionsListData">
+          <td class="govuk-table__cell">{{ actionListItem.trainingCategory.category }}</td>
+          <td class="govuk-table__cell">{{ actionListItem.typeOfTraining }}</td>
+          <td class="govuk-table__cell" id="svgToPdf">
+            <div *ngIf="actionListItem.trainingStatus === trainingStatusService.MISSING">
+              <img src="/assets/images/flag-red.png" alt="red warning flag" class="govuk-util__vertical-align-top" />
+              Missing
+            </div>
+            <div *ngIf="actionListItem.trainingStatus === trainingStatusService.EXPIRED && actionListItem.expires">
+              <img src="/assets/images/flag-red.png" alt="red expired flag" class="govuk-util__vertical-align-top" />
+              Expired
+            </div>
+            <div *ngIf="actionListItem.trainingStatus === trainingStatusService.EXPIRING && actionListItem.expires">
+              <img
+                src="/assets/images/flag-orange.png"
+                alt="yellow expires soon flag"
+                class="govuk-util__vertical-align-top"
+              />
+              Expires soon
+            </div>
+          </td>
+
+          <td class="govuk-table__cell"></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

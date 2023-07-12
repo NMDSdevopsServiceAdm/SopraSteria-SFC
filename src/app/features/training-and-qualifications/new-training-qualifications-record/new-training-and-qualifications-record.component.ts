@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
@@ -8,6 +8,7 @@ import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
@@ -41,6 +42,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     nonMandatoryTraining: 'non-mandatory-training',
     qualifications: 'qualifications',
   };
+  public pdfCount: number;
   constructor(
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
@@ -51,7 +53,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private trainingService: TrainingService,
     private workerService: WorkerService,
     private alertService: AlertService,
-  ) {}
+    public viewContainerRef: ViewContainerRef,
+    private pdfTrainingAndQualificationService: PdfTrainingAndQualificationService,
+  ) {
+    pdfTrainingAndQualificationService.setViewContainer = viewContainerRef;
+  }
 
   public ngOnInit(): void {
     const alertMessage = history.state?.alertMessage;
@@ -64,6 +70,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setTraining();
     this.setUpAlertSubscription();
     this.setReturnRoute();
+    this.getPdfCount();
   }
 
   private showAlert(message: string): void {
@@ -71,6 +78,32 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       type: 'success',
       message,
     });
+  }
+  public async downloadAsPDF(save: boolean = true) {
+    try {
+      return await this.pdfTrainingAndQualificationService.BuildTrainingAndQualsPdf(
+        this.workplace,
+        this.mandatoryTraining,
+        this.nonMandatoryTraining,
+        this.qualificationsByGroup,
+        this.nonMandatoryTrainingCount,
+        this.mandatoryTrainingCount,
+        this.worker,
+        this.lastUpdatedDate,
+        this.actionsListData,
+        'Training_And_Qualification.pdf',
+        save,
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  private async getPdfCount() {
+    const pdf = await this.downloadAsPDF(false);
+    const numberOfPages = pdf.getNumberOfPages();
+
+    return (this.pdfCount = numberOfPages);
   }
 
   private setPageData(): void {

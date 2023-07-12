@@ -10,6 +10,8 @@ import { ExpiredTrainingComponent } from './expired-training/expired-training.co
 import { ExpiringSoonTrainingComponent } from './expiring-soon-training/expiring-soon-training.component';
 import { MissingMandatoryTrainingStatusComponent } from './missing-mandatory-training/missing-mandatory-training-status.component';
 import { TrainingAndQualificationsRoutingModule } from './training-and-qualifications-routing.module';
+import { PdfTraininAndQualificationActionList } from '@features/pdf/training-and-qualification-action-list/training-and-qualification-action-list.component';
+import { PdfTraininAndQualificationTitle } from '@features/pdf/training-and-qualification-title/training-and-qualification-title.component';
 
 @NgModule({
   imports: [
@@ -20,7 +22,13 @@ import { TrainingAndQualificationsRoutingModule } from './training-and-qualifica
     OverlayModule,
     TrainingAndQualificationsRoutingModule,
   ],
-  declarations: [ExpiredTrainingComponent, ExpiringSoonTrainingComponent, MissingMandatoryTrainingStatusComponent],
+  declarations: [
+    ExpiredTrainingComponent,
+    ExpiringSoonTrainingComponent,
+    MissingMandatoryTrainingStatusComponent,
+    PdfTraininAndQualificationActionList,
+    PdfTraininAndQualificationTitle,
+  ],
   providers: [GetTrainingByStatusResolver, MissingMandatoryTrainingResolver],
 })
 export class TrainingAndQualificationsModule {}

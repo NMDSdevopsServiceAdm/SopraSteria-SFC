@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { TrainingRecordCategory } from '@core/model/training.model';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
@@ -13,7 +13,7 @@ export class NewTrainingComponent {
   @Input() public trainingType: string;
   @Input() public setReturnRoute: () => void;
   @Input() public canEditWorker: boolean;
-
+  @ViewChild('content') public content: ElementRef;
   public workplaceUid: string;
 
   constructor(protected trainingStatusService: TrainingStatusService, private route: ActivatedRoute) {}
