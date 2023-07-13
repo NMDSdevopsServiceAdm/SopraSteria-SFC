@@ -145,7 +145,7 @@ export class PdfTrainingAndQualificationService {
     };
 
     await doc.html(html, {
-      margin: [10, x, 10, 50],
+      margin: [25, x, 10, 50],
       autoPaging: 'text',
       html2canvas,
       callback: function (doc) {
