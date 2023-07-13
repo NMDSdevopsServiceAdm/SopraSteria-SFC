@@ -404,6 +404,7 @@ const styleLookup = {
       Q: 15,
       R: 15,
       S: 15,
+      T: 15,
     },
     WKRLAST: {
       A: 2,
@@ -425,6 +426,7 @@ const styleLookup = {
       Q: 20,
       R: 20,
       S: 20,
+      T: 15,
     },
   },
   RED: {
@@ -512,6 +514,7 @@ const styleLookup = {
       Q: 67,
       R: 67,
       S: 67,
+      T: 67,
     },
     WKRLAST: {
       A: 2,
@@ -533,6 +536,7 @@ const styleLookup = {
       Q: 67,
       R: 67,
       S: 67,
+      T: 67,
     },
   },
 };
@@ -962,7 +966,7 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
   for (let row = 0; row < reportData.workers.length; row++) {
     const rowType = row === reportData.workers.length - 1 ? 'WKRLAST' : 'WKRREGULAR';
 
-    for (let column = 0; column < 19; column++) {
+    for (let column = 0; column < 20; column++) {
       const columnText = String.fromCharCode(column + 65);
       let isRed = false;
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 10}']`);
@@ -1131,6 +1135,15 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
             putString(cellToChange, reportData.workers[row].OtherQualificationsValue);
 
             isRed = reportData.workers[row].OtherQualificationsValue === 'Missing';
+
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
+        case 'T':
+          {
+            putString(cellToChange, reportData.workers[row].WdfEligible);
+
+            isRed = reportData.workers[row].WdfEligible === 'Missing';
 
             setStyle(cellToChange, columnText, rowType, isRed);
           }
