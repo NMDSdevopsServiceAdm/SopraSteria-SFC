@@ -1,12 +1,9 @@
 'use strict';
 
-const { promise } = require('protractor');
-
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   up: (queryInterface) => {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      await promise.all([
+      await Promise.all([
         queryInterface.sequelize.query('insert into cqc."Job" ("JobID", "JobName") values (30, \'Deputy manager\')', {
           transaction,
         }),
@@ -31,7 +28,7 @@ module.exports = {
 
   down: (queryInterface) => {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      await promise.all([
+      await Promise.all([
         queryInterface.sequelize.query('delete from cqc."Job" ("JobID", "JobName") where "JobID" IN (30, 31, 32)', {
           transaction,
         }),
