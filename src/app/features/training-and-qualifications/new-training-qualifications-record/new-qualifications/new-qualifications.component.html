@@ -33,9 +33,9 @@
                   }}</span>
                 </ng-template>
               </td>
-              <td class="govuk-table__cell">{{ qualificationRecord.year ? qualificationRecord.year : '-' }}</td>
+              <td class="govuk-table__cell">{{ qualificationRecord?.year ? qualificationRecord.year : '-' }}</td>
               <td class="govuk-table__cell">
-                {{ qualificationRecord.notes ? qualificationRecord.notes : 'None' }}
+                {{ qualificationRecord?.notes ? qualificationRecord.notes : 'None' }}
               </td>
             </tr>
           </tbody>

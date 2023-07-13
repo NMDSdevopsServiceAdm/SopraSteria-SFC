@@ -48,16 +48,16 @@
                 </ng-template>
               </td>
               <td class="govuk-table__cell" [attr.data-testid]="'accredited-' + trainingRecord.uid">
-                {{ trainingRecord.accredited ? trainingRecord.accredited : '-' }}
+                {{ trainingRecord?.accredited ? trainingRecord.accredited : '-' }}
               </td>
               <td class="govuk-table__cell" [attr.data-testid]="'completion-date-' + trainingRecord.uid">
-                {{ trainingRecord.completed ? (trainingRecord.completed | date: 'dd MMM y') : '-' }}
+                {{ trainingRecord?.completed ? (trainingRecord.completed | date: 'dd MMM y') : '-' }}
               </td>
               <td class="govuk-table__cell" [attr.data-testid]="'expiry-date-' + trainingRecord.uid">
-                {{ trainingRecord.expires ? (trainingRecord.expires | date: 'dd MMM y') : '-' }}
+                {{ trainingRecord?.expires ? (trainingRecord.expires | date: 'dd MMM y') : '-' }}
               </td>
               <td class="govuk-table__cell" [attr.data-testid]="'status-' + trainingRecord.uid">
-                <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.MISSING">
+                <div *ngIf="trainingRecord?.trainingStatus === trainingStatusService.MISSING">
                   <img
                     src="/assets/images/flag-red.png"
                     alt="red warning flag"
@@ -65,7 +65,7 @@
                   />
                   Missing
                 </div>
-                <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRED && trainingRecord.expires">
+                <div *ngIf="trainingRecord?.trainingStatus === trainingStatusService.EXPIRED && trainingRecord.expires">
                   <img
                     src="/assets/images/flag-red.png"
                     alt="red expired flag"
@@ -74,7 +74,9 @@
 
                   Expired
                 </div>
-                <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.EXPIRING && trainingRecord.expires">
+                <div
+                  *ngIf="trainingRecord?.trainingStatus === trainingStatusService.EXPIRING && trainingRecord.expires"
+                >
                   <img
                     src="/assets/images/flag-orange.png"
                     alt="yellow expires soon flag"
@@ -82,10 +84,10 @@
                   />
                   Expires soon
                 </div>
-                <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.ACTIVE && trainingRecord.expires">
+                <div *ngIf="trainingRecord?.trainingStatus === trainingStatusService.ACTIVE && trainingRecord.expires">
                   OK
                 </div>
-                <div *ngIf="trainingRecord.trainingStatus === trainingStatusService.ACTIVE && !trainingRecord.expires">
+                <div *ngIf="trainingRecord?.trainingStatus === trainingStatusService.ACTIVE && !trainingRecord.expires">
                   -
                 </div>
               </td>

@@ -82,7 +82,7 @@
   </div>
 </div>
 <div
-  *ngIf="mandatoryTrainingCount + nonMandatoryTrainingCount + qualificationsByGroup.count > 0"
+  *ngIf="mandatoryTraining.length + nonMandatoryTraining.length + qualificationsByGroup.count"
   class="govuk-!-margin-bottom-8"
 >
   <app-download-pdf-traininf-and-qualification
