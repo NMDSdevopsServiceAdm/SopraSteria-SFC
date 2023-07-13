@@ -123,13 +123,15 @@ export class PdfTrainingAndQualificationService {
   }
 
   private appendActionList(html, actionsListData): void {
-    const actionList = this.resolveComponent(PdfTraininAndQualificationActionList, (c) => {
-      c.instance.actionsListData = actionsListData;
-      c.changeDetectorRef.detectChanges();
-    });
+    if (actionsListData.length > 0) {
+      const actionList = this.resolveComponent(PdfTraininAndQualificationActionList, (c) => {
+        c.instance.actionsListData = actionsListData;
+        c.changeDetectorRef.detectChanges();
+      });
 
-    html.append(actionList.cloneNode(true));
-    html.append(this.createSpacer(this.width, this.spacing));
+      html.append(actionList.cloneNode(true));
+      html.append(this.createSpacer(this.width, this.spacing));
+    }
   }
   private async saveHtmlToPdf(filename, doc: jsPDF, html, scale, width, save): Promise<void> {
     const widthHtml = width * scale;
@@ -143,7 +145,7 @@ export class PdfTrainingAndQualificationService {
     };
 
     await doc.html(html, {
-      margin: [15, x, 10, 50],
+      margin: [10, x, 10, 50],
       autoPaging: 'text',
       html2canvas,
       callback: function (doc) {
