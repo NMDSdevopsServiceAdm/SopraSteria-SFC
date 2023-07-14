@@ -75,11 +75,7 @@
                   "replace": "src/environments/environment.ts",
                   "with": "src/environments/environment.test.ts"
                 }
-              ],
-              "index": {
-                "input": "index.test.html",
-                "output": "index.html"
-              }
+              ]
             },
             "production": {
               "fileReplacements": [
@@ -104,11 +100,7 @@
                   "type": "anyComponentStyle",
                   "maximumWarning": "6kb"
                 }
-              ],
-              "index": {
-                "input": "index.prod.html",
-                "output": "index.html"
-              }
+              ]
             },
             "preproduction": {
               "fileReplacements": [
