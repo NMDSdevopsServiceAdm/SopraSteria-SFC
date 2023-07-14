@@ -2,18 +2,12 @@
 
 .asc-dashboard-header {
   background-color: govuk-colour('light-grey');
-  min-height: 165px;
-  height: 185px;
+  height: 165px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
 
   &__full-height {
-    min-height: 215px;
-    height: 235px;
+    height: 215px;
   }
-}
-
-.home-workplace-name {
-  width: 103%;
 }
