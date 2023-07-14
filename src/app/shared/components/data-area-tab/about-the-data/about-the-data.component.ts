@@ -1,9 +1,11 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
@@ -26,6 +28,7 @@ export class DataAreaAboutTheDataComponent implements OnInit, OnDestroy {
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksService,
     private permissionsService: PermissionsService,
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit(): void {
@@ -44,6 +47,8 @@ export class DataAreaAboutTheDataComponent implements OnInit, OnDestroy {
         }),
       );
     }
+
+    this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
   }
 
   public pluralizeWorkplaces(workplaces) {
