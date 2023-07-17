@@ -168,7 +168,7 @@ export class DataAreaBarchartOptionsBuilder {
 
     const options = cloneDeep(this.defaultOptions);
     options.title = {
-      y: 30,
+      y: 15,
       x: -10,
       align: 'left',
       text: `<span class="govuk-!-font-size-16 govuk-!-font-weight-bold" style='font-family:"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif'>${this.getYAxisTitle(
