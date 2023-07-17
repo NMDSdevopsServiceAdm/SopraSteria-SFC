@@ -1,11 +1,10 @@
-import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.component';
@@ -37,8 +36,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   constructor(
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
-    private pdfService: PdfService,
-    private elRef: ElementRef,
     protected benchmarksService: BenchmarksService,
     protected router: Router,
   ) {}
@@ -51,15 +48,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.setDownloadBenchmarksText();
     this.checkComparisonDataExists();
     this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;
-  }
-
-  public async downloadAsPDF() {
-    return await this.pdfService.BuildBenchmarksPdf(
-      this.elRef,
-      this.aboutData.aboutData,
-      this.workplace,
-      'Benchmarks.pdf',
-    );
   }
 
   public checkComparisonDataExists(): void {
