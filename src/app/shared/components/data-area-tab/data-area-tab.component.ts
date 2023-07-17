@@ -53,15 +53,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;
   }
 
-  public async downloadAsPDF() {
-    return await this.pdfService.BuildBenchmarksPdf(
-      this.elRef,
-      this.aboutData.aboutData,
-      this.workplace,
-      'Benchmarks.pdf',
-    );
-  }
-
   public checkComparisonDataExists(): void {
     const noComparisonData = 'no-data';
 

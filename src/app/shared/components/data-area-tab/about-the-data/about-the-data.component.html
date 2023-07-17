@@ -1,30 +1,85 @@
-<div class="govuk-grid-row" >
-  <div class="govuk-grid-column-two-thirds" #aboutData>
-    <h1 class="govuk-!-margin-bottom-9">About the data</h1>
-    <h2 class="govuk-heading-m">Who uses the data</h2>
-    <p>The Department of Health and Social Care (DHSC) use the data collected by this service.</p>
-    <p>The data helps DHSC, the Care Quality Commission and local authorities make decisions about the adult social care sector.</p>
-    <h2 class="govuk-heading-m">Benchmarks</h2>
-    <p>The amount and quality of the data you add will make the benchmarks more accurate and useful. </p>
-    <p>Staff records are not included in benchmark calculations when there's missing data. For example, if you have 4 staff records and only 3 contain pay data, only those 3 records would be included in the benchmark for pay.</p>
-    <h2 class="govuk-heading-m">Comparison group</h2>
-    <p>Your comparison group data:  </p>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <div>
+      <span class="govuk-caption-l">{{ workplace.name }}</span>
+
+      <h1 class="govuk-!-margin-bottom-6 govuk-heading-l">About the data</h1>
+      <h2 class="govuk-heading-m">Who uses the data</h2>
+      <p>The Department of Health and Social Care (DHSC) use the data collected by this service.</p>
+      <p>
+        The data helps DHSC, the Care Quality Commission and local authorities make decisions about the adult social
+        care sector.
+      </p>
+      <h2 class="govuk-heading-m">Benchmarks</h2>
+      <p>The amount and quality of the data you add will make the benchmarks more accurate and useful.</p>
+      <p>
+        Staff records are not included in benchmark calculations when there’s missing data. For example, if you have 4
+        staff records and only 3 contain pay data, only those 3 records would be included in the benchmark for pay.
+      </p>
+      <h2 class="govuk-heading-m">Comparison group</h2>
+      <p>
+        Your comparison group data is refreshed every month and is only included after it passes extensive quality
+        checks.
+      </p>
+      <p>
+        The size of the comparison group can change depending on which group you select, the number of workplaces and
+        the amount of data provided.
+      </p>
+
+      <h2 class="govuk-heading-m">Not enough data</h2>
+      <p>Benchmarks will not show if:</p>
       <ul class="govuk-list govuk-list--bullet">
-        <li><p>is updated every month</p></li>
-        <li><p>has passed extensive quality checks that cross-validate and remove outliers</p></li>
-        <li *ngIf="meta?.staff && meta?.workplaces"><p data-testid="meta-data">is {{meta.staff | number}} staff from {{meta.workplaces | number}} {{pluralizeWorkplaces(meta.workplaces)}} providing the same main service as you in your local authority</p></li>
+        <li><p>there are not enough workplaces or staff in a comparison group</p></li>
+        <li><p>you’ve not added any data about something (for example, pay or a particular job role)</p></li>
       </ul>
-    <p>Skills for Care is committed to protecting your privacy and security. We comply with the General Data Protection Regulation ((EU) 2016/679) and the Data Protection Act 2018.</p>
-     <button data-html2canvas-ignore type="submit" class="govuk-button" [routerLink]="this.url" [fragment]="this.fragment" >View your benchmarks</button>
+
+      <h2 class="govuk-heading-m">Care worker and senior care worker pay</h2>
+      <p>
+        Your workplace data for care worker pay and senior care worker pay will not show if they’re saved as annual
+        salaries.
+      </p>
+      <h2 class="govuk-heading-m">Registered manager and registered nurse salaries</h2>
+      <p>Your workplace data for these salaries will not show if they’re saved as hourly rates of pay.</p>
+
+      <h2 class="govuk-heading-m">Vacancy rate</h2>
+      <p>
+        Your workplace vacancy rate will not show until you’ve added vacancy information and at least the mandatory
+        staff record information needed for each staff member included in your total number of staff.
+      </p>
+
+      <h2 class="govuk-heading-m">Turnover rate</h2>
+      <p>
+        Your workplace turnover rate will not show until you’ve added leaver information and at least the mandatory
+        staff record information needed for each staff member included in your total number of staff.
+      </p>
+      <p>Percentage of staff still in their main Job role after 12 months.</p>
+
+      <p>
+        Your workplace percentage of staff will not show unless you’ve added a staff record for each staff member
+        included in your total number of staff. You’ll also need to have added a main job role start date for each staff
+        member.
+      </p>
+
+      <h2 class="govuk-heading-m">Data protection</h2>
+      <p>
+        Skills for Care is committed to protecting your privacy and security. We comply with the General Data Protection
+        Regulation ((EU) 2016/679) and the Data Protection Act 2018.
+      </p>
+    </div>
+
+    <div>
+      <button type="submit" class="govuk-button govuk-!-margin-top-4" (click)="returnToHome()">
+        Return to benchmarks
+      </button>
+    </div>
   </div>
-  <div class="govuk-grid-column-one-thirds">
-    <div class="department-of-health-logo govuk-!-margin-top-6">
+  <div class="govuk-grid-column-one-third">
+    <div
+      class="department-of-health-logo govuk-!-margin-top-6 govuk__flex govuk-util__align-right govuk-!-padding-left-6"
+    >
       <div class="department-of-health-logo__crest">
         <span class="department-of-health-logo__name">Department<br />of Health &amp;<br />Social Care</span>
       </div>
     </div>
   </div>
 </div>
-
-
-
