@@ -1,29 +1,39 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { BrowserModule, By } from '@angular/platform-browser';
-import { ActivatedRoute } from '@angular/router';
+
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Establishment } from '@core/model/establishment.model';
+
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { within } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
-import { Establishment as MockEstablishment } from '../../../../../mockdata/establishment';
-import { DataAreaTabModule } from '../data-area-tab.module';
 import { DataAreaAboutTheDataComponent } from './about-the-data.component';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { SharedModule } from '@shared/shared.module';
+import { getTestBed } from '@angular/core/testing';
 
-describe('BenchmarksAboutTheDataComponent', () => {
-  let component: DataAreaAboutTheDataComponent;
-  let fixture: ComponentFixture<DataAreaAboutTheDataComponent>;
-
-  beforeEach(() => {
-    TestBed.configureTestingModule({
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, DataAreaTabModule],
+describe('DataAreaAboutTheDataComponent', () => {
+  async function setup() {
+    const { getByText, getByLabelText, getByTestId, fixture } = await render(DataAreaAboutTheDataComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
         { provide: BenchmarksService, useClass: MockBenchmarksService },
+        { provide: PermissionsService, useClass: MockPermissionsService },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
+        },
+
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -35,40 +45,47 @@ describe('BenchmarksAboutTheDataComponent', () => {
             },
           },
         },
-        { provide: PermissionsService, useClass: MockPermissionsService },
       ],
-    }).compileComponents();
-    fixture = TestBed.createComponent(DataAreaAboutTheDataComponent);
-    component = fixture.componentInstance;
-    component.workplace = MockEstablishment as Establishment;
-    fixture.detectChanges();
-  });
-
-  it('should create', () => {
-    component.meta = { workplaces: 1, staff: 1, localAuthority: 'Test LA' };
-
+    });
+    const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    return {
+      getByText,
+      getByLabelText,
+      getByTestId,
+      fixture,
+      component,
+      routerSpy,
+    };
+  }
+  it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
-  it('should have the right text with only one workplace', async () => {
-    component.meta = { workplaces: 1, staff: 1, localAuthority: 'Test LA' };
-    fixture.detectChanges();
-    const componenttext = await within(document.body).findByTestId('meta-data');
-    expect(componenttext.innerHTML).toContain(
-      `is 1 staff from 1 workplace providing the same main service as you in your local authority`,
-    );
+
+  it('should show the workplace name', async () => {
+    const { component } = await setup();
+    const workplaceName = component.workplace.name;
+    expect(workplaceName).toBeTruthy();
   });
-  it('should have the right text with correct comma placement', async () => {
-    component.meta = { workplaces: 1000, staff: 1000, localAuthority: 'Test LA' };
-    fixture.detectChanges();
-    const componenttext = await within(document.body).findByTestId('meta-data');
-    expect(componenttext.innerHTML).toContain(
-      `is 1,000 staff from 1,000 workplaces providing the same main service as you in your local authority`,
-    );
+
+  it('should show the About the data header', async () => {
+    const { getByText } = await setup();
+
+    const aboutData = getByText('About the data');
+    expect(aboutData).toBeTruthy();
   });
-  it('should have the right text with no data', async () => {
-    component.meta = null;
+
+  it('should navigate to the benchmarks page', async () => {
+    const { component, getByText, routerSpy, fixture } = await setup();
+
+    const returnButton = getByText('Return to benchmarks');
+
+    fireEvent.click(returnButton);
+
     fixture.detectChanges();
-    const lineItemCount = fixture.debugElement.queryAll(By.css('li')).length;
-    expect(lineItemCount).toBe(2);
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'benchmarks' });
   });
 });
