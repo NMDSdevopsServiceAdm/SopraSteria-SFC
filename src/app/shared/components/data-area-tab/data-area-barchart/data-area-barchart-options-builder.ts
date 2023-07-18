@@ -159,8 +159,9 @@ export class DataAreaBarchartOptionsBuilder {
         plotLines: plotlines,
       },
     };
+
     if (rankingData.allValues?.length == 0) {
-      source.series[0].data = [{ y: 20000 }];
+      source.series[0].data = [{ y: this.buildEmptyChart(type) }];
       source.series[0].opacity = 0;
     } else {
       source.series[0].data = this.buildChartData(rankingData, type);
@@ -244,6 +245,26 @@ export class DataAreaBarchartOptionsBuilder {
         value = FormatUtil.formatPercent(labelValue);
     }
     return value;
+  }
+
+  private buildEmptyChart(type: Metric): number {
+    let emptyNumberLimit: number;
+    switch (type) {
+      case Metric.careWorkerPay:
+      case Metric.seniorCareWorkerPay:
+        emptyNumberLimit = 18;
+        break;
+      case Metric.registeredManagerPay:
+      case Metric.registeredNursePay:
+        emptyNumberLimit = 30000;
+        break;
+      case Metric.vacancy:
+      case Metric.turnover:
+      case Metric.timeInRole:
+        emptyNumberLimit = 0.9;
+        break;
+    }
+    return emptyNumberLimit;
   }
 
   private buildChartData(rankingData: RankingsResponse, type: Metric): any[] {
