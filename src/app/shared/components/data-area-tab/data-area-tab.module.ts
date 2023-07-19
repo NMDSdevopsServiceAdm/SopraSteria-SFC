@@ -14,7 +14,7 @@ import { DataAreaRankingComponent } from './data-area-ranking/data-area-ranking.
 import { DataAreaRecruitmentAndRetentionComponent } from './data-area-recruitment-and-retention/data-area-recruiment-and-retention.component';
 import { DataAreaRoutingModule } from './data-area-routing.module';
 import { DataAreaTabComponent } from './data-area-tab.component';
-import { DataAreaUsefulLinkPayComponent } from './data-area-useful-link/data-area-useful-link-pay.component';
+import { DataAreaUsefulLinkPayComponent } from './data-area-useful-link/data-area-useful-link-pay/data-area-useful-link-pay.component';
 import { DownloadPdfComponent } from './download-pdf/download-pdf.component';
 import { DataAreaUsefulLinkRecruitmentComponent } from './data-area-useful-link/data-area-useful-link-recuitment/data-area-useful-link-recruitment.component';
 
