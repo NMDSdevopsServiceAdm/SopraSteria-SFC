@@ -14,8 +14,9 @@ import { DataAreaRankingComponent } from './data-area-ranking/data-area-ranking.
 import { DataAreaRecruitmentAndRetentionComponent } from './data-area-recruitment-and-retention/data-area-recruiment-and-retention.component';
 import { DataAreaRoutingModule } from './data-area-routing.module';
 import { DataAreaTabComponent } from './data-area-tab.component';
-import { DataAreaUsefulLinkComponent } from './data-area-useful-link/data-area-useful-link.component';
+import { DataAreaUsefulLinkPayComponent } from './data-area-useful-link/data-area-useful-link-pay.component';
 import { DownloadPdfComponent } from './download-pdf/download-pdf.component';
+import { DataAreaUsefulLinkRecruitmentComponent } from './data-area-useful-link/data-area-useful-link-recuitment/data-area-useful-link-recruitment.component';
 
 @NgModule({
   imports: [CommonModule, RouterModule, OverlayModule, HighchartsChartModule, SharedModule, DataAreaRoutingModule],
@@ -26,10 +27,12 @@ import { DownloadPdfComponent } from './download-pdf/download-pdf.component';
     DataAreaTabComponent,
     BenchmarksSelectViewPanelComponent,
     BenchmarksSelectComparisonGroupsComponent,
-    DataAreaUsefulLinkComponent,
+
     DownloadPdfComponent,
     DataAreaPayComponent,
     DataAreaRecruitmentAndRetentionComponent,
+    DataAreaUsefulLinkPayComponent,
+    DataAreaUsefulLinkRecruitmentComponent,
   ],
   exports: [
     DataAreaAboutTheDataComponent,
@@ -38,10 +41,12 @@ import { DownloadPdfComponent } from './download-pdf/download-pdf.component';
     DataAreaTabComponent,
     BenchmarksSelectViewPanelComponent,
     BenchmarksSelectComparisonGroupsComponent,
-    DataAreaUsefulLinkComponent,
+
     DownloadPdfComponent,
     DataAreaPayComponent,
     DataAreaRecruitmentAndRetentionComponent,
+    DataAreaUsefulLinkPayComponent,
+    DataAreaUsefulLinkRecruitmentComponent,
   ],
   providers: [],
 })
