@@ -19,6 +19,8 @@ import { NotificationsListResolver } from '@core/resolvers/notifications-list.re
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
@@ -143,6 +145,8 @@ const routes: Routes = [
           cqcStatusCheck: CqcStatusCheckResolver,
           benchmarks: BenchmarksResolver,
           rankings: RankingsResolver,
+          usefulLinksPay: UsefulLinkPayResolver,
+          usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },
