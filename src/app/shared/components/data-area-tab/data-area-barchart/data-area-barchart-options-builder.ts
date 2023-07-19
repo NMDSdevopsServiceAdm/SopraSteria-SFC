@@ -11,7 +11,7 @@ export class DataAreaBarchartOptionsBuilder {
   private defaultOptions: Highcharts.Options = {
     chart: {
       type: 'column',
-      marginTop: 75,
+      marginTop: 60,
       marginRight: 100,
       backgroundColor: '#f3f2f1',
       plotBorderColor: '#d4d5d5',
@@ -215,9 +215,10 @@ export class DataAreaBarchartOptionsBuilder {
         case Metric.pay:
         case Metric.careWorkerPay:
         case Metric.seniorCareWorkerPay:
+          return '<span class="govuk-body">£' + this.value + '</span>';
         case Metric.registeredManagerPay:
         case Metric.registeredNursePay:
-          return '<span class="govuk-body">£' + this.value + '</span>';
+          return '<span class="govuk-body">' + FormatUtil.formatSalary(this.value) + '</span>';
         case Metric.vacancy:
         case Metric.turnover:
         case Metric.timeInRole:

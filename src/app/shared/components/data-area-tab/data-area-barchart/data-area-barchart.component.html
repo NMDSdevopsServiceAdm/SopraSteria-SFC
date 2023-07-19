@@ -20,10 +20,7 @@
   <ng-template #noData>
     <ng-container *ngIf="rankingsData.stateMessage == 'no-comparison-data'; else hasComparisonData">
       <ng-container *ngIf="noWorkplaceData == false; else noWorkplaceAndComparisonData">
-        <p
-          class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8 govuk-!-padding-bottom-3"
-          data-testid="no-comparison-data"
-        >
+        <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="no-comparison-data">
           We do not have enough comparison group data to<br />
           show you where you're positioned yet.
         </p>
@@ -43,16 +40,13 @@
       </ng-container>
       <ng-template #recrAndRet>
         <ng-container *ngIf="type == 'vacancy'; else turnoverOrPerecent">
-          <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-vacancy-data">
+          <p class="govuk-body govuk-!-margin-top-2" data-testid="no-workplace-vacancy-data">
             You've not added any vacancies, so we cannot show<br />
             where you're positioned.
           </p>
         </ng-container>
         <ng-template #turnoverOrPerecent>
-          <p
-            class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2"
-            data-testid="no-workplace-turnover-or-percent-data"
-          >
+          <p class="govuk-body govuk-!-margin-top-2" data-testid="no-workplace-turnover-or-percent-data">
             You've not added the data we need to show where <br />you're positioned (see '<app-about-the-data-link
             ></app-about-the-data-link>').
           </p>
