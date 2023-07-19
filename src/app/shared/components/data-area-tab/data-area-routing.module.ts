@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.component';
+import { DataAreaAboutTheDataComponent } from '@shared/components/data-area-tab/about-the-data/about-the-data.component';
 
 const routes: Routes = [
   {

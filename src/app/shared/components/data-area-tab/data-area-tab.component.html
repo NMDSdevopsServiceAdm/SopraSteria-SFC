@@ -79,13 +79,6 @@
           </p>
         </ng-template>
       </ng-container>
-      <div class="govuk-!-margin-top-5">
-        <app-download-pdf
-          [linkUrl]="'/benchmarks.pdf'"
-          [viewBenchmarksByCategory]="viewBenchmarksByCategory"
-          (downloadPDF)="downloadAsPDF()"
-        ></app-download-pdf>
-      </div>
 
       <ng-container *ngIf="viewBenchmarksByCategory; else showPay">
         <app-data-area-recruitment-and-retention
@@ -105,10 +98,10 @@
         ></app-data-area-pay>
       </ng-template>
     </div>
-    <app-data-area-about-the-data
+    <!-- <app-data-area-about-the-data
       #aboutData
       class="govuk-visually-hidden"
       [workplace]="workplace"
-    ></app-data-area-about-the-data>
+    ></app-data-area-about-the-data> -->
   </div>
 </div>
