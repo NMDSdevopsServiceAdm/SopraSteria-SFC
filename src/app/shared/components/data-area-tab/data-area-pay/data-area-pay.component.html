@@ -144,31 +144,9 @@
       </div>
     </ng-template>
   </div>
-
-  <div class="govuk-!-margin-top-7">
-    <h2 class="govuk-heading-m">Useful links</h2>
-    <app-data-area-useful-link
-      [linkTitle]="'Create a positive place to work'"
-      [linkUrl]="['/positive-workplace']"
-      [linkDescription]="
-        'Creating a positive place to work helps the workforce feel valued, engaged and want to continue working in your workplace.'
-      "
-    ></app-data-area-useful-link>
-
-    <app-data-area-useful-link
-      [linkTitle]="'Maximise recruitment'"
-      [linkUrl]="['/maximise-recruitment']"
-      [linkDescription]="
-        'This webinar shares sector expertise to support you in the recruitment process. Discover top tips and innovative solutions for staff retention and practical ideas from other managers.'
-      "
-    ></app-data-area-useful-link>
-
-    <app-data-area-useful-link
-      [linkTitle]="'Top tips for adult social care workforce retention'"
-      [linkUrl]="['/workplace-retention-top-tips']"
-      [linkDescription]="
-        'Created in partnership with local councils and providers of social care, this guide provides suggestions and resources to help you improve your retention.'
-      "
-    ></app-data-area-useful-link>
+  <div>
+    <div>
+      <app-data-area-useful-link-pay></app-data-area-useful-link-pay>
+    </div>
   </div>
 </div>
