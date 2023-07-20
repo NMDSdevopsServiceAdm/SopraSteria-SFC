@@ -966,7 +966,7 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
   for (let row = 0; row < reportData.workers.length; row++) {
     const rowType = row === reportData.workers.length - 1 ? 'WKRLAST' : 'WKRREGULAR';
 
-    for (let column = 0; column < 19; column++) {
+    for (let column = 0; column < 20; column++) {
       const columnText = String.fromCharCode(column + 65);
       let isRed = false;
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 10}']`);
@@ -974,8 +974,6 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
       switch (columnText) {
         case 'B':
           {
-            console.log(columnText);
-            console.log(reportData.workers[row].NameOrIdValue);
             basicValidationUpdate(putString, cellToChange, reportData.workers[row].NameOrIdValue, columnText, rowType);
           }
           break;
@@ -1141,15 +1139,15 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
             setStyle(cellToChange, columnText, rowType, isRed);
           }
           break;
-        // case 'T':
-        //   {
-        //     putString(cellToChange, reportData.workers[row].WdfEligible);
+        case 'T':
+          {
+            putString(cellToChange, reportData.workers[row].WdfEligible);
 
-        //     isRed = reportData.workers[row].WdfEligible === 'Missing';
+            isRed = reportData.workers[row].WdfEligible === 'Missing';
 
-        //     setStyle(cellToChange, columnText, rowType, isRed);
-        //   }
-        //   break;
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
       }
     }
 
