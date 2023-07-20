@@ -1141,7 +1141,7 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
           break;
         case 'T':
           {
-            putString(cellToChange, reportData.workers[row].WdfEligible);
+            putString(cellToChange, reportData.workers[row].WdfEligible ? 'Yes' : 'No');
 
             isRed = reportData.workers[row].WdfEligible === 'Missing';
 
