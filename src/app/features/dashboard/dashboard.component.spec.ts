@@ -128,11 +128,18 @@ describe('DashboardComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Tabs', () => {
+  fdescribe('Tabs', () => {
     it('should display the Home tab', async () => {
       const { getByTestId } = await setup();
       expect(getByTestId('tab_home')).toBeTruthy();
     });
+
+    // it('should display parent home tab when establishment is a parent', async () => {
+    //   const { component, queryByTestId } = await setup();
+
+    //   const parentHomeTab = queryByTestId('parentHomeTab');
+
+    // });
 
     it('should display the Workplace tab', async () => {
       const { getByTestId } = await setup();

@@ -8,12 +8,14 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 })
 export class DashboardWrapperComponent implements OnInit {
   public standAloneAccount: boolean;
+  public parentAccount: boolean;
   public newHomeDesignFlag: boolean;
 
   constructor(private establishmentService: EstablishmentService, private featureFlagsService: FeatureFlagsService) {}
 
   ngOnInit(): void {
     this.standAloneAccount = this.establishmentService.standAloneAccount;
+    this.parentAccount = this.establishmentService.establishment.isParent;
     this.newHomeDesignFlag = this.featureFlagsService.newHomeDesignFlag;
   }
 }
