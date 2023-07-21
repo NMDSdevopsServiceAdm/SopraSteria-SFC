@@ -11,7 +11,7 @@ export class DataAreaBarchartOptionsBuilder {
   private defaultOptions: Highcharts.Options = {
     chart: {
       type: 'column',
-      marginTop: 75,
+      marginTop: 60,
       marginRight: 100,
       backgroundColor: '#f3f2f1',
       plotBorderColor: '#d4d5d5',
@@ -159,8 +159,9 @@ export class DataAreaBarchartOptionsBuilder {
         plotLines: plotlines,
       },
     };
+
     if (rankingData.allValues?.length == 0) {
-      source.series[0].data = [{ y: 20000 }];
+      source.series[0].data = [{ y: this.buildEmptyChart(type) }];
       source.series[0].opacity = 0;
     } else {
       source.series[0].data = this.buildChartData(rankingData, type);
@@ -168,7 +169,7 @@ export class DataAreaBarchartOptionsBuilder {
 
     const options = cloneDeep(this.defaultOptions);
     options.title = {
-      y: 30,
+      y: 15,
       x: -10,
       align: 'left',
       text: `<span class="govuk-!-font-size-16 govuk-!-font-weight-bold" style='font-family:"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif'>${this.getYAxisTitle(
@@ -214,9 +215,10 @@ export class DataAreaBarchartOptionsBuilder {
         case Metric.pay:
         case Metric.careWorkerPay:
         case Metric.seniorCareWorkerPay:
+          return '<span class="govuk-body">£' + this.value + '</span>';
         case Metric.registeredManagerPay:
         case Metric.registeredNursePay:
-          return '<span class="govuk-body">£' + this.value + '</span>';
+          return '<span class="govuk-body">' + FormatUtil.formatSalary(this.value) + '</span>';
         case Metric.vacancy:
         case Metric.turnover:
         case Metric.timeInRole:
@@ -244,6 +246,26 @@ export class DataAreaBarchartOptionsBuilder {
         value = FormatUtil.formatPercent(labelValue);
     }
     return value;
+  }
+
+  private buildEmptyChart(type: Metric): number {
+    let emptyNumberLimit: number;
+    switch (type) {
+      case Metric.careWorkerPay:
+      case Metric.seniorCareWorkerPay:
+        emptyNumberLimit = 18;
+        break;
+      case Metric.registeredManagerPay:
+      case Metric.registeredNursePay:
+        emptyNumberLimit = 30000;
+        break;
+      case Metric.vacancy:
+      case Metric.turnover:
+      case Metric.timeInRole:
+        emptyNumberLimit = 0.9;
+        break;
+    }
+    return emptyNumberLimit;
   }
 
   private buildChartData(rankingData: RankingsResponse, type: Metric): any[] {

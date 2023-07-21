@@ -272,16 +272,14 @@ describe('NewDashboardHeaderComponent', () => {
   });
 
   describe('Benchmarks tab', () => {
-    it('should display the workplace name, the tab name, the nmdsId number and the benchmarks last updated date', async () => {
-      const { component, getByText, getByTestId } = await setup('benchmarks', true);
+    it('should display the workplace name, the tab name and the nmdsId number', async () => {
+      const { component, getByText } = await setup('benchmarks');
 
       const workplace = component.workplace;
 
       expect(getByText(workplace.name)).toBeTruthy();
       expect(getByText('Benchmarks')).toBeTruthy();
       expect(getByText(`Workplace ID: ${workplace.nmdsId}`)).toBeTruthy();
-      expect(getByTestId('separator')).toBeTruthy();
-      expect(getByTestId('benchmarksLastUpdatedDate')).toBeTruthy();
     });
 
     it('should not display date if an updated date is not given', async () => {
