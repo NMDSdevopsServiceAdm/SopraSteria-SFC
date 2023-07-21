@@ -175,6 +175,9 @@ export class DataAreaBarchartOptionsBuilder {
       text: `<span class="govuk-!-font-size-16 govuk-!-font-weight-bold" style='font-family:"Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif'>${this.getYAxisTitle(
         type,
       )}</span>`,
+      style: {
+        color: '#0b0c0c',
+      },
     };
 
     return merge(options, source);
@@ -205,7 +208,7 @@ export class DataAreaBarchartOptionsBuilder {
         axisTitle = 'Percentage of staff';
         break;
     }
-    return '<span class="govuk-body govuk-!-font-size-19 govuk-!-font-weight-bold">' + axisTitle + '</span>';
+    return '<span class="govuk-body govuk-!-font-size-16 govuk-!-font-weight-bold">' + axisTitle + '</span>';
   }
 
   private formatLabel(type: Metric): Highcharts.AxisLabelsFormatterCallbackFunction {
