@@ -28,7 +28,7 @@ const MockWindow = {
   },
 };
 
-describe('NewDashboardHeaderComponent', () => {
+fdescribe('NewDashboardHeaderComponent', () => {
   const setup = async (
     tab = 'home',
     updateDate = false,
@@ -75,6 +75,7 @@ describe('NewDashboardHeaderComponent', () => {
         tAndQCount: 5,
         canEditWorker,
         hasWorkers,
+        isParent: false,
       },
     });
 
@@ -110,6 +111,22 @@ describe('NewDashboardHeaderComponent', () => {
       expect(getByText(`Workplace ID: ${workplace.nmdsId}`)).toBeTruthy();
       expect(queryByTestId('separator')).toBeFalsy();
       expect(queryByTestId('lastUpdatedDate')).toBeFalsy();
+    });
+
+    it('should not show parent above workplace name if it is not a parent', async () => {
+      const { component, queryByTestId } = await setup();
+
+      component.isParent = false;
+
+      expect(queryByTestId('parentLabel')).toBeFalsy();
+    });
+
+    it('should show parent above workplace name if it is a parent', async () => {
+      const { component, queryByTestId } = await setup();
+
+      component.isParent = true;
+
+      expect(queryByTestId('parentLabel')).toBeTruthy();
     });
 
     it('should show Skills for Care contact info', async () => {
