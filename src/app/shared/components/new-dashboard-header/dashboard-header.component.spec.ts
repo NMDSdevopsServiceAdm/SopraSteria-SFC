@@ -28,7 +28,7 @@ const MockWindow = {
   },
 };
 
-fdescribe('NewDashboardHeaderComponent', () => {
+describe('NewDashboardHeaderComponent', () => {
   const setup = async (
     tab = 'home',
     updateDate = false,

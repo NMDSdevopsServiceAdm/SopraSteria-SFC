@@ -33,6 +33,9 @@ export class SummarySectionComponent implements OnInit {
     },
   ];
 
+  public isParent: boolean;
+  public workplacesSummaryMessage: string;
+
   constructor(
     private tabsService: TabsService,
     private establishmentService: EstablishmentService,
@@ -44,6 +47,8 @@ export class SummarySectionComponent implements OnInit {
     this.getStaffCreatedDate();
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
+    this.isParent = this.workplace?.isParent;
+    this.getWorkplacesSummaryMessage();
   }
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
@@ -145,5 +150,9 @@ export class SummarySectionComponent implements OnInit {
     const workerLatestCreatedDate = new Date(Math.max(...this.workersCreatedDate));
     const afterWorkerCreated = dayjs(workerLatestCreatedDate).add(12, 'M');
     return afterWorkerCreated;
+  }
+
+  getWorkplacesSummaryMessage(): void {
+    this.workplacesSummaryMessage = `You've not added any other workplaces yet `;
   }
 }
