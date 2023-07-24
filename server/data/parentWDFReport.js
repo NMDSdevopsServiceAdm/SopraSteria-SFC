@@ -244,7 +244,8 @@ SELECT
   "SocialCareQualificationFKSavedAt",
   "OtherQualificationsValue",
   "OtherQualificationsSavedAt",
-  "Worker"."WdfEligible"
+  "Worker"."WdfEligible",
+  "Worker"."LastWdfEligibility"
 FROM
   cqc."Worker"
 INNER JOIN
