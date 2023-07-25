@@ -7,10 +7,6 @@
         <app-home-tab [workplace]="workplace" [workerCount]="workerCount" data-testid="homeTab"></app-home-tab>
       </app-tab>
 
-      <app-tab [title]="'New Home'">
-        <app-parent-home-tab [workplace]="workplace" [meta]="undefined" data-testid="parentHomeTab"></app-parent-home-tab>
-      </app-tab>
-
       <app-tab
         *ngIf="workplace && canViewEstablishment"
         [title]="'Workplace'"

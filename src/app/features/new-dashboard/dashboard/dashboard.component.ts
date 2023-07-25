@@ -30,6 +30,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public tilesData: BenchmarksResponse;
   public newDataAreaFlag: boolean;
   public canSeeNewDataArea: boolean;
+  public isParent: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,6 +48,8 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
     this.tilesData = this.benchmarksService.benchmarksData;
+
+    this.isParent = this.workplace?.isParent;
 
     this.authService.isOnAdminScreen = false;
     this.subscriptions.add(

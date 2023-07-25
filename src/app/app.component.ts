@@ -23,6 +23,7 @@ export class AppComponent implements OnInit {
   public standAloneAccount = false;
   public newHomeDesignFlag: boolean;
   public newDataAreaFlag: boolean;
+  public parentAccount: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -61,6 +62,7 @@ export class AppComponent implements OnInit {
       this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
       if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
+      this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
 
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {

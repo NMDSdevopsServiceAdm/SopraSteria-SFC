@@ -61,6 +61,7 @@ export class ParentHomeTabComponent implements OnInit, OnDestroy {
   public addWorkplaceDetailsBanner: boolean;
   public bigThreeServices: boolean;
   public hasBenchmarkComparisonData: boolean;
+  public isParent: boolean;
 
   constructor(
     private userService: UserService,
@@ -88,6 +89,8 @@ export class ParentHomeTabComponent implements OnInit, OnDestroy {
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();
+
+    this.isParent = this.workplace?.isParent;
 
     if (this.workplace) {
       this.subscriptions.add(

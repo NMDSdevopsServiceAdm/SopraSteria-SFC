@@ -5,10 +5,12 @@ import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { DashboardWrapperComponent } from './dashboard-wrapper.component';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
 describe('DashboardWrapperComponent', () => {
   const setup = async () => {
@@ -19,7 +21,12 @@ describe('DashboardWrapperComponent', () => {
           provide: FeatureFlagsService,
           useClass: MockFeatureFlagsService,
         },
+        {
+          provide: EstablishmentService,
+          useClasss: MockEstablishmentService,
+        },
       ],
+      componentProperties: {},
       schemas: [NO_ERRORS_SCHEMA],
     });
 
@@ -43,20 +50,37 @@ describe('DashboardWrapperComponent', () => {
 
     component.standAloneAccount = true;
     component.newHomeDesignFlag = true;
+
     fixture.detectChanges();
 
     expect(getByTestId('standAloneDashboard')).toBeTruthy();
+    expect(queryByTestId('parentDashboard')).toBeFalsy();
     expect(queryByTestId('parentSubDashboard')).toBeFalsy();
   });
 
-  it('should render the parent sub dashboard if the establishment is not a stand alone account and the new home design feature flag is true', async () => {
+  it('should render the parent dashboard if the establishment is a parent account and the new home design feature flag is true', async () => {
     const { component, fixture, getByTestId, queryByTestId } = await setup();
 
     component.standAloneAccount = false;
     component.newHomeDesignFlag = true;
+    component.parentAccount = true;
+
+    fixture.detectChanges();
+
+    expect(queryByTestId('standAloneDashboard')).toBeFalsy();
+    expect(getByTestId('parentDashboard')).toBeTruthy();
+  });
+
+  it('should render the sub dashboard if the establishment is not a stand alone account or parent and the new home design feature flag is true', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+    component.standAloneAccount = false;
+    component.newHomeDesignFlag = true;
+    component.parentAccount = false;
     fixture.detectChanges();
 
     expect(getByTestId('parentSubDashboard')).toBeTruthy();
+    expect(queryByTestId('parentDashboard')).toBeFalsy();
     expect(queryByTestId('standAloneDashboard')).toBeFalsy();
   });
 
@@ -65,6 +89,7 @@ describe('DashboardWrapperComponent', () => {
 
     component.standAloneAccount = true;
     component.newHomeDesignFlag = false;
+
     fixture.detectChanges();
 
     expect(getByTestId('parentSubDashboard')).toBeTruthy();
@@ -76,6 +101,7 @@ describe('DashboardWrapperComponent', () => {
 
     component.standAloneAccount = false;
     component.newHomeDesignFlag = false;
+    component.parentAccount = true;
     fixture.detectChanges();
 
     expect(getByTestId('parentSubDashboard')).toBeTruthy();

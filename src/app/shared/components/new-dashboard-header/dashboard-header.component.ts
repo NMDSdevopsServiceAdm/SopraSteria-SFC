@@ -54,7 +54,7 @@ export class NewDashboardHeaderComponent implements OnInit {
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
     this.getHeader();
     this.getPermissions();
-    this.isParent = this.establishmentService.primaryWorkplace.isParent;
+    this.isParent = this.establishmentService.primaryWorkplace?.isParent;
 
     if (this.workplace) {
       this.setSubsidiaryCount();

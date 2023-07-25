@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
@@ -15,7 +16,7 @@ export class DashboardWrapperComponent implements OnInit {
 
   ngOnInit(): void {
     this.standAloneAccount = this.establishmentService.standAloneAccount;
-    this.parentAccount = this.establishmentService.establishment.isParent;
+    this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
     this.newHomeDesignFlag = this.featureFlagsService.newHomeDesignFlag;
   }
 }
