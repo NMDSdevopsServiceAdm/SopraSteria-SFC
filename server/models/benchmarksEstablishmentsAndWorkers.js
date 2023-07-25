@@ -26,8 +26,7 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  BenchmarksEstablishmentsAndWorkers.getComparisonData = async function (establishmentId, mainService) {
-    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
+  BenchmarksEstablishmentsAndWorkers.getComparisonData = async function (mainService, cssr) {
     if (!cssr) return {};
     const comparisonGroup = await this.findOne({
       attributes: ['BaseEstablishments', 'WorkerCount'],
