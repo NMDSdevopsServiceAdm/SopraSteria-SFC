@@ -57,6 +57,11 @@ export const mockConfigCatClient = {
         return resolve(true);
       });
     }
+    if (flagName === 'homePageNewDesignParent') {
+      return new Promise((resolve) => {
+        return resolve(false);
+      });
+    }
 
     if (flagName === 'newBenchmarksDataArea') {
       return new Promise((resolve) => {

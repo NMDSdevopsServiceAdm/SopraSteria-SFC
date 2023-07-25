@@ -11,6 +11,7 @@ export class DashboardWrapperComponent implements OnInit {
   public standAloneAccount: boolean;
   public parentAccount: boolean;
   public newHomeDesignFlag: boolean;
+  public newHomeDesignParentFlag: boolean;
 
   constructor(private establishmentService: EstablishmentService, private featureFlagsService: FeatureFlagsService) {}
 
@@ -18,5 +19,6 @@ export class DashboardWrapperComponent implements OnInit {
     this.standAloneAccount = this.establishmentService.standAloneAccount;
     this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
     this.newHomeDesignFlag = this.featureFlagsService.newHomeDesignFlag;
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
   }
 }

@@ -6,11 +6,13 @@ import { environment } from 'src/environments/environment';
 export class FeatureFlagsService {
   public configCatClient: IConfigCatClient;
   private _newHomeDesignFlag: boolean;
+  private _newHomeDesignParentFlag: boolean;
   private _newDataAreaFlag: boolean;
 
   constructor() {}
 
   async start(): Promise<void> {
+    console.log(environment.environmentName);
     if (environment.environmentName === 'other') {
       this.configCatClient = mockConfigCatClient;
     } else {
@@ -24,6 +26,14 @@ export class FeatureFlagsService {
 
   public set newHomeDesignFlag(value: boolean) {
     this._newHomeDesignFlag = value;
+  }
+
+  public get newHomeDesignParentFlag(): boolean {
+    return this._newHomeDesignParentFlag;
+  }
+
+  public set newHomeDesignParentFlag(value: boolean) {
+    this._newHomeDesignParentFlag = value;
   }
 
   public get newBenchmarksDataArea(): boolean {
