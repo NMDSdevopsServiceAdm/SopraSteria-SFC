@@ -1,6 +1,6 @@
 <div tabindex="-1" #top class="govuk-util__no-focus">
   <a class="govuk-skip-link" href="#main-content" (click)="skip($event)">Skip to main content</a>
-  <app-header [standAloneAccount]="standAloneAccount"></app-header>
+  <app-header [showNotificationsLink]="standAloneAccount || parentAccount"></app-header>
 
   <ng-container
     *ngIf="
