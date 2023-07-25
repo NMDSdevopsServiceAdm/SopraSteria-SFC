@@ -10,98 +10,111 @@
 ></app-summary-section>
 <div class="govuk-width-container govuk-!-margin-top-4">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-one-third">
-      <app-card [image]="'/assets/images/benchmarks.svg'">
-        <a
-          (click)="navigateToTab($event, 'benchmarks')"
-          class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-          href="#"
-        >
-          <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
-            See how your pay, recruitment and retention compares against other workplaces</ng-container
+    <div class="govuk-grid-column-full govuk-!-padding-left-2 govuk-!-padding-right-2">
+      <div class="govuk-grid-column-one-third asc-card">
+        <app-card [image]="'/assets/images/bulk-upload.svg'">
+          <a
+            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+            routerLink="/bulk-upload"
+            href="#"
+            >Bulk upload your data</a
           >
-          <ng-template #notBigThreeServices> See how you compare against other workplaces</ng-template>
-        </a>
-        <p class="govuk-!-margin-top-5">
-          {{ benchmarksMessage }}
-        </p>
-      </app-card>
-    </div>
+          <p class="govuk-!-margin-top-5">
+            Add all of your workforce data into ASC-WDS without the need to add it manually.
+          </p></app-card
+        >
+      </div>
 
-    <div class="govuk-grid-column-one-third">
-      <app-card [image]="'/assets/images/benefits-bundle.svg'">
-        <a
-          class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-          routerLink="/benefits-bundle"
-          href="#"
-          >View the ASC-WDS Benefits Bundle</a
+      <div class="govuk-grid-column-one-third asc-card">
+        <app-card [image]="'/assets/images/wdf.svg'">
+          <a
+            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+            routerLink="/wdf"
+            href="#"
+            >Does your data meed WDF requirements?</a
+          >
+          <p class="govuk-!-margin-top-5">
+            Check to see whether your data meets the {{ certificateYears }} Workforce Development Fund requirements.
+          </p></app-card
         >
-        <p class="govuk-!-margin-top-5">
-          Get discounts and special offers from endorsed training providers and across Skills for Care's product range.
-        </p></app-card
-      >
-    </div>
-    <div class="govuk-grid-column-one-third">
-      <app-card [image]="'/assets/images/benefits-bundle.svg'">
-        <a
-          class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-          routerLink="/benefits-bundle"
-          href="#"
-          >This is a test card</a
-        >
-        <p class="govuk-!-margin-top-5">Lorem Ipsum etc etc etc</p></app-card
-      >
-    </div>
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full">
-        <div class="govuk-grid-column-one-third">
-          <app-card [image]="'/assets/images/benefits-bundle.svg'">
-            <a
-              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-              routerLink="/benefits-bundle"
-              href="#"
-              >This is a test card</a
-            >
-            <p class="govuk-!-margin-top-5">Lorem Ipsum etc etc etc</p></app-card
+      </div>
+
+      <div class="govuk-grid-column-one-third asc-card">
+        <app-card [image]="'/assets/images/benchmarks.svg'">
+          <a
+            (click)="navigateToTab($event, 'benchmarks')"
+            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+            href="#"
           >
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <app-card [image]="'/assets/images/benefits-bundle.svg'">
-            <a
-              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-              routerLink="/benefits-bundle"
-              href="#"
-              >This is a test card</a
+            <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
+              See how your pay, recruitment and retention compares against other workplaces</ng-container
             >
-            <p class="govuk-!-margin-top-5">Lorem Ipsum etc etc etc</p></app-card
-          >
-        </div>
-        <div class="govuk-grid-column-one-third">
-          <app-card [image]="'/assets/images/benefits-bundle.svg'">
-            <a
-              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-              routerLink="/benefits-bundle"
-              href="#"
-              >This is a test card</a
-            >
-            <p class="govuk-!-margin-top-5">Lorem Ipsum etc etc etc</p></app-card
-          >
-        </div>
+            <ng-template #notBigThreeServices> See how you compare against other workplaces</ng-template>
+          </a>
+          <p class="govuk-!-margin-top-5">
+            {{ benchmarksMessage }}
+          </p>
+        </app-card>
       </div>
     </div>
-
-    <div class="govuk-width-container govuk-!-margin-top-4">
-      <div class="govuk-grid-row">
-        <div class="asc-link-box">
+  </div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full govuk-!-padding-left-2 govuk-!-padding-right-2">
+      <div class="govuk-grid-column-one-third asc-card">
+        <app-card [image]="'/assets/images/certificate.svg'">
           <a
-            class="govuk__flex govuk__align-items-center"
-            href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-local-authority-report.xls'"
-            (click)="downloadLocalAuthorityReport($event)"
+            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+            routerLink="/asc-wds-certificate"
+            href="#"
+            >Get your ASC-WDS certificate</a
           >
-            <img alt="" src="/assets/images/icon-download.svg" />
-            <span class="govuk-!-margin-left-1">Download local authority progress report (XLS)</span>
-          </a>
-        </div>
+          <p class="govuk-!-margin-top-5">
+            Get a certificate, email signature or logo to show that you provide information to help the adult social
+            care sector.
+          </p></app-card
+        >
+      </div>
+      <div class="govuk-grid-column-one-third asc-card">
+        <app-card [image]="'/assets/images/benefits-bundle.svg'">
+          <a
+            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+            routerLink="/benefits-bundle"
+            href="#"
+            >View the ASC-WDS Benefits Bundle</a
+          >
+          <p class="govuk-!-margin-top-5">
+            Get discounts and special offers from endorsed training providers and from across Skills for Care's product
+            range.
+          </p></app-card
+        >
+      </div>
+      <div class="govuk-grid-column-one-third asc-card">
+        <app-card [image]="'/assets/images/news.svg'">
+          <a
+            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+            routerLink="/about-ascwds"
+            href="#"
+            >ASC-WDS news</a
+          >
+          <p class="govuk-!-margin-top-5">
+            Read all about how your data gets used and be the first to hear about any new ASC-WDS developments.
+          </p></app-card
+        >
+      </div>
+    </div>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="asc-link-box">
+        <a
+          class="govuk__flex govuk__align-items-center"
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-local-authority-report.xls'"
+          (click)="downloadLocalAuthorityReport($event)"
+        >
+          <img alt="" src="/assets/images/icon-download.svg" />
+          <span class="govuk-!-margin-left-1">Download local authority progress report (XLS)</span>
+        </a>
       </div>
     </div>
   </div>

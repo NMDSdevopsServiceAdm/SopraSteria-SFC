@@ -67,6 +67,7 @@ export class ParentHomeTabComponent implements OnInit, OnDestroy {
   public bigThreeServices: boolean;
   public hasBenchmarkComparisonData: boolean;
   public isParent: boolean;
+  public certificateYears: string;
 
   constructor(
     private userService: UserService,
@@ -127,6 +128,13 @@ export class ParentHomeTabComponent implements OnInit, OnDestroy {
       this.window.dataLayer.push({
         event: 'firstLogin',
       });
+    }
+
+    const currentYear = this.now.getFullYear();
+    if (this.now.getMonth() >= 4) {
+      this.certificateYears = `${currentYear} to ${currentYear + 1}`;
+    } else {
+      this.certificateYears = `${currentYear - 1} to ${currentYear}`;
     }
 
     this.bigThreeServices = [1, 2, 8].includes(this.workplace.mainService.reportingID);
