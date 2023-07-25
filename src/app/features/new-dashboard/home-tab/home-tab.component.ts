@@ -129,7 +129,7 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   private setBenchmarksCard(): void {
     if (this.hasBenchmarkComparisonData) {
       const serviceName = this.serviceNamePipe.transform(this.workplace.mainService.name);
-      const localAuthority = this.meta?.localAuthority.replace(/&/g, 'and');
+      const localAuthority = this.meta?.localAuthority?.replace(/&/g, 'and');
       const noOfWorkplacesText =
         this.meta.workplaces === 1
           ? `There is ${this.meta.workplaces} workplace`
