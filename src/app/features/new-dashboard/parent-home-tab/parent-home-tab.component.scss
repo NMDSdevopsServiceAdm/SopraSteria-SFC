@@ -1,0 +1,16 @@
+@import 'govuk-frontend/govuk/base';
+
+.asc-link-box {
+  display: flex;
+
+  background-color: govuk-colour('light-grey');
+  font-size: 19px;
+  color: $govuk-text-colour;
+  padding: 15px;
+  margin: 15px;
+  margin-bottom: 40px;
+
+  @media only screen and (max-width: 680px) {
+    justify-content: center;
+  }
+}

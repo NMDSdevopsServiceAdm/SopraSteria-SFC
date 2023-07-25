@@ -1,3 +1,4 @@
+import { HttpResponse } from '@angular/common/http';
 import { Component, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
@@ -8,6 +9,7 @@ import { Worker } from '@core/model/worker.model';
 import { DialogService } from '@core/services/dialog.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { ReportService } from '@core/services/report.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
@@ -17,6 +19,7 @@ import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent
 import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
+import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 
 declare global {
@@ -30,6 +33,7 @@ window.dataLayer = window.dataLayer || {};
 @Component({
   selector: 'app-parent-home-tab',
   templateUrl: './parent-home-tab.component.html',
+  styleUrls: ['./parent-home-tab.component.scss'],
   providers: [ServiceNamePipe],
 })
 export class ParentHomeTabComponent implements OnInit, OnDestroy {
@@ -53,6 +57,7 @@ export class ParentHomeTabComponent implements OnInit, OnDestroy {
   public canEditEstablishment: boolean;
   public canViewListOfWorkers: boolean;
   public trainingCounts: TrainingCounts;
+  public now: Date = new Date();
   public user: UserDetails;
   public workplaceSummaryMessage: string;
   public workersCreatedDate;
@@ -72,6 +77,7 @@ export class ParentHomeTabComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     @Inject(WindowToken) private window: Window,
     private serviceNamePipe: ServiceNamePipe,
+    private reportsService: ReportService,
   ) {}
 
   ngOnInit(): void {
@@ -252,6 +258,22 @@ export class ParentHomeTabComponent implements OnInit, OnDestroy {
         this.parentStatusRequested = false;
       }
     });
+  }
+
+  public downloadLocalAuthorityReport(event: Event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportsService.getLocalAuthorityReport(this.workplace.uid).subscribe((response) => this.saveFile(response)),
+    );
+  }
+
+  public saveFile(response: HttpResponse<Blob>) {
+    const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+    const header = response.headers.get('content-disposition');
+    const filenameMatches = header && header.match(filenameRegEx);
+    const filename = filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
+    const blob = new Blob([response.body], { type: 'text/plain;charset=utf-8' });
+    saveAs(blob, filename);
   }
 
   ngOnDestroy(): void {
