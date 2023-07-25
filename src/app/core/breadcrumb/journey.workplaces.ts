@@ -12,6 +12,7 @@ enum Path {
   CREATE_ACCOUNT = '/workplace/:workplaceUid/user/create',
   TRAINING_AND_QUALIFICATIONS_RECORD = '/workplace/:workplaceUid/training-and-qualifications-record/:workerUid/training',
   MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
+  ABOUT_DATA = '/workplace/:workplaceUid/data-area/about-the-data',
 }
 
 export const workplaceTabJourney: JourneyRoute = {
@@ -78,6 +79,12 @@ export const brenchmarksTabJourney: JourneyRoute = {
       title: 'Benchmarks',
       path: Path.DASHBOARD,
       fragment: 'benchmarks',
+      children: [
+        {
+          title: 'About the data',
+          path: Path.ABOUT_DATA,
+        },
+      ],
     },
   ],
 };

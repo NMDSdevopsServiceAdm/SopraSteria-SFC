@@ -183,7 +183,7 @@ describe('BenchmarksRankingsComponent', () => {
       const rank = parseInt(content.split('Lowest')[0]);
 
       maxRanks.push(fixture.componentInstance.rankings.pay.careWorkerPay.groupRankings.maxRank);
-      maxRanks.push(fixture.componentInstance.rankings.turnoverRate.groupRankings.maxRank);
+      maxRanks.push(fixture.componentInstance.rankings.turnover.groupRankings.maxRank);
       maxRanks.push(fixture.componentInstance.rankings.sickness.groupRankings.maxRank);
       maxRanks.push(fixture.componentInstance.rankings.qualifications.groupRankings.maxRank);
 
@@ -201,7 +201,7 @@ describe('BenchmarksRankingsComponent', () => {
       const rank = parseInt(content);
 
       currentRanks.push(fixture.componentInstance.rankings.pay.careWorkerPay.groupRankings.currentRank);
-      currentRanks.push(fixture.componentInstance.rankings.turnoverRate.groupRankings.currentRank);
+      currentRanks.push(fixture.componentInstance.rankings.turnover.groupRankings.currentRank);
       currentRanks.push(fixture.componentInstance.rankings.sickness.groupRankings.currentRank);
       currentRanks.push(fixture.componentInstance.rankings.qualifications.groupRankings.currentRank);
 

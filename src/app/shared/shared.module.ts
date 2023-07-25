@@ -100,6 +100,7 @@ import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
 import { DontKnowPipe } from './pipes/dont-know.pipe';
 import { FirstErrorPipe } from './pipes/first-error.pipe';
+import { FormatAmpersandPipe } from './pipes/format-ampersand.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe';
@@ -107,9 +108,11 @@ import { NursingSpecialismsTextPipe } from './pipes/nursing-specialisms-text.pip
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
 import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
+import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-data-link/about-the-data-link.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -221,6 +224,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WDFTabComponent,
     WDFWorkplaceSummaryComponent,
     NewDashboardHeaderComponent,
+    ServiceNamePipe,
+    FormatAmpersandPipe,
+    AboutTheDataLinkComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -328,6 +334,9 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WDFTabComponent,
     WDFWorkplaceSummaryComponent,
     NewDashboardHeaderComponent,
+    ServiceNamePipe,
+    FormatAmpersandPipe,
+    AboutTheDataLinkComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

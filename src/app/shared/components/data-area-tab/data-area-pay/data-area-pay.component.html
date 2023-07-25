@@ -6,19 +6,62 @@
     <thead class="govuk-table__head">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header"></th>
-        <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
+        <th
+          scope="col"
+          class="govuk-table__header comparison-table-header govuk-!-text-align-centre govuk-!-padding-right-0"
+        >
           Your workplace
         </th>
-        <th scope="col" class="govuk-table__header commparision-table-header govuk-!-text-align-centre">
+        <th scope="col" class="govuk-table__header comparison-table-header govuk-!-text-align-centre">
           Comparison group
         </th>
       </tr>
     </thead>
-    <tbody class="govuk-table__body">
-      <tr app-data-area-table-row class="govuk-table__row first-row" header="Care worker pay" [data]="data.careWorkerPay"></tr>
-      <tr app-data-area-table-row class="govuk-table__row" header="Senior care worker pay" [data]="data.seniorCareWorkerPay"></tr>
-      <tr app-data-area-table-row class="govuk-table__row" header="Registered nurse salary" [data]="data.registeredNursePay"></tr>
-      <tr app-data-area-table-row class="govuk-table__row" header="Registered manager salary" [data]="data.registeredManagerPay"></tr>
+    <tbody class="govuk-table__body comparison-table-body">
+      <tr class="govuk-table__row first-row" data-testid="careworkerRow">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
+          Care worker pay
+        </th>
+        <td class="govuk-table__cell workplace-cell">
+          {{ careWorkerPay }}
+        </td>
+        <td class="govuk-table__cell comparison-group-cell">
+          {{ comparisonGroupCareWorkerPay }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row" data-testid="seniorCareworkerRow">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
+          Senior care worker pay
+        </th>
+        <td class="govuk-table__cell workplace-cell">
+          {{ seniorCareWorkerPay }}
+        </td>
+        <td class="govuk-table__cell comparison-group-cell">
+          {{ comparisonGroupSeniorCareWorkerPay }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row" data-testid="register-nurse-comparison" *ngIf="showRegisteredNurseSalary">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
+          Registered nurse salary
+        </th>
+        <td class="govuk-table__cell workplace-cell">
+          {{ registeredNurseSalary }}
+        </td>
+        <td class="govuk-table__cell comparison-group-cell">
+          {{ comparisonGroupRegisteredNurseSalary }}
+        </td>
+      </tr>
+      <tr class="govuk-table__row last-row" data-testid="seniorCareworkerRow">
+        <th scope="row" class="govuk-table__header comparison-row-header govuk-!-font-weight-regular">
+          Registered manager salary
+        </th>
+        <td class="govuk-table__cell workplace-cell">
+          {{ registeredManagerSalary }}
+        </td>
+        <td class="govuk-table__cell comparison-group-cell">
+          {{ comparisonGroupRegisteredManagerSalary }}
+        </td>
+      </tr>
     </tbody>
   </table>
 
@@ -33,50 +76,74 @@
     <ng-container *ngIf="viewBenchmarksPosition; else showRankings">
       <div class="govuk-!-margin-top-7" data-testid="barcharts">
         <app-data-area-barchart
-          [positionedTitle]="'Care worker pay'"
-          [payMoreThanWorkplacesNumber]="54"
-          [workplacesNumber]="72"
+          [section]="'Care worker pay'"
+          [type]="'careWorkerPay'"
+          [rankingsData]="careWorkerRankings"
+          [altDescription]="'Care worker pay barchart'"
+          [isPay]="true"
+          [noWorkplaceData]="rankings.careWorkerPay.noWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
-          [positionedTitle]="'Senior care worker pay'"
-          [payMoreThanWorkplacesNumber]="21"
-          [workplacesNumber]="72"
+          [section]="'Senior care worker pay'"
+          [type]="'seniorCareWorkerPay'"
+          [rankingsData]="seniorCareWorkerRankings"
+          [altDesrcripton]="'Senior care worker pay barchart'"
+          [isPay]="true"
+          [noWorkplaceData]="rankings.seniorCareWorkerPay.noWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
-          [positionedTitle]="'Registered nurse salary'"
-          [payMoreThanWorkplacesNumber]="36"
-          [workplacesNumber]="72"
+          *ngIf="showRegisteredNurseSalary"
+          [section]="'Registered nurse salary'"
+          [type]="'registeredNursePay'"
+          [rankingsData]="registeredNurseRankings"
+          [altDescription]="'Registered nurse salary barchart'"
+          [isPay]="true"
+          [noWorkplaceData]="rankings.registeredNursePay.noWorkplaceData"
         ></app-data-area-barchart>
         <app-data-area-barchart
-          [positionedTitle]="'Registered manager salary'"
-          [payMoreThanWorkplacesNumber]="31"
-          [workplacesNumber]="72"
+          [section]="'Registered manager salary'"
+          [type]="'registeredManagerPay'"
+          [rankingsData]="registeredManagerRankings"
+          [isPay]="true"
+          [noWorkplaceData]="rankings.registeredManagerPay.noWorkplaceData"
+          [altDescription]="'Registered manager salary barchart'"
         ></app-data-area-barchart>
       </div>
     </ng-container>
     <ng-template #showRankings>
       <div class="govuk-!-margin-top-7" data-testid="rankings">
         <app-data-area-ranking
-          [rankingTitle]="'Care worker pay'"
-          [workplaceRankNumber]="18"
-          [workplacesNumber]="72"
+          [rankingTitle]="rankings.careWorkerPay.title"
+          [workplaceRankNumber]="rankings.careWorkerPay.workplacesRankNumber"
+          [workplacesNumber]="rankings.careWorkerPay.totalWorkplaces"
+          [noWorkplaceData]="rankings.careWorkerPay.noWorkplaceData"
+          [isPay]="true"
         ></app-data-area-ranking>
         <app-data-area-ranking
-          [rankingTitle]="'Senior care worker pay'"
-          [workplaceRankNumber]="51"
-          [workplacesNumber]="72"
+          [rankingTitle]="rankings.seniorCareWorkerPay.title"
+          [workplaceRankNumber]="rankings.seniorCareWorkerPay.workplacesRankNumber"
+          [workplacesNumber]="rankings.seniorCareWorkerPay.totalWorkplaces"
+          [noWorkplaceData]="rankings.seniorCareWorkerPay.noWorkplaceData"
+          [isPay]="true"
         ></app-data-area-ranking>
         <app-data-area-ranking
-          [rankingTitle]="'Registered nurse salary'"
-          [workplaceRankNumber]="36"
-          [workplacesNumber]="72"
+          *ngIf="showRegisteredNurseSalary"
+          [rankingTitle]="rankings.registeredNursePay.title"
+          [workplaceRankNumber]="rankings.registeredNursePay.workplacesRankNumber"
+          [workplacesNumber]="rankings.registeredNursePay.totalWorkplaces"
+          [noWorkplaceData]="rankings.registeredNursePay.noWorkplaceData"
+          [isPay]="true"
         ></app-data-area-ranking>
         <app-data-area-ranking
-          [rankingTitle]="'Registered manager salary'"
-          [workplaceRankNumber]="41"
-          [workplacesNumber]="72"
+          [rankingTitle]="rankings.registeredManagerPay.title"
+          [workplaceRankNumber]="rankings.registeredManagerPay.workplacesRankNumber"
+          [workplacesNumber]="rankings.registeredManagerPay.totalWorkplaces"
+          [noWorkplaceData]="rankings.registeredManagerPay.noWorkplaceData"
+          [isPay]="true"
         ></app-data-area-ranking>
       </div>
     </ng-template>
   </div>
+
+  <app-data-area-useful-link-pay></app-data-area-useful-link-pay>
 </div>

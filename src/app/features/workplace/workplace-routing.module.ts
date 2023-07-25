@@ -470,6 +470,15 @@ const routes: Routes = [
         },
       },
       {
+        path: 'data-area',
+        loadChildren: () =>
+          import('@shared/components/data-area-tab/data-area-tab.module').then((m) => m.DataAreaTabModule),
+        data: {
+          title: 'Data Area',
+        },
+      },
+
+      {
         path: 'add-and-manage-mandatory-training',
         loadChildren: () =>
           import('@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module').then(

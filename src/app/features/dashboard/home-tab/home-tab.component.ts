@@ -14,6 +14,7 @@ import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WorkerService } from '@core/services/worker.service';
+import { isAdminRole } from '@core/utils/check-role-util';
 import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
@@ -27,7 +28,6 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { isAdminRole } from 'server/utils/adminUtils';
 
 declare global {
   interface Window {

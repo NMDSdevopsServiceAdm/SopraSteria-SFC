@@ -18,13 +18,18 @@
               (click)="navigateToTab($event, 'benchmarks')"
               class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
               href="#"
-              >{{ benchmarksHeader }}</a
             >
+              <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
+                See how your pay, recruitment and retention compares against other workplaces</ng-container
+              >
+              <ng-template #notBigThreeServices> See how you compare against other workplaces</ng-template>
+            </a>
             <p class="govuk-!-margin-top-5">
               {{ benchmarksMessage }}
-            </p></app-card
-          >
+            </p>
+          </app-card>
         </div>
+
         <div class="govuk-grid-column-one-half">
           <app-card [image]="'/assets/images/benefits-bundle.svg'">
             <a

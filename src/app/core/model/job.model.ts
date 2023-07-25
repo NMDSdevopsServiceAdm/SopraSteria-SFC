@@ -10,6 +10,7 @@ export interface GetJobsResponse {
 
 export interface JobRole {
   jobId: number;
+  jobRoleName?: string;
   title?: string;
   other?: string;
 }

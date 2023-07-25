@@ -10,18 +10,6 @@
             <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
               {{ workplace?.name }}
             </h1>
-
-            <div *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'">
-              <button
-                class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0"
-                (click)="onDeleteWorkplace($event)"
-              >
-                <img src="/assets/images/bin.svg" alt="" />
-                <span class="govuk-!-margin-left-1">
-                  Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
-                </span>
-              </button>
-            </div>
           </ng-container>
           <ng-template #otherTab>
             <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
@@ -32,16 +20,10 @@
           <p class="govuk-!-font-size-16 govuk-!-margin-top-2 govuk-!-margin-bottom-0">
             <span class="govuk-!-margin-right-2">Workplace ID: {{ workplace?.nmdsId }}</span>
             <span *ngIf="updatedDate" data-testid="separator">|</span>
-            <ng-container *ngIf="tab === 'benchmarks'; else notBenchmarks">
-              <span *ngIf="updatedDate" class="govuk-!-margin-left-2" data-testid="benchmarksLastUpdatedDate"
-                >Comparison group data updated {{ updatedDate | date: 'd MMMM y' }}
-              </span>
-            </ng-container>
-            <ng-template #notBenchmarks>
-              <span *ngIf="updatedDate" class="govuk-!-margin-left-2" data-testid="lastUpdatedDate"
-                >Last update, {{ updatedDate | date: 'd MMMM y' }}
-              </span>
-            </ng-template>
+
+            <span *ngIf="updatedDate" class="govuk-!-margin-left-2" data-testid="lastUpdatedDate"
+              >Last update, {{ updatedDate | date: 'd MMMM y' }}
+            </span>
           </p>
         </div>
         <div
@@ -51,6 +33,20 @@
           <ng-container [ngSwitch]="tab">
             <ng-container *ngSwitchCase="'home'">
               <div class="govuk-util__float-right" *ngIf="tab === 'home'" data-testid="contact-info">
+                <div
+                  *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'"
+                >
+                  <button
+                    class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0"
+                    (click)="onDeleteWorkplace($event)"
+                  >
+                    <img src="/assets/images/bin.svg" alt="" />
+                    <span class="govuk-!-margin-left-1">
+                      Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
+                    </span>
+                  </button>
+                </div>
+
                 <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Contact Skills for Care</h2>
                 <p class="govuk-!-font-size-16 govuk-!-margin-top-2 govuk-!-margin-bottom-0">
                   <span class="govuk-!-margin-right-2">0113 241 0969</span> |

@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { JwtHelperService } from '@auth0/angular-jwt';
 import { UserToken } from '@core/model/auth.model';
+import { isAdminRole } from '@core/utils/check-role-util';
 import * as Sentry from '@sentry/browser';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import isNull from 'lodash/isNull';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, tap } from 'rxjs/operators';
 
-import { isAdminRole } from '../../../../server/utils/adminUtils';
 import { EstablishmentService } from './establishment.service';
 import { PermissionsService } from './permissions/permissions.service';
 import { UserService } from './user.service';

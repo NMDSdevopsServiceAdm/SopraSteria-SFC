@@ -21,9 +21,10 @@ export interface Meta {
   localAuthority: string;
 }
 export interface Tile {
-  workplaceValue: BenchmarkValue;
-  comparisonGroup: BenchmarkValue;
-  goodCqc: BenchmarkValue;
+  workplaceValue?: BenchmarkValue;
+  comparisonGroup?: BenchmarkValue;
+  groupRankings?: any;
+  goodCqc?: BenchmarkValue;
   lowTurnover?: BenchmarkValue;
   workplaces?: number;
   staff?: number;
@@ -35,10 +36,15 @@ export interface BenchmarkValue {
 }
 
 export interface RankingsResponse {
-  currentRank: number;
-  maxRank: number;
+  currentRank?: number;
+  maxRank?: number;
   hasValue: boolean;
-  stateMessage: string;
+  stateMessage?: string;
+  allValues?: Array<RankingsValue>;
+}
+export interface RankingsValue {
+  value: number;
+  currentEst: boolean;
 }
 
 export interface CompareGroupsRankingsResponse {
@@ -57,7 +63,9 @@ export interface AllRankingsResponse {
   pay: PayRankingsResponse;
   qualifications: CompareGroupsRankingsResponse;
   sickness: CompareGroupsRankingsResponse;
-  turnoverRate: CompareGroupsRankingsResponse;
+  turnover: CompareGroupsRankingsResponse;
+  vacancy: CompareGroupsRankingsResponse;
+  timeInRole: CompareGroupsRankingsResponse;
 }
 
 export enum Metric {
@@ -65,6 +73,12 @@ export enum Metric {
   'turnover',
   'qualifications',
   'sickness',
+  'vacancy',
+  'timeInRole',
+  'careWorkerPay',
+  'seniorCareWorkerPay',
+  'registeredManagerPay',
+  'registeredNursePay',
 }
 
 export interface NoData {
@@ -76,6 +90,7 @@ export interface NoData {
   'no-pay-data'?: string;
   'no-sickness-data'?: string;
   'no-qualifications-data'?: string;
+  'no-comparison-data'?: string;
 }
 
 export class MetricsContent {

@@ -16,6 +16,7 @@ export const workerBuilder = build('Worker', {
     nameOrId: fake((f) => f.name.findName()),
     mainJob: {
       id: sequence(),
+      jobRoleName: fake((f) => f.lorem.sentence()),
       title: fake((f) => f.lorem.sentence()),
       other: null,
     },
@@ -42,6 +43,9 @@ export const workerBuilder = build('Worker', {
     },
     nurseSpecialism: null,
     wdfEligible: perBuild(() => false),
+    wdf: {
+      isEligible: perBuild(() => false),
+    },
     trainingCount: 0,
     expiredTrainingCount: 0,
     expiringTrainingCount: 0,
@@ -50,7 +54,6 @@ export const workerBuilder = build('Worker', {
     longTermAbsence: null,
     completed: perBuild(() => false),
     created: new Date('2020-03-31'),
-
     ethnicity: {
       ethnicityId: 1,
       ethnicity: 'white ethnicity 1',
@@ -129,6 +132,30 @@ export const longTermAbsentWorker = workerBuilder({
     longTermAbsence: 'Illness',
   },
 });
+
+export const workerWithWdf = () => {
+  return workerBuilder({
+    overrides: {
+      wdfEligible: perBuild(() => true),
+      wdf: {
+        isEligible: true,
+        mainJobStartDate: { isEligible: true, updatedSinceEffectiveDate: true },
+        daysSick: { isEligible: true, updatedSinceEffectiveDate: true },
+        zeroHoursContract: { isEligible: true, updatedSinceEffectiveDate: true },
+        weeklyHoursContracted: { isEligible: true, updatedSinceEffectiveDate: true },
+        weeklyHoursAverage: { isEligible: true, updatedSinceEffectiveDate: true },
+        annualHourlyPay: { isEligible: true, updatedSinceEffectiveDate: true },
+        mainJob: { isEligible: true, updatedSinceEffectiveDate: true },
+        contract: { isEligible: true, updatedSinceEffectiveDate: true },
+        socialCareQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+        qualificationInSocialCare: { isEligible: true, updatedSinceEffectiveDate: true },
+        careCertificate: { isEligible: true, updatedSinceEffectiveDate: true },
+        otherQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+        highestQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+      },
+    },
+  });
+};
 
 export const AllWorkers = [
   {

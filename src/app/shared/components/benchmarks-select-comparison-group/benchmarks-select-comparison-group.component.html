@@ -1,6 +1,7 @@
 <div class="govuk-form-group">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-!-font-weight-bold">Comparison groups</legend>
+    <ng-container *ngIf="comparisonDataExists; else noComparisonDataAvailable">
     <div class="govuk-radios govuk-!-margin-top-4" data-module="govuk-radios">
       <div class="govuk-radios__item">
         <input
@@ -14,7 +15,7 @@
           (change)="handleViewChange($event)"
         />
         <label class="govuk-label govuk-radios__label" for="comparison-groups">
-          {{ mainServiceName }} providers in {{ localAuthorityLocation }}
+          {{ mainServiceName | serviceName }} providers in {{ localAuthorityLocation | formatAmpersand }}
         </label>
       </div>
       <div class="govuk-radios__item">
@@ -29,9 +30,15 @@
           (change)="handleViewChange($event)"
         />
         <label class="govuk-label govuk-radios__label" for="comparison-groups-good-and-outstanding">
-          Good and outstading CQC providers in {{ localAuthorityLocation }}
+          Good and outstading CQC providers in {{ localAuthorityLocation | formatAmpersand }}
         </label>
       </div>
     </div>
+  </ng-container>
+  <ng-template #noComparisonDataAvailable>
+    <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-4" data-testid="no-comparison-data">
+      We do not have enough comparison group data to compare your workplace against.
+    </p>
+  </ng-template>
   </fieldset>
 </div>

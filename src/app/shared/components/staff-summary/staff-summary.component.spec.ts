@@ -4,17 +4,19 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 import sinon from 'sinon';
 
-import { establishmentBuilder, workerBuilder } from '../../../../../server/test/factories/models';
 import { PaginationComponent } from '../pagination/pagination.component';
 import { TablePaginationWrapperComponent } from '../table-pagination-wrapper/table-pagination-wrapper.component';
 import { StaffSummaryComponent } from './staff-summary.component';
@@ -22,7 +24,7 @@ import { StaffSummaryComponent } from './staff-summary.component';
 describe('StaffSummaryComponent', () => {
   async function setup(isWdf = false, qsParamGetMock = sinon.fake()) {
     const establishment = establishmentBuilder() as Establishment;
-    const workers = [workerBuilder(), workerBuilder(), workerBuilder()];
+    const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
     const component = await render(StaffSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],

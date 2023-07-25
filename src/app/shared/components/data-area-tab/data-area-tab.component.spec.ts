@@ -10,13 +10,14 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { WindowRef } from '@core/services/window.ref';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BenchmarksSelectViewPanelComponent } from '../benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { DataAreaTabComponent } from './data-area-tab.component';
 
@@ -42,6 +43,10 @@ describe('DataAreaTabComponent', () => {
         {
           provide: BenchmarksService,
           useClass: MockBenchmarksService,
+        },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
         },
       ],
       declarations: [BenchmarksSelectViewPanelComponent],
@@ -97,5 +102,22 @@ describe('DataAreaTabComponent', () => {
     expect(within(categoryHeading).getByText('Recruitment and retention')).toBeTruthy();
     expect(queryByTestId('payArea')).toBeFalsy();
     expect(within(categoryHeading).queryByText('Pay')).toBeFalsy();
+  });
+
+  it('should check the pay benchmarks data to see if there is comparison data', async () => {
+    const { component } = await setup();
+    const noCompData = {
+      value: 0,
+      stateMessage: 'no-data',
+      hasValue: false,
+    };
+    component.tilesData.careWorkerPay.comparisonGroup = noCompData;
+    component.tilesData.seniorCareWorkerPay.comparisonGroup = noCompData;
+    component.tilesData.registeredNursePay.comparisonGroup = noCompData;
+    component.tilesData.registeredManagerPay.comparisonGroup = noCompData;
+
+    component.checkComparisonDataExists();
+
+    expect(component.comparisonDataExists).toBeFalsy();
   });
 });

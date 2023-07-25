@@ -10,7 +10,11 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import {
+  establishmentWithShareWith,
+  establishmentWithWdfBuilder,
+  MockEstablishmentService,
+} from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
@@ -18,7 +22,6 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
-import { establishmentWithShareWith, establishmentWithWdfBuilder } from '../../../../../server/test/factories/models';
 import { WorkplaceSummaryComponent } from './workplace-summary.component';
 
 describe('WorkplaceSummaryComponent', () => {

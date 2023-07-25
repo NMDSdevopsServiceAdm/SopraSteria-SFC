@@ -1,0 +1,14 @@
+<a
+  class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-flex-start"
+  role="button"
+  draggable="false"
+  href="{{ linkUrl }}"
+  data-testid="download-link"
+  data-html2canvas-ignore
+  (click)="downloadAsPDF($event)"
+>
+  <img alt="" src="/assets/images/icon-download.svg" />
+  <span class="govuk-!-margin-left-1" data-testid="DownloadLink">
+    Download training and qualifications (PDF, 430KB, {{ pdfCount }} pages)
+  </span>
+</a>

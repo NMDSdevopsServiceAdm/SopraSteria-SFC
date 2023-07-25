@@ -28,4 +28,7 @@ exports.JOB_ROLES = [
   { ASC: 8, BUDI: 40 },
   { ASC: 9, BUDI: 41 },
   { ASC: 6, BUDI: 42 },
+  { ASC: 30, BUDI: 43 },
+  { ASC: 31, BUDI: 44 },
+  { ASC: 32, BUDI: 45 },
 ];

@@ -4,18 +4,18 @@ import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentWithShareWith, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
-import { establishmentWithShareWith } from '../../../../../server/test/factories/models';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
 describe('NewWorkplaceSummaryComponent', () => {
@@ -38,7 +38,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         },
       ],
       componentProperties: {
-        workplace: establishmentWithShareWith(shareWith),
+        workplace: establishmentWithShareWith(shareWith) as Establishment,
       },
     });
 
@@ -278,6 +278,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         component.canEditEstablishment = true;
         component.workplace.numberOfStaff = null;
+        component.numberOfStaffError = true;
 
         fixture.detectChanges();
 
@@ -365,7 +366,7 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         component.canEditEstablishment = true;
         component.typeOfEmployer = '';
-
+        component.workplace.employerType = null;
         fixture.detectChanges();
 
         const employerTypeRow = within(document.body).queryByTestId('employerType');

@@ -18,6 +18,7 @@ import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
@@ -85,6 +86,8 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 
 @NgModule({
   declarations: [
@@ -189,6 +192,9 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     TotalStaffRecordsResolver,
     CqcStatusCheckResolver,
     BenchmarksResolver,
+    RankingsResolver,
+    UsefulLinkPayResolver,
+    UsefulLinkRecruitmentResolver,
   ],
   bootstrap: [AppComponent],
 })

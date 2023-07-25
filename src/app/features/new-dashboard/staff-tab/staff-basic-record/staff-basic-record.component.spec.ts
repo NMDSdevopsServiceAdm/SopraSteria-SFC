@@ -4,21 +4,22 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { Worker } from '@core/model/worker.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-
-import { establishmentBuilder, workerBuilder } from '../../../../../../server/test/factories/models';
 
 import { StaffBasicRecord } from './staff-basic-record.component';
 
 describe('StaffBasicRecord', () => {
   async function setup() {
     const establishment = establishmentBuilder() as Establishment;
-    const workers = [workerBuilder(), workerBuilder(), workerBuilder()];
+    const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
     const component = await render(StaffBasicRecord, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],

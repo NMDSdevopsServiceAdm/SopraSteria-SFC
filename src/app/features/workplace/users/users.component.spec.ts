@@ -8,12 +8,12 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { EditUser, ReadUser } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { establishmentBuilder } from '../../../../../server/test/factories/models';
 import { UsersComponent } from './users.component';
 
 describe('UsersComponent', () => {

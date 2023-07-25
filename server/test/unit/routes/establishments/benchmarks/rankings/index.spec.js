@@ -279,8 +279,8 @@ describe('rankings', () => {
 
   describe('turnover', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
-      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 0 });
-      sinon.stub(models.worker, 'countForEstablishment').returns(0);
+      sinon.stub(models.establishment, 'turnoverAndVacanciesData').returns({ NumberOfStaffValue: 1 });
+      sinon.stub(models.worker, 'countForEstablishment').returns(1);
       sinon.stub(models.benchmarksTurnoverByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksTurnoverByEstIdGoodOutstanding, 'findAll').returns([]);
 
@@ -444,7 +444,7 @@ describe('rankings', () => {
       const result = await rankings.turnover(establishmentId, 8, 10);
 
       expect(result.groupRankings.currentRank).to.equal(2);
-      expect(result.goodCqcRankings.currentRank).to.equal(2);
+      expect(result.goodCqcRankings.currentRank).to.equal(4);
     });
 
     it('should be response with currentRank 1 when leavers value is 0', async () => {
@@ -467,8 +467,8 @@ describe('rankings', () => {
 
       const result = await rankings.turnover(establishmentId, 8, 10);
 
-      expect(result.groupRankings.currentRank).to.equal(1);
-      expect(result.goodCqcRankings.currentRank).to.equal(1);
+      expect(result.groupRankings.currentRank).to.equal(3);
+      expect(result.goodCqcRankings.currentRank).to.equal(5);
     });
   });
 
@@ -606,10 +606,10 @@ describe('rankings', () => {
       const result = await rankings.vacancy(establishmentId, 8, 10);
 
       expect(result.groupRankings.currentRank).to.equal(2);
-      expect(result.goodCqcRankings.currentRank).to.equal(2);
+      expect(result.goodCqcRankings.currentRank).to.equal(4);
     });
 
-    it('should be response with currentRank 1 when vacancies value is 0', async () => {
+    it('should be response with currentRank when vacancies value is 0', async () => {
       sinon
         .stub(models.establishment, 'turnoverAndVacanciesData')
         .returns({ NumberOfStaffValue: 2, VacanciesValue: 'None' });
@@ -629,17 +629,22 @@ describe('rankings', () => {
 
       const result = await rankings.vacancy(establishmentId, 8, 10);
 
-      expect(result.groupRankings.currentRank).to.equal(1);
-      expect(result.goodCqcRankings.currentRank).to.equal(1);
+      expect(result.groupRankings.currentRank).to.equal(3);
+      expect(result.goodCqcRankings.currentRank).to.equal(5);
     });
   });
 
   describe('time in role', () => {
     it('should be response with stateMessage no-comparison-data when no comparison group data', async () => {
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 3, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
       sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksTimeInRoleByEstIdGoodOutstanding, 'findAll').returns([]);
+      sinon.stub(models.worker, 'countForEstablishment').returns(6);
 
       const result = await rankings.timeInRole(establishmentId, 8, 10);
 
@@ -648,8 +653,13 @@ describe('rankings', () => {
     });
 
     it('should be response with stateMessage no-perm-or-temp when workplace has no perm or temp data', async () => {
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 0 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns(null);
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 6, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(6);
       sinon
         .stub(models.benchmarksTimeInRoleByEstId, 'findAll')
         .returns([
@@ -669,8 +679,13 @@ describe('rankings', () => {
     });
 
     it('should be response with hasValue true when pay and comparison group are available', async () => {
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 6, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(6);
       sinon
         .stub(models.benchmarksTimeInRoleByEstId, 'findAll')
         .returns([
@@ -690,6 +705,11 @@ describe('rankings', () => {
     });
 
     it('should be response with maxRank equal to number of comparison group rankings + current establishment', async () => {
+      sinon.stub(models.worker, 'countForEstablishment').returns(3);
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 3, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
       sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([
@@ -710,8 +730,13 @@ describe('rankings', () => {
     });
 
     it('should be response with currentRank against comparison group rankings', async () => {
+      sinon.stub(models.worker, 'countForPermAndTempNoStartDate').returns(0);
       sinon.stub(models.worker, 'yearOrMoreInRoleCount').returns({ amount: 3 });
       sinon.stub(models.worker, 'permAndTempCountForEstablishment').returns({ amount: 3 });
+      sinon
+        .stub(models.establishment, 'turnoverAndVacanciesData')
+        .returns({ NumberOfStaffValue: 3, VacanciesValue: 'With Jobs' });
+      sinon.stub(models.worker, 'countForEstablishment').returns(3);
       sinon.stub(models.benchmarksTimeInRoleByEstId, 'findAll').returns([
         { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1.0, EstablishmentFK: 456 },
         { LocalAuthorityArea: 123, MainServiceFK: 1, InRoleFor12MonthsPercentage: 1.0, EstablishmentFK: 456 },

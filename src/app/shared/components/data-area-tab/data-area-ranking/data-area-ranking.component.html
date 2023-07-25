@@ -1,9 +1,52 @@
-<div class="govuk-!-margin-top-4 govuk-!-padding-3 ranking-container">
-  <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-2">{{ rankingTitle }}</div>
-  <p class="govuk-body govuk-!-margin-top-2">
-    Your workplace ranks <span class="govuk-!-font-weight-bold">{{ workplaceRankNumber }}</span> in a comparision group
-    of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
-  </p>
+<div class="govuk-!-margin-top-5 govuk-!-padding-3 govuk-!-padding-bottom-5 ranking-container">
+  <div class="govuk-!-font-size-19 govuk-!-font-weight-bold govuk-!-margin-top-1">{{ rankingTitle }}</div>
+  <ng-container *ngIf="workplacesNumber; else noComparisonData">
+    <ng-container *ngIf="workplaceRankNumber; else noRankingData">
+      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-3" data-testid="ranking-data">
+        Your workplace ranks <span class="govuk-!-font-weight-bold">{{ workplaceRankNumber }}</span> in a comparison
+        group of <span class="govuk-!-font-weight-bold">{{ workplacesNumber }} </span> workplaces.
+      </p>
+    </ng-container>
+
+    <ng-template #noRankingData>
+      <ng-container *ngIf="isPay; else recrAndRet">
+        <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-pay-data">
+          You've not added any {{ rankingTitle | lowercase }} data, so we <br />cannot show you where you're ranked.
+        </p>
+      </ng-container>
+      <ng-template #recrAndRet>
+        <ng-container *ngIf="type == 'vacancy'; else turnoverOrPerecent">
+          <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-vacancy-data">
+            You've not added any vacancies, so we cannot show <br />
+            where you're ranked.
+          </p>
+        </ng-container>
+        <ng-template #turnoverOrPerecent>
+          <p
+            class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2"
+            data-testid="no-workplace-turnover-or-percent-data"
+          >
+            You've not added the data we need to show where <br />you're ranked (see '<app-about-the-data-link
+            ></app-about-the-data-link>').
+          </p>
+        </ng-template>
+      </ng-template>
+    </ng-template>
+  </ng-container>
+  <ng-template #noComparisonData>
+    <ng-container *ngIf="noWorkplaceData == false; else noWorkplaceDataMessage">
+      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-comparison-data">
+        We do not have enough comparison group data to <br />
+        show you where you're ranked yet.
+      </p>
+    </ng-container>
+    <ng-template #noWorkplaceDataMessage>
+      <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-bottom-2" data-testid="no-workplace-or-comparison-data">
+        We do not have enough workplace and comparison group <br />
+        data to show you where you're ranked yet.
+      </p>
+    </ng-template>
+  </ng-template>
   <div class="ranking-bar">
     <highcharts-chart class="chart" [Highcharts]="Highcharts" [options]="options"></highcharts-chart>
   </div>

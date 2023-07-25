@@ -4,8 +4,7 @@ import { PermissionType } from '@core/model/permissions.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-
-import { isAdminRole } from '../../../../../../server/utils/adminUtils';
+import { isAdminRole } from '@core/utils/check-role-util';
 
 @Injectable({
   providedIn: 'root',

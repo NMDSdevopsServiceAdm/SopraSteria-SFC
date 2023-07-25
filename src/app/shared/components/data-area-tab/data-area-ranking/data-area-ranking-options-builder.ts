@@ -12,7 +12,7 @@ ArrowSymbolsModule(Highcharts);
 export class GaugeOptionsBuilder {
   private defaultOptions: Highcharts.Options = {
     chart: {
-      height: 125,
+      height: 105,
       type: 'bar',
       margin: [0, 0, 0, 0],
       scrollablePlotArea: {
@@ -101,9 +101,10 @@ export class GaugeOptionsBuilder {
     if (!maxRank && !currentRank) {
       maxRank = 10000000;
     }
-    const topMargin = currentRank ? 55 : 0;
-    const padding = 1;
 
+    const topMargin = currentRank ? 35 : 15;
+    const padding =
+      maxRank >= 10 ? maxRank / 60 : maxRank >= 4 ? maxRank / 55 : maxRank > 2 ? maxRank / 58 : maxRank / 85;
     return this.build(maxRank, currentRank, padding, topMargin);
   }
 
@@ -118,6 +119,7 @@ export class GaugeOptionsBuilder {
     const source = {
       chart: {
         margin: [topMargin, 0, 0, 0],
+        height: currentRank ? 105 : 85,
       },
       yAxis: {
         min: 1 - padding,

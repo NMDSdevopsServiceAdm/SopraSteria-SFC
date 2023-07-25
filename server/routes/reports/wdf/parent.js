@@ -252,6 +252,7 @@ const updateProps = (
 
 const getWorkersReportData = async (establishmentId) => {
   const workerData = await getWorkerData(establishmentId);
+
   let workersArray = workerData.filter((worker) => {
     if (establishmentId !== worker.EstablishmentID) {
       return worker.DataOwner === 'Parent' || worker.DataPermissions === 'Workplace and Staff';
@@ -303,6 +304,9 @@ const getWorkersReportData = async (establishmentId) => {
         value.HoursValue = 'Missing';
       }
     }
+
+    const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
+    value.WdfEligible = value.WdfEligible && moment(value.LastWdfEligibility).isAfter(effectiveFromIso);
 
     if (value.ContractValue === 'Agency' || value.ContractValue === 'Pool/Bank') {
       value.DaysSickValue = 'N/A';
@@ -404,6 +408,7 @@ const styleLookup = {
       Q: 15,
       R: 15,
       S: 15,
+      T: 15,
     },
     WKRLAST: {
       A: 2,
@@ -425,6 +430,7 @@ const styleLookup = {
       Q: 20,
       R: 20,
       S: 20,
+      T: 20,
     },
   },
   RED: {
@@ -512,6 +518,7 @@ const styleLookup = {
       Q: 67,
       R: 67,
       S: 67,
+      T: 67,
     },
     WKRLAST: {
       A: 2,
@@ -533,6 +540,7 @@ const styleLookup = {
       Q: 67,
       R: 67,
       S: 67,
+      T: 67,
     },
   },
 };
@@ -962,7 +970,7 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
   for (let row = 0; row < reportData.workers.length; row++) {
     const rowType = row === reportData.workers.length - 1 ? 'WKRLAST' : 'WKRREGULAR';
 
-    for (let column = 0; column < 19; column++) {
+    for (let column = 0; column < 20; column++) {
       const columnText = String.fromCharCode(column + 65);
       let isRed = false;
       const cellToChange = currentRow.children(`c[r='${columnText}${row + 10}']`);
@@ -1131,6 +1139,15 @@ const updateWorkersSheet = (workersSheet, reportData, sharedStrings, sst, shared
             putString(cellToChange, reportData.workers[row].OtherQualificationsValue);
 
             isRed = reportData.workers[row].OtherQualificationsValue === 'Missing';
+
+            setStyle(cellToChange, columnText, rowType, isRed);
+          }
+          break;
+        case 'T':
+          {
+            putString(cellToChange, reportData.workers[row].WdfEligible ? 'Yes' : 'No');
+
+            isRed = reportData.workers[row].WdfEligible === 'Missing';
 
             setStyle(cellToChange, columnText, rowType, isRed);
           }
@@ -1508,6 +1525,7 @@ const reportGet = async (req, res) => {
 //    pass through the Establishment/Worker entities. This is done for performance, as these reports
 //    are expected to operate across large sets of data
 const express = require('express');
+const { WdfCalculator } = require('../../../models/classes/wdfCalculator');
 const router = express.Router();
 
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));

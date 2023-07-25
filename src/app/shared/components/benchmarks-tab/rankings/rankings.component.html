@@ -51,11 +51,7 @@
   </div>
 </div>
 <p>{{ metricContent['Turnover'].description }}</p>
-<app-gauge
-  *ngIf="rankings.turnoverRate"
-  [maxRank]="turnoverContent.maxRank"
-  [currentRank]="turnoverContent.currentRank"
->
+<app-gauge *ngIf="rankings.turnover" [maxRank]="turnoverContent.maxRank" [currentRank]="turnoverContent.currentRank">
   <ng-container your-rank>
     <app-ranking-content *ngIf="turnoverContent" [content]="turnoverContent"></app-ranking-content>
   </ng-container>
