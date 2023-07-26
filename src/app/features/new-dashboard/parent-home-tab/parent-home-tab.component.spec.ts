@@ -45,58 +45,62 @@ describe('ParentHomeTabComponent', () => {
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
   ) => {
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(ParentHomeTabComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [
-        WindowRef,
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
-        },
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
-          deps: [HttpClient, Router, UserService],
-        },
+    const { fixture, queryAllByText, getByText, queryByText, getByTestId, queryByTestId } = await render(
+      ParentHomeTabComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        providers: [
+          WindowRef,
+          {
+            provide: FeatureFlagsService,
+            useClass: MockFeatureFlagsService,
+          },
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(),
+            deps: [HttpClient, Router, UserService],
+          },
 
-        {
-          provide: UserService,
-          useFactory: MockUserService.factory(1, Roles.Admin),
-          deps: [HttpClient],
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {
-                workers: {
-                  workersCreatedDate: [],
-                  workerCount: 0,
-                  trainingCounts: {} as TrainingCounts,
-                  workersNotCompleted: [],
+          {
+            provide: UserService,
+            useFactory: MockUserService.factory(1, Roles.Admin),
+            deps: [HttpClient],
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                data: {
+                  workers: {
+                    workersCreatedDate: [],
+                    workerCount: 0,
+                    trainingCounts: {} as TrainingCounts,
+                    workersNotCompleted: [],
+                  },
                 },
               },
+              queryParams: of({ view: null }),
+              url: of(null),
             },
-            queryParams: of({ view: null }),
-            url: of(null),
           },
+          {
+            provide: EstablishmentService,
+            useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
+            deps: [HttpClient],
+          },
+          { provide: WindowToken, useValue: MockWindow },
+        ],
+        declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
+        componentProperties: {
+          workplace: establishment,
+          meta: comparisonDataAvailable
+            ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
+            : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
+          canRunLocalAuthorityReport: false,
         },
-        {
-          provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
-          deps: [HttpClient],
-        },
-        { provide: WindowToken, useValue: MockWindow },
-      ],
-      declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
-      componentProperties: {
-        workplace: establishment,
-        meta: comparisonDataAvailable
-          ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
-          : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
+        schemas: [NO_ERRORS_SCHEMA],
       },
-      schemas: [NO_ERRORS_SCHEMA],
-    });
+    );
 
     const component = fixture.componentInstance;
 
@@ -111,6 +115,7 @@ describe('ParentHomeTabComponent', () => {
     return {
       component,
       fixture,
+      queryAllByText,
       getByText,
       queryByText,
       getByTestId,
@@ -321,6 +326,24 @@ describe('ParentHomeTabComponent', () => {
 
         expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
       });
+    });
+  });
+
+  describe('Local authority progress link', () => {
+    it('should not show link when not a local authority', async () => {
+      const { queryByText } = await setup();
+
+      expect(queryByText('Download local authority progress report (XLS)')).toBeFalsy();
+    });
+
+    it('should show the Local authority progress link when it is a local authority', async () => {
+      const { component, fixture, queryAllByText } = await setup();
+
+      component.canRunLocalAuthorityReport = true;
+
+      fixture.detectChanges();
+
+      expect(queryAllByText('Download local authority progress report (XLS)').length).toBe(1);
     });
   });
 });

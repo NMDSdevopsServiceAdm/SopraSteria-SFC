@@ -104,7 +104,7 @@
     </div>
   </div>
 
-  <div class="govuk-grid-row">
+  <div *ngIf="canRunLocalAuthorityReport && workplace" data-cy="download-report" class="govuk-grid-row">
     <div class="govuk-grid-column-full">
       <div class="asc-link-box">
         <a
