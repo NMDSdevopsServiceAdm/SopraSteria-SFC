@@ -26,9 +26,9 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  BenchmarksEstablishmentsAndWorkersGoodOutstanding.getComparisonData = async function (establishmentId, mainService) {
-    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
+  BenchmarksEstablishmentsAndWorkersGoodOutstanding.getComparisonData = async function (mainService, cssr) {
     if (!cssr) return {};
+
     return await this.findOne({
       attributes: ['BaseEstablishments', 'WorkerCount'],
       where: {

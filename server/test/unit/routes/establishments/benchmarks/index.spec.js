@@ -758,10 +758,12 @@ describe('/benchmarks', () => {
         .returns({ ...timeInRoleComparisonResponse, InRoleFor12MonthsPercentage: 0.81 })
         .onCall(17)
         .returns({ ...timeInRoleComparisonResponse, InRoleFor12MonthsPercentage: 0.85 });
+
+      sinon.stub(models.establishment, 'findbyId').returns({ mainService: { reportingID: 8 } });
+      sinon.stub(models.cssr, 'getCSSR').returns({ id: 102, name: 'Leeds' });
     });
 
     it('should return 200 and the data when successfully getting the benchmarks data', async () => {
-      sinon.stub(models.establishment, 'findbyId').returns({ mainService: { reportingID: 8 } });
       sinon
         .stub(benchmarksService, 'getPay')
         .onFirstCall()
@@ -849,8 +851,6 @@ describe('/benchmarks', () => {
     });
 
     it('should return 500 when an error is thrown', async () => {
-      sinon.stub(models.establishment, 'findbyId').returns({ MainServiceFKValue: 8 });
-
       sinon.stub(benchmarksService, 'getPay').throws();
       await viewBenchmarks(req, res);
 
