@@ -63,6 +63,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
 
+
     if (this.workplace) {
       this.getPermissions();
       this.totalStaffRecords = this.route.snapshot.data.totalStaffRecords;

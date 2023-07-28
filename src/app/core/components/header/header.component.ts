@@ -13,7 +13,7 @@ import { interval, Subscription } from 'rxjs';
   styleUrls: ['./header.component.scss'],
 })
 export class HeaderComponent implements OnInit, OnDestroy {
-  @Input() standAloneAccount: boolean;
+  @Input() showNotificationsLink: boolean;
   private subscriptions: Subscription = new Subscription();
   public isOnAdminScreen = true;
   public users: Array<UserDetails>;
@@ -37,7 +37,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.onAdminScreen();
     this.workplaceId && this.getUsers();
-    this.standAloneAccount && this.setUpNotificationSubscription();
+    this.showNotificationsLink && this.setUpNotificationSubscription();
   }
 
   ngOnDestroy(): void {

@@ -22,7 +22,9 @@ export class AppComponent implements OnInit {
   public dashboardView = false;
   public standAloneAccount = false;
   public newHomeDesignFlag: boolean;
+  public newHomeDesignParentFlag: boolean;
   public newDataAreaFlag: boolean;
+  public parentAccount: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -61,6 +63,7 @@ export class AppComponent implements OnInit {
       this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
       if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
+      this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
 
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {
@@ -89,6 +92,10 @@ export class AppComponent implements OnInit {
     await this.featureFlagsService.configCatClient.forceRefreshAsync();
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
+
+    this.newHomeDesignParentFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesignParent', false);
+    this.featureFlagsService.newHomeDesignParentFlag = this.newHomeDesignParentFlag;
+
 
     this.newDataAreaFlag = await this.featureFlagsService.configCatClient.getValueAsync('newBenchmarksDataArea', false);
     this.featureFlagsService.newBenchmarksDataArea = this.newDataAreaFlag;
