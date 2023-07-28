@@ -38,6 +38,7 @@ import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wra
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
+import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 
 const routes: Routes = [
   {
@@ -246,6 +247,14 @@ const routes: Routes = [
             },
           },
         ],
+      },
+      {
+        path: 'become-a-parent',
+        component: BecomeAParentComponent,
+        data: { title: 'Become a Parent' },
+        resolve: {
+          pages: PageResolver,
+        },
       },
     ],
   },
