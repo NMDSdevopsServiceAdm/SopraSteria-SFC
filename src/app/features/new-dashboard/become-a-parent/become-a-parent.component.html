@@ -6,8 +6,35 @@
 
       <p>
         When you send a request to become a parent workplace, Skills for Care will review it and then send you a
-        notification to tell you whether your request was approved or not. Skills for Care will contact you if they need
-        more information about your request.
+        notification to tell you whether your request was approved or not.
+      </p>
+      <p>Skills for Care will contact you if they need more information about your request.</p>
+
+      <h2>What's a parent workplace?</h2>
+
+      <p>
+        A parent workplace is a workplace that’s taken responsibility in ASC-WDS for a number of other workplaces as
+        part of a group or organisation.
+      </p>
+      <app-details data-testid="becomeAParentRevealTitle" [title]="'Why you might want to be a parent workplace'"
+        ><p data-testid="becomeAParentRevealText">
+          Parent workplaces can be given edit or view permissions for another workplace’s data in ASC-WDS.
+          Alternatively, they can just be linked to, to show that they’re part of a group or organisation.
+        </p>
+        <p>
+          Being a parent workplace can help to free up resources. Other workplace managers can then concentrate on tasks
+          away from ASC-WDS, while the parent ensures that their workplaces' data meets Workforce Development Fund
+          requirements.
+        </p></app-details
+      >
+      <p>
+        <a class="govuk-link" [routerLink]="['/contact-us']">Contact us</a> if you need any more help and information
+        about becoming a parent
+      </p>
+      <p class="govuk-!-margin-top-9">
+        <button type="button" class="govuk-button">Send parent request</button>
+
+        <a href="#" class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2">Cancel</a>
       </p>
     </div>
   </div>
