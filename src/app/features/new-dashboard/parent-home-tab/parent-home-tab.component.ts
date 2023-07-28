@@ -3,8 +3,9 @@ import { NewHomeTabDirective } from '@shared/directives/new-home-tab/new-home-ta
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 
 @Component({
-  selector: 'app-new-home-tab',
-  templateUrl: './home-tab.component.html',
+  selector: 'app-parent-home-tab',
+  templateUrl: './parent-home-tab.component.html',
+  styleUrls: ['./parent-home-tab.component.scss'],
   providers: [ServiceNamePipe],
 })
-export class NewHomeTabComponent extends NewHomeTabDirective {}
+export class ParentHomeTabComponent extends NewHomeTabDirective {}

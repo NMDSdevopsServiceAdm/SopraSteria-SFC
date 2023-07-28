@@ -4,7 +4,7 @@
   <div class="govuk-grid-column-full">
     <app-tabs (selectedTabClick)="tabClickEvent($event)">
       <app-tab [title]="'Home'">
-        <app-home-tab [workplace]="workplace" [workerCount]="workerCount"></app-home-tab>
+        <app-home-tab [workplace]="workplace" [workerCount]="workerCount" data-testid="homeTab"></app-home-tab>
       </app-tab>
 
       <app-tab

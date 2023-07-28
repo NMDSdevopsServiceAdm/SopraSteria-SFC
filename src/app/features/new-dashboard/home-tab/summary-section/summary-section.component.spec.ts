@@ -45,6 +45,7 @@ describe('Summary section', () => {
         workerCount,
         workersCreatedDate: workerCreatedDate,
         workersNotCompleted: workersNotCompleted as Worker[],
+        isParent: false,
       },
     });
 
@@ -465,6 +466,27 @@ describe('Summary section', () => {
         expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
         expect(within(tAndQRow).queryByText('Manage your staff training and qualifications')).toBeFalsy();
       });
+    });
+  });
+
+  describe('your other workplaces summary section', () => {
+    it('should show you other workplaces link', async () => {
+      const { component, getByText } = await setup();
+
+      component.isParent = true;
+
+      expect(getByText('Your other workplaces')).toBeTruthy();
+    });
+
+    it('should show the no workplace message when there is no workplaces added', async () => {
+      const { component, getByTestId } = await setup();
+
+      component.isParent = true;
+
+      const workplacesRow = getByTestId('workplaces-row');
+
+      expect(workplacesRow).toBeTruthy();
+      expect(within(workplacesRow).getByText(`You've not added any other workplaces yet`)).toBeTruthy();
     });
   });
 });

@@ -2,5 +2,10 @@
   <app-new-dashboard data-testid="standAloneDashboard"></app-new-dashboard>
 </ng-container>
 <ng-template #parentSubDashboard>
-  <app-dashboard data-testid="parentSubDashboard"></app-dashboard>
+  <ng-container *ngIf="parentAccount && newHomeDesignParentFlag; else subDashboard">
+    <app-new-dashboard data-testid="parentDashboard"></app-new-dashboard>
+  </ng-container>
+  <ng-template #subDashboard>
+    <app-dashboard data-testid="parentSubDashboard"></app-dashboard>
+  </ng-template>
 </ng-template>
