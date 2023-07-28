@@ -33,6 +33,7 @@ import {
   allWorkplacesJourney,
   brenchmarksTabJourney,
   myWorkplaceJourney,
+  otherWorkplacesJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
@@ -276,6 +277,10 @@ export class BreadcrumbService {
       }
       case JourneyType.BENCHMARKS_TAB: {
         routes = brenchmarksTabJourney;
+        break;
+      }
+      case JourneyType.OTHER_WORKPLACES: {
+        routes = otherWorkplacesJourney;
         break;
       }
 
