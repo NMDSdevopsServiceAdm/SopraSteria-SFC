@@ -83,10 +83,26 @@
 
           <app-link-with-arrow *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
             <ng-container *ngIf="parentStatusRequested; else requestBecomeAParent">
-              <a class="govuk-link" (click)="cancelBecomeAParent($event)" href="#">Parent request pending</a>
+              <ng-container *ngIf="newHomeDesignParentFlag; else dialogParentRequestPending">
+                <a class="govuk-link" href="#">Become a parent and manage other workplaces' data (request pending)</a>
+              </ng-container>
+              <ng-template #dialogParentRequestPending
+                ><a class="govuk-link" (click)="cancelBecomeAParent($event)" href="#"
+                  >Parent request pending</a
+                ></ng-template
+              >
             </ng-container>
             <ng-template #requestBecomeAParent>
-              <a class="govuk-link" (click)="becomeAParent($event)" href="#">Become a parent organisation</a>
+              <ng-container *ngIf="newHomeDesignParentFlag; else dialogParentRequest">
+                <a class="govuk-link" [routerLink]="['/become-a-parent']"
+                  >Become a parent and manage other workplaces' data</a
+                >
+              </ng-container>
+              <ng-template #dialogParentRequest
+                ><a class="govuk-link" (click)="becomeAParent($event)" href="#"
+                  >Become a parent organisation</a
+                ></ng-template
+              >
             </ng-template>
           </app-link-with-arrow>
 
