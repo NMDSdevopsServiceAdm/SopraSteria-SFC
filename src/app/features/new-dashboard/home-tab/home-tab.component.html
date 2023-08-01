@@ -1,13 +1,16 @@
 <app-new-dashboard-header tab="home"></app-new-dashboard-header>
-<app-summary-section
-  *ngIf="canViewListOfWorkers"
-  [workplace]="workplace"
-  [workerCount]="workerCount"
-  [workersCreatedDate]="workersCreatedDate"
-  [trainingCounts]="trainingCounts"
-  [workersNotCompleted]="workersNotCompleted"
-  [(navigateToTab)]="navigateToTab"
-></app-summary-section>
+
+<div class="govuk-width-container govuk-!-margin-top-7">
+  <app-summary-section
+    *ngIf="canViewListOfWorkers"
+    [workplace]="workplace"
+    [workerCount]="workerCount"
+    [workersCreatedDate]="workersCreatedDate"
+    [trainingCounts]="trainingCounts"
+    [workersNotCompleted]="workersNotCompleted"
+    [(navigateToTab)]="navigateToTab"
+  ></app-summary-section>
+</div>
 <div class="govuk-width-container govuk-!-margin-top-4">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -84,7 +87,7 @@
           <app-link-with-arrow *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent">
             <ng-container *ngIf="parentStatusRequested; else requestBecomeAParent">
               <ng-container *ngIf="newHomeDesignParentFlag; else dialogParentRequestPending">
-                <a class="govuk-link" href="#">Become a parent and manage other workplaces' data (request pending)</a>
+                <a class="govuk-link" (click)="cancelBecomeAParent($event)" href="#">Become a parent and manage other workplaces' data (request pending)</a>
               </ng-container>
               <ng-template #dialogParentRequestPending
                 ><a class="govuk-link" (click)="cancelBecomeAParent($event)" href="#"

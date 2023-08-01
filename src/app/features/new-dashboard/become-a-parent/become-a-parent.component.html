@@ -1,41 +1,49 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <div style="width: 92%">
-      <span class="govuk-caption-l">{{ workplace.name }}</span>
-      <h1 class="govuk-heading-l">Become a parent and manage other workplaces' data</h1>
+<div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div style="width: 92%">
+        <span class="govuk-caption-l">{{ workplace.name }}</span>
+        <h1 class="govuk-heading-l">Become a parent and manage other workplaces' data</h1>
 
-      <p>
-        When you send a request to become a parent workplace, Skills for Care will review it and then send you a
-        notification to tell you whether your request was approved or not.
-      </p>
-      <p>Skills for Care will contact you if they need more information about your request.</p>
-
-      <h2>What's a parent workplace?</h2>
-
-      <p>
-        A parent workplace is a workplace that’s taken responsibility in ASC-WDS for a number of other workplaces as
-        part of a group or organisation.
-      </p>
-      <app-details data-testid="becomeAParentRevealTitle" [title]="'Why you might want to be a parent workplace'"
-        ><p data-testid="becomeAParentRevealText">
-          Parent workplaces can be given edit or view permissions for another workplace’s data in ASC-WDS.
-          Alternatively, they can just be linked to, to show that they’re part of a group or organisation.
-        </p>
         <p>
-          Being a parent workplace can help to free up resources. Other workplace managers can then concentrate on tasks
-          away from ASC-WDS, while the parent ensures that their workplaces' data meets Workforce Development Fund
-          requirements.
-        </p></app-details
-      >
-      <p>
-        <a class="govuk-link" [routerLink]="['/contact-us']">Contact us</a> if you need any more help and information
-        about becoming a parent
-      </p>
-      <p class="govuk-!-margin-top-9">
-        <button type="button" class="govuk-button">Send parent request</button>
+          When you send a request to become a parent workplace, Skills for Care will review it and then send you a
+          notification to tell you whether your request was approved or not.
+        </p>
+        <p>Skills for Care will contact you if they need more information about your request.</p>
 
-        <a href="#" class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-2">Cancel</a>
-      </p>
+        <h2>What's a parent workplace?</h2>
+
+        <p>
+          A parent workplace is a workplace that’s taken responsibility in ASC-WDS for a number of other workplaces as
+          part of a group or organisation.
+        </p>
+        <app-details data-testid="becomeAParentRevealTitle" [title]="'Why you might want to be a parent workplace'"
+          ><p data-testid="becomeAParentRevealText">
+            Parent workplaces can be given edit or view permissions for another workplace’s data in ASC-WDS.
+            Alternatively, they can just be linked to, to show that they’re part of a group or organisation.
+          </p>
+          <p>
+            Being a parent workplace can help to free up resources. Other workplace managers can then concentrate on
+            tasks away from ASC-WDS, while the parent ensures that their workplaces' data meets Workforce Development
+            Fund requirements.
+          </p></app-details
+        >
+        <p>
+          <a class="govuk-link" [routerLink]="['/contact-us']">Contact us</a> if you need any more help and information
+          about becoming a parent
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-6" style="width: 90%">
+    <div class="govuk-grid-column-one-half">
+      <button type="button" (click)="sendRequestToBecomeAParent()" class="govuk-button">Send parent request</button>
+
+      <a
+        [routerLink]="['/dashboard']"
+        class="govuk-link govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-1"
+        >Cancel</a
+      >
     </div>
   </div>
 </div>

@@ -15,8 +15,9 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
 import { getTestBed } from '@angular/core/testing';
+import { AlertService } from '@core/services/alert.service';
 
-describe('BecomeAParentComponent', () => {
+fdescribe('BecomeAParentComponent', () => {
   async function setup() {
     const { getByRole, getByText, getByLabelText, getByTestId, fixture } = await render(BecomeAParentComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -49,6 +50,7 @@ describe('BecomeAParentComponent', () => {
     const component = fixture.componentInstance;
 
     const parentsRequestService = TestBed.inject(ParentRequestsService);
+    //const alertService = TestBed.inject(AlertService)
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -62,6 +64,7 @@ describe('BecomeAParentComponent', () => {
       component,
       routerSpy,
       parentsRequestService,
+      //alertService
     };
   }
   it('should create', async () => {
@@ -103,7 +106,7 @@ describe('BecomeAParentComponent', () => {
     expect(getByTestId('becomeAParentRevealText')).toBeTruthy();
   });
 
-  it('should render the link with the correct href', async () => {
+  it('should show the link with the correct href', async () => {
     const { getByText } = await setup();
     const link = getByText('Contact us');
     expect(link).toBeTruthy();
@@ -118,11 +121,12 @@ describe('BecomeAParentComponent', () => {
     expect(parentRequestButton).toBeTruthy();
   });
 
-  it('should show the cancel link', async () => {
+  it('should show the cancel link with the correct href back to the home tab', async () => {
     const { getByText } = await setup();
 
     const cancelRequestLink = getByText('Cancel');
 
     expect(cancelRequestLink).toBeTruthy();
+    expect(cancelRequestLink.getAttribute('href')).toEqual('/dashboard');
   });
 });
