@@ -1,6 +1,11 @@
 <ng-container *ngIf="breadcrumbs">
   <div class="govuk-breadcrumbs govuk-!-margin-top-0 govuk-!-padding-top-3">
-    Go back to:
+    <ng-container *ngIf="overrideMessage; else defaultMessage">
+      {{ overrideMessage }}:
+    </ng-container>
+    <ng-template #defaultMessage>
+      Go back to:
+    </ng-template>
     <ol class="govuk-breadcrumbs__list">
       <li
         class="govuk-breadcrumbs__list-item"

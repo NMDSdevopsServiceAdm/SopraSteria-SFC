@@ -28,10 +28,9 @@ export class OtherWorkplacesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.OTHER_WORKPLACES);
+    this.breadcrumbService.show(JourneyType.OTHER_WORKPLACES, this.establishmentService.primaryWorkplace.name);
     this.workplace = this.establishmentService.primaryWorkplace;
-    const childWorkplaces = this.route.snapshot.data.childWorkplaces;
-    this.totalWorkplaceCount = childWorkplaces.count;
+    // this.totalWorkplaceCount = childWorkplaces.count;
     console.log(this.totalWorkplaceCount);
   }
 

@@ -48,6 +48,8 @@ import { parse } from 'url';
 export class BreadcrumbService {
   private readonly _routes$: BehaviorSubject<Array<JourneyRoute>> = new BehaviorSubject<Array<JourneyRoute>>(null);
   public readonly routes$: Observable<Array<JourneyRoute>> = this._routes$.asObservable();
+  private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
 
   constructor(private router: Router, private location: Location) {
     this.router.events
@@ -63,12 +65,13 @@ export class BreadcrumbService {
       });
   }
 
-  public show(journey: JourneyType) {
+  public show(journey: JourneyType, overrideMessage: string = null) {
     const urlTree = this.router.parseUrl(this.location.path());
     const segmentGroup = urlTree.root.children[PRIMARY_OUTLET];
     const segments = segmentGroup ? segmentGroup.segments : null;
     const routes = this.getRoutes(this.getRoutesConfig(journey), segments);
     this._routes$.next(routes);
+    this._overrideMessage$.next(overrideMessage);
   }
 
   public removeRoutes(): void {
