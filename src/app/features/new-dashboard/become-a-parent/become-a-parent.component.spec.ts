@@ -53,7 +53,6 @@ describe('BecomeAParentComponent', () => {
     const component = fixture.componentInstance;
 
     const parentsRequestService = TestBed.inject(ParentRequestsService);
-    //const alertService = TestBed.inject(AlertService)
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -67,7 +66,6 @@ describe('BecomeAParentComponent', () => {
       component,
       routerSpy,
       parentsRequestService,
-      //alertService
     };
   }
   it('should create', async () => {
