@@ -29,6 +29,7 @@ export enum JourneyType {
   STAFF_RECORDS_TAB,
   TRAINING_AND_QUALIFICATIONS_TAB,
   BENCHMARKS_TAB,
+  OTHER_WORKPLACES,
 }
 
 export interface JourneyRoute {

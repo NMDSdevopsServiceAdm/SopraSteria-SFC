@@ -11,6 +11,7 @@ import { Subscription } from 'rxjs';
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
   public breadcrumbs: JourneyRoute[];
+  public overrideMessage: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(private breadcrumbService: BreadcrumbService, private router: Router, private tabsService: TabsService) {}
@@ -20,6 +21,9 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
       this.breadcrumbService.routes$.subscribe((routes) => {
         this.breadcrumbs = routes ? this.getBreadcrumbs(routes) : null;
       }),
+    );
+    this.subscriptions.add(
+      this.breadcrumbService.overrideMessage$.subscribe(overrideMessage => this.overrideMessage = overrideMessage ? overrideMessage : undefined)
     );
   }
 
