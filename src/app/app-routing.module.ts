@@ -39,6 +39,8 @@ import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
+import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
+import { OtherWorkplacesComponent } from '@features/workplace/other-workplaces/other-workplaces.component';
 
 const routes: Routes = [
   {
@@ -252,10 +254,12 @@ const routes: Routes = [
         path: 'become-a-parent',
         component: BecomeAParentComponent,
         data: { title: 'Become a Parent' },
-        resolve: {
-          pages: PageResolver,
-        },
       },
+      {
+        path: 'other-workplaces',
+        component: OtherWorkplacesComponent,
+        data: { title: 'Other workplaces' }
+      }
     ],
   },
   {

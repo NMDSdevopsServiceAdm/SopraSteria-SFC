@@ -248,6 +248,43 @@ describe('ParentHomeTabComponent', () => {
       expect(benefitsBundleLink).toBeTruthy();
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
     });
+
+    it('should show a card with a link that takes you to the bulk upload page', async () => {
+      const { getByText } = await setup();
+
+      const bulkUploadLink = getByText('Bulk upload your data');
+
+      expect(bulkUploadLink).toBeTruthy();
+      expect(bulkUploadLink.getAttribute('href')).toBe('/bulk-upload');
+    });
+
+    it('should show a card with a link that takes you to the wdf page', async () => {
+      const { getByText } = await setup();
+
+      const wdfLink = getByText('Does your data meet WDF requirements?');
+
+      expect(wdfLink).toBeTruthy();
+      expect(wdfLink.getAttribute('href')).toBe('/wdf');
+    });
+
+    it('should show a card with a link that takes you to the ASC-WDS certificate page', async () => {
+      const { getByText } = await setup();
+
+      const ascWdsCertificateLink = getByText('Get your ASC-WDS certificate');
+
+      expect(ascWdsCertificateLink).toBeTruthy();
+      expect(ascWdsCertificateLink.getAttribute('href')).toBe('/asc-wds-certificate');
+    });
+
+    it('should show a card with a link that takes you to the ASC-WDS news page', async () => {
+      const { getByText } = await setup();
+
+      const ascWdsNewsLink = getByText('ASC-WDS news');
+
+      expect(ascWdsNewsLink).toBeTruthy();
+      expect(ascWdsNewsLink.getAttribute('href')).toBe('/articles/news-article-heartof');
+    });
+
   });
 
   describe('summary', () => {
