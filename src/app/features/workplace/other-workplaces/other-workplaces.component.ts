@@ -18,20 +18,19 @@ import { Subscription } from 'rxjs';
 })
 export class OtherWorkplacesComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
-  public totalWorkplaceCount: number;
+  public childWorkplacesCount: number;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
-    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.OTHER_WORKPLACES, this.establishmentService.primaryWorkplace.name);
     this.workplace = this.establishmentService.primaryWorkplace;
-    // this.totalWorkplaceCount = childWorkplaces.count;
-    console.log(this.totalWorkplaceCount);
+    this.breadcrumbService.show(JourneyType.OTHER_WORKPLACES, this.workplace.name);
+
+    this.establishmentService.getChildWorkplaces(this.workplace.uid).subscribe(x => this.childWorkplacesCount = x.count);
   }
 
   ngOnDestroy(): void {

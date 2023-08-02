@@ -1,7 +1,7 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-one-half">
     <span class="govuk-caption-xl">{{ workplace.name }}</span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Your other workplaces (0)</h1>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Your other workplaces ({{childWorkplacesCount}})</h1>
   </div>
   <div class="govuk-grid-column-one-half govuk-util__align-right">
     <a
@@ -16,8 +16,8 @@
   </div>
     <div class="govuk-grid-column-two-thirds">
 
-          <p><a [routerLink]="['/']">What you can do as a parent workplace</a></p>
-
+      <p><a [routerLink]="['/']">What you can do as a parent workplace</a></p>
+    <br/>
       <p>You've not added any workplaces yet.</p>
       <p>To add a workplace, you'll need to know:</p>
       <ul class="govuk-list govuk-list--bullet">
