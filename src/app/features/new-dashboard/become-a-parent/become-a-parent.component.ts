@@ -35,7 +35,7 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
         if (data) {
           this.router.navigate(['/dashboard'], {
             state: {
-              parentRequestMessage: `You’ve sent a request to become a parent workplace.`,
+              parentRequestMessage: `You’ve sent a request to become a parent workplace`,
             },
           });
         }
