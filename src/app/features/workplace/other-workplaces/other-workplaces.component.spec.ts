@@ -19,7 +19,7 @@ describe('OtherWorkplacesComponent', () => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
       OtherWorkplacesComponent,
       {
-        imports: [BrowserModule, SharedModule, ReactiveFormsModule],
+        imports: [HttpClientTestingModule, BrowserModule, SharedModule, ReactiveFormsModule],
         providers: [
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           {
@@ -39,4 +39,8 @@ describe('OtherWorkplacesComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the count of other workplaces', async () => {
+    const { component, getByText } = await setup();
+    expect(getByText('Your other workplaces (3)')).toBeTruthy();
+  });
 });
