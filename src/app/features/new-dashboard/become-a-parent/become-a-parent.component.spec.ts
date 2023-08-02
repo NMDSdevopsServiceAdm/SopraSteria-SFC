@@ -16,13 +16,16 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
 import { getTestBed } from '@angular/core/testing';
 import { AlertService } from '@core/services/alert.service';
+import { WindowRef } from '@core/services/window.ref';
 
-fdescribe('BecomeAParentComponent', () => {
+describe('BecomeAParentComponent', () => {
   async function setup() {
     const { getByRole, getByText, getByLabelText, getByTestId, fixture } = await render(BecomeAParentComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
+        AlertService,
+        WindowRef,
         { provide: BenchmarksService, useClass: MockBenchmarksService },
         { provide: PermissionsService, useClass: MockPermissionsService },
         {

@@ -1,6 +1,5 @@
-import { Component, OnInit, OnDestroy, Output } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertService } from '@core/services/alert.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -11,14 +10,15 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-become-a-parent',
   templateUrl: './become-a-parent.component.html',
+  styleUrls: ['./become-a-parent.component.scss']
 })
+
 export class BecomeAParentComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public workplace: Establishment;
 
   constructor(
     private parentRequestsService: ParentRequestsService,
-    private alertService: AlertService,
     private router: Router,
     protected route: ActivatedRoute,
 
@@ -33,12 +33,9 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.parentRequestsService.becomeParent().subscribe((data) => {
         if (data) {
-          this.router.navigate(['/dashboard']);
-          this.alertService.addAlert({
-            type: 'success',
-            message: `You’ve sent a request to become a parent workplace.`,
-          });
-
+          this.router.navigate(['/dashboard'], {state: {
+            parentRequestMessage: `You’ve sent a request to become a parent workplace.`,
+            }});
         }
       }),
     );

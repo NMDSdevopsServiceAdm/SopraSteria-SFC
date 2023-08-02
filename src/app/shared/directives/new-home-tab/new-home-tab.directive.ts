@@ -22,6 +22,7 @@ import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/l
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
+import { AlertService } from '@core/services/alert.service';
 
 declare global {
   interface Window {
@@ -66,6 +67,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public isParent: boolean;
   public certificateYears: string;
   public newHomeDesignParentFlag: boolean;
+  public parentRequestAlertMessage: string;
 
   constructor(
     private userService: UserService,
@@ -78,6 +80,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     private serviceNamePipe: ServiceNamePipe,
     private reportsService: ReportService,
     private featureFlagsService: FeatureFlagsService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -142,6 +145,9 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.hasBenchmarkComparisonData = !!this.meta?.staff && !!this.meta?.workplaces;
     this.setBenchmarksCard();
     this.subscriptions.add();
+
+    this.parentRequestAlertMessage = history.state?.parentRequestMessage;
+    this.sendAlert();
   }
 
   private setBenchmarksCard(): void {
@@ -161,6 +167,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
 
   ngOnChanges() {
     this.setBenchmarksCard();
+
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {
@@ -285,7 +292,17 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     saveAs(blob, filename);
   }
 
+  public sendAlert(): void {
+    if(this.parentRequestAlertMessage){
+      this.alertService.addAlert({
+        type: 'success',
+        message: this.parentRequestAlertMessage
+      });
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.alertService.removeAlert()
   }
 }
