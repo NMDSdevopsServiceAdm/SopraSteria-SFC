@@ -90,7 +90,6 @@ import { SatisfactionSurveyComponent } from './features/satisfaction-survey/sati
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
-import { OtherWorkplacesComponent } from '@features/workplace/other-workplaces/other-workplaces.component';
 
 @NgModule({
   declarations: [
@@ -137,7 +136,6 @@ import { OtherWorkplacesComponent } from '@features/workplace/other-workplaces/o
     SummarySectionComponent,
     StaffBasicRecord,
     BecomeAParentComponent,
-    OtherWorkplacesComponent
   ],
   imports: [
     Angulartics2Module.forRoot({
