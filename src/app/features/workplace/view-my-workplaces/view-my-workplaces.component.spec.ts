@@ -138,12 +138,12 @@ describe('ViewMyWorkplacesComponent', () => {
 
   it('should display activeWorkplaceCount returned from getChildWorkplaces (2)', async () => {
     const { queryByText } = await setup();
-    expect(queryByText('All workplaces (2)')).toBeTruthy();
+    expect(queryByText('Your other workplaces (2)')).toBeTruthy();
   });
 
   it('should display no workplaces message when workplace has no child workplaces', async () => {
-    const { queryByText } = await setup(false);
-    expect(queryByText('There are no workplaces.')).toBeTruthy();
+    const { getByTestId } = await setup(false);
+    expect(getByTestId('noWorkplacesMessage')).toBeTruthy();
   });
 
   describe('calls getChildWorkplaces on establishmentService when using search', () => {
@@ -234,7 +234,7 @@ describe('ViewMyWorkplacesComponent', () => {
 
       fixture.detectChanges();
 
-      expect(getByText('All workplaces (2)'));
+      expect(getByText('Your other workplaces (2)'));
       expect(component.workplaceCount).toEqual(1);
     });
 

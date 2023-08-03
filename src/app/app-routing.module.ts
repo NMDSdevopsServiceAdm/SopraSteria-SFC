@@ -39,7 +39,6 @@ import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
-import { OtherWorkplacesComponent } from '@features/workplace/other-workplaces/other-workplaces.component';
 
 const routes: Routes = [
   {
@@ -249,11 +248,6 @@ const routes: Routes = [
           },
         ],
       },
-      {
-        path: 'other-workplaces',
-        component: OtherWorkplacesComponent,
-        data: { title: 'Other workplaces' }
-      }
     ],
   },
   {

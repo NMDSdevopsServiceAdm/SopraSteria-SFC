@@ -139,15 +139,6 @@ export const myWorkplaceJourney: JourneyRoute = {
   ],
 };
 
-export const otherWorkplacesJourney: JourneyRoute = {
-  children: [
-    {
-      title: 'Your other workplaces',
-      path: Path.OTHER_WORKPLACES,
-    }
-  ]
-}
-
 export const allWorkplacesJourney: JourneyRoute = {
   children: [
     {
