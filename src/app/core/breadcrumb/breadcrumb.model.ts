@@ -30,6 +30,7 @@ export enum JourneyType {
   TRAINING_AND_QUALIFICATIONS_TAB,
   BENCHMARKS_TAB,
   OTHER_WORKPLACES,
+  BECOME_A_PARENT,
 }
 
 export interface JourneyRoute {

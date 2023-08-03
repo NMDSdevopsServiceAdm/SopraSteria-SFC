@@ -13,20 +13,21 @@
 
   <div class="govuk-!-margin-top-7" data-testid="benchmarksCategoryHeading">
     <ng-container *ngIf="viewBenchmarksByCategory; else payCategory">
-      <h2 class="govuk-heading-m">Recruitment and retention</h2>
+      <h2 class="govuk-heading-m govuk-!-font-size-27">Recruitment and retention</h2>
     </ng-container>
     <ng-template #payCategory>
-      <h2 class="govuk-heading-m">Pay</h2>
+      <h2 class="govuk-heading-m govuk-!-font-size-27">Pay</h2>
     </ng-template>
   </div>
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-one-third">
-      <app-about-the-data-link></app-about-the-data-link>
+      <div class="govuk-!-margin-top-1">
+        <app-about-the-data-link></app-about-the-data-link>
+      </div>
+
       <div *ngIf="tilesData?.meta.lastUpdated" data-testid="benchmarksLastUpdatedDate" class="govuk-!-margin-top-5">
-        <p class="govuk-body">
-          The comparison group data was refreshed on {{ tilesData?.meta.lastUpdated | date: 'd MMMM y' }}.
-        </p>
+        <p>The comparison group data was refreshed on {{ tilesData?.meta.lastUpdated | date: 'd MMMM y' }}.</p>
       </div>
 
       <app-benchmarks-select-comparison-group
@@ -53,7 +54,7 @@
       </ng-template>
       <ng-container *ngIf="comparisonDataExists">
         <ng-container *ngIf="viewBenchmarksComparisonGroups; else nonGoodCqcComparisonGroup">
-          <p class="govuk-body">
+          <p>
             Your selected comparison group is a maximum
             <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
             staff from

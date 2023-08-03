@@ -66,7 +66,7 @@ module.exports = function (sequelize, DataTypes) {
     });
 
     if (cssr && cssr.id) {
-      return cssr.id;
+      return { id: cssr.id, name: district };
     } else {
       return false;
     }
@@ -93,6 +93,7 @@ module.exports = function (sequelize, DataTypes) {
         postcode: postcode.postcode,
       },
     });
+
     if (cssr && cssr.theAuthority) {
       cssr = cssr.theAuthority;
     } else {

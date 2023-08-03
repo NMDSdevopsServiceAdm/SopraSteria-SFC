@@ -12,7 +12,6 @@ export class FeatureFlagsService {
   constructor() {}
 
   async start(): Promise<void> {
-    console.log(environment.environmentName);
     if (environment.environmentName === 'other') {
       this.configCatClient = mockConfigCatClient;
     } else {

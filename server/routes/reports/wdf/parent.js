@@ -252,6 +252,7 @@ const updateProps = (
 
 const getWorkersReportData = async (establishmentId) => {
   const workerData = await getWorkerData(establishmentId);
+
   let workersArray = workerData.filter((worker) => {
     if (establishmentId !== worker.EstablishmentID) {
       return worker.DataOwner === 'Parent' || worker.DataPermissions === 'Workplace and Staff';
@@ -303,6 +304,9 @@ const getWorkersReportData = async (establishmentId) => {
         value.HoursValue = 'Missing';
       }
     }
+
+    const effectiveFromIso = WdfCalculator.effectiveDate.toISOString();
+    value.WdfEligible = value.WdfEligible && moment(value.LastWdfEligibility).isAfter(effectiveFromIso);
 
     if (value.ContractValue === 'Agency' || value.ContractValue === 'Pool/Bank') {
       value.DaysSickValue = 'N/A';
@@ -1521,6 +1525,7 @@ const reportGet = async (req, res) => {
 //    pass through the Establishment/Worker entities. This is done for performance, as these reports
 //    are expected to operate across large sets of data
 const express = require('express');
+const { WdfCalculator } = require('../../../models/classes/wdfCalculator');
 const router = express.Router();
 
 router.route('/signedUrl').get(acquireLock.bind(null, signedUrlGet, buStates.DOWNLOADING));

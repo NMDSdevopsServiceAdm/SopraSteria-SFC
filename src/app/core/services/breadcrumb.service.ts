@@ -36,6 +36,7 @@ import {
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
+  becomeAParentJourney,
 } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -281,6 +282,12 @@ export class BreadcrumbService {
         routes = brenchmarksTabJourney;
         break;
       }
+
+      case JourneyType.BECOME_A_PARENT: {
+        routes = becomeAParentJourney;
+        break;
+      }
+
       default: {
         routes = null;
       }
