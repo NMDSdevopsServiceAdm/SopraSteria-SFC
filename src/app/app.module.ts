@@ -78,6 +78,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { HighchartsChartModule } from 'highcharts-angular';
+import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -135,6 +136,7 @@ import { OtherWorkplacesComponent } from '@features/workplace/other-workplaces/o
     CardComponent,
     SummarySectionComponent,
     StaffBasicRecord,
+    BecomeAParentComponent,
     OtherWorkplacesComponent
   ],
   imports: [

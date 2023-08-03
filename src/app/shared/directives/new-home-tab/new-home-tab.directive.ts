@@ -13,6 +13,7 @@ import { ReportService } from '@core/services/report.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { isAdminRole } from '@core/utils/check-role-util';
 import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
@@ -21,6 +22,7 @@ import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/l
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
+import { AlertService } from '@core/services/alert.service';
 
 declare global {
   interface Window {
@@ -64,6 +66,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public hasBenchmarkComparisonData: boolean;
   public isParent: boolean;
   public certificateYears: string;
+  public newHomeDesignParentFlag: boolean;
+  public parentRequestAlertMessage: string;
 
   constructor(
     private userService: UserService,
@@ -75,6 +79,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     @Inject(WindowToken) private window: Window,
     private serviceNamePipe: ServiceNamePipe,
     private reportsService: ReportService,
+    private featureFlagsService: FeatureFlagsService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -94,6 +100,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.setPermissionLinks();
 
     this.isParent = this.workplace?.isParent;
+
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
     if (this.workplace) {
       this.subscriptions.add(
@@ -137,6 +145,9 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.hasBenchmarkComparisonData = !!this.meta?.staff && !!this.meta?.workplaces;
     this.setBenchmarksCard();
     this.subscriptions.add();
+
+    this.parentRequestAlertMessage = history.state?.parentRequestMessage;
+    this.sendAlert();
   }
 
   private setBenchmarksCard(): void {
@@ -156,6 +167,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
 
   ngOnChanges() {
     this.setBenchmarksCard();
+
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {
@@ -280,7 +292,17 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     saveAs(blob, filename);
   }
 
+  public sendAlert(): void {
+    if(this.parentRequestAlertMessage){
+      this.alertService.addAlert({
+        type: 'success',
+        message: this.parentRequestAlertMessage
+      });
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.alertService.removeAlert()
   }
 }
