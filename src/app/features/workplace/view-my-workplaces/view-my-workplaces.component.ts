@@ -40,8 +40,8 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES, this.primaryWorkplace.name);
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
 
     const childWorkplaces = this.route.snapshot.data.childWorkplaces;
