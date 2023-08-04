@@ -147,6 +147,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.subscriptions.add();
 
     this.parentRequestAlertMessage = history.state?.parentRequestMessage;
+
     this.sendAlert();
   }
 
@@ -167,7 +168,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
 
   ngOnChanges() {
     this.setBenchmarksCard();
-
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {
@@ -293,16 +293,16 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   }
 
   public sendAlert(): void {
-    if(this.parentRequestAlertMessage){
+    if (this.parentRequestAlertMessage) {
       this.alertService.addAlert({
         type: 'success',
-        message: this.parentRequestAlertMessage
+        message: this.parentRequestAlertMessage,
       });
     }
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-    this.alertService.removeAlert()
+    this.alertService.removeAlert();
   }
 }

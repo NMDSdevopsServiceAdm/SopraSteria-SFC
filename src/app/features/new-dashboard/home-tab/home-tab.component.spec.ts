@@ -495,7 +495,7 @@ describe('NewHomeTabComponent', () => {
           expect(becomeAParentlink.getAttribute('href')).toEqual('/become-a-parent');
         });
 
-        it('should show the become a parent pending request link', async () => {
+        it('should show the become a parent pending request link with the correct href', async () => {
           const { component, fixture, getByText, queryByText } = await setup();
 
           component.newHomeDesignParentFlag = true;
@@ -511,6 +511,7 @@ describe('NewHomeTabComponent', () => {
           );
           expect(becomeAParentPendinglink).toBeTruthy();
           expect(queryByText('Link to my parent organisation')).toBeFalsy();
+          expect(becomeAParentPendinglink.getAttribute('href')).toEqual('/become-a-parent');
         });
       });
     });
