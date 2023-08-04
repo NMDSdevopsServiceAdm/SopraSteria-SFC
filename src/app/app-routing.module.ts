@@ -19,8 +19,8 @@ import { NotificationsListResolver } from '@core/resolvers/notifications-list.re
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
@@ -34,12 +34,11 @@ import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forg
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
-import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
-import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
 
 const routes: Routes = [
   {
@@ -120,6 +119,12 @@ const routes: Routes = [
         path: 'workplace',
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
+        resolve: {
+          benchmarks: BenchmarksResolver,
+          rankings: RankingsResolver,
+          usefulLinksPay: UsefulLinkPayResolver,
+          usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+        },
       },
       {
         path: 'add-workplace',
