@@ -19,8 +19,8 @@ import { NotificationsListResolver } from '@core/resolvers/notifications-list.re
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
@@ -118,6 +118,12 @@ const routes: Routes = [
         path: 'workplace',
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
+        resolve: {
+          benchmarks: BenchmarksResolver,
+          rankings: RankingsResolver,
+          usefulLinksPay: UsefulLinkPayResolver,
+          usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+        },
       },
       {
         path: 'add-workplace',
