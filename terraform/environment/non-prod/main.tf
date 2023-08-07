@@ -8,11 +8,11 @@ terraform {
     region = "eu-west-1"
   }
 }
-module "frontend" {
-  source = "../../modules/frontend"
+# module "frontend" {
+#   source = "../../modules/frontend"
 
-  environment = var.environment
-}
+#   environment = var.environment
+# }
 
 module "backend" {
   source = "../../modules/backend"

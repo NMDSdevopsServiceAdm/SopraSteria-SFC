@@ -115,35 +115,35 @@ resource "aws_iam_role_policy_attachment" "app_runner_erc_access_role_policy_att
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
 }
 
-resource "aws_apprunner_service" "sfc_app_runner" {
-  service_name = "sfc-app-runner-${var.environment}"
+# resource "aws_apprunner_service" "sfc_app_runner" {
+#   service_name = "sfc-app-runner-${var.environment}"
 
 
 
-  instance_configuration {
-    cpu               = var.app_runner_cpu
-    memory            = var.app_runner_memory
-    instance_role_arn = aws_iam_role.app_runner_instance_role.arn
-  }
-  source_configuration {
-    authentication_configuration {
-      access_role_arn = aws_iam_role.app_runner_erc_access_role.arn
-    }
-    image_repository {
-      image_identifier      = "${aws_ecr_repository.sfc_backend_ecr_repository.repository_url}:latest"
-      image_repository_type = "ECR"
-      image_configuration {
-        port = 3000
-        runtime_environment_secrets = {
-          DB_PASS        = aws_ssm_parameter.database_password.arn
-          DB_PORT        = aws_ssm_parameter.database_port.arn
-          DB_USER        = aws_ssm_parameter.database_username.arn
-          DB_NAME        = aws_ssm_parameter.database_name.arn
-          DB_HOST        = aws_ssm_parameter.database_host.arn
-          REDIS_ENDPOINT = aws_ssm_parameter.redis_endpoint.arn
-        }
-      }
-    }
-    auto_deployments_enabled = false
-  }
-}
+#   instance_configuration {
+#     cpu               = var.app_runner_cpu
+#     memory            = var.app_runner_memory
+#     instance_role_arn = aws_iam_role.app_runner_instance_role.arn
+#   }
+#   source_configuration {
+#     authentication_configuration {
+#       access_role_arn = aws_iam_role.app_runner_erc_access_role.arn
+#     }
+#     image_repository {
+#       image_identifier      = "${aws_ecr_repository.sfc_backend_ecr_repository.repository_url}:latest"
+#       image_repository_type = "ECR"
+#       image_configuration {
+#         port = 3000
+#         runtime_environment_secrets = {
+#           DB_PASS        = aws_ssm_parameter.database_password.arn
+#           DB_PORT        = aws_ssm_parameter.database_port.arn
+#           DB_USER        = aws_ssm_parameter.database_username.arn
+#           DB_NAME        = aws_ssm_parameter.database_name.arn
+#           DB_HOST        = aws_ssm_parameter.database_host.arn
+#           REDIS_ENDPOINT = aws_ssm_parameter.redis_endpoint.arn
+#         }
+#       }
+#     }
+#     auto_deployments_enabled = false
+#   }
+# }
