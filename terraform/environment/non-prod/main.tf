@@ -1,7 +1,13 @@
 provider "aws" {
   region = "eu-west-1"
 }
-
+terraform {
+  backend "s3" {
+    bucket = "terraform-state-sfc"
+    key    = "state/terraform.tfstate"
+    region = "eu-west-1"
+  }
+}
 module "frontend" {
   source = "../../modules/frontend"
 
@@ -23,11 +29,4 @@ module "pipeline" {
   environment = var.environment
 }
 
-# # TODO: We need to enable this to save state soon
-# # terraform {
-# #   backend "s3" {
-# #     key = "medium-terraform/prod/terraform.tfstate"
-# #     # ...
-# #   }
-# # }
 
