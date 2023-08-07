@@ -8,4 +8,7 @@
 >
   <ng-content></ng-content>
   <a *ngIf="closable" href="#" (click)="close($event)" class="govuk-util__float-right">Close</a>
+  <a *ngIf="linkTextForAlert" href="#" class="govuk-util__float-right" (click)="alertLinkClick($event)">{{
+    linkTextForAlert
+  }}</a>
 </div>

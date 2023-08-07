@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnDestroy, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Alert } from '@core/model/alert.model';
 import { AlertService } from '@core/services/alert.service';
 import { Subscription } from 'rxjs';
@@ -8,6 +8,10 @@ import { Subscription } from 'rxjs';
   templateUrl: './alert.component.html',
 })
 export class AlertComponent implements OnInit, OnDestroy {
+  @Input() isAlertPositionInside: boolean;
+  @Input() linkTextForAlert: string;
+  @Output() notifyAlertLinkClicked = new EventEmitter();
+
   public alert: Alert;
   private subscriptions: Subscription = new Subscription();
 
@@ -24,6 +28,10 @@ export class AlertComponent implements OnInit, OnDestroy {
 
   remove() {
     this.alertService.removeAlert();
+  }
+
+  alertLinkClicked(event) {
+    this.notifyAlertLinkClicked.emit(event);
   }
 
   ngOnDestroy(): void {
