@@ -17,7 +17,7 @@ resource "aws_db_instance" "sfc_rds_db" {
 resource "random_password" "sfc_rds_password" {
   length           = 20
   special          = true
-  override_special = "!@#$%&*-_=+?"
+  override_special = "/@\"'"
 }
 
 resource "aws_ssm_parameter" "database_password" {
