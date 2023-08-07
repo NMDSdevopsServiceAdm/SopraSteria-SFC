@@ -28,6 +28,7 @@ var bodyParser = require('body-parser');
 var proxy = require('express-http-proxy'); // for service public/download content
 var compression = require('compression');
 var toobusy = require('toobusy-js');
+const cors = require('cors');
 
 // app config
 var AppConfig = require('./server/config/appConfig');
@@ -89,6 +90,15 @@ const AWSsns = require('./server/aws/sns');
 AWSsns.initialise(config.get('aws.region'));
 
 var app = express();
+
+const corsOptions = {
+  origin: '*',
+  methods: 'GET,PUT,PATCH,POST,DELETE',
+  exposedHeaders: 'Authorization,authorization',
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 if (config.get('sentry.dsn')) {
   Sentry.init({
