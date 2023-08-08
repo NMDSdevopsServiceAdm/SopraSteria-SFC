@@ -129,7 +129,7 @@ export class GaugeOptionsBuilder {
     return this.build(maxRank, null, padding, 0);
   }
 
-  public moveRank(currentRank: number, maxRank: number) {
+  public rankLabelOffset(currentRank: number, maxRank: number) {
     if (currentRank === 1) {
       return -2;
     } else if (currentRank === maxRank && currentRank >= 100) {
@@ -167,7 +167,7 @@ export class GaugeOptionsBuilder {
         {
           data: [[0, currentRank]],
           dataLabels: {
-            x: this.moveRank(currentRank, maxRank),
+            x: this.rankLabelOffset(currentRank, maxRank),
           },
         },
       ],
