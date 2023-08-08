@@ -104,7 +104,21 @@ export class GaugeOptionsBuilder {
 
     const topMargin = currentRank ? 35 : 15;
     const padding =
-      maxRank >= 10 ? maxRank / 60 : maxRank >= 4 ? maxRank / 55 : maxRank > 2 ? maxRank / 58 : maxRank / 85;
+      maxRank >= 200
+        ? maxRank / 50
+        : maxRank > 100
+        ? maxRank / 90
+        : maxRank >= 20
+        ? maxRank / 50
+        : maxRank >= 10
+        ? maxRank / 50
+        : maxRank >= 4
+        ? maxRank / 55
+        : maxRank > 2
+        ? maxRank / 58
+        : maxRank > 2
+        ? maxRank / 58
+        : maxRank / 85;
     return this.build(maxRank, currentRank, padding, topMargin);
   }
 
@@ -113,6 +127,18 @@ export class GaugeOptionsBuilder {
     const padding = 1000000;
 
     return this.build(maxRank, null, padding, 0);
+  }
+
+  public rankLabelOffset(currentRank: number, maxRank: number) {
+    if (currentRank === 1) {
+      return -2;
+    } else if (currentRank === maxRank && currentRank >= 100) {
+      return 10;
+    } else if (currentRank === maxRank && currentRank > 20) {
+      return 5;
+    } else if (currentRank === maxRank) {
+      return 2;
+    }
   }
 
   private build(maxRank: number, currentRank: number, padding: number, topMargin: number) {
@@ -140,6 +166,9 @@ export class GaugeOptionsBuilder {
       series: [
         {
           data: [[0, currentRank]],
+          dataLabels: {
+            x: this.rankLabelOffset(currentRank, maxRank),
+          },
         },
       ],
       tooltip: {
