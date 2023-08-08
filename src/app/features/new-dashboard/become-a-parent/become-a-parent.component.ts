@@ -5,6 +5,11 @@ import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { AlertService } from '@core/services/alert.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -15,6 +20,11 @@ import { Subscription } from 'rxjs';
 export class BecomeAParentComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public workplace: Establishment;
+  public isBecomeParentRequestPending: boolean;
+  public newHomeDesignParentFlag: boolean;
+  public canBecomeAParent: boolean;
+  public serverError: string;
+  public serverErrorsMap: Array<ErrorDefinition>;
 
   constructor(
     private parentRequestsService: ParentRequestsService,
@@ -22,11 +32,46 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
     protected route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
+    private featureFlagsService: FeatureFlagsService,
+    private alertService: AlertService,
+    private errorSummaryService: ErrorSummaryService,
+    private permissionsService: PermissionsService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.breadcrumbService.show(JourneyType.BECOME_A_PARENT, this.workplace.name);
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
+
+    if (this.workplace) {
+      this.subscriptions.add(
+        this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe((parentStatusRequested) => {
+          this.isBecomeParentRequestPending = parentStatusRequested;
+          this.showCancelParentRequestAlert(this.isBecomeParentRequestPending);
+        }),
+      );
+
+      this.canBecomeAParent = this.permissionsService.can(this.workplace.uid, 'canBecomeAParent');
+    }
+    this.setupServerErrorsMap();
+  }
+
+  //setup server error message
+  private setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 500,
+        message: 'We could not cancel parent request. You can try again or contact us.',
+      },
+      {
+        name: 400,
+        message: 'Unable to cancel parent request.',
+      },
+      {
+        name: 404,
+        message: 'Cancel parent request to parent service not found. You can try again or contact us.',
+      },
+    ];
   }
 
   public sendRequestToBecomeAParent() {
@@ -41,6 +86,37 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
         }
       }),
     );
+  }
+
+  public sendCancelToBecomeAParent(event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.parentRequestsService.cancelBecomeAParent().subscribe(
+        () => {
+          this.router.navigate(['/dashboard'], {
+            state: {
+              parentRequestMessage: `You've cancelled your request to become a parent workplace`,
+            },
+          });
+        },
+        (error) => {
+          this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+        },
+      ),
+    );
+  }
+
+  public showCancelParentRequestAlert(isBecomeParentRequestPending): void {
+    if (isBecomeParentRequestPending) {
+      this.alertService.addAlert({
+        type: 'pending',
+        message: `Your request to become a parent workplace is pending`,
+      });
+    }
+  }
+
+  public returnToHome(): void {
+    this.router.navigate(['/dashboard']);
   }
 
   public ngOnDestroy(): void {

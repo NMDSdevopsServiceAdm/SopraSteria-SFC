@@ -6,13 +6,15 @@ import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { BecomeAParentComponent } from './become-a-parent.component';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { getTestBed } from '@angular/core/testing';
 import { AlertService } from '@core/services/alert.service';
@@ -38,6 +40,10 @@ describe('BecomeAParentComponent', () => {
           useClass: MockEstablishmentService,
         },
         {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
+        {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
@@ -49,6 +55,9 @@ describe('BecomeAParentComponent', () => {
           },
         },
       ],
+      componentProperties: {
+        isBecomeParentRequestPending: false,
+      },
     });
     const component = fixture.componentInstance;
 
@@ -107,14 +116,14 @@ describe('BecomeAParentComponent', () => {
     expect(getByTestId('becomeAParentRevealText')).toBeTruthy();
   });
 
-  it('should show the link with the correct href', async () => {
+  it('should show the contact us link with the correct href', async () => {
     const { getByText } = await setup();
     const link = getByText('Contact us');
     expect(link).toBeTruthy();
     expect(link.getAttribute('href')).toEqual('/contact-us');
   });
 
-  it('should show the parent request button ', async () => {
+  it('should show the parent request button', async () => {
     const { getByText } = await setup();
 
     const parentRequestButton = getByText('Send parent request');
@@ -129,5 +138,34 @@ describe('BecomeAParentComponent', () => {
 
     expect(cancelRequestLink).toBeTruthy();
     expect(cancelRequestLink.getAttribute('href')).toEqual('/dashboard');
+  });
+
+  describe('pending become a parent request', () => {
+    it('should show return to home button with the correct href back to the home tab', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      component.isBecomeParentRequestPending = true;
+
+      fixture.detectChanges();
+
+      const returnToHomeButton = getByText('Return to home');
+
+      expect(returnToHomeButton).toBeTruthy();
+    });
+
+    it('should navigate to the home tab', async () => {
+      const { component, getByText, routerSpy, fixture } = await setup();
+
+      component.isBecomeParentRequestPending = true;
+
+      fixture.detectChanges();
+
+      const returnToHomeButton = getByText('Return to home');
+
+      fireEvent.click(returnToHomeButton);
+
+      fixture.detectChanges();
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+    });
   });
 });

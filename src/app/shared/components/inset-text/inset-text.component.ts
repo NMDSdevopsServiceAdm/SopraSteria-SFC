@@ -9,12 +9,19 @@ export class InsetTextComponent {
   @Input() closable = false;
   @Input() removeBottomMargin = false;
   @Input() removeTopMargin = false;
+  @Input() linkTextForAlert: string;
   @Output() closed = new EventEmitter();
+  @Output() alertLinkClicked = new EventEmitter();
 
   constructor() {}
 
   public close(event: Event) {
     event.preventDefault();
     this.closed.emit();
+  }
+
+  alertLinkClick(event: Event) {
+    event.preventDefault();
+    this.alertLinkClicked.emit(event);
   }
 }

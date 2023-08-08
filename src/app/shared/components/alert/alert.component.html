@@ -1,5 +1,30 @@
-<ng-container *ngIf="alert">
+<!-- <ng-container *ngIf="alert">
   <app-inset-text [color]="alert.type" [closable]="true" [removeBottomMargin]="true" (closed)="remove()">
     <span role="status">{{ alert.message }}</span>
   </app-inset-text>
-</ng-container>
+</ng-container> -->
+
+<div>
+  <ng-container *ngIf="alert && alert.type == 'pending'; else top">
+    <ng-container *ngIf="isAlertPositionInside">
+      <app-inset-text
+        [color]="alert.type"
+        [closable]="false"
+        [removeTopMargin]="true"
+        [removeBottomMargin]="false"
+        (closed)="remove()"
+        [linkTextForAlert]="linkTextForAlert"
+        (alertLinkClicked)="alertLinkClicked($event)"
+      >
+        <span role="status">{{ alert.message }}</span>
+      </app-inset-text>
+    </ng-container>
+  </ng-container>
+  <ng-template #top>
+    <ng-container *ngIf="alert">
+      <app-inset-text [color]="alert.type" [closable]="true" [removeBottomMargin]="true" (closed)="remove()">
+        <span role="status">{{ alert.message }}</span>
+      </app-inset-text>
+    </ng-container>
+  </ng-template>
+</div>

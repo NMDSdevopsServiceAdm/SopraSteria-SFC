@@ -4,7 +4,23 @@
       <div class="parentRequestTextContainer">
         <span class="govuk-caption-l">{{ workplace.name }}</span>
         <h1 class="govuk-heading-l">Become a parent and manage other workplaces' data</h1>
-
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf="isBecomeParentRequestPending && newHomeDesignParentFlag">
+    <div class="govuk-grid-row govuk-!-margin-top-0">
+      <div class="govuk-grid-column-full govuk-!-margin-top-0">
+        <app-alert
+          [isAlertPositionInside]="true"
+          [linkTextForAlert]="'Cancel parent request'"
+          (notifyAlertLinkClicked)="sendCancelToBecomeAParent($event)"
+        ></app-alert>
+      </div>
+    </div>
+  </ng-container>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="parentRequestTextContainer">
         <p>
           When you send a request to become a parent workplace, Skills for Care will review it and then send you a
           notification to tell you whether your request was approved or not.
@@ -23,7 +39,8 @@
             Alternatively, they can just be linked to, to show that they’re part of a group or organisation.
           </p>
           <p>
-            Being a parent workplace can free up resources at your other workplaces. Managers of your other workplaces can concentrate on tasks away from ASC-WDS, while you ensure that their workplaces' data is up to date.
+            Being a parent workplace can free up resources at your other workplaces. Managers of your other workplaces
+            can concentrate on tasks away from ASC-WDS, while you ensure that their workplaces' data is up to date.
           </p></app-details
         >
         <p>
@@ -33,15 +50,23 @@
       </div>
     </div>
   </div>
-  <div class="govuk-grid-row govuk-!-margin-top-6 parentRequestButtonContainer">
-    <div class="govuk-grid-column-one-half">
-      <button type="button" (click)="sendRequestToBecomeAParent()" class="govuk-button">Send parent request</button>
 
-      <a
-        [routerLink]="['/dashboard']"
-        class="govuk-link govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-1"
-        >Cancel</a
-      >
-    </div>
+  <div class="govuk-grid-row govuk-!-margin-top-6 parentRequestButtonContainer">
+    <ng-container *ngIf="isBecomeParentRequestPending == false; else returnToHomeButton">
+      <div class="govuk-grid-column-one-half">
+        <button type="button" (click)="sendRequestToBecomeAParent()" class="govuk-button">Send parent request</button>
+
+        <a
+          [routerLink]="['/dashboard']"
+          class="govuk-link govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-1"
+          >Cancel</a
+        >
+      </div>
+    </ng-container>
+    <ng-template #returnToHomeButton>
+      <div class="govuk-grid-column-one-half">
+        <button type="button" class="govuk-button" (click)="returnToHome()">Return to home</button>
+      </div>
+    </ng-template>
   </div>
 </div>
