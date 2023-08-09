@@ -44,7 +44,6 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.tilesData = this.benchmarksService.benchmarksData;
     this.rankingsData = this.benchmarksService.rankingsData;
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
     this.setDownloadBenchmarksText();
     this.checkComparisonDataExists();
     this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;

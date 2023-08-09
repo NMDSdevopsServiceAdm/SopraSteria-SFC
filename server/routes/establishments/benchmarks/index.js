@@ -91,8 +91,8 @@ const payBenchmarks = async (establishmentId, mainService, workerId, cssr) => {
     mainService,
     'benchmarksPayByLAAndService',
     ['AverageHourlyRate', 'AverageAnnualFTE', 'MainJobRole', 'BaseWorkers'],
-    workerId,
     cssr,
+    workerId,
   );
 
   const annualOrHourly = [CARE_WORKER_ID, SENIOR_CARE_WORKER_ID].includes(workerId) ? 'Hourly' : 'Annually';
@@ -186,7 +186,7 @@ const timeInRoleBenchmarks = async (establishmentId, mainService, cssr) => {
   return await timeInRole({ establishmentId }, comparisonGroups);
 };
 
-const getComparisonGroups = async (mainService, benchmarksModel, attributes, workerId, cssr) => {
+const getComparisonGroups = async (mainService, benchmarksModel, attributes, cssr, workerId) => {
   const comparisonGroup = await benchmarksService.getComparisonData(
     models[benchmarksModel],
     mainService,

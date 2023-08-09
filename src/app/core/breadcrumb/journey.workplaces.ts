@@ -85,6 +85,10 @@ export const brenchmarksTabJourney: JourneyRoute = {
         {
           title: 'About the data',
           path: Path.ABOUT_DATA,
+          referrer: {
+            path: Path.DASHBOARD,
+            fragment: 'benchmarks',
+          },
         },
       ],
     },
