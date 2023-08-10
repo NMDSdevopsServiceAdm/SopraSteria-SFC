@@ -98,6 +98,7 @@ class Establishment extends EntityValidator {
     this._pensionContribution = null;
     this._sickPay = null;
     this._recruitmentJourneyExistingUserBanner = false;
+    this._isParentApprovedBannerViewed = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -390,6 +391,10 @@ class Establishment extends EntityValidator {
     return this._recruitmentJourneyExistingUserBanner;
   }
 
+  get isParentApprovedBannerViewed() {
+    return this._isParentApprovedBannerViewed;
+  }
+
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -606,6 +611,10 @@ class Establishment extends EntityValidator {
 
         if ('recruitmentJourneyExistingUserBanner' in document) {
           this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
+        }
+
+        if ('isParentApprovedBannerViewed' in document) {
+          this._isParentApprovedBannerViewed = document.isParentApprovedBannerViewed;
         }
       }
 
@@ -868,6 +877,7 @@ class Establishment extends EntityValidator {
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
+          isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1069,6 +1079,7 @@ class Establishment extends EntityValidator {
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
             recruitmentJourneyExistingUserBanner: bulkUploaded ? true : this._recruitmentJourneyExistingUserBanner,
+            isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1383,6 +1394,7 @@ class Establishment extends EntityValidator {
         this._pensionContribution = fetchResults.pensionContribution;
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
+        this._isParentApprovedBannerViewed = fetchResults.isParentApprovedBannerViewed;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1865,6 +1877,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.pensionContribution = this.pensionContribution;
         myDefaultJSON.careWorkersLeaveDaysPerYear = this.careWorkersLeaveDaysPerYear;
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
+        myDefaultJSON.isParentApprovedBannerViewed = this.isParentApprovedBannerViewed;
       }
 
       if (this.showSharingPermissionsBanner !== null) {
