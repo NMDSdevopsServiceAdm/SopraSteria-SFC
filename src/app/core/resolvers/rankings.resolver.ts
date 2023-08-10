@@ -10,7 +10,9 @@ export class RankingsResolver implements Resolve<any> {
   constructor(private establishmentService: EstablishmentService, private benchmarksService: BenchmarksService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    const workplaceUid = this.establishmentService.establishmentId;
+    const workplaceUid = route.paramMap.get('establishmentuid')
+      ? route.paramMap.get('establishmentuid')
+      : this.establishmentService.establishmentId;
 
     if (workplaceUid) {
       return this.benchmarksService.getAllRankingData(workplaceUid).pipe(
