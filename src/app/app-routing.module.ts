@@ -118,12 +118,6 @@ const routes: Routes = [
         path: 'workplace',
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
-        resolve: {
-          benchmarks: BenchmarksResolver,
-          rankings: RankingsResolver,
-          usefulLinksPay: UsefulLinkPayResolver,
-          usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
-        },
       },
       {
         path: 'add-workplace',
