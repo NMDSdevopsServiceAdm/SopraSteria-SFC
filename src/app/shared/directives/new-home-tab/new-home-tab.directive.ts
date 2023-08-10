@@ -1,6 +1,6 @@
 import { Directive, Inject, Input, OnDestroy, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -23,6 +23,7 @@ import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 import { AlertService } from '@core/services/alert.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 
 declare global {
   interface Window {
@@ -68,6 +69,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public certificateYears: string;
   public newHomeDesignParentFlag: boolean;
   public parentRequestAlertMessage: string;
+  public isParentApprovedBannerViewed: boolean;
 
   constructor(
     private userService: UserService,
@@ -81,6 +83,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     private reportsService: ReportService,
     private featureFlagsService: FeatureFlagsService,
     private alertService: AlertService,
+    private router: Router,
+    private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
@@ -149,6 +153,10 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.parentRequestAlertMessage = history.state?.parentRequestMessage;
 
     this.sendAlert();
+
+    this.isParentApprovedBannerViewed = this.workplace?.isParentApprovedBannerViewed;
+    console.log(this.isParentApprovedBannerViewed);
+    this.showParentApprovedBanner();
   }
 
   private setBenchmarksCard(): void {
@@ -301,7 +309,34 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     }
   }
 
+  public showParentApprovedBanner(): void {
+    if (this.isParentApprovedBannerViewed === false) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: `Your request to become a parent has been approved`,
+      });
+    }
+  }
+
+  public updateIsParentApprovedBannerViewed(): void {
+    if (this.isParentApprovedBannerViewed === false && this.workplace) {
+      const data = {
+        property: 'isParentApprovedBannerViewed',
+        value: true,
+      };
+
+      this.subscriptions.add(
+        this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, data).subscribe(),
+      );
+    }
+  }
+
+  public goToAboutParentsLink(): void {
+    this.router.navigate(['/about-parents']);
+  }
+
   ngOnDestroy(): void {
+    this.updateIsParentApprovedBannerViewed();
     this.subscriptions.unsubscribe();
     this.alertService.removeAlert();
   }
