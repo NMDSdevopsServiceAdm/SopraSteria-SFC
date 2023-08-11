@@ -65,7 +65,13 @@ resource "aws_elasticache_cluster" "sfc_redis" {
   node_type            = "cache.t4g.micro"
   num_cache_nodes      = 1
   parameter_group_name = "default.redis7"
+  subnet_group_name  = aws_elasticache_subnet_group.sfc_redis_elasticache_subnet_group.name
   port                 = 6379
+}
+
+resource "aws_elasticache_subnet_group" "sfc_redis_elasticache_subnet_group" {
+  name       = "sfc-vpc"
+  subnet_ids = var.private_subnet_ids
 }
 
 resource "aws_ssm_parameter" "redis_endpoint" {
