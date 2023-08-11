@@ -152,11 +152,9 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
 
     this.parentRequestAlertMessage = history.state?.parentRequestMessage;
 
-    this.sendAlert();
+    this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;
 
-    this.isParentApprovedBannerViewed = this.workplace?.isParentApprovedBannerViewed;
-    console.log(this.isParentApprovedBannerViewed);
-    this.showParentApprovedBanner();
+    this.sendAlert();
   }
 
   private setBenchmarksCard(): void {
@@ -306,11 +304,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
         type: 'success',
         message: this.parentRequestAlertMessage,
       });
-    }
-  }
-
-  public showParentApprovedBanner(): void {
-    if (this.isParentApprovedBannerViewed === false) {
+    } else if (this.isParentApprovedBannerViewed === false) {
       this.alertService.addAlert({
         type: 'success',
         message: `Your request to become a parent has been approved`,
@@ -319,7 +313,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   }
 
   public updateIsParentApprovedBannerViewed(): void {
-    if (this.isParentApprovedBannerViewed === false && this.workplace) {
+    if (this.isParentApprovedBannerViewed === false) {
+      this.workplace.isParentApprovedBannerViewed = true;
       const data = {
         property: 'isParentApprovedBannerViewed',
         value: true,

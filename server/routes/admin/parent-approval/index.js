@@ -98,7 +98,7 @@ const _makeWorkplaceIntoParent = async (id) => {
   let workplace = await models.establishment.findbyId(id);
   if (workplace) {
     workplace.isParent = true;
-    workplace.isParentApprovedBannerViewed = true;
+    workplace.isParentApprovedBannerViewed = false;
     await workplace.save();
   } else {
     throw `Can't find workplace with id ${id}`;

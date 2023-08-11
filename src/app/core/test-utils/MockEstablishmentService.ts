@@ -63,6 +63,7 @@ export const establishmentBuilder = build('Establishment', {
     sickPay: 'Yes',
     careWorkersLeaveDaysPerYear: fake((f) => f.datatype.number(1000)),
     wdf: null,
+    isParentParentApprovedBannerViewed: null,
   },
 });
 

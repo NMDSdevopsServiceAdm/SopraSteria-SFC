@@ -10,6 +10,7 @@ import { Subscription } from 'rxjs';
 export class AlertComponent implements OnInit, OnDestroy {
   @Input() isAlertPositionInside: boolean;
   @Input() linkTextForAlert: string;
+  @Input() noFloatRight: boolean;
   @Output() notifyAlertLinkClicked = new EventEmitter();
 
   public alert: Alert;
