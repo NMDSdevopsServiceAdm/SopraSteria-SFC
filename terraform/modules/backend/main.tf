@@ -59,26 +59,36 @@ resource "aws_ssm_parameter" "database_host" {
   value       = aws_db_instance.sfc_rds_db.address
 }
 
-resource "aws_elasticache_cluster" "sfc_redis" {
-  cluster_id           = "sfc-redis-${var.environment}"
-  engine               = "redis"
-  node_type            = "cache.t4g.micro"
-  num_cache_nodes      = 1
-  parameter_group_name = "default.redis7"
-  subnet_group_name  = aws_elasticache_subnet_group.sfc_redis_elasticache_subnet_group.name
-  port                 = 6379
-}
-
 resource "aws_elasticache_subnet_group" "sfc_redis_elasticache_subnet_group" {
   name       = "sfc-vpc"
   subnet_ids = var.private_subnet_ids
+}
+
+resource "aws_elasticache_replication_group" "sfc_redis_replication_group" {
+  replication_group_id        = "sfc-redis"
+  description                 = "sfc-redis"
+  node_type                   = "cache.t4g.micro"
+  num_cache_clusters          = 1
+  parameter_group_name        = "default.redis7"
+  port                        = 6379
+  subnet_group_name  = aws_elasticache_subnet_group.sfc_redis_elasticache_subnet_group.name
+
+  lifecycle {
+    ignore_changes = [num_cache_clusters]
+  }
+}
+
+resource "aws_elasticache_cluster" "sfc_redis_replica" {
+  count = 1
+  cluster_id           = "sfc-redis-${var.environment}-${count.index}"
+  replication_group_id = aws_elasticache_replication_group.sfc_redis_replication_group.id
 }
 
 resource "aws_ssm_parameter" "redis_endpoint" {
   name        = "/${var.environment}/redis/endpoint"
   description = "The endpoint for Elasticache"
   type        = "String"
-  value       = "redis://THISNEEDSUPDATING:6379" #TODO: Find a way to populate this from Teraform
+  value       = "redis://${aws_elasticache_replication_group.sfc_redis_replication_group.primary_endpoint_address}:6379"
 }
 
 resource "aws_iam_role" "app_runner_instance_role" {
