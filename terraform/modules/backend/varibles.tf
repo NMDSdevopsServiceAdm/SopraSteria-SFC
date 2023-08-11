@@ -12,3 +12,11 @@ variable "app_runner_memory" {
   description = "The memory size you wish to use on AWS App Runner"
   type        = number
 }
+
+variable "sn_id" {
+
+}
+
+variable "sg_id" {
+
+}

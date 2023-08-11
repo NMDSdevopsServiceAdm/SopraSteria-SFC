@@ -115,7 +115,7 @@ resource "aws_iam_role_policy_attachment" "app_runner_erc_access_role_policy_att
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
 }
 
-resource "aws_apprunner_service" "sfc_app_runner" {
+ resource "aws_apprunner_service" "sfc_app_runner" {
   service_name = "sfc-app-runner-${var.environment}"
 
 
@@ -124,6 +124,13 @@ resource "aws_apprunner_service" "sfc_app_runner" {
     cpu               = var.app_runner_cpu
     memory            = var.app_runner_memory
     instance_role_arn = aws_iam_role.app_runner_instance_role.arn
+  }
+
+    network_configuration {
+    egress_configuration {
+      egress_type       = "VPC"
+      vpc_connector_arn = aws_apprunner_vpc_connector.sfc_app_runner_vpc_connector.arn
+    }
   }
   source_configuration {
     authentication_configuration {
@@ -146,4 +153,10 @@ resource "aws_apprunner_service" "sfc_app_runner" {
     }
     auto_deployments_enabled = false
   }
+}
+
+resource "aws_apprunner_vpc_connector" "sfc_app_runner_vpc_connector" {
+  vpc_connector_name = "sfc-app-runner-vpc-connector"
+  subnets            = var.sn_id
+  security_groups    = var.sg_id
 }
