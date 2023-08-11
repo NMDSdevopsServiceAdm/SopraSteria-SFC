@@ -13,10 +13,10 @@ variable "app_runner_memory" {
   type        = number
 }
 
-variable "sn_id" {
-
+variable "private_subnet_ids" {
+  description = "The ID's of the private subnet used by the App Runner VPC connector"
 }
 
-variable "sg_id" {
-
+variable "security_group_ids" {
+  description = "The ID's of the security groups used by the App Runner VPC connector"
 }

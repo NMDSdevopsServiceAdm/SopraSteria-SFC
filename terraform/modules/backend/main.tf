@@ -157,6 +157,6 @@ resource "aws_iam_role_policy_attachment" "app_runner_erc_access_role_policy_att
 
 resource "aws_apprunner_vpc_connector" "sfc_app_runner_vpc_connector" {
   vpc_connector_name = "sfc-app-runner-vpc-connector"
-  subnets            = var.sn_id
-  security_groups    = var.sg_id
+  subnets            = var.private_subnet_ids
+  security_groups    = var.security_group_ids
 }

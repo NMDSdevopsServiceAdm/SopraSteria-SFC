@@ -21,8 +21,8 @@ module "backend" {
   environment = var.environment
   app_runner_cpu = var.app_runner_cpu
   app_runner_memory = var.app_runner_memory
-  sn_id = module.networking.private_subnets
-  sg_id = module.networking.security_group_id
+  private_subnet_ids = module.networking.private_subnets
+  security_group_ids = module.networking.security_group_id
   }
 
 module "networking" {
