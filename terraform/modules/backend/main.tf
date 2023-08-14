@@ -12,12 +12,17 @@ resource "aws_db_instance" "sfc_rds_db" {
   username            = "administrator" # TODO: We may want this as a random string
   password            = random_password.sfc_rds_password.result
   skip_final_snapshot = true
+  db_subnet_group_name = aws_db_subnet_group.sfc_rds_db_subnet_group.name
+}
+
+resource "aws_db_subnet_group" "sfc_rds_db_subnet_group" {
+  name       = "sfc-vpc"
+  subnet_ids = var.private_subnet_ids
 }
 
 resource "random_password" "sfc_rds_password" {
   length           = 20
-  special          = true
-  override_special = "!@#$%&*-_=+?"
+  special          = false
 }
 
 resource "aws_ssm_parameter" "database_password" {
@@ -54,20 +59,36 @@ resource "aws_ssm_parameter" "database_host" {
   value       = aws_db_instance.sfc_rds_db.address
 }
 
-resource "aws_elasticache_cluster" "sfc_redis" {
-  cluster_id           = "sfc-redis-${var.environment}"
-  engine               = "redis"
-  node_type            = "cache.t4g.micro"
-  num_cache_nodes      = 1
-  parameter_group_name = "default.redis7"
-  port                 = 6379
+resource "aws_elasticache_subnet_group" "sfc_redis_elasticache_subnet_group" {
+  name       = "sfc-vpc"
+  subnet_ids = var.private_subnet_ids
+}
+
+resource "aws_elasticache_replication_group" "sfc_redis_replication_group" {
+  replication_group_id        = "sfc-redis"
+  description                 = "sfc-redis"
+  node_type                   = "cache.t4g.micro"
+  num_cache_clusters          = 1
+  parameter_group_name        = "default.redis7"
+  port                        = 6379
+  subnet_group_name  = aws_elasticache_subnet_group.sfc_redis_elasticache_subnet_group.name
+
+  lifecycle {
+    ignore_changes = [num_cache_clusters]
+  }
+}
+
+resource "aws_elasticache_cluster" "sfc_redis_replica" {
+  count = 1
+  cluster_id           = "sfc-redis-${var.environment}-${count.index}"
+  replication_group_id = aws_elasticache_replication_group.sfc_redis_replication_group.id
 }
 
 resource "aws_ssm_parameter" "redis_endpoint" {
   name        = "/${var.environment}/redis/endpoint"
   description = "The endpoint for Elasticache"
   type        = "String"
-  value       = "redis://THISNEEDSUPDATING:6379" #TODO: Find a way to populate this from Teraform
+  value       = "redis://${aws_elasticache_replication_group.sfc_redis_replication_group.primary_endpoint_address}:6379"
 }
 
 resource "aws_iam_role" "app_runner_instance_role" {
@@ -115,7 +136,7 @@ resource "aws_iam_role_policy_attachment" "app_runner_erc_access_role_policy_att
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSAppRunnerServicePolicyForECRAccess"
 }
 
-resource "aws_apprunner_service" "sfc_app_runner" {
+ resource "aws_apprunner_service" "sfc_app_runner" {
   service_name = "sfc-app-runner-${var.environment}"
 
 
@@ -124,6 +145,13 @@ resource "aws_apprunner_service" "sfc_app_runner" {
     cpu               = var.app_runner_cpu
     memory            = var.app_runner_memory
     instance_role_arn = aws_iam_role.app_runner_instance_role.arn
+  }
+
+    network_configuration {
+    egress_configuration {
+      egress_type       = "VPC"
+      vpc_connector_arn = aws_apprunner_vpc_connector.sfc_app_runner_vpc_connector.arn
+    }
   }
   source_configuration {
     authentication_configuration {
@@ -146,4 +174,10 @@ resource "aws_apprunner_service" "sfc_app_runner" {
     }
     auto_deployments_enabled = false
   }
+}
+
+resource "aws_apprunner_vpc_connector" "sfc_app_runner_vpc_connector" {
+  vpc_connector_name = "sfc-app-runner-vpc-connector"
+  subnets            = var.private_subnet_ids
+  security_groups    = var.security_group_ids
 }
