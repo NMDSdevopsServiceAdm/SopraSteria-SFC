@@ -734,12 +734,16 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
   describe('BuildTrainingAndQualsPdf', async () => {
     it('should download the page as a pdf when the the download as pdf link is clicked', async () => {
-      const { component, getByText, pdfTrainingAndQualsService } = await setup();
+      const { component, getByText, pdfTrainingAndQualsService, fixture } = await setup();
       const downloadFunctionSpy = spyOn(component, 'downloadAsPDF').and.callThrough();
       const pdfTrainingAndQualsServiceSpy = spyOn(
         pdfTrainingAndQualsService,
         'BuildTrainingAndQualsPdf',
       ).and.callThrough();
+
+      component.pdfCount = 1;
+
+      fixture.detectChanges();
 
       fireEvent.click(getByText('Download training and qualifications', { exact: false }));
 
