@@ -60,14 +60,16 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     const district = postcodeData.addresses[0].district;
+    console.log({ district: district });
     const cssr = await this.findOne({
       attributes: ['id'],
       where: {
         LocalAuthority: district,
       },
     });
-
+    console.log({ districtcssr: cssr });
     if (cssr && cssr.id) {
+      console.log({ cssrTrue: cssr });
       return { id: cssr.id, name: district };
     } else {
       return false;
