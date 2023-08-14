@@ -184,6 +184,7 @@ const getComparisonGroupRankings = async function ({
   mainJob,
 }) {
   const cssr = await models.cssr.getCSSR(establishmentId);
+  console.log('I am hereeeeeeeeeeeeeeeeeeeeeee');
   if (!cssr) return {};
   const where = mainJob ? { MainJobRole: mainJob } : {};
   return await benchmarksModel.findAll({

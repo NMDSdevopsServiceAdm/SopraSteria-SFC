@@ -73,10 +73,13 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   CSSR.getCSSR = async (establishmentId) => {
+    console.log('Where is the postcodeeeeeeeeeeeeeeeeeeeeeefgfhfjkhsdjkghkshfglkhsjfkghfhjghjfhgjfdhgf');
     const postcode = await sequelize.models.establishment.findOne({
       attributes: ['postcode', 'id'],
       where: { id: establishmentId },
     });
+
+    console.log({ postcode });
     if (!postcode) {
       return false;
     }
@@ -93,7 +96,7 @@ module.exports = function (sequelize, DataTypes) {
         postcode: postcode.postcode,
       },
     });
-
+    console.log({ cssr });
     if (cssr && cssr.theAuthority) {
       cssr = cssr.theAuthority;
     } else {
