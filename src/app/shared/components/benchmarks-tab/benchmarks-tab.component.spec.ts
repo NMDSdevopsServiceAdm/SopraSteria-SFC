@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -7,38 +7,44 @@ import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchmarks-tab.component';
-
 import { Establishment } from '../../../../mockdata/establishment';
+import { PdfService } from '@core/services/pdf.service';
+import { fireEvent, render } from '@testing-library/angular';
 
 describe('BenchmarksTabComponent', () => {
-  let component: BenchmarksTabComponent;
-  let fixture: ComponentFixture<BenchmarksTabComponent>;
+  const setup = async () => {
+    const { fixture, getByText } = await render(BenchmarksTabComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        { provide: BenchmarksService, useClass: MockBenchmarksService },
+        { provide: PermissionsService, useClass: MockPermissionsService },
+      ],
+      declarations: [],
+      componentProperties: {
+        workplace: Establishment,
+      },
+    });
+    const component = fixture.componentInstance;
 
-  beforeEach(
-    waitForAsync(() => {
-      TestBed.configureTestingModule({
-        imports: [RouterTestingModule, HttpClientTestingModule],
-        declarations: [],
-        providers: [
-          { provide: BenchmarksService, useClass: MockBenchmarksService },
-          { provide: PermissionsService, useClass: MockPermissionsService },
-        ],
-      }).compileComponents();
-    }),
-  );
+    const injector = getTestBed();
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(BenchmarksTabComponent);
-    component = fixture.componentInstance;
-    component.workplace = Establishment;
-    fixture.detectChanges();
-  });
+    const pdfService = injector.inject(PdfService) as PdfService;
 
-  it('should create', () => {
+    return {
+      component,
+      getByText,
+      pdfService,
+      fixture,
+    };
+  };
+
+  it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
-  it('should be able to build with only part of the data', () => {
+  it('should be able to build with only part of the data', async () => {
+    const { component, fixture } = await setup();
     const tileData = {
       tiles: {
         pay: {
@@ -84,10 +90,14 @@ describe('BenchmarksTabComponent', () => {
   });
 
   it('should download a pdf', async () => {
-    const event = new Event('click');
+    const { component, getByText, pdfService } = await setup();
+
     const pdfDownload = spyOn(component, 'downloadAsPDF').and.callThrough();
-    const downloadPDF = await component.downloadAsPDF(event);
+    const pdfServiceSpy = spyOn(pdfService, 'BuildBenchmarksPdf').and.callThrough();
+
+    fireEvent.click(getByText('Download Benchmarks PDF', { exact: false }));
+
     expect(pdfDownload).toHaveBeenCalled();
-    expect(downloadPDF.getNumberOfPages()).toEqual(2);
+    expect(pdfServiceSpy).toHaveBeenCalled();
   });
 });

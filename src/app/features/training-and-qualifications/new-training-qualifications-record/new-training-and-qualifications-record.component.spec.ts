@@ -740,7 +740,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         pdfTrainingAndQualsService,
         'BuildTrainingAndQualsPdf',
       ).and.callThrough();
+
       fireEvent.click(getByText('Download training and qualifications', { exact: false }));
+
       expect(downloadFunctionSpy).toHaveBeenCalled();
       expect(pdfTrainingAndQualsServiceSpy).toHaveBeenCalled();
     });
