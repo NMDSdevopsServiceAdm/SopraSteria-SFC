@@ -52,7 +52,9 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   CSSR.getIdFromDistrict = async function (postcode) {
+    console.log({ getIdFromDistrict: postcode });
     const postcodeData = await getAddressAPI.getPostcodeData(postcode);
+    console.log({ getPostcodeData: postcodeData });
     if (!get(postcodeData, 'addresses[0].district')) {
       return false;
     }
@@ -73,7 +75,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   CSSR.getCSSR = async (establishmentId) => {
-    console.log('Where is the postcodeeeeeeeeeeeeeeeeeeeeeefgfhfjkhsdjkghkshfglkhsjfkghfhjghjfhgjfdhgf');
+    console.log('Where is the postcodeeeeeeeeeeeeeeeeeeeeee');
     const postcode = await sequelize.models.establishment.findOne({
       attributes: ['postcode', 'id'],
       where: { id: establishmentId },
@@ -96,11 +98,12 @@ module.exports = function (sequelize, DataTypes) {
         postcode: postcode.postcode,
       },
     });
-    console.log({ cssr });
+
     if (cssr && cssr.theAuthority) {
       cssr = cssr.theAuthority;
     } else {
       cssr = await CSSR.getIdFromDistrict(postcode.postcode);
+      console.log({ cssr });
       if (!cssr) {
         return false;
       }
