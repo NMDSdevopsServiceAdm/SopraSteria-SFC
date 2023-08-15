@@ -1,6 +1,7 @@
 /* jshint indent: 2 */
 const getAddressAPI = require('../utils/getAddressAPI');
 const get = require('lodash/get');
+const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
   const CSSR = sequelize.define(
@@ -62,28 +63,26 @@ module.exports = function (sequelize, DataTypes) {
     const district = postcodeData.addresses[0].district;
     console.log({ district: district });
     const cssr = await this.findOne({
-      attributes: ['id'],
+      attributes: ['id', 'name'],
       where: {
-        LocalAuthority: district,
+        LocalAuthority: { [Op.like]: `%${district}%` },
       },
+      logging: true,
     });
-    console.log({ districtcssr: cssr });
+
     if (cssr && cssr.id) {
-      console.log({ cssrTrue: cssr });
-      return { id: cssr.id, name: district };
+      return { id: cssr.id, name: cssr.name };
     } else {
       return false;
     }
   };
 
   CSSR.getCSSR = async (establishmentId) => {
-    console.log('Where is the postcodeeeeeeeeeeeeeeeeeeeeee');
     const postcode = await sequelize.models.establishment.findOne({
       attributes: ['postcode', 'id'],
       where: { id: establishmentId },
     });
 
-    console.log({ postcode });
     if (!postcode) {
       return false;
     }
@@ -105,7 +104,6 @@ module.exports = function (sequelize, DataTypes) {
       cssr = cssr.theAuthority;
     } else {
       cssr = await CSSR.getIdFromDistrict(postcode.postcode);
-      console.log({ cssr });
       if (!cssr) {
         return false;
       }
