@@ -158,6 +158,7 @@ export interface Establishment {
   careWorkersLeaveDaysPerYear?: string;
   careWorkersCashLoyaltyForFirstTwoYears?: string;
   sickPay?: string;
+  isParentApprovedBannerViewed?: boolean;
 }
 
 export interface UpdateJobsRequest {

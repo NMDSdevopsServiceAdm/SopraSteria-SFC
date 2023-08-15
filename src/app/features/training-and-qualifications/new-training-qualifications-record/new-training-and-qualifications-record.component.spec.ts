@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
@@ -17,6 +17,7 @@ import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockW
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
+import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
@@ -308,6 +309,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
+    const pdfTrainingAndQualsService = injector.inject(
+      PdfTrainingAndQualificationService,
+    ) as PdfTrainingAndQualificationService;
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -325,6 +329,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       workplaceUid,
       workerUid,
       alertSpy,
+      pdfTrainingAndQualsService,
     };
   }
 
@@ -724,6 +729,26 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           { fragment: 'qualifications' },
         );
       });
+    });
+  });
+
+  describe('BuildTrainingAndQualsPdf', async () => {
+    it('should download the page as a pdf when the the download as pdf link is clicked', async () => {
+      const { component, getByText, pdfTrainingAndQualsService, fixture } = await setup();
+      const downloadFunctionSpy = spyOn(component, 'downloadAsPDF').and.callThrough();
+      const pdfTrainingAndQualsServiceSpy = spyOn(
+        pdfTrainingAndQualsService,
+        'BuildTrainingAndQualsPdf',
+      ).and.callThrough();
+
+      component.pdfCount = 1;
+
+      fixture.detectChanges();
+
+      fireEvent.click(getByText('Download training and qualifications', { exact: false }));
+
+      expect(downloadFunctionSpy).toHaveBeenCalled();
+      expect(pdfTrainingAndQualsServiceSpy).toHaveBeenCalled();
     });
   });
 });

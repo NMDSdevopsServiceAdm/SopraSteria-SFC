@@ -22,7 +22,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
@@ -284,7 +284,6 @@ describe('ParentHomeTabComponent', () => {
       expect(ascWdsNewsLink).toBeTruthy();
       expect(ascWdsNewsLink.getAttribute('href')).toBe('/articles/news-article-heartof');
     });
-
   });
 
   describe('summary', () => {
@@ -381,6 +380,49 @@ describe('ParentHomeTabComponent', () => {
       fixture.detectChanges();
 
       expect(queryAllByText('Download local authority progress report (XLS)').length).toBe(1);
+    });
+  });
+
+  describe('parent request approved banner', () => {
+    it(`should not show if isParentApprovedBannerViewed has not been set`, async () => {
+      const { component, fixture, queryByTestId } = await setup();
+
+      component.isParentApprovedBannerViewed = null;
+      component.isParent = true;
+      component.newHomeDesignParentFlag = true;
+
+      fixture.detectChanges();
+
+      const alertBanner = queryByTestId('parentApprovedBanner');
+
+      expect(alertBanner).toBeFalsy();
+    });
+
+    it('should show an alert when they become a parent', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.isParentApprovedBannerViewed = false;
+      component.isParent = true;
+      component.newHomeDesignParentFlag = true;
+
+      fixture.detectChanges();
+      const alertBanner = getByTestId('parentApprovedBanner');
+
+      expect(alertBanner).toBeTruthy();
+    });
+
+    it(`should be removed after it's been viewed`, async () => {
+      const { component, fixture, queryByTestId } = await setup();
+
+      component.isParentApprovedBannerViewed = true;
+      component.isParent = true;
+      component.newHomeDesignParentFlag = true;
+
+      fixture.detectChanges();
+
+      const alertBanner = queryByTestId('parentApprovedBanner');
+
+      expect(alertBanner).toBeFalsy();
     });
   });
 });
