@@ -755,6 +755,11 @@ module.exports = function (sequelize, DataTypes) {
         values: ['Yes', 'No', "Don't know"],
         field: 'SickPay',
       },
+      isParentApprovedBannerViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'IsParentApprovedBannerViewed',
+      },
     },
     {
       defaultScope: {

@@ -3,6 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 @Component({
   selector: 'app-inset-text',
   templateUrl: './inset-text.component.html',
+  styleUrls: ['./inset-text.component.scss'],
 })
 export class InsetTextComponent {
   @Input() color: string;
@@ -10,6 +11,7 @@ export class InsetTextComponent {
   @Input() removeBottomMargin = false;
   @Input() removeTopMargin = false;
   @Input() linkTextForAlert: string;
+  @Input() noFloatRight: boolean;
   @Output() closed = new EventEmitter();
   @Output() alertLinkClicked = new EventEmitter();
 

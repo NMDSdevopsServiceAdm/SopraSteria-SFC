@@ -22,9 +22,25 @@
   </ng-container>
   <ng-template #top>
     <ng-container *ngIf="alert">
-      <app-inset-text [color]="alert.type" [closable]="true" [removeBottomMargin]="true" (closed)="remove()">
-        <span role="status">{{ alert.message }}</span>
-      </app-inset-text>
+      <ng-container *ngIf="linkTextForAlert">
+        <app-inset-text
+          [color]="alert.type"
+          [closable]="false"
+          [removeTopMargin]="true"
+          [removeBottomMargin]="false"
+          [linkTextForAlert]="linkTextForAlert"
+          (alertLinkClicked)="alertLinkClicked($event)"
+          [noFloatRight]="noFloatRight"
+        >
+          <span role="status">{{ alert.message }}</span>
+        </app-inset-text>
+      </ng-container>
+
+      <ng-template>
+        <app-inset-text [color]="alert.type" [closable]="true" [removeBottomMargin]="true" (closed)="remove()">
+          <span role="status">{{ alert.message }}</span>
+        </app-inset-text>
+      </ng-template>
     </ng-container>
   </ng-template>
 </div>

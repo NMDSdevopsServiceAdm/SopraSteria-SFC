@@ -1,10 +1,10 @@
-import { render } from '@testing-library/angular';
+import { queryByTestId, render } from '@testing-library/angular';
 import { SharedModule } from '@shared/shared.module';
 import { InsetTextComponent } from './inset-text.component';
 
 describe('InsetTextComponent', () => {
   async function setup() {
-    const { getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
+    const { getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText, queryByTestId } = await render(
       InsetTextComponent,
       {
         imports: [SharedModule],
@@ -12,6 +12,7 @@ describe('InsetTextComponent', () => {
         componentProperties: {
           color: 'todo',
           closable: false,
+          noFloatRight: false,
         },
       },
     );
@@ -26,6 +27,7 @@ describe('InsetTextComponent', () => {
       queryByText,
       fixture,
       component,
+      queryByTestId,
     };
   }
 
@@ -54,5 +56,33 @@ describe('InsetTextComponent', () => {
 
     expect(getByText(linkText)).toBeTruthy();
     expect(getByRole('link', { name: linkText })).toBeTruthy();
+  });
+
+  it('should show the no float link', async () => {
+    const { component, getByTestId, fixture, getByRole, queryByTestId } = await setup();
+
+    const linkText = 'Cancel this';
+
+    component.linkTextForAlert = linkText;
+    component.noFloatRight = true;
+
+    fixture.detectChanges();
+
+    expect(getByTestId('noFloatRight')).toBeTruthy();
+    expect(queryByTestId('floatRight')).toBeFalsy();
+  });
+
+  it('should show the float link', async () => {
+    const { component, getByTestId, fixture, getByRole, queryByTestId } = await setup();
+
+    const linkText = 'Cancel this';
+
+    component.linkTextForAlert = linkText;
+    component.noFloatRight = false;
+
+    fixture.detectChanges();
+
+    expect(getByTestId('floatRight')).toBeTruthy();
+    expect(queryByTestId('noFloatRight')).toBeFalsy();
   });
 });
