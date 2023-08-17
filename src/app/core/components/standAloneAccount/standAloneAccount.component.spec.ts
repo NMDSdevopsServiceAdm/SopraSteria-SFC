@@ -88,7 +88,7 @@ describe('StandAloneAccountComponent', () => {
     expect(getByRole('main').getAttribute('class')).not.toContain('govuk-!-padding-top-0');
   });
 
-  xdescribe('Tabs', () => {
+  describe('Tabs', () => {
     it('should show all tabs when all permissions are on the establishment', async () => {
       const { component } = await setup();
       // expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab, benchmarksTab]);
