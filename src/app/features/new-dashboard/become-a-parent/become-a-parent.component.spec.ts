@@ -61,7 +61,7 @@ describe('BecomeAParentComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    const parentsRequestService = TestBed.inject(ParentRequestsService);
+    const parentRequestsService = TestBed.inject(ParentRequestsService);
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -74,7 +74,7 @@ describe('BecomeAParentComponent', () => {
       fixture,
       component,
       routerSpy,
-      parentsRequestService,
+      parentRequestsService,
     };
   }
   it('should create', async () => {
@@ -131,6 +131,22 @@ describe('BecomeAParentComponent', () => {
     expect(parentRequestButton).toBeTruthy();
   });
 
+  it('should call becomeParent to request becoming a parent', async () => {
+    const { component, getByText, fixture, parentRequestsService } = await setup();
+
+    component.isBecomeParentRequestPending = false;
+
+    fixture.detectChanges();
+
+    const becomeParentSpy = spyOn(parentRequestsService, 'becomeParent').and.callThrough();
+
+    const parentRequestButton = getByText('Send parent request');
+
+    fireEvent.click(parentRequestButton);
+
+    expect(becomeParentSpy).toHaveBeenCalled();
+  });
+
   it('should show the cancel link with the correct href back to the home tab', async () => {
     const { getByText } = await setup();
 
@@ -166,6 +182,32 @@ describe('BecomeAParentComponent', () => {
 
       fixture.detectChanges();
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+    });
+
+    it('should show the parent pending request banner', async () => {
+      const { component, getByTestId, fixture, getByText } = await setup();
+
+      component.isBecomeParentRequestPending = true;
+
+      fixture.detectChanges();
+      expect(getByTestId('parentPendingRequestBanner')).toBeTruthy();
+      expect(getByText('Cancel parent request')).toBeTruthy();
+    });
+
+    it('should call cancelBecomeAParent to cancel the parent request', async () => {
+      const { component, getByText, fixture, parentRequestsService } = await setup();
+
+      component.isBecomeParentRequestPending = true;
+
+      fixture.detectChanges();
+
+      const cancelBecomeAParentSpy = spyOn(parentRequestsService, 'cancelBecomeAParent').and.callThrough();
+
+      const cancelParentRequestLink = getByText('Cancel parent request');
+
+      fireEvent.click(cancelParentRequestLink);
+
+      expect(cancelBecomeAParentSpy).toHaveBeenCalled();
     });
   });
 });

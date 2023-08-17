@@ -5,8 +5,6 @@ import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { AlertService } from '@core/services/alert.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -32,8 +30,6 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
     protected route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
-    private featureFlagsService: FeatureFlagsService,
-    private alertService: AlertService,
     private errorSummaryService: ErrorSummaryService,
     private permissionsService: PermissionsService,
   ) {}
@@ -41,13 +37,11 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
   public async ngOnInit(): Promise<void> {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.breadcrumbService.show(JourneyType.BECOME_A_PARENT, this.workplace.name);
-    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
     if (this.workplace) {
       this.subscriptions.add(
         this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe((parentStatusRequested) => {
           this.isBecomeParentRequestPending = parentStatusRequested;
-          this.showCancelParentRequestAlert(this.isBecomeParentRequestPending);
         }),
       );
 
@@ -104,15 +98,6 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
         },
       ),
     );
-  }
-
-  public showCancelParentRequestAlert(isBecomeParentRequestPending): void {
-    if (isBecomeParentRequestPending) {
-      this.alertService.addAlert({
-        type: 'pending',
-        message: `Your request to become a parent workplace is pending`,
-      });
-    }
   }
 
   public returnToHome(): void {

@@ -1,29 +1,23 @@
-<!-- <ng-container *ngIf="alert">
-  <app-inset-text [color]="alert.type" [closable]="true" [removeBottomMargin]="true" (closed)="remove()">
-    <span role="status">{{ alert.message }}</span>
-  </app-inset-text>
-</ng-container> -->
-
 <div>
-  <ng-container *ngIf="alert && alert.type == 'pending'; else top">
-    <ng-container *ngIf="isAlertPositionInside">
-      <app-inset-text
-        [color]="alert.type"
-        [closable]="false"
-        [removeTopMargin]="true"
-        [removeBottomMargin]="false"
-        (closed)="remove()"
-        [linkTextForAlert]="linkTextForAlert"
-        (alertLinkClicked)="alertLinkClicked($event)"
-      >
-        <span role="status">{{ alert.message }}</span>
-      </app-inset-text>
-    </ng-container>
+  <ng-container *ngIf="isAlertPositionInside && alert.type == 'pending'; else top">
+    <app-inset-text
+      data-testid="pending_alert_inside"
+      [color]="alert.type"
+      [closable]="false"
+      [removeTopMargin]="true"
+      [removeBottomMargin]="false"
+      (closed)="remove()"
+      [linkTextForAlert]="linkTextForAlert"
+      (alertLinkClicked)="alertLinkClicked($event)"
+    >
+      <span role="status">{{ alert.message }}</span>
+    </app-inset-text>
   </ng-container>
   <ng-template #top>
-    <ng-container *ngIf="alert">
-      <ng-container *ngIf="linkTextForAlert">
+    <ng-container *ngIf="alert && alert.type !== 'pending'">
+      <ng-container *ngIf="linkTextForAlert; else generic_alert">
         <app-inset-text
+          data-testid="success_alert_with_link"
           [color]="alert.type"
           [closable]="false"
           [removeTopMargin]="true"
@@ -36,8 +30,14 @@
         </app-inset-text>
       </ng-container>
 
-      <ng-template>
-        <app-inset-text [color]="alert.type" [closable]="true" [removeBottomMargin]="true" (closed)="remove()">
+      <ng-template #generic_alert>
+        <app-inset-text
+          data-testid="generic_alert"
+          [color]="alert.type"
+          [closable]="true"
+          [removeBottomMargin]="true"
+          (closed)="remove()"
+        >
           <span role="status">{{ alert.message }}</span>
         </app-inset-text>
       </ng-template>

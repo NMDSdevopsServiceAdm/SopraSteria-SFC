@@ -15,14 +15,12 @@ export class InsetTextComponent {
   @Output() closed = new EventEmitter();
   @Output() alertLinkClicked = new EventEmitter();
 
-  constructor() {}
-
   public close(event: Event) {
     event.preventDefault();
     this.closed.emit();
   }
 
-  alertLinkClick(event: Event) {
+  public alertLinkClick(event: Event) {
     event.preventDefault();
     this.alertLinkClicked.emit(event);
   }

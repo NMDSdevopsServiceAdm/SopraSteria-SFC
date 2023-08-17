@@ -1,4 +1,4 @@
-import { queryByTestId, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import { SharedModule } from '@shared/shared.module';
 import { InsetTextComponent } from './inset-text.component';
 
@@ -73,7 +73,7 @@ describe('InsetTextComponent', () => {
   });
 
   it('should show the float link', async () => {
-    const { component, getByTestId, fixture, getByRole, queryByTestId } = await setup();
+    const { component, getByTestId, fixture, queryByTestId } = await setup();
 
     const linkText = 'Cancel this';
 
