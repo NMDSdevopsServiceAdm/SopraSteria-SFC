@@ -54,7 +54,7 @@ export class StandAloneAccountComponent implements OnInit {
     const tabs = [this.tabsService.homeTab];
     this.canViewEstablishment && tabs.push(this.tabsService.workplaceTab);
     this.canViewListOfWorkers && tabs.push(this.tabsService.staffRecordsTab, this.tabsService.tAndQTab);
-    tabs.push(this.tabsService.benchmarksTab);
+    // tabs.push(this.tabsService.benchmarksTab);
 
     this.tabs = tabs;
   }

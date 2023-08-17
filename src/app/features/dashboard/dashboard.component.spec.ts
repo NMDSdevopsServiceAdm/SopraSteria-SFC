@@ -158,7 +158,7 @@ describe('DashboardComponent', () => {
       expect(getByTestId('tab_wdf')).toBeTruthy();
     });
 
-    it('should display the Benchmarks tab', async () => {
+    xit('should display the Benchmarks tab', async () => {
       const { fixture, getByTestId } = await setup();
 
       fixture.detectChanges();
@@ -215,7 +215,7 @@ describe('DashboardComponent', () => {
     });
 
     describe('tabClickEvent', () => {
-      it('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
+      xit('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
         const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
 
         fixture.detectChanges();
@@ -246,13 +246,13 @@ describe('DashboardComponent', () => {
     });
   });
   describe('Benchmarks tab', () => {
-    it('should show the benchmarks tab when it is the selected tab, there is a workplace and there is canViewListOfWorkers permissions', async () => {
+    xit('should show the benchmarks tab when it is the selected tab, there is a workplace and there is canViewListOfWorkers permissions', async () => {
       const { getByTestId } = await setup();
 
       expect(getByTestId('benchmarks-tab')).toBeTruthy();
     });
 
-    it('should render the new data area page rather than benchmark page when the newDataAreaFlag is true', async () => {
+    xit('should render the new data area page rather than benchmark page when the newDataAreaFlag is true', async () => {
       const { component, fixture, getByTestId, queryByTestId } = await setup();
 
       component.canSeeNewDataArea = true;
@@ -263,7 +263,7 @@ describe('DashboardComponent', () => {
       expect(queryByTestId('benchmarks-tab')).toBeFalsy();
     });
 
-    it('should render the normal benchmarks page when the newDataAreaFlag is false', async () => {
+    xit('should render the normal benchmarks page when the newDataAreaFlag is false', async () => {
       const { component, fixture, getByTestId, queryByTestId } = await setup();
 
       component.canSeeNewDataArea = true;
@@ -274,7 +274,7 @@ describe('DashboardComponent', () => {
       expect(queryByTestId('data-area-tab')).toBeFalsy();
     });
 
-    it('should render the normal benchmarks page when the establishment is non regulated', async () => {
+    xit('should render the normal benchmarks page when the establishment is non regulated', async () => {
       const { component, fixture, getByTestId, queryByTestId } = await setup();
 
       component.canSeeNewDataArea = false;
