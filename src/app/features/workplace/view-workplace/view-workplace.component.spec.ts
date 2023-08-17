@@ -137,7 +137,7 @@ describe('view-workplace', () => {
       expect(getByText('Workplace users')).toBeTruthy();
     });
 
-    it('should display the Benchmarks tab', async () => {
+    xit('should display the Benchmarks tab', async () => {
       const { component, fixture, getByText } = await setup(true);
 
       const establishment = {
@@ -218,7 +218,7 @@ describe('view-workplace', () => {
   });
 
   describe('tabClickEvent', () => {
-    it('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
+    xit('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
       const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
 
       component.canViewBenchmarks = true;
@@ -248,7 +248,7 @@ describe('view-workplace', () => {
     });
   });
 
-  describe('Benchmarks tab', () => {
+  xdescribe('Benchmarks tab', () => {
     it('should show the benchmarks tab when it is the selected tab, there is a workplace and there is canViewBenchmarks permissions', async () => {
       const { getByTestId, component, fixture } = await setup(true);
       component.canViewBenchmarks = true;

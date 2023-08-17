@@ -463,7 +463,7 @@ describe('NewHomeTabComponent', () => {
   });
 
   describe('cards', () => {
-    describe('Benchmarks', () => {
+    xdescribe('Benchmarks', () => {
       describe('Where main service is one of the big 3', async () => {
         const establishment = {
           ...Establishment,

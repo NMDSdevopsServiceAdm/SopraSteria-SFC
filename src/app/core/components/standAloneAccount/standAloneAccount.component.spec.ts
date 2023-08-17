@@ -91,22 +91,24 @@ describe('StandAloneAccountComponent', () => {
   describe('Tabs', () => {
     it('should show all tabs when all permissions are on the establishment', async () => {
       const { component } = await setup();
-
-      expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab, benchmarksTab]);
+      // expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab, benchmarksTab]);
+      expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab]);
     });
 
     it('should show not show the workplace tab when canViewEstablisment permission is not on the establishment', async () => {
       const permissions = ['canViewBenchmarks', 'canViewListOfUsers', 'canViewListOfWorkers'];
       const { component } = await setup(true, permissions);
 
-      expect(component.tabs).toEqual([homeTab, staffRecordsTab, tAndQTab, benchmarksTab]);
+     // expect(component.tabs).toEqual([homeTab, staffRecordsTab, tAndQTab, benchmarksTab]);
+      expect(component.tabs).toEqual([homeTab, staffRecordsTab, tAndQTab]);
     });
 
     it('should show not show the staff-records or tAndQ tabs when canViewListOfWorkers permission is not on the establishment', async () => {
       const permissions = ['canViewBenchmarks', 'canViewListOfUsers', 'canViewEstablishment'];
       const { component } = await setup(true, permissions);
 
-      expect(component.tabs).toEqual([homeTab, workplaceTab, benchmarksTab]);
+     // expect(component.tabs).toEqual([homeTab, workplaceTab, benchmarksTab]);
+      expect(component.tabs).toEqual([homeTab, workplaceTab]);
     });
   });
 

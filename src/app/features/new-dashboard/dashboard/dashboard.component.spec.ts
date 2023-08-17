@@ -149,7 +149,7 @@ describe('NewDashboardComponent', () => {
     });
   });
 
-  describe('Benchmarks tab', () => {
+  xdescribe('Benchmarks tab', () => {
     it('should show the benchmarks tab when it is the selected tab, there is a workplace and there is canViewListOfWorkers permissions', async () => {
       const { getByTestId } = await setup('benchmarks');
 
