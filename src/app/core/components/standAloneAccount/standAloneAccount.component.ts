@@ -37,11 +37,11 @@ export class StandAloneAccountComponent implements OnInit {
     this.setTabs();
   }
 
-  public tabClickEvent(properties: { tabSlug: string }): void {
-    if (properties.tabSlug === 'benchmarks') {
-      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplaceId).subscribe());
-    }
-  }
+  // public tabClickEvent(properties: { tabSlug: string }): void {
+  //   if (properties.tabSlug === 'benchmarks') {
+  //     this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplaceId).subscribe());
+  //   }
+  // }
 
   private getPermissions(): void {
     this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks') || true;

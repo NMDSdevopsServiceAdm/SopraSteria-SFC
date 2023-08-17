@@ -59,10 +59,7 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
-import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+
 
 @NgModule({
   imports: [
@@ -129,10 +126,10 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     ExpiresSoonAlertDatesResolver,
     ChildWorkplacesResolver,
     JobsResolver,
-    BenchmarksResolver,
-    RankingsResolver,
-    UsefulLinkPayResolver,
-    UsefulLinkRecruitmentResolver,
+    // BenchmarksResolver,
+    // RankingsResolver,
+    // UsefulLinkPayResolver,
+    // UsefulLinkRecruitmentResolver,
   ],
 })
 export class WorkplaceModule {}
