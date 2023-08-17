@@ -20,7 +20,7 @@ describe('rankings', () => {
       sinon.stub(models.benchmarksPayByEstId, 'findAll').returns([]);
       sinon.stub(models.benchmarksPayByEstIdGoodOutstanding, 'findAll').returns([]);
 
-      const result = await rankings.pay(establishmentId, 8, 10);
+      const result = await rankings.pay(establishmentId, 8, 10, 809);
 
       expect(result.groupRankings.stateMessage).to.equal('no-comparison-data');
       expect(result.goodCqcRankings.stateMessage).to.equal('no-comparison-data');
@@ -36,7 +36,7 @@ describe('rankings', () => {
         .stub(models.benchmarksPayByEstIdGoodOutstanding, 'findAll')
         .returns([{ LocalAuthorityArea: 123, MainServiceFK: 1, AverageHourlyRate: 1550, EstablishmentFK: 456 }]);
 
-      const result = await rankings.pay(establishmentId, 8, 10);
+      const result = await rankings.pay(establishmentId, 8, 10, 809);
 
       expect(result.groupRankings.stateMessage).to.equal('no-pay-data');
       expect(result.goodCqcRankings.stateMessage).to.equal('no-pay-data');
@@ -52,7 +52,7 @@ describe('rankings', () => {
         .stub(models.benchmarksPayByEstIdGoodOutstanding, 'findAll')
         .returns([{ LocalAuthorityArea: 123, MainServiceFK: 1, AverageHourlyRate: 1550, EstablishmentFK: 456 }]);
 
-      const result = await rankings.pay(establishmentId, 8, 10);
+      const result = await rankings.pay(establishmentId, 8, 10, 809);
 
       expect(result.groupRankings.hasValue).to.equal(true);
       expect(result.goodCqcRankings.hasValue).to.equal(true);
@@ -71,7 +71,7 @@ describe('rankings', () => {
         { LocalAuthorityArea: 123, MainServiceFK: 1, AverageHourlyRate: 1700, EstablishmentFK: 550 },
       ]);
 
-      const result = await rankings.pay(establishmentId, 8, 10);
+      const result = await rankings.pay(establishmentId, 8, 10, 809);
 
       expect(result.groupRankings.maxRank).to.equal(3);
       expect(result.goodCqcRankings.maxRank).to.equal(4);
@@ -90,7 +90,7 @@ describe('rankings', () => {
         { LocalAuthorityArea: 123, MainServiceFK: 1, AverageHourlyRate: 1700, EstablishmentFK: 550 },
       ]);
 
-      const result = await rankings.pay(establishmentId, 8, 10);
+      const result = await rankings.pay(establishmentId, 8, 10, 809);
 
       expect(result.groupRankings.currentRank).to.equal(2);
       expect(result.goodCqcRankings.currentRank).to.equal(3);
@@ -125,7 +125,7 @@ describe('rankings', () => {
         { CssrID: 123, MainServiceFK: 1, Qualifications: 0.7, EstablishmentFK: 789 },
       ]);
 
-      const result = await rankings.qualifications(establishmentId, 8, 10);
+      const result = await rankings.qualifications(establishmentId, 8, 10, 809);
 
       expect(result.groupRankings.stateMessage).to.equal('no-qualifications-data');
       expect(result.goodCqcRankings.stateMessage).to.equal('no-qualifications-data');
@@ -144,7 +144,7 @@ describe('rankings', () => {
         { CssrID: 123, MainServiceFK: 1, Qualifications: 0.7, EstablishmentFK: 789 },
       ]);
 
-      const result = await rankings.qualifications(establishmentId, 8, 10);
+      const result = await rankings.qualifications(establishmentId, 8, 10, 809);
       expect(result.groupRankings.hasValue).to.equal(true);
       expect(result.goodCqcRankings.hasValue).to.equal(true);
     });
@@ -163,7 +163,7 @@ describe('rankings', () => {
         { CssrID: 123, MainServiceFK: 1, Qualifications: 0.7, EstablishmentFK: 789 },
       ]);
 
-      const result = await rankings.qualifications(establishmentId, 8, 10);
+      const result = await rankings.qualifications(establishmentId, 8, 10, 809);
       expect(result.groupRankings.maxRank).to.equal(4);
       expect(result.goodCqcRankings.maxRank).to.equal(3);
     });
@@ -182,7 +182,7 @@ describe('rankings', () => {
         { CssrID: 123, MainServiceFK: 1, Qualifications: 0.7, EstablishmentFK: 789 },
       ]);
 
-      const result = await rankings.qualifications(establishmentId, 8, 10);
+      const result = await rankings.qualifications(establishmentId, 8, 10, 809);
 
       expect(result.groupRankings.currentRank).to.equal(2);
       expect(result.goodCqcRankings.currentRank).to.equal(2);
