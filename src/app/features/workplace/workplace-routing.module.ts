@@ -54,10 +54,7 @@ import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -88,10 +85,10 @@ const routes: Routes = [
           users: AllUsersForEstablishmentResolver,
           workers: WorkersResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
-          benchmarks: BenchmarksResolver,
-          rankings: RankingsResolver,
-          usefulLinksPay: UsefulLinkPayResolver,
-          usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+          // benchmarks: BenchmarksResolver,
+          // rankings: RankingsResolver,
+          // usefulLinksPay: UsefulLinkPayResolver,
+          // usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
         },
       },
       {
@@ -469,24 +466,24 @@ const routes: Routes = [
           title: 'Training and qualifications record',
         },
       },
-      {
-        path: 'benchmarks',
-        loadChildren: () =>
-          import('@shared/components/benchmarks-tab/benchmarks.module').then((m) => m.BenchmarksModule),
+      // {
+      //   path: 'benchmarks',
+      //   loadChildren: () =>
+      //     import('@shared/components/benchmarks-tab/benchmarks.module').then((m) => m.BenchmarksModule),
 
-        data: {
-          title: 'Benchmarks',
-        },
-      },
-      {
-        path: 'data-area',
-        loadChildren: () =>
-          import('@shared/components/data-area-tab/data-area-tab.module').then((m) => m.DataAreaTabModule),
+      //   data: {
+      //     title: 'Benchmarks',
+      //   },
+      // },
+      // {
+      //   path: 'data-area',
+      //   loadChildren: () =>
+      //     import('@shared/components/data-area-tab/data-area-tab.module').then((m) => m.DataAreaTabModule),
 
-        data: {
-          title: 'Data Area',
-        },
-      },
+      //   data: {
+      //     title: 'Data Area',
+      //   },
+      // },
 
       {
         path: 'add-and-manage-mandatory-training',
