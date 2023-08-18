@@ -180,27 +180,36 @@ const checkStaffNumbers = async function (establishmentId, establishment, leaver
 //   return !establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue;
 // };
 
-const getComparisonGroupRankings = async function ({
-  benchmarksModel,
-  establishmentId,
-  mainService,
-  attributes,
-  mainJob,
-  cssr
-}) {
-  if (!cssr) return {};
-
-  const where = mainJob ? { MainJobRole: mainJob } : {};
+const getComparisonGroupRankings = async function (establishmentId, benchmarksModel) {
+  const cssr = await models.cssr.getCSSR(establishmentId);
+  if (!cssr) return [];
   return await benchmarksModel.findAll({
-    attributes: ['LocalAuthorityArea', 'MainServiceFK', ...attributes],
+    attributes: { exclude: ['CssrID', 'MainServiceFK'] },
     where: {
-      LocalAuthorityArea: cssr.id,
-      MainServiceFK: mainService,
+      CssrID: cssr.id,
       EstablishmentFK: {
         [Op.not]: [establishmentId],
       },
-      ...where,
     },
+    include: [
+      {
+        attributes: ['id', 'reportingID'],
+        model: models.services,
+        as: 'BenchmarkToService',
+        include: [
+          {
+            attributes: ['id'],
+            model: models.establishment,
+            where: {
+              id: establishmentId,
+            },
+            as: 'establishmentsMainService',
+            required: true,
+          },
+        ],
+        required: true,
+      },
+    ],
   });
 };
 
