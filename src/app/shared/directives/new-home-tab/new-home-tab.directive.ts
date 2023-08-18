@@ -68,8 +68,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public isParent: boolean;
   public certificateYears: string;
   public newHomeDesignParentFlag: boolean;
-  public parentRequestAlertMessage: string;
   public isParentApprovedBannerViewed: boolean;
+  public successAlertMessage: string;
 
   constructor(
     private userService: UserService,
@@ -150,7 +150,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.setBenchmarksCard();
     this.subscriptions.add();
 
-    this.parentRequestAlertMessage = history.state?.parentRequestMessage;
+    this.successAlertMessage = history.state?.successAlertMessage;
 
     this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;
 
@@ -299,15 +299,15 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   }
 
   public sendAlert(): void {
-    if (this.parentRequestAlertMessage) {
-      this.alertService.addAlert({
-        type: 'success',
-        message: this.parentRequestAlertMessage,
-      });
-    } else if (this.isParentApprovedBannerViewed === false) {
+    if (this.isParentApprovedBannerViewed === false) {
       this.alertService.addAlert({
         type: 'success',
         message: `Your request to become a parent has been approved`,
+      });
+    } else if (this.successAlertMessage) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: this.successAlertMessage,
       });
     }
   }
@@ -330,9 +330,14 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.router.navigate(['/about-parents']);
   }
 
+  public clearAlertMessageFromState(): void {
+    window.history.pushState({ successAlertMessage: null }, '', '');
+  }
+
   ngOnDestroy(): void {
     this.updateIsParentApprovedBannerViewed();
     this.subscriptions.unsubscribe();
     this.alertService.removeAlert();
+    this.clearAlertMessageFromState();
   }
 }

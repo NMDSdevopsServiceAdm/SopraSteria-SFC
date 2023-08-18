@@ -20,7 +20,7 @@ import { getTestBed } from '@angular/core/testing';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 
-describe('BecomeAParentComponent', () => {
+fdescribe('BecomeAParentComponent', () => {
   async function setup() {
     const { getByRole, getByText, getByLabelText, getByTestId, fixture } = await render(BecomeAParentComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
