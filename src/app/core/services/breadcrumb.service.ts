@@ -37,6 +37,7 @@ import {
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
   becomeAParentJourney,
+  linkToParentJourney,
 } from '@core/breadcrumb/journey.workplaces';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -285,6 +286,11 @@ export class BreadcrumbService {
 
       case JourneyType.BECOME_A_PARENT: {
         routes = becomeAParentJourney;
+        break;
+      }
+
+      case JourneyType.LINK_TO_PARENT: {
+        routes = linkToParentJourney;
         break;
       }
 

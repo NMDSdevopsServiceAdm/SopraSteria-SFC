@@ -9,7 +9,7 @@ import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { fireEvent, render } from '@testing-library/angular';
-import { BecomeAParentComponent } from './become-a-parent.component';
+import { LinkToParentComponent } from './link-to-parent.component';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -20,9 +20,9 @@ import { getTestBed } from '@angular/core/testing';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 
-describe('BecomeAParentComponent', () => {
+describe('LinkToParentComponent', () => {
   async function setup() {
-    const { getByRole, getByText, getByLabelText, getByTestId, fixture } = await render(BecomeAParentComponent, {
+    const { getByRole, getByText, getByLabelText, getByTestId, fixture } = await render(LinkToParentComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -55,9 +55,7 @@ describe('BecomeAParentComponent', () => {
           },
         },
       ],
-      componentProperties: {
-        isBecomeParentRequestPending: false,
-      },
+      componentProperties: {},
     });
     const component = fixture.componentInstance;
 
@@ -93,7 +91,7 @@ describe('BecomeAParentComponent', () => {
     const { getByRole } = await setup();
 
     const heading = getByRole('heading', {
-      name: /become a parent and manage other workplaces' data/i,
+      name: /link to a parent workplace/i,
     });
 
     expect(heading).toBeTruthy();
@@ -112,40 +110,33 @@ describe('BecomeAParentComponent', () => {
   it('should show the reveal', async () => {
     const { getByTestId } = await setup();
 
-    expect(getByTestId('becomeAParentRevealTitle')).toBeTruthy();
-    expect(getByTestId('becomeAParentRevealText')).toBeTruthy();
+    expect(getByTestId('linkToParentRevealTitle')).toBeTruthy();
+    expect(getByTestId('linkToParentRevealText')).toBeTruthy();
   });
 
-  it('should show the contact us link with the correct href', async () => {
-    const { getByText } = await setup();
-    const link = getByText('Contact us');
-    expect(link).toBeTruthy();
-    expect(link.getAttribute('href')).toEqual('/contact-us');
-  });
-
-  it('should show the parent request button', async () => {
+  it('should show the link parent request button', async () => {
     const { getByText } = await setup();
 
-    const parentRequestButton = getByText('Send parent request');
+    const linkToParentRequestButton = getByText('Send link request');
 
-    expect(parentRequestButton).toBeTruthy();
+    expect(linkToParentRequestButton).toBeTruthy();
   });
 
-  it('should call becomeParent to request becoming a parent', async () => {
-    const { component, getByText, fixture, parentRequestsService } = await setup();
+  // it('should call becomeParent to request becoming a parent', async () => {
+  //   const { component, getByText, fixture, parentRequestsService } = await setup();
 
-    component.isBecomeParentRequestPending = false;
+  //   component.isBecomeParentRequestPending = false;
 
-    fixture.detectChanges();
+  //   fixture.detectChanges();
 
-    const becomeParentSpy = spyOn(parentRequestsService, 'becomeParent').and.callThrough();
+  //   const becomeParentSpy = spyOn(parentRequestsService, 'becomeParent').and.callThrough();
 
-    const parentRequestButton = getByText('Send parent request');
+  //   const parentRequestButton = getByText('Send parent request');
 
-    fireEvent.click(parentRequestButton);
+  //   fireEvent.click(parentRequestButton);
 
-    expect(becomeParentSpy).toHaveBeenCalled();
-  });
+  //   expect(becomeParentSpy).toHaveBeenCalled();
+  // });
 
   it('should show the cancel link with the correct href back to the home tab', async () => {
     const { getByText } = await setup();
@@ -154,60 +145,5 @@ describe('BecomeAParentComponent', () => {
 
     expect(cancelRequestLink).toBeTruthy();
     expect(cancelRequestLink.getAttribute('href')).toEqual('/dashboard');
-  });
-
-  describe('pending become a parent request', () => {
-    it('should show return to home button with the correct href back to the home tab', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.isBecomeParentRequestPending = true;
-
-      fixture.detectChanges();
-
-      const returnToHomeButton = getByText('Return to home');
-
-      expect(returnToHomeButton).toBeTruthy();
-    });
-
-    it('should navigate to the home tab', async () => {
-      const { component, getByText, routerSpy, fixture } = await setup();
-
-      component.isBecomeParentRequestPending = true;
-
-      fixture.detectChanges();
-
-      const returnToHomeButton = getByText('Return to home');
-
-      fireEvent.click(returnToHomeButton);
-
-      fixture.detectChanges();
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
-    });
-
-    it('should show the parent pending request banner', async () => {
-      const { component, getByTestId, fixture, getByText } = await setup();
-
-      component.isBecomeParentRequestPending = true;
-
-      fixture.detectChanges();
-      expect(getByTestId('parentPendingRequestBanner')).toBeTruthy();
-      expect(getByText('Cancel parent request')).toBeTruthy();
-    });
-
-    it('should call cancelBecomeAParent to cancel the parent request', async () => {
-      const { component, getByText, fixture, parentRequestsService } = await setup();
-
-      component.isBecomeParentRequestPending = true;
-
-      fixture.detectChanges();
-
-      const cancelBecomeAParentSpy = spyOn(parentRequestsService, 'cancelBecomeAParent').and.callThrough();
-
-      const cancelParentRequestLink = getByText('Cancel parent request');
-
-      fireEvent.click(cancelParentRequestLink);
-
-      expect(cancelBecomeAParentSpy).toHaveBeenCalled();
-    });
   });
 });
