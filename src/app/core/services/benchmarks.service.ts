@@ -15,7 +15,7 @@ import { Observable } from 'rxjs';
 export class BenchmarksService {
   private returnToURL: URLStructure;
   private _benchmarksData$: BenchmarksResponse = null;
-  private _rankingsData$: AllRankingsResponse = null;
+  // private _rankingsData$: AllRankingsResponse = null;
   constructor(private http: HttpClient) {}
 
   public get returnTo(): URLStructure {
@@ -34,13 +34,13 @@ export class BenchmarksService {
     this._benchmarksData$ = benchmarksData;
   }
 
-  public get rankingsData(): AllRankingsResponse {
-    return this._rankingsData$;
-  }
+  // public get rankingsData(): AllRankingsResponse {
+  //   return this._rankingsData$;
+  // }
 
-  public set rankingsData(rankingsData) {
-    this._rankingsData$ = rankingsData;
-  }
+  // public set rankingsData(rankingsData) {
+  //   this._rankingsData$ = rankingsData;
+  // }
 
   postBenchmarkTabUsage(establishmentId: number) {
     const viewedTime = new Date();

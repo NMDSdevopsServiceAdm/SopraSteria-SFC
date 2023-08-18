@@ -122,27 +122,28 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
 
     this.bigThreeServices = [1, 2, 8].includes(this.workplace.mainService.reportingID);
     this.hasBenchmarkComparisonData = !!this.meta?.staff && !!this.meta?.workplaces;
-    // this.setBenchmarksCard();
+    this.setBenchmarksCard();
     this.subscriptions.add();
   }
 
-  // private setBenchmarksCard(): void {
-  //   if (this.hasBenchmarkComparisonData) {
-  //     const serviceName = this.serviceNamePipe.transform(this.workplace.mainService.name);
-  //     const localAuthority = this.meta?.localAuthority?.replace(/&/g, 'and');
-  //     const noOfWorkplacesText =
-  //       this.meta.workplaces === 1
-  //         ? `There is ${this.meta.workplaces} workplace`
-  //         : `There are ${this.meta.workplaces} workplaces`;
-  //     const serviceText = this.bigThreeServices ? `${serviceName.toLowerCase()}` : 'adult social care';
-  //     this.benchmarksMessage = `${noOfWorkplacesText} providing ${serviceText} in ${localAuthority}.`;
-  //   } else {
-  //     this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
-  //   }
-  // }
+  private setBenchmarksCard(): void {
+    if (this.hasBenchmarkComparisonData) {
+      const serviceName = this.serviceNamePipe.transform(this.workplace.mainService.name);
+      // const localAuthority = this.meta?.localAuthority?.replace(/&/g, 'and');
+      const noOfWorkplacesText =
+        this.meta.workplaces === 1
+          ? `There is ${this.meta.workplaces} workplace`
+          : `There are ${this.meta.workplaces} workplaces`;
+      const serviceText = this.bigThreeServices ? `${serviceName.toLowerCase()}` : 'adult social care';
+      this.benchmarksMessage = `${noOfWorkplacesText} providing ${serviceText} in Local Authority.`;
+
+    } else {
+      this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
+    }
+  }
 
   ngOnChanges() {
-    // this.setBenchmarksCard();
+    this.setBenchmarksCard();
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {

@@ -466,15 +466,15 @@ const routes: Routes = [
           title: 'Training and qualifications record',
         },
       },
-      // {
-      //   path: 'benchmarks',
-      //   loadChildren: () =>
-      //     import('@shared/components/benchmarks-tab/benchmarks.module').then((m) => m.BenchmarksModule),
+      {
+        path: 'benchmarks',
+        loadChildren: () =>
+          import('@shared/components/benchmarks-tab/benchmarks.module').then((m) => m.BenchmarksModule),
 
-      //   data: {
-      //     title: 'Benchmarks',
-      //   },
-      // },
+        data: {
+          title: 'Benchmarks',
+        },
+      },
       // {
       //   path: 'data-area',
       //   loadChildren: () =>

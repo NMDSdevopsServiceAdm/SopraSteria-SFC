@@ -21,10 +21,13 @@ export interface Meta {
   localAuthority: string;
 }
 export interface Tile {
-  workplaceValue?: BenchmarkValue;
-  comparisonGroup?: BenchmarkValue;
-  groupRankings?: any;
-  goodCqc?: BenchmarkValue;
+  workplaceValue: BenchmarkValue;
+  comparisonGroup: BenchmarkValue;
+  goodCqc: BenchmarkValue;
+  // workplaceValue?: BenchmarkValue;
+  // comparisonGroup?: BenchmarkValue;
+  // groupRankings?: any;
+  // goodCqc?: BenchmarkValue;
   lowTurnover?: BenchmarkValue;
   workplaces?: number;
   staff?: number;
@@ -66,6 +69,7 @@ export interface AllRankingsResponse {
   turnover: CompareGroupsRankingsResponse;
   vacancy: CompareGroupsRankingsResponse;
   timeInRole: CompareGroupsRankingsResponse;
+  turnoverRate: CompareGroupsRankingsResponse;
 }
 
 export enum Metric {

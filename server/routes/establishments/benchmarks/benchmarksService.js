@@ -111,15 +111,17 @@ const vacanciesAndLeavers = async (establishmentId, leaversOrVacancies) => {
 };
 
 const getTimeInRole = async function ({ establishmentId }) {
-  const establishment = await models.establishment.turnoverAndVacanciesData(establishmentId);
-  const workerMismatch = await checkWorkerMismatch(establishmentId, establishment);
 
-  if (workerMismatch) {
-    return {
-      stateMessage: 'mismatch-workers',
-    };
-  }
-  const permTempNoStartDate = await models.worker.countForPermAndTempNoStartDate(establishmentId);
+  const noOfWorkersYearInRole = await models.worker.yearOrMoreInRoleCount(establishmentId);
+  // const establishment = await models.establishment.turnoverAndVacanciesData(establishmentId);
+  // const workerMismatch = await checkWorkerMismatch(establishmentId, establishment);
+
+  // if (workerMismatch) {
+  //   return {
+  //     stateMessage: 'mismatch-workers',
+  //   };
+  // }
+  // const permTempNoStartDate = await models.worker.countForPermAndTempNoStartDate(establishmentId);
   const permTempCount = await models.worker.permAndTempCountForEstablishment(establishmentId);
 
   if (!permTempCount) {
@@ -128,13 +130,13 @@ const getTimeInRole = async function ({ establishmentId }) {
     };
   }
 
-  if (permTempNoStartDate > 0) {
-    return {
-      stateMessage: 'not-enough-data',
-    };
-  }
+  // if (permTempNoStartDate > 0) {
+  //   return {
+  //     stateMessage: 'not-enough-data',
+  //   };
+  // }
 
-  const noOfWorkersYearInRole = await models.worker.yearOrMoreInRoleCount(establishmentId);
+  // const noOfWorkersYearInRole = await models.worker.yearOrMoreInRoleCount(establishmentId);
 
   if (!noOfWorkersYearInRole) {
     return {
@@ -154,9 +156,11 @@ const getTimeInRole = async function ({ establishmentId }) {
 };
 
 const checkStaffNumbers = async function (establishmentId, establishment, leaversOrVacancies) {
-  const workerMismatch = await checkWorkerMismatch(establishmentId, establishment);
+  const workerCount = await models.worker.countForEstablishment(establishmentId);
+  // const workerMismatch = await checkWorkerMismatch(establishmentId, establishment);
+  if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
 
-  if (workerMismatch) {
+  // if (workerMismatch) {
     return {
       stateMessage: 'mismatch-workers',
     };
@@ -171,10 +175,10 @@ const checkStaffNumbers = async function (establishmentId, establishment, leaver
   return false;
 };
 
-const checkWorkerMismatch = async function (establishmentId, establishment) {
-  const workerCount = await models.worker.countForEstablishment(establishmentId);
-  return !establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue;
-};
+// const checkWorkerMismatch = async function (establishmentId, establishment) {
+//   const workerCount = await models.worker.countForEstablishment(establishmentId);
+//   return !establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue;
+// };
 
 const getComparisonGroupRankings = async function ({
   benchmarksModel,

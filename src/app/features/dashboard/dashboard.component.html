@@ -38,8 +38,8 @@
         ></app-training-and-qualifications-tab>
       </app-tab>
 
-      <!-- <app-tab *ngIf="workplace" [title]="'Benchmarks'">
-        <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
+      <app-tab *ngIf="workplace" [title]="'Benchmarks'">
+        <ng-container *ngIf="newDataAreaFlag ; else benchmarksTab">
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
               <h2 class="govuk-heading-m govuk-!-margin-bottom-5 govuk-!-font-size-27">Benchmarks</h2>
@@ -54,7 +54,7 @@
             data-testid="benchmarks-tab"
           ></app-benchmarks-tab>
         </ng-template>
-      </app-tab> -->
+      </app-tab>
 
       <app-tab *ngIf="workplace && canViewEstablishment && wdfNewDesignFlag" [title]="'WDF'">
         <app-wdf-tab [workplace]="workplace"></app-wdf-tab>
