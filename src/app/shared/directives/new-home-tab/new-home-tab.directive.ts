@@ -155,6 +155,9 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;
 
     this.sendAlert();
+
+    this.updateLinkToParentRequestedStatus();
+    this.updateParentStatusRequested();
   }
 
   private setBenchmarksCard(): void {
@@ -330,14 +333,23 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.router.navigate(['/about-parents']);
   }
 
-  public clearAlertMessageFromState(): void {
-    window.history.pushState({ successAlertMessage: null }, '', '');
+  public updateLinkToParentRequestedStatus(): void {
+    const linkToParentRequestedStatusState = history.state?.linkToParentRequestedStatus;
+    if (linkToParentRequestedStatusState || linkToParentRequestedStatusState === false) {
+      this.linkToParentRequestedStatus = history.state?.linkToParentRequestedStatus;
+    }
+  }
+
+  public updateParentStatusRequested(): void {
+    const parentStatusRequestedState = history.state?.parentStatusRequested;
+    if (parentStatusRequestedState || parentStatusRequestedState === false) {
+      this.parentStatusRequested = parentStatusRequestedState;
+    }
   }
 
   ngOnDestroy(): void {
     this.updateIsParentApprovedBannerViewed();
     this.subscriptions.unsubscribe();
     this.alertService.removeAlert();
-    this.clearAlertMessageFromState();
   }
 }

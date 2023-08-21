@@ -8,7 +8,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByLabelText, getByTestId, render, within } from '@testing-library/angular';
 import { LinkToParentComponent } from './link-to-parent.component';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -19,6 +19,7 @@ import { SharedModule } from '@shared/shared.module';
 import { getTestBed } from '@angular/core/testing';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
+import userEvent from '@testing-library/user-event';
 
 describe('LinkToParentComponent', () => {
   async function setup() {
@@ -61,6 +62,8 @@ describe('LinkToParentComponent', () => {
 
     const parentRequestsService = TestBed.inject(ParentRequestsService);
 
+    const establishmentService = TestBed.inject(EstablishmentService);
+
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
@@ -73,6 +76,7 @@ describe('LinkToParentComponent', () => {
       component,
       routerSpy,
       parentRequestsService,
+      establishmentService,
     };
   }
   it('should create', async () => {
@@ -121,22 +125,6 @@ describe('LinkToParentComponent', () => {
 
     expect(linkToParentRequestButton).toBeTruthy();
   });
-
-  // it('should call becomeParent to request becoming a parent', async () => {
-  //   const { component, getByText, fixture, parentRequestsService } = await setup();
-
-  //   component.isBecomeParentRequestPending = false;
-
-  //   fixture.detectChanges();
-
-  //   const becomeParentSpy = spyOn(parentRequestsService, 'becomeParent').and.callThrough();
-
-  //   const parentRequestButton = getByText('Send parent request');
-
-  //   fireEvent.click(parentRequestButton);
-
-  //   expect(becomeParentSpy).toHaveBeenCalled();
-  // });
 
   it('should show the cancel link with the correct href back to the home tab', async () => {
     const { getByText } = await setup();

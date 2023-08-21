@@ -15,7 +15,7 @@
           notification to tell you whether your request was approved or not.
         </p>
 
-        <h2>What's a parent workplace?</h2>
+        <h2 class="govuk-!-font-size-27">What's a parent workplace?</h2>
 
         <p>
           A parent workplace is a workplace that's taken responsibility in ASC-WDS for a number of other workplaces as
@@ -36,11 +36,19 @@
       >
       </app-error-summary>
 
-      <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off" aria-label="form">
+      <form
+        #formEl
+        novalidate
+        (ngSubmit)="onSubmit()"
+        [formGroup]="form"
+        autocomplete="off"
+        aria-label="form"
+        data-testid="linkToParentForm"
+      >
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h3 class="govuk-fieldset__heading">Select the parent workplace</h3>
+              <h2 class="govuk-fieldset__heading govuk-!-font-size-27">Select the parent workplace</h2>
             </legend>
             <div class="govuk-form-group">
               <label class="govuk-label" for="parentNameOrPostCode"
@@ -54,14 +62,15 @@
                 <span class="govuk-visually-hidden">Error:</span>
                 {{ getFirstErrorMessage('parentNameOrPostCode') }}
               </span>
-
-              <app-auto-suggest
-                [formGroup]="form"
-                [dataProvider]="parentNameOrPostCodeFilter"
-                [formControlName]="'parentNameOrPostCode'"
-              ></app-auto-suggest>
+              <div class="linkToParentInput">
+                <app-auto-suggest
+                  [formGroup]="form"
+                  [dataProvider]="parentNameOrPostCodeFilter"
+                  [formControlName]="'parentNameOrPostCode'"
+                ></app-auto-suggest>
+              </div>
             </div>
-            <h3>Data permissions</h3>
+            <h2>Data permissions</h2>
             <p class="govuk">
               If the parent workplace approves your request, what data do you want them to have
               <span class="govuk-!-font-weight-bold">view only access</span> to?
@@ -74,17 +83,19 @@
               <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
             </span>
 
-            <!-- <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios" data-module="govuk-radios">
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
                   id="dataPermission-0"
                   name="dataPermission"
+                  [formControlName]="'dataPermission'"
                   type="radio"
-                  value="dataPermissions[0]"
+                  [value]="dataPermissions[0]"
                 />
+
                 <label class="govuk-label govuk-radios__label" for="dataPermission-0">
-                  {{ dataPermissions[0] | dataViewPermissions }}
+                  {{ dataPermissions[0] | newDataViewPermissions }}
                 </label>
               </div>
               <div class="govuk-radios__item">
@@ -92,45 +103,29 @@
                   class="govuk-radios__input"
                   id="dataPermission-1"
                   name="dataPermission"
+                  [formControlName]="'dataPermission'"
                   type="radio"
-                  value="dataPermissions[1]"
+                  [value]="dataPermissions[1]"
                 />
+
                 <label class="govuk-label govuk-radios__label" for="dataPermission-1">
-                  {{ dataPermissions[1] | dataViewPermissions }}
+                  {{ dataPermissions[1] | newDataViewPermissions }}
                 </label>
               </div>
-              <div class="govuk-radios__divider">or</div>
+              <div class="govuk-radios__divider govuk-!-text-align-left">Or</div>
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
-                  id="dataPermissions-2"
-                  name="dataPermission"
-                  type="radio"
-                  value="dataPermission[2]"
-                />
-                <label class="govuk-label govuk-radios__label" for="dataPermissions-2">
-                  {{ dataPermissions[2] | dataViewPermissions }}
-                </label>
-              </div>
-            </div> -->
-            <div class="govuk-radios" data-module="govuk-radios">
-              <div class="govuk-radios__item" *ngFor="let dataPermission of dataPermissions; let i = index">
-                <input
-                  class="govuk-radios__input"
-                  id="dataPermission-{{ i }}"
+                  id="dataPermission-2"
                   name="dataPermission"
                   [formControlName]="'dataPermission'"
                   type="radio"
-                  [value]="dataPermission"
+                  [value]="dataPermissions[2]"
                 />
 
-                <label class="govuk-label govuk-radios__label" for="dataPermission-{{ i }}">
-                  {{ dataPermission | newDataViewPermissions }}
+                <label class="govuk-label govuk-radios__label" for="dataPermission-2">
+                  {{ dataPermissions[2] | newDataViewPermissions }}
                 </label>
-
-                <div>
-                  <p *ngIf="i === dataPermissions.length - 2" class="govuk-radios__divider">or</p>
-                </div>
               </div>
             </div>
           </fieldset>

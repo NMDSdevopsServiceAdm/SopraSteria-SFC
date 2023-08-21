@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
@@ -111,6 +111,10 @@ describe('NewHomeTabComponent', () => {
     const tabsService = TestBed.inject(TabsService);
     const tabsServiceSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
       fixture,
@@ -122,6 +126,7 @@ describe('NewHomeTabComponent', () => {
       parentsRequestService,
       tabsServiceSpy,
       getByRole,
+      routerSpy,
     };
   };
 
@@ -333,6 +338,23 @@ describe('NewHomeTabComponent', () => {
         expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeTruthy();
       });
 
+      it('should show the link to parent link with the correct href', async () => {
+        const { component, fixture, getByText } = await setup();
+
+        component.workplace.isParent = false;
+        component.canLinkToParent = true;
+        component.canBecomeAParent = true;
+        component.linkToParentRequestedStatus = false;
+        component.parentStatusRequested = false;
+        component.newHomeDesignParentFlag = true;
+
+        fixture.detectChanges();
+
+        const linkToParentLink = getByText('Link to a parent workplace');
+        expect(linkToParentLink).toBeTruthy();
+        expect(linkToParentLink.getAttribute('href')).toEqual('/link-to-parent');
+      });
+
       it('should show Link to a parent workplace pending after requesting', async () => {
         const { component, fixture, queryByText } = await setup();
 
@@ -345,6 +367,7 @@ describe('NewHomeTabComponent', () => {
 
         const expectedMessage = 'Link to a parent workplace (request pending)';
         expect(queryByText(expectedMessage)).toBeTruthy();
+
         expect(queryByText('Link to a parent workplace')).toBeFalsy();
         expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeFalsy();
       });

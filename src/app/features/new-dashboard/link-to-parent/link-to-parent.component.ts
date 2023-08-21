@@ -1,9 +1,9 @@
-import { Component, Inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { DataPermissions, Workplace } from '@core/model/my-workplaces.model';
+import { DataPermissions } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -47,7 +47,6 @@ export class LinkToParentComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.breadcrumbService.show(JourneyType.LINK_TO_PARENT, this.workplace.name);
     this.getAvailableParentWorkPlaces();
-    this.setWorkplaces();
     this.setDataPermissions();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
@@ -67,11 +66,6 @@ export class LinkToParentComponent implements OnInit, OnDestroy {
         },
       ),
     );
-  }
-
-  //set workplace reference in modal window
-  private setWorkplaces(): void {
-    //this.workplace = this.data;
   }
 
   //set the data permission array
@@ -171,10 +165,11 @@ export class LinkToParentComponent implements OnInit, OnDestroy {
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
           (data) => {
             if (data) {
-              const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
+              //const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
               this.router.navigate(['/dashboard'], {
                 state: {
                   successAlertMessage: `You've sent a link request to ${this.form.value.parentNameOrPostCode}`,
+                  linkToParentRequestedStatus: true,
                 },
               });
             }

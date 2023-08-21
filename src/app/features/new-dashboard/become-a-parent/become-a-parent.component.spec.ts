@@ -150,10 +150,10 @@ describe('BecomeAParentComponent', () => {
   it('should show the cancel link with the correct href back to the home tab', async () => {
     const { getByText } = await setup();
 
-    const cancelRequestLink = getByText('Cancel');
+    const cancelLink = getByText('Cancel');
 
-    expect(cancelRequestLink).toBeTruthy();
-    expect(cancelRequestLink.getAttribute('href')).toEqual('/dashboard');
+    expect(cancelLink).toBeTruthy();
+    expect(cancelLink.getAttribute('href')).toEqual('/dashboard');
   });
 
   describe('pending become a parent request', () => {
