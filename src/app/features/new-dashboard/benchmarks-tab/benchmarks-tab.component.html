@@ -5,27 +5,69 @@
 ></app-new-dashboard-header>
 
 <div class="govuk-width-container govuk-!-margin-top-7">
-  <div id="benchmarks-tiles">
+  <!-- <div id="benchmarks-tiles"> -->
+
     <app-new-comparison-group-header
       [canViewFullContent]="canViewFullBenchmarks"
       [meta]="tilesData?.meta"
       [workplaceID]="workplace.uid"
       (downloadPDF)="downloadAsPDF()"
     ></app-new-comparison-group-header>
-    <div class="govuk-grid-row" data-cy="benchmarks-tiles">
+
+  <div class="govuk-grid-row">
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="payContent"
+      [tile]="payTile"
+      [workplaceID]="workplace.uid"
+    >
+    </app-benchmark-tile>
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="turnoverContent"
+      [tile]="turnoverTile"
+      [workplaceID]="workplace.uid"
+    >
+    </app-benchmark-tile>
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="sicknessContent"
+      [tile]="sicknessTile"
+      [workplaceID]="workplace.uid"
+    >
+    </app-benchmark-tile>
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="qualificationsContent"
+      [tile]="qualificationsTile"
+      [workplaceID]="workplace.uid"
+    >
+    </app-benchmark-tile>
+  </div>
+    <!-- <div class="govuk-grid-row" data-cy="benchmarks-tiles">
+      <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="payContent"
+      [tile]="payTile"
+      [workplaceID]="workplace.uid"
+    >
+    </app-benchmark-tile>
       <app-benchmark-tile
         [canViewFullContent]="canViewFullBenchmarks"
         [content]="payContent"
-        [tile]="tilesData?.careWorkerPay"
+        [tile]="tilesData?.pay"
         [workplaceID]="workplace.uid"
       >
+
       </app-benchmark-tile>
+      [tile]="tilesData?.careWorkerPay"
       <app-benchmark-tile
         [canViewFullContent]="canViewFullBenchmarks"
         [content]="turnoverContent"
-        [tile]="tilesData?.turnoverRate"
+        [tile]="tilesData?.turnover"
         [workplaceID]="workplace.uid"
       >
+      [tile]="tilesData?.turnoverRate"
       </app-benchmark-tile>
       <app-benchmark-tile
         [canViewFullContent]="canViewFullBenchmarks"
@@ -41,11 +83,13 @@
         [workplaceID]="workplace.uid"
       >
       </app-benchmark-tile>
-    </div>
-    <app-benchmarks-about-the-data
+    </div> -->
+    <!-- <app-benchmarks-about-the-data
       #aboutData
       class="govuk-visually-hidden"
       [workplace]="workplace"
-    ></app-benchmarks-about-the-data>
-  </div>
+    ></app-benchmarks-about-the-data> -->
+  <!-- </div> -->
 </div>
+
+

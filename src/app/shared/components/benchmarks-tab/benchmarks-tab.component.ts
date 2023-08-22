@@ -45,6 +45,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           if (data) {
             this.tilesData = data;
           }
+
         }),
     );
   }
@@ -54,11 +55,11 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   }
 
   get payTile(): Tile {
-    return this.tilesData?.careWorkerPay;
+    return this.tilesData?.pay;
   }
 
   get turnoverTile(): Tile {
-    return this.tilesData?.turnoverRate;
+    return this.tilesData?.turnover;
   }
 
   get sicknessTile(): Tile {
