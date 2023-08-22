@@ -2,7 +2,7 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Metric, RankingsResponse } from '@core/model/benchmarks.model';
 import * as Highcharts from 'highcharts';
 
-import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-builder';
+// import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-builder';
 
 @Component({
   selector: 'app-data-area-barchart',
@@ -23,7 +23,8 @@ export class DataAreaBarchartComponent implements OnChanges, OnInit {
   public rank: number;
   public sectionInSummary: string;
 
-  constructor(private builder: DataAreaBarchartOptionsBuilder) {}
+  // constructor(private builder: DataAreaBarchartOptionsBuilder) {}
+  constructor() {}
 
   ngOnInit(): void {}
 
@@ -31,12 +32,12 @@ export class DataAreaBarchartComponent implements OnChanges, OnInit {
     this.formatSection(this.type);
     this.numberOfWorkplaces = this.rankingsData.maxRank ? this.rankingsData.maxRank : null;
     this.rank = this.rankingsData.currentRank ? this.rankingsData.currentRank : null;
-    this.options = this.builder.buildChartOptions(
-      this.section,
-      this.rankingsData,
-      Metric[this.type],
-      this.altDescription,
-    );
+    // this.options = this.builder.buildChartOptions(
+    //   this.section,
+    //   this.rankingsData,
+    //   Metric[this.type],
+    //   this.altDescription,
+    // );
   }
 
   public formatSection(type: string) {
