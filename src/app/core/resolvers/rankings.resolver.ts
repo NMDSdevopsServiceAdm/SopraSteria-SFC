@@ -11,16 +11,16 @@ export class RankingsResolver implements Resolve<any> {
 
   resolve(route: ActivatedRouteSnapshot) {
     const workplaceUid = route.paramMap.get('establishmentuid')
-      ? route.paramMap.get('establishmentuid')
-      : this.establishmentService.establishmentId;
+    //   ? route.paramMap.get('establishmentuid')
+    //   : this.establishmentService.establishmentId;
 
-    if (workplaceUid) {
-      return this.benchmarksService.getAllRankingData(workplaceUid).pipe(
-        tap((rankingsData) => {
-          this.benchmarksService.rankingsData = rankingsData;
-        }),
-      );
-    }
+    // if (workplaceUid) {
+    //   return this.benchmarksService.getAllRankingData(workplaceUid).pipe(
+    //     tap((rankingsData) => {
+    //       this.benchmarksService.rankingsData = rankingsData;
+    //     }),
+    //   );
+    // }
     return of(null);
   }
 }

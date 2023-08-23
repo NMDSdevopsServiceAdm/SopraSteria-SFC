@@ -59,8 +59,9 @@ export const mockConfigCatClient = {
     }
 
     if (flagName === 'newBenchmarksDataArea') {
+
       return new Promise((resolve) => {
-        return resolve(true);
+        return resolve(false);
       });
     }
 

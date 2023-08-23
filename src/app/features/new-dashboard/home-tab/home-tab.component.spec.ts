@@ -92,8 +92,8 @@ describe('NewHomeTabComponent', () => {
       componentProperties: {
         workplace: establishment,
         meta: comparisonDataAvailable
-          ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
-          : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
+          ? { workplaces: noOfWorkplaces, staff: 4,  }
+          : ({ workplaces: 0, staff: 0,  } as Meta),
       },
       schemas: [NO_ERRORS_SCHEMA],
     });

@@ -139,17 +139,60 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Benchmarks.getBenchmarkData = async function (establishmentId, cssrId) {
+  // Benchmarks.getBenchmarkData = async function (establishmentId, cssrId) {
+  //   console.log('{{{{{{{{{{{{{{{{{{{{{{{{{{');
+  // console.log({establishmentId},{cssrId});
+  //   const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
+
+  //   const reportingId = mainService.reportingID;
+  //   const specificMainServiceReportingIds = [1, 2, 8];
+  //   const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
+
+  //   if (!cssrId) return {};
+  //   return await this.findOne({
+  //     where: {
+  //       CssrID: cssrId,
+  //     },
+  //     include: [
+  //       {
+  //         attributes: ['id', 'reportingID'],
+  //         model: sequelize.models.services,
+  //         as: 'BenchmarkToService',
+  //         on: {
+  //           col1: sequelize.where(sequelize.col('benchmarks.MainServiceFK'), '=', mainServiceReportingId),
+  //         },
+  //         include: [
+  //           {
+  //             attributes: ['id'],
+  //             model: sequelize.models.establishment,
+  //             where: {
+  //               id: establishmentId,
+  //             },
+  //             as: 'establishmentsMainService',
+  //             required: true,
+  //           },
+  //         ],
+  //         required: true,
+  //       },
+  //     ],
+  //     raw: true,
+  //     logging:true
+  //   });
+  // };
+
+  Benchmarks.getBenchmarkData = async function (establishmentId) {
+    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
     const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
+
 
     const reportingId = mainService.reportingID;
     const specificMainServiceReportingIds = [1, 2, 8];
     const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
 
-    if (!cssrId) return {};
+    if (!cssr) return {};
     return await this.findOne({
       where: {
-        CssrID: cssrId,
+        CssrID: cssr.id,
       },
       include: [
         {

@@ -46,9 +46,10 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
-    this.tilesData = this.benchmarksService.benchmarksData;
+    // this.tilesData = this.benchmarksService.benchmarksData;
 
     this.authService.isOnAdminScreen = false;
+    // this.benchmarkDataSubscription();
     this.subscriptions.add(
       this.tabsService.selectedTab$.subscribe((selectedTab) => {
         this.selectedTab = selectedTab;
@@ -61,12 +62,27 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
 
       this.canViewListOfWorkers && this.setWorkersAndTrainingValues();
     }
+
+      this.subscriptions.add(
+        this.benchmarksService
+          .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
+          .subscribe((data) => {
+            if (data) {
+              this.tilesData = data;
+            }
+          }),
+      );
+    
+
+
   }
 
   private getPermissions(): void {
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplace.uid, 'canViewEstablishment');
   }
+
+
 
   private setWorkersAndTrainingValues(): void {
     const { workers = [], workerCount = 0, trainingCounts, tAndQsLastUpdated } = this.route.snapshot.data.workers;

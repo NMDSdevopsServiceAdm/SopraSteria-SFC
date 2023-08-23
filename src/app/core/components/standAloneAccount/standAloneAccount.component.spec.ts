@@ -91,40 +91,40 @@ describe('StandAloneAccountComponent', () => {
   describe('Tabs', () => {
     it('should show all tabs when all permissions are on the establishment', async () => {
       const { component } = await setup();
-      // expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab, benchmarksTab]);
-      expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab]);
+       expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab, benchmarksTab]);
+     // expect(component.tabs).toEqual([homeTab, workplaceTab, staffRecordsTab, tAndQTab]);
     });
 
     it('should show not show the workplace tab when canViewEstablisment permission is not on the establishment', async () => {
       const permissions = ['canViewBenchmarks', 'canViewListOfUsers', 'canViewListOfWorkers'];
       const { component } = await setup(true, permissions);
 
-     // expect(component.tabs).toEqual([homeTab, staffRecordsTab, tAndQTab, benchmarksTab]);
-      expect(component.tabs).toEqual([homeTab, staffRecordsTab, tAndQTab]);
+      expect(component.tabs).toEqual([homeTab, staffRecordsTab, tAndQTab, benchmarksTab]);
+     // expect(component.tabs).toEqual([homeTab, staffRecordsTab, tAndQTab]);
     });
 
     it('should show not show the staff-records or tAndQ tabs when canViewListOfWorkers permission is not on the establishment', async () => {
       const permissions = ['canViewBenchmarks', 'canViewListOfUsers', 'canViewEstablishment'];
       const { component } = await setup(true, permissions);
 
-     // expect(component.tabs).toEqual([homeTab, workplaceTab, benchmarksTab]);
-      expect(component.tabs).toEqual([homeTab, workplaceTab]);
+      expect(component.tabs).toEqual([homeTab, workplaceTab, benchmarksTab]);
+     // expect(component.tabs).toEqual([homeTab, workplaceTab]);
     });
   });
 
-  // xdescribe('tabClickEvent', () => {
-  //   it('should run postBenchmarkTabUsage when called with a tab slug of benchmarks', async () => {
-  //     const { component, benchmarksSpy } = await setup();
-  //     const workplaceId = component.workplaceId;
-  //     component.tabClickEvent({ tabSlug: 'benchmarks' });
-  //     expect(benchmarksSpy).toHaveBeenCalledWith(workplaceId);
-  //   });
+  describe('tabClickEvent', () => {
+    it('should run postBenchmarkTabUsage when called with a tab slug of benchmarks', async () => {
+      const { component, benchmarksSpy } = await setup();
+      const workplaceId = component.workplaceId;
+      component.tabClickEvent({ tabSlug: 'benchmarks' });
+      expect(benchmarksSpy).toHaveBeenCalledWith(workplaceId);
+    });
 
-  //   it('should not run postBenchmarkTabUsage when called with a tab slug that is not benchmarks', async () => {
-  //     const { component, benchmarksSpy } = await setup();
+    it('should not run postBenchmarkTabUsage when called with a tab slug that is not benchmarks', async () => {
+      const { component, benchmarksSpy } = await setup();
 
-  //     component.tabClickEvent({ tabSlug: 'home' });
-  //     expect(benchmarksSpy).not.toHaveBeenCalled();
-  //   });
-  // });
+      component.tabClickEvent({ tabSlug: 'home' });
+      expect(benchmarksSpy).not.toHaveBeenCalled();
+    });
+  });
 });

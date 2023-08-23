@@ -1,13 +1,14 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
+import { AllRankingsResponse, MetricsContent } from '@core/model/benchmarks-v2.model';
+import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.component';
+import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
 
 @Component({
   selector: 'app-data-area-tab',
@@ -36,13 +37,13 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   constructor(
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
-    protected benchmarksService: BenchmarksService,
+    protected benchmarksV2Service: BenchmarksV2Service,
     protected router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.tilesData = this.benchmarksService.benchmarksData;
-    this.rankingsData = this.benchmarksService.rankingsData;
+    // this.tilesData = this.benchmarksV2Service.benchmarksData;
+    this.rankingsData = this.benchmarksV2Service.rankingsData;
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.setDownloadBenchmarksText();
     this.checkComparisonDataExists();

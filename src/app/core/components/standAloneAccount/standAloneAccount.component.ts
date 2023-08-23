@@ -37,11 +37,11 @@ export class StandAloneAccountComponent implements OnInit {
     this.setTabs();
   }
 
-  // public tabClickEvent(properties: { tabSlug: string }): void {
-  //   if (properties.tabSlug === 'benchmarks') {
-  //     this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplaceId).subscribe());
-  //   }
-  // }
+  public tabClickEvent(properties: { tabSlug: string }): void {
+    if (properties.tabSlug === 'benchmarks') {
+      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplaceId).subscribe());
+    }
+  }
 
   private getPermissions(): void {
     this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks') || true;
@@ -54,7 +54,7 @@ export class StandAloneAccountComponent implements OnInit {
     const tabs = [this.tabsService.homeTab];
     this.canViewEstablishment && tabs.push(this.tabsService.workplaceTab);
     this.canViewListOfWorkers && tabs.push(this.tabsService.staffRecordsTab, this.tabsService.tAndQTab);
-    // tabs.push(this.tabsService.benchmarksTab);
+    tabs.push(this.tabsService.benchmarksTab);
 
     this.tabs = tabs;
   }

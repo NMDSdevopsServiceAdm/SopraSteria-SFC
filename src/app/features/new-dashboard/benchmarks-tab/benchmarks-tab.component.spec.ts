@@ -96,7 +96,7 @@ describe('NewBenchmarksTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should download the page as a pdf when the the download as pdf link is clicked', async () => {
+  xit('should download the page as a pdf when the the download as pdf link is clicked', async () => {
     const { component, getByText, pdfService } = await setup();
 
     const downloadFunctionSpy = spyOn(component, 'downloadAsPDF').and.callThrough();

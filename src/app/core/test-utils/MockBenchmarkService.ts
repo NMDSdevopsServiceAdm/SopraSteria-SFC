@@ -146,7 +146,7 @@ export const benchmarksData = {
     staff: 460,
     workplacesGoodCqc: 22,
     staffGoodCqc: 315,
-    localAuthority: 'LA1',
+    // localAuthority: 'LA1',
     lastUpdated: new Date(),
   },
 };
@@ -160,9 +160,9 @@ export class MockBenchmarksService extends BenchmarksService {
     return returnTo;
   }
 
-  public getTileData(establishmentUid, requiredTiles): Observable<BenchmarksResponse> {
-    return of(benchmarksData);
-  }
+  // public getTileData(establishmentUid, requiredTiles): Observable<BenchmarksResponse> {
+  //   return of(benchmarksData);
+  // }
 
   public getAllRankingData(establishmentUid): Observable<AllRankingsResponse> {
     return of(allRankingsData);
@@ -172,7 +172,7 @@ export class MockBenchmarksService extends BenchmarksService {
     return of(null);
   }
 
-  public get benchmarksData(): BenchmarksResponse {
-    return benchmarksData;
-  }
+  // public get benchmarksData(): BenchmarksResponse {
+  //   return benchmarksData;
+  // }
 }
