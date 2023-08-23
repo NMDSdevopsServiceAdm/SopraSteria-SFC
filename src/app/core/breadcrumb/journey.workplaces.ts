@@ -15,6 +15,7 @@ enum Path {
   ABOUT_DATA = '/workplace/:workplaceUid/data-area/about-the-data',
   OTHER_WORKPLACES = '/workplace/other-workplaces',
   BECOME_A_PARENT = '/workplace/become-a-parent',
+  REMOVE_LINK_TO_PARENT = '/workplace/remove_link-to-parent',
 }
 
 export const workplaceTabJourney: JourneyRoute = {
@@ -224,6 +225,15 @@ export const becomeAParentJourney: JourneyRoute = {
     {
       title: `Become a parent and manage other workplaces' data`,
       path: Path.BECOME_A_PARENT,
+    },
+  ],
+};
+
+export const removeLinkToParentJourney: JourneyRoute = {
+  children: [
+    {
+      title: `Remove the link to your parent workplace`,
+      path: Path.REMOVE_LINK_TO_PARENT,
     },
   ],
 };

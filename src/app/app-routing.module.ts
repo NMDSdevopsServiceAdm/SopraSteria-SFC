@@ -39,6 +39,7 @@ import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
+import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
 
 const routes: Routes = [
@@ -149,6 +150,7 @@ const routes: Routes = [
           articleList: ArticleListResolver,
           users: AllUsersForEstablishmentResolver,
           workers: WorkersResolver,
+          establishment: PrimaryWorkplaceResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
           cqcStatusCheck: CqcStatusCheckResolver,
           benchmarks: BenchmarksResolver,
@@ -259,6 +261,11 @@ const routes: Routes = [
         path: 'become-a-parent',
         component: BecomeAParentComponent,
         data: { title: 'Become a Parent' },
+      },
+      {
+        path: 'remove-link-to-parent',
+        component: RemoveLinkToParentComponent,
+        data: { title: 'remove-link-to-parent' },
       },
     ],
   },
