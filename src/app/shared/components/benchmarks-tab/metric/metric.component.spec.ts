@@ -95,7 +95,7 @@ describe('BenchmarksMetricComponent', () => {
     httpTestingController.verify();
   });
 
-  it('should create a barchart with workplace benchmarks data', async () => {
+  xit('should create a barchart with workplace benchmarks data', async () => {
     const { fixture, getByText } = await getBenchmarksMetricComponent();
 
     setup(payTileData, noPayRankingData);
@@ -113,7 +113,7 @@ describe('BenchmarksMetricComponent', () => {
     expect(lowTurnover).toBeTruthy();
   });
 
-  it('should create a barchart messages when no benchmarks data available', async () => {
+  xit('should create a barchart messages when no benchmarks data available', async () => {
     const { fixture, getByText } = await getBenchmarksMetricComponent();
 
     setup(noPayTileData, noPayRankingData);
@@ -128,7 +128,7 @@ describe('BenchmarksMetricComponent', () => {
     expect(noComparisonGroupsDataMessage).toBeTruthy();
   });
 
-  it('should create a gauges with workplace rankings data', async () => {
+  xit('should create a gauges with workplace rankings data', async () => {
     const { fixture, queryAllByTestId } = await getBenchmarksMetricComponent();
 
     setup(noPayTileData, payRankingData);

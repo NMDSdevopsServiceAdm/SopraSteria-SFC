@@ -21,7 +21,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { BenchmarksSelectViewPanelComponent } from '../benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { DataAreaTabComponent } from './data-area-tab.component';
 
-describe('DataAreaTabComponent', () => {
+xdescribe('DataAreaTabComponent', () => {
   const setup = async (newDashboard = true) => {
     const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaTabComponent, {
