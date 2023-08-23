@@ -1,5 +1,4 @@
 const dayjs = require('dayjs');
-const { logging } = require('protractor');
 const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
@@ -1230,7 +1229,6 @@ module.exports = function (sequelize, DataTypes) {
   // };
 
   Worker.averageHourlyPay = async function (establishmentId) {
-
     return this.findOne({
       attributes: [[sequelize.fn('avg', sequelize.col('AnnualHourlyPayRate')), 'amount']],
       where: {
