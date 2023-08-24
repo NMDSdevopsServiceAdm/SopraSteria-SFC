@@ -1,3 +1,11 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+  data-testid="linkToParentErrorSummary"
+>
+</app-error-summary>
 <div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -15,8 +23,7 @@
           notification to tell you whether your request was approved or not.
         </p>
 
-        <h2 class="govuk-!-font-size-27">What's a parent workplace?</h2>
-
+        <h2 class="govuk-!-font-size-27 govuk-!-margin-bottom-3">What's a parent workplace?</h2>
         <p>
           A parent workplace is a workplace that's taken responsibility in ASC-WDS for a number of other workplaces as
           part of a group or organisation.
@@ -28,13 +35,6 @@
           </p></app-details
         >
       </div>
-      <app-error-summary
-        *ngIf="submitted && (form.invalid || serverError)"
-        [formErrorsMap]="formErrorsMap"
-        [form]="form"
-        [serverError]="serverError"
-      >
-      </app-error-summary>
 
       <form
         #formEl
@@ -45,7 +45,10 @@
         aria-label="form"
         data-testid="linkToParentForm"
       >
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
+        <div
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="submitted && form.get('parentNameOrPostCode').invalid"
+        >
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
               <h2 class="govuk-fieldset__heading govuk-!-font-size-27">Select the parent workplace</h2>
@@ -67,26 +70,30 @@
                   [formGroup]="form"
                   [dataProvider]="parentNameOrPostCodeFilter"
                   [formControlName]="'parentNameOrPostCode'"
+                  [error]="submitted && form.get('parentNameOrPostCode').invalid"
                 ></app-auto-suggest>
               </div>
             </div>
-            <h2>Data permissions</h2>
-            <p class="govuk">
+            <h2 class="govuk-!-margin-bottom-3">Data permissions</h2>
+            <p>
               If the parent workplace approves your request, what data do you want them to have
               <span class="govuk-!-font-weight-bold">view only access</span> to?
             </p>
+
             <span
               *ngIf="submitted && form.get('dataPermission').invalid"
               id="dataPermission-error"
               class="govuk-error-message"
             >
-              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
+              <span class="govuk-visually-hidden">Error:</span>
+              {{ getFirstErrorMessage('dataPermission') }}
             </span>
 
             <div class="govuk-radios" data-module="govuk-radios">
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
+                  [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
                   id="dataPermission-0"
                   name="dataPermission"
                   [formControlName]="'dataPermission'"
@@ -101,6 +108,7 @@
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
+                  [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
                   id="dataPermission-1"
                   name="dataPermission"
                   [formControlName]="'dataPermission'"
@@ -116,6 +124,7 @@
               <div class="govuk-radios__item">
                 <input
                   class="govuk-radios__input"
+                  [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
                   id="dataPermission-2"
                   name="dataPermission"
                   [formControlName]="'dataPermission'"
