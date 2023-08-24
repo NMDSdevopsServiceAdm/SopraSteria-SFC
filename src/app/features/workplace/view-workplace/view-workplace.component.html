@@ -59,20 +59,20 @@
       </app-tab>
 
       <app-tab [title]="'Benchmarks'">
-        <ng-container *ngIf="newDataAreaFlag ; else benchmarksTab">
+        <!-- <ng-container *ngIf="newDataAreaFlag ; else benchmarksTab">
           <app-data-area-tab
             class="asc-benchmarks-tab"
             [workplace]="workplace"
             data-testid="data-area-tab"
           ></app-data-area-tab>
-        </ng-container>
-        <ng-template #benchmarksTab>
+        </ng-container> -->
+        <!-- <ng-template #benchmarksTab> -->
           <app-benchmarks-tab
             class="asc-benchmarks-tab"
             [workplace]="workplace"
             data-testid="benchmarks-tab"
           ></app-benchmarks-tab>
-        </ng-template>
+        <!-- </ng-template> -->
       </app-tab>
 
       <app-tab *ngIf="canViewListOfUsers" [title]="'Workplace users'" [alert]="false">

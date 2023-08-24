@@ -36,13 +36,13 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     const canViewBenchmarks = this.permissionsService.can(workplaceUid, 'canViewBenchmarks');
 
     if (canViewBenchmarks) {
-      this.subscriptions.add(
-        this.benchmarksService.getTileData(workplaceUid, []).subscribe((data) => {
-          if (data) {
-            this.meta = data.meta;
-          }
-        }),
-      );
+      // this.subscriptions.add(
+      //   this.benchmarksService.getTileData(workplaceUid, []).subscribe((data) => {
+      //     if (data) {
+      //       this.meta = data.meta;
+      //     }
+      //   }),
+      // );
     }
   }
 
