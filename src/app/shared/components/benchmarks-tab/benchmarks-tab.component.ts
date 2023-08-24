@@ -50,9 +50,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
+
 
   get payTile(): Tile {
     return this.tilesData?.pay;
@@ -89,5 +87,8 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
       url: [this.router.url.split('#')[0]],
       fragment: 'benchmarks',
     });
+  }
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

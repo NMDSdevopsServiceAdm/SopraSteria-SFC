@@ -26,14 +26,13 @@ export class BenchmarksService {
   }
 
   getTileData(establishmentId: string, tilesNeeded: string[]): Observable<BenchmarksResponse> {
-    console.log({establishmentId}, {tilesNeeded});
 
     let param = '';
     if (tilesNeeded.length) {
       param = '?tiles=' + tilesNeeded.join(',');
     }
     return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/${param}`);
-    
+
   }
 
   getRankingData(establishmentId: string, metric: string): Observable<RankingsResponse> {

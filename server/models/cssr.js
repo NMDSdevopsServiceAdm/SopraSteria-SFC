@@ -53,21 +53,17 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   CSSR.getIdFromDistrict = async function (postcode) {
-    console.log({ getIdFromDistrict: postcode });
     const postcodeData = await getAddressAPI.getPostcodeData(postcode);
-    console.log({ getPostcodeData: postcodeData });
     if (!get(postcodeData, 'addresses[0].district')) {
       return false;
     }
 
     const district = postcodeData.addresses[0].district;
-    console.log({ district: district });
     const cssr = await this.findOne({
       attributes: ['id', 'name'],
       where: {
         LocalAuthority: { [Op.like]: `%${district}%` },
       },
-      logging: true,
     });
 
     if (cssr && cssr.id) {
