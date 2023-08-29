@@ -44,7 +44,7 @@ export class BenchmarksV2Service {
 
   postBenchmarkTabUsage(establishmentId: number) {
     const viewedTime = new Date();
-    return this.http.post<any>(`/api/establishment/${establishmentId}/benchmarks/usage`, { viewedTime });
+    return this.http.post<any>(`/api/v2/establishment/${establishmentId}/benchmarks/usage`, { viewedTime });
   }
 
   getTileData(establishmentId: string, tilesNeeded: string[]): Observable<BenchmarksResponse> {
@@ -52,20 +52,20 @@ export class BenchmarksV2Service {
     if (tilesNeeded.length) {
       param = '?tiles=' + tilesNeeded.join(',');
     }
-    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/${param}`);
+    return this.http.get<BenchmarksResponse>(`/api/v2/establishment/${establishmentId}/benchmarks/${param}`);
   }
 
   getRankingData(establishmentId: string, metric: string): Observable<CompareGroupsRankingsResponse> {
     return this.http.get<CompareGroupsRankingsResponse>(
-      `/api/establishment/${establishmentId}/benchmarks/rankings/${metric}`,
+      `/api/v2/establishment/${establishmentId}/benchmarks/rankings/${metric}`,
     );
   }
 
   getPayRankingData(establishmentId: string): Observable<PayRankingsResponse> {
-    return this.http.get<PayRankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings/pay`);
+    return this.http.get<PayRankingsResponse>(`/api/v2/establishment/${establishmentId}/benchmarks/rankings/pay`);
   }
 
   getAllRankingData(establishmentId: string): Observable<AllRankingsResponse> {
-    return this.http.get<AllRankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings`);
+    return this.http.get<AllRankingsResponse>(`/api/v2/establishment/${establishmentId}/benchmarks/rankings`);
   }
 }

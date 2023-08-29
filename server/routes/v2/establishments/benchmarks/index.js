@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const models = require('../../../models');
+const models = require('../../../../models');
 const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
 const usage = require('./usage');
@@ -55,7 +55,10 @@ const timeInRole = async (params, benchmarkComparisonGroup) => {
 
 const buildTile = async (params, benchmarkComparisonGroup, key, getMetricCallback) => {
   const { value, stateMessage } = await getMetricCallback(params);
+  console.log(value);
+  console.log(stateMessage);
   const hasValue = !stateMessage || stateMessage.length === 0;
+  console.log(`***** hasValue: ${hasValue}`);
   const json = {
     workplaceValue: {
       value: value ? value : 0,

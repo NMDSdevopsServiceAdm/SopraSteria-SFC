@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const models = require('../../../../models');
+const models = require('../../../../../models');
 
 const postBenchmarkTabUsage = async (req, res) => {
   const { viewedTime } = req.body;

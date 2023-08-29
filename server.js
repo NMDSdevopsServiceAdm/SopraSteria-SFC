@@ -70,6 +70,9 @@ var registrationSurvey = require('./server/routes/registrationSurvey');
 var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 var longTermAbsence = require('./server/routes/longTermAbsence');
 
+// v2 security libraries
+var establishmentV2 = require('./server/routes/v2/establishments');
+
 // admin route
 var admin = require('./server/routes/admin');
 
@@ -283,6 +286,9 @@ app.use('/api/wdf', [cacheMiddleware.nocache, WDFRoute]);
 app.use('/api/notification', [cacheMiddleware.nocache, notifications]);
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
+
+// v2 transaction endpoints
+app.use('/api/v2/establishment', [cacheMiddleware.nocache, establishmentV2]);
 
 app.use('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', authLimiter);
 app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {

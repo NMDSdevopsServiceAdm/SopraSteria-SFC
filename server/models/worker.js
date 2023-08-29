@@ -1205,28 +1205,25 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  // Worker.averageHourlyPay = async function (params) {
-  //   console.log(establishmentId);
-  //   // const establishmentId = params.establishmentId;
-  //   // const mainJobFk = params.mainJob || 10;
-  //   // const annualOrHourly = params.annualOrHourly || 'Hourly';
+  Worker.averageHourlyPay2 = async function (params) {
+    const establishmentId = params.establishmentId;
+    const mainJobFk = params.mainJob || 10;
+    const annualOrHourly = params.annualOrHourly || 'Hourly';
 
-  //   return this.findOne({
-  //     attributes: [[sequelize.fn('avg', sequelize.col('AnnualHourlyPayRate')), 'amount']],
-  //     where: {
-  //       // MainJobFkValue: 10,
-  //       // archived: false,
-  //       // AnnualHourlyPayValue:  'Hourly',
-  //       // AnnualHourlyPayRate: {
-  //       //   [Op.not]: null,
-  //       // },
-  //       establishmentFk: establishmentId,
-  //     },
-  //     raw: true,
-  //     logging:true
-  //   }
-  //  );
-  // };
+    return this.findOne({
+      attributes: [[sequelize.fn('avg', sequelize.col('AnnualHourlyPayRate')), 'amount']],
+      where: {
+        MainJobFkValue: mainJobFk,
+        archived: false,
+        AnnualHourlyPayValue: annualOrHourly,
+        AnnualHourlyPayRate: {
+          [Op.not]: null,
+        },
+        establishmentFk: establishmentId,
+      },
+      raw: true,
+    });
+  };
 
   Worker.averageHourlyPay = async function (establishmentId) {
     return this.findOne({

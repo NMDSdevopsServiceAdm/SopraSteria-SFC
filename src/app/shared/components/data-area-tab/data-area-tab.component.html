@@ -49,7 +49,7 @@
       <ng-template #nonGoodCqcComparisonGroup>
         <h3 class="govuk-heading-m">
           {{ workplace.mainService.name | serviceName }} providers in
-          {{ tilesData?.meta.localAuthority | formatAmpersand }}
+          <!-- TODO: Return local authority in meta - {{ tilesData?.meta.localAuthority | formatAmpersand }} -->
         </h3>
       </ng-template>
       <ng-container *ngIf="comparisonDataExists">
