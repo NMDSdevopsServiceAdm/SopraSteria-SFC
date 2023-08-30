@@ -1,5 +1,5 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,7 +16,9 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
   templateUrl: './link-to-parent.component.html',
   styleUrls: ['./link-to-parent.component.scss'],
 })
-export class LinkToParentComponent implements OnInit, OnDestroy {
+export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('formEl') formEl: ElementRef;
+
   public dataPermissions: DataPermissions[];
   public form: UntypedFormGroup;
   public submitted = false;
@@ -41,6 +43,10 @@ export class LinkToParentComponent implements OnInit, OnDestroy {
     this.parentNameOrPostCodeValidator = this.parentNameOrPostCodeValidator.bind(this);
     this.parentNameOrPostCodeFilter = this.parentNameOrPostCodeFilter.bind(this);
     this.setupForm();
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   ngOnInit() {
@@ -76,24 +82,27 @@ export class LinkToParentComponent implements OnInit, OnDestroy {
   //Set the form fields and validator
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      parentNameOrPostCode: [null, [Validators.required, this.parentNameOrPostCodeValidator]],
-      dataPermission: [null, Validators.required],
+      parentNameOrPostCode: [null, { validators: [Validators.required, this.parentNameOrPostCodeValidator] }],
+      //dataPermission: new FormControl(null, { validators: [Validators.required],  }),
+      //dataPermission: [null, { validators: [Validators.required], updateOn: 'submit' }],
+      dataPermission: [null, [Validators.required]],
     });
   }
 
   //setup  form error message
   public setupFormErrorsMap(): void {
+    const nameOrPostCodeErrorMessage = "Enter and then select the parent workplace's name or postcode";
     this.formErrorsMap = [
       {
         item: 'parentNameOrPostCode',
         type: [
           {
             name: 'required',
-            message: 'Enter parent name or post code.',
+            message: nameOrPostCodeErrorMessage,
           },
           {
             name: 'validNameOrPostCode',
-            message: 'Enter correct parent name or post code',
+            message: nameOrPostCodeErrorMessage,
           },
         ],
       },
@@ -102,7 +111,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy {
         type: [
           {
             name: 'required',
-            message: 'Select data permissions',
+            message: 'Select what data you want them to have view only access to',
           },
         ],
       },
@@ -114,15 +123,15 @@ export class LinkToParentComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 500,
-        message: 'We could not send request to parent. You can try again or contact us.',
+        message: 'We could not send request to parent. You can try again or contact us',
       },
       {
         name: 400,
-        message: 'Unable to send request to parent.',
+        message: 'Unable to send request to parent',
       },
       {
         name: 404,
-        message: 'Send request to parent service not found. You can try again or contact us.',
+        message: 'Send request to parent service not found. You can try again or contact us',
       },
     ];
   }
@@ -137,7 +146,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  //sync the form error event and if form is invlid then scroll to error summary
+  //sync the form error event and if form is invalid then scroll to error summary
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -191,6 +200,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy {
   public parentNameOrPostCodeValidator() {
     if (this.form && this.availableParentWorkPlaces) {
       const { parentNameOrPostCode } = this.form.controls;
+
       if (parentNameOrPostCode.value !== null) {
         const parentNameOrPostCodeLowerCase = parentNameOrPostCode.value.toLowerCase();
         return this.availableParentWorkPlaces.some(

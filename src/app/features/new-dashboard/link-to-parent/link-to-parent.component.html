@@ -45,15 +45,15 @@
         aria-label="form"
         data-testid="linkToParentForm"
       >
-        <div
-          class="govuk-form-group"
-          [class.govuk-form-group--error]="submitted && form.get('parentNameOrPostCode').invalid"
-        >
+        <div>
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
               <h2 class="govuk-fieldset__heading govuk-!-font-size-27">Select the parent workplace</h2>
             </legend>
-            <div class="govuk-form-group">
+            <div
+              class="govuk-form-group"
+              [class.govuk-form-group--error]="submitted && form.get('parentNameOrPostCode').invalid"
+            >
               <label class="govuk-label" for="parentNameOrPostCode"
                 >Start to type the parent workplace's name or postcode</label
               >
@@ -74,7 +74,15 @@
                 ></app-auto-suggest>
               </div>
             </div>
-            <h2 class="govuk-!-margin-bottom-3">Data permissions</h2>
+          </fieldset>
+        </div>
+
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('dataPermission').invalid">
+          <fieldset class="govuk-fieldset">
+            <legend class="govuk-fieldset__legend">
+              <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Data permissions</h2>
+            </legend>
+
             <p>
               If the parent workplace approves your request, what data do you want them to have
               <span class="govuk-!-font-weight-bold">view only access</span> to?
@@ -139,6 +147,7 @@
             </div>
           </fieldset>
         </div>
+
         <div class="linkToParentRequestButtonContainer">
           <button type="submit" (click)="sendRequestToParent()" class="govuk-button">Send link request</button>
           <a
