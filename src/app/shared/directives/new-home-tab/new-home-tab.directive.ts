@@ -70,6 +70,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public newHomeDesignParentFlag: boolean;
   public parentRequestAlertMessage: string;
   public isParentApprovedBannerViewed: boolean;
+  public isOwnershipRequested = false;
+  public canAddWorker: boolean;
 
   constructor(
     private userService: UserService,
@@ -189,9 +191,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public setPermissionLinks(): void {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
-    // this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
+    this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
     this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
-
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
@@ -204,14 +205,13 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
       this.workplace.parentUid != null &&
       this.workplace.dataOwner === 'Workplace' &&
       this.user.role != 'Read';
-
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
       this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
 
-    // if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
-    //   this.isOwnershipRequested = true;
-    // }
+    if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
+      this.isOwnershipRequested = true;
+    }
 
     if (isAdminRole(this.user.role)) {
       this.canLinkToParent = this.workplace && this.workplace.parentUid === null && !this.parentStatusRequested;

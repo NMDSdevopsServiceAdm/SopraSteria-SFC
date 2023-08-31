@@ -12,6 +12,7 @@ export class DashboardWrapperComponent implements OnInit {
   public parentAccount: boolean;
   public newHomeDesignFlag: boolean;
   public newHomeDesignParentFlag: boolean;
+  public subsAccount: boolean;
 
   constructor(private establishmentService: EstablishmentService, private featureFlagsService: FeatureFlagsService) {}
 
