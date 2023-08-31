@@ -3,6 +3,11 @@
 </ng-container>
 
 <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
+  <ng-container *ngIf="!rankingsData">
+    <h2 class="govuk-heading-m govuk-!-font-size-27">No comparison data available</h2>
+
+  </ng-container>
+
   <app-benchmarks-select-view-panel
     data-testid="selectCategoryLinks"
     [falseSelectionName]="'Pay'"

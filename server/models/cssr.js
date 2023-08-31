@@ -99,10 +99,10 @@ module.exports = function (sequelize, DataTypes) {
     if (cssr && cssr.theAuthority) {
       cssr = cssr.theAuthority;
     } else {
-      cssr = await CSSR.getIdFromDistrict(postcode.postcode);
-      if (!cssr) {
+      // cssr = await CSSR.getIdFromDistrict(postcode.postcode);
+      // if (!cssr) {
         return false;
-      }
+      // }
     }
     return cssr;
   };

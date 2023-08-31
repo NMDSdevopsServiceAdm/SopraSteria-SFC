@@ -215,28 +215,34 @@ const getBenchmarksData = async (establishmentId, mainService) => {
 
   const cssr = await models.cssr.getCSSR(establishmentId);
 
-  data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
-  data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
-  data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssr);
-  data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID, cssr);
-  data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService, cssr);
-  data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService, cssr);
-  data.qualifications = await qualificationsBenchmarks(establishmentId, mainService, cssr);
-  data.sickness = await sicknessBenchmarks(establishmentId, mainService, cssr);
-  data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssr);
+  if(cssr) {
+    data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
+    data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
+    data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssr);
+    data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID, cssr);
+    data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService, cssr);
+    data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService, cssr);
+    data.qualifications = await qualificationsBenchmarks(establishmentId, mainService, cssr);
+    data.sickness = await sicknessBenchmarks(establishmentId, mainService, cssr);
+    data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssr);
+  }
 
   data.meta = await getMetaData(mainService, cssr);
   return data;
 };
 
 const getMetaData = async (mainService, cssr) => {
-  const benchmarksComparisonGroup = await models.benchmarksEstablishmentsAndWorkers.getComparisonData(
-    mainService,
-    cssr,
-  );
+  let benchmarksComparisonGroup = undefined;
+  let benchmarksComparisonGroupGoodOutstanding = undefined;
 
-  const benchmarksComparisonGroupGoodOutstanding =
-    await models.benchmarksEstablishmentsAndWorkersGoodOutstanding.getComparisonData(mainService, cssr);
+  if(cssr) {
+    benchmarksComparisonGroup = await models.benchmarksEstablishmentsAndWorkers.getComparisonData(
+      mainService,
+      cssr,
+    );
+
+    benchmarksComparisonGroupGoodOutstanding = await models.benchmarksEstablishmentsAndWorkersGoodOutstanding.getComparisonData(mainService, cssr);
+  }
 
   return {
     workplaces: benchmarksComparisonGroup ? benchmarksComparisonGroup.workplaces : 0,

@@ -317,6 +317,7 @@ const getRankingsResponse = async (req, res) => {
 
     const data = { pay: {} };
 
+    if (cssr) {
     data.pay.careWorkerPay = await getPayRanking(establishmentId, mainServiceID, CARE_WORKER_ID, cssr);
     data.pay.seniorCareWorkerPay = await getPayRanking(establishmentId, mainServiceID, SENIOR_CARE_WORKER_ID, cssr);
     data.pay.registeredNursePay = await getPayRanking(establishmentId, mainServiceID, REGISTERED_NURSE_ID, cssr);
@@ -329,7 +330,7 @@ const getRankingsResponse = async (req, res) => {
     data.qualifications = await getQualificationsRanking(establishmentId, mainServiceID, cssr);
     data.vacancy = await getVacancyRanking(establishmentId, mainServiceID, cssr);
     data.timeInRole = await getTimeInRoleRankings(establishmentId, mainServiceID, cssr);
-
+    }
     console.log('************** DONE');
 
     res.status(200).json(data);
