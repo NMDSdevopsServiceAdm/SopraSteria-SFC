@@ -77,72 +77,76 @@
           </fieldset>
         </div>
 
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('dataPermission').invalid">
+        <div>
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend">
               <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Data permissions</h2>
             </legend>
-
-            <p>
-              If the parent workplace approves your request, what data do you want them to have
-              <span class="govuk-!-font-weight-bold">view only access</span> to?
-            </p>
-
-            <span
-              *ngIf="submitted && form.get('dataPermission').invalid"
-              id="dataPermission-error"
-              class="govuk-error-message"
+            <div
+              class="govuk-form-group"
+              [class.govuk-form-group--error]="submitted && form.get('dataPermission').invalid"
             >
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFirstErrorMessage('dataPermission') }}
-            </span>
+              <p>
+                If the parent workplace approves your request, what data do you want them to have
+                <span class="govuk-!-font-weight-bold">view only access</span> to?
+              </p>
 
-            <div class="govuk-radios" data-module="govuk-radios">
-              <div class="govuk-radios__item">
-                <input
-                  class="govuk-radios__input"
-                  [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
-                  id="dataPermission-0"
-                  name="dataPermission"
-                  [formControlName]="'dataPermission'"
-                  type="radio"
-                  [value]="dataPermissions[0]"
-                />
+              <span
+                *ngIf="submitted && form.get('dataPermission').invalid"
+                id="dataPermission-error"
+                class="govuk-error-message"
+              >
+                <span class="govuk-visually-hidden">Error:</span>
+                {{ getFirstErrorMessage('dataPermission') }}
+              </span>
 
-                <label class="govuk-label govuk-radios__label" for="dataPermission-0">
-                  {{ dataPermissions[0] | newDataViewPermissions }}
-                </label>
-              </div>
-              <div class="govuk-radios__item">
-                <input
-                  class="govuk-radios__input"
-                  [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
-                  id="dataPermission-1"
-                  name="dataPermission"
-                  [formControlName]="'dataPermission'"
-                  type="radio"
-                  [value]="dataPermissions[1]"
-                />
+              <div class="govuk-radios" data-module="govuk-radios">
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                    id="dataPermission-0"
+                    name="dataPermission"
+                    [formControlName]="'dataPermission'"
+                    type="radio"
+                    [value]="dataPermissions[0]"
+                  />
 
-                <label class="govuk-label govuk-radios__label" for="dataPermission-1">
-                  {{ dataPermissions[1] | newDataViewPermissions }}
-                </label>
-              </div>
-              <div class="govuk-radios__divider govuk-!-text-align-left">Or</div>
-              <div class="govuk-radios__item">
-                <input
-                  class="govuk-radios__input"
-                  [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
-                  id="dataPermission-2"
-                  name="dataPermission"
-                  [formControlName]="'dataPermission'"
-                  type="radio"
-                  [value]="dataPermissions[2]"
-                />
+                  <label class="govuk-label govuk-radios__label" for="dataPermission-0">
+                    {{ dataPermissions[0] | newDataViewPermissions }}
+                  </label>
+                </div>
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                    id="dataPermission-1"
+                    name="dataPermission"
+                    [formControlName]="'dataPermission'"
+                    type="radio"
+                    [value]="dataPermissions[1]"
+                  />
 
-                <label class="govuk-label govuk-radios__label" for="dataPermission-2">
-                  {{ dataPermissions[2] | newDataViewPermissions }}
-                </label>
+                  <label class="govuk-label govuk-radios__label" for="dataPermission-1">
+                    {{ dataPermissions[1] | newDataViewPermissions }}
+                  </label>
+                </div>
+                <div class="govuk-radios__divider govuk-!-text-align-left">Or</div>
+                <div class="govuk-radios__item">
+                  <input
+                    class="govuk-radios__input"
+                    [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                    id="dataPermission-2"
+                    name="dataPermission"
+                    [formControlName]="'dataPermission'"
+                    type="radio"
+                    [value]="dataPermissions[2]"
+                  />
+
+                  <label class="govuk-label govuk-radios__label" for="dataPermission-2">
+                    {{ dataPermissions[2] | newDataViewPermissions }}
+                  </label>
+                </div>
               </div>
             </div>
           </fieldset>

@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -83,8 +83,6 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
   private setupForm(): void {
     this.form = this.formBuilder.group({
       parentNameOrPostCode: [null, { validators: [Validators.required, this.parentNameOrPostCodeValidator] }],
-      //dataPermission: new FormControl(null, { validators: [Validators.required],  }),
-      //dataPermission: [null, { validators: [Validators.required], updateOn: 'submit' }],
       dataPermission: [null, [Validators.required]],
     });
   }
@@ -203,7 +201,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
 
       if (parentNameOrPostCode.value !== null) {
         const parentNameOrPostCodeLowerCase = parentNameOrPostCode.value.toLowerCase();
-        return this.availableParentWorkPlaces.some(
+        return this.availableParentWorkPlaces.find(
           (wp) => wp.parentNameAndPostalcode.toLowerCase() === parentNameOrPostCodeLowerCase,
         )
           ? null
