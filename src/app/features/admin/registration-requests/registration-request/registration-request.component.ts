@@ -10,6 +10,8 @@ import { Dialog, DialogService } from '@core/services/dialog.service';
 import { RegistrationsService } from '@core/services/registrations.service';
 import { SwitchWorkplaceService } from '@core/services/switch-workplace.service';
 import { RegistrationRequestDirective } from '@shared/directives/admin/registration-requests/registration-request.directive';
+import { LocalAuthoritiesService } from '@core/services/admin/local-authorities/local-authorities.service';
+import { CSSR } from '@core/model/cssr.model';
 
 import { ApprovalOrRejectionDialogComponent } from '../../components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
@@ -24,8 +26,10 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
   public userFullName: string;
   public checkBoxError: string;
   public approvalOrRejectionServerError: string;
+  public localAuthorities: CSSR;
 
   constructor(
+    public localAuthorityService: LocalAuthoritiesService,
     public registrationsService: RegistrationsService,
     protected breadcrumbService: BreadcrumbService,
     protected route: ActivatedRoute,
@@ -40,6 +44,7 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
 
   protected init(): void {
     this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
+    this.localAuthorityService.getLAsList().subscribe(list => this.localAuthorities = list);
     this.setupForm();
   }
 

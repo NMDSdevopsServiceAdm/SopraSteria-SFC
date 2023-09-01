@@ -56,6 +56,7 @@ import { SearchForUserComponent } from './search/search-for-user/search-for-user
 import { SearchForWorkplaceComponent } from './search/search-for-workplace/search-for-workplace.component';
 import { SearchComponent } from './search/search.component';
 import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplace-dropdown.component';
+import { LocalAuthoritiesService } from '@core/services/admin/local-authorities/local-authorities.service';
 
 @NgModule({
   imports: [
@@ -103,6 +104,7 @@ import { WorkplaceDropdownComponent } from './search/workplace-dropdown/workplac
   ],
   providers: [
     LocalAuthoritiesReturnService,
+    LocalAuthoritiesService,
     GetDatesResolver,
     GetLasResolver,
     GetLaResolver,

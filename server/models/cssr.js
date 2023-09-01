@@ -73,7 +73,16 @@ module.exports = function (sequelize, DataTypes) {
     }
   };
 
+  // CSSR.getAll = async () => {
+  //   const cssrList = this.findAll({
+  //     attributes: ['id', 'name', 'localAuthority', 'localCustodianCode'],
+  //   });
+
+  //   return cssrList;
+  // }
+
   CSSR.getCSSR = async (establishmentId) => {
+
     const postcode = await sequelize.models.establishment.findOne({
       attributes: ['postcode', 'id'],
       where: { id: establishmentId },
@@ -106,5 +115,6 @@ module.exports = function (sequelize, DataTypes) {
     }
     return cssr;
   };
+
   return CSSR;
 };
