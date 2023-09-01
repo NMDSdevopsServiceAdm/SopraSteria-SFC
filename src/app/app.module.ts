@@ -79,7 +79,6 @@ import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
-import { SubsHomeTabComponent } from '@features/new-dashboard/subs-home-tab/subs-home-tab.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BenefitAccordionComponent } from './features/benefits-bundle/benefit-accordion/benefit-accordion.component';
@@ -106,7 +105,6 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     HeaderComponent,
     HomeTabComponent,
     ParentHomeTabComponent,
-    SubsHomeTabComponent,
     LoginComponent,
     LogoutComponent,
     MigratedUserTermsConditionsComponent,
