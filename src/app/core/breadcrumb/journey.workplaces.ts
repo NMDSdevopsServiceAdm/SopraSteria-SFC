@@ -14,7 +14,6 @@ enum Path {
   MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
   ABOUT_DATA = '/workplace/:workplaceUid/data-area/about-the-data',
   OTHER_WORKPLACES = '/workplace/other-workplaces',
-  BECOME_A_PARENT = '/workplace/become-a-parent',
 }
 
 export const workplaceTabJourney: JourneyRoute = {
@@ -215,15 +214,6 @@ export const allWorkplacesJourney: JourneyRoute = {
           ],
         },
       ],
-    },
-  ],
-};
-
-export const becomeAParentJourney: JourneyRoute = {
-  children: [
-    {
-      title: `Become a parent and manage other workplaces' data`,
-      path: Path.BECOME_A_PARENT,
     },
   ],
 };

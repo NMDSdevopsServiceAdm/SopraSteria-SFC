@@ -384,6 +384,24 @@ describe('ParentHomeTabComponent', () => {
   });
 
   describe('parent request approved banner', () => {
+    it('should send alert after request to become a parent is approved', async () => {
+      const { component, fixture, alertServiceSpy, getByText } = await setup();
+
+      component.workplace.isParentApprovedBannerViewed = false;
+      component.isParent = true;
+      component.newHomeDesignParentFlag = true;
+
+      const message = `Your request to become a parent has been approved`;
+
+      fixture.detectChanges();
+      component.ngOnInit();
+
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: message,
+      });
+    });
+
     it(`should not show if isParentApprovedBannerViewed has not been set`, async () => {
       const { component, fixture, queryByTestId } = await setup();
 

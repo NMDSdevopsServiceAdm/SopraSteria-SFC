@@ -40,6 +40,7 @@ import { ResetPasswordComponent } from '@features/reset-password/reset-password.
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
+import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
 
 const routes: Routes = [
   {
@@ -259,6 +260,11 @@ const routes: Routes = [
         path: 'become-a-parent',
         component: BecomeAParentComponent,
         data: { title: 'Become a Parent' },
+      },
+      {
+        path: 'link-to-parent',
+        component: LinkToParentComponent,
+        data: { title: 'Link to Parent' },
       },
     ],
   },
