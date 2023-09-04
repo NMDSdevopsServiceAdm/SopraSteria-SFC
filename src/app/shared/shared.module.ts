@@ -98,6 +98,7 @@ import { FileValueAccessorDirective } from './form-controls/file-control-value-a
 import { AbsoluteNumberPipe } from './pipes/absolute-number.pipe';
 import { ClosedEndedAnswerPipe } from './pipes/closed-ended-answer.pipe';
 import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
+import { NewDataViewPermissionsPipe } from './pipes/new-data-view-permissions.pipe';
 import { DontKnowPipe } from './pipes/dont-know.pipe';
 import { FirstErrorPipe } from './pipes/first-error.pipe';
 import { FormatAmpersandPipe } from './pipes/format-ampersand.pipe';
@@ -128,6 +129,7 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
+    NewDataViewPermissionsPipe,
     SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
@@ -240,6 +242,7 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
+    NewDataViewPermissionsPipe,
     SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,

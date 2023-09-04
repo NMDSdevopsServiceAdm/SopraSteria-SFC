@@ -77,12 +77,24 @@
 
           <app-link-with-arrow *ngIf="canLinkToParent && !workplace.isParent">
             <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
-              <a class="govuk-link" (click)="cancelLinkToParent($event)" href="#"
-                >Link to my parent organisation pending</a
-              >
+              <ng-container *ngIf="newHomeDesignParentFlag; else dialogLinkParentRequestPending">
+                <a class="govuk-link" (click)="cancelLinkToParent($event)" href="#"
+                  >Link to a parent workplace (request pending)</a
+                >
+              </ng-container>
+              <ng-template #dialogLinkParentRequestPending>
+                <a class="govuk-link" (click)="cancelLinkToParent($event)" href="#"
+                  >Link to my parent organisation pending</a
+                >
+              </ng-template>
             </ng-container>
             <ng-template #requestLinkToParent>
-              <a class="govuk-link" (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
+              <ng-container *ngIf="newHomeDesignParentFlag; else dialogLinkParentRequest">
+                <a class="govuk-link" [routerLink]="['/link-to-parent']">Link to a parent workplace</a>
+              </ng-container>
+              <ng-template #dialogLinkParentRequest>
+                <a class="govuk-link" (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
+              </ng-template>
             </ng-template>
           </app-link-with-arrow>
 
