@@ -103,6 +103,7 @@
       </div>
     </dl>
 
+    <ng-container *ngIf="displayLaSection">
     <h2 class="govuk-heading-m">Local Authority</h2>
     <dl class="govuk-summary-list asc-summarylist-border-top">
       <div class="govuk-summary-list__row">
@@ -110,7 +111,7 @@
         <dd class="govuk-summary-list__value">
           <!-- TODO function -->
           <!-- <select (ngModelChange)="updateLocalAuthority($event)" (ngModel)="localAuthorities"></select> -->
-          <select (ngModel)="localAuthorities">
+          <select (ngModel)="localAuthorities" name="localAuthority">
             <option *ngFor="let la of localAuthorities" [ngValue]="la.id">
                 {{la.localAuthority}}
             </option>
@@ -118,6 +119,7 @@
         </dd>
       </div>
     </dl>
+    </ng-container>
 
     <h2 class="govuk-heading-m govuk-!-margin-top-8">Account details</h2>
     <dl class="govuk-summary-list asc-summarylist-border-top">

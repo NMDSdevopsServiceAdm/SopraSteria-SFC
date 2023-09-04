@@ -6,16 +6,6 @@ const getLocalAuthoritiesList = async (req, res) => {
   try {
     const localAuthorities = await models.cssr.findAll({attributes: ['id', 'name', 'localAuthority', 'localCustodianCode']});
 
-    // let result = []
-    // for(let la in localAuthorities) {
-    //   result.push({
-    //     'id': la.id,
-    //     'name': la.name,
-    //     'localAuthority': la.localAuthority,
-    //     'localCustodianCode': la.localCustodianCode,
-    //   })
-    // }
-    console.log(localAuthorities);
     return res.status(200).send(localAuthorities);
   } catch (error) {
     console.error(error);

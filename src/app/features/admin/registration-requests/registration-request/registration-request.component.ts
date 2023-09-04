@@ -12,6 +12,7 @@ import { SwitchWorkplaceService } from '@core/services/switch-workplace.service'
 import { RegistrationRequestDirective } from '@shared/directives/admin/registration-requests/registration-request.directive';
 import { LocalAuthoritiesService } from '@core/services/admin/local-authorities/local-authorities.service';
 import { CSSR } from '@core/model/cssr.model';
+import { LAs } from '@core/model/admin/local-authorities-return.model'
 
 import { ApprovalOrRejectionDialogComponent } from '../../components/approval-or-rejection-dialog/approval-or-rejection-dialog.component';
 
@@ -27,6 +28,7 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
   public checkBoxError: string;
   public approvalOrRejectionServerError: string;
   public localAuthorities: CSSR;
+  public displayLaSection: boolean;
 
   constructor(
     public localAuthorityService: LocalAuthoritiesService,
@@ -44,8 +46,17 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
 
   protected init(): void {
     this.userFullName = this.route.snapshot.data.loggedInUser.fullname;
-    this.localAuthorityService.getLAsList().subscribe(list => this.localAuthorities = list);
+    this.initialiseLocalAuthority();
     this.setupForm();
+  }
+
+  private initialiseLocalAuthority() {
+    this.displayLaSection = false;
+    const nmdsIdLetters = ['B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
+    if (nmdsIdLetters.filter(key => key === this.registration.establishment.nmdsId[0]).length === 0) {
+      this.displayLaSection = true;
+    }
+    this.localAuthorityService.getLAsList().subscribe(list => this.localAuthorities = list);
   }
 
   get nmdsId(): AbstractControl {
@@ -59,6 +70,9 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
         Validators.minLength(8),
         Validators.maxLength(8),
       ]),
+      localAuthority: new UntypedFormControl(null, [
+        Validators.required
+      ])
     });
   }
 
@@ -98,6 +112,31 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
         });
       }
     });
+  }
+
+  public updateLocalAuthority(e): void {
+    // if (this.nmdsId.invalid) {
+    //   this.invalidWorkplaceIdEntered = true;
+    //   return;
+    // }
+
+    // const body = {
+    //   uid: this.registration.establishment.uid,
+    //   nmdsId: this.nmdsId.value,
+    // };
+
+    // this.registrationsService.updateWorkplaceId(body).subscribe(
+    //   () => {
+    //     this.getUpdatedRegistration();
+    //     this.showWorkplaceIdUpdatedAlert();
+    //   },
+    //   (err) => {
+    //     this.invalidWorkplaceIdEntered = true;
+    //     if (err instanceof HttpErrorResponse) {
+    //       this.populateErrorFromServer(err);
+    //     }
+    //   },
+    // );
   }
 
   protected setBreadcrumbs(): void {
