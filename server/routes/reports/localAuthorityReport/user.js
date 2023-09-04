@@ -104,7 +104,7 @@ const identifyLocalAuthority = async (postcode) => {
   const fuzzyCssrIdMatch = await models.sequelize.query(
     `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like '${escape(
       firstHalfOfPostcode,
-    )}%' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR"`,
+    )}%' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
     {
       type: models.sequelize.QueryTypes.SELECT,
     },
