@@ -21,5 +21,6 @@ export class DashboardWrapperComponent implements OnInit {
     this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
     this.newHomeDesignFlag = this.featureFlagsService.newHomeDesignFlag;
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
+    this.subsAccount = this.establishmentService.primaryWorkplace?.parentName ? true : false;
   }
 }
