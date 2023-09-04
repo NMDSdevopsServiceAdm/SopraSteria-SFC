@@ -515,6 +515,46 @@ describe('NewHomeTabComponent', () => {
         });
       });
     });
+
+    describe('Data owner', () => {
+      describe('isOwnershipRequested is true', () => {
+        it('shows "data request pending"', async () => {
+          const { component, fixture, getByText } = await setup();
+
+          component.isOwnershipRequested = true;
+          fixture.detectChanges();
+
+          expect(getByText('Data request pending')).toBeTruthy();
+        });
+      });
+
+      it('shows "Change data owner" when isOwnershipRequested is false', async () => {
+        const { component, fixture, getByText, queryByText } = await setup();
+
+        component.isOwnershipRequested = false;
+        fixture.detectChanges();
+
+        expect(getByText('Change data owner')).toBeTruthy();
+      });
+
+      it('should show a dialog to confirm you want to change data ownership', async () => {
+        const { component, fixture, getByText } = await setup();
+
+        component.isOwnershipRequested = false;
+        fixture.detectChanges();
+
+        const changeDataOwnerLink = getByText('Change data owner');
+
+        fireEvent.click(changeDataOwnerLink);
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+        const dialogMessage = 'Send a request to change ownership of data';
+
+        expect(dialog).toBeTruthy();
+        expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+      });
+    });
   });
 
   it('should link to the first login wizard page when clicking "Help to get you started"', async () => {

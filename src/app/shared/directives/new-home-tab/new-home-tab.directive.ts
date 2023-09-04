@@ -19,6 +19,11 @@ import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
@@ -72,6 +77,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public isParentApprovedBannerViewed: boolean;
   public isOwnershipRequested = false;
   public canAddWorker: boolean;
+  public ownershipChangeRequestId: any = [];
 
   constructor(
     private userService: UserService,
@@ -328,6 +334,111 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
 
   public goToAboutParentsLink(): void {
     this.router.navigate(['/about-parents']);
+  }
+
+  private changeDataOwnerLink(): void {
+    this.isOwnershipRequested = !this.isOwnershipRequested;
+  }
+
+  public onChangeDataOwner($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(ChangeDataOwnerDialogComponent, this.workplace);
+    dialog.afterClosed.subscribe((changeDataOwnerConfirmed) => {
+      if (changeDataOwnerConfirmed) {
+        this.changeDataOwnerLink();
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({
+          type: 'success',
+          message: `Request to change data owner has been sent to ${this.workplace.parentName} `,
+        });
+      }
+    });
+  }
+
+  public cancelChangeDataOwnerRequest($event: Event) {
+    $event.preventDefault();
+    this.ownershipChangeRequestId = [];
+    this.subscriptions.add(
+      this.establishmentService.changeOwnershipDetails(this.workplace.uid).subscribe(
+        (data) => {
+          if (data && data.length > 0) {
+            data.forEach((element) => {
+              this.ownershipChangeRequestId.push(element.ownerChangeRequestUID);
+            });
+            this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
+            const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
+            dialog.afterClosed.subscribe((cancelDataOwnerConfirmed) => {
+              if (cancelDataOwnerConfirmed) {
+                this.changeDataOwnerLink();
+                this.router.navigate(['/dashboard']);
+                this.alertService.addAlert({
+                  type: 'success',
+                  message: 'Request to change data owner has been cancelled ',
+                });
+              }
+            });
+          }
+        },
+        (error) => {
+          console.error(error.error.message);
+        },
+      ),
+    );
+  }
+
+  /**
+   * This function is used to open a conditional dialog window
+   * open ownership change message dialog if canViewChangeDataOwner flag is true
+   * else remove link to parent dialog.
+   * This method is also reset the current estrablishment and permissions after delink api return 200
+   * from LinkToParentRemoveDialogComponent.
+   *
+   * @param {event} triggred event
+   * @return {void}
+   */
+  public removeLinkToParent($event: Event) {
+    $event.preventDefault();
+    let dialog;
+    if (this.canViewChangeDataOwner) {
+      dialog = this.dialogService.open(OwnershipChangeMessageDialogComponent, this.workplace);
+    } else {
+      dialog = this.dialogService.open(LinkToParentRemoveDialogComponent, this.workplace);
+    }
+    dialog.afterClosed.subscribe((returnToClose) => {
+      if (returnToClose) {
+        //if return  from LinkToParentRemoveDialogComponent then proceed to delink request
+        if (returnToClose.closeFrom === 'remove-link') {
+          this.establishmentService.getEstablishment(this.workplace.uid).subscribe((workplace) => {
+            if (workplace) {
+              //get permission and reset latest value
+              this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermission) => {
+                if (hasPermission) {
+                  this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
+                  this.establishmentService.setState(workplace);
+                  this.establishmentService.setPrimaryWorkplace(workplace);
+                  this.workplace.parentUid = null; // update on @input object
+                  this.setPermissionLinks();
+                  this.router.navigate(['/dashboard']);
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `You're no longer linked to your parent organisation.`,
+                  });
+                }
+              });
+            }
+          });
+        }
+        //if return from OwnershipChangeMessageDialogComponent then open change data owner dialog in case
+        //of isOwnershipRequested flag false else cancel change data owner dialog .
+        if (returnToClose.closeFrom === 'ownership-change') {
+          if (this.isOwnershipRequested) {
+            this.cancelChangeDataOwnerRequest($event);
+          } else {
+            this.onChangeDataOwner($event);
+          }
+        }
+      }
+    });
   }
 
   ngOnDestroy(): void {

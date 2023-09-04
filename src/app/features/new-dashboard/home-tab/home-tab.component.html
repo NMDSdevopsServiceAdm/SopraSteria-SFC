@@ -113,6 +113,14 @@
             </ng-template>
           </app-link-with-arrow>
 
+          <app-link-with-arrow *ngIf="canViewChangeDataOwner"
+            ><ng-container *ngIf="isOwnershipRequested; else changeDataOwner">
+              <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
+            </ng-container>
+            <ng-template #changeDataOwner>
+              <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>
+            </ng-template></app-link-with-arrow
+          >
           <app-link-with-arrow>
             <a class="govuk-link" [routerLink]="['/first-login-wizard']">Help to get you started</a>
           </app-link-with-arrow>
