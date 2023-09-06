@@ -451,6 +451,43 @@ class Establishment extends EntityValidator {
     }
   }
 
+  async getNmdsLetter(cssrResults) {
+    if (
+      cssrResults &&
+      cssrResults.postcode === this._postcode &&
+      cssrResults.theAuthority &&
+      cssrResults.theAuthority.id &&
+      Number.isInteger(cssrResults.theAuthority.id)
+    ) {
+      nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
+    } else {
+      // No direct match so do the fuzzy match
+      // this._postcode
+      const [firstHalfOfPostcode] = postcode.split(' ');
+      const fuzzyCssrNmdsIdMatch = await models.sequelize.query(
+        `select "Cssr"."NmdsIDLetter"
+          from cqcref.pcodedata, cqc."Cssr"
+          where postcode like '${escape(firstHalfOfPostcode)}%'
+          and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode"
+          group by "Cssr"."NmdsIDLetter"
+          limit 1`,
+        {
+          type: models.sequelize.QueryTypes.SELECT,
+        },
+      );
+
+      if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
+        nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
+      }
+    }
+
+    // catch all - because we don't want new establishments failing just because of old postcode data
+    if (nmdsLetter === null) {
+      nmdsLetter = 'W';
+    }
+    return nmdsIdLetter;
+  }
+
   theWorker(key) {
     return this._workerEntities && key ? this._workerEntities[key] : null;
   }
@@ -770,39 +807,7 @@ class Establishment extends EntityValidator {
           ],
         });
 
-        let nmdsLetter = null;
-        if (
-          cssrResults &&
-          cssrResults.postcode === this._postcode &&
-          cssrResults.theAuthority &&
-          cssrResults.theAuthority.id &&
-          Number.isInteger(cssrResults.theAuthority.id)
-        ) {
-          nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
-        } else {
-          // No direct match so do the fuzzy match
-          const [firstHalfOfPostcode] = 'postcode'.split(' ');
-          const fuzzyCssrNmdsIdMatch = await models.sequelize.query(
-            `select "Cssr"."NmdsIDLetter"
-              from cqcref.pcodedata, cqc."Cssr"
-              where postcode like '${escape(firstHalfOfPostcode)}%'
-              and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode"
-              group by "Cssr"."NmdsIDLetter"
-              limit 1`,
-            {
-              type: models.sequelize.QueryTypes.SELECT,
-            },
-          );
-
-          if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
-            nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
-          }
-        }
-
-        // catch all - because we don't want new establishments failing just because of old postcode data
-        if (nmdsLetter === null) {
-          nmdsLetter = 'W';
-        }
+        let nmdsLetter = getNmdsLetter();
 
         let nextNmdsIdSeqNumber = 0;
         const nextNmdsIdSeqNumberResults = await models.sequelize.query('SELECT nextval(\'cqc."NmdsID_seq"\')', {

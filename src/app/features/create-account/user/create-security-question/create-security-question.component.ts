@@ -52,6 +52,7 @@ export class SecurityQuestionComponent extends SecurityQuestionDirective {
     this.backLinkService.showBackLink();
   }
 
+  // TODO REF!
   protected save(): void {
     this.router.navigate(['/registration/confirm-details']).then(() => {
       this.registrationService.securityDetails$.next({
