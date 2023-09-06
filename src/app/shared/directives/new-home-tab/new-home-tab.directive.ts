@@ -23,6 +23,7 @@ import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-o
 import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import saveAs from 'file-saver';
@@ -96,16 +97,10 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const {
-      workersCreatedDate,
-      workerCount = 0,
-      trainingCounts,
-      workersNotCompleted,
-    } = this.route.snapshot.data.workers;
-    this.workersCreatedDate = workersCreatedDate;
-    this.workerCount = workerCount;
-    this.trainingCounts = trainingCounts;
-    this.workersNotCompleted = workersNotCompleted;
+    this.workersCreatedDate = this.route.snapshot.data.workers?.workersCreatedDate;
+    this.workerCount = this.route.snapshot.data.workers?.workerCount;
+    this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
+    this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
 
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
@@ -351,6 +346,21 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     if (parentStatusRequestedState || parentStatusRequestedState === false) {
       this.parentStatusRequested = parentStatusRequestedState;
     }
+  }
+
+  public setDataPermissions($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
+    dialog.afterClosed.subscribe((setPermissionConfirmed) => {
+      if (setPermissionConfirmed) {
+        this.changeDataOwnerLink();
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({
+          type: 'success',
+          message: `Data permissions for ${this.workplace.parentName} have been set.`,
+        });
+      }
+    });
   }
 
   private changeDataOwnerLink(): void {

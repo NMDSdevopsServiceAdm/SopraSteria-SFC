@@ -22,13 +22,14 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByText, queryByTestId, render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
-
+import { DialogService } from '@core/services/dialog.service';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
 import { SummarySectionComponent } from './summary-section/summary-section.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 
 const MockWindow = {
   dataLayer: {
@@ -45,12 +46,14 @@ describe('NewHomeTabComponent', () => {
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
   ) => {
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId, getByRole } = await render(
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId, getByRole, getByLabelText } = await render(
       NewHomeTabComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
         providers: [
           WindowRef,
+          AlertService,
+          DialogService,
           {
             provide: FeatureFlagsService,
             useClass: MockFeatureFlagsService,
@@ -90,7 +93,12 @@ describe('NewHomeTabComponent', () => {
           },
           { provide: WindowToken, useValue: MockWindow },
         ],
-        declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
+        declarations: [
+          NewDashboardHeaderComponent,
+          NewArticleListComponent,
+          SummarySectionComponent,
+          OwnershipChangeMessageDialogComponent,
+        ],
         componentProperties: {
           workplace: establishment,
           meta: comparisonDataAvailable
@@ -127,6 +135,7 @@ describe('NewHomeTabComponent', () => {
       tabsServiceSpy,
       getByRole,
       routerSpy,
+      getByLabelText,
     };
   };
 
@@ -317,79 +326,79 @@ describe('NewHomeTabComponent', () => {
           expect(linkToParentLink).toBeTruthy();
         });
       });
-    });
 
-    describe('with parent home tab feature flag', () => {
-      it('should not show Link to a parent workplace pending before requesting', async () => {
-        const { component, fixture, queryByText } = await setup();
+      describe('with parent home tab feature flag', () => {
+        it('should not show Link to a parent workplace pending before requesting', async () => {
+          const { component, fixture, queryByText } = await setup();
 
-        component.workplace.isParent = false;
-        component.canLinkToParent = true;
-        component.canBecomeAParent = true;
-        component.linkToParentRequestedStatus = false;
-        component.parentStatusRequested = false;
-        component.newHomeDesignParentFlag = true;
+          component.workplace.isParent = false;
+          component.canLinkToParent = true;
+          component.canBecomeAParent = true;
+          component.linkToParentRequestedStatus = false;
+          component.parentStatusRequested = false;
+          component.newHomeDesignParentFlag = true;
 
-        fixture.detectChanges();
+          fixture.detectChanges();
 
-        const expectedMessage = 'Link to a parent workplace (request pending)';
-        expect(queryByText(expectedMessage)).toBeFalsy();
-        expect(queryByText('Link to a parent workplace')).toBeTruthy();
-        expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeTruthy();
-      });
+          const expectedMessage = 'Link to a parent workplace (request pending)';
+          expect(queryByText(expectedMessage)).toBeFalsy();
+          expect(queryByText('Link to a parent workplace')).toBeTruthy();
+          expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeTruthy();
+        });
 
-      it('should show the link to parent link with the correct href', async () => {
-        const { component, fixture, getByText } = await setup();
+        it('should show the link to parent link with the correct href', async () => {
+          const { component, fixture, getByText } = await setup();
 
-        component.workplace.isParent = false;
-        component.canLinkToParent = true;
-        component.canBecomeAParent = true;
-        component.linkToParentRequestedStatus = false;
-        component.parentStatusRequested = false;
-        component.newHomeDesignParentFlag = true;
+          component.workplace.isParent = false;
+          component.canLinkToParent = true;
+          component.canBecomeAParent = true;
+          component.linkToParentRequestedStatus = false;
+          component.parentStatusRequested = false;
+          component.newHomeDesignParentFlag = true;
 
-        fixture.detectChanges();
+          fixture.detectChanges();
 
-        const linkToParentLink = getByText('Link to a parent workplace');
-        expect(linkToParentLink).toBeTruthy();
-        expect(linkToParentLink.getAttribute('href')).toEqual('/link-to-parent');
-      });
+          const linkToParentLink = getByText('Link to a parent workplace');
+          expect(linkToParentLink).toBeTruthy();
+          expect(linkToParentLink.getAttribute('href')).toEqual('/link-to-parent');
+        });
 
-      it('should show Link to a parent workplace pending after requesting', async () => {
-        const { component, fixture, queryByText } = await setup();
+        it('should show Link to a parent workplace pending after requesting', async () => {
+          const { component, fixture, queryByText } = await setup();
 
-        component.workplace.isParent = false;
-        component.canLinkToParent = true;
-        component.linkToParentRequestedStatus = true;
-        component.newHomeDesignParentFlag = true;
+          component.workplace.isParent = false;
+          component.canLinkToParent = true;
+          component.linkToParentRequestedStatus = true;
+          component.newHomeDesignParentFlag = true;
 
-        fixture.detectChanges();
+          fixture.detectChanges();
 
-        const expectedMessage = 'Link to a parent workplace (request pending)';
-        expect(queryByText(expectedMessage)).toBeTruthy();
+          const expectedMessage = 'Link to a parent workplace (request pending)';
+          expect(queryByText(expectedMessage)).toBeTruthy();
 
-        expect(queryByText('Link to a parent workplace')).toBeFalsy();
-        expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeFalsy();
-      });
+          expect(queryByText('Link to a parent workplace')).toBeFalsy();
+          expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeFalsy();
+        });
 
-      it('should show an alert banner after requesting to link to a parent', async () => {
-        const { component, fixture, alertServiceSpy } = await setup();
+        it('should show an alert banner after requesting to link to a parent', async () => {
+          const { component, fixture, alertServiceSpy } = await setup();
 
-        component.workplace.isParent = false;
-        component.canLinkToParent = true;
-        component.linkToParentRequestedStatus = true;
-        component.newHomeDesignParentFlag = true;
+          component.workplace.isParent = false;
+          component.canLinkToParent = true;
+          component.linkToParentRequestedStatus = true;
+          component.newHomeDesignParentFlag = true;
 
-        const message = `You've sent a link request`;
+          const message = `You've sent a link request`;
 
-        window.history.pushState({ successAlertMessage: message }, '', '');
+          window.history.pushState({ successAlertMessage: message }, '', '');
 
-        fixture.detectChanges();
-        component.ngOnInit();
+          fixture.detectChanges();
+          component.ngOnInit();
 
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: message,
+          expect(alertServiceSpy).toHaveBeenCalledWith({
+            type: 'success',
+            message: message,
+          });
         });
       });
     });
@@ -621,51 +630,187 @@ describe('NewHomeTabComponent', () => {
     });
 
     describe('Data owner', () => {
-      describe('isOwnershipRequested is true', () => {
-        it('shows "data request pending"', async () => {
+      it('should not show a link if canViewChangeDataOwner is false', async () => {
+        const { component, fixture, queryByText } = await setup();
+
+        component.canViewChangeDataOwner = false;
+        fixture.detectChanges();
+
+        expect(queryByText('Change data owner')).toBeFalsy();
+        expect(queryByText('Data request pending')).toBeFalsy();
+      });
+
+      describe('isOwnershipRequested is false', () => {
+        it('shows "Change data owner" when isOwnershipRequested is false', async () => {
           const { component, fixture, getByText } = await setup();
 
-          component.isOwnershipRequested = true;
+          component.isOwnershipRequested = false;
           fixture.detectChanges();
 
-          expect(getByText('Data request pending')).toBeTruthy();
+          expect(getByText('Change data owner')).toBeTruthy();
+        });
+
+        it('should show a change data owner dialog', async () => {
+          const { component, fixture, getByText } = await setup();
+
+          component.isOwnershipRequested = false;
+          fixture.detectChanges();
+
+          const changeDataOwnerLink = getByText('Change data owner');
+
+          fireEvent.click(changeDataOwnerLink);
+          fixture.detectChanges();
+
+          const dialog = await within(document.body).findByRole('dialog');
+          const dialogMessage = 'Send a request to change ownership of data';
+          const requestDataOwnershipChangeButton = within(dialog).getByText('Save and return');
+          const cancelLink = within(dialog).getByText('Cancel');
+
+          expect(dialog).toBeTruthy();
+          expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+          expect(requestDataOwnershipChangeButton).toBeTruthy();
+          expect(cancelLink).toBeTruthy();
+
+          fireEvent.click(cancelLink);
         });
       });
 
-      it('shows "Change data owner" when isOwnershipRequested is false', async () => {
-        const { component, fixture, getByText, queryByText } = await setup();
-
-        component.isOwnershipRequested = false;
-        fixture.detectChanges();
-
-        expect(getByText('Change data owner')).toBeTruthy();
-      });
-
-      it('should show a dialog to confirm you want to change data ownership', async () => {
+      it('shows "data request pending" when ownership has been requested', async () => {
         const { component, fixture, getByText } = await setup();
 
-        component.isOwnershipRequested = false;
+        component.isOwnershipRequested = true;
         fixture.detectChanges();
 
-        const changeDataOwnerLink = getByText('Change data owner');
+        expect(getByText('Data request pending')).toBeTruthy();
+      });
+    });
 
-        fireEvent.click(changeDataOwnerLink);
+    describe('set data permissions', () => {
+      it('does not show the set data permissions link if canViewDataPermissionsLink is false', async () => {
+        const { component, fixture, queryByText } = await setup();
+
+        component.canViewDataPermissionsLink = false;
+        fixture.detectChanges();
+        const setDataPermissionsLink = queryByText('Set data permissions');
+
+        expect(setDataPermissionsLink).toBeFalsy();
+      });
+
+      it('shows the set data permissions link if canViewDataPermissionsLink is true', async () => {
+        const { component, fixture, getByText } = await setup();
+
+        component.canViewDataPermissionsLink = true;
+        fixture.detectChanges();
+        const setDataPermissionsLink = getByText('Set data permissions');
+
+        expect(setDataPermissionsLink).toBeTruthy();
+      });
+
+      it('should show a dialog to set data permissions', async () => {
+        const { component, fixture, getByText } = await setup();
+
+        component.canViewDataPermissionsLink = true;
+        fixture.detectChanges();
+
+        const setDataPermissionsLink = getByText('Set data permissions');
+
+        fireEvent.click(setDataPermissionsLink);
         fixture.detectChanges();
 
         const dialog = await within(document.body).findByRole('dialog');
-        const dialogMessage = 'Send a request to change ownership of data';
+
+        const dialogMessage = within(dialog).getByText('Set data permissions', { exact: false });
+        const setPermissionsButton = within(dialog).getByText('Set Permissions');
+        const cancelLink = within(dialog).getByText('Cancel');
 
         expect(dialog).toBeTruthy();
-        expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+        expect(dialogMessage).toBeTruthy();
+        expect(setPermissionsButton).toBeTruthy();
+        expect(cancelLink).toBeTruthy();
       });
     });
-  });
 
-  it('should link to the first login wizard page when clicking "Help to get you started"', async () => {
-    const { getByText } = await setup();
+    describe('remove parent association', () => {
+      it('should not not show link if canRemoveParentAssociation is false', async () => {
+        const { component, fixture, queryByText } = await setup();
+        component.canRemoveParentAssociation = false;
+        fixture.detectChanges();
 
-    const firstLoginWizardLink = getByText('Help to get you started');
-    expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
+        const removeLinkToParentLink = queryByText('Remove link to my parent organisation');
+
+        expect(removeLinkToParentLink).toBeFalsy();
+      });
+
+      it('should show link if canRemoveParentAssociation is true', async () => {
+        const { component, fixture, getByText } = await setup();
+        component.canRemoveParentAssociation = true;
+        fixture.detectChanges();
+
+        const removeLinkToParentLink = getByText('Remove link to my parent organisation');
+
+        expect(removeLinkToParentLink).toBeTruthy();
+      });
+
+      it('should show the request to change data ownership dialog if the sub owns the data', async () => {
+        const { component, fixture, getByText } = await setup();
+        component.canRemoveParentAssociation = true;
+        component.canViewChangeDataOwner = true;
+
+        fixture.detectChanges();
+
+        const removeLinkToParentLink = getByText('Remove link to my parent organisation');
+
+        fireEvent.click(removeLinkToParentLink);
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+
+        const dialogMessage = within(dialog).getByText(
+          'To remove the link to your parent organisation, you must own your data',
+          { exact: false },
+        );
+        const changeofOwnershipLink = within(dialog).getByText('Send a request to change ownership of data');
+        const cancelLink = within(dialog).getByText('Cancel');
+
+        expect(dialog).toBeTruthy();
+        expect(dialogMessage).toBeTruthy();
+        expect(changeofOwnershipLink).toBeTruthy();
+        expect(cancelLink).toBeTruthy();
+      });
+
+      it('should show the correct dialog if the sub does own the data', async () => {
+        const { component, fixture, getByText } = await setup();
+        component.canRemoveParentAssociation = true;
+        component.canViewChangeDataOwner = false;
+
+        fixture.detectChanges();
+
+        const removeLinkToParentLink = getByText('Remove link to my parent organisation');
+
+        fireEvent.click(removeLinkToParentLink);
+        fixture.detectChanges();
+
+        const dialog = await within(document.body).findByRole('dialog');
+
+        const dialogMessage = within(dialog).getByText("You're about to remove your link to your parent organisation", {
+          exact: false,
+        });
+        const changeofOwnershipButton = within(dialog).getByText('Continue');
+        const cancelLink = within(dialog).getByText('Cancel');
+
+        expect(dialog).toBeTruthy();
+        expect(dialogMessage).toBeTruthy();
+        expect(changeofOwnershipButton).toBeTruthy();
+        expect(cancelLink).toBeTruthy();
+      });
+    });
+
+    it('should link to the first login wizard page when clicking "Help to get you started"', async () => {
+      const { getByText } = await setup();
+
+      const firstLoginWizardLink = getByText('Help to get you started');
+      expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
+    });
   });
 
   describe('cards', () => {

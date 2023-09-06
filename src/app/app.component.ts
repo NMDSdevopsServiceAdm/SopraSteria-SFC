@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
       if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
       this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
-      this.subsAccount = this.establishmentService.primaryWorkplace.parentName ? true : false;
+      this.subsAccount = this.establishmentService.primaryWorkplace?.parentName ? true : false;
 
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {
