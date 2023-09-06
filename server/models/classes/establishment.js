@@ -781,7 +781,7 @@ class Establishment extends EntityValidator {
           nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
         } else {
           // No direct match so do the fuzzy match
-          const [firstHalfOfPostcode] = 'postcode'.split(' ');
+          const [firstHalfOfPostcode] = postcode.split(' ');
           const fuzzyCssrNmdsIdMatch = await models.sequelize.query(
             `select "Cssr"."NmdsIDLetter"
               from cqcref.pcodedata, cqc."Cssr"
