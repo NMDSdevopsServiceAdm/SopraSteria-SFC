@@ -762,7 +762,8 @@ class Establishment extends EntityValidator {
     if (mustSave && this._isNew) {
       // create new Establishment
       try {
-        // when creating an establishment, need to calculate it's NMDS ID, which is combination of postcode area and sequence.
+        // when creating an establishment, need to calculate it's NMDS ID, which is..
+        // combination of postcode area and sequence.
         const cssrResults = await models.pcodedata.findOne({
           where: {
             postcode: this._postcode,
@@ -781,18 +782,38 @@ class Establishment extends EntityValidator {
         if (cssrResults) {
           this._localCustodianCode = cssrResults.local_custodian_code
         } else {
-          const [firstHalfOfPostcode] = this._postcode.split(' ');
 
-          const fuzzyLocalCustodianCode = await models.sequelize.query(
-            `select "Cssr"."LocalCustodianCode"
-              from cqcref.pcodedata, cqc."Cssr"
-              where postcode like '${escape(firstHalfOfPostcode)}%'
-              group by "Cssr"."LocalCustodianCode"
-              limit 1`,
-            {
-              type: models.sequelize.QueryTypes.SELECT,
-            },
-          );
+          try{
+            const firstHalfOfPostcode = this._postcode.split(' ')[0];
+          } catch (error) {
+            console.error(error);
+            throw new Error(error);
+          }
+
+          const fuzzyLocalCustodianCode = await models.CSSR.findAll({
+            include: [{
+              model: models.pcodedata,
+              where: {
+                postcode: {
+                  [Op.like]: '$%{(firstHalfOfPostcode%)}%'
+                }
+              },
+              required: true
+             }]
+          }).then(cssrs => {
+            console.log(cssrs) //TODO!!!
+          });
+
+          // const fuzzyLocalCustodianCode = await models.sequelize.query(
+          //   `select "Cssr"."LocalCustodianCode"
+          //     from cqcref.pcodedata, cqc."Cssr"
+          //     where postcode like '${escape(firstHalfOfPostcode)}%'
+          //     group by "Cssr"."LocalCustodianCode"
+          //     limit 1`,
+          //   {
+          //     type: models.sequelize.QueryTypes.SELECT,
+          //   },
+          // );
 
           if (fuzzyLocalCustodianCode[0]) {
             this._localCustodianCode = fuzzyCssrNmdsIdMatch[0].localCustodianCode;
