@@ -782,15 +782,16 @@ class Establishment extends EntityValidator {
         if (cssrResults) {
           this._localCustodianCode = cssrResults.local_custodian_code
         } else {
+          // try{
+          //   const firstHalfOfPostcode = this._postcode.split(' ')[0];
+          // } catch (error) {
+          //   console.error(error);
+          //   throw new Error(error);
+          // }
 
-          try{
-            const firstHalfOfPostcode = this._postcode.split(' ')[0];
-          } catch (error) {
-            console.error(error);
-            throw new Error(error);
-          }
+          const firstHalfOfPostcode = this._postcode.split(' ')[0];
 
-          const fuzzyLocalCustodianCode = await models.CSSR.findAll({
+          const fuzzyLocalCustodianCode = models.CSSR.findAll({
             include: [{
               model: models.pcodedata,
               where: {
@@ -801,7 +802,7 @@ class Establishment extends EntityValidator {
               required: true
              }]
           }).then(cssrs => {
-            console.log(cssrs) //TODO!!!
+            console.log(cssrs) //TODO!!! Should never fail with valid postcode
           });
 
           // const fuzzyLocalCustodianCode = await models.sequelize.query(
