@@ -1,3 +1,4 @@
+
 /*
  * establishment.js
  *
@@ -66,6 +67,7 @@ class Establishment extends EntityValidator {
     this._town = null;
     this._county = null;
     this._locationId = null;
+    this._localCustodianCode = null;
     this._provId = null;
     this._postcode = null;
     this._isRegulated = null;
@@ -208,6 +210,10 @@ class Establishment extends EntityValidator {
 
   get locationId() {
     return this._locationId;
+  }
+
+  get localCustodianCode() {
+    return this._localCustodianCode;
   }
 
   get provId() {
@@ -770,6 +776,31 @@ class Establishment extends EntityValidator {
           ],
         });
 
+        //--------------------------- MOVE ME! ----------------------------
+
+        if (cssrResults) {
+          this._localCustodianCode = cssrResults.local_custodian_code
+        } else {
+          const [firstHalfOfPostcode] = this._postcode.split(' ');
+
+          const fuzzyLocalCustodianCode = await models.sequelize.query(
+            `select "Cssr"."LocalCustodianCode"
+              from cqcref.pcodedata, cqc."Cssr"
+              where postcode like '${escape(firstHalfOfPostcode)}%'
+              group by "Cssr"."LocalCustodianCode"
+              limit 1`,
+            {
+              type: models.sequelize.QueryTypes.SELECT,
+            },
+          );
+
+          if (fuzzyLocalCustodianCode[0]) {
+            this._localCustodianCode = fuzzyCssrNmdsIdMatch[0].localCustodianCode;
+          }
+        }
+
+        //--------------------------- MOVE ME! ----------------------------
+
         let nmdsLetter = null;
         if (
           cssrResults &&
@@ -801,6 +832,7 @@ class Establishment extends EntityValidator {
 
         // catch all - because we don't want new establishments failing just because of old postcode data
         if (nmdsLetter === null) {
+          //log error
           nmdsLetter = 'W';
         }
 
@@ -1000,7 +1032,7 @@ class Establishment extends EntityValidator {
           }
         }
 
-        // and foreign key constaint to Location
+        // and foreign key constraint to Location
         if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
           throw new EstablishmentExceptions.EstablishmentSaveException(
             null,
@@ -1044,6 +1076,7 @@ class Establishment extends EntityValidator {
             source: bulkUploaded ? 'Bulk' : 'Online',
             isRegulated: this._isRegulated, // to remove when a change managed property
             locationId: this._locationId, // to remove when a change managed property
+            localCustodianCode: this._localCustodianCode,
             provId: this._provId, // to remove when a change managed property
             address1: this._address1,
             address2: this._address2,

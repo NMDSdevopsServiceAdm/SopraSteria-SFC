@@ -154,6 +154,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"LocationID"',
       },
+      localCustodianCode: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"LocalCustodianCode"',
+      },
       LocationIdSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
