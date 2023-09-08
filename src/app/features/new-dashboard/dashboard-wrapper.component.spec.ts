@@ -102,45 +102,100 @@ describe('DashboardWrapperComponent', () => {
   });
 
   describe('sub account', () => {
-    it('should render the sub dashboard if the establishment is not a stand alone account or parent and the new home design feature flag is true', async () => {
-      const { component, fixture, getByTestId, queryByTestId } = await setup();
+    describe('with subsAccount set to false', () => {
+      it('should render the sub dashboard if the establishment is not a stand alone account or parent and the new home design feature flag is true', async () => {
+        const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-      component.standAloneAccount = false;
-      component.newHomeDesignFlag = true;
-      component.parentAccount = false;
-      fixture.detectChanges();
+        component.standAloneAccount = false;
+        component.newHomeDesignFlag = true;
+        component.parentAccount = false;
+        component.subsAccount = false;
+        fixture.detectChanges();
 
-      expect(getByTestId('parentSubDashboard')).toBeTruthy();
-      expect(queryByTestId('parentDashboard')).toBeFalsy();
-      expect(queryByTestId('standAloneDashboard')).toBeFalsy();
+        expect(getByTestId('parentSubDashboard')).toBeTruthy();
+        expect(queryByTestId('parentDashboard')).toBeFalsy();
+        expect(queryByTestId('standAloneDashboard')).toBeFalsy();
+      });
+
+      it('should render the sub dashboard if the establishment is not a stand alone account or parent and the new parent home design feature flag is true', async () => {
+        const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+        component.standAloneAccount = false;
+        component.newHomeDesignFlag = false;
+        component.newHomeDesignParentFlag = true;
+        component.parentAccount = false;
+        component.subsAccount = false;
+        fixture.detectChanges();
+
+        expect(getByTestId('parentSubDashboard')).toBeTruthy();
+        expect(queryByTestId('parentDashboard')).toBeFalsy();
+        expect(queryByTestId('standAloneDashboard')).toBeFalsy();
+      });
+
+      it('should render the sub dashboard if the establishment is not a stand alone account or parent and all feature flags are false', async () => {
+        const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+        component.standAloneAccount = false;
+        component.newHomeDesignFlag = false;
+        component.newHomeDesignParentFlag = false;
+        component.parentAccount = false;
+        component.subsAccount = false;
+        fixture.detectChanges();
+
+        expect(getByTestId('parentSubDashboard')).toBeTruthy();
+        expect(queryByTestId('parentDashboard')).toBeFalsy();
+        expect(queryByTestId('standAloneDashboard')).toBeFalsy();
+      });
     });
 
-    it('should render the sub dashboard if the establishment is not a stand alone account or parent and the new parent home design feature flag is true', async () => {
-      const { component, fixture, getByTestId, queryByTestId } = await setup();
+    describe('with subsAccount set to true', () => {
+      it('should render the parentSubDashboard if the establishment is a sub account and the new home design feature flag is true', async () => {
+        const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-      component.standAloneAccount = false;
-      component.newHomeDesignFlag = false;
-      component.newHomeDesignParentFlag = true;
-      component.parentAccount = false;
-      fixture.detectChanges();
+        component.standAloneAccount = false;
+        component.newHomeDesignFlag = true;
+        component.newHomeDesignParentFlag = false;
+        component.parentAccount = false;
+        component.subsAccount = true;
+        fixture.detectChanges();
 
-      expect(getByTestId('parentSubDashboard')).toBeTruthy();
-      expect(queryByTestId('parentDashboard')).toBeFalsy();
-      expect(queryByTestId('standAloneDashboard')).toBeFalsy();
-    });
+        expect(getByTestId('parentSubDashboard')).toBeTruthy();
+        expect(queryByTestId('parentDashboard')).toBeFalsy();
+        expect(queryByTestId('standAloneDashboard')).toBeFalsy();
+        expect(queryByTestId('subsDashboard')).toBeFalsy();
+      });
 
-    it('should render the sub dashboard if the establishment is not a stand alone account or parent and all feature flags are false', async () => {
-      const { component, fixture, getByTestId, queryByTestId } = await setup();
+      it('should render the subsDashboard if the establishment is a sub account and the new parent home design feature flag is true', async () => {
+        const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-      component.standAloneAccount = false;
-      component.newHomeDesignFlag = false;
-      component.newHomeDesignParentFlag = false;
-      component.parentAccount = false;
-      fixture.detectChanges();
+        component.standAloneAccount = false;
+        component.newHomeDesignFlag = false;
+        component.newHomeDesignParentFlag = true;
+        component.parentAccount = false;
+        component.subsAccount = true;
+        fixture.detectChanges();
 
-      expect(getByTestId('parentSubDashboard')).toBeTruthy();
-      expect(queryByTestId('parentDashboard')).toBeFalsy();
-      expect(queryByTestId('standAloneDashboard')).toBeFalsy();
+        expect(getByTestId('subsDashboard')).toBeTruthy();
+        expect(queryByTestId('parentDashboard')).toBeFalsy();
+        expect(queryByTestId('standAloneDashboard')).toBeFalsy();
+        expect(queryByTestId('parentSubDashboard')).toBeFalsy();
+      });
+
+      it('should render the parentSubDashboard if the establishment is a sub account and all feature flags are false', async () => {
+        const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+        component.standAloneAccount = false;
+        component.newHomeDesignFlag = false;
+        component.newHomeDesignParentFlag = false;
+        component.parentAccount = false;
+        component.subsAccount = true;
+        fixture.detectChanges();
+
+        expect(getByTestId('parentSubDashboard')).toBeTruthy();
+        expect(queryByTestId('parentDashboard')).toBeFalsy();
+        expect(queryByTestId('standAloneDashboard')).toBeFalsy();
+        expect(queryByTestId('subsDashboard')).toBeFalsy();
+      });
     });
   });
 });

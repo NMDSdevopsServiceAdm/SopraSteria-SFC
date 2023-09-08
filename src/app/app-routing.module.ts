@@ -41,6 +41,7 @@ import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satis
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
+import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
 
 const routes: Routes = [
   {
@@ -266,6 +267,11 @@ const routes: Routes = [
         path: 'remove-link-to-parent',
         component: RemoveLinkToParentComponent,
         data: { title: 'remove-link-to-parent' },
+      },
+      {
+        path: 'link-to-parent',
+        component: LinkToParentComponent,
+        data: { title: 'Link to Parent' },
       },
     ],
   },

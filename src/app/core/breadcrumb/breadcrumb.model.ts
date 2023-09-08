@@ -32,6 +32,7 @@ export enum JourneyType {
   OTHER_WORKPLACES,
   BECOME_A_PARENT,
   REMOVE_LINK_TO_PARENT,
+  LINK_TO_PARENT,
 }
 
 export interface JourneyRoute {

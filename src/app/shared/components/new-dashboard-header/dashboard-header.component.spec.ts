@@ -93,6 +93,7 @@ describe('NewDashboardHeaderComponent', () => {
       queryByText,
       establishmentService,
       router,
+      fixture,
     };
   };
 
@@ -143,6 +144,19 @@ describe('NewDashboardHeaderComponent', () => {
 
       expect(column1.getAttribute('class')).toContain('govuk-grid-column-one-half');
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-half');
+    });
+
+    it('should show the parent name for a sub account', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.isParent = false;
+      component.workplace.parentName = 'My parent';
+
+      fixture.detectChanges();
+
+      const parentName = getByTestId('parentNameLabel');
+
+      expect(parentName).toBeTruthy();
     });
   });
 
