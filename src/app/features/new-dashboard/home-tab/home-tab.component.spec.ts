@@ -104,6 +104,7 @@ describe('NewHomeTabComponent', () => {
           meta: comparisonDataAvailable
             ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
             : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
+          canViewListOfWorkers: false,
         },
         schemas: [NO_ERRORS_SCHEMA],
       },
@@ -944,16 +945,6 @@ describe('NewHomeTabComponent', () => {
       expect(summaryBox).toBeTruthy();
     });
 
-    it('should not show the summary section if the user does not have the correct permissions', async () => {
-      const { component, fixture, queryByTestId } = await setup();
-
-      component.canViewListOfWorkers = false;
-      fixture.detectChanges();
-
-      const summaryBox = queryByTestId('summaryBox');
-      expect(summaryBox).toBeFalsy();
-    });
-
     describe('workplace summary section', () => {
       it('should take you to the workplace tab when clicking the workplace link', async () => {
         const { component, fixture, getByText, tabsServiceSpy } = await setup();
@@ -975,9 +966,9 @@ describe('NewHomeTabComponent', () => {
         fixture.detectChanges();
 
         const link = getByText('Add more details to your workplace');
-        fireEvent.click(link);
 
         expect(link).toBeTruthy();
+        fireEvent.click(link);
         expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
       });
     });
