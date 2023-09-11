@@ -1,16 +1,11 @@
 import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-//import { ParentRequestsService } from '@core/services/parent-requests.service';
-
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -30,9 +25,6 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private router: Router,
     private breadcrumbService: BreadcrumbService,
-    private alertService: AlertService,
-    private permissionsService: PermissionsService,
-    private ref: ChangeDetectorRef,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -85,7 +77,6 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
     ];
   }
 
-  // send request to backend for delink to parent
   public removeLinkToParent(): void {
     this.subscriptions.add(
       this.establishmentService
@@ -95,12 +86,9 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
             this.router.navigate(['/dashboard'], {
               state: {
                 successAlertMessage: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`,
+                removeLinkToParentSuccess: true,
               },
             });
-            // this.alertService.addAlert({
-            //   type: 'success',
-            //   message: `You've removed your link to ${this.workplace.parentName}, ${this.workplace.postcode}`,
-            // });
           },
           (error) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

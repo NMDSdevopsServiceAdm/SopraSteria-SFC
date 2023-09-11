@@ -120,6 +120,10 @@ describe('NewHomeTabComponent', () => {
     const tabsService = TestBed.inject(TabsService);
     const tabsServiceSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
       fixture,
@@ -132,6 +136,7 @@ describe('NewHomeTabComponent', () => {
       tabsServiceSpy,
       getByRole,
       getByLabelText,
+      routerSpy,
     };
   };
 
@@ -737,15 +742,48 @@ describe('NewHomeTabComponent', () => {
         expect(removeLinkToParentLink).toBeFalsy();
       });
 
-      it('should show the correct link and href', async () => {
-        const { component, fixture, getByText } = await setup();
-        component.canRemoveParentAssociation = true;
-        fixture.detectChanges();
+      describe('canRemoveParentAssociation is true', () => {
+        it('should show the link ', async () => {
+          const { component, fixture, getByText } = await setup();
+          component.canRemoveParentAssociation = true;
+          fixture.detectChanges();
 
-        const removeLinkToParentlink = getByText(`Remove the link to your parent workplace`);
+          const removeLinkToParentlink = getByText(`Remove the link to your parent workplace`);
 
-        expect(removeLinkToParentlink).toBeTruthy();
-        expect(removeLinkToParentlink.getAttribute('href')).toEqual('/remove-link-to-parent');
+          expect(removeLinkToParentlink).toBeTruthy();
+        });
+
+        it('should show OwnershipChangeMessageDialog if canRemoveParentAssociation is true', async () => {
+          const { component, fixture, getByText } = await setup();
+          component.canRemoveParentAssociation = true;
+          component.isOwnershipRequested = true;
+          fixture.detectChanges();
+
+          const removeLinkToParentlink = getByText(`Remove the link to your parent workplace`);
+          const dialogMessage = 'To remove the link to your parent organisation, you must own your data.';
+
+          fireEvent.click(removeLinkToParentlink);
+          fixture.detectChanges();
+
+          const dialog = await within(document.body).findByRole('dialog');
+
+          expect(dialog).toBeTruthy();
+          expect(within(dialog).getByText(dialogMessage, { exact: false })).toBeTruthy();
+        });
+
+        it('should show remove link to parent if data owner', async () => {
+          const { component, fixture, getByText } = await setup();
+
+          component.canRemoveParentAssociation = true;
+          component.canViewChangeDataOwner = false;
+          component.workplace.dataOwnershipRequested = null;
+          fixture.detectChanges();
+
+          const removeLinkToParentlink = getByText(`Remove the link to your parent workplace`);
+
+          expect(removeLinkToParentlink).toBeTruthy();
+          expect(removeLinkToParentlink.getAttribute('href')).toBe('/remove-link-to-parent');
+        });
       });
     });
 
