@@ -105,8 +105,9 @@
           <a (click)="linkToParent($event)" href="#">Link to my parent organisation</a>
         </ng-template>
       </li>
+
       <li *ngIf="canRemoveParentAssociation" class="govuk-!-margin-bottom-3">
-        <a [routerLink]="['/remove-link-to-parent']">Remove the link to your parent workplace</a>
+        <a (click)="removeLinkToParent($event)" href="#">Remove link to my parent organisation</a>
       </li>
       <li
         *ngIf="canBecomeAParent && !linkToParentRequestedStatus && !workplace.isParent"

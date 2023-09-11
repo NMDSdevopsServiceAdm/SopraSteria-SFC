@@ -7,8 +7,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 //import { ParentRequestsService } from '@core/services/parent-requests.service';
-//import { DialogComponent } from '@core/components/dialog.component';
-//import { Dialog, DIALOG_DATA } from '@core/services/dialog.service';
+
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -23,6 +22,8 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
   protected subscriptions: Subscription = new Subscription();
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition>;
+  public parentPostcode: string;
+  public allParents;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -38,6 +39,32 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.breadcrumbService.show(JourneyType.REMOVE_LINK_TO_PARENT, this.workplace.name);
     this.setupServerErrorsMap();
+    this.getAllParents();
+  }
+
+  private getAllParents() {
+    this.subscriptions.add(
+      this.establishmentService.getAllParentWithPostCode().subscribe(
+        (parentsWithPostCode) => {
+          this.allParents = parentsWithPostCode;
+          this.getParentPostcode(this.allParents);
+        },
+        (error) => {
+          if (error.error.message) {
+            this.serverError = error.error.message;
+          }
+        },
+      ),
+    );
+  }
+
+  public getParentPostcode(allParents): void {
+    const parentUid = this.workplace?.parentUid;
+
+    if (allParents) {
+      const parent = this.allParents.find((parent) => parent.uid === parentUid);
+      this.parentPostcode = parent.postcode;
+    }
   }
 
   //setup server error message
@@ -45,7 +72,7 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
     this.serverErrorsMap = [
       {
         name: 500,
-        message: 'We could not send request to  remove parent association. You can try again or contact us.',
+        message: 'We could not send request to remove parent association. You can try again or contact us.',
       },
       {
         name: 400,
@@ -59,28 +86,27 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
   }
 
   // send request to backend for delink to parent
-  public removeLinkToParent() {
-    //event.preventDefault();
+  public removeLinkToParent(): void {
     this.subscriptions.add(
       this.establishmentService
         .removeParentAssociation(this.workplace.uid, { parentWorkplaceUId: this.workplace.parentUid })
         .subscribe(
           () => {
-            this.router.navigate(['/dashboard']);
-            this.alertService.addAlert({
-              type: 'success',
-              message: `You've removed your link to ${this.workplace.parentName}, ${this.workplace.postcode}`,
+            this.router.navigate(['/dashboard'], {
+              state: {
+                successAlertMessage: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`,
+              },
             });
+            // this.alertService.addAlert({
+            //   type: 'success',
+            //   message: `You've removed your link to ${this.workplace.parentName}, ${this.workplace.postcode}`,
+            // });
           },
           (error) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
           },
         ),
     );
-  }
-
-  public returnToHome(): void {
-    this.router.navigate(['/dashboard']);
   }
 
   public ngOnDestroy(): void {

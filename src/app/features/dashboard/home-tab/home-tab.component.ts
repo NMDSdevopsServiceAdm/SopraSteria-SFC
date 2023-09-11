@@ -259,7 +259,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     if (this.canViewChangeDataOwner) {
       dialog = this.dialogService.open(OwnershipChangeMessageDialogComponent, this.workplace);
     } else {
-      // TODO: use a feature flag? (LinkToParentRemoveDialogComponent/RemoveLinkToParentComponent)
       dialog = this.dialogService.open(LinkToParentRemoveDialogComponent, this.workplace);
     }
     dialog.afterClosed.subscribe((returnToClose) => {
@@ -279,7 +278,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
                   this.router.navigate(['/dashboard']);
                   this.alertService.addAlert({
                     type: 'success',
-                    message: `You've removed your link to ${this.workplace.parentName}, ${this.workplace.postcode}`,
+                    message: `You're no longer linked to your parent organisation.`,
                   });
                 }
               });
