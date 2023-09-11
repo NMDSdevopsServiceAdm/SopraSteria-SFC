@@ -22,6 +22,7 @@ describe('Summary section', () => {
     trainingCounts = {} as TrainingCounts,
     workerCreatedDate = [dayjs()],
     workersNotCompleted = [workerBuilder()] as Worker[],
+    canViewListOfWorkers = true,
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule],
@@ -46,6 +47,7 @@ describe('Summary section', () => {
         workersCreatedDate: workerCreatedDate,
         workersNotCompleted: workersNotCompleted as Worker[],
         isParent: false,
+        canViewListOfWorkers: canViewListOfWorkers,
       },
     });
 

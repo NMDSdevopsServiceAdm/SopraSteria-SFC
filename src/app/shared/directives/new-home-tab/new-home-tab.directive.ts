@@ -19,6 +19,12 @@ import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
 import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
@@ -69,6 +75,9 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public certificateYears: string;
   public newHomeDesignParentFlag: boolean;
   public isParentApprovedBannerViewed: boolean;
+  public isOwnershipRequested = false;
+  public canAddWorker: boolean;
+  public ownershipChangeRequestId: any = [];
   public successAlertMessage: string;
 
   constructor(
@@ -88,16 +97,10 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const {
-      workersCreatedDate,
-      workerCount = 0,
-      trainingCounts,
-      workersNotCompleted,
-    } = this.route.snapshot.data.workers;
-    this.workersCreatedDate = workersCreatedDate;
-    this.workerCount = workerCount;
-    this.trainingCounts = trainingCounts;
-    this.workersNotCompleted = workersNotCompleted;
+    this.workersCreatedDate = this.route.snapshot.data.workers?.workersCreatedDate;
+    this.workerCount = this.route.snapshot.data.workers?.workerCount;
+    this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
+    this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
 
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
@@ -192,9 +195,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public setPermissionLinks(): void {
     const workplaceUid: string = this.workplace ? this.workplace.uid : null;
     this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
-    // this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
+    this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
     this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
-
     this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
     this.canViewWorkplaces = this.workplace && this.workplace.isParent;
     this.canViewChangeDataOwner =
@@ -207,14 +209,13 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
       this.workplace.parentUid != null &&
       this.workplace.dataOwner === 'Workplace' &&
       this.user.role != 'Read';
-
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
       this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
 
-    // if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
-    //   this.isOwnershipRequested = true;
-    // }
+    if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
+      this.isOwnershipRequested = true;
+    }
 
     if (isAdminRole(this.user.role)) {
       this.canLinkToParent = this.workplace && this.workplace.parentUid === null && !this.parentStatusRequested;
@@ -345,6 +346,126 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     if (parentStatusRequestedState || parentStatusRequestedState === false) {
       this.parentStatusRequested = parentStatusRequestedState;
     }
+  }
+
+  public setDataPermissions($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(SetDataPermissionDialogComponent, this.workplace);
+    dialog.afterClosed.subscribe((setPermissionConfirmed) => {
+      if (setPermissionConfirmed) {
+        this.changeDataOwnerLink();
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({
+          type: 'success',
+          message: `Data permissions for ${this.workplace.parentName} have been set.`,
+        });
+      }
+    });
+  }
+
+  private changeDataOwnerLink(): void {
+    this.isOwnershipRequested = !this.isOwnershipRequested;
+  }
+
+  public onChangeDataOwner($event: Event) {
+    $event.preventDefault();
+    const dialog = this.dialogService.open(ChangeDataOwnerDialogComponent, this.workplace);
+    dialog.afterClosed.subscribe((changeDataOwnerConfirmed) => {
+      if (changeDataOwnerConfirmed) {
+        this.changeDataOwnerLink();
+        this.router.navigate(['/dashboard']);
+        this.alertService.addAlert({
+          type: 'success',
+          message: `Request to change data owner has been sent to ${this.workplace.parentName} `,
+        });
+      }
+    });
+  }
+
+  public cancelChangeDataOwnerRequest($event: Event) {
+    $event.preventDefault();
+    this.ownershipChangeRequestId = [];
+    this.subscriptions.add(
+      this.establishmentService.changeOwnershipDetails(this.workplace.uid).subscribe(
+        (data) => {
+          if (data && data.length > 0) {
+            data.forEach((element) => {
+              this.ownershipChangeRequestId.push(element.ownerChangeRequestUID);
+            });
+            this.workplace.ownershipChangeRequestId = this.ownershipChangeRequestId;
+            const dialog = this.dialogService.open(CancelDataOwnerDialogComponent, this.workplace);
+            dialog.afterClosed.subscribe((cancelDataOwnerConfirmed) => {
+              if (cancelDataOwnerConfirmed) {
+                this.changeDataOwnerLink();
+                this.router.navigate(['/dashboard']);
+                this.alertService.addAlert({
+                  type: 'success',
+                  message: 'Request to change data owner has been cancelled ',
+                });
+              }
+            });
+          }
+        },
+        (error) => {
+          console.error(error.error.message);
+        },
+      ),
+    );
+  }
+
+  /**
+   * This function is used to open a conditional dialog window
+   * open ownership change message dialog if canViewChangeDataOwner flag is true
+   * else remove link to parent dialog.
+   * This method is also reset the current estrablishment and permissions after delink api return 200
+   * from LinkToParentRemoveDialogComponent.
+   *
+   * @param {event} triggred event
+   * @return {void}
+   */
+  public removeLinkToParent($event: Event) {
+    $event.preventDefault();
+    let dialog;
+    if (this.canViewChangeDataOwner) {
+      dialog = this.dialogService.open(OwnershipChangeMessageDialogComponent, this.workplace);
+    } else {
+      dialog = this.dialogService.open(LinkToParentRemoveDialogComponent, this.workplace);
+    }
+    dialog.afterClosed.subscribe((returnToClose) => {
+      if (returnToClose) {
+        //if return  from LinkToParentRemoveDialogComponent then proceed to delink request
+        if (returnToClose.closeFrom === 'remove-link') {
+          this.establishmentService.getEstablishment(this.workplace.uid).subscribe((workplace) => {
+            if (workplace) {
+              //get permission and reset latest value
+              this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermission) => {
+                if (hasPermission) {
+                  this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
+                  this.establishmentService.setState(workplace);
+                  this.establishmentService.setPrimaryWorkplace(workplace);
+                  this.workplace.parentUid = null; // update on @input object
+                  this.setPermissionLinks();
+                  this.router.navigate(['/dashboard']);
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `You're no longer linked to your parent organisation.`,
+                  });
+                }
+              });
+            }
+          });
+        }
+        //if return from OwnershipChangeMessageDialogComponent then open change data owner dialog in case
+        //of isOwnershipRequested flag false else cancel change data owner dialog .
+        if (returnToClose.closeFrom === 'ownership-change') {
+          if (this.isOwnershipRequested) {
+            this.cancelChangeDataOwnerRequest($event);
+          } else {
+            this.onChangeDataOwner($event);
+          }
+        }
+      }
+    });
   }
 
   ngOnDestroy(): void {
