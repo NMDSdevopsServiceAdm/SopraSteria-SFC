@@ -171,6 +171,7 @@ jobs:
           if [ -d "/home/circleci/project/node_modules" ]; then
             echo "Skipping install as node modules already exists"
           else
+            echo "Installing modules"
             npm ci
           fi
       - save_cache:
