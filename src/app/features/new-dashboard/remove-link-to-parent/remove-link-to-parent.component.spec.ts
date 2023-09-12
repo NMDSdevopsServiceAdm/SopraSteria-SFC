@@ -82,6 +82,21 @@ describe('RemoveLinkToParentComponent', () => {
     };
   }
 
+  const mockparentsWithPostCode = [
+    {
+      parentName: 'Test 1',
+      parentNameAndPostalcode: 'Test 1, BD20 9LY',
+      postcode: 'BD20 9LY',
+      uid: 'test-id-1',
+    },
+    {
+      parentName: 'Test 2',
+      parentNameAndPostalcode: 'Test 2, L20 9LY',
+      postcode: 'L20 9LY',
+      uid: 'test-id-2',
+    },
+  ];
+
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -122,22 +137,7 @@ describe('RemoveLinkToParentComponent', () => {
   it('should set the parent postcode', async () => {
     const { fixture, component, establishmentService } = await setup();
 
-    const mockparentsWithPostCode = [
-      {
-        parentName: 'Test 1',
-        parentNameAndPostalcode: 'Test 1, BD20 9LY',
-        postcode: 'BD20 9LY',
-        uid: 'test-id-1',
-      },
-      {
-        parentName: 'Test 2',
-        parentNameAndPostalcode: 'Test 2, L20 9LY',
-        postcode: 'L20 9LY',
-        uid: 'test-id-2',
-      },
-    ];
-
-    const establishmentServiceSpy = spyOn(establishmentService, 'getAllParentWithPostCode').and.returnValue(
+    const getAllParentWithPostCodeSpy = spyOn(establishmentService, 'getAllParentWithPostCode').and.returnValue(
       of(mockparentsWithPostCode),
     );
 
@@ -148,13 +148,15 @@ describe('RemoveLinkToParentComponent', () => {
     fixture.detectChanges();
     component.getParentPostcode(mockparentsWithPostCode);
 
-    expect(establishmentServiceSpy).toHaveBeenCalled();
+    expect(getAllParentWithPostCodeSpy).toHaveBeenCalled();
     expect(component.parentPostcode).toBe('BD20 9LY');
   });
 
   it('should call removeParentAssociation', async () => {
     const { getByText, fixture, establishmentService, component } = await setup();
-    const getAllParentWithPostCodeSpy = spyOn(establishmentService, 'getAllParentWithPostCode').and.callThrough();
+    const getAllParentWithPostCodeSpy = spyOn(establishmentService, 'getAllParentWithPostCode').and.returnValue(
+      of(mockparentsWithPostCode),
+    );
     const removeParentAssociationSpy = spyOn(establishmentService, 'removeParentAssociation').and.callThrough();
     component.ngOnInit();
 
