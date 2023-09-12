@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -43,17 +43,6 @@ describe('RemoveLinkToParentComponent', () => {
             provide: FeatureFlagsService,
             useClass: MockFeatureFlagsService,
           },
-          // {
-          //   provide: ActivatedRoute,
-          //   useValue: {
-          //     snapshot: {
-          //       url: [{ path: 1 }, { path: 2 }],
-          //       params: {
-          //         establishmentID: 123,
-          //       },
-          //     },
-          //   },
-          // },
         ],
         componentProperties: {},
       },
@@ -131,7 +120,7 @@ describe('RemoveLinkToParentComponent', () => {
     const { establishmentService, component } = await setup();
     const establishmentServiceSpy = spyOn(establishmentService, 'getAllParentWithPostCode').and.callThrough();
     component.ngOnInit();
-    expect(establishmentServiceSpy).toHaveBeenCalled();
+    expect(establishmentServiceSpy).toHaveBeenCalledWith();
   });
 
   it('should set the parent postcode', async () => {
