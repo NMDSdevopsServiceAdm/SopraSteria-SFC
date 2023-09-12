@@ -760,7 +760,7 @@ describe('NewHomeTabComponent', () => {
           fixture.detectChanges();
 
           const removeLinkToParentlink = getByText(`Remove the link to your parent workplace`);
-          const dialogMessage = 'To remove the link to your parent organisation, you must own your data.';
+          const dialogMessage = 'To remove the link to your parent organisation, you must own your data';
 
           fireEvent.click(removeLinkToParentlink);
           fixture.detectChanges();

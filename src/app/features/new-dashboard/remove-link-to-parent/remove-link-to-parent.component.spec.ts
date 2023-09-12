@@ -17,52 +17,55 @@ import { SharedModule } from '@shared/shared.module';
 import { getTestBed } from '@angular/core/testing';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
+import { of } from 'rxjs';
 
 describe('RemoveLinkToParentComponent', () => {
   async function setup() {
-    const { getByRole, getByText, getByLabelText, getByTestId, fixture } = await render(RemoveLinkToParentComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
-      providers: [
-        AlertService,
-        WindowRef,
-        { provide: BenchmarksService, useClass: MockBenchmarksService },
-        { provide: PermissionsService, useClass: MockPermissionsService },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
-        },
-
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              url: [{ path: 1 }, { path: 2 }],
-              params: {
-                establishmentID: 123,
-              },
-            },
+    const { getByRole, getByText, getByLabelText, getByTestId, fixture, getAllByText } = await render(
+      RemoveLinkToParentComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        declarations: [],
+        providers: [
+          AlertService,
+          WindowRef,
+          { provide: BenchmarksService, useClass: MockBenchmarksService },
+          { provide: PermissionsService, useClass: MockPermissionsService },
+          {
+            provide: BreadcrumbService,
+            useClass: MockBreadcrumbService,
           },
-        },
-      ],
-      componentProperties: {},
-    });
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
+            provide: FeatureFlagsService,
+            useClass: MockFeatureFlagsService,
+          },
+          // {
+          //   provide: ActivatedRoute,
+          //   useValue: {
+          //     snapshot: {
+          //       url: [{ path: 1 }, { path: 2 }],
+          //       params: {
+          //         establishmentID: 123,
+          //       },
+          //     },
+          //   },
+          // },
+        ],
+        componentProperties: {},
+      },
+    );
     const component = fixture.componentInstance;
 
     const injector = getTestBed();
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'removeParentAssociation').and.callThrough();
 
     const router = injector.inject(Router) as Router;
+
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
@@ -72,10 +75,13 @@ describe('RemoveLinkToParentComponent', () => {
       getByTestId,
       fixture,
       component,
+      router,
+      establishmentService,
       routerSpy,
-      establishmentServiceSpy,
+      getAllByText,
     };
   }
+
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -106,14 +112,69 @@ describe('RemoveLinkToParentComponent', () => {
     expect(removeTheLinkButton).toBeTruthy();
   });
 
-  it('should call removeParentAssociation and remove the link', async () => {
-    const { getByText, fixture, establishmentServiceSpy } = await setup();
+  it('should call getAllParentWithPostCode', async () => {
+    const { establishmentService, component } = await setup();
+    const establishmentServiceSpy = spyOn(establishmentService, 'getAllParentWithPostCode').and.callThrough();
+    component.ngOnInit();
+    expect(establishmentServiceSpy).toHaveBeenCalled();
+  });
+
+  it('should set the parent postcode', async () => {
+    const { fixture, component, establishmentService } = await setup();
+
+    const mockparentsWithPostCode = [
+      {
+        parentName: 'Test 1',
+        parentNameAndPostalcode: 'Test 1, BD20 9LY',
+        postcode: 'BD20 9LY',
+        uid: 'test-id-1',
+      },
+      {
+        parentName: 'Test 2',
+        parentNameAndPostalcode: 'Test 2, L20 9LY',
+        postcode: 'L20 9LY',
+        uid: 'test-id-2',
+      },
+    ];
+
+    const establishmentServiceSpy = spyOn(establishmentService, 'getAllParentWithPostCode').and.returnValue(
+      of(mockparentsWithPostCode),
+    );
+
+    component.ngOnInit();
+    const parentUid = 'test-id-1';
+
+    component.workplace.parentUid = parentUid;
+    fixture.detectChanges();
+    component.getParentPostcode(mockparentsWithPostCode);
+
+    expect(establishmentServiceSpy).toHaveBeenCalled();
+    expect(component.parentPostcode).toBe('BD20 9LY');
+  });
+
+  it('should call removeParentAssociation', async () => {
+    const { getByText, fixture, establishmentService, component } = await setup();
+    const getAllParentWithPostCodeSpy = spyOn(establishmentService, 'getAllParentWithPostCode').and.callThrough();
+    const removeParentAssociationSpy = spyOn(establishmentService, 'removeParentAssociation').and.callThrough();
+    component.ngOnInit();
+
+    expect(getAllParentWithPostCodeSpy).toHaveBeenCalled();
+
+    const workplaceUid = component.workplace.uid;
+    const parentUid = 'test-id-1';
+
+    component.workplace.parentUid = parentUid;
+
+    fixture.detectChanges();
 
     const removeTheLinkButton = getByText('Remove the link');
     fireEvent.click(removeTheLinkButton);
+
     fixture.detectChanges();
 
-    expect(establishmentServiceSpy).toHaveBeenCalled();
+    expect(removeParentAssociationSpy).toHaveBeenCalledWith(workplaceUid, {
+      parentWorkplaceUId: parentUid,
+    });
   });
 
   it('should show the cancel link with the correct href back to the home tab', async () => {
