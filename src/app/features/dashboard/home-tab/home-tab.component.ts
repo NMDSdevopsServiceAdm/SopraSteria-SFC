@@ -262,7 +262,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     }
     dialog.afterClosed.subscribe((returnToClose) => {
       if (returnToClose) {
-        //if return from  LinkToParentRemoveDialogComponent then proceed to delink request
+        //if return from LinkToParentRemoveDialogComponent then proceed to delink request
         if (returnToClose.closeFrom === 'remove-link') {
           this.establishmentService.getEstablishment(this.workplace.uid).subscribe((workplace) => {
             if (workplace) {
