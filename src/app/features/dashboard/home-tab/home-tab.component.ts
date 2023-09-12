@@ -21,7 +21,6 @@ import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-o
 import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
-import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
@@ -263,7 +262,7 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     }
     dialog.afterClosed.subscribe((returnToClose) => {
       if (returnToClose) {
-        //if return from LinkToParentRemoveDialogComponent then proceed to delink request
+        //if return from  LinkToParentRemoveDialogComponent then proceed to delink request
         if (returnToClose.closeFrom === 'remove-link') {
           this.establishmentService.getEstablishment(this.workplace.uid).subscribe((workplace) => {
             if (workplace) {
