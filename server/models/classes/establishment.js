@@ -1,4 +1,3 @@
-
 /*
  * establishment.js
  *
@@ -7,8 +6,8 @@
  *
  * Also includes representation as JSON, in one or more presentations.
  */
+const { Op } = require('sequelize');
 const moment = require('moment');
-
 const uuid = require('uuid');
 
 // Shorthand for hasOwnProperty that also works with bare objects
@@ -67,7 +66,7 @@ class Establishment extends EntityValidator {
     this._town = null;
     this._county = null;
     this._locationId = null;
-    this._localCustodianCode = null;
+    this._cssrID = null;
     this._provId = null;
     this._postcode = null;
     this._isRegulated = null;
@@ -213,7 +212,7 @@ class Establishment extends EntityValidator {
   }
 
   get localCustodianCode() {
-    return this._localCustodianCode;
+    return this._cssrID;
   }
 
   get provId() {
@@ -764,7 +763,10 @@ class Establishment extends EntityValidator {
       try {
         // when creating an establishment, need to calculate it's NMDS ID, which is..
         // combination of postcode area and sequence.
-        const cssrResults = await models.pcodedata.findOne({
+
+        // We use the postcode to get local custodian code
+        // and use this to get the Cssr record
+        let cssrResults = await models.pcodedata.findOne({
           where: {
             postcode: this._postcode,
           },
@@ -780,44 +782,25 @@ class Establishment extends EntityValidator {
         //--------------------------- MOVE ME! ----------------------------
 
         if (cssrResults) {
-          this._localCustodianCode = cssrResults.local_custodian_code
+          this._cssrID = cssrResults.CssrID;
         } else {
-          // try{
-          //   const firstHalfOfPostcode = this._postcode.split(' ')[0];
-          // } catch (error) {
-          //   console.error(error);
-          //   throw new Error(error);
-          // }
-
-          const firstHalfOfPostcode = this._postcode.split(' ')[0];
-
-          const fuzzyLocalCustodianCode = models.CSSR.findAll({
-            include: [{
-              model: models.pcodedata,
-              where: {
-                postcode: {
-                  [Op.like]: '$%{(firstHalfOfPostcode%)}%'
-                }
+          //try matching ignoring last character of postcode
+          cssrResults = await models.CSSR.findAll({
+            include: [
+              {
+                model: models.pcodedata,
+                where: {
+                  postcode: {
+                    [Op.like]: '${postcode.slice(0, -1)}%',
+                  },
+                },
+                required: true,
               },
-              required: true
-             }]
-          }).then(cssrs => {
-            console.log(cssrs) //TODO!!! Should never fail with valid postcode
+            ],
           });
 
-          // const fuzzyLocalCustodianCode = await models.sequelize.query(
-          //   `select "Cssr"."LocalCustodianCode"
-          //     from cqcref.pcodedata, cqc."Cssr"
-          //     where postcode like '${escape(firstHalfOfPostcode)}%'
-          //     group by "Cssr"."LocalCustodianCode"
-          //     limit 1`,
-          //   {
-          //     type: models.sequelize.QueryTypes.SELECT,
-          //   },
-          // );
-
-          if (fuzzyLocalCustodianCode[0]) {
-            this._localCustodianCode = fuzzyCssrNmdsIdMatch[0].localCustodianCode;
+          if (cssrResults) {
+            this._cssrID = cssrResults[0].CssrID;
           }
         }
 
@@ -854,7 +837,7 @@ class Establishment extends EntityValidator {
 
         // catch all - because we don't want new establishments failing just because of old postcode data
         if (nmdsLetter === null) {
-          //log error
+          console.error('Could not retrieve nmdsLetter as postcode cannot be matched');
           nmdsLetter = 'W';
         }
 

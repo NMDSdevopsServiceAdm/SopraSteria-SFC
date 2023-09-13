@@ -7,13 +7,13 @@ const table = {
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.addColumn(table, 'LocalCustodianCode', {
+    await queryInterface.addColumn(table, 'CssrID', {
       type: Sequelize.DataTypes.INTEGER,
       allowNull: true,
     });
   },
 
   down: async (queryInterface) => {
-    await queryInterface.removeColumn(table, 'LocalCustodianCode');
+    await queryInterface.removeColumn(table, 'CssrID');
   },
 };

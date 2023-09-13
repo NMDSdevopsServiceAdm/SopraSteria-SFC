@@ -154,10 +154,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"LocationID"',
       },
-      localCustodianCode: {
+      CssrID: {
         type: DataTypes.INTEGER,
         allowNull: true,
-        field: '"LocalCustodianCode"',
+        field: '"CssrID"',
       },
       LocationIdSavedAt: {
         type: DataTypes.DATE,
