@@ -172,7 +172,7 @@ jobs:
             echo "Skipping install as node modules already exists"
           else
             echo "Installing modules"
-            rm ~/project/package-lock.json
+            rm ~/circleci/project/package-lock.json
             npm ci
           fi
       - save_cache:
