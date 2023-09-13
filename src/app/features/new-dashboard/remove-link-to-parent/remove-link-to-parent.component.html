@@ -1,0 +1,32 @@
+<div>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-full">
+      <div class="govuk-caption-l">{{ workplace.name }}</div>
+      <h1 class="govuk-heading-l" data-cy="account-heading">Remove the link to your parent workplace</h1>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+          <p>
+            If you remove the link to your parent workplace, <b>{{ workplace.parentName }}</b> will no longer be able to
+            view any of your data and you'll not be a part of their group or organisation in ASC-WDS.
+          </p>
+        </div>
+      </div>
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column">
+          <div class="govuk-grid-column-one-third">
+            <button
+              type="button"
+              (click)="removeLinkToParent()"
+              class="govuk-button govuk-!-margin-top-4 govuk-!-margin-right-3"
+            >
+              Remove the link
+            </button>
+          </div>
+          <div class="govuk-grid-column-one-third govuk-!-margin-top-5">
+            <a class="govuk-link govuk-list govuk-!-margin-top-4" href="#" [routerLink]="['/dashboard']"> Cancel </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

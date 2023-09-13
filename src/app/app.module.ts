@@ -79,6 +79,7 @@ import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { HighchartsChartModule } from 'highcharts-angular';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
+import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -136,6 +137,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     SummarySectionComponent,
     StaffBasicRecord,
     BecomeAParentComponent,
+    RemoveLinkToParentComponent,
     LinkToParentComponent,
   ],
   imports: [
