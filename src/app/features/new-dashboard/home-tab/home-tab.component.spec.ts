@@ -374,8 +374,9 @@ describe('NewHomeTabComponent', () => {
 
           fixture.detectChanges();
 
-          const expectedMessage = 'Link to a parent workplace (request pending)';
-          expect(queryByText(expectedMessage)).toBeTruthy();
+          const linkToParentPendingLink = queryByText('Link to a parent workplace (request pending)');
+          expect(linkToParentPendingLink).toBeTruthy();
+          expect(linkToParentPendingLink.getAttribute('href')).toEqual('/link-to-parent');
 
           expect(queryByText('Link to a parent workplace')).toBeFalsy();
           expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeFalsy();

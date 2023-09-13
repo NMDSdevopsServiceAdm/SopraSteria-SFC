@@ -35,133 +35,139 @@
           </p></app-details
         >
       </div>
-
-      <form
-        #formEl
-        novalidate
-        (ngSubmit)="onSubmit()"
-        [formGroup]="form"
-        autocomplete="off"
-        aria-label="form"
-        data-testid="linkToParentForm"
-      >
-        <div>
-          <fieldset class="govuk-fieldset">
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
-              <h2 class="govuk-fieldset__heading govuk-!-font-size-27">Select the parent workplace</h2>
-            </legend>
-            <div
-              class="govuk-form-group"
-              [class.govuk-form-group--error]="submitted && form.get('parentNameOrPostCode').invalid"
-            >
-              <label class="govuk-label" for="parentNameOrPostCode"
-                >Start to type the parent workplace's name or postcode</label
+      <ng-container *ngIf="!linkToParentRequested; else linkToParentRequestedPending">
+        <form
+          #formEl
+          novalidate
+          (ngSubmit)="onSubmit()"
+          [formGroup]="form"
+          autocomplete="off"
+          aria-label="form"
+          data-testid="linkToParentForm"
+        >
+          <div>
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                <h2 class="govuk-fieldset__heading govuk-!-font-size-27">Select the parent workplace</h2>
+              </legend>
+              <div
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="submitted && form.get('parentNameOrPostCode').invalid"
               >
-              <span
-                *ngIf="submitted && form.get('parentNameOrPostCode').invalid"
-                id="parentNameOrPostCode-error"
-                class="govuk-error-message"
-              >
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ getFirstErrorMessage('parentNameOrPostCode') }}
-              </span>
-              <div class="linkToParentInput">
-                <app-auto-suggest
-                  [formGroup]="form"
-                  [dataProvider]="parentNameOrPostCodeFilter"
-                  [formControlName]="'parentNameOrPostCode'"
-                  [error]="submitted && form.get('parentNameOrPostCode').invalid"
-                ></app-auto-suggest>
-              </div>
-            </div>
-          </fieldset>
-        </div>
-
-        <div>
-          <fieldset class="govuk-fieldset">
-            <legend class="govuk-fieldset__legend">
-              <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Data permissions</h2>
-            </legend>
-            <div
-              class="govuk-form-group"
-              [class.govuk-form-group--error]="submitted && form.get('dataPermission').invalid"
-            >
-              <p>
-                If the parent workplace approves your request, what data do you want them to have
-                <span class="govuk-!-font-weight-bold">view only access</span> to?
-              </p>
-
-              <span
-                *ngIf="submitted && form.get('dataPermission').invalid"
-                id="dataPermission-error"
-                class="govuk-error-message"
-              >
-                <span class="govuk-visually-hidden">Error:</span>
-                {{ getFirstErrorMessage('dataPermission') }}
-              </span>
-
-              <div class="govuk-radios" data-module="govuk-radios">
-                <div class="govuk-radios__item">
-                  <input
-                    class="govuk-radios__input"
-                    [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
-                    id="dataPermission-0"
-                    name="dataPermission"
-                    [formControlName]="'dataPermission'"
-                    type="radio"
-                    [value]="dataPermissions[0]"
-                  />
-
-                  <label class="govuk-label govuk-radios__label" for="dataPermission-0">
-                    {{ dataPermissions[0] | newDataViewPermissions }}
-                  </label>
-                </div>
-                <div class="govuk-radios__item">
-                  <input
-                    class="govuk-radios__input"
-                    [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
-                    id="dataPermission-1"
-                    name="dataPermission"
-                    [formControlName]="'dataPermission'"
-                    type="radio"
-                    [value]="dataPermissions[1]"
-                  />
-
-                  <label class="govuk-label govuk-radios__label" for="dataPermission-1">
-                    {{ dataPermissions[1] | newDataViewPermissions }}
-                  </label>
-                </div>
-                <div class="govuk-radios__divider govuk-!-text-align-left">Or</div>
-                <div class="govuk-radios__item">
-                  <input
-                    class="govuk-radios__input"
-                    [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
-                    id="dataPermission-2"
-                    name="dataPermission"
-                    [formControlName]="'dataPermission'"
-                    type="radio"
-                    [value]="dataPermissions[2]"
-                  />
-
-                  <label class="govuk-label govuk-radios__label" for="dataPermission-2">
-                    {{ dataPermissions[2] | newDataViewPermissions }}
-                  </label>
+                <label class="govuk-label" for="parentNameOrPostCode"
+                  >Start to type the parent workplace's name or postcode</label
+                >
+                <span
+                  *ngIf="submitted && form.get('parentNameOrPostCode').invalid"
+                  id="parentNameOrPostCode-error"
+                  class="govuk-error-message"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFirstErrorMessage('parentNameOrPostCode') }}
+                </span>
+                <div class="linkToParentInput">
+                  <app-auto-suggest
+                    [formGroup]="form"
+                    [dataProvider]="parentNameOrPostCodeFilter"
+                    [formControlName]="'parentNameOrPostCode'"
+                    [error]="submitted && form.get('parentNameOrPostCode').invalid"
+                  ></app-auto-suggest>
                 </div>
               </div>
-            </div>
-          </fieldset>
-        </div>
+            </fieldset>
+          </div>
 
-        <div class="linkToParentRequestButtonContainer">
-          <button type="submit" (click)="sendRequestToParent()" class="govuk-button">Send link request</button>
-          <a
-            href="#"
-            [routerLink]="['/dashboard']"
-            class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-3"
-            >Cancel</a
-          >
-        </div>
-      </form>
+          <div>
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend">
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Data permissions</h2>
+              </legend>
+              <div
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="submitted && form.get('dataPermission').invalid"
+              >
+                <p>
+                  If the parent workplace approves your request, what data do you want them to have
+                  <span class="govuk-!-font-weight-bold">view only access</span> to?
+                </p>
+
+                <span
+                  *ngIf="submitted && form.get('dataPermission').invalid"
+                  id="dataPermission-error"
+                  class="govuk-error-message"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFirstErrorMessage('dataPermission') }}
+                </span>
+
+                <div class="govuk-radios" data-module="govuk-radios">
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                      id="dataPermission-0"
+                      name="dataPermission"
+                      [formControlName]="'dataPermission'"
+                      type="radio"
+                      [value]="dataPermissions[0]"
+                    />
+
+                    <label class="govuk-label govuk-radios__label" for="dataPermission-0">
+                      {{ dataPermissions[0] | newDataViewPermissions }}
+                    </label>
+                  </div>
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                      id="dataPermission-1"
+                      name="dataPermission"
+                      [formControlName]="'dataPermission'"
+                      type="radio"
+                      [value]="dataPermissions[1]"
+                    />
+
+                    <label class="govuk-label govuk-radios__label" for="dataPermission-1">
+                      {{ dataPermissions[1] | newDataViewPermissions }}
+                    </label>
+                  </div>
+                  <div class="govuk-radios__divider govuk-!-text-align-left">Or</div>
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                      id="dataPermission-2"
+                      name="dataPermission"
+                      [formControlName]="'dataPermission'"
+                      type="radio"
+                      [value]="dataPermissions[2]"
+                    />
+
+                    <label class="govuk-label govuk-radios__label" for="dataPermission-2">
+                      {{ dataPermissions[2] | newDataViewPermissions }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="linkToParentRequestButtonContainer">
+            <button type="submit" (click)="sendRequestToParent()" class="govuk-button">Send link request</button>
+            <a
+              href="#"
+              [routerLink]="['/dashboard']"
+              class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-3"
+              >Cancel</a
+            >
+          </div>
+        </form>
+      </ng-container>
+      <ng-template #linkToParentRequestedPending>
+        <button data-testid="returnToHomeButton" type="button" (click)="returnToHome()" class="govuk-button">
+          Return to home
+        </button>
+      </ng-template>
     </div>
   </div>
 </div>

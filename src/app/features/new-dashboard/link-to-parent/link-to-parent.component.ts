@@ -31,6 +31,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
   public availableParentWorkPlaces;
   public parentNameOrPostCode: string;
   public formErrorsMap: Array<ErrorDetails>;
+  public linkToParentRequested: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -56,6 +57,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.setDataPermissions();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    this.linkToParentRequested = this.workplace.linkToParentRequested ? true : false;
   }
 
   //function is use to get all available parent workplaces name, uid and Postcode
@@ -250,6 +252,10 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       return filterArray[0].parentName;
     }
+  }
+
+  public returnToHome(): void {
+    this.router.navigate(['/dashboard']);
   }
 
   public ngOnDestroy(): void {
