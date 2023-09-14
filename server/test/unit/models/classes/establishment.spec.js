@@ -28,7 +28,7 @@ describe('Establishment Class', () => {
   });
 
   describe('save()', () => {
-    fit('should add an establishment to the database if establishment data is provided and correct', async () => {
+    it('should add an establishment to the database if establishment data is provided and correct', async () => {
       const establishment = new Establishment('AutomatedTest0');
       establishment.initialise('', '', '', 'Grangetown', 'Sunderland', '', '', 'SR2 7TZ', false);
       establishment.save('test');

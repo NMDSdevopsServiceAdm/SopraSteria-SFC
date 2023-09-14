@@ -782,25 +782,27 @@ class Establishment extends EntityValidator {
         //--------------------------- MOVE ME! ----------------------------
 
         if (cssrResults) {
-          this._cssrID = cssrResults.CssrID;
+          this._cssrID = cssrResults.CssrID; //FIX
         } else {
           //try matching ignoring last character of postcode
-          cssrResults = await models.CSSR.findAll({
+          cssrResults = await models.pcodedata.findOne({
+            where: {
+              postcode: {
+                [Op.like]: this._postcode.slice(0, -1) + '%', // 'SR2 7T%'
+              },
+            },
             include: [
               {
-                model: models.pcodedata,
-                where: {
-                  postcode: {
-                    [Op.like]: '${postcode.slice(0, -1)}%',
-                  },
-                },
+                model: models.cssr,
+                as: 'theAuthority',
+                attributes: ['id', 'name', 'nmdsIdLetter'],
                 required: true,
               },
             ],
           });
 
           if (cssrResults) {
-            this._cssrID = cssrResults[0].CssrID;
+            this._cssrID = cssrResults.theAuthority.id; // CHECK
           }
         }
 
