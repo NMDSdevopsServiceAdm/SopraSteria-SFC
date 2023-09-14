@@ -728,6 +728,8 @@ class Establishment extends EntityValidator {
     }
   }
 
+  // Looks up Cssr record based on postcode and
+  // ignores the last character if not found
   async getLocalAuthority(postcode) {
     let cssrRecord = await models.pcodedata.findOne({
       where: {
@@ -801,11 +803,11 @@ class Establishment extends EntityValidator {
 
         // We use the postcode to get local custodian code
         // and use this to get the Cssr record
-        const cssrResults = this.getLocalAuthority(this._postcode);
+        const cssrResult = this.getLocalAuthority(this._postcode);
 
-        if (cssrResults) {
-          this._cssrID = cssrResults.theAuthority.id;
-          nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
+        if (cssrResult) {
+          this._cssrID = cssrResult.theAuthority.id;
+          nmdsLetter = cssrResult.theAuthority.nmdsIdLetter;
         }
 
         // catch all - because we don't want new establishments failing just because of old postcode data
@@ -1565,54 +1567,14 @@ class Establishment extends EntityValidator {
         //  primary Authority; that is the Local Authority associated with the physical area
         //  of the given Establishment (using the postcode as the key)
         // lookup primary authority by trying to resolve on specific postcode code
-        const cssrResults = await models.pcodedata.findOne({
-          where: {
-            postcode: fetchResults.postcode,
-          },
-          include: [
-            {
-              model: models.cssr,
-              as: 'theAuthority',
-              attributes: ['id', 'name', 'nmdsIdLetter'],
-            },
-          ],
-        });
 
-        if (
-          cssrResults &&
-          cssrResults.postcode === fetchResults.postcode &&
-          cssrResults.theAuthority &&
-          cssrResults.theAuthority.id &&
-          Number.isInteger(cssrResults.theAuthority.id)
-        ) {
-          fetchResults.primaryAuthorityCssr = {
-            id: cssrResults.theAuthority.id,
-            name: cssrResults.theAuthority.name,
-          };
-        } else {
-          //  using just the first half of the postcode
-          const [firstHalfOfPostcode] = fetchResults.postcode.split(' ');
+        // TODO!
+        const cssrResult = this.getLocalAuthority(this._postcode);
 
-          // must escape the string to prevent SQL injection
-          const fuzzyCssrIdMatch = await models.sequelize.query(
-            `select "Cssr"."CssrID", "Cssr"."CssR"
-              from cqcref.pcodedata, cqc."Cssr"
-              where postcode like '${escape(firstHalfOfPostcode)}%'
-              and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode"
-              group by "Cssr"."CssrID", "Cssr"."CssR"
-              limit 1`,
-            {
-              type: models.sequelize.QueryTypes.SELECT,
-            },
-          );
-
-          if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
-            fetchResults.primaryAuthorityCssr = {
-              id: fuzzyCssrIdMatch[0].CssrID,
-              name: fuzzyCssrIdMatch[0].CssR,
-            };
-          }
-        }
+        fetchResults.primaryAuthorityCssr = {
+          id: cssrResult.theAuthority.id,
+          name: cssrResult.theAuthority.name,
+        };
 
         if (fetchResults.auditEvents) {
           this._auditEvents = fetchResults.auditEvents;
@@ -1645,7 +1607,7 @@ class Establishment extends EntityValidator {
                   associatedLevel,
                 );
 
-                // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
+                // : once we have the unique worder id property, use that instead; for now, we only have the name or id.
                 // without whitespace
                 this.associateWorker(newWorker.key, newWorker);
 

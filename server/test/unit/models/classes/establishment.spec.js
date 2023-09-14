@@ -35,9 +35,9 @@ describe('Establishment Class', () => {
   });
 
   describe('save()', () => {
-    it('should add an establishment to the database if establishment data is provided and correct', async () => {
+    it('should obtain the correct cssr record for the supplied postcode', async () => {
       const establishment = new Establishment('AutomatedTest0');
-      const cssrResult = establishment.getLocalAuthority('BL2 2QX');
+      const cssrResult = await establishment.getLocalAuthority('BL2 2QX');
 
       expect(cssrResult.theAuthority.id).to.equal(304);
     });
