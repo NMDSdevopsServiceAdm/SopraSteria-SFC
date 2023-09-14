@@ -249,5 +249,22 @@ describe('LinkToParentComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
     });
+
+    it('it should show pending blue banner', async () => {
+      const { component, fixture, getByTestId, getByText } = await setup();
+
+      component.linkToParentRequested = true;
+      fixture.detectChanges();
+
+      const pendingBlueBanner = getByTestId('pendingBlueBanner');
+      const cancelLinkRequest = getByText('Cancel link request');
+
+      expect(pendingBlueBanner).toBeTruthy();
+      expect(cancelLinkRequest).toBeTruthy();
+    });
+
+    xit('should show the cancel link request', async () => {
+      const { component, fixture, getByText } = await setup();
+    });
   });
 });
