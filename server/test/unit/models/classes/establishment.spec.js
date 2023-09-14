@@ -30,7 +30,17 @@ describe('Establishment Class', () => {
   describe('save()', () => {
     it('should add an establishment to the database if establishment data is provided and correct', async () => {
       const establishment = new Establishment('AutomatedTest0');
-      establishment.initialise('', '', '', 'Grangetown', 'Sunderland', '', '', 'SR2 7TZ', false);
+      // establishment.initialise('', '', '', 'Grangetown', 'Sunderland', '', '', 'SR2 7TZ', false);
+      establishment.initialise('1 Montrose Ave', '', '', 'Bolton', 'Lancashire', '', '', 'BL2 2QX', false);
+      establishment.load({
+        name: 'Test Location',
+        mainService: {
+          name: 'Fake',
+          id: 16,
+        },
+        ustatus: 'PENDING',
+        expiresSoonAlert: '90',
+      });
       establishment.save('test');
     });
   });
