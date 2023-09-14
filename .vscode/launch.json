@@ -137,7 +137,7 @@
       "request": "launch",
       "name": "Mocha All",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["--timeout", "999999", "--colors", "${workspaceFolder}/test"],
+      "args": ["--timeout", "999999", "--colors", "${workspaceFolder}/server/test/**/*.spec.js"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**/*.js"]
