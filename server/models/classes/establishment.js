@@ -728,6 +728,42 @@ class Establishment extends EntityValidator {
     }
   }
 
+  async getLocalAuthority(postcode) {
+    let cssrRecord = await models.pcodedata.findOne({
+      where: {
+        postcode: postcode,
+      },
+      include: [
+        {
+          model: models.cssr,
+          as: 'theAuthority',
+          attributes: ['id', 'name', 'nmdsIdLetter'],
+        },
+      ],
+    });
+
+    if (!cssrRecord) {
+      //try matching ignoring last character of postcode
+      cssrRecord = await models.pcodedata.findOne({
+        where: {
+          postcode: {
+            [Op.like]: postcode.slice(0, -1) + '%', // 'SR2 7T%'
+          },
+        },
+        include: [
+          {
+            model: models.cssr,
+            as: 'theAuthority',
+            attributes: ['id', 'name', 'nmdsIdLetter'],
+            required: true,
+          },
+        ],
+      });
+    }
+
+    return cssrRecord;
+  }
+
   // saves the Establishment to DB. Returns true if saved; false is not.
   // Throws "EstablishmentSaveException" on error
   async save(savedBy, bulkUploaded = false, externalTransaction = null, associatedEntities = false) {
@@ -761,51 +797,16 @@ class Establishment extends EntityValidator {
     if (mustSave && this._isNew) {
       // create new Establishment
       try {
-        // when creating an establishment, need to calculate it's NMDS ID, which is..
-        // combination of postcode area and sequence.
         let nmdsLetter = 'W';
+
         // We use the postcode to get local custodian code
         // and use this to get the Cssr record
-        let cssrResults = await models.pcodedata.findOne({
-          where: {
-            postcode: this._postcode,
-          },
-          include: [
-            {
-              model: models.cssr,
-              as: 'theAuthority',
-              attributes: ['id', 'name', 'nmdsIdLetter'],
-            },
-          ],
-        });
-
-        //--------------------------- MOVE ME! ----------------------------
-
-        if (!cssrResults) {
-          //try matching ignoring last character of postcode
-          cssrResults = await models.pcodedata.findOne({
-            where: {
-              postcode: {
-                [Op.like]: this._postcode.slice(0, -1) + '%', // 'SR2 7T%'
-              },
-            },
-            include: [
-              {
-                model: models.cssr,
-                as: 'theAuthority',
-                attributes: ['id', 'name', 'nmdsIdLetter'],
-                required: true,
-              },
-            ],
-          });
-        }
+        const cssrResults = this.getLocalAuthority(this._postcode);
 
         if (cssrResults) {
-          this._cssrID = cssrResults.theAuthority.id; // CHECK
+          this._cssrID = cssrResults.theAuthority.id;
           nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
         }
-
-        //--------------------------- MOVE ME! ----------------------------
 
         // catch all - because we don't want new establishments failing just because of old postcode data
         if (nmdsLetter === 'W') {
