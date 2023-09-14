@@ -37,9 +37,12 @@ describe('Establishment Class', () => {
   describe('save()', () => {
     it('should obtain the correct cssr record for the supplied postcode', async () => {
       const establishment = new Establishment('AutomatedTest0');
-      const cssrResult = await establishment.getLocalAuthority('BL2 2QX');
 
+      let cssrResult = await establishment.getLocalAuthority('BL2 2QX');
       expect(cssrResult.theAuthority.id).to.equal(304);
+
+      cssrResult = await establishment.getLocalAuthority('SR2 7TZ');
+      expect(cssrResult.theAuthority.id).to.equal(110);
     });
   });
 });
