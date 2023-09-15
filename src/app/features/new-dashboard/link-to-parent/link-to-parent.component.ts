@@ -57,7 +57,11 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.setDataPermissions();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.linkToParentRequested = this.workplace.linkToParentRequested ? true : false;
+    this.linkToParentRequested = history.state?.linkToParentRequested
+      ? true
+      : this.workplace.linkToParentRequested
+      ? true
+      : false;
   }
 
   //function is use to get all available parent workplaces name, uid and Postcode
@@ -252,6 +256,30 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
       }
       return filterArray[0].parentName;
     }
+  }
+
+  public cancelRequestToParent(event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.establishmentService
+        .cancelRequestToParentForLink(this.workplace.uid, { approvalStatus: 'CANCELLED' })
+        .subscribe(
+          (data) => {
+            if (data) {
+              const parentName = data[0].requstedParentName;
+              this.router.navigate(['/dashboard'], {
+                state: {
+                  successAlertMessage: `You've cancelled your request to ${parentName}`,
+                  cancelRequestToParentForLinkSuccess: true,
+                },
+              });
+            }
+          },
+          (error) => {
+            this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          },
+        ),
+    );
   }
 
   public returnToHome(): void {

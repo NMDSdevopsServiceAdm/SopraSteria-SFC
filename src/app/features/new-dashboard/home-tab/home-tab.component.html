@@ -78,7 +78,10 @@
           <app-link-with-arrow *ngIf="canLinkToParent && !workplace.isParent">
             <ng-container *ngIf="linkToParentRequestedStatus; else requestLinkToParent">
               <ng-container *ngIf="newHomeDesignParentFlag; else dialogLinkParentRequestPending">
-                <a class="govuk-link" [routerLink]="['/link-to-parent']"
+                <a
+                  class="govuk-link"
+                  [routerLink]="['/link-to-parent']"
+                  [state]="{ linkToParentRequested: linkToParentRequestedStatus }"
                   >Link to a parent workplace (request pending)</a
                 >
               </ng-container>

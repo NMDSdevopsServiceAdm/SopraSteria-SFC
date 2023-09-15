@@ -15,6 +15,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { Establishment } from '../../../../mockdata/establishment';
 import { SharedModule } from '@shared/shared.module';
 import { getTestBed } from '@angular/core/testing';
 import { AlertService } from '@core/services/alert.service';
@@ -22,6 +23,7 @@ import { WindowRef } from '@core/services/window.ref';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
 
 describe('LinkToParentComponent', () => {
   async function setup() {
@@ -51,6 +53,7 @@ describe('LinkToParentComponent', () => {
           },
         ],
         componentProperties: {
+          linkToParentRequested: false,
           availableParentWorkPlaces: [
             {
               parentName: 'All Now',
@@ -98,8 +101,10 @@ describe('LinkToParentComponent', () => {
   });
 
   it('should show the workplace name', async () => {
-    const { component, getByText } = await setup();
+    const { component, getByText, fixture } = await setup();
     const workplaceName = component.workplace.name;
+
+    fixture.detectChanges();
 
     expect(getByText(workplaceName)).toBeTruthy();
   });
@@ -263,8 +268,26 @@ describe('LinkToParentComponent', () => {
       expect(cancelLinkRequest).toBeTruthy();
     });
 
-    xit('should show the cancel link request', async () => {
-      const { component, fixture, getByText } = await setup();
+    it('should show the cancel link request', async () => {
+      const { component, fixture, getByText, establishmentService } = await setup();
+
+      component.linkToParentRequested = true;
+      fixture.detectChanges();
+
+      const returnedEstablishment = {
+        requstedParentName: 'Parent name',
+      };
+
+      const cancelRequestToParentForLinkSpy = spyOn(
+        establishmentService,
+        'cancelRequestToParentForLink',
+      ).and.returnValue(of([returnedEstablishment]) as Establishment);
+
+      const cancelLinkRequest = getByText('Cancel link request');
+      fireEvent.click(cancelLinkRequest);
+      fixture.detectChanges();
+
+      expect(cancelRequestToParentForLinkSpy).toHaveBeenCalled();
     });
   });
 });
