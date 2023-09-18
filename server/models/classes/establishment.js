@@ -749,7 +749,7 @@ class Establishment extends EntityValidator {
       cssrRecord = await models.pcodedata.findOne({
         where: {
           postcode: {
-            [Op.like]: postcode.slice(0, -1) + '%', // 'SR2 7T%'
+            [Op.like]: postcode.slice(0, -1).substring(0, 9) + '%', // 'SR2 7T%' limit to be safe
           },
         },
         include: [
@@ -757,6 +757,7 @@ class Establishment extends EntityValidator {
             model: models.cssr,
             as: 'theAuthority',
             attributes: ['id', 'name', 'nmdsIdLetter'],
+            // where: {} // ?TODO
             required: true,
           },
         ],
@@ -820,12 +821,7 @@ class Establishment extends EntityValidator {
           type: models.sequelize.QueryTypes.SELECT,
         });
 
-        if (
-          nextNmdsIdSeqNumberResults &&
-          nextNmdsIdSeqNumberResults[0] &&
-          nextNmdsIdSeqNumberResults[0] &&
-          nextNmdsIdSeqNumberResults[0].nextval
-        ) {
+        if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
           nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
         } else {
           // no sequence number
@@ -1042,7 +1038,7 @@ class Establishment extends EntityValidator {
         const updatedTimestamp = new Date();
 
         // need to update the existing Establishment record and add an
-        //  updated audit event within a single transaction
+        // updated audit event within a single transaction
         await models.sequelize.transaction(async (t) => {
           // the saving of an Establishment can be initiated within
           //  an external transaction

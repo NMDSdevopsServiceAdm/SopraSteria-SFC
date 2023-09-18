@@ -1,17 +1,10 @@
 const expect = require('chai').expect;
-const sinon = require('sinon');
 
 const Establishment = require('../../../../models/classes/establishment').Establishment;
 
 const establishment = new Establishment();
 
 describe('Establishment Class', () => {
-  beforeEach(() => {});
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
   describe('load()', () => {
     it('should set CQC to null in shareWith if an establishment is not CQC regulated', async () => {
       const nonCqc = {
@@ -34,15 +27,16 @@ describe('Establishment Class', () => {
     });
   });
 
-  describe('save()', () => {
+  describe('getLocalAuthority(postcode)', () => {
     it('should obtain the correct cssr record for the supplied postcode', async () => {
-      const establishment = new Establishment('AutomatedTest0');
-
       let cssrResult = await establishment.getLocalAuthority('BL2 2QX');
       expect(cssrResult.theAuthority.id).to.equal(304);
 
       cssrResult = await establishment.getLocalAuthority('SR2 7TZ');
       expect(cssrResult.theAuthority.id).to.equal(110);
+
+      cssrResult = await establishment.getLocalAuthority('SR2 XXX');
+      expect(cssrResult).to.equal(null); // or exception
     });
   });
 });
