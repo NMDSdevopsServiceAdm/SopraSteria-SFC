@@ -5,6 +5,7 @@ const Establishment = require('../../models/classes/establishment');
 const { v4: uuidv4 } = require('uuid');
 uuidv4();
 const linkSubToParent = require('../../data/linkToParent');
+const models = require('../../models');
 const notifications = require('../../data/notifications');
 const { hasPermission } = require('../../utils/security/hasPermission');
 
@@ -279,9 +280,32 @@ const delink = async (req, res) => {
   }
 };
 
+const getRequestedLinkToParent = async (req, res) => {
+  try {
+    const establishmentId = req.body?.establishmentId;
+    if (establishmentId) {
+      let getLinkToParentUid = await models.LinkToParent.getLinkToParentUid(establishmentId);
+
+      if (getLinkToParentUid) {
+        return res.status(200).send({
+          getLinkToParentUid,
+        });
+      } else {
+        return res.status(400).send({
+          message: 'Invalid request',
+        });
+      }
+    }
+  } catch (e) {
+    console.error(' /establishment/:id/linkToParent/requested : ERR: ', e.message);
+    return res.status(500).send({});
+  }
+};
+
 router.route('/').post(hasPermission('canEditEstablishment'), linkToParent);
 router.route('/cancel').post(hasPermission('canEditEstablishment'), cancelLinkToParent);
 router.route('/action').put(hasPermission('canEditEstablishment'), actionLinkToParent);
 router.route('/delink').put(hasPermission('canEditEstablishment'), delink);
+router.route('/requested').put(hasPermission('canEditEstablishment'), getRequestedLinkToParent);
 
 module.exports = router;
