@@ -129,14 +129,13 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
   private setBenchmarksCard(): void {
     if (this.hasBenchmarkComparisonData) {
       const serviceName = this.serviceNamePipe.transform(this.workplace.mainService.name);
-      const localAuthority = this.meta?.localAuthority?.replace(/&/g, 'and');
+      // const localAuthority = this.meta?.localAuthority?.replace(/&/g, 'and');
       const noOfWorkplacesText =
         this.meta.workplaces === 1
           ? `There is ${this.meta.workplaces} workplace`
           : `There are ${this.meta.workplaces} workplaces`;
       const serviceText = this.bigThreeServices ? `${serviceName.toLowerCase()}` : 'adult social care';
-      this.benchmarksMessage = `LA${localAuthority} , ${noOfWorkplacesText} providing ${serviceText} in Local Authority.`;
-
+      this.benchmarksMessage = `${noOfWorkplacesText} providing ${serviceText} in Local Authority.`;
     } else {
       this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
     }
