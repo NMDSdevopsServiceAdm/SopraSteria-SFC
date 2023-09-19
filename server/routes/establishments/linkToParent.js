@@ -292,16 +292,11 @@ const getRequestedLinkToParent = async (req, res) => {
       let linkToParentRequestDetails = await models.LinkToParent.getLinkToParentRequestDetails(linkToParentUID);
       if (linkToParentRequestDetails) {
         return res.status(200).send(linkToParentRequestDetails);
-      } else {
-        return res.status(400).send({
-          message: 'Invalid request',
-        });
       }
-    } else {
-      return res.status(400).send({
-        message: 'Invalid request',
-      });
     }
+    return res.status(400).send({
+      message: 'Invalid request',
+    });
   } catch (e) {
     console.error(' /establishment/:id/linkToParent/requested : ERR: ', e.message);
     return res.status(500).send({});
