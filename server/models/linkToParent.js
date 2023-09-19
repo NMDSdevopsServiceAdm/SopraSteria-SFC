@@ -66,9 +66,13 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  // LinkToParent.linkToParentRequest = async function (params) {
-  //   return await linkSubToParent.linkToParentRequest(params);
-  // };
+  LinkToParent.associate = (models) => {
+    LinkToParent.belongsTo(models.establishment, {
+      foreignKey: 'ParentEstablishmentID',
+      targetKey: 'id',
+      as: 'ParentEstablishment',
+    });
+  };
 
   LinkToParent.getLinkToParentUid = async function (establishmentId) {
     return await this.findOne({
@@ -77,6 +81,23 @@ module.exports = function (sequelize, DataTypes) {
         approvalStatus: 'REQUESTED',
       },
       attributes: ['LinkToParentUID'],
+    });
+  };
+
+  LinkToParent.getLinkToParentRequestDetails = async function (linkToParentUid) {
+    return await this.findOne({
+      attributes: ['ApprovalStatus', 'PermissionRequest', 'SubEstablishmentID'],
+      include: [
+        {
+          model: sequelize.models.establishment,
+          as: 'ParentEstablishment',
+          attributes: ['EstablishmentID', 'PostCode', 'NameValue'],
+          required: true,
+        },
+      ],
+      where: {
+        linkToParentUid: linkToParentUid,
+      },
     });
   };
 

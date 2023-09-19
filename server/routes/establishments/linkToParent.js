@@ -281,20 +281,26 @@ const delink = async (req, res) => {
 };
 
 const getRequestedLinkToParent = async (req, res) => {
+  const establishmentId = req.body?.establishmentId;
+
   try {
-    const establishmentId = req.body?.establishmentId;
     if (establishmentId) {
       let getLinkToParentUid = await models.LinkToParent.getLinkToParentUid(establishmentId);
 
-      if (getLinkToParentUid) {
-        return res.status(200).send({
-          getLinkToParentUid,
-        });
+      const linkToParentUID = getLinkToParentUid?.dataValues?.LinkToParentUID;
+
+      let linkToParentRequestDetails = await models.LinkToParent.getLinkToParentRequestDetails(linkToParentUID);
+      if (linkToParentRequestDetails) {
+        return res.status(200).send(linkToParentRequestDetails);
       } else {
         return res.status(400).send({
           message: 'Invalid request',
         });
       }
+    } else {
+      return res.status(400).send({
+        message: 'Invalid request',
+      });
     }
   } catch (e) {
     console.error(' /establishment/:id/linkToParent/requested : ERR: ', e.message);
@@ -309,3 +315,4 @@ router.route('/delink').put(hasPermission('canEditEstablishment'), delink);
 router.route('/requested').put(hasPermission('canEditEstablishment'), getRequestedLinkToParent);
 
 module.exports = router;
+module.exports.getRequestedLinkToParent = getRequestedLinkToParent;
