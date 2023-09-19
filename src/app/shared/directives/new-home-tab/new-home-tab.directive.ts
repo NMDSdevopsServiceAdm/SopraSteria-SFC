@@ -162,6 +162,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.updateLinkToParentRequestedStatus();
     this.updateParentStatusRequested();
     this.updateCancelLinkToParentRequest();
+    this.updateOnRemoveLinkToParentSuccess();
   }
 
   private setBenchmarksCard(): void {
@@ -423,58 +424,45 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   }
 
   /**
-   * This function is used to open a conditional dialog window
-   * open ownership change message dialog if canViewChangeDataOwner flag is true
-   * else remove link to parent dialog.
-   * This method is also reset the current estrablishment and permissions after delink api return 200
-   * from LinkToParentRemoveDialogComponent.
-   *
    * @param {event} triggred event
    * @return {void}
    */
-  public removeLinkToParent($event: Event) {
+  public ownershipChangeMessage($event: Event) {
     $event.preventDefault();
+
     let dialog;
     if (this.canViewChangeDataOwner) {
       dialog = this.dialogService.open(OwnershipChangeMessageDialogComponent, this.workplace);
-    } else {
-      dialog = this.dialogService.open(LinkToParentRemoveDialogComponent, this.workplace);
     }
     dialog.afterClosed.subscribe((returnToClose) => {
-      if (returnToClose) {
-        //if return  from LinkToParentRemoveDialogComponent then proceed to delink request
-        if (returnToClose.closeFrom === 'remove-link') {
-          this.establishmentService.getEstablishment(this.workplace.uid).subscribe((workplace) => {
-            if (workplace) {
-              //get permission and reset latest value
-              this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermission) => {
-                if (hasPermission) {
-                  this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
-                  this.establishmentService.setState(workplace);
-                  this.establishmentService.setPrimaryWorkplace(workplace);
-                  this.workplace.parentUid = null; // update on @input object
-                  this.setPermissionLinks();
-                  this.router.navigate(['/dashboard']);
-                  this.alertService.addAlert({
-                    type: 'success',
-                    message: `You're no longer linked to your parent organisation.`,
-                  });
-                }
-              });
-            }
-          });
-        }
-        //if return from OwnershipChangeMessageDialogComponent then open change data owner dialog in case
-        //of isOwnershipRequested flag false else cancel change data owner dialog .
-        if (returnToClose.closeFrom === 'ownership-change') {
-          if (this.isOwnershipRequested) {
-            this.cancelChangeDataOwnerRequest($event);
-          } else {
-            this.onChangeDataOwner($event);
-          }
+      if (returnToClose.closeFrom === 'ownership-change') {
+        if (this.isOwnershipRequested) {
+          this.cancelChangeDataOwnerRequest($event);
+        } else {
+          this.onChangeDataOwner($event);
         }
       }
     });
+  }
+
+  public updateOnRemoveLinkToParentSuccess(): void {
+    const removeLinkToParentSuccess = history.state?.removeLinkToParentSuccess;
+
+    if (removeLinkToParentSuccess) {
+      this.establishmentService.getEstablishment(this.workplace.uid).subscribe((workplace) => {
+        if (workplace) {
+          this.permissionsService.getPermissions(this.workplace.uid).subscribe((hasPermission) => {
+            if (hasPermission) {
+              this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
+              this.establishmentService.setState(workplace);
+              this.establishmentService.setPrimaryWorkplace(workplace);
+              this.workplace.parentUid = null;
+              this.setPermissionLinks();
+            }
+          });
+        }
+      });
+    }
   }
 
   ngOnDestroy(): void {

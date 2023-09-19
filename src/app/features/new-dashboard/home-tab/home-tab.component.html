@@ -139,11 +139,14 @@
           <app-link-with-arrow *ngIf="canViewDataPermissionsLink">
             <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
           </app-link-with-arrow>
-          <app-link-with-arrow *ngIf="canRemoveParentAssociation"
-            ><a (click)="removeLinkToParent($event)" href="#"
-              >Remove link to my parent organisation</a
-            ></app-link-with-arrow
-          >
+          <app-link-with-arrow *ngIf="canRemoveParentAssociation">
+            <ng-container *ngIf="canViewChangeDataOwner; else removeLinkToParent">
+              <a (click)="ownershipChangeMessage($event)" href="#">Remove the link to your parent workplace</a>
+            </ng-container>
+            <ng-template #removeLinkToParent>
+              <a [routerLink]="['/remove-link-to-parent']">Remove the link to your parent workplace</a>
+            </ng-template>
+          </app-link-with-arrow>
 
           <app-link-with-arrow>
             <a class="govuk-link" [routerLink]="['/first-login-wizard']">Help to get you started</a>
