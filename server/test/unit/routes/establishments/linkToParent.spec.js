@@ -29,13 +29,13 @@ describe('server/routes/establishments/linkToParent', () => {
     const linkToParentUID = { LinkToParentUID: '124-123' };
 
     const linkToParentRequestDetails = {
-      ApprovalStatus: 'REQUESTED',
-      PermissionRequest: 'Workplace',
-      SubEstablishmentID: 122,
-      ParentEstablishment: {
-        EstablishmentID: 5,
-        PostCode: 'LE2 1RQ',
-        NameValue: 'Parent LA',
+      approvalStatus: 'REQUESTED',
+      permissionRequest: 'Workplace',
+      subEstablishmentID: 122,
+      parentEstablishment: {
+        id: 5,
+        postCode: 'LE2 1RQ',
+        name: 'Parent LA',
       },
     };
 

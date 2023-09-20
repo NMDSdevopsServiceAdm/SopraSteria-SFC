@@ -296,8 +296,8 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
           .getRequestedLinkToParent(this.workplace.uid, { establishmentId: this.workplace.id })
           .subscribe(
             (requestedParent: any) => {
-              this.parentPostcode = requestedParent.ParentEstablishment.PostCode;
-              this.requestedParentNameAndPostcode = `${requestedParent.ParentEstablishment.NameValue}, ${requestedParent.ParentEstablishment.PostCode}`;
+              this.parentPostcode = requestedParent.parentEstablishment.postcode;
+              this.requestedParentNameAndPostcode = `${requestedParent.parentEstablishment.name}, ${requestedParent.parentEstablishment.postcode}`;
             },
             (error) => {
               if (error.error.message) {

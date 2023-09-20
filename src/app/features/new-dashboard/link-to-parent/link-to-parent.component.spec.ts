@@ -95,6 +95,18 @@ describe('LinkToParentComponent', () => {
       establishmentService,
     };
   }
+
+  const requestedLinkToParent = {
+    approvalStatus: 'REQUESTED',
+    parentEstablishment: {
+      name: 'Parent name',
+      id: 7,
+      postcode: 'SE5 7HY',
+    },
+    permissionRequest: 'Workplace',
+    subEstablishmentID: 4,
+  };
+
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
@@ -291,38 +303,28 @@ describe('LinkToParentComponent', () => {
     });
 
     it('should call getRequestedLinkToParent', async () => {
-      const { component, fixture, getByText, establishmentService } = await setup();
+      const { component, fixture, establishmentService } = await setup();
 
       component.linkToParentRequested = true;
       fixture.detectChanges();
 
-      const returnedEstablishment = {
-        ApprovalStatus: 'REQUESTED',
-        ParentEstablishment: {
-          NameValue: 'Parent name',
-          EstablishmentID: 7,
-          PostCode: 'SE5 7HY',
-        },
-        PermissionRequest: 'Workplace',
-        SubEstablishmentID: 4,
-      };
-
       const getRequestedLinkToParentSpy = spyOn(establishmentService, 'getRequestedLinkToParent').and.returnValue(
-        of([returnedEstablishment]) as Establishment,
+        of([requestedLinkToParent]) as Establishment,
       );
 
-      component.ngOnInit();
-      fixture.detectChanges();
+      component.getRequestedParent();
 
       expect(getRequestedLinkToParentSpy).toHaveBeenCalled();
     });
 
     it('should show the requested parent and postcode on the banner', async () => {
-      const { component, fixture, getByText, establishmentService } = await setup();
+      const { component, fixture, getByText } = await setup();
 
       component.linkToParentRequested = true;
-      const requestedParentNameAndPostcode = 'Parent name, SE5 7HY';
+
+      const requestedParentNameAndPostcode = `${requestedLinkToParent.parentEstablishment.name}, ${requestedLinkToParent.parentEstablishment.postcode}`;
       component.requestedParentNameAndPostcode = requestedParentNameAndPostcode;
+
       fixture.detectChanges();
 
       const requestedParentNameAndPostcodeText = getByText(requestedParentNameAndPostcode);

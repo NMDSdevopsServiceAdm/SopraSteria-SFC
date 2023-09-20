@@ -70,7 +70,7 @@ module.exports = function (sequelize, DataTypes) {
     LinkToParent.belongsTo(models.establishment, {
       foreignKey: 'ParentEstablishmentID',
       targetKey: 'id',
-      as: 'ParentEstablishment',
+      as: 'parentEstablishment',
     });
   };
 
@@ -86,12 +86,12 @@ module.exports = function (sequelize, DataTypes) {
 
   LinkToParent.getLinkToParentRequestDetails = async function (linkToParentUid) {
     return await this.findOne({
-      attributes: ['ApprovalStatus', 'PermissionRequest', 'SubEstablishmentID'],
+      attributes: ['approvalStatus', 'permissionRequest', 'subEstablishmentId'],
       include: [
         {
           model: sequelize.models.establishment,
-          as: 'ParentEstablishment',
-          attributes: ['EstablishmentID', 'PostCode', 'NameValue'],
+          as: 'parentEstablishment',
+          attributes: ['id', 'postcode', ['NameValue', 'name']],
           required: true,
         },
       ],
