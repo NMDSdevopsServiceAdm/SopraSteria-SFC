@@ -272,7 +272,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
               const parentName = data[0].requstedParentName;
               this.router.navigate(['/dashboard'], {
                 state: {
-                  successAlertMessage: `You've cancelled your request to ${parentName}, ${this.parentPostcode}`,
+                  successAlertMessage: `You've cancelled your request to link to ${parentName}, ${this.parentPostcode}`,
                   cancelRequestToParentForLinkSuccess: true,
                 },
               });

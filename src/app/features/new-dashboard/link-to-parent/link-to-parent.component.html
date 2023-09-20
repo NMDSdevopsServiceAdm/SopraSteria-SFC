@@ -7,7 +7,7 @@
 >
 </app-error-summary>
 <div>
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-padding-bottom-1">
     <div class="govuk-grid-column-two-thirds">
       <div class="parentRequestTextContainer">
         <span class="govuk-caption-l">{{ workplace.name }}</span>
@@ -177,7 +177,12 @@
         </form>
       </ng-container>
       <ng-template #linkToParentRequestedPending>
-        <button data-testid="returnToHomeButton" type="button" (click)="returnToHome()" class="govuk-button">
+        <button
+          data-testid="returnToHomeButton"
+          type="button"
+          (click)="returnToHome()"
+          class="govuk-button govuk-!-margin-top-3"
+        >
           Return to home
         </button>
       </ng-template>
