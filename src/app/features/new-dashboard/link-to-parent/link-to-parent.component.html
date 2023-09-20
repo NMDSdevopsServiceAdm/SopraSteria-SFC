@@ -62,7 +62,7 @@
                 class="govuk-form-group"
                 [class.govuk-form-group--error]="submitted && form.get('parentNameOrPostCode').invalid"
               >
-                <label class="govuk-label" for="parentNameOrPostCode"
+                <label class="govuk-label govuk-!-margin-top-3" for="parentNameOrPostCode"
                   >Start to type the parent workplace's name or postcode</label
                 >
                 <span
@@ -88,7 +88,7 @@
           <div>
             <fieldset class="govuk-fieldset">
               <legend class="govuk-fieldset__legend">
-                <h2 class="govuk-heading-m govuk-!-margin-bottom-3">Data permissions</h2>
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Data permissions</h2>
               </legend>
               <div
                 class="govuk-form-group"
@@ -139,7 +139,11 @@
                       {{ dataPermissions[1] | newDataViewPermissions }}
                     </label>
                   </div>
-                  <div class="govuk-radios__divider govuk-!-text-align-left">Or</div>
+                  <div
+                    class="govuk-radios__divider govuk-!-text-align-left govuk-!-padding-top-2 govuk-!-padding-bottom-2"
+                  >
+                    Or
+                  </div>
                   <div class="govuk-radios__item">
                     <input
                       class="govuk-radios__input"
@@ -160,7 +164,7 @@
             </fieldset>
           </div>
 
-          <div class="linkToParentRequestButtonContainer">
+          <div class="linkToParentRequestButtonContainer govuk-!-margin-top-5">
             <button type="submit" (click)="sendRequestToParent()" class="govuk-button">Send link request</button>
             <a
               href="#"
