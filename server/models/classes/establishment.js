@@ -804,7 +804,7 @@ class Establishment extends EntityValidator {
 
         // We use the postcode to get local custodian code
         // and use this to get the Cssr record
-        const cssrResult = this.getLocalAuthority(this._postcode);
+        const cssrResult = await this.getLocalAuthority(this._postcode);
 
         if (cssrResult) {
           this._cssrID = cssrResult.theAuthority.id;
@@ -1565,7 +1565,7 @@ class Establishment extends EntityValidator {
         // lookup primary authority by trying to resolve on specific postcode code
 
         // TODO!
-        const cssrResult = this.getLocalAuthority(this._postcode);
+        const cssrResult = await this.getLocalAuthority(this._postcode);
 
         fetchResults.primaryAuthorityCssr = {
           id: cssrResult.theAuthority.id,
