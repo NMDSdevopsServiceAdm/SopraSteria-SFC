@@ -342,7 +342,7 @@ export class EstablishmentService {
   }
 
   //get request for link to parent
-  public getRequestedLinkToParent(establishmentId, data): Observable<Establishment> {
+  public getRequestedLinkToParent(establishmentId, data) {
     return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/requested`, data);
   }
 

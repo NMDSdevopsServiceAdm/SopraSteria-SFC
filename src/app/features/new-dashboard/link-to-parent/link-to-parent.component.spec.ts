@@ -289,5 +289,45 @@ describe('LinkToParentComponent', () => {
 
       expect(cancelRequestToParentForLinkSpy).toHaveBeenCalled();
     });
+
+    it('should call getRequestedLinkToParent', async () => {
+      const { component, fixture, getByText, establishmentService } = await setup();
+
+      component.linkToParentRequested = true;
+      fixture.detectChanges();
+
+      const returnedEstablishment = {
+        ApprovalStatus: 'REQUESTED',
+        ParentEstablishment: {
+          NameValue: 'Parent name',
+          EstablishmentID: 7,
+          PostCode: 'SE5 7HY',
+        },
+        PermissionRequest: 'Workplace',
+        SubEstablishmentID: 4,
+      };
+
+      const getRequestedLinkToParentSpy = spyOn(establishmentService, 'getRequestedLinkToParent').and.returnValue(
+        of([returnedEstablishment]) as Establishment,
+      );
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      expect(getRequestedLinkToParentSpy).toHaveBeenCalled();
+    });
+
+    it('should show the requested parent and postcode on the banner', async () => {
+      const { component, fixture, getByText, establishmentService } = await setup();
+
+      component.linkToParentRequested = true;
+      const requestedParentNameAndPostcode = 'Parent name, SE5 7HY';
+      component.requestedParentNameAndPostcode = requestedParentNameAndPostcode;
+      fixture.detectChanges();
+
+      const requestedParentNameAndPostcodeText = getByText(requestedParentNameAndPostcode);
+
+      expect(requestedParentNameAndPostcodeText).toBeTruthy();
+    });
   });
 });

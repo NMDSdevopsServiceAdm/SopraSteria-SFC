@@ -17,7 +17,8 @@
   </div>
   <ng-container *ngIf="linkToParentRequested">
     <app-inset-text color="pending" [removeTopMargin]="true" data-testid="pendingBlueBanner">
-      Your request to link to <span class="govuk-!-font-weight-bold">[parentname & postcode]</span> is pending
+      Your request to link to <span class="govuk-!-font-weight-bold">{{ requestedParentNameAndPostcode }}</span> is
+      pending
       <span>
         <a href="#" (click)="cancelRequestToParent($event)" class="govuk-util__float-right">Cancel link request</a>
       </span>

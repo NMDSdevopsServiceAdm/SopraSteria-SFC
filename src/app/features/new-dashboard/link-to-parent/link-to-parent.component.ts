@@ -32,6 +32,8 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
   public parentNameOrPostCode: string;
   public formErrorsMap: Array<ErrorDetails>;
   public linkToParentRequested: boolean;
+  public requestedParentNameAndPostcode: string;
+  public parentPostcode: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -62,6 +64,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
       : this.workplace.linkToParentRequested
       ? true
       : false;
+    this.getRequestedParent();
   }
 
   //function is use to get all available parent workplaces name, uid and Postcode
@@ -269,7 +272,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
               const parentName = data[0].requstedParentName;
               this.router.navigate(['/dashboard'], {
                 state: {
-                  successAlertMessage: `You've cancelled your request to ${parentName}`,
+                  successAlertMessage: `You've cancelled your request to ${parentName}, ${this.parentPostcode}`,
                   cancelRequestToParentForLinkSuccess: true,
                 },
               });
@@ -284,6 +287,26 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public returnToHome(): void {
     this.router.navigate(['/dashboard']);
+  }
+
+  public getRequestedParent(): void {
+    if (this.linkToParentRequested) {
+      this.subscriptions.add(
+        this.establishmentService
+          .getRequestedLinkToParent(this.workplace.uid, { establishmentId: this.workplace.id })
+          .subscribe(
+            (requestedParent: any) => {
+              this.parentPostcode = requestedParent.ParentEstablishment.PostCode;
+              this.requestedParentNameAndPostcode = `${requestedParent.ParentEstablishment.NameValue}, ${requestedParent.ParentEstablishment.PostCode}`;
+            },
+            (error) => {
+              if (error.error.message) {
+                this.serverError = error.error.message;
+              }
+            },
+          ),
+      );
+    }
   }
 
   public ngOnDestroy(): void {
