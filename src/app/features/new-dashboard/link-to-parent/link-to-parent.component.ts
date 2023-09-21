@@ -181,7 +181,6 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
           (data) => {
             if (data) {
-              //const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
               this.router.navigate(['/dashboard'], {
                 state: {
                   successAlertMessage: `You've sent a link request to ${this.form.value.parentNameOrPostCode}`,
@@ -296,8 +295,8 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
           .getRequestedLinkToParent(this.workplace.uid, { establishmentId: this.workplace.id })
           .subscribe(
             (requestedParent: any) => {
-              this.parentPostcode = requestedParent.parentEstablishment.postcode;
-              this.requestedParentNameAndPostcode = `${requestedParent.parentEstablishment.name}, ${requestedParent.parentEstablishment.postcode}`;
+              this.parentPostcode = requestedParent.parentEstablishment?.postcode;
+              this.requestedParentNameAndPostcode = `${requestedParent.parentEstablishment?.name}, ${requestedParent.parentEstablishment?.postcode}`;
             },
             (error) => {
               if (error.error.message) {
