@@ -374,8 +374,9 @@ describe('NewHomeTabComponent', () => {
 
           fixture.detectChanges();
 
-          const expectedMessage = 'Link to a parent workplace (request pending)';
-          expect(queryByText(expectedMessage)).toBeTruthy();
+          const linkToParentPendingLink = queryByText('Link to a parent workplace (request pending)');
+          expect(linkToParentPendingLink).toBeTruthy();
+          expect(linkToParentPendingLink.getAttribute('href')).toEqual('/link-to-parent');
 
           expect(queryByText('Link to a parent workplace')).toBeFalsy();
           expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeFalsy();
@@ -400,6 +401,26 @@ describe('NewHomeTabComponent', () => {
             type: 'success',
             message: message,
           });
+        });
+
+        it('should update when cancel to link to parent is successful', async () => {
+          const { component, fixture } = await setup();
+
+          component.workplace.isParent = false;
+          component.canLinkToParent = true;
+          component.linkToParentRequestedStatus = true;
+          component.newHomeDesignParentFlag = true;
+          component.canBecomeAParent = false;
+
+          const message = `You've cancelled request to link to parent`;
+
+          window.history.pushState({ successAlertMessage: message, cancelRequestToParentForLinkSuccess: true }, '', '');
+
+          fixture.detectChanges();
+          component.ngOnInit();
+
+          expect(component.linkToParentRequestedStatus).toEqual(false);
+          expect(component.canBecomeAParent).toEqual(true);
         });
       });
     });

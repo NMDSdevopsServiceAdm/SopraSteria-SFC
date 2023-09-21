@@ -341,6 +341,11 @@ export class EstablishmentService {
     return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/delink`, data);
   }
 
+  //get request for link to parent
+  public getRequestedLinkToParent(establishmentId, data) {
+    return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/requested`, data);
+  }
+
   //update mandatory training
   public createAndUpdateMandatoryTraining(establishmentId, data: mandatoryTraining) {
     return this.http.post<Establishment>(`/api/establishment/${establishmentId}/mandatoryTraining`, data);

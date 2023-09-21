@@ -31,6 +31,9 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
   public availableParentWorkPlaces;
   public parentNameOrPostCode: string;
   public formErrorsMap: Array<ErrorDetails>;
+  public linkToParentRequested: boolean;
+  public requestedParentNameAndPostcode: string;
+  public parentPostcode: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -56,6 +59,12 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
     this.setDataPermissions();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
+    this.linkToParentRequested = history.state?.linkToParentRequested
+      ? true
+      : this.workplace.linkToParentRequested
+      ? true
+      : false;
+    this.getRequestedParent();
   }
 
   //function is use to get all available parent workplaces name, uid and Postcode
@@ -172,7 +181,6 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
           (data) => {
             if (data) {
-              //const parentName = this.getParentUidOrName(this.form.value.parentNameOrPostCode, 'parentName') || null;
               this.router.navigate(['/dashboard'], {
                 state: {
                   successAlertMessage: `You've sent a link request to ${this.form.value.parentNameOrPostCode}`,
@@ -249,6 +257,54 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
         return filterArray[0].uid;
       }
       return filterArray[0].parentName;
+    }
+  }
+
+  public cancelRequestToParent(event) {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.establishmentService
+        .cancelRequestToParentForLink(this.workplace.uid, { approvalStatus: 'CANCELLED' })
+        .subscribe(
+          (data) => {
+            if (data) {
+              const parentName = data[0].requstedParentName;
+              this.router.navigate(['/dashboard'], {
+                state: {
+                  successAlertMessage: `You've cancelled your request to link to ${parentName}, ${this.parentPostcode}`,
+                  cancelRequestToParentForLinkSuccess: true,
+                },
+              });
+            }
+          },
+          (error) => {
+            this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          },
+        ),
+    );
+  }
+
+  public returnToHome(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  public getRequestedParent(): void {
+    if (this.linkToParentRequested) {
+      this.subscriptions.add(
+        this.establishmentService
+          .getRequestedLinkToParent(this.workplace.uid, { establishmentId: this.workplace.id })
+          .subscribe(
+            (requestedParent: any) => {
+              this.parentPostcode = requestedParent.parentEstablishment?.postcode;
+              this.requestedParentNameAndPostcode = `${requestedParent.parentEstablishment?.name}, ${requestedParent.parentEstablishment?.postcode}`;
+            },
+            (error) => {
+              if (error.error.message) {
+                this.serverError = error.error.message;
+              }
+            },
+          ),
+      );
     }
   }
 
