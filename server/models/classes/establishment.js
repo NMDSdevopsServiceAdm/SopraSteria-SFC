@@ -746,10 +746,11 @@ class Establishment extends EntityValidator {
 
     if (!cssrRecord) {
       //try matching ignoring last character of postcode
+      // The UK postcode consists of five to seven alphanumeric characters
       cssrRecord = await models.pcodedata.findOne({
         where: {
           postcode: {
-            [Op.like]: postcode.slice(0, -1).substring(0, 9) + '%', // 'SR2 7T%' limit to be safe
+            [Op.like]: postcode.slice(0, -1).substring(0, 7) + '%', // 'SR2 7T%' limit to avoid injection
           },
         },
         include: [
@@ -762,6 +763,10 @@ class Establishment extends EntityValidator {
           },
         ],
       });
+    }
+
+    if (!cssrRecord) {
+      console.error('Could not obtain CSSR record from postcode');
     }
 
     return cssrRecord;
