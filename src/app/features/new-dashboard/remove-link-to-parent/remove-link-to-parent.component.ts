@@ -55,7 +55,7 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
 
     if (allParents) {
       const parent = this.allParents.find((parent) => parent.uid === parentUid);
-      this.parentPostcode = parent.postcode;
+      this.parentPostcode = parent?.postcode;
     }
   }
 
