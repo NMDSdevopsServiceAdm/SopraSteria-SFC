@@ -24,50 +24,120 @@ const workerMap = new Map([
   [22, 4],
 ]);
 
+const getPayRanking = async function (establishmentId, mainService, workerId, cssr) {
+  const annualOrHourly = [CARE_WORKER_ID, SENIOR_CARE_WORKER_ID].includes(workerId) ? 'Hourly' : 'Annually';
+  const field = annualOrHourly === 'Hourly' ? 'AverageHourlyRate' : 'AverageAnnualFTE';
+  const currentmetricValue = await getPay({ establishmentId, annualOrHourly, mainJob: workerId });
 
-const getPayRanking = async function (establishmentId) {
-  try {
-    return await getComparisonGroupAndCalculateRanking(
-      establishmentId,
-      models.benchmarksPay,
-      getPay,
-      (r) => r.pay,
-      calculateRankDesc
-    );
-  } catch (error) {
-    return res.status(500).json(error);
-  }
-};
-
-
-const getQualificationsRanking = async function (establishmentId) {
-  return await getComparisonGroupAndCalculateRanking(
+  const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
-    models.benchmarksQualifications,
-    getQualifications,
-    (r) => parseFloat(r.qualifications),
+    mainService,
+    'benchmarksPayByEstId',
+    [field, 'MainJobRole'],
+    currentmetricValue,
+    (r) => r[field],
     calculateRankDesc,
+    cssr,
+    workerId,
   );
+
+  const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksPayByEstIdGoodOutstanding',
+    [field, 'MainJobRole'],
+    currentmetricValue,
+    (r) => r[field],
+    calculateRankDesc,
+    cssr,
+    workerId,
+  );
+
+  return { groupRankings, goodCqcRankings };
 };
 
-const getSicknessRanking = async function (establishmentId) {
-  return await getComparisonGroupAndCalculateRanking(
+const getQualificationsRanking = async function (establishmentId, mainService, cssr) {
+  const currentmetricValue = await getQualifications({ establishmentId });
+
+  const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
-    models.benchmarksSickness,
-    getSickness,
-    (r) => parseInt(r.sickness),
-    calculateRankAsc,
+    mainService,
+    'benchmarksQualificationsByEstId',
+    ['Qualifications'],
+    currentmetricValue,
+    (r) => parseFloat(r.Qualifications),
+    calculateRankDesc,
+    cssr
   );
+
+  const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksQualificationsByEstIdGoodOutstanding',
+    ['Qualifications'],
+    currentmetricValue,
+    (r) => parseFloat(r.Qualifications),
+    calculateRankDesc,
+    cssr
+  );
+
+  return { groupRankings, goodCqcRankings };
 };
 
-const getTurnoverRanking = async function (establishmentId) {
-  return await getComparisonGroupAndCalculateRanking(
+const getSicknessRanking = async function (establishmentId, mainService, cssr) {
+  const currentmetricValue = await getSickness({ establishmentId });
+
+  const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
-    models.benchmarksTurnover,
-    getTurnover,
-    (r) => parseFloat(r.turnover),
+    mainService,
+    'benchmarksSicknessByEstId',
+    ['AverageNoOfSickDays'],
+    currentmetricValue,
+    (r) => parseInt(r.AverageNoOfSickDays),
     calculateRankAsc,
+    cssr
   );
+
+  const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksSicknessByEstIdGoodOutstanding',
+    ['AverageNoOfSickDays'],
+    currentmetricValue,
+    (r) => parseInt(r.AverageNoOfSickDays),
+    calculateRankAsc,
+    cssr
+  );
+
+  return { groupRankings, goodCqcRankings };
+};
+
+const getTurnoverRanking = async function (establishmentId, mainService, cssr) {
+  const currentmetricValue = await getTurnover({ establishmentId });
+
+  const groupRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksTurnoverByEstId',
+    ['TurnoverRate'],
+    currentmetricValue,
+    (r) => parseFloat(r.TurnoverRate),
+    calculateRankDesc,
+    cssr
+  );
+
+  const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    mainService,
+    'benchmarksTurnoverByEstIdGoodOutstanding',
+    ['TurnoverRate'],
+    currentmetricValue,
+    (r) => parseFloat(r.TurnoverRate),
+    calculateRankDesc,
+    cssr
+  );
+
+  return { groupRankings, goodCqcRankings };
 };
 
 const getVacancyRanking = async function (establishmentId, mainService, cssr) {
@@ -126,41 +196,65 @@ const getTimeInRoleRankings = async function (establishmentId, mainService, cssr
 
 const getComparisonGroupAndCalculateRanking = async function (
   establishmentId,
+  mainService,
   benchmarksModel,
-  getMetricCallback,
+  attributes,
+  metric,
   mapComparisonGroupCallback,
   calculateRankingCallback,
+  cssr,
+  workerId,
 ) {
 
-  const comparisonGroupRankings = await getComparisonGroupRankings(establishmentId, benchmarksModel);
+  const comparisonGroupRankings = await getComparisonGroupRankings({
+    benchmarksModel: models[benchmarksModel],
+    establishmentId,
+    mainService,
+    attributes,
+    mainJob: workerId && workerMap.get(workerId),
+    cssr
+  });
 
-  if (comparisonGroupRankings.length === 0) {
+  const mappedComparisonGroupRankings = comparisonGroupRankings.map(mapComparisonGroupCallback).filter((a) => a);
+
+  if (mappedComparisonGroupRankings.length === 0) {
+    const values = [];
+    if (!metric.stateMessage) {
+      values.push({ value: metric.value, currentEst: true });
+    }
+
     return {
+      allValues: values,
       hasValue: false,
       stateMessage: 'no-comparison-data',
     };
   }
 
+  const valuesData = mappedComparisonGroupRankings
+    .sort((a, b) => b - a)
+    .map((rank) => {
+      return { value: rank, currentEst: false };
+    });
 
-  const maxRank = comparisonGroupRankings.length + 1;
-
-  const metric = await getMetricCallback( establishmentId );
+  const maxRank = mappedComparisonGroupRankings.length + 1;
 
   if (metric.stateMessage) {
     return {
+      allValues: valuesData,
       maxRank,
       hasValue: false,
       ...metric,
     };
   }
 
-  const rankings = comparisonGroupRankings.map(mapComparisonGroupCallback);
-  const currentRank = await calculateRankingCallback(metric.value, rankings);
+  const currentRank = await calculateRankingCallback(metric.value, mappedComparisonGroupRankings);
+  valuesData.splice(currentRank - 1, 0, { value: metric.value, currentEst: true });
 
   return {
     maxRank,
     currentRank,
     hasValue: true,
+    allValues: valuesData,
   };
 };
 
@@ -169,7 +263,10 @@ const getResponse = async function (req, res, getRankingCallback) {
   try {
     const establishmentId = req.establishmentId;
 
-    const responseData = await getRankingCallback(establishmentId);
+    const { MainServiceFKValue } = await models.establishment.findbyId(establishmentId);
+    const mainService = [1, 2, 8].includes(MainServiceFKValue) ? MainServiceFKValue : 0;
+
+    const responseData = await getRankingCallback(establishmentId, mainService);
 
     res.status(200).json(responseData);
   } catch (error) {
@@ -178,10 +275,20 @@ const getResponse = async function (req, res, getRankingCallback) {
 };
 
 const getPayResponse = async (req, res) => {
+  try {
+    const establishmentId = req.establishmentId;
+    const { MainServiceFKValue } = await models.establishment.findbyId(establishmentId);
+    const mainService = [1, 2, 8].includes(MainServiceFKValue) ? MainServiceFKValue : 0;
 
-
-  await getResponse(req, res, getPayRanking);
-
+    const data = {};
+    data.careWorkerPay = await getPayRanking(establishmentId, mainService, CARE_WORKER_ID);
+    data.seniorCareWorkerPay = await getPayRanking(establishmentId, mainService, SENIOR_CARE_WORKER_ID);
+    data.registeredNursePay = await getPayRanking(establishmentId, mainService, REGISTERED_NURSE_ID);
+    data.registeredManagerPay = await getPayRanking(establishmentId, mainService, REGISTERED_MANAGER_ID);
+    res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
 };
 
 const getQualificationsResponse = async (req, res) => {
@@ -205,21 +312,28 @@ const getTimeInRoleResponse = async (req, res) => {
 };
 
 const getRankingsResponse = async (req, res) => {
-  const establishmentId = req.establishmentId;
+  try {
+    const establishmentId = req.establishmentId;
+    const { mainService } = await models.establishment.findbyId(establishmentId);
 
-  const pay = await getPayRanking(establishmentId);
-  const turnover = await getTurnoverRanking(establishmentId);
-  const sickness = await getSicknessRanking(establishmentId);
-  const qualifications = await getQualificationsRanking(establishmentId);
+    const mainServiceID = [1, 2, 8].includes(mainService.reportingID) ? mainService.reportingID : 0;
+    const cssr = await models.cssr.getCSSR(establishmentId);
 
-  const data = {
-    pay,
-    turnover,
-    sickness,
-    qualifications,
-  };
+    const data = { pay: {} };
 
-  res.status(200).json(data);
+    data.pay.careWorkerPay = await getPayRanking(establishmentId, mainServiceID, CARE_WORKER_ID, cssr);
+    data.pay.seniorCareWorkerPay = await getPayRanking(establishmentId, mainServiceID, SENIOR_CARE_WORKER_ID, cssr);
+    data.pay.registeredNursePay = await getPayRanking(establishmentId, mainServiceID, REGISTERED_NURSE_ID, cssr);
+    data.pay.registeredManagerPay = await getPayRanking(establishmentId, mainServiceID, REGISTERED_MANAGER_ID, cssr);
+    data.turnover = await getTurnoverRanking(establishmentId, mainServiceID, cssr);
+    data.sickness = await getSicknessRanking(establishmentId, mainServiceID, cssr);
+    data.qualifications = await getQualificationsRanking(establishmentId, mainServiceID, cssr);
+    data.vacancy = await getVacancyRanking(establishmentId, mainServiceID, cssr);
+    data.timeInRole = await getTimeInRoleRankings(establishmentId, mainServiceID, cssr);
+    res.status(200).json(data);
+  } catch (error) {
+    return res.status(500).json(error);
+  }
 };
 
 router.route('/').get(getRankingsResponse);

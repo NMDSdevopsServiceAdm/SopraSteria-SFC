@@ -60,11 +60,7 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
     );
   }
 
-
-
-
   get payTile(): Tile {
-
     return this.tilesData?.pay;
   }
 

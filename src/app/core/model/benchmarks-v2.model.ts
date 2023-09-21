@@ -18,7 +18,7 @@ export interface Meta {
   workplacesGoodCqc?: number;
   staffGoodCqc?: number;
   lastUpdated?: Date;
-  localAuthority: string;
+  localAuthority: string; //TODO
 }
 export interface Tile {
   workplaceValue: BenchmarkValue;

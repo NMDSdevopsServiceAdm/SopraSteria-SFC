@@ -1205,28 +1205,28 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  // Worker.averageHourlyPay = async function (params) {
-  //   console.log(establishmentId);
-  //   // const establishmentId = params.establishmentId;
-  //   // const mainJobFk = params.mainJob || 10;
-  //   // const annualOrHourly = params.annualOrHourly || 'Hourly';
+  Worker.averageHourlyPay = async function (params) {
+    console.log(establishmentId);
+    const establishmentId = params.establishmentId;
+    const mainJobFk = params.mainJob || 10;
+    const annualOrHourly = params.annualOrHourly || 'Hourly';
 
-  //   return this.findOne({
-  //     attributes: [[sequelize.fn('avg', sequelize.col('AnnualHourlyPayRate')), 'amount']],
-  //     where: {
-  //       // MainJobFkValue: 10,
-  //       // archived: false,
-  //       // AnnualHourlyPayValue:  'Hourly',
-  //       // AnnualHourlyPayRate: {
-  //       //   [Op.not]: null,
-  //       // },
-  //       establishmentFk: establishmentId,
-  //     },
-  //     raw: true,
-  //     logging:true
-  //   }
-  //  );
-  // };
+    return this.findOne({
+      attributes: [[sequelize.fn('avg', sequelize.col('AnnualHourlyPayRate')), 'amount']],
+      where: {
+        MainJobFkValue: mainJobFk,
+        archived: false,
+        AnnualHourlyPayValue:  annualOrHourly,
+        AnnualHourlyPayRate: {
+          [Op.not]: null,
+        },
+        establishmentFk: establishmentId,
+      },
+      raw: true,
+      logging:true
+    }
+   );
+  };
 
   Worker.averageHourlyPay = async function (establishmentId) {
     return this.findOne({
@@ -1256,19 +1256,19 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  // Worker.yearOrMoreInRoleCount = async function (establishmentId) {
-  //   const yearAgo = dayjs(new Date()).subtract(1, 'year').toDate();
-  //   return this.count({
-  //     where: {
-  //       establishmentFk: establishmentId,
-  //       archived: false,
-  //       ContractValue: ['Permanent', 'Temporary'],
-  //       MainJobStartDateValue: {
-  //         [Op.lt]: yearAgo,
-  //       },
-  //     },
-  //   });
-  // };
+  Worker.yearOrMoreInRoleCount = async function (establishmentId) {
+    const yearAgo = dayjs(new Date()).subtract(1, 'year').toDate();
+    return this.count({
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        ContractValue: ['Permanent', 'Temporary'],
+        MainJobStartDateValue: {
+          [Op.lt]: yearAgo,
+        },
+      },
+    });
+  };
 
   Worker.countForPermAndTempNoStartDate = async function (establishmentId) {
     return this.count({

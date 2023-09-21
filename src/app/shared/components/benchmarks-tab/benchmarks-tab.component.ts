@@ -50,8 +50,6 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     );
   }
 
-
-
   get payTile(): Tile {
     return this.tilesData?.pay;
   }

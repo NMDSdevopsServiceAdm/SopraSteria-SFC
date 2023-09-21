@@ -1,7 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { AllRankingsResponse, BenchmarksResponse, Metric, MetricsContent, NoData, Tile } from '@core/model/benchmarks.model';
+import {
+  AllRankingsResponse,
+  BenchmarksResponse,
+  Metric,
+  MetricsContent,
+  NoData,
+  Tile,
+} from '@core/model/benchmarks.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -100,11 +107,23 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.benchmarksService.getAllRankingData(this.establishmentUid).subscribe((data: AllRankingsResponse) => {
         this.rankings = data;
-        this.payContent = { ...this.rankings.pay, smallText: true, noData: MetricsContent.Pay.noData };
-        this.turnoverContent = { ...this.rankings.turnover, smallText: true, noData: MetricsContent.Turnover.noData };
-        this.sicknessContent = { ...this.rankings.sickness, smallText: true, noData: MetricsContent.Sickness.noData };
+        this.payContent = {
+          ...this.rankings.pay.careWorkerPay.groupRankings,
+          smallText: true,
+          noData: MetricsContent.Pay.noData,
+        };
+        this.turnoverContent = {
+          ...this.rankings.turnover.groupRankings,
+          smallText: true,
+          noData: MetricsContent.Turnover.noData,
+        };
+        this.sicknessContent = {
+          ...this.rankings.sickness.groupRankings,
+          smallText: true,
+          noData: MetricsContent.Sickness.noData,
+        };
         this.qualificationsContent = {
-          ...this.rankings.qualifications,
+          ...this.rankings.qualifications.groupRankings,
           smallText: true,
           noData: MetricsContent.Qualifications.noData,
         };

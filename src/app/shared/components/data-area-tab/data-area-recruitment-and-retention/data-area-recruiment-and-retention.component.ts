@@ -37,8 +37,8 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
   public timeInRoleWorkplaceData: string;
 
   ngOnChanges(): void {
-    // this.setRankings(this.viewBenchmarksComparisonGroups);
-    // this.setComparisonTableData(this.viewBenchmarksComparisonGroups);
+    this.setRankings(this.viewBenchmarksComparisonGroups);
+    this.setComparisonTableData(this.viewBenchmarksComparisonGroups);
   }
 
   public handleViewBenchmarkPosition(visible: boolean): void {
@@ -61,9 +61,9 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
     }
   }
 
-  // public hasWorkplaceData(rank: RankingsResponse): boolean {
-  //   return rank.allValues?.length == 0;
-  // }
+  public hasWorkplaceData(rank: RankingsResponse): boolean {
+    return rank.allValues?.length == 0;
+  }
 
   private formatComparisonGroupTableData(data: BenchmarkValue): string {
     return data.hasValue ? `${FormatUtil.formatPercent(data.value)}` : 'Not enough data';
@@ -73,42 +73,42 @@ export class DataAreaRecruitmentAndRetentionComponent implements OnChanges {
     return data.hasValue ? `${FormatUtil.formatPercent(data.value)}` : 'No data added';
   }
 
-  // public setComparisonTableData(isGoodAndOutstanding: boolean): void {
-  //   this.vacancyWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.workplaceValue);
-  //   this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.turnoverRate.workplaceValue);
-  //   this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.timeInRole.workplaceValue);
-  //   if (isGoodAndOutstanding) {
-  //     this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.goodCqc);
-  //     this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.goodCqc);
-  //     this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.goodCqc);
-  //   } else {
-  //     this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.comparisonGroup);
-  //     this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.comparisonGroup);
-  //     this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.comparisonGroup);
-  //   }
-  // }
+  public setComparisonTableData(isGoodAndOutstanding: boolean): void {
+    this.vacancyWorkplaceData = this.formatWorkplaceTableData(this.data.vacancyRate.workplaceValue);
+    this.turnoverWorkplaceData = this.formatWorkplaceTableData(this.data.turnoverRate.workplaceValue);
+    this.timeInRoleWorkplaceData = this.formatWorkplaceTableData(this.data.timeInRole.workplaceValue);
+    if (isGoodAndOutstanding) {
+      this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.goodCqc);
+      this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.goodCqc);
+      this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.goodCqc);
+    } else {
+      this.vacancyComparisonGroupData = this.formatComparisonGroupTableData(this.data.vacancyRate.comparisonGroup);
+      this.turnoverComparisonGroupData = this.formatComparisonGroupTableData(this.data.turnoverRate.comparisonGroup);
+      this.timeInRoleComparisonGroupData = this.formatComparisonGroupTableData(this.data.timeInRole.comparisonGroup);
+    }
+  }
 
-  // public setRankings(isGoodAndOutstanding: boolean): void {
-  //   if (isGoodAndOutstanding) {
-  //     this.vacancyRankings = this.rankingsData?.vacancy.goodCqcRankings;
-  //     this.turnoverRankings = this.rankingsData?.turnover.goodCqcRankings;
-  //     this.timeInRoleRankings = this.rankingsData?.timeInRole.goodCqcRankings;
-  //   } else {
-  //     this.vacancyRankings = this.rankingsData?.vacancy.groupRankings;
-  //     this.turnoverRankings = this.rankingsData?.turnover.groupRankings;
-  //     this.timeInRoleRankings = this.rankingsData?.timeInRole.groupRankings;
-  //   }
+  public setRankings(isGoodAndOutstanding: boolean): void {
+    if (isGoodAndOutstanding) {
+      this.vacancyRankings = this.rankingsData?.vacancy.goodCqcRankings;
+      this.turnoverRankings = this.rankingsData?.turnover.goodCqcRankings;
+      this.timeInRoleRankings = this.rankingsData?.timeInRole.goodCqcRankings;
+    } else {
+      this.vacancyRankings = this.rankingsData?.vacancy.groupRankings;
+      this.turnoverRankings = this.rankingsData?.turnover.groupRankings;
+      this.timeInRoleRankings = this.rankingsData?.timeInRole.groupRankings;
+    }
 
-  //   this.vacancyMaxRank = this.setMaxRank(this.vacancyRankings);
-  //   this.turnoverMaxRank = this.setMaxRank(this.turnoverRankings);
-  //   this.timeInRoleMaxRank = this.setMaxRank(this.timeInRoleRankings);
+    this.vacancyMaxRank = this.setMaxRank(this.vacancyRankings);
+    this.turnoverMaxRank = this.setMaxRank(this.turnoverRankings);
+    this.timeInRoleMaxRank = this.setMaxRank(this.timeInRoleRankings);
 
-  //   this.vacancyCurrentRank = this.setCurrentRank(this.vacancyRankings);
-  //   this.turnoverCurrentRank = this.setCurrentRank(this.turnoverRankings);
-  //   this.timeInRoleCurrentRank = this.setCurrentRank(this.timeInRoleRankings);
+    this.vacancyCurrentRank = this.setCurrentRank(this.vacancyRankings);
+    this.turnoverCurrentRank = this.setCurrentRank(this.turnoverRankings);
+    this.timeInRoleCurrentRank = this.setCurrentRank(this.timeInRoleRankings);
 
-  //   this.vacancyNoWorkplaceData = this.hasWorkplaceData(this.vacancyRankings);
-  //   this.turnoverNoWorkplaceData = this.hasWorkplaceData(this.turnoverRankings);
-  //   this.timeInRoleNoWorkplaceData = this.hasWorkplaceData(this.timeInRoleRankings);
-  // }
+    this.vacancyNoWorkplaceData = this.hasWorkplaceData(this.vacancyRankings);
+    this.turnoverNoWorkplaceData = this.hasWorkplaceData(this.turnoverRankings);
+    this.timeInRoleNoWorkplaceData = this.hasWorkplaceData(this.timeInRoleRankings);
+  }
 }

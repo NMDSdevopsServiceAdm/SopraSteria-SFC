@@ -45,7 +45,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+    this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID); // TODO REMEMBER
     // this.tilesData = this.benchmarksService.benchmarksData;
 
     this.authService.isOnAdminScreen = false;

@@ -52,7 +52,7 @@ const getSickness = async function ({ establishmentId }) {
 };
 
 const getTurnover = async function ({ establishmentId }) {
-  const response = await vacanciesAndLeavers(establishmentId, 'LeaversValue');
+  const establishment = await models.establishment.turnoverData(establishmentId);
 
   if (response.stateMessage) return { stateMessage: response.stateMessage };
   if (response.value) return { value: 0 };
@@ -130,13 +130,11 @@ const getTimeInRole = async function ({ establishmentId }) {
     };
   }
 
-  // if (permTempNoStartDate > 0) {
-  //   return {
-  //     stateMessage: 'not-enough-data',
-  //   };
-  // }
-
-  // const noOfWorkersYearInRole = await models.worker.yearOrMoreInRoleCount(establishmentId);
+  if (permTempNoStartDate > 0) {
+    return {
+      stateMessage: 'not-enough-data',
+    };
+  }
 
   if (!noOfWorkersYearInRole) {
     return {

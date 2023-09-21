@@ -1,6 +1,14 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Data } from '@angular/router';
-import { BenchmarksResponse, Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
+import {
+  BenchmarksResponse,
+  CompareGroupsRankingsResponse,
+  Metric,
+  NoData,
+  PayRankingsResponse,
+  RankingsResponse,
+  Tile,
+} from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -72,11 +80,19 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
         .subscribe(this.handleBenchmarksResponse),
     );
 
-    this.subscriptions.add(
-      dataObservable$
-        .pipe(mergeMap(() => this.benchmarksService.getRankingData(this.establishmentUid, Metric[this.type])))
-        .subscribe(this.handleRankingsResponse),
-    );
+    if (Metric[this.type] == 'pay') {
+      this.subscriptions.add(
+        dataObservable$
+          .pipe(mergeMap(() => this.benchmarksService.getPayRankingData(this.establishmentUid)))
+          .subscribe(this.handlePayRankingsResponse),
+      );
+    } else {
+      this.subscriptions.add(
+        dataObservable$
+          .pipe(mergeMap(() => this.benchmarksService.getRankingData(this.establishmentUid, Metric[this.type])))
+          .subscribe(this.handleRankingsResponse),
+      );
+    }
   }
 
   setRouteData = (data: Data): void => {
@@ -88,13 +104,18 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   };
 
   handleBenchmarksResponse = (benchmarks: BenchmarksResponse): void => {
-
-    this.tile = benchmarks[Metric[this.type]];
-  
+    switch (Metric[this.type]) {
+      case 'pay':
+        this.tile = benchmarks['careWorkerPay'];
+        break;
+      case 'turnover':
+        this.tile = benchmarks['turnoverRate'];
+        break;
+      default:
+        this.tile = benchmarks[Metric[this.type]];
+    }
 
     this.metaDataAvailable = Boolean(benchmarks.meta && this.tile.workplaces && this.tile.staff);
-
-
 
     if (this.metaDataAvailable) {
       this.numberOfWorkplaces = this.tile.workplaces;
@@ -103,10 +124,17 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
     }
   };
 
-  handleRankingsResponse = (rankings: RankingsResponse) => {
+  handleRankingsResponse = (rankings: CompareGroupsRankingsResponse): void => {
+    this.rankings = rankings.groupRankings;
     this.rankings = rankings;
     this.rankingContent = { ...this.rankings, noData: this.noData };
   };
+
+  handlePayRankingsResponse = (payRankings: PayRankingsResponse): void => {
+    this.rankings = payRankings.careWorkerPay.groupRankings;
+    this.rankingContent = { ...this.rankings, noData: this.noData };
+  };
+
   public async downloadAsPDF($event: Event): Promise<jsPDF> {
     $event.preventDefault();
 
