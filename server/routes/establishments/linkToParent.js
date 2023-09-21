@@ -5,7 +5,7 @@ const Establishment = require('../../models/classes/establishment');
 const { v4: uuidv4 } = require('uuid');
 uuidv4();
 const linkSubToParent = require('../../data/linkToParent');
-const models = require('../../models');
+const { LinkToParent } = require('../../models');
 const notifications = require('../../data/notifications');
 const { hasPermission } = require('../../utils/security/hasPermission');
 
@@ -285,11 +285,11 @@ const getRequestedLinkToParent = async (req, res) => {
 
   try {
     if (establishmentId) {
-      let getLinkToParentUid = await models.LinkToParent.getLinkToParentUid(establishmentId);
+      let getLinkToParentUid = await LinkToParent.getLinkToParentUid(establishmentId);
 
       const linkToParentUID = getLinkToParentUid?.dataValues?.LinkToParentUID;
 
-      let linkToParentRequestDetails = await models.LinkToParent.getLinkToParentRequestDetails(linkToParentUID);
+      let linkToParentRequestDetails = await LinkToParent.getLinkToParentRequestDetails(linkToParentUID);
       if (linkToParentRequestDetails) {
         return res.status(200).send(linkToParentRequestDetails);
       }

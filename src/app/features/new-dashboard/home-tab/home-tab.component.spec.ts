@@ -402,6 +402,26 @@ describe('NewHomeTabComponent', () => {
             message: message,
           });
         });
+
+        it('should update when cancel to link to parent is successful', async () => {
+          const { component, fixture } = await setup();
+
+          component.workplace.isParent = false;
+          component.canLinkToParent = true;
+          component.linkToParentRequestedStatus = true;
+          component.newHomeDesignParentFlag = true;
+          component.canBecomeAParent = false;
+
+          const message = `You've cancelled request to link to parent`;
+
+          window.history.pushState({ successAlertMessage: message, cancelRequestToParentForLinkSuccess: true }, '', '');
+
+          fixture.detectChanges();
+          component.ngOnInit();
+
+          expect(component.linkToParentRequestedStatus).toEqual(false);
+          expect(component.canBecomeAParent).toEqual(true);
+        });
       });
     });
 
