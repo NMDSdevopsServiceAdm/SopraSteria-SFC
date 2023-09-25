@@ -98,13 +98,12 @@ const identifyLocalAuthority = async (postcode) => {
   }
 
   // ignoring the last charecter of the postcode
-  const fuzzyPostcode = postcode.slice(0, -1).substring(0, 7); // 'SR2 7T%'
+
+  const fuzzyPostcode = postcode.slice(0, -1).substring(0, 7) + '%'; // 'SR2 7T%'
 
   // must escape the string to prevent SQL injection
   const fuzzyCssrIdMatch = await models.sequelize.query(
-    `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like '${escape(
-      fuzzyPostcode,
-    )}%' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
+    `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like '${fuzzyPostcode}' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
     {
       type: models.sequelize.QueryTypes.SELECT,
     },
