@@ -11,6 +11,8 @@ const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
 
+const getCssrRecordFromPostcode = require('../../../services/cssr-records/cssr-record').GetCssrRecordFromPostcode;
+
 //Constants string needed by this file in several places
 const folderName = 'template';
 const workplacesSheetName = path.join('xl', 'worksheets', 'sheet1.xml');
@@ -74,44 +76,13 @@ const identifyLocalAuthority = async (postcode) => {
   // of the given Establishment (using the postcode as the key)
 
   // lookup primary authority by trying to resolve on specific postcode code
-  const cssrResults = await models.pcodedata.findOne({
-    where: {
-      postcode,
-    },
-    include: [
-      {
-        model: models.cssr,
-        as: 'theAuthority',
-        attributes: ['id', 'name', 'nmdsIdLetter'],
-      },
-    ],
-  });
 
-  if (
-    cssrResults &&
-    cssrResults.postcode === postcode &&
-    cssrResults.theAuthority &&
-    cssrResults.theAuthority.id &&
-    Number.isInteger(cssrResults.theAuthority.id)
-  ) {
-    return cssrResults.theAuthority.name;
-  }
+  // We use the postcode to get local custodian code
+  // and use this to get the Cssr record
+  const cssrResult = await getCssrRecordFromPostcode(postcode);
 
-  //  using just the first half of the postcode
-  const [firstHalfOfPostcode] = postcode.split(' ');
-
-  // must escape the string to prevent SQL injection
-  const fuzzyCssrIdMatch = await models.sequelize.query(
-    `select "Cssr"."CssrID", "Cssr"."CssR" from cqcref.pcodedata, cqc."Cssr" where postcode like '${escape(
-      firstHalfOfPostcode,
-    )}%' and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode" group by "Cssr"."CssrID", "Cssr"."CssR" limit 1`,
-    {
-      type: models.sequelize.QueryTypes.SELECT,
-    },
-  );
-
-  if (fuzzyCssrIdMatch && fuzzyCssrIdMatch.length === 1 && fuzzyCssrIdMatch[0].CssrID) {
-    return fuzzyCssrIdMatch[0].CssR;
+  if (cssrResult) {
+    return cssrResult.theAuthority.name;
   }
 
   //Couldn't get local authority name. Just leave it blank?
