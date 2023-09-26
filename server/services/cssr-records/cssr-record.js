@@ -18,37 +18,37 @@ const GetCssrRecordFromPostcode = async (postcode) => {
   });
 
   // no match so try nearest authority
-  // TODO Allow to fail
   // The UK postcode consists of five to seven alphanumeric characters
-  if(postcode.contains(" ")) {
-    let [outwardCode, inwardCode] = postcode.substring(0, 7).split(" "); //limit to avoid injection
+  // outwardcode (2-4 chars) and inwardcode (3chars)
+  let [outwardCode, inwardCode] = postcode.substring(0, 8).split(" "); //limit to avoid injection
 
-    while (!cssrRecord && inwardCode.length > 0) {
-      inwardCode = inwardCode.slice(0, -1);
-      //try matching ignoring last character of postcode
-      cssrRecord = await pcodedata.findOne({
-        where: {
-          postcode: {
-            [Op.like]: `${outwardCode} ${inwardCode}%`,
-          },
+  if(outwardCode.length == 0 || outwardCode.length > 4)
+    console.error("Postcode: ${postcode} is invalid!");
+  };
+
+  while (!cssrRecord && inwardCode.length > 0) {
+    inwardCode = inwardCode.slice(0, -1);
+    //try matching ignoring last character of postcode
+    cssrRecord = await pcodedata.findOne({
+      where: {
+        postcode: {
+          [Op.like]: `${outwardCode} ${inwardCode}%`,
         },
-        include: [
-          {
-            model: cssr,
-            as: 'theAuthority',
-            attributes: ['id', 'name', 'nmdsIdLetter'],
-            required: true,
-          },
-        ],
-      });
-    }
-  } else {
-    console.error("Postcode: ${postcode} does not contain spaces so invalid!");
-  }
+      },
+      include: [
+        {
+          model: cssr,
+          as: 'theAuthority',
+          attributes: ['id', 'name', 'nmdsIdLetter'],
+          required: true,
+        },
+      ],
+    });
+  };
 
   if (!cssrRecord) {
     console.error('Could not obtain CSSR record from postcode non local custodian match');
-  }
+  };
 
   return cssrRecord;
 };
