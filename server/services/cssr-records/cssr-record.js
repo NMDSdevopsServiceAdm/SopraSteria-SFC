@@ -28,6 +28,7 @@ const GetCssrRecordFromPostcode = async (postcode) => {
 
   while (!cssrRecord && inwardCode.length > 0) {
     inwardCode = inwardCode.slice(0, -1);
+    console.log("Could not find cssr record for postcode ${outwardCode} ${inwardCode}%")
     //try matching ignoring last character of postcode
     cssrRecord = await pcodedata.findOne({
       where: {
