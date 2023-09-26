@@ -67,7 +67,6 @@ class Establishment extends EntityValidator {
     this._town = null;
     this._county = null;
     this._locationId = null;
-    this._cssrID = null;
     this._provId = null;
     this._postcode = null;
     this._isRegulated = null;
@@ -210,10 +209,6 @@ class Establishment extends EntityValidator {
 
   get locationId() {
     return this._locationId;
-  }
-
-  get localCustodianCode() {
-    return this._cssrID;
   }
 
   get provId() {
@@ -769,7 +764,7 @@ class Establishment extends EntityValidator {
         const cssrResult = await getCssrRecordFromPostcode(this._postcode);
 
         if (cssrResult) {
-          this._cssrID = cssrResult.theAuthority.id;
+          this._cssrID = cssrResult.theAuthority.id; //TODO!
           nmdsLetter = cssrResult.theAuthority.nmdsIdLetter;
         }
 
@@ -1014,7 +1009,6 @@ class Establishment extends EntityValidator {
             source: bulkUploaded ? 'Bulk' : 'Online',
             isRegulated: this._isRegulated, // to remove when a change managed property
             locationId: this._locationId, // to remove when a change managed property
-            // localCustodianCode: this._localCustodianCode,
             provId: this._provId, // to remove when a change managed property
             address1: this._address1,
             address2: this._address2,
