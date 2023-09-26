@@ -161,6 +161,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
 
     this.updateLinkToParentRequestedStatus();
     this.updateParentStatusRequested();
+    this.updateCancelLinkToParentRequest();
     this.updateOnRemoveLinkToParentSuccess();
   }
 
@@ -346,6 +347,14 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     const parentStatusRequestedState = history.state?.parentStatusRequested;
     if (parentStatusRequestedState || parentStatusRequestedState === false) {
       this.parentStatusRequested = parentStatusRequestedState;
+    }
+  }
+
+  public updateCancelLinkToParentRequest(): void {
+    const cancelRequestToParentForLinkState = history.state?.cancelRequestToParentForLinkSuccess;
+    if (cancelRequestToParentForLinkState) {
+      this.linkToParentRequestedStatus = false;
+      this.canBecomeAParent = true;
     }
   }
 
