@@ -22,7 +22,7 @@ const GetCssrRecordFromPostcode = async (postcode) => {
   // outwardcode (2-4 chars) and inwardcode (3chars)
   let [outwardCode, inwardCode] = postcode.substring(0, 8).split(" "); //limit to avoid injection
 
-  if(outwardCode.length == 0 || outwardCode.length > 4)
+  if(outwardCode.length == 0 || outwardCode.length > 4) {
     console.error("Postcode: ${postcode} is invalid!");
   };
 
