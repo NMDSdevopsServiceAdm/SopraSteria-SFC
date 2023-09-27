@@ -392,7 +392,7 @@ describe('NewHomeTabComponent', () => {
 
           const message = `You've sent a link request`;
 
-          window.history.pushState({ successAlertMessage: message }, '', '');
+          window.history.pushState({ alertMessage: message }, '', '');
 
           fixture.detectChanges();
           component.ngOnInit();
@@ -414,7 +414,7 @@ describe('NewHomeTabComponent', () => {
 
           const message = `You've cancelled request to link to parent`;
 
-          window.history.pushState({ successAlertMessage: message, cancelRequestToParentForLinkSuccess: true }, '', '');
+          window.history.pushState({ alertMessage: message, cancelRequestToParentForLinkSuccess: true }, '', '');
 
           fixture.detectChanges();
           component.ngOnInit();
@@ -639,7 +639,7 @@ describe('NewHomeTabComponent', () => {
 
         const message = `You’ve sent a request to become a parent workplace`;
 
-        window.history.pushState({ successAlertMessage: message }, '', '');
+        window.history.pushState({ alertMessage: message }, '', '');
 
         fixture.detectChanges();
         component.ngOnInit();
