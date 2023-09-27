@@ -19,15 +19,17 @@ describe('/server/services/cssr-records/cssr-record', async () => {
 
   describe('GetCssrRecordFromPostcode', async () => {
     it('should return a cssr record when a matching postcode with a corresponding cssr entry is found', async () => {
+      const response = { postcode: 'HD1 1DZ', ...la };
+
       const stubCompleteMatch = sinon.stub(cssrRecordData, 'getCssrRecordCompleteMatch').callsFake(async () => {
-        return la;
+        return response;
       });
       const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordWithLikePostcode').callsFake(async () => {
         console.log('This should not be hit');
       });
 
       const localAuth = await cssrRecord.GetCssrRecordFromPostcode('HD1 1DA');
-      expect(localAuth).to.deep.equal(la);
+      expect(localAuth).to.deep.equal(response);
       expect(stubCompleteMatch.calledOnce);
       expect(stubCompleteMatch.withArgs('HD1 1DA'));
       expect(stubPartialMatch.notCalled);
@@ -52,6 +54,20 @@ describe('/server/services/cssr-records/cssr-record', async () => {
         expect(stubPartialMatch.calledWith('HD1 1D'));
         expect(stubPartialMatch.calledWith('HD1 1'));
         expect(stubPartialMatch.calledWith('HD1'));
+      });
+
+      it('should return a cssr corresponding to a similar postcode', async () => {
+        const response = { postcode: 'HD1 1DZ', ...la };
+
+        const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordWithLikePostcode').callsFake(async () => {
+          return response;
+        });
+
+        const localAuth = await cssrRecord.GetCssrRecordFromPostcode('HD1 1DA');
+        expect(localAuth).to.deep.equal(response);
+        expect(stubCompleteMatch.calledOnce);
+        expect(stubPartialMatch.calledOnce);
+        expect(stubPartialMatch.calledWith('HD1 1D'));
       });
     });
   });
