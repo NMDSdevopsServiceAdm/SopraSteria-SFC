@@ -49,6 +49,9 @@ Thumbs.db
 /coverage
 /.nyc_output
 /fecoverage
+*/coverage
+*/.nyc_output
+*/fecoverage
 
 ./package-lock.json
 */package-lock.json

@@ -1,0 +1,15 @@
+version: 0.2
+
+env:
+  variables:
+      MOCHA_FILE: ./junit/test-results.xml
+      NODE_ENV: example
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+  build:
+    commands:
+      - cd backend && npm ci
+      - npm run server:lambda:cover:unit:ci; EXITCODE=$?
