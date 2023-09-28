@@ -16,7 +16,6 @@ async function getCssrRecordWithLikePostcode(postcode) {
         required: true,
       },
     ],
-    logging: true,
   });
 }
 
