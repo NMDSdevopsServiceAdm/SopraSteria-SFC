@@ -2,7 +2,7 @@ const { Op } = require('sequelize');
 const { cssr, pcodedata } = require('../../models');
 
 async function getCssrRecordWithLikePostcode(postcode) {
-  return await pcodedata.findOne({
+  return pcodedata.findOne({
     where: {
       postcode: {
         [Op.like]: `${postcode}%`,
@@ -21,7 +21,7 @@ async function getCssrRecordWithLikePostcode(postcode) {
 }
 
 async function getCssrRecordCompleteMatch(postcode) {
-  return await pcodedata.findOne({
+  return pcodedata.findOne({
     where: {
       postcode: postcode,
     },
