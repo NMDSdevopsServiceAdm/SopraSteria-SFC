@@ -1,0 +1,20 @@
+version: 0.2
+
+env:
+  variables:
+    NODE_OPTIONS: "--max_old_space_size=8192"
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+  build:
+    commands:
+      - cd frontend && npm ci
+      - npm run build:test
+      - cd ../backend && npm ci
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: 'frontend/src'
