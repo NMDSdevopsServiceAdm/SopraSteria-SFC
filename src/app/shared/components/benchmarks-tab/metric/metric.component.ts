@@ -126,7 +126,6 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
 
   handleRankingsResponse = (rankings: CompareGroupsRankingsResponse): void => {
     this.rankings = rankings.groupRankings;
-    this.rankings = rankings;
     this.rankingContent = { ...this.rankings, noData: this.noData };
   };
 

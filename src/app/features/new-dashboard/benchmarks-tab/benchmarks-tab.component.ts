@@ -61,11 +61,11 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
   }
 
   get payTile(): Tile {
-    return this.tilesData?.pay;
+    return this.tilesData?.careWorkerPay;
   }
 
   get turnoverTile(): Tile {
-    return this.tilesData?.turnover;
+    return this.tilesData?.turnoverRate;
   }
 
   get sicknessTile(): Tile {
