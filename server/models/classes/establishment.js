@@ -1558,7 +1558,7 @@ class Establishment extends EntityValidator {
                   associatedLevel,
                 );
 
-                // : once we have the unique worder id property, use that instead; for now, we only have the name or id.
+                // once we have the unique worker id property, use that instead; for now, we only have the name or id.
                 // without whitespace
                 this.associateWorker(newWorker.key, newWorker);
 
