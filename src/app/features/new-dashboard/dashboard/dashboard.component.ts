@@ -79,8 +79,6 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     this.canViewEstablishment = this.permissionsService.can(this.workplace.uid, 'canViewEstablishment');
   }
 
-
-
   private setWorkersAndTrainingValues(): void {
     const { workers = [], workerCount = 0, trainingCounts, tAndQsLastUpdated } = this.route.snapshot.data.workers;
     this.workers = workers;

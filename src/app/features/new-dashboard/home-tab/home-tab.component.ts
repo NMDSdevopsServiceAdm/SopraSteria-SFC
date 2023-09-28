@@ -136,7 +136,6 @@ export class NewHomeTabComponent implements OnInit, OnDestroy {
           : `There are ${this.meta.workplaces} workplaces`;
       const serviceText = this.bigThreeServices ? `${serviceName.toLowerCase()}` : 'adult social care';
       this.benchmarksMessage = `${noOfWorkplacesText} providing ${serviceText} in Local Authority.`;
-
     } else {
       this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
     }
