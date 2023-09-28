@@ -19,7 +19,7 @@ describe('/server/services/cssr-records/cssr-record', async () => {
 
   describe('GetCssrRecordFromPostcode', async () => {
     it('should return a cssr record when a matching postcode with a corresponding cssr entry is found', async () => {
-      const response = { postcode: 'HD1 1DZ', ...la };
+      const response = { postcode: 'HD1 1DA', ...la };
 
       const stubCompleteMatch = sinon.stub(cssrRecordData, 'getCssrRecordCompleteMatch').callsFake(async () => {
         return response;
