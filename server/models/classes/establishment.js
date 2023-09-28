@@ -1520,7 +1520,6 @@ class Establishment extends EntityValidator {
         //  of the given Establishment (using the postcode as the key)
         // lookup primary authority by trying to resolve on specific postcode code
 
-        // TODO!
         const cssrResult = await getCssrRecordFromPostcode(this._postcode);
 
         fetchResults.primaryAuthorityCssr = {
