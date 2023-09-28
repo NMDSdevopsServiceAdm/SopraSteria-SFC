@@ -18,7 +18,7 @@ const models = require('../index');
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
 const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
 
-const getCssrRecordFromPostcode = require('../../services/cssr-records/cssr-record').getCssrRecordFromPostcode;
+const getCssrRecordFromPostcode = require('../../services/cssr-records/cssr-record').GetCssrRecordFromPostcode;
 
 // associations
 const Worker = require('./worker').Worker;
@@ -1521,7 +1521,7 @@ class Establishment extends EntityValidator {
         // lookup primary authority by trying to resolve on specific postcode code
 
         // TODO!
-        const cssrResult = await this.getLocalAuthority(this._postcode);
+        const cssrResult = await getCssrRecordFromPostcode(this._postcode);
 
         fetchResults.primaryAuthorityCssr = {
           id: cssrResult.theAuthority.id,
