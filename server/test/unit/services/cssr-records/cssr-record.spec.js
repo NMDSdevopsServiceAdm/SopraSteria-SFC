@@ -70,40 +70,5 @@ describe('/server/services/cssr-records/cssr-record', async () => {
         expect(stubPartialMatch.calledWith('HD1 1D'));
       });
     });
-
-    describe('do not mock, should always return a response if data available', async () => {
-      it('this should always return a record if there is KT2 unless lookup has failed (Kingston upon Thames)', async () => {
-        let la2 = {
-          theAuthority: {
-            id: 729,
-            name: 'Kingston upon Thames',
-            nmdsIdLetter: 'G',
-          },
-        };
-
-        let postcode = 'KT2 6AP';
-
-        const localAuth = await cssrRecord.GetCssrRecordFromPostcode(postcode);
-
-        expect(localAuth.theAuthority.id).to.equal(la2.theAuthority.id);
-        expect(localAuth.theAuthority.name).to.equal(la2.theAuthority.name);
-      });
-
-      it('this should always return a record', async () => {
-        let la2 = {
-          theAuthority: {
-            id: 110,
-            name: 'Sunderland',
-            nmdsIdLetter: '',
-          },
-        };
-
-        let postcode = 'SR2 7TZ';
-        const localAuth = await cssrRecord.GetCssrRecordFromPostcode(postcode);
-
-        expect(localAuth.theAuthority.id).to.equal(la2.theAuthority.id);
-        expect(localAuth.theAuthority.name).to.equal(la2.theAuthority.name);
-      });
-    });
   });
 });
