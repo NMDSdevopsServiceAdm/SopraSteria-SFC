@@ -16,7 +16,7 @@ else
     echo $folder folder moved to frontend folder
   done
 
-  frontendFiles=('.editorconfig' 'angular.json' 'index.html' 'index.prod.html' 'index.test.html' 'proxy.conf.json' 'testing-webpack.config.js' 'tsconfig.eslint.json' 'tsconfig.json')
+  frontendFiles=('.editorconfig' 'angular.json' 'index.html' 'index.prod.html' 'index.test.html' 'proxy.conf.json' 'testing-webpack.config.js' 'tsconfig.eslint.json' 'tsconfig.json' 'karma.conf.js' 'lighthouserc.json')
 
   for file in ${frontendFiles[@]}; do
     mv $file ./frontend
@@ -218,7 +218,7 @@ else
     echo $folder folder moved to backend folder
   done
 
-  backendFiles=('server.js' '.sequelizerc')
+  backendFiles=('server.js' '.sequelizerc' '.nycrc')
   for file in ${backendFiles[@]}; do
     mv $file ./backend
     echo $file moved to backend folder
