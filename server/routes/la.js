@@ -40,7 +40,6 @@ router.route('/:postcode').get(async (req, res) => {
   try {
     const cssrResult = await getCssrRecordFromPostcode(givenPostcode);
 
-    // TODO!
     primaryAuthorityCssr = {
       id: cssrResult.theAuthority.id,
       name: cssrResult.theAuthority.name,
