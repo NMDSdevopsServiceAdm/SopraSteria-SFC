@@ -2,9 +2,14 @@ const express = require('express');
 const router = express.Router();
 const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models/index');
+const getAddressAPI = require('../utils/getAddressAPI');
 
 const transformAddresses = (results) => {
   return results.map((result) => createAddressObject(result.dataValues));
+};
+
+const transformGetAddressAPIResults = (results) => {
+  return results.addresses.map((result) => createAddressObjectFromGetAddressesAPIResults(result, results.postcode));
 };
 
 const createAddressObject = (data) => {
@@ -24,6 +29,24 @@ const createAddressObject = (data) => {
     townCity: data.post_town,
     county: data.county,
     postalCode: data.postcode,
+  };
+};
+
+const createAddressObjectFromGetAddressesAPIResults = (data, postcode) => {
+  const numberAndStreet = data.building_number ? `${data.building_number} ${data.thoroughfare}` : data.thoroughfare;
+  const addressInfo = [data.sub_building_name, data.building_name, numberAndStreet];
+  const filteredAddressInfo = addressInfo.filter((value) => {
+    return value != '';
+  });
+
+  return {
+    locationName: data.sub_building_name,
+    addressLine1: filteredAddressInfo[0],
+    addressLine2: filteredAddressInfo[1] ? filteredAddressInfo[1] : '',
+    addressLine3: filteredAddressInfo[2] ? filteredAddressInfo[2] : '',
+    townCity: data.town_or_city,
+    county: data.county,
+    postalCode: postcode, // Does not return from getAddress
   };
 };
 
@@ -51,11 +74,16 @@ const getAddressesWithPostcode = async (req, res) => {
     }
 
     if (postcodeData.length === 0) {
-      res.status(404);
-      return res.send({
-        success: 0,
-        message: 'No addresses found',
-      });
+      const addressAPIResults = await getAddressAPI.getPostcodeData(req.params.postcode);
+      postcodeData = transformGetAddressAPIResults(addressAPIResults);
+
+      if (postcodeData.length === 0) {
+        res.status(404);
+        return res.send({
+          success: 0,
+          message: 'No addresses found',
+        });
+      }
     }
 
     res.status(200);
