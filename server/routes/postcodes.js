@@ -46,7 +46,7 @@ const createAddressObjectFromGetAddressesAPIResults = (data, postcode) => {
     addressLine3: filteredAddressInfo[2] ? filteredAddressInfo[2] : '',
     townCity: data.town_or_city,
     county: data.county,
-    postalCode: postcode, // Does not return from getAddress
+    postalCode: postcode,
   };
 };
 
@@ -75,6 +75,14 @@ const getAddressesWithPostcode = async (req, res) => {
 
     if (postcodeData.length === 0) {
       const addressAPIResults = await getAddressAPI.getPostcodeData(req.params.postcode);
+
+      if (addressAPIResults == null) {
+        res.status(404);
+        return res.send({
+          success: 0,
+          message: 'No Response From getAddressAPI',
+        });
+      }
       postcodeData = transformGetAddressAPIResults(addressAPIResults);
 
       if (postcodeData.length === 0) {

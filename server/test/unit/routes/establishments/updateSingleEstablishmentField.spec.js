@@ -4,8 +4,15 @@ const sinon = require('sinon');
 const models = require('../../../../models');
 
 const { updateEstablishment } = require('../../../../routes/establishments/updateSingleEstablishmentField');
+const getAddressAPI = require('../../../../utils/getAddressAPI');
 
 describe('server/routes/establishments/updateSingleEstablishmentField', () => {
+  beforeEach(() => {
+    sinon.stub(getAddressAPI, 'getPostcodeData').callsFake(async () => {
+      return null;
+    });
+  });
+
   afterEach(async () => {
     sinon.restore();
   });
