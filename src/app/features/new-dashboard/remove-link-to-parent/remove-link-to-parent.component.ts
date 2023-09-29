@@ -85,7 +85,7 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
           () => {
             this.router.navigate(['/dashboard'], {
               state: {
-                successAlertMessage: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`,
+                alertMessage: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`,
                 removeLinkToParentSuccess: true,
               },
             });
