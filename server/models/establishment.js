@@ -809,7 +809,7 @@ module.exports = function (sequelize, DataTypes) {
 
   Establishment.addHook('afterUpdate', (record) => {
     const postcode = record.dataValues.PostCode;
-    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode); // TODO RETURN?
+    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
   });
 
   Establishment.associate = (models) => {
