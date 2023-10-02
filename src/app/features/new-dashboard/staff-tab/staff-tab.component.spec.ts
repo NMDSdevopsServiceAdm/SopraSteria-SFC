@@ -129,7 +129,7 @@ describe('NewStaffTabComponent', () => {
   it('should show an alert banner if there is an alertMessage', async () => {
     const { component, fixture, alertServiceSpy } = await setup();
 
-    const message = `Staff shas been deleted`;
+    const message = 'Staff shas been deleted';
 
     window.history.pushState({ alertMessage: message }, '', '');
 

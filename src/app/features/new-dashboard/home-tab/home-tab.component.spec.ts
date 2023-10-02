@@ -1010,7 +1010,7 @@ describe('NewHomeTabComponent', () => {
     component.isParentApprovedBannerViewed = null;
     component.newHomeDesignParentFlag = true;
 
-    const message = `You have unlinked from Parent`;
+    const message = 'You have unlinked from Parent';
 
     window.history.pushState({ alertMessage: message }, '', '');
 
