@@ -1017,6 +1017,7 @@ describe('NewHomeTabComponent', () => {
     fixture.detectChanges();
     component.ngOnInit();
 
+    expect(component.alertMessage).toEqual(message);
     expect(alertServiceSpy).toHaveBeenCalledWith({
       type: 'success',
       message: message,
