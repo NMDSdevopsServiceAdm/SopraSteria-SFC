@@ -25,7 +25,7 @@ import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-
+import { AlertService } from '@core/services/alert.service';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewStaffTabComponent } from './staff-tab.component';
 
@@ -87,11 +87,16 @@ describe('NewStaffTabComponent', () => {
     const workerService = TestBed.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
 
+    const alertService = TestBed.inject(AlertService);
+    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
       component,
       getByTestId,
       queryByTestId,
       workerSpy,
+      fixture,
+      alertServiceSpy,
     };
   };
 
@@ -119,5 +124,21 @@ describe('NewStaffTabComponent', () => {
 
     component.ngOnInit();
     expect(workerSpy).toHaveBeenCalledWith(false);
+  });
+
+  it('should show an alert banner if there is an alertMessage', async () => {
+    const { component, fixture, alertServiceSpy } = await setup();
+
+    const message = `Staff shas been deleted`;
+
+    window.history.pushState({ alertMessage: message }, '', '');
+
+    fixture.detectChanges();
+    component.ngOnInit();
+
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: message,
+    });
   });
 });

@@ -1003,4 +1003,23 @@ describe('NewHomeTabComponent', () => {
       });
     });
   });
+
+  it('should show the banner message if there is an alert message', async () => {
+    const { component, fixture, alertServiceSpy } = await setup();
+
+    component.isParentApprovedBannerViewed = null;
+    component.newHomeDesignParentFlag = true;
+
+    const message = `You have unlinked from Parent`;
+
+    window.history.pushState({ alertMessage: message }, '', '');
+
+    fixture.detectChanges();
+    component.ngOnInit();
+
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: message,
+    });
+  });
 });
