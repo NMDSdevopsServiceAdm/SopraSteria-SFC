@@ -166,8 +166,7 @@ export class SummarySectionComponent implements OnInit {
       (linkText === this.sections[2].linkText && this.canViewListOfWorkers)
     ) {
       return true;
-    } else {
-      return false;
     }
+    return false;
   }
 }
