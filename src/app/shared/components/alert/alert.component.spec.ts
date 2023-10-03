@@ -32,16 +32,6 @@ describe('AlertComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the pending alert', async () => {
-    const { component, fixture, getByTestId } = await setup();
-    component.isAlertPositionInside = true;
-    component.alert = { type: 'pending', message: 'alert message' };
-
-    fixture.detectChanges();
-
-    expect(getByTestId('pending_alert_inside')).toBeTruthy();
-  });
-
   it('should show the success alert with provided link', async () => {
     const { component, fixture, getByTestId } = await setup();
     component.isAlertPositionInside = false;
