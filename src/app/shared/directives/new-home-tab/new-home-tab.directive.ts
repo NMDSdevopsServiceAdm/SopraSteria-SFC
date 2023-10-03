@@ -21,7 +21,6 @@ import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-pa
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
 import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import { LinkToParentRemoveDialogComponent } from '@shared/components/link-to-parent-remove/link-to-parent-remove-dialog.component';
 import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 
@@ -78,7 +77,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public isOwnershipRequested = false;
   public canAddWorker: boolean;
   public ownershipChangeRequestId: any = [];
-  public successAlertMessage: string;
+  public alertMessage: string;
 
   constructor(
     private userService: UserService,
@@ -153,7 +152,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.setBenchmarksCard();
     this.subscriptions.add();
 
-    this.successAlertMessage = history.state?.successAlertMessage;
+    this.alertMessage = history.state?.alertMessage;
 
     this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;
 
@@ -310,10 +309,10 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
         type: 'success',
         message: `Your request to become a parent has been approved`,
       });
-    } else if (this.successAlertMessage) {
+    } else if (this.alertMessage) {
       this.alertService.addAlert({
         type: 'success',
-        message: this.successAlertMessage,
+        message: this.alertMessage,
       });
     }
   }

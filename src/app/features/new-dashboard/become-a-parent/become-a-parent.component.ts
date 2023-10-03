@@ -74,7 +74,7 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
         if (data) {
           this.router.navigate(['/dashboard'], {
             state: {
-              successAlertMessage: `You’ve sent a request to become a parent workplace`,
+              alertMessage: 'You’ve sent a request to become a parent workplace',
               parentStatusRequested: true,
             },
           });
@@ -90,7 +90,7 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
         () => {
           this.router.navigate(['/dashboard'], {
             state: {
-              successAlertMessage: `You've cancelled your request to become a parent workplace`,
+              alertMessage: "You've cancelled your request to become a parent workplace",
               parentStatusRequested: false,
             },
           });

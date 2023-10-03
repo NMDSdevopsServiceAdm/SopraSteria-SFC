@@ -108,5 +108,6 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();
     this.subscriptions.unsubscribe();
+    this.alertService.removeAlert();
   }
 }
