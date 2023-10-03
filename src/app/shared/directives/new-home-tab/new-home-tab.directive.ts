@@ -79,6 +79,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public canAddWorker: boolean;
   public ownershipChangeRequestId: any = [];
   public successAlertMessage: string;
+  public canViewEstablishment: boolean;
 
   constructor(
     private userService: UserService,
@@ -214,7 +215,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
       this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
-
+    this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }

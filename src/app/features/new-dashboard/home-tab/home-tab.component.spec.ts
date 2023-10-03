@@ -952,6 +952,7 @@ describe('NewHomeTabComponent', () => {
         const { component, fixture, getByText, tabsServiceSpy } = await setup();
 
         component.canViewListOfWorkers = true;
+        component.canViewEstablishment = true;
         fixture.detectChanges();
 
         const workplaceLink = getByText('Workplace');
@@ -965,6 +966,7 @@ describe('NewHomeTabComponent', () => {
         const { component, fixture, getByText, tabsServiceSpy } = await setup(true, establishment);
 
         component.canViewListOfWorkers = true;
+        component.canViewEstablishment = true;
         fixture.detectChanges();
 
         const link = getByText('Add more details to your workplace');

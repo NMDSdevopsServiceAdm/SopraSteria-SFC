@@ -23,6 +23,7 @@ describe('Summary section', () => {
     workerCreatedDate = [dayjs()],
     workersNotCompleted = [workerBuilder()] as Worker[],
     canViewListOfWorkers = true,
+    canViewEstablishment = true,
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule],
@@ -48,6 +49,7 @@ describe('Summary section', () => {
         workersNotCompleted: workersNotCompleted as Worker[],
         isParent: false,
         canViewListOfWorkers: canViewListOfWorkers,
+        canViewEstablishment: canViewEstablishment,
       },
     });
 
@@ -73,6 +75,41 @@ describe('Summary section', () => {
       const { getByText } = await setup();
 
       expect(getByText('Workplace')).toBeTruthy();
+    });
+
+    it('should not show clickable workplace link if no access to data', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(1, 'year'),
+        numberOfStaff: 12,
+      };
+
+      const date = [dayjs().subtract(1, 'year')];
+
+      const { fixture, getByText } = await setup(false, establishment, 0, {}, date, [], false, false);
+
+      fixture.detectChanges();
+
+      const workplaceText = getByText('Workplace');
+
+      expect(workplaceText.getAttribute('href')).toBeFalsy();
+    });
+
+    it('should show clickable workplace link if access to workplace', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(1, 'year'),
+        numberOfStaff: 12,
+      };
+
+      const date = [dayjs().subtract(1, 'year')];
+
+      const { component, fixture, getByText } = await setup(false, establishment, 0, {}, date, [], false, true);
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workplaceText = getByText('Workplace');
+
+      expect(workplaceText.getAttribute('href')).toBeTruthy();
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
@@ -180,6 +217,35 @@ describe('Summary section', () => {
       const { getByText } = await setup();
 
       expect(getByText('Staff records')).toBeTruthy();
+    });
+
+    it('should not show clickable staff records link if no access to data', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(1, 'year'),
+        numberOfStaff: 12,
+      };
+
+      const date = [dayjs().subtract(1, 'year')];
+
+      const { fixture, getByText } = await setup(false, establishment, 0, {}, date, [], false, true);
+
+      fixture.detectChanges();
+
+      const staffRecordsLinkText = getByText('Staff records');
+
+      expect(staffRecordsLinkText.getAttribute('href')).toBeFalsy();
+    });
+
+    it('should show clickable staff records link if access to workplace', async () => {
+      const { component, fixture, getByText } = await setup();
+      component.canViewListOfWorkers = true;
+
+      fixture.detectChanges();
+
+      const staffRecordsLinkText = getByText('Staff records');
+
+      expect(staffRecordsLinkText.getAttribute('href')).toBeTruthy();
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
@@ -352,6 +418,35 @@ describe('Summary section', () => {
       const { getByText } = await setup();
 
       expect(getByText('Training and qualifications')).toBeTruthy();
+    });
+
+    it('should not show clickable training and qualifications link if no access to data', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(1, 'year'),
+        numberOfStaff: 12,
+      };
+
+      const date = [dayjs().subtract(1, 'year')];
+
+      const { fixture, getByText } = await setup(false, establishment, 0, {}, date, [], false, true);
+
+      fixture.detectChanges();
+
+      const trainingAndQualificationsLinkText = getByText('Training and qualifications');
+
+      expect(trainingAndQualificationsLinkText.getAttribute('href')).toBeFalsy();
+    });
+
+    it('should show clickable training and qualifications link if access to workplace', async () => {
+      const { component, fixture, getByText } = await setup();
+      component.canViewListOfWorkers = true;
+
+      fixture.detectChanges();
+
+      const trainingAndQualificationsLinkText = getByText('Training and qualifications');
+
+      expect(trainingAndQualificationsLinkText.getAttribute('href')).toBeTruthy();
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
