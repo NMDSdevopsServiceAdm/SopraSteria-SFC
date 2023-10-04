@@ -22,7 +22,7 @@ import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
 
 interface EstablishmentApiResponse {
-  id: number;
+  id: number; //this is the workplace name
   name: string;
 }
 
@@ -78,7 +78,7 @@ export class EstablishmentService {
   private _employerTypeHasValue: boolean = null;
   private _inStaffRecruitmentFlow: boolean;
   private _standAloneAccount$: boolean;
-
+  // add workplaceName??
   constructor(private http: HttpClient) {}
 
   private _establishmentId: string = null;

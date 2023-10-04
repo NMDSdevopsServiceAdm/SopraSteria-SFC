@@ -1,13 +1,6 @@
 <ng-container *ngIf="breadcrumbs">
   <div class="govuk-breadcrumbs govuk-!-margin-top-0 govuk-!-padding-top-3">
-    <!-- remove lines 4 - 8. insert {{workplaceName}}-->
-    <!-- <ng-container *ngIf="overrideMessage; else defaultMessage">
-      {{ overrideMessage }}:
-    </ng-container> -->
-    <ng-template #defaultMessage>
-      Go back to:
-      {{ workplaceName }}
-    </ng-template>
+    {{ workplaceName }}:
     <ol class="govuk-breadcrumbs__list">
       <li
         class="govuk-breadcrumbs__list-item"
