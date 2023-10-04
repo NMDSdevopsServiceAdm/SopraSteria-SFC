@@ -11,7 +11,7 @@ phases:
       - apt-get -y install google-chrome-stable
   build:
     commands:
-      - cd frontend && npm ci
+      - cd frontend
       - npm install -g @lhci/cli@0.12.x
       - npm run build
       - lhci autorun
