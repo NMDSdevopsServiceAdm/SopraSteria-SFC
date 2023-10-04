@@ -1,7 +1,12 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+<<<<<<< Updated upstream
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
+=======
+import { AllRankingsResponse, MetricsContent } from '@core/model/benchmarks.model';
+import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
+>>>>>>> Stashed changes
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';

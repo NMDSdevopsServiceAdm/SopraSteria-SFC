@@ -266,7 +266,7 @@ const config = convict({
     apikey: {
       doc: 'API key for getAddress.io',
       format: 'String',
-      default: '',
+      default: 'XWMzPYQ8F0uIadZjnirlLA27971',
     },
   },
   aws: {

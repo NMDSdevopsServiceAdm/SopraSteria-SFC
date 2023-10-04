@@ -1,11 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  AllRankingsResponse,
-  BenchmarksResponse,
-  CompareGroupsRankingsResponse,
-  PayRankingsResponse,
-} from '@core/model/benchmarks.model';
+import { AllRankingsResponse, BenchmarksResponse, RankingsResponse } from '@core/model/benchmarks.model';
 import { URLStructure } from '@core/model/url.model';
 import { Observable } from 'rxjs';
 
@@ -14,8 +9,6 @@ import { Observable } from 'rxjs';
 })
 export class BenchmarksService {
   private returnToURL: URLStructure;
-  private _benchmarksData$: BenchmarksResponse = null;
-  private _rankingsData$: AllRankingsResponse = null;
 
   constructor(private http: HttpClient) {}
 
@@ -25,22 +18,6 @@ export class BenchmarksService {
 
   public setReturnTo(returnTo: URLStructure): void {
     this.returnToURL = returnTo;
-  }
-
-  public get benchmarksData(): BenchmarksResponse {
-    return this._benchmarksData$;
-  }
-
-  public set benchmarksData(benchmarksData) {
-    this._benchmarksData$ = benchmarksData;
-  }
-
-  public get rankingsData(): AllRankingsResponse {
-    return this._rankingsData$;
-  }
-
-  public set rankingsData(rankingsData) {
-    this._rankingsData$ = rankingsData;
   }
 
   postBenchmarkTabUsage(establishmentId: number) {
@@ -58,17 +35,11 @@ export class BenchmarksService {
 
   }
 
-  getRankingData(establishmentId: string, metric: string): Observable<CompareGroupsRankingsResponse> {
-    return this.http.get<CompareGroupsRankingsResponse>(
-      `/api/establishment/${establishmentId}/benchmarks/rankings/${metric}`,
-    );
+  getRankingData(establishmentId: string, metric: string): Observable<RankingsResponse> {
+    return this.http.get<RankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings/${metric}`);
   }
 
   getAllRankingData(establishmentId: string): Observable<AllRankingsResponse> {
     return this.http.get<AllRankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings`);
   }
-
-  getPayRankingData(establishmentId: string): Observable<PayRankingsResponse> {
-    return this.http.get<PayRankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings/pay`);
-  };
 }
