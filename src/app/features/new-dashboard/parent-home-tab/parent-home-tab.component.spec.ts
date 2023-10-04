@@ -60,7 +60,6 @@ describe('ParentHomeTabComponent', () => {
             useFactory: MockPermissionsService.factory(),
             deps: [HttpClient, Router, UserService],
           },
-
           {
             provide: UserService,
             useFactory: MockUserService.factory(1, Roles.Admin),

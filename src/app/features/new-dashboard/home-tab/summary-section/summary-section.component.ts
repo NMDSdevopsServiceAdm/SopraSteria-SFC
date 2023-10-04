@@ -79,6 +79,7 @@ export class SummarySectionComponent implements OnInit {
     } else if (!vacancies && (leavers || starters)) {
       this.sections[0].message = `You've not added any staff vacancy data`;
     }
+    this.showViewSummaryLinks(this.sections[0].linkText);
   }
 
   private afterEightWeeksFromFirstLogin(): boolean {
@@ -104,6 +105,7 @@ export class SummarySectionComponent implements OnInit {
       this.sections[1].message = 'Some records only have mandatory data added';
       this.sections[1].route = ['/staff-basic-records'];
     }
+    this.showViewSummaryLinks(this.sections[1].linkText);
   }
 
   public getTrainingAndQualsSummary(): void {
@@ -138,6 +140,7 @@ export class SummarySectionComponent implements OnInit {
       this.sections[2].link = false;
       this.sections[2].message = 'Manage your staff training and qualifications';
     }
+    this.showViewSummaryLinks(this.sections[2].linkText);
   }
 
   getStaffCreatedDate() {
@@ -159,14 +162,13 @@ export class SummarySectionComponent implements OnInit {
     this.workplacesSummaryMessage = `You've not added any other workplaces yet `;
   }
 
-  public showViewSummaryLinks(linkText: string): boolean {
-    if (
-      (linkText === this.sections[0].linkText && this.canViewEstablishment) ||
-      (linkText === this.sections[1].linkText && this.canViewListOfWorkers) ||
-      (linkText === this.sections[2].linkText && this.canViewListOfWorkers)
-    ) {
-      return true;
+  public showViewSummaryLinks(linkText: string): void {
+    if (linkText === this.sections[0].linkText && !this.canViewEstablishment) {
+      this.sections[0].link = false;
+    } else if (linkText === this.sections[1].linkText && !this.canViewListOfWorkers) {
+      this.sections[1].link = false;
+    } else if (linkText === this.sections[2].linkText && !this.canViewListOfWorkers) {
+      this.sections[2].link = false;
     }
-    return false;
   }
 }

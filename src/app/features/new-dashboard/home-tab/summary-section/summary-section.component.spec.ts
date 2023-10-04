@@ -13,6 +13,8 @@ import dayjs from 'dayjs';
 
 import { Establishment } from '../../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 describe('Summary section', () => {
   const setup = async (
@@ -26,7 +28,7 @@ describe('Summary section', () => {
     canViewEstablishment = true,
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
-      imports: [SharedModule, HttpClientTestingModule],
+      imports: [SharedModule, HttpClientTestingModule, RouterModule, RouterTestingModule],
       providers: [
         {
           provide: TabsService,
