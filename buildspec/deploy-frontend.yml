@@ -5,4 +5,4 @@ phases:
     commands:
       - COMMIT_HASH=$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | cut -c 1-7)
       - cd frontend/src
-      - aws s3 cp --recursive . s3://sfc-frontend-nonprod/$COMMIT_HASH
+      - aws s3 cp --recursive . s3://sfc-frontend-build-artifacts/$COMMIT_HASH
