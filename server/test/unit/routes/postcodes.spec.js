@@ -3,8 +3,15 @@ const sinon = require('sinon');
 const postcodes = require('../../../routes/postcodes');
 const models = require('../../../models');
 const httpMocks = require('node-mocks-http');
+const getAddressAPI = require('../../../utils/getAddressAPI');
 
 describe('postcodes', () => {
+  beforeEach(() => {
+    sinon.stub(getAddressAPI, 'getPostcodeData').callsFake(async () => {
+      return null;
+    });
+  });
+
   afterEach(() => {
     sinon.restore();
   });
