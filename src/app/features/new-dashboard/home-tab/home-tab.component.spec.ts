@@ -60,10 +60,9 @@ describe('NewHomeTabComponent', () => {
           },
           {
             provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(),
+            useFactory: MockPermissionsService.factory(['canViewEstablishment', 'canViewListOfWorkers']),
             deps: [HttpClient, Router, UserService],
           },
-
           {
             provide: UserService,
             useFactory: MockUserService.factory(1, Roles.Admin),
@@ -104,7 +103,6 @@ describe('NewHomeTabComponent', () => {
           meta: comparisonDataAvailable
             ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
             : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
-          canViewListOfWorkers: false,
         },
         schemas: [NO_ERRORS_SCHEMA],
       },
@@ -937,10 +935,7 @@ describe('NewHomeTabComponent', () => {
 
   describe('summary', () => {
     it('should show summary box', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.canViewListOfWorkers = true;
-      fixture.detectChanges();
+      const { getByTestId } = await setup();
 
       const summaryBox = getByTestId('summaryBox');
 
@@ -949,23 +944,16 @@ describe('NewHomeTabComponent', () => {
 
     describe('workplace summary section', () => {
       it('should take you to the workplace tab when clicking the workplace link', async () => {
-        const { component, fixture, getByText, tabsServiceSpy } = await setup();
-
-        component.canViewListOfWorkers = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup();
 
         const workplaceLink = getByText('Workplace');
         fireEvent.click(workplaceLink);
-
         expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
       });
 
       it('should show a warning link which should navigate to the workplace tab', async () => {
         const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-        const { component, fixture, getByText, tabsServiceSpy } = await setup(true, establishment);
-
-        component.canViewListOfWorkers = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup(true, establishment);
 
         const link = getByText('Add more details to your workplace');
 
@@ -977,10 +965,7 @@ describe('NewHomeTabComponent', () => {
 
     describe('staff records summary section', () => {
       it('should show staff records link and take you to the staff records tab', async () => {
-        const { component, fixture, getByText, tabsServiceSpy } = await setup();
-
-        component.canViewListOfWorkers = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup();
 
         const staffRecordsLink = getByText('Staff records');
         fireEvent.click(staffRecordsLink);
@@ -991,10 +976,7 @@ describe('NewHomeTabComponent', () => {
 
     describe('training and qualifications summary section', () => {
       it('should show training and qualifications link that take you the training and qualifications tab', async () => {
-        const { component, fixture, getByText, tabsServiceSpy } = await setup();
-
-        component.canViewListOfWorkers = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup();
 
         const trainingAndQualificationsLink = getByText('Training and qualifications');
         fireEvent.click(trainingAndQualificationsLink);

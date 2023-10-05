@@ -60,7 +60,6 @@ describe('ParentHomeTabComponent', () => {
             useFactory: MockPermissionsService.factory(),
             deps: [HttpClient, Router, UserService],
           },
-
           {
             provide: UserService,
             useFactory: MockUserService.factory(1, Roles.Admin),
@@ -313,6 +312,7 @@ describe('ParentHomeTabComponent', () => {
         const { component, fixture, getByText, tabsServiceSpy } = await setup();
 
         component.canViewListOfWorkers = true;
+        component.canViewEstablishment = true;
         fixture.detectChanges();
 
         const workplaceLink = getByText('Workplace');
@@ -326,6 +326,7 @@ describe('ParentHomeTabComponent', () => {
         const { component, fixture, getByText, tabsServiceSpy } = await setup(true, establishment);
 
         component.canViewListOfWorkers = true;
+        component.canViewEstablishment = true;
         fixture.detectChanges();
 
         const link = getByText('Add more details to your workplace');
