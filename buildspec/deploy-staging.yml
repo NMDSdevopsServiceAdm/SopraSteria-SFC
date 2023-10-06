@@ -12,8 +12,8 @@ phases:
     commands:
       - COMMIT_HASH=$(aws ecr describe-images --repository-name sfc-backend-build-images --image-ids imageTag=latest --output text | awk '{print $2}' | tail -n1)
       - echo Retagging the latest ecr image...
-      - aws ecr batch-delete-image --repository-name sfc-backend-build-images --image-ids imageTag=latest-staging
-      - aws ecr put-image --repository-name sfc-backend-build-images --image-tag latest-staging --image-manifest "$manifest"
+      - aws ecr batch-delete-image --repository-name sfc-backend-build-images --image-ids imageTag=staging
+      - aws ecr put-image --repository-name sfc-backend-build-images --image-tag staging --image-manifest "$manifest"
       - echo Copy s3 bucket from bnd to staging...
       - aws s3 cp --recursive s3://sfc-frontend-build-artifacts/$COMMIT_HASH s3://sfc-frontend-staging/
 
