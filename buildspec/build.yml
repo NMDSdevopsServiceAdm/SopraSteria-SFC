@@ -10,6 +10,7 @@ phases:
       nodejs: 18
   build:
     commands:
+      - echo $CODEBUILD_RESOLVED_SOURCE_VERSION > commit_hash.txt
       - cd frontend && npm ci
       - npm run build:test
       - cd ../backend && npm ci
