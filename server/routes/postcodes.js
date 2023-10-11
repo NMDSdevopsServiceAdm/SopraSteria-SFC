@@ -74,7 +74,7 @@ const getAddressesWithPostcode = async (req, res) => {
 
     // Now try to get records with matching with Cssr on LAcode
     // This means we can associate a CssrID to the establishment
-    let results = await getCssrRecordsFromPostcode(cleanPostcode);
+    const results = await getCssrRecordsFromPostcode(cleanPostcode);
 
     //filter out any results without a linked cssr record (theAuthority)
     //then transform addresses

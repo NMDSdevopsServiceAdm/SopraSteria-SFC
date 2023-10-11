@@ -160,8 +160,8 @@ module.exports = function (sequelize, DataTypes) {
       console.log(`Adding ${address.building_name}`);
       results.push({
         postcode: getAddressAPIResults.postcode,
-        latitude: getAddressAPIResults.latitude.latitude,
-        longitude: getAddressAPIResults.latitude.longitude,
+        latitude: getAddressAPIResults.latitude,
+        longitude: getAddressAPIResults.longitude,
         thoroughfare: address.thoroughfare,
         buildingName: address.building_name,
         subBuildingName: address.sub_building_name,
