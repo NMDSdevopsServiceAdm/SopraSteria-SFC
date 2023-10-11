@@ -16,4 +16,5 @@ phases:
       - aws ecr put-image --repository-name sfc-backend-build-images --image-tag staging --image-manifest "$manifest"
       - echo Copy s3 bucket from bnd to staging...
       - aws s3 cp --recursive s3://sfc-frontend-build-artifacts/$COMMIT_HASH s3://sfc-frontend-staging/
-
+      - export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" $(aws sts assume-role --role-arn arn:aws:iam::101248264786:role/CodebuildApprunnerCrossAccountAccessRole --role-session-name MySessionName --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" --output text))
+      - aws apprunner start-deployment --service-arn arn:aws:apprunner:eu-west-1:101248264786:service/sfc-app-runner-staging/9e440da7842b4153bd211b2ca2645353
