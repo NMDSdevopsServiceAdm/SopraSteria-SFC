@@ -1,8 +1,19 @@
 const { Op } = require('sequelize');
 const { cssr, pcodedata } = require('../../models');
 
-async function getCssrRecordWithLikePostcode(postcode) {
-  return pcodedata.findOne({
+async function getCssrRecordsWithLikePostcode(postcode) {
+  return pcodedata.findAll({
+    attributes: [
+      'uprn',
+      'building_number',
+      'street_description',
+      'sub_building_name',
+      'building_name',
+      'rm_organisation_name',
+      'post_town',
+      'county',
+      'postcode',
+    ],
     where: {
       postcode: {
         [Op.like]: `${postcode}%`,
@@ -19,8 +30,19 @@ async function getCssrRecordWithLikePostcode(postcode) {
   });
 }
 
-async function getCssrRecordCompleteMatch(postcode) {
-  return pcodedata.findOne({
+async function getCssrRecordsCompleteMatch(postcode) {
+  return pcodedata.findAll({
+    attributes: [
+      'uprn',
+      'building_number',
+      'street_description',
+      'sub_building_name',
+      'building_name',
+      'rm_organisation_name',
+      'post_town',
+      'county',
+      'postcode',
+    ],
     where: {
       postcode: postcode,
     },
@@ -34,5 +56,5 @@ async function getCssrRecordCompleteMatch(postcode) {
   });
 }
 
-module.exports.getCssrRecordWithLikePostcode = getCssrRecordWithLikePostcode;
-module.exports.getCssrRecordCompleteMatch = getCssrRecordCompleteMatch;
+module.exports.getCssrRecordsWithLikePostcode = getCssrRecordsWithLikePostcode;
+module.exports.getCssrRecordsCompleteMatch = getCssrRecordsCompleteMatch;

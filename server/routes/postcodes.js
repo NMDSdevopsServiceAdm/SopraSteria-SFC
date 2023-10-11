@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models/index');
-// const getAddressAPI = require('../utils/getAddressAPI');
+const getCssrRecordsFromPostcode = require('../services/cssr-records/cssr-record').GetCssrRecordsFromPostcode;
 
 const transformAddresses = (results) => {
   return results
@@ -74,29 +74,7 @@ const getAddressesWithPostcode = async (req, res) => {
 
     // Now try to get records with matching with Cssr on LAcode
     // This means we can associate a CssrID to the establishment
-    let results = await models.pcodedata.findAll({
-      attributes: [
-        'uprn',
-        'building_number',
-        'street_description',
-        'sub_building_name',
-        'building_name',
-        'rm_organisation_name',
-        'post_town',
-        'county',
-        'postcode',
-      ],
-      include: [
-        {
-          model: models.cssr,
-          attributes: ['id', 'name'],
-          as: 'theAuthority',
-        },
-      ],
-      where: {
-        postcode: cleanPostcode,
-      },
-    });
+    let results = await getCssrRecordsFromPostcode(cleanPostcode);
 
     //filter out any results without a linked cssr record (theAuthority)
     //then transform addresses

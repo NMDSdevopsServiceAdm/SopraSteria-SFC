@@ -122,6 +122,8 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  //Retrieve full postcodes records or callgetAddress and cache
+  // TODO Plan for deployment!
   postcodes.firstOrCreate = async function (postcode) {
     postcode = pCodeCheck.sanitisePostcode(postcode);
     let foundPostcodes = await this.findAllByPostcode(postcode);
@@ -144,7 +146,7 @@ module.exports = function (sequelize, DataTypes) {
     const getAddressAPIResults = await getAddressAPI.getPostcodeData(postcode);
 
     if (!getAddressAPIResults || getAddressAPIResults.addresses.length === 0) {
-      return;
+      return foundPostcodes;
     }
 
     // Some records with this postcode are not full so we delete all with this postcode
@@ -153,7 +155,6 @@ module.exports = function (sequelize, DataTypes) {
 
     console.log(`New or updated postcode data for: ${getAddressAPIResults.postcode}`);
 
-    // TODO pcodeData.addresses is an array of results
     let results = [];
     getAddressAPIResults.addresses.forEach(function (address) {
       console.log(`Adding ${address.building_name}`);
