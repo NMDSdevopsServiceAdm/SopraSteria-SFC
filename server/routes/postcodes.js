@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models/index');
-const getAddressAPI = require('../utils/getAddressAPI');
+// const getAddressAPI = require('../utils/getAddressAPI');
 
 const transformAddresses = (results) => {
-  return results.map((result) => createAddressObject(result.dataValues));
+  return results
+    .filter((result) => result.theAuthority != null)
+    .map((result) => createAddressObject(result.dataValues));
 };
 
 const transformGetAddressAPIResults = (results) => {
-  return results.addresses.map((result) => createAddressObjectFromGetAddressesAPIResults(result, results.postcode));
+  return results.map((result) => createAddressObjectFromGetAddressesAPIResults(result, results.postcode));
 };
 
 const createAddressObject = (data) => {
@@ -33,39 +35,36 @@ const createAddressObject = (data) => {
 };
 
 const createAddressObjectFromGetAddressesAPIResults = (data, postcode) => {
-  const numberAndStreet = data.building_number ? `${data.building_number} ${data.thoroughfare}` : data.thoroughfare;
-  const addressInfo = [data.sub_building_name, data.building_name, numberAndStreet];
+  console.log(data);
+  const numberAndStreet = data.buildingNumber ? `${data.buildingNumber} ${data.thoroughfare}` : data.thoroughfare;
+  const addressInfo = [data.subBuildingName, data.buildingName, numberAndStreet];
   const filteredAddressInfo = addressInfo.filter((value) => {
     return value != '';
   });
 
   return {
-    locationName: data.sub_building_name,
+    locationName: data.subBuildingName,
     addressLine1: filteredAddressInfo[0],
     addressLine2: filteredAddressInfo[1] ? filteredAddressInfo[1] : '',
     addressLine3: filteredAddressInfo[2] ? filteredAddressInfo[2] : '',
-    townCity: data.town_or_city,
+    townCity: data.townOrCity,
     county: data.county,
     postalCode: postcode,
   };
 };
 
-/* GET with Postcode parameter to find matching addresses */
+/* GET with Postcode parameter to find matching addresses
+TODO fuzzy loop required here
+look in pcodedata for record with matching la
+if none found look in postcodes
+if not full record found do getAdddressAPI and store result
+*/
 const getAddressesWithPostcode = async (req, res) => {
   try {
     let postcodeData = [];
     const cleanPostcode = pCodeCheck.sanitisePostcode(req.params.postcode);
 
-    if (cleanPostcode != null) {
-      const results = await models.pcodedata.findAll({
-        where: {
-          postcode: cleanPostcode,
-        },
-        order: [['uprn', 'ASC']],
-      });
-
-      postcodeData = transformAddresses(results);
-    } else {
+    if (cleanPostcode == null) {
       res.status(400);
       return res.send({
         success: 0,
@@ -73,8 +72,38 @@ const getAddressesWithPostcode = async (req, res) => {
       });
     }
 
+    // Now try to get records with matching with Cssr on LAcode
+    // This means we can associate a CssrID to the establishment
+    let results = await models.pcodedata.findAll({
+      attributes: [
+        'uprn',
+        'building_number',
+        'street_description',
+        'sub_building_name',
+        'building_name',
+        'rm_organisation_name',
+        'post_town',
+        'county',
+        'postcode',
+      ],
+      include: [
+        {
+          model: models.cssr,
+          attributes: ['id', 'name'],
+          as: 'theAuthority',
+        },
+      ],
+      where: {
+        postcode: cleanPostcode,
+      },
+    });
+
+    //filter out any results without a linked cssr record (theAuthority)
+    //then transform addresses
+    postcodeData = transformAddresses(results);
+
     if (postcodeData.length === 0) {
-      const addressAPIResults = await getAddressAPI.getPostcodeData(req.params.postcode);
+      const addressAPIResults = await models.postcodes.firstOrCreate(cleanPostcode);
 
       if (addressAPIResults == null) {
         res.status(404);

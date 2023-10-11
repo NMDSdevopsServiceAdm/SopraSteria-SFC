@@ -5,6 +5,11 @@ module.exports = function (sequelize, DataTypes) {
   const postcodes = sequelize.define(
     'postcodes',
     {
+      uuid: {
+        type: DataTypes.UUIDV4,
+        allowNull: false,
+        field: '"uuid"',
+      },
       postcode: {
         type: DataTypes.STRING,
         allowNull: true,
@@ -111,49 +116,69 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  postcodes.findAllByPostcode = async function (postcode) {
+    return await this.findAll({
+      where: { postcode: postcode },
+    });
+  };
+
   postcodes.firstOrCreate = async function (postcode) {
     postcode = pCodeCheck.sanitisePostcode(postcode);
-    let foundPostcode = await this.findByPostcode(postcode);
+    let foundPostcodes = await this.findAllByPostcode(postcode);
+    let allPostcodeResultsFull = true;
+
+    //now for each foundPostcode need to check for full record
+    //if not full then update record with getAddressAPI
+    foundPostcodes.forEach(function (foundPostcode) {
+      if (foundPostcode.country == null) {
+        allPostcodeResultsFull = false;
+      }
+    });
 
     // If postcode exists and has a Country indicates it already has
     // spoken to getAddressAPI
-    if (foundPostcode && foundPostcode.Country != null) {
-      return foundPostcode;
+    if (foundPostcodes.length && allPostcodeResultsFull) {
+      return foundPostcodes;
     }
 
-    console.log('----------------------------------------------------------------------------------------');
-    console.log(`POSTCODES: ${postcode} was not found in postcodes table`);
-    console.log('----------------------------------------------------------------------------------------');
     const getAddressAPIResults = await getAddressAPI.getPostcodeData(postcode);
 
     if (!getAddressAPIResults || getAddressAPIResults.addresses.length === 0) {
       return;
     }
 
-    console.log(`New postcode: ${getAddressAPIResults.postcode} adding to postcodes table`);
+    // Some records with this postcode are not full so we delete all with this postcode
+    // if getAddressAPI returns results
+    await this.destroy({ where: { postcode: postcode } });
 
-    const pcodeData = getAddressAPIResults.addresses[0];
+    console.log(`New or updated postcode data for: ${getAddressAPIResults.postcode}`);
 
     // TODO pcodeData.addresses is an array of results
-    return await this.create({
-      postcode: pcodeData.postcode,
-      latitude: pcodeData.latitude,
-      longitude: pcodeData.longitude,
-      thoroughfare: pcodeData.thoroughfare,
-      buildingName: pcodeData.building_name,
-      subBuildingName: pcodeData.sub_building_name,
-      subBuildingNumber: pcodeData.sub_building_number,
-      buildingNumber: pcodeData.building_number,
-      line1: pcodeData.line_1,
-      line2: pcodeData.line_2,
-      line3: pcodeData.line_3,
-      line4: pcodeData.line_4,
-      locality: pcodeData.locality,
-      townOrCity: pcodeData.town_or_city,
-      county: pcodeData.county,
-      district: pcodeData.district,
-      country: pcodeData.country,
+    let results = [];
+    getAddressAPIResults.addresses.forEach(function (address) {
+      console.log(`Adding ${address.building_name}`);
+      results.push({
+        postcode: getAddressAPIResults.postcode,
+        latitude: getAddressAPIResults.latitude.latitude,
+        longitude: getAddressAPIResults.latitude.longitude,
+        thoroughfare: address.thoroughfare,
+        buildingName: address.building_name,
+        subBuildingName: address.sub_building_name,
+        subBuildingNumber: address.sub_building_number,
+        buildingNumber: address.building_number,
+        line1: address.line_1,
+        line2: address.line_2,
+        line3: address.line_3,
+        line4: address.line_4,
+        locality: address.locality,
+        townOrCity: address.town_or_city,
+        county: address.county,
+        district: address.district,
+        country: address.country,
+      });
     });
+
+    return this.bulkCreate(results);
   };
 
   return postcodes;

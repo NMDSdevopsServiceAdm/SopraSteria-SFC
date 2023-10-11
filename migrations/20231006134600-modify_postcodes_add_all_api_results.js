@@ -251,7 +251,7 @@ module.exports = {
         },
         'district',
       ),
-      queryInterface.addColumn(
+      queryInterface.removeColumn(
         {
           tableName: 'postcodes',
           schema: 'cqcref',
