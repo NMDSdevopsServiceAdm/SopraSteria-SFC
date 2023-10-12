@@ -78,6 +78,7 @@ export class EstablishmentService {
   private _employerTypeHasValue: boolean = null;
   private _inStaffRecruitmentFlow: boolean;
   private _standAloneAccount$: boolean;
+  private _isSelectedWorkplace: boolean;
 
   constructor(private http: HttpClient) {}
 
@@ -113,6 +114,14 @@ export class EstablishmentService {
 
   public setWorkplace(workplace: Establishment) {
     this._establishment$.next(workplace);
+  }
+
+  public setIsSelectedWorkplace(value: boolean) {
+    this._isSelectedWorkplace = value;
+  }
+
+  public getIsSelectedWorkplace(): boolean {
+    return this._isSelectedWorkplace;
   }
 
   public get establishment$() {
