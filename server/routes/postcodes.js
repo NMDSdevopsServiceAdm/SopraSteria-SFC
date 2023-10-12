@@ -54,7 +54,6 @@ const createAddressObjectFromGetAddressesAPIResults = (data, postcode) => {
 };
 
 /* GET with Postcode parameter to find matching addresses
-TODO fuzzy loop required here
 look in pcodedata for record with matching la
 if none found look in postcodes
 if not full record found do getAdddressAPI and store result
@@ -81,16 +80,16 @@ const getAddressesWithPostcode = async (req, res) => {
     postcodeData = transformAddresses(results);
 
     if (postcodeData.length === 0) {
-      const addressAPIResults = await models.postcodes.firstOrCreate(cleanPostcode);
+      const postcodes = await models.postcodes.firstOrCreate(cleanPostcode);
 
-      if (addressAPIResults == null) {
+      if (postcodes == null) {
         res.status(404);
         return res.send({
           success: 0,
           message: 'No Response From getAddressAPI',
         });
       }
-      postcodeData = transformGetAddressAPIResults(addressAPIResults);
+      postcodeData = transformGetAddressAPIResults(postcodes);
 
       if (postcodeData.length === 0) {
         res.status(404);

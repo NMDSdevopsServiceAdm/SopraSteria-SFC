@@ -146,12 +146,15 @@ module.exports = function (sequelize, DataTypes) {
     const getAddressAPIResults = await getAddressAPI.getPostcodeData(postcode);
 
     if (!getAddressAPIResults || getAddressAPIResults.addresses.length === 0) {
+      console.error(`Could not get a response from getAddress for postcode ${postcode}`);
       return foundPostcodes;
     }
 
     // Some records with this postcode are not full so we delete all with this postcode
     // if getAddressAPI returns results
-    await this.destroy({ where: { postcode: postcode } });
+    if (foundPostcodes.length) {
+      await this.destroy({ where: { postcode: postcode } });
+    }
 
     console.log(`New or updated postcodes data for: ${getAddressAPIResults.postcode}`);
 
