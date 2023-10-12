@@ -111,7 +111,6 @@ const vacanciesAndLeavers = async (establishmentId, leaversOrVacancies) => {
 };
 
 const getTimeInRole = async function ({ establishmentId }) {
-
   const noOfWorkersYearInRole = await models.worker.yearOrMoreInRoleCount(establishmentId);
   // const establishment = await models.establishment.turnoverAndVacanciesData(establishmentId);
   // const workerMismatch = await checkWorkerMismatch(establishmentId, establishment);
@@ -159,8 +158,7 @@ const checkStaffNumbers = async function (establishmentId, establishment, leaver
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   // const workerMismatch = await checkWorkerMismatch(establishmentId, establishment);
   if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
-
-  // if (workerMismatch) {
+    // if (workerMismatch) {
     return {
       stateMessage: 'mismatch-workers',
     };
