@@ -18,6 +18,7 @@ import { UserService } from '@core/services/user.service';
 })
 export class NewDashboardHeaderComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
+  @Input() workplace: Establishment;
   @Input() tab: string;
   @Input() canAddWorker = false;
   @Input() updatedDate: string;
@@ -25,7 +26,6 @@ export class NewDashboardHeaderComponent implements OnInit {
   @Input() canEditWorker = false;
   @Input() hasWorkers = false;
 
-  public workplace: Establishment;
   public canDeleteEstablishment: boolean;
   public workplaceUid: string;
   public subsidiaryCount: number;
@@ -38,6 +38,7 @@ export class NewDashboardHeaderComponent implements OnInit {
   };
   public header: string;
   public isParent: boolean;
+  public isSelectedWorkplace: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -50,7 +51,7 @@ export class NewDashboardHeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.workplace = this.establishmentService.primaryWorkplace;
+    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
     this.getHeader();
     this.getPermissions();

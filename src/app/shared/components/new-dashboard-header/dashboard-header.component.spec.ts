@@ -3,7 +3,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentService, establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import { AuthService } from '@core/services/auth.service';
@@ -20,6 +20,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { Roles } from '@core/model/roles.enum';
 import { getTestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { Establishment } from '@core/model/establishment.model';
 const MockWindow = {
   dataLayer: {
     push: () => {
@@ -40,6 +41,7 @@ describe('NewDashboardHeaderComponent', () => {
   ) => {
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const updatedDate = updateDate ? '01/02/2023' : null;
+    const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByTestId, queryByTestId, getByText, queryByText } = await render(NewDashboardHeaderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -76,6 +78,8 @@ describe('NewDashboardHeaderComponent', () => {
         canEditWorker,
         hasWorkers,
         isParent: false,
+        isSelectedWorkplace: false,
+        workplace: establishment,
       },
     });
 
@@ -151,6 +155,7 @@ describe('NewDashboardHeaderComponent', () => {
 
       component.isParent = false;
       component.workplace.parentName = 'My parent';
+      component.isSelectedWorkplace = false;
 
       fixture.detectChanges();
 
