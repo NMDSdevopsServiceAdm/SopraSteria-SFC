@@ -1,0 +1,10 @@
+@import 'govuk-frontend/govuk/base';
+
+.asc-back-to-parent {
+  background-color: govuk-colour('blue');
+  color: govuk-colour('white');
+}
+
+.asc-back-to-parent a {
+  color: govuk-colour('white');
+}
