@@ -1521,11 +1521,17 @@ class Establishment extends EntityValidator {
         //  of the given Establishment (using the postcode as the key)
         // lookup primary authority by trying to resolve on specific postcode code
 
-        const cssrResult = await getCssrRecordsFromPostcode(this._postcode);
+        const cssrResults = await getCssrRecordsFromPostcode(this._postcode);
+
+        if (!cssrResults || cssrResults.length == 0) {
+          console.log('------------------------------------');
+          console.log('Could not retrieve cssr record');
+          console.log('------------------------------------');
+        }
 
         fetchResults.primaryAuthorityCssr = {
-          id: cssrResult.theAuthority.id,
-          name: cssrResult.theAuthority.name,
+          id: cssrResults[0].theAuthority.id,
+          name: cssrResults[0].theAuthority.name,
         };
 
         if (fetchResults.auditEvents) {

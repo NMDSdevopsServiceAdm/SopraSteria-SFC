@@ -38,11 +38,17 @@ router.route('/:postcode').get(async (req, res) => {
   let primaryAuthorityCssr = null;
 
   try {
-    const cssrResult = await getCssrRecordsFromPostcode(givenPostcode);
+    const cssrResults = await getCssrRecordsFromPostcode(givenPostcode);
+
+    if (!cssrResults || cssrResults.length == 0) {
+      console.log('------------------------------------');
+      console.log('Could not retrieve cssr record');
+      console.log('------------------------------------');
+    }
 
     primaryAuthorityCssr = {
-      id: cssrResult.theAuthority.id,
-      name: cssrResult.theAuthority.name,
+      id: cssrResults.theAuthority.id,
+      name: cssrResults.theAuthority.name,
     };
 
     if (primaryAuthorityCssr) {

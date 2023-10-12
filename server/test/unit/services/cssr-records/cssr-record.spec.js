@@ -17,18 +17,18 @@ describe('/server/services/cssr-records/cssr-record', async () => {
     sinon.restore();
   });
 
-  describe('GetCssrRecordFromPostcode', async () => {
+  describe('getCssrRecordsFromPostcode', async () => {
     it('should return a cssr record when a matching postcode with a corresponding cssr entry is found', async () => {
       const response = { postcode: 'HD1 1DA', ...la };
 
-      const stubCompleteMatch = sinon.stub(cssrRecordData, 'getCssrRecordCompleteMatch').callsFake(async () => {
+      const stubCompleteMatch = sinon.stub(cssrRecordData, 'getCssrRecordsCompleteMatch').callsFake(async () => {
         return response;
       });
-      const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordWithLikePostcode').callsFake(async () => {
+      const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordsWithLikePostcode').callsFake(async () => {
         console.log('This should not be hit');
       });
 
-      const localAuth = await cssrRecord.GetCssrRecordFromPostcode('HD1 1DA');
+      const localAuth = await cssrRecord.getCssrRecordsFromPostcode('HD1 1DA');
       expect(localAuth).to.deep.equal(response);
       expect(stubCompleteMatch.calledOnce);
       expect(stubCompleteMatch.withArgs('HD1 1DA'));
@@ -38,17 +38,17 @@ describe('/server/services/cssr-records/cssr-record', async () => {
     describe('when no exact match is found', async () => {
       let stubCompleteMatch;
       beforeEach(() => {
-        stubCompleteMatch = sinon.stub(cssrRecordData, 'getCssrRecordCompleteMatch').callsFake(async () => {
+        stubCompleteMatch = sinon.stub(cssrRecordData, 'getCssrRecordsCompleteMatch').callsFake(async () => {
           return null;
         });
       });
 
       it('should attempt to find a cssr corresponding to similar postcodes', async () => {
-        const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordWithLikePostcode').callsFake(async () => {
+        const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordsWithLikePostcode').callsFake(async () => {
           return null;
         });
 
-        await cssrRecord.GetCssrRecordFromPostcode('HD1 1DA');
+        await cssrRecord.getCssrRecordsFromPostcode('HD1 1DA');
         expect(stubCompleteMatch.calledOnce);
         expect(stubPartialMatch.calledThrice);
         expect(stubPartialMatch.calledWith('HD1 1D'));
@@ -59,11 +59,11 @@ describe('/server/services/cssr-records/cssr-record', async () => {
       it('should return a cssr corresponding to a similar postcode', async () => {
         const response = { postcode: 'HD1 1DZ', ...la };
 
-        const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordWithLikePostcode').callsFake(async () => {
+        const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordsWithLikePostcode').callsFake(async () => {
           return response;
         });
 
-        const localAuth = await cssrRecord.GetCssrRecordFromPostcode('HD1 1DA');
+        const localAuth = await cssrRecord.getCssrRecordsFromPostcode('HD1 1DA');
         expect(localAuth).to.deep.equal(response);
         expect(stubCompleteMatch.calledOnce);
         expect(stubPartialMatch.calledOnce);
@@ -83,7 +83,7 @@ describe('/server/services/cssr-records/cssr-record', async () => {
 
     //     let postcode = 'KT2 6AP';
 
-    //     const localAuth = await cssrRecord.GetCssrRecordFromPostcode(postcode);
+    //     const localAuth = await cssrRecord.getCssrRecordsFromPostcode(postcode);
 
     //     expect(localAuth.theAuthority.id).to.equal(la2.theAuthority.id);
     //     expect(localAuth.theAuthority.name).to.equal(la2.theAuthority.name);
@@ -99,7 +99,7 @@ describe('/server/services/cssr-records/cssr-record', async () => {
     //     };
 
     //     let postcode = 'SR2 7TZ';
-    //     const localAuth = await cssrRecord.GetCssrRecordFromPostcode(postcode);
+    //     const localAuth = await cssrRecord.getCssrRecordsFromPostcode(postcode);
 
     //     expect(localAuth.theAuthority.id).to.equal(la2.theAuthority.id);
     //     expect(localAuth.theAuthority.name).to.equal(la2.theAuthority.name);
