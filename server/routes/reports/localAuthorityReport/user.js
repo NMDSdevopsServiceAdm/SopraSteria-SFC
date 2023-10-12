@@ -11,7 +11,7 @@ const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
 
-const getCssrRecordFromPostcode = require('../../../services/cssr-records/cssr-record').GetCssrRecordFromPostcode;
+const getCssrRecordsFromPostcode = require('../../../services/cssr-records/cssr-record').getCssrRecordsFromPostcode;
 
 //Constants string needed by this file in several places
 const folderName = 'template';
@@ -79,7 +79,7 @@ const identifyLocalAuthority = async (postcode) => {
 
   // We use the postcode to get local custodian code
   // and use this to get the Cssr record
-  const cssrResult = await getCssrRecordFromPostcode(postcode);
+  const cssrResult = await getCssrRecordsFromPostcode(postcode);
 
   if (cssrResult) {
     return cssrResult.theAuthority.name;

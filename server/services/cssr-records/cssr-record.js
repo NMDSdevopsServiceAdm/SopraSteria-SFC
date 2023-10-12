@@ -2,7 +2,7 @@ const cssrRecordData = require('./cssrRecordData');
 
 // Looks up Cssr record based on postcode and
 // ignores the last character if not found
-const GetCssrRecordsFromPostcode = async (postcode) => {
+const getCssrRecordsFromPostcode = async (postcode) => {
   let cssrRecord = await cssrRecordData.getCssrRecordsCompleteMatch(postcode);
 
   if (!cssrRecord) {
@@ -33,4 +33,4 @@ async function getCssrRecordsFuzzyMatch(postcode) {
   return cssrRecord;
 }
 
-module.exports.GetCssrRecordsFromPostcode = GetCssrRecordsFromPostcode;
+module.exports.getCssrRecordsFromPostcode = getCssrRecordsFromPostcode;

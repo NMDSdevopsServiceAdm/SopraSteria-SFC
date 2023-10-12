@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../models');
 const LaFormatters = require('../models/api/la');
-const getCssrRecordFromPostcode = require('../services/cssr-records/cssr-record').GetCssrRecordFromPostcode;
+const getCssrRecordsFromPostcode = require('../services/cssr-records/cssr-record').getCssrRecordsFromPostcode;
 
 // return the list of all Local Authorities
 router.route('/').get(async (req, res) => {
@@ -38,7 +38,7 @@ router.route('/:postcode').get(async (req, res) => {
   let primaryAuthorityCssr = null;
 
   try {
-    const cssrResult = await getCssrRecordFromPostcode(givenPostcode);
+    const cssrResult = await getCssrRecordsFromPostcode(givenPostcode);
 
     primaryAuthorityCssr = {
       id: cssrResult.theAuthority.id,

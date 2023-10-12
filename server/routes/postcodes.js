@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models/index');
-const getCssrRecordsFromPostcode = require('../services/cssr-records/cssr-record').GetCssrRecordsFromPostcode;
+const getCssrRecordsFromPostcode = require('../services/cssr-records/cssr-record').getCssrRecordsFromPostcode;
 
 const transformAddresses = (results) => {
   return results

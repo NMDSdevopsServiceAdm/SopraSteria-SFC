@@ -755,6 +755,11 @@ module.exports = function (sequelize, DataTypes) {
         values: ['Yes', 'No', "Don't know"],
         field: 'SickPay',
       },
+      cssrId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"CssrID"',
+      },
     },
     {
       defaultScope: {

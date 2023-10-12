@@ -67,6 +67,7 @@ class Establishment extends EntityValidator {
     this._town = null;
     this._county = null;
     this._locationId = null;
+    this._cssrID = null;
     this._provId = null;
     this._postcode = null;
     this._isRegulated = null;

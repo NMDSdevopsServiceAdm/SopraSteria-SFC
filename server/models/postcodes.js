@@ -153,7 +153,7 @@ module.exports = function (sequelize, DataTypes) {
     // if getAddressAPI returns results
     await this.destroy({ where: { postcode: postcode } });
 
-    console.log(`New or updated postcode data for: ${getAddressAPIResults.postcode}`);
+    console.log(`New or updated postcodes data for: ${getAddressAPIResults.postcode}`);
 
     let results = [];
     getAddressAPIResults.addresses.forEach(function (address) {
