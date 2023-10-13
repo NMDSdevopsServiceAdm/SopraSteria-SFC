@@ -34,4 +34,17 @@ describe('BackToParentComponent', () => {
     const linkText = getByText('Back to Test parent');
     expect(linkText).toBeTruthy();
   });
+
+  it('should emit on click', async () => {
+    const { component, fixture, getByText } = await setup();
+
+    component.primaryWorkplaceName = 'Test parent';
+    fixture.detectChanges();
+
+    const linkText = getByText('Back to Test parent');
+    const backToParentLinkClickEmitter = spyOn(component.backToParentLinkClicked, 'emit');
+
+    linkText.click();
+    expect(backToParentLinkClickEmitter).toHaveBeenCalled();
+  });
 });

@@ -40,4 +40,11 @@ describe('EstablishmentService', () => {
       expect(req.request.body).toEqual(requestBody);
     });
   });
+
+  describe('is selected Workplace', () => {
+    it('sets the isSelectectedWorkplace value', async () => {
+      service.setIsSelectedWorkplace(true);
+      expect(service.getIsSelectedWorkplace()).toBeTrue();
+    });
+  });
 });
