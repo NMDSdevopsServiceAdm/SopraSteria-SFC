@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -30,13 +30,13 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private pdfService: PdfService,
     private elRef: ElementRef,
-    private benchmarksService: BenchmarksService,
+    private benchmarksService: IBenchmarksService,
     protected router: Router,
   ) {}
 
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    // this.tilesData = this.benchmarksService.benchmarksData;
+    this.tilesData = this.benchmarksService.benchmarksData;
 
     this.subscriptions.add(
       this.benchmarksService
@@ -45,7 +45,6 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
           if (data) {
             this.tilesData = data;
           }
-
         }),
     );
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
@@ -60,11 +59,7 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
     );
   }
 
-
-
-
   get payTile(): Tile {
-
     return this.tilesData?.pay;
   }
 
@@ -86,8 +81,6 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
       fragment: 'benchmarks',
     });
   }
-
-
 
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();

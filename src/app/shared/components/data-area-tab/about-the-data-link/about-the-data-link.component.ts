@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
@@ -12,7 +12,7 @@ export class AboutTheDataLinkComponent implements OnInit {
 
   constructor(
     private establishmentService: EstablishmentService,
-    protected benchmarksService: BenchmarksService,
+    protected benchmarksService: IBenchmarksService,
     protected router: Router,
   ) {}
 

@@ -11,7 +11,7 @@ import { IBenchmarksService } from './Ibenchmarks.service';
 export class BenchmarksService implements IBenchmarksService {
   private returnToURL: URLStructure;
   private _benchmarksData$: BenchmarksResponse = null;
-
+  private _rankingsData$: AllRankingsResponse = null;
   constructor(private http: HttpClient) {}
 
   public get returnTo(): URLStructure {
@@ -28,6 +28,14 @@ export class BenchmarksService implements IBenchmarksService {
 
   public set benchmarksData(benchmarksData) {
     this._benchmarksData$ = benchmarksData;
+  }
+
+  public get rankingsData(): AllRankingsResponse {
+    return this._rankingsData$;
+  }
+
+  public set rankingsData(rankingsData) {
+    this._rankingsData$ = rankingsData;
   }
 
   postBenchmarkTabUsage(establishmentId: number) {

@@ -2,12 +2,12 @@ import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@ang
 import { Router } from '@angular/router';
 import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
+import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
 
 @Component({
   selector: 'app-benchmarks-tab',
@@ -29,7 +29,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public tilesData: BenchmarksResponse;
 
   constructor(
-    private benchmarksService: BenchmarksService,
+    private benchmarksService: IBenchmarksService,
     private elRef: ElementRef,
     private pdfService: PdfService,
     private permissionsService: PermissionsService,
@@ -45,12 +45,9 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
           if (data) {
             this.tilesData = data;
           }
-
         }),
     );
   }
-
-
 
   get payTile(): Tile {
     return this.tilesData?.pay;

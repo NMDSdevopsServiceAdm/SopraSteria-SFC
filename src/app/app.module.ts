@@ -87,6 +87,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 
 @NgModule({
   declarations: [
@@ -196,7 +197,7 @@ import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
     TotalStaffRecordsResolver,
     CqcStatusCheckResolver,
     BenchmarksResolver,
-    // RankingsResolver,
+    RankingsResolver,
     // UsefulLinkPayResolver,
     // UsefulLinkRecruitmentResolver,
   ],

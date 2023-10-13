@@ -6,7 +6,6 @@ import { Worker } from '@core/model/worker.model';
 import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
