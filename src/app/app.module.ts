@@ -155,7 +155,7 @@ import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
     {
       provide: IBenchmarksService,
       useFactory: BenchmarksServiceFactory,
-      deps: [FeatureFlagsService, HttpClientModule],
+      deps: [FeatureFlagsService, HttpClient],
     },
     BackService,
     CountryService,
