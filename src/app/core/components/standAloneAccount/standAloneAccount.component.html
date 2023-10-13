@@ -1,4 +1,10 @@
 <div id="content">
+  <ng-container *ngIf="isSelectedWorkplace">
+    <app-back-to-parent-link
+      [primaryWorkplaceName]="primaryWorkplaceName"
+      (backToParentLinkClicked)="goBackToParent()"
+    ></app-back-to-parent-link>
+  </ng-container>
   <div class="asc-tabs-container">
     <div class="govuk-width-container">
       <app-new-tabs (selectedTabClick)="tabClickEvent($event)" [tabs]="tabs" [dashboardView]="dashboardView">

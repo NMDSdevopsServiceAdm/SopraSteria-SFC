@@ -42,6 +42,7 @@ window.dataLayer = window.dataLayer || {};
 @Directive()
 export class NewHomeTabDirective implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
+  @Input() primaryEstablishment: Establishment;
   @Input() meta: Meta;
 
   private subscriptions: Subscription = new Subscription();
@@ -164,6 +165,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.updateParentStatusRequested();
     this.updateCancelLinkToParentRequest();
     this.updateOnRemoveLinkToParentSuccess();
+
+    console.log(this.primaryEstablishment);
   }
 
   private setBenchmarksCard(): void {
@@ -334,6 +337,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   }
 
   public goToAboutParentsLink(): void {
+    // page doesn't exist yet
     this.router.navigate(['/about-parents']);
   }
 

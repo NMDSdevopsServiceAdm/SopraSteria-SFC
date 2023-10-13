@@ -1,8 +1,12 @@
 @import 'govuk-frontend/govuk/base';
 
-.asc-back-to-parent {
+.asc-back-to-parent-container {
   background-color: govuk-colour('blue');
   color: govuk-colour('white');
+}
+
+.asc-back-to-parent {
+  padding: 5px 0 12px 0;
 }
 
 .asc-back-to-parent a {

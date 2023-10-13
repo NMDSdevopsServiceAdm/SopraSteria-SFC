@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, OnChanges } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,10 +16,12 @@ import { Subscription } from 'rxjs';
   selector: 'app-new-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class NewDashboardComponent implements OnInit, OnDestroy {
+export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges {
   private subscriptions: Subscription = new Subscription();
   public selectedTab: string;
+  public primaryEstablishment: Establishment;
   public workplace: Establishment;
+  public subWorkplace: Establishment;
   public workerCount: number;
   public workers: Worker[];
   public trainingCounts: TrainingCounts;
@@ -33,6 +35,8 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public isParent: boolean;
   @Input() isStandAloneAccount: boolean;
   @Input() isSubsAccount: boolean;
+  public primaryWorkplaceName: string;
+  public isSelectedWorkplace: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,7 +51,11 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
-    this.workplace = this.establishmentService.primaryWorkplace;
+    //this.workplace = this.establishmentService.primaryWorkplace;
+    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace() ? true : false;
+    this.primaryEstablishment = this.establishmentService.primaryWorkplace;
+    this.subWorkplace = this.establishmentService?.establishment;
+    this.workplace = this.isSelectedWorkplace ? this.subWorkplace : this.primaryEstablishment;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
     this.tilesData = this.benchmarksService.benchmarksData;
 
@@ -66,6 +74,10 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
 
       this.canViewListOfWorkers && this.setWorkersAndTrainingValues();
     }
+  }
+
+  ngOnChanges(): void {
+    this.workplace = this.isSelectedWorkplace ? this.subWorkplace : this.primaryEstablishment;
   }
 
   private getPermissions(): void {

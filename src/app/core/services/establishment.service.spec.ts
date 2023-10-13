@@ -46,5 +46,11 @@ describe('EstablishmentService', () => {
       service.setIsSelectedWorkplace(true);
       expect(service.getIsSelectedWorkplace()).toBeTrue();
     });
+
+    it('gets the isSelectectedWorkplace value', async () => {
+      service.setIsSelectedWorkplace(false);
+      const isSelectectedWorkplace = service.getIsSelectedWorkplace();
+      expect(isSelectectedWorkplace).toBeFalse();
+    });
   });
 });

@@ -146,7 +146,7 @@ export const myWorkplaceJourney: JourneyRoute = {
 export const allWorkplacesJourney: JourneyRoute = {
   children: [
     {
-      title: 'All workplaces',
+      title: 'Your other workplaces',
       path: Path.ALL_WORKPLACES,
       children: [
         {

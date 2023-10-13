@@ -1,5 +1,5 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-third">
+  <div class="govuk-grid-column-one-third govuk-!-width-one-quarter">
     <p>
       <ng-container *ngIf="canViewEstablishment; else noPermission">
         <a href="#" (click)="setEmployerType($event)">
@@ -10,11 +10,11 @@
         {{ workplace.name }}
       </ng-template>
     </p>
-    <p class="govuk-!-margin-bottom-1"><strong>Last updated</strong></p>
+    <p class="govuk-!-margin-bottom-1"><strong>Last update</strong></p>
     <p class="govuk-!-margin-bottom-0">{{ workplace.updated | date: 'd MMMM y' }}</p>
   </div>
 
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-three-quarters">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <p>
@@ -44,6 +44,7 @@
         </p>
         <p class="govuk-!-margin-bottom-0">
           {{ workplace.dataPermissions | dataViewPermissions }}
+          <span *ngIf="workplace.dataPermissions !== 'None'">(view only)</span>
           <span class="govuk-util__float-right" *ngIf="canChangePermissionsForSubsidiary">
             <ng-container *ngIf="workplace.dataOwnershipRequested; else dataPermissions">
               <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
@@ -51,7 +52,7 @@
             <ng-template #dataPermissions>
               <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
                 <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                  <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
+                  <a (click)="setDataPermissions($event)" href="#">Change data permissions</a>
                 </ng-container>
                 <ng-template #notParent>
                   <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>

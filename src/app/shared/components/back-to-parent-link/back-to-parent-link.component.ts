@@ -1,4 +1,5 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
   selector: 'app-back-to-parent-link',
@@ -9,12 +10,13 @@ export class BackToParentComponent implements OnInit {
   @Input() primaryWorkplaceName: string;
   @Output() backToParentLinkClicked = new EventEmitter();
 
-  constructor() {}
+  constructor(private establishmentService: EstablishmentService) {}
 
   ngOnInit() {}
 
   public backToParentLinkClick(event: Event) {
     event.preventDefault();
+    this.establishmentService.setIsSelectedWorkplace(false);
     this.backToParentLinkClicked.emit(event);
   }
 }

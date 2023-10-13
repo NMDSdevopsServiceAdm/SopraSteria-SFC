@@ -262,4 +262,12 @@ describe('ViewMyWorkplacesComponent', () => {
       expect((getByLabelText('Search child workplace records') as HTMLInputElement).value).toBe('mysupersearch');
     });
   });
+
+  it('should show about parents link', async () => {
+    const { getByText } = await setup();
+    const aboutParentsLink = getByText('What you can do as a parent workplace');
+
+    expect(aboutParentsLink).toBeTruthy();
+    expect(aboutParentsLink.getAttribute('href')).toEqual('/about-parents');
+  });
 });

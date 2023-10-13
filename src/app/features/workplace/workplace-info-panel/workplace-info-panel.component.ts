@@ -12,6 +12,7 @@ import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-o
 import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { MoveWorkplaceDialogComponent } from '@shared/components/move-workplace/move-workplace-dialog.component';
 import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -30,6 +31,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public ownershipChangeRequestId: any = [];
   public ownershipChangeRequestCreatedByLoggegInUser: boolean;
   public ownershipChangeRequester: any;
+  public newHomeDesignParentFlag: boolean;
 
   constructor(
     private dialogService: DialogService,
@@ -39,6 +41,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private alertService: AlertService,
     private authService: AuthService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit() {
@@ -54,6 +57,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         }
       }),
     );
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
   }
 
   private changeOwnershipAndPermissions(): void {
@@ -141,6 +145,9 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
       if (data.employerType == null) {
         this.establishmentService.setEmployerTypeHasValue(false);
         this.router.navigate(['/workplace', this.workplace.uid, 'type-of-employer']);
+      } else if (this.newHomeDesignParentFlag) {
+        this.establishmentService.setIsSelectedWorkplace(true);
+        this.router.navigate(['workplace', this.workplace.uid, 'home', { dashboard: 'dashboard' }]);
       } else {
         this.router.navigate(['/workplace', this.workplace.uid]);
       }

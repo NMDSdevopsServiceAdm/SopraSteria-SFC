@@ -40,6 +40,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   private showBanner = false;
   public newDataAreaFlag: boolean;
   public canSeeNewDataArea: boolean;
+  public newHomeDesignParentFlag: boolean;
 
   constructor(
     private alertService: AlertService,
@@ -68,6 +69,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
     if (this.workplace && this.workplace.locationId) {
       this.subscriptions.add(

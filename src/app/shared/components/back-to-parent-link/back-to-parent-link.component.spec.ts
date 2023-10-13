@@ -1,14 +1,22 @@
 import { SharedModule } from '@shared/shared.module';
-import { getByText, render } from '@testing-library/angular';
-import { AlertService } from '@core/services/alert.service';
+import { render } from '@testing-library/angular';
 import { WindowRef } from '@core/services/window.ref';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BackToParentComponent } from './back-to-parent-link.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('BackToParentComponent', () => {
   const setup = async () => {
     const { fixture, getByText } = await render(BackToParentComponent, {
-      imports: [SharedModule],
-      providers: [AlertService, WindowRef],
+      imports: [SharedModule, HttpClientTestingModule],
+      providers: [
+        WindowRef,
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+      ],
     });
 
     const component = fixture.componentInstance;
