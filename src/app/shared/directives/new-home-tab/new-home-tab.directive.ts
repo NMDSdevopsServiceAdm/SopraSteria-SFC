@@ -165,8 +165,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.updateParentStatusRequested();
     this.updateCancelLinkToParentRequest();
     this.updateOnRemoveLinkToParentSuccess();
-
-    console.log(this.primaryEstablishment);
   }
 
   private setBenchmarksCard(): void {
