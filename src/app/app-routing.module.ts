@@ -10,6 +10,7 @@ import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/ha
 import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
@@ -140,7 +141,7 @@ const routes: Routes = [
           workers: WorkersResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
           cqcStatusCheck: CqcStatusCheckResolver,
-          // benchmarks: BenchmarksResolver,
+          benchmarks: BenchmarksResolver,
           // rankings: RankingsResolver,
           // usefulLinksPay: UsefulLinkPayResolver,
           // usefulLinkRecruitment: UsefulLinkRecruitmentResolver,

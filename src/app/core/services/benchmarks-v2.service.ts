@@ -8,11 +8,12 @@ import {
 } from '@core/model/benchmarks-v2.model';
 import { URLStructure } from '@core/model/url.model';
 import { Observable } from 'rxjs';
+import { IBenchmarksService } from './Ibenchmarks.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BenchmarksV2Service {
+export class BenchmarksV2Service implements IBenchmarksService {
   private returnToURL: URLStructure;
   private _benchmarksData$: BenchmarksResponse = null;
   private _rankingsData$: AllRankingsResponse = null;

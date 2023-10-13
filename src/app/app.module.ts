@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -84,7 +84,9 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-
+import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
 
 @NgModule({
   declarations: [
@@ -150,6 +152,11 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
   providers: [
     AuthGuard,
     AdminSkipService,
+    {
+      provide: IBenchmarksService,
+      useFactory: BenchmarksServiceFactory,
+      deps: [FeatureFlagsService, HttpClientModule],
+    },
     BackService,
     CountryService,
     EstablishmentService,
@@ -188,7 +195,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     WorkersResolver,
     TotalStaffRecordsResolver,
     CqcStatusCheckResolver,
-    // BenchmarksResolver,
+    BenchmarksResolver,
     // RankingsResolver,
     // UsefulLinkPayResolver,
     // UsefulLinkRecruitmentResolver,

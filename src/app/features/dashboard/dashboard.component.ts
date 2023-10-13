@@ -3,6 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
+import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
 import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
@@ -44,7 +45,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
     private authService: AuthService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private benchmarksService: BenchmarksService,
+    private benchmarksService: IBenchmarksService,
     private userService: UserService,
     private workerService: WorkerService,
     private route: ActivatedRoute,
