@@ -1,11 +1,10 @@
 const express = require('express');
-const app = express();
-
+const router = express.Router();
 // caching middleware - ref and transactional
 var cacheMiddleware = require('../../../server/utils/middleware/noCache');
 
 const establishments = require('./establishments');
 
-app.use('/api/v2/establishment', [cacheMiddleware.nocache, establishments]);
+router.use('/establishment', [cacheMiddleware.nocache, establishments]);
 
-module.exports = app;
+module.exports = router;

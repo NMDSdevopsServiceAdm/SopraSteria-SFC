@@ -53,7 +53,7 @@ export class BenchmarksV2Service implements IBenchmarksService {
     if (tilesNeeded.length) {
       param = '?tiles=' + tilesNeeded.join(',');
     }
-    return this.http.get<BenchmarksResponse>(`/api/v2/establishment/${establishmentId}/benchmarks/${param}`);
+    return this.http.get<BenchmarksResponse>(`/api/v2/establishment/${establishmentId}/benchmarks`);
   }
 
   getRankingData(establishmentId: string, metric: string): Observable<CompareGroupsRankingsResponse> {

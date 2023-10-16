@@ -249,6 +249,7 @@ const getMetaData = async (mainService, cssr) => {
 
 const viewBenchmarks = async (req, res) => {
   try {
+    console.log('*********** Start view Benchmarks ************');
     const establishmentId = req.establishmentId;
     const { mainService } = await models.establishment.findbyId(establishmentId);
 

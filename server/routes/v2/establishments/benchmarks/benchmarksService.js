@@ -1,4 +1,4 @@
-const models = require('../../../models');
+const models = require('../../../../models');
 const { Op } = require('sequelize');
 
 const getPay = async function (params) {

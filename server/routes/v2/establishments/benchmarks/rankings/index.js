@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const models = require('server/models');
-const { calculateRankDesc, calculateRankAsc } = require('../../../../utils/benchmarksUtils');
+const models = require('../../../../../models');
+const { calculateRankDesc, calculateRankAsc } = require('../../../../../utils/benchmarksUtils');
 const {
   getPay,
   getQualifications,
