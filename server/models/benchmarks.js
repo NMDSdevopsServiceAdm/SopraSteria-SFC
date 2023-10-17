@@ -140,10 +140,11 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   // TODO
-  // Uses estalishmentId to get cssr
+  // Uses establishmentId to get cssr
   // then cssrId to retrieve benchmarks
   Benchmarks.getBenchmarkData = async function (establishmentId) {
     // This is only to retreive cssrId associated with establishmentId
+    // Some establishments should now have CssrID attached to their record
     const { establishment } = await sequelize.models.establishment.findbyId(establishmentId);
     const reportingId = establishment.reportingID;
     const specificMainServiceReportingIds = [1, 2, 8];
@@ -155,7 +156,7 @@ module.exports = function (sequelize, DataTypes) {
     if (establishment && establishment.CssrID) {
       CssrID = establishment.CssrID;
     } else {
-      // Relies on a relationship between establishment and Cssr
+      // Relies on a relationship between pcodedata and Cssr
       const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
 
       if (!cssr) return {};
