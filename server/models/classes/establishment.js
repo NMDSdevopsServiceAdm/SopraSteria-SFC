@@ -1662,7 +1662,7 @@ class Establishment extends EntityValidator {
           this.uid,
           nameId ? nameId.property : null,
           '',
-          `Failed to update (archive) estabalishment record with uid: ${this._uid}`,
+          `Failed to update (archive) establishment record with uid: ${this._uid}`,
         );
       }
     } catch (err) {
@@ -1679,7 +1679,7 @@ class Establishment extends EntityValidator {
         this.uid,
         nameId ? nameId.property : null,
         err,
-        `Failed to update (archive) estabalishment record with uid: ${this._uid}`,
+        `Failed to update (archive) establishment record with uid: ${this._uid}`,
       );
     }
   }
