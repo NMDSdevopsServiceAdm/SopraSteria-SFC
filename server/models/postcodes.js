@@ -122,15 +122,15 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  //Retrieve full postcodes records or callgetAddress and cache
+  // Retrieve full postcodes records or callgetAddress and cache
   // TODO Plan for deployment!
   postcodes.firstOrCreate = async function (postcode) {
     postcode = pCodeCheck.sanitisePostcode(postcode);
     let foundPostcodes = await this.findAllByPostcode(postcode);
     let allPostcodeResultsFull = true;
 
-    //now for each foundPostcode need to check for full record
-    //if not full then update record with getAddressAPI
+    // Now for each foundPostcode need to check for full record
+    // if not full then update record with getAddressAPI
     foundPostcodes.forEach(function (foundPostcode) {
       if (foundPostcode.country == null) {
         allPostcodeResultsFull = false;

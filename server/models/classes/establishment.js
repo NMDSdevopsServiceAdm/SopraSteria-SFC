@@ -762,11 +762,11 @@ class Establishment extends EntityValidator {
 
         // We use the postcode to get local custodian code
         // and use this to get the Cssr record
-        const cssrResult = await getCssrRecordsFromPostcode(this._postcode);
+        const cssrResults = await getCssrRecordsFromPostcode(this._postcode);
 
-        if (cssrResult) {
-          this._cssrID = cssrResult.theAuthority.id; //TODO!
-          nmdsLetter = cssrResult.theAuthority.nmdsIdLetter;
+        if (cssrResults) {
+          this._cssrID = cssrResults[0].theAuthority.id; //TODO!
+          nmdsLetter = cssrResults[0].theAuthority.nmdsIdLetter;
         }
 
         // catch all - because we don't want new establishments failing just because of old postcode data

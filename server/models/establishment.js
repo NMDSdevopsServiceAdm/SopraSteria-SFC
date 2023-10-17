@@ -915,6 +915,17 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.updateCssrIdsByPostcode = async function (postcode, cssrId) {
+    return await this.update(
+      { cssrId: cssrId },
+      {
+        where: {
+          postcode: postcode,
+        },
+      },
+    );
+  };
+
   Establishment.findWithWorkersAndTraining = function (establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id'],
