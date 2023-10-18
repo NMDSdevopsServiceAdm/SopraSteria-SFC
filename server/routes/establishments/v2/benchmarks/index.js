@@ -210,7 +210,7 @@ const getBenchmarksData = async (establishmentId, mainService) => {
     meta: {},
   };
 
-  const cssr = await models.cssr.getCSSR(establishmentId);
+  const cssr = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
 
   data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
   data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
