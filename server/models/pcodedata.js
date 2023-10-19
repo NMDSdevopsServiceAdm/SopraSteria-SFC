@@ -1,7 +1,10 @@
 /* jshint indent: 2 */
 
+const { Op } = require('sequelize');
+const { cssr } = require('../models');
+
 module.exports = function (sequelize, DataTypes) {
-  const PcodeData = sequelize.define(
+  const pcodedata = sequelize.define(
     'pcodedata',
     {
       uprn: {
@@ -54,13 +57,46 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  PcodeData.associate = (models) => {
-    PcodeData.belongsTo(models.cssr, {
+  pcodedata.associate = (models) => {
+    pcodedata.belongsTo(models.cssr, {
       foreignKey: 'local_custodian_code',
       targetKey: 'localCustodianCode',
       as: 'theAuthority',
     });
   };
 
-  return PcodeData;
+  pcodedata.getLinkedCssrRecordsCompleteMatch = async function (postcode) {
+    return await this.findAll({
+      where: {
+        postcode: postcode,
+      },
+      include: [
+        {
+          model: cssr,
+          as: 'theAuthority',
+          attributes: ['id', 'name', 'nmdsIdLetter'],
+        },
+      ],
+    });
+  };
+
+  pcodedata.getLinkedCssrRecordsWithLikePostcode = async function (postcode) {
+    return await this.findAll({
+      where: {
+        postcode: {
+          [Op.like]: `${postcode}%`,
+        },
+      },
+      include: [
+        {
+          model: cssr,
+          as: 'theAuthority',
+          attributes: ['id', 'name', 'nmdsIdLetter'],
+          required: true,
+        },
+      ],
+    });
+  };
+
+  return pcodedata;
 };

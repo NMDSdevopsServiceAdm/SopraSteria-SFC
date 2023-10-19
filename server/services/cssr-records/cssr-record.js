@@ -1,19 +1,18 @@
-const cssrRecordData = require('./cssrRecordData');
+// const { pcodedata } = require('../../models');
+const models = require('../../models/index');
 
 // Looks up Cssr record based on postcode and
 // ignores the last character if not found
 const getCssrRecordsFromPostcode = async (postcode) => {
-  let cssrRecords = await cssrRecordData.getCssrRecordsCompleteMatch(postcode);
+  const cssrRecords = await models.pcodedata.getLinkedCssrRecordsCompleteMatch(postcode);
 
   if (!cssrRecords) {
     console.error('Could not obtain CSSR records from postcode non local custodian match');
     // no match so try nearest authority
     // The UK postcode consists of five to seven alphanumeric characters
     // outwardcode (2-4 chars) and inwardcode (3chars)
-    cssrRecords = await getCssrRecordsFuzzyMatch(postcode);
+    return await getCssrRecordsFuzzyMatch(postcode);
   }
-
-  return cssrRecords;
 };
 
 async function getCssrRecordsFuzzyMatch(postcode) {
@@ -28,7 +27,7 @@ async function getCssrRecordsFuzzyMatch(postcode) {
     inwardCode = inwardCode.slice(0, -1);
     console.log(`Attempting to match cssr record for postcode like ${outwardCode} ${inwardCode}%`);
     //try fuzzy matching
-    cssrRecords = await cssrRecordData.getCssrRecordsWithLikePostcode(`${outwardCode} ${inwardCode}`);
+    cssrRecords = await models.pcodedata.getLinkedCssrRecordsWithLikePostcode(`${outwardCode} ${inwardCode}`);
   }
   return cssrRecords;
 }

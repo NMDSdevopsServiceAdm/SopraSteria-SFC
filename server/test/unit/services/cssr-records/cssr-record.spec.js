@@ -21,12 +21,14 @@ describe('/server/services/cssr-records/cssr-record', async () => {
     it('should return a cssr record when a matching postcode with a corresponding cssr entry is found', async () => {
       const response = { postcode: 'HD1 1DA', ...la };
 
-      const stubCompleteMatch = sinon.stub(cssrRecordData, 'getCssrRecordsCompleteMatch').callsFake(async () => {
+      const stubCompleteMatch = sinon.stub(cssrRecordData, 'getLinkedCssrRecordsCompleteMatch').callsFake(async () => {
         return response;
       });
-      const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordsWithLikePostcode').callsFake(async () => {
-        console.log('This should not be hit');
-      });
+      const stubPartialMatch = sinon
+        .stub(cssrRecordData, 'getLinkedCssrRecordsWithLikePostcode')
+        .callsFake(async () => {
+          console.log('This should not be hit');
+        });
 
       const localAuth = await cssrRecord.getCssrRecordsFromPostcode('HD1 1DA');
       expect(localAuth).to.deep.equal(response);
@@ -38,15 +40,17 @@ describe('/server/services/cssr-records/cssr-record', async () => {
     describe('when no exact match is found', async () => {
       let stubCompleteMatch;
       beforeEach(() => {
-        stubCompleteMatch = sinon.stub(cssrRecordData, 'getCssrRecordsCompleteMatch').callsFake(async () => {
+        stubCompleteMatch = sinon.stub(cssrRecordData, 'getLinkedCssrRecordsCompleteMatch').callsFake(async () => {
           return null;
         });
       });
 
       it('should attempt to find a cssr corresponding to similar postcodes', async () => {
-        const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordsWithLikePostcode').callsFake(async () => {
-          return null;
-        });
+        const stubPartialMatch = sinon
+          .stub(cssrRecordData, 'getLinkedCssrRecordsWithLikePostcode')
+          .callsFake(async () => {
+            return null;
+          });
 
         await cssrRecord.getCssrRecordsFromPostcode('HD1 1DA');
         expect(stubCompleteMatch.calledOnce);
@@ -59,9 +63,11 @@ describe('/server/services/cssr-records/cssr-record', async () => {
       it('should return a cssr corresponding to a similar postcode', async () => {
         const response = { postcode: 'HD1 1DZ', ...la };
 
-        const stubPartialMatch = sinon.stub(cssrRecordData, 'getCssrRecordsWithLikePostcode').callsFake(async () => {
-          return response;
-        });
+        const stubPartialMatch = sinon
+          .stub(cssrRecordData, 'getLinkedCssrRecordsWithLikePostcode')
+          .callsFake(async () => {
+            return response;
+          });
 
         const localAuth = await cssrRecord.getCssrRecordsFromPostcode('HD1 1DA');
         expect(localAuth).to.deep.equal(response);
