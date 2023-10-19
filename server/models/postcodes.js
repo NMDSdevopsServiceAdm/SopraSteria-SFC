@@ -107,9 +107,6 @@ module.exports = function (sequelize, DataTypes) {
   // There is no PK key on the postcodes table
   postcodes.removeAttribute('id');
 
-  // TODD add all response data from getAddressAPI to postcodes table
-  // If not full record i.e no country then do the request and store the results
-  // If no record do the request and store the results
   postcodes.findByPostcode = async function (postcode) {
     return await this.findOne({
       where: { postcode: postcode },
@@ -123,7 +120,6 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   // Retrieve full postcodes records or callgetAddress and cache
-  // TODO Plan for deployment!
   postcodes.firstOrCreate = async function (postcode) {
     postcode = pCodeCheck.sanitisePostcode(postcode);
     let foundPostcodes = await this.findAllByPostcode(postcode);
@@ -182,7 +178,7 @@ module.exports = function (sequelize, DataTypes) {
       });
     });
 
-    return this.bulkCreate(results);
+    return this.bulkCreate(results); // TODO await
   };
 
   return postcodes;

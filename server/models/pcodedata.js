@@ -62,20 +62,5 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  PcodeData.getCssrFromPostcode = async function (postcode) {
-    return await this.findOne({
-      attributes: ['uprn', 'postcode'],
-      where: {
-        postcode: postcode,
-      },
-      include: [
-        {
-          model: sequelize.models.cssr,
-          attributes: ['region', 'localAuthority'],
-          as: 'theAuthority',
-        },
-      ],
-    });
-  };
   return PcodeData;
 };
