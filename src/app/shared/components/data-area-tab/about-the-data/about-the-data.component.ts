@@ -4,7 +4,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
-import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -26,7 +26,7 @@ export class DataAreaAboutTheDataComponent implements OnInit, OnDestroy {
   constructor(
     protected router: Router,
     protected route: ActivatedRoute,
-    protected benchmarksService: IBenchmarksService,
+    protected benchmarksService: BenchmarksServiceBase,
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,

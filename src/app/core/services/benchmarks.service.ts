@@ -3,12 +3,12 @@ import { Injectable } from '@angular/core';
 import { AllRankingsResponse, BenchmarksResponse, RankingsResponse } from '@core/model/benchmarks.model';
 import { URLStructure } from '@core/model/url.model';
 import { Observable } from 'rxjs';
-import { IBenchmarksService } from './Ibenchmarks.service';
+import { BenchmarksServiceBase } from './benchmarks-base.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BenchmarksService implements IBenchmarksService {
+export class BenchmarksService implements BenchmarksServiceBase {
   private returnToURL: URLStructure;
   private _benchmarksData$: BenchmarksResponse = null;
   private _rankingsData$: AllRankingsResponse = null;

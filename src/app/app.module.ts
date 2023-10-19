@@ -86,7 +86,7 @@ import { SatisfactionSurveyComponent } from './features/satisfaction-survey/sati
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 
 @NgModule({
@@ -154,7 +154,7 @@ import { RankingsResolver } from '@core/resolvers/rankings.resolver';
     AuthGuard,
     AdminSkipService,
     {
-      provide: IBenchmarksService,
+      provide: BenchmarksServiceBase,
       useFactory: BenchmarksServiceFactory,
       deps: [FeatureFlagsService, HttpClient],
     },

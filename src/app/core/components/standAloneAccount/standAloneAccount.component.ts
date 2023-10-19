@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -26,7 +26,7 @@ export class StandAloneAccountComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private tabsService: TabsService,
-    private benchmarksService: IBenchmarksService,
+    private benchmarksService: BenchmarksServiceBase,
   ) {}
 
   ngOnInit(): void {

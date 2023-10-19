@@ -9,7 +9,7 @@ import {
   NoData,
   Tile,
 } from '@core/model/benchmarks.model';
-import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
@@ -45,7 +45,7 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
   public journeyType: string;
 
   constructor(
-    private benchmarksService: IBenchmarksService,
+    private benchmarksService: BenchmarksServiceBase,
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,

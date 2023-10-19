@@ -1,6 +1,6 @@
 import { URLStructure } from '@core/model/url.model';
 
-export abstract class IBenchmarksService {
+export abstract class BenchmarksServiceBase {
   abstract benchmarksData;
   abstract rankingsData;
   abstract returnTo;

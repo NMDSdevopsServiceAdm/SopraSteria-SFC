@@ -2,7 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { ActivatedRoute, Data } from '@angular/router';
 import { BenchmarksResponse, Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
-import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfService } from '@core/services/pdf.service';
@@ -44,7 +44,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public rankingContent: RankingContent;
 
   constructor(
-    private benchmarksService: IBenchmarksService,
+    private benchmarksService: BenchmarksServiceBase,
     private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,

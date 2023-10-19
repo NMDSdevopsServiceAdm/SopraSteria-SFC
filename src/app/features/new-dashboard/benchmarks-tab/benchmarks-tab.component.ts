@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
-import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -30,7 +30,7 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private pdfService: PdfService,
     private elRef: ElementRef,
-    private benchmarksService: IBenchmarksService,
+    private benchmarksService: BenchmarksServiceBase,
     protected router: Router,
   ) {}
 

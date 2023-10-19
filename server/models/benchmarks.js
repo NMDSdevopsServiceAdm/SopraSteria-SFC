@@ -139,6 +139,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  // TODO JMH:
   // Benchmarks.getBenchmarkData = async function (establishmentId, cssrId) {
   //   console.log('{{{{{{{{{{{{{{{{{{{{{{{{{{');
   // console.log({establishmentId},{cssrId});
@@ -183,7 +184,6 @@ module.exports = function (sequelize, DataTypes) {
   Benchmarks.getBenchmarkData = async function (establishmentId) {
     const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
     const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
-
 
     const reportingId = mainService.reportingID;
     const specificMainServiceReportingIds = [1, 2, 8];

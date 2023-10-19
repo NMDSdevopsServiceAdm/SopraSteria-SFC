@@ -1205,6 +1205,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  // TODO JMH:
   // Worker.averageHourlyPay = async function (params) {
   //   console.log(establishmentId);
   //   // const establishmentId = params.establishmentId;
@@ -1256,6 +1257,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  // TODO JMH:
   // Worker.yearOrMoreInRoleCount = async function (establishmentId) {
   //   const yearAgo = dayjs(new Date()).subtract(1, 'year').toDate();
   //   return this.count({

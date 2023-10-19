@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
-import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 @Component({
   selector: 'app-new-comparison-group-header',
@@ -17,7 +17,7 @@ export class NewComparisonGroupHeaderComponent {
   constructor(
     protected router: Router,
     protected route: ActivatedRoute,
-    protected benchmarksService: IBenchmarksService,
+    protected benchmarksService: BenchmarksServiceBase,
   ) {}
 
   public setReturn(): void {

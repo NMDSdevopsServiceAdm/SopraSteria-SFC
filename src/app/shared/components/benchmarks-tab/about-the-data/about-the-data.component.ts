@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
-import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
@@ -24,7 +24,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   constructor(
     protected router: Router,
     protected route: ActivatedRoute,
-    protected benchmarksService: IBenchmarksService,
+    protected benchmarksService: BenchmarksServiceBase,
     private permissionsService: PermissionsService,
   ) {}
 

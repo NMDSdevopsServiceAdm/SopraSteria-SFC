@@ -7,7 +7,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { Subscription } from 'rxjs';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
-import { IBenchmarksService } from '@core/services/Ibenchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 @Component({
   selector: 'app-benchmarks-tab',
@@ -29,7 +29,7 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public tilesData: BenchmarksResponse;
 
   constructor(
-    private benchmarksService: IBenchmarksService,
+    private benchmarksService: BenchmarksServiceBase,
     private elRef: ElementRef,
     private pdfService: PdfService,
     private permissionsService: PermissionsService,
