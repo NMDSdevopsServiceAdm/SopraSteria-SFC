@@ -105,7 +105,7 @@ module.exports = function (sequelize, DataTypes) {
       const cssr = await this.findOne({
         attributes: ['id', 'name'],
         where: {
-          LocalAuthority: { [Op.like]: `%${district}%` }, // TODO Use this!!!
+          LocalAuthority: { [Op.like]: `%${district}%` },
         },
       });
 
