@@ -2,7 +2,6 @@
 
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    // Add the 'uuid' column
     await queryInterface.addColumn(
       {
         tableName: 'postcodes',
@@ -12,14 +11,13 @@ module.exports = {
       {
         type: Sequelize.UUID,
         primaryKey: true,
-        defaultValue: Sequelize.literal('uuid_generate_v4()'), // Postgres specific, use your database's equivalent
+        defaultValue: Sequelize.literal('uuid_generate_v4()'),
         allowNull: false,
       },
     );
   },
 
   down: async (queryInterface) => {
-    // Remove the 'uuid' column
     await queryInterface.removeColumn('cqcref.postcodes', 'uuid');
   },
 };

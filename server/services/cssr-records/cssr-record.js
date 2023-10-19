@@ -27,7 +27,7 @@ async function getCssrRecordsFuzzyMatch(postcode) {
   while (!cssrRecords && inwardCode.length > 0) {
     inwardCode = inwardCode.slice(0, -1);
     console.log(`Attempting to match cssr record for postcode like ${outwardCode} ${inwardCode}%`);
-    //try matching ignoring last character of postcode
+    //try fuzzy matching
     cssrRecords = await cssrRecordData.getCssrRecordsWithLikePostcode(`${outwardCode} ${inwardCode}`);
   }
   return cssrRecords;
