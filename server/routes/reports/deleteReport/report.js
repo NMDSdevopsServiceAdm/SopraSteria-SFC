@@ -63,14 +63,12 @@ const createTableHeader = (WS1) => {
     currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1);
   }
 };
+
 const addCSSRData = async (establishmentsData) => {
-  const result = {};
-  await Promise.all(
-    establishmentsData.map(async (establishment) => {
-      result[establishment.id] = await models.pcodedata.getCssrFromPostcode(establishment.postcode);
-    }),
-  );
-  return result;
+  const results = await models.cssr.getCssrRecordsFromPostcode(establishmentsData.postcode);
+
+  //if no cssr results
+  return results;
 };
 
 const fillData = (reportData, laData, WS1) => {
@@ -84,6 +82,7 @@ const fillData = (reportData, laData, WS1) => {
     const parentName = establishment.Parent ? establishment.Parent.NameValue : '';
     let region = '';
     let la = '';
+
     if (laData[establishment.id] && laData[establishment.id].theAuthority) {
       region = laData[establishment.id].theAuthority.region;
       la = laData[establishment.id].theAuthority.localAuthority;

@@ -59,7 +59,7 @@ module.exports = function (sequelize, DataTypes) {
 
     District = CSSR.LocalAuthority
   */
-  CSSR.getCSSRFromEstablishmentId = async (establishmentId) => {
+  CSSR.getCSSRsFromEstablishmentId = async (establishmentId) => {
     const establishment = await sequelize.models.establishment.findOne({
       attributes: ['postcode', 'id'],
       where: { id: establishmentId },
@@ -81,6 +81,20 @@ module.exports = function (sequelize, DataTypes) {
     return await CSSR.getIdFromPostcodeDistrict(establishment.postcode);
   };
 
+  CSSR.getCSSRsFromPostcode = async (postcode) => {
+    // Try and match or fuzzy match
+    const cssrResults = await getCssrRecordsFromPostcode(postcode);
+
+    if (cssrResults[0] && cssrResults[0].theAuthority) {
+      return cssrResults[0].theAuthority;
+    }
+
+    // Now try and retrieve CSSR based on district
+    return await CSSR.getIdFromPostcodeDistrict(postcode);
+  };
+
+  // fallback queries getAddressAPI, caches results
+  // then use district to match with cssr.LocalAuthority
   CSSR.getIdFromPostcodeDistrict = async function (postcode) {
     // Check for full records in postcodes table or query getAddressAPI and cache
     const postcodesRecords = sequelize.models.postcodes.firstOrCreate(postcode);
@@ -101,18 +115,6 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     return false;
-  };
-
-  CSSR.getCSSRFromPostcode = async (postcode) => {
-    // Try and match or fuzzy match
-    const cssrResults = await getCssrRecordsFromPostcode(postcode);
-
-    if (cssrResults[0] && cssrResults[0].theAuthority) {
-      return cssrResults[0].theAuthority;
-    }
-
-    // Now try and retrieve CSSR based on district
-    return await CSSR.getIdFromPostcodeDistrict(postcode);
   };
 
   return CSSR;

@@ -341,7 +341,7 @@ const getTimeInRoleResponse = async (req, res) => {
 //     // const { mainService } = await models.establishment.findbyId(establishmentId);
 
 //     // const mainServiceID = [1, 2, 8].includes(mainService.reportingID) ? mainService.reportingID : 0;
-//     // const cssr = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
+//     // const cssr = await models.cssr.getCSSRsFromEstablishmentId(establishmentId);
 
 //     const data = { pay: {} };
 

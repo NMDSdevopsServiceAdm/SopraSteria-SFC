@@ -111,7 +111,6 @@ const vacanciesAndLeavers = async (establishmentId, leaversOrVacancies) => {
 };
 
 const getTimeInRole = async function ({ establishmentId }) {
-
   const noOfWorkersYearInRole = await models.worker.yearOrMoreInRoleCount(establishmentId);
   // const establishment = await models.establishment.turnoverAndVacanciesData(establishmentId);
   // const workerMismatch = await checkWorkerMismatch(establishmentId, establishment);
@@ -159,8 +158,7 @@ const checkStaffNumbers = async function (establishmentId, establishment, leaver
   const workerCount = await models.worker.countForEstablishment(establishmentId);
   // const workerMismatch = await checkWorkerMismatch(establishmentId, establishment);
   if (!establishment || establishment.NumberOfStaffValue === 0 || workerCount !== establishment.NumberOfStaffValue) {
-
-  // if (workerMismatch) {
+    // if (workerMismatch) {
     return {
       stateMessage: 'mismatch-workers',
     };
@@ -181,12 +179,13 @@ const checkStaffNumbers = async function (establishmentId, establishment, leaver
 // };
 
 const getComparisonGroupRankings = async function (establishmentId, benchmarksModel) {
-  const cssr = await models.cssr.getCSSR(establishmentId);
+  const cssr = await models.cssr.getCSSRsFromEstablishmentId(establishmentId);
+
   if (!cssr) return [];
   return await benchmarksModel.findAll({
     attributes: { exclude: ['CssrID', 'MainServiceFK'] },
     where: {
-      CssrID: cssr.id,
+      CssrID: cssr[0].id,
       EstablishmentFK: {
         [Op.not]: [establishmentId],
       },

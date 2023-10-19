@@ -157,7 +157,7 @@ module.exports = function (sequelize, DataTypes) {
       CssrID = establishment.CssrID;
     } else {
       // Relies on a relationship between pcodedata and Cssr
-      const cssr = await sequelize.models.cssr.getCSSRFromEstablishmentId(establishmentId);
+      const cssr = await sequelize.models.cssr.getCSSRsFromEstablishmentId(establishmentId);
 
       if (!cssr) return {};
       CssrID = cssr.id;

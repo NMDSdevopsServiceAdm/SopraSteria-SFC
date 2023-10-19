@@ -14,7 +14,7 @@
 // describe('/server/routes/reports/deleteReport/report', () => {
 //   describe('deleteReport()', () => {
 //     beforeEach(() => {
-//       sinon.stub(models.pcodedata, 'getCssrFromPostcode').callsFake(async () => {
+//       sinon.stub(models.pcodedata, 'getCSSRsFromPostcode').callsFake(async () => {
 //         return {};
 //       });
 //     });

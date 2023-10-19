@@ -99,7 +99,7 @@ const checkStaffNumberAndLeavers = async function (establishmentId, establishmen
 };
 
 const getComparisonGroupRankings = async function (establishmentId, benchmarksModel) {
-  const cssr = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
+  const cssr = await models.cssr.getCSSRsFromEstablishmentId(establishmentId);
   if (!cssr) return [];
   return await benchmarksModel.findAll({
     attributes: { exclude: ['CssrID', 'MainServiceFK'] },
