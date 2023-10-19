@@ -2,19 +2,13 @@ const models = require('../../../models');
 const { Op } = require('sequelize');
 
 const getPay = async function (establishmentId) {
-
-
-  const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
-
-
+  const averageHourlyPay = await models.worker.averageHourlyPayByEstablishmentId(establishmentId);
 
   if (averageHourlyPay.amount === null) {
     return {
       stateMessage: 'no-pay-data',
     };
   }
-
-
 
   return { value: parseFloat((parseFloat(averageHourlyPay.amount) * 100).toFixed(0)) };
 };
@@ -134,7 +128,6 @@ const getComparisonGroupRankings = async function (establishmentId, benchmarksMo
         required: true,
       },
     ],
-
   });
 };
 
