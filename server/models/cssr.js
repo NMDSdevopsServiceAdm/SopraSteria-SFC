@@ -61,13 +61,24 @@ module.exports = function (sequelize, DataTypes) {
   */
   CSSR.getCSSRsFromEstablishmentId = async (establishmentId) => {
     const establishment = await sequelize.models.establishment.findOne({
-      attributes: ['postcode', 'id'],
+      attributes: ['postcode', 'id', 'cssrId'],
       where: { id: establishmentId },
     });
 
     if (!establishment) {
       console.error(`No establishment found for establishmentId ${establishmentId}`);
       return false;
+    }
+
+    // if we already have an attached cssrId
+    if (establishment.cssrId) {
+      return [
+        await this.findOne({
+          where: {
+            CssrId: establishment.cssrId,
+          },
+        }),
+      ]; //expects array return
     }
 
     // Try and match or fuzzy match
@@ -103,7 +114,6 @@ module.exports = function (sequelize, DataTypes) {
       const district = postcodesRecords[0].district;
 
       const cssr = await this.findOne({
-        attributes: ['id', 'name'],
         where: {
           LocalAuthority: { [Op.like]: `%${district}%` },
         },

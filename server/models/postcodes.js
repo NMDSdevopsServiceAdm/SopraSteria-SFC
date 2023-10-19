@@ -178,7 +178,7 @@ module.exports = function (sequelize, DataTypes) {
       });
     });
 
-    return this.bulkCreate(results); // TODO await
+    return this.bulkCreate(results); // TODO await?
   };
 
   return postcodes;

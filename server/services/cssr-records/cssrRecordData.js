@@ -1,8 +1,9 @@
 const { Op } = require('sequelize');
-const { cssr, pcodedata } = require('../../models');
+// const { cssr, PcodeData } = require('../../models');
+const models = require('../../models/index');
 
 async function getCssrRecordsWithLikePostcode(postcode) {
-  return pcodedata.findAll({
+  return await models.pcodedata.findAll({
     attributes: [
       'uprn',
       'building_number',
@@ -21,7 +22,7 @@ async function getCssrRecordsWithLikePostcode(postcode) {
     },
     include: [
       {
-        model: cssr,
+        model: models.cssr,
         as: 'theAuthority',
         attributes: ['id', 'name', 'nmdsIdLetter'],
         required: true,
@@ -31,7 +32,7 @@ async function getCssrRecordsWithLikePostcode(postcode) {
 }
 
 async function getCssrRecordsCompleteMatch(postcode) {
-  return pcodedata.findAll({
+  return await models.pcodedata.findAll({
     attributes: [
       'uprn',
       'building_number',
@@ -48,7 +49,7 @@ async function getCssrRecordsCompleteMatch(postcode) {
     },
     include: [
       {
-        model: cssr,
+        model: models.cssr,
         as: 'theAuthority',
         attributes: ['id', 'name', 'nmdsIdLetter'],
       },
