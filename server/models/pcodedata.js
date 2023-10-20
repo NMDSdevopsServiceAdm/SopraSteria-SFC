@@ -1,7 +1,6 @@
 /* jshint indent: 2 */
 
 const { Op } = require('sequelize');
-const { cssr } = require('../models');
 
 module.exports = function (sequelize, DataTypes) {
   const pcodedata = sequelize.define(
@@ -72,7 +71,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       include: [
         {
-          model: cssr,
+          model: sequelize.models.cssr,
           as: 'theAuthority',
           attributes: ['id', 'name', 'nmdsIdLetter'],
         },
@@ -89,7 +88,7 @@ module.exports = function (sequelize, DataTypes) {
       },
       include: [
         {
-          model: cssr,
+          model: sequelize.models.cssr,
           as: 'theAuthority',
           attributes: ['id', 'name', 'nmdsIdLetter'],
           required: true,

@@ -1,5 +1,5 @@
 // const { pcodedata } = require('../../models');
-const models = require('../../models/index');
+const models = require('../../models');
 
 // Looks up Cssr record based on postcode and
 // ignores the last character if not found
