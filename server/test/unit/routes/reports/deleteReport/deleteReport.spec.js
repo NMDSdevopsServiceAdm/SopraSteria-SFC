@@ -1,7 +1,5 @@
 'use strict';
 
-// TODO restore test getAddressFixes
-
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
