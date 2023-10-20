@@ -65,7 +65,7 @@ const createTableHeader = (WS1) => {
 };
 
 const addCSSRData = async (establishmentsData) => {
-  const results = await models.cssr.getCssrRecordsFromPostcode(establishmentsData.postcode);
+  const results = await models.pcodedata.getLinkedCssrRecordsFromPostcode(establishmentsData.postcode);
 
   //if no cssr results
   return results;

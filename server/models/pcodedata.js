@@ -72,13 +72,13 @@ module.exports = function (sequelize, DataTypes) {
       // no match so try nearest authority
       // The UK postcode consists of five to seven alphanumeric characters
       // outwardcode (2-4 chars) and inwardcode (3chars)
-      return await this.getCssrRecordsFuzzyMatch(postcode);
+      return await this.getLinkedCssrRecordsFuzzyMatch(postcode);
     }
 
     return cssrRecords;
   };
 
-  pcodedata.getCssrRecordsFuzzyMatch = async function (postcode) {
+  pcodedata.getLinkedCssrRecordsFuzzyMatch = async function (postcode) {
     let [outwardCode, inwardCode] = postcode.substring(0, 8).split(' '); //limit to avoid injection
     let cssrRecords;
 

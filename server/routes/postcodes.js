@@ -100,7 +100,7 @@ const getAddressesWithPostcode = async (req, res) => {
 
       if (postcodesRecords) {
         // associate cssrID with postcodes(county/district) and cssr(LocalAuthority/CssR)
-        const cssrID = await models.cssr.getCssrRecordsFromPostcode(cleanPostcode);
+        const cssrID = await models.pcodedata.getLinkedCssrRecordsFromPostcode(cleanPostcode);
 
         // now update the cssrID for all establishments with this postcode
         let establishments = await models.establishment.updateCssrIdsByPostcode(cleanPostcode, cssrID);
