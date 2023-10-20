@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const pCodeCheck = require('../utils/postcodeSanitizer');
-const models = require('../models/index');
-const getCssrRecordsFromPostcode = require('../services/cssr-records/cssr-record').getCssrRecordsFromPostcode;
+const models = require('../models');
 
 const transformAddresses = (results) => {
   return results
@@ -73,23 +72,43 @@ const getAddressesWithPostcode = async (req, res) => {
 
     // Now try to get records with matching with Cssr on LAcode
     // This means we can associate a CssrID to the establishment
-    const results = await getCssrRecordsFromPostcode(cleanPostcode);
+    const results = await models.pcodedata.getLinkedCssrRecordsFromPostcode(cleanPostcode);
+
+    // if linked results by lacode then update the
+    // establishments CssrIds
+    if (results && results[0].theAuthority) {
+      // update establishment cssrId
+      await models.establishment.updateCssrIdsByPostcode(cleanPostcode, results[0].theAuthority.id);
+    }
 
     //filter out any results without a linked cssr record (theAuthority)
     //then transform addresses
     postcodeData = transformAddresses(results);
 
+    // If no establishment has local authority code matching a cssr record
+    // fall back to using postcodes table
     if (postcodeData.length === 0) {
-      const postcodes = await models.postcodes.firstOrCreate(cleanPostcode);
+      const postcodesRecords = await models.postcodes.firstOrCreate(cleanPostcode);
 
-      if (postcodes == null) {
+      if (postcodesRecords == null) {
         res.status(404);
         return res.send({
           success: 0,
           message: 'No Response From getAddressAPI',
         });
       }
-      postcodeData = transformGetAddressAPIResults(postcodes);
+
+      if (postcodesRecords) {
+        // associate cssrID with postcodes(county/district) and cssr(LocalAuthority/CssR)
+        const cssrID = await models.cssr.getCssrRecordsFromPostcode(cleanPostcode);
+
+        // now update the cssrID for all establishments with this postcode
+        let establishments = await models.establishment.updateCssrIdsByPostcode(cleanPostcode, cssrID);
+
+        console.log(`Updated ${establishments.length} establishments with cssrId ${cssrID}`);
+      }
+
+      postcodeData = transformGetAddressAPIResults(postcodesRecords);
 
       if (postcodeData.length === 0) {
         res.status(404);

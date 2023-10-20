@@ -32,10 +32,10 @@ const isAuthorised = (req, res, next) => {
         req.role = claim.role;
         req.isParent = claim.isParent;
         req.establishment = {
-          id: claim.EstblishmentId,
-          uid: claim.hasOwnProperty('EstablishmentUID') ? claim.EstablishmentUID : null,
+          id: claim.EstablishmentId,
+          uid: Object.prototype.hasOwnProperty.call(claim, 'EstablishmentUID') ? claim.EstablishmentUID : null,
         };
-        req.establishmentId = claim.EstblishmentId;
+        req.establishmentId = claim.EstablishmentId;
 
         Sentry.setUser({
           username: req.username,
@@ -83,7 +83,7 @@ const authorisedEstablishmentPermissionCheck = async (req, res, next, roleCheck)
 
 const audOrISSInvalid = (claim, thisIss) => claim.aud !== config.get('jwt.aud.login') || claim.iss !== thisIss;
 
-const isEstablishmentIDNaN = (claim) => !claim.EstblishmentId || isNaN(parseInt(claim.EstblishmentId));
+const isEstablishmentIDNaN = (claim) => !claim.EstablishmentId || isNaN(parseInt(claim.EstablishmentId));
 
 const isEstablishmentUIDInvalid = (claim) => !claim.EstablishmentUID || !uuidV4Regex.test(claim.EstablishmentUID);
 
@@ -103,8 +103,8 @@ const reqMatchClaimEstablishment = (establishmentIdIsUID, req, claim) => {
     return true;
   }
 
-  if (claim.EstblishmentId === parseInt(req.params.id)) {
-    req.establishmentId = claim.EstblishmentId;
+  if (claim.EstablishmentId === parseInt(req.params.id)) {
+    req.establishmentId = claim.EstablishmentId;
     return true;
   }
   return false;
@@ -144,7 +144,7 @@ const handleExceptions = (req, res, claim, establishmentMatchesClaim, roleCheck)
 
   if (subsidaryEstablishmentClaimMismatch(establishmentMatchesClaim, claim)) {
     console.error(
-      `hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstblishmentId}/${claim.EstablishmentUID})`,
+      `hasAuthorisedEstablishment - given and known establishment id do not match: given (${req.params.id})/known (${claim.EstablishmentId}/${claim.EstablishmentUID})`,
     );
     return res.status(403).send(`Not permitted to access Establishment with id: ${escape(req.params.id)}`);
   }
@@ -176,7 +176,7 @@ const parentButNoPermissions = (establishmentMatchesClaim, referencedEstablishme
 const handleParentPermissionsExceptions = (req, res, claim, referencedEstablishment, establishmentMatchesClaim) => {
   if (parentButNoPermissions(establishmentMatchesClaim, referencedEstablishment, claim, req)) {
     console.error(
-      `Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID}), but access has not been given`,
+      `Found subsidiary establishment (${req.params.id}) for this known parent (${claim.EstablishmentId}/${claim.EstablishmentUID}), but access has not been given`,
     );
     return res
       .status(403)
@@ -193,7 +193,7 @@ const buildRequest = (req, claim, referencedEstablishment) => {
   req.isParent = claim.isParent;
   req.role = claim.role;
   req.establishment = {
-    id: claim.EstblishmentId,
+    id: claim.EstablishmentId,
     uid: claim.EstablishmentUID,
   };
 
@@ -217,7 +217,7 @@ const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret
 
   try {
     const where = {};
-    if (!establishmentMatchesClaim && claim.isParent) where.parentId = claim.EstblishmentId;
+    if (!establishmentMatchesClaim && claim.isParent) where.parentId = claim.EstablishmentId;
     establishmentIdIsUID ? (where.uid = req.params.id) : (where.id = req.params.id);
 
     const referencedEstablishment = await models.establishment.authenticateEstablishment(where);
@@ -238,7 +238,7 @@ const checkAuthorisation = async (req, res, next, roleCheck, token, Token_Secret
   } catch (err) {
     // failed to find establishment by UUID - being a subsidairy of this known parent
     console.error(
-      `Failed to find subsidiary establishment (${req.params.id}) for this known parent (${claim.EstblishmentId}/${claim.EstablishmentUID})`,
+      `Failed to find subsidiary establishment (${req.params.id}) for this known parent (${claim.EstablishmentId}/${claim.EstablishmentUID})`,
     );
     return res.status(403).send(`Not permitted to access Establishment with id: ${escape(req.params.id)}`);
   }

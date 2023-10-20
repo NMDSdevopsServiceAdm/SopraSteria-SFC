@@ -1,6 +1,5 @@
 /* jshint indent: 2 */
 const { Op } = require('sequelize');
-const getCssrRecordsFromPostcode = require('../services/cssr-records/cssr-record').getCssrRecordsFromPostcode;
 
 module.exports = function (sequelize, DataTypes) {
   const CSSR = sequelize.define(
@@ -82,7 +81,7 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     // Try and match or fuzzy match
-    const cssrResults = await getCssrRecordsFromPostcode(establishment.postcode);
+    const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(establishment.postcode);
 
     if (cssrResults[0] && cssrResults[0].theAuthority) {
       return cssrResults[0].theAuthority;
@@ -94,7 +93,7 @@ module.exports = function (sequelize, DataTypes) {
 
   CSSR.getCSSRsFromPostcode = async (postcode) => {
     // Try and match or fuzzy match
-    const cssrResults = await getCssrRecordsFromPostcode(postcode);
+    const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
 
     if (cssrResults[0] && cssrResults[0].theAuthority) {
       return cssrResults[0].theAuthority;

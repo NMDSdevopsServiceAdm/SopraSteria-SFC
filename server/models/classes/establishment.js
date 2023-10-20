@@ -18,8 +18,6 @@ const models = require('../index');
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
 const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
 
-const getCssrRecordsFromPostcode = require('../../services/cssr-records/cssr-record').getCssrRecordsFromPostcode;
-
 // associations
 const Worker = require('./worker').Worker;
 
@@ -762,7 +760,7 @@ class Establishment extends EntityValidator {
 
         // We use the postcode to get local custodian code
         // and use this to get the Cssr record
-        const cssrResults = await getCssrRecordsFromPostcode(this._postcode);
+        const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
         if (cssrResults) {
           this._cssrID = cssrResults[0].theAuthority.id; //TODO!
@@ -1521,7 +1519,7 @@ class Establishment extends EntityValidator {
         //  of the given Establishment (using the postcode as the key)
         // lookup primary authority by trying to resolve on specific postcode code
 
-        const cssrResults = await getCssrRecordsFromPostcode(this._postcode);
+        const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
         if (!cssrResults || cssrResults.length == 0) {
           console.log('------------------------------------');
