@@ -33,29 +33,23 @@ router.route('/').get(async (req, res) => {
 
 // returns the primary Local Authority for the given postcode
 router.route('/:postcode').get(async (req, res) => {
-  const givenPostcode = req.params.postcode;
   let primaryAuthorityCssr = null;
 
   try {
-    const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(givenPostcode);
+    const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(req.params.postcode);
 
     if (!cssrResults || cssrResults.length == 0) {
-      console.log('------------------------------------');
-      console.log('Could not retrieve cssr record');
-      console.log('------------------------------------');
+      return res.status(404).send(`${req.params.postcode} not found`);
     }
 
     primaryAuthorityCssr = {
-      id: cssrResults.theAuthority.id,
-      name: cssrResults.theAuthority.name,
+      id: cssrResults.cssrRecord.id,
+      name: cssrResults.cssrRecord.name,
     };
 
     if (primaryAuthorityCssr) {
       res.status(200);
-      return res.status(200).json({
-        id: primaryAuthorityCssr.id,
-        name: primaryAuthorityCssr.name,
-      });
+      return res.status(200).json(primaryAuthorityCssr);
     } else {
       return res.status(404).send('Not found');
     }

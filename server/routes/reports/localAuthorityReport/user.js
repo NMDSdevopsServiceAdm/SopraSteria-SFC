@@ -80,7 +80,7 @@ const identifyLocalAuthority = async (postcode) => {
   const cssrResult = await models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
 
   if (cssrResult) {
-    return cssrResult.theAuthority.name;
+    return cssrResult.cssrRecord.name;
   }
 
   //Couldn't get local authority name. Just leave it blank?

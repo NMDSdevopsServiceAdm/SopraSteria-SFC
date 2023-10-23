@@ -60,7 +60,7 @@ module.exports = function (sequelize, DataTypes) {
     pcodedata.belongsTo(models.cssr, {
       foreignKey: 'local_custodian_code',
       targetKey: 'localCustodianCode',
-      as: 'theAuthority',
+      as: 'cssrRecord',
     });
   };
 
@@ -103,13 +103,14 @@ module.exports = function (sequelize, DataTypes) {
       include: [
         {
           model: sequelize.models.cssr,
-          as: 'theAuthority',
+          as: 'cssrRecord',
           attributes: ['id', 'name', 'nmdsIdLetter'],
         },
       ],
     });
   };
 
+  // TODO how much power does this really use (how slow/hungry)?
   pcodedata.getLinkedCssrRecordsWithLikePostcode = async function (postcode) {
     return await this.findAll({
       where: {
@@ -120,7 +121,7 @@ module.exports = function (sequelize, DataTypes) {
       include: [
         {
           model: sequelize.models.cssr,
-          as: 'theAuthority',
+          as: 'cssrRecord',
           attributes: ['id', 'name', 'nmdsIdLetter'],
           required: true,
         },

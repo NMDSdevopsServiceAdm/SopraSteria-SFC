@@ -83,9 +83,9 @@ const fillData = (reportData, laData, WS1) => {
     let region = '';
     let la = '';
 
-    if (laData[establishment.id] && laData[establishment.id].theAuthority) {
-      region = laData[establishment.id].theAuthority.region;
-      la = laData[establishment.id].theAuthority.localAuthority;
+    if (laData[establishment.id] && laData[establishment.id].cssrRecord) {
+      region = laData[establishment.id].cssrRecord.region;
+      la = laData[establishment.id].cssrRecord.localAuthority;
     }
     const address = concatenateAddress(
       establishment.address,

@@ -5,7 +5,7 @@ const sinon = require('sinon');
 // const cssrRecordData = require('../../../../services/cssr-records/cssrRecordData');
 
 // const la = {
-//   theAuthority: {
+//   cssrRecord: {
 //     id: 123,
 //     name: 'Kirklees',
 //     nmdsIdLetter: 'J',
@@ -80,7 +80,7 @@ describe('/server/services/cssr-records/cssr-record', async () => {
   // describe('do not mock, should always return a response if data available', async () => {
   //   it('this should always return a record if there is KT2 unless lookup has failed (Kingston upon Thames)', async () => {
   //     let la2 = {
-  //       theAuthority: {
+  //       cssrRecord: {
   //         id: 729,
   //         name: 'Kingston upon Thames',
   //         nmdsIdLetter: 'G',
@@ -91,13 +91,13 @@ describe('/server/services/cssr-records/cssr-record', async () => {
 
   //     const localAuth = await cssrRecord.getCssrRecordsFromPostcode(postcode);
 
-  //     expect(localAuth.theAuthority.id).to.equal(la2.theAuthority.id);
-  //     expect(localAuth.theAuthority.name).to.equal(la2.theAuthority.name);
+  //     expect(localAuth.cssrRecord.id).to.equal(la2.cssrRecord.id);
+  //     expect(localAuth.cssrRecord.name).to.equal(la2.cssrRecord.name);
   //   });
 
   //   it('this should always return a record', async () => {
   //     let la2 = {
-  //       theAuthority: {
+  //       cssrRecord: {
   //         id: 110,
   //         name: 'Sunderland',
   //         nmdsIdLetter: '',
@@ -107,8 +107,8 @@ describe('/server/services/cssr-records/cssr-record', async () => {
   //     let postcode = 'SR2 7TZ';
   //     const localAuth = await cssrRecord.getCssrRecordsFromPostcode(postcode);
 
-  //     expect(localAuth.theAuthority.id).to.equal(la2.theAuthority.id);
-  //     expect(localAuth.theAuthority.name).to.equal(la2.theAuthority.name);
+  //     expect(localAuth.cssrRecord.id).to.equal(la2.cssrRecord.id);
+  //     expect(localAuth.cssrRecord.name).to.equal(la2.cssrRecord.name);
   //   });
   // });
   // });

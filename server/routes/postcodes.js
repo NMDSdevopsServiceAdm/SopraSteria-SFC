@@ -5,12 +5,13 @@ const models = require('../models');
 
 const transformAddresses = (results) => {
   return results
-    .filter((result) => result.theAuthority != null)
+    .filter((result) => result.cssrRecord != null)
     .map((result) => createAddressObject(result.dataValues));
 };
 
 const transformGetAddressAPIResults = (results) => {
-  return results.map((result) => createAddressObjectFromGetAddressesAPIResults(result, results.postcode));
+  return results
+    .map((result) => createAddressObjectFromGetAddressesAPIResults(result, results.postcode));
 };
 
 const createAddressObject = (data) => {
@@ -34,7 +35,6 @@ const createAddressObject = (data) => {
 };
 
 const createAddressObjectFromGetAddressesAPIResults = (data, postcode) => {
-  console.log(data);
   const numberAndStreet = data.buildingNumber ? `${data.buildingNumber} ${data.thoroughfare}` : data.thoroughfare;
   const addressInfo = [data.subBuildingName, data.buildingName, numberAndStreet];
   const filteredAddressInfo = addressInfo.filter((value) => {
@@ -76,12 +76,12 @@ const getAddressesWithPostcode = async (req, res) => {
 
     // if linked results by lacode then update the
     // establishments CssrIds
-    if (results && results[0].theAuthority) {
+    if (results && results[0].cssrRecord) {
       // update establishment cssrId
-      await models.establishment.updateCssrIdsByPostcode(cleanPostcode, results[0].theAuthority.id);
+      await models.establishment.updateCssrIdsByPostcode(cleanPostcode, results[0].cssrRecord.id);
     }
 
-    //filter out any results without a linked cssr record (theAuthority)
+    //filter out any results without a linked cssr record (cssrRecord)
     //then transform addresses
     postcodeData = transformAddresses(results);
 

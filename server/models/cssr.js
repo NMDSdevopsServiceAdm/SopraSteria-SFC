@@ -83,8 +83,8 @@ module.exports = function (sequelize, DataTypes) {
     // Try and match or fuzzy match
     const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(establishment.postcode);
 
-    if (cssrResults[0] && cssrResults[0].theAuthority) {
-      return cssrResults[0].theAuthority;
+    if (cssrResults[0] && cssrResults[0].cssrRecord) {
+      return cssrResults[0].cssrRecord;
     }
 
     // Now try and retrieve CSSR based on district
@@ -95,8 +95,8 @@ module.exports = function (sequelize, DataTypes) {
     // Try and match or fuzzy match
     const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
 
-    if (cssrResults[0] && cssrResults[0].theAuthority) {
-      return cssrResults[0].theAuthority;
+    if (cssrResults[0] && cssrResults[0].cssrRecord) {
+      return cssrResults[0].cssrRecord;
     }
 
     // Now try and retrieve CSSR based on district
@@ -112,6 +112,7 @@ module.exports = function (sequelize, DataTypes) {
     if (postcodesRecords && postcodesRecords[0].district) {
       const district = postcodesRecords[0].district;
 
+      // TODO test and improve.
       const cssr = await this.findOne({
         where: {
           LocalAuthority: { [Op.like]: `%${district}%` },

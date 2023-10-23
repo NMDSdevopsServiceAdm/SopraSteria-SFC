@@ -763,8 +763,8 @@ class Establishment extends EntityValidator {
         const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
         if (cssrResults) {
-          this._cssrID = cssrResults[0].theAuthority.id; //TODO!
-          nmdsLetter = cssrResults[0].theAuthority.nmdsIdLetter;
+          this._cssrID = cssrResults[0].cssrRecord.id; //TODO!
+          nmdsLetter = cssrResults[0].cssrRecord.nmdsIdLetter;
         }
 
         // catch all - because we don't want new establishments failing just because of old postcode data
@@ -1514,22 +1514,16 @@ class Establishment extends EntityValidator {
           fetchResults.allServiceCapacityQuestions = null;
         }
 
-        // need to identify which, if any, of the shared authorities is attributed to the
-        //  primary Authority; that is the Local Authority associated with the physical area
-        //  of the given Establishment (using the postcode as the key)
-        // lookup primary authority by trying to resolve on specific postcode code
-
         const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
         if (!cssrResults || cssrResults.length == 0) {
-          console.log('------------------------------------');
           console.log('Could not retrieve cssr record');
-          console.log('------------------------------------');
+          return {};
         }
 
         fetchResults.primaryAuthorityCssr = {
-          id: cssrResults[0].theAuthority.id,
-          name: cssrResults[0].theAuthority.name,
+          id: cssrResults[0].cssrRecord.id,
+          name: cssrResults[0].cssrRecord.name,
         };
 
         if (fetchResults.auditEvents) {

@@ -105,6 +105,7 @@ module.exports = function (sequelize, DataTypes) {
   );
 
   // There is no PK key on the postcodes table
+  // TODO this is not my comment above. We now have pk uuid.!
   postcodes.removeAttribute('id');
 
   postcodes.findByPostcode = async function (postcode) {
@@ -148,6 +149,7 @@ module.exports = function (sequelize, DataTypes) {
 
     // Some records with this postcode are not full so we delete all with this postcode
     // if getAddressAPI returns results
+    // TODO should actually map getAddressAPI results to foundPostcodes and then save
     if (foundPostcodes.length) {
       await this.destroy({ where: { postcode: postcode } });
     }
