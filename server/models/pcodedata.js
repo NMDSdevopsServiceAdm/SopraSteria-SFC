@@ -64,6 +64,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  // TODO Called too often for initial release i.e 'update'
   pcodedata.getLinkedCssrRecordsFromPostcode = async function (postcode) {
     const cssrRecords = await this.getLinkedCssrRecordsCompleteMatch(postcode);
 
@@ -71,14 +72,14 @@ module.exports = function (sequelize, DataTypes) {
       console.error('Could not obtain CSSR records from postcode non local custodian match');
       // no match so try nearest authority
       // The UK postcode consists of five to seven alphanumeric characters
-      // outwardcode (2-4 chars) and inwardcode (3chars)
-      return await this.getLinkedCssrRecordsFuzzyMatch(postcode);
+      // outwardcode (2-4 chars) and inwardcode (3chars) .. AB12 XYZ
+      return await this.getLinkedCssrRecordsLooseMatch(postcode);
     }
 
     return cssrRecords;
   };
 
-  pcodedata.getLinkedCssrRecordsFuzzyMatch = async function (postcode) {
+  pcodedata.getLinkedCssrRecordsLooseMatch = async function (postcode) {
     let [outwardCode, inwardCode] = postcode.substring(0, 8).split(' '); //limit to avoid injection
     let cssrRecords;
 
@@ -89,7 +90,7 @@ module.exports = function (sequelize, DataTypes) {
     while (!cssrRecords && inwardCode.length > 0) {
       inwardCode = inwardCode.slice(0, -1);
       console.log(`Attempting to match cssr record for postcode like ${outwardCode} ${inwardCode}%`);
-      //try fuzzy matching
+      //try loose matching
       cssrRecords = await this.getLinkedCssrRecordsWithLikePostcode(`${outwardCode} ${inwardCode}`);
     }
     return cssrRecords;
@@ -104,7 +105,6 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.cssr,
           as: 'cssrRecord',
-          attributes: ['id', 'name', 'nmdsIdLetter'],
         },
       ],
     });
@@ -122,7 +122,6 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.cssr,
           as: 'cssrRecord',
-          attributes: ['id', 'name', 'nmdsIdLetter'],
           required: true,
         },
       ],

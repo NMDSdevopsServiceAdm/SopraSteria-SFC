@@ -52,7 +52,7 @@ module.exports = function (sequelize, DataTypes) {
 
   /*
     1. Use attached CssrId on establishment to get Cssr
-    2. Try to get CSSR the 'traditional' way using the relationship or fuzzy
+    2. Try to get CSSR the 'traditional' way using the relationship or loose
     3. Get district from postcodes table if exists
     4. Query getAddressAPI and cache result
 
@@ -80,7 +80,7 @@ module.exports = function (sequelize, DataTypes) {
       ]; //expects array return
     }
 
-    // Try and match or fuzzy match
+    // Try and match or loose match
     const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(establishment.postcode);
 
     if (cssrResults[0] && cssrResults[0].cssrRecord) {
@@ -92,7 +92,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   CSSR.getCSSRsFromPostcode = async (postcode) => {
-    // Try and match or fuzzy match
+    // Try and match or loose match
     const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
 
     if (cssrResults[0] && cssrResults[0].cssrRecord) {

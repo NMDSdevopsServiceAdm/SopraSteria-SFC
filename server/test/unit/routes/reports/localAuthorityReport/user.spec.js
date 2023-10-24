@@ -33,7 +33,7 @@ describe('/server/routes/reports/localAuthorityReport/user', () => {
     });
 
     // TODO restore test getAddressAPIFixes
-    it('should return a la if one is not found in postcodedata table but it is found via fuzzy match', async () => {
+    it('should return a la if one is not found in postcodedata table but it is found via loose match', async () => {
       const localAuth = await userReport.identifyLocalAuthority('LS1 1AA');
       expect(localAuth).to.deep.equal(la2.cssrRecord.name);
     });
