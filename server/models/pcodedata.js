@@ -104,7 +104,6 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.cssr,
           as: 'cssrRecord',
-          attributes: ['id', 'name', 'nmdsIdLetter'],
         },
       ],
     });
@@ -122,7 +121,6 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.cssr,
           as: 'cssrRecord',
-          attributes: ['id', 'name', 'nmdsIdLetter'],
           required: true,
         },
       ],

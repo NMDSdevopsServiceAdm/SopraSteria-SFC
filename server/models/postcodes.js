@@ -126,13 +126,17 @@ module.exports = function (sequelize, DataTypes) {
     let foundPostcodes = await this.findAllByPostcode(postcode);
     let allPostcodeResultsFull = true;
 
-    // Now for each foundPostcode need to check for full record
-    // if not full then update record with getAddressAPI
-    foundPostcodes.forEach(function (foundPostcode) {
-      if (foundPostcode.country == null) {
-        allPostcodeResultsFull = false;
-      }
-    });
+    // TODO
+    //if more than one record then may need to be updated as is getAddressAPI records
+    if(foundPostcodes.length > 1) {
+      // Now for each foundPostcode need to check for full record
+      // if not full then update record with getAddressAPI
+      foundPostcodes.forEach(function (foundPostcode) {
+        if (foundPostcode.country == null) {
+          allPostcodeResultsFull = false;
+        }
+      });
+    }
 
     // If postcode exists and has a Country indicates it already has
     // spoken to getAddressAPI
@@ -149,7 +153,7 @@ module.exports = function (sequelize, DataTypes) {
 
     // Some records with this postcode are not full so we delete all with this postcode
     // if getAddressAPI returns results
-    // TODO should actually map getAddressAPI results to foundPostcodes and then save
+    // TODO should actually map getAddressAPI results to foundPostcodes and then save TODO!!!
     if (foundPostcodes.length) {
       await this.destroy({ where: { postcode: postcode } });
     }
