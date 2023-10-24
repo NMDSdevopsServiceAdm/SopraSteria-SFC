@@ -59,7 +59,7 @@ module.exports = function (sequelize, DataTypes) {
     District = CSSR.LocalAuthority
   */
   CSSR.getCSSRsFromEstablishmentId = async (establishmentId) => {
-    const establishment = await sequelize.models.establishment.findOne({
+    const establishment = await sequelize.models.establishment.findAll({
       attributes: ['postcode', 'id', 'cssrId'],
       where: { id: establishmentId },
     });
@@ -70,7 +70,7 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     // if we already have an attached cssrId
-    if (establishment.cssrId) {
+    if (establishment[0].cssrId) {
       return [
         await this.findOne({
           where: {
@@ -113,18 +113,14 @@ module.exports = function (sequelize, DataTypes) {
       const district = postcodesRecords[0].district;
 
       // TODO test and improve.
-      const cssr = await this.findOne({
+      return await this.findOne({
         where: {
-          LocalAuthority: { [Op.like]: `%${district}%` },
+          LocalAuthority: { [Op.iLike]: `%${district}%` },
         },
       });
-
-      if (cssr && cssr.id) {
-        return { id: cssr.id, name: cssr.name };
-      }
     }
 
-    return false;
+    return null;
   };
 
   return CSSR;
