@@ -56,7 +56,7 @@ module.exports = function (sequelize, DataTypes) {
     3. Get district from postcodes table if exists
     4. Query getAddressAPI and cache result
 
-    District = CSSR.LocalAuthority
+    District = CSSR.LocalAuthority (needs testing)
   */
   CSSR.getCSSRsFromEstablishmentId = async (establishmentId) => {
     const establishment = await sequelize.models.establishment.findAll({

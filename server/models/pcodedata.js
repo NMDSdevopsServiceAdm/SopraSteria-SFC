@@ -90,7 +90,7 @@ module.exports = function (sequelize, DataTypes) {
     while (!cssrRecords && inwardCode.length > 0) {
       inwardCode = inwardCode.slice(0, -1);
       console.log(`Attempting to match cssr record for postcode like ${outwardCode} ${inwardCode}%`);
-      //try loose matching
+      // try loose matching
       cssrRecords = await this.getLinkedCssrRecordsWithLikePostcode(`${outwardCode} ${inwardCode}`);
     }
     return cssrRecords;
@@ -105,6 +105,7 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.cssr,
           as: 'cssrRecord',
+          required: true,
         },
       ],
     });
