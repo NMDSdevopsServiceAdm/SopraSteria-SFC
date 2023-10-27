@@ -144,7 +144,6 @@ module.exports = function (sequelize, DataTypes) {
     // Some establishments should now have CssrID attached to their record
     const establishment = await sequelize.models.establishment.findbyIdWithMainService(establishmentId);
 
-    // TODO test!
     const reportingId = establishment.mainService.reportingID;
     const specificMainServiceReportingIds = [1, 2, 8];
     const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
