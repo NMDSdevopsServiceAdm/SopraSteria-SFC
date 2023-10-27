@@ -139,14 +139,13 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  // TODO
-  // Uses establishmentId to get cssr
-  // then cssrId to retrieve benchmarks
   Benchmarks.getBenchmarkData = async function (establishmentId) {
     // This is only to retrieve cssrId associated with establishmentId
     // Some establishments should now have CssrID attached to their record
-    const { establishment } = await sequelize.models.establishment.findbyId(establishmentId);
-    const reportingId = establishment.reportingID;
+    const establishment = await sequelize.models.establishment.findbyIdWithMainService(establishmentId);
+
+    // TODO test!
+    const reportingId = establishment.mainService.reportingID;
     const specificMainServiceReportingIds = [1, 2, 8];
     const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
 

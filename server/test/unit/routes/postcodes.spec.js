@@ -3,8 +3,6 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const postcodes = require('../../../routes/postcodes');
-// const models = require('../../../models');
-// const httpMocks = require('node-mocks-http');
 const getAddressAPI = require('../../../utils/getAddressAPI');
 
 describe('postcodes', () => {
