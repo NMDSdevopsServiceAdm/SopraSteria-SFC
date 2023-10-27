@@ -60,6 +60,7 @@ describe('WorkplaceInfoPanel', () => {
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const establishmentServiceSpy = spyOn(establishmentService, 'getEstablishment').and.callThrough();
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
@@ -71,7 +72,7 @@ describe('WorkplaceInfoPanel', () => {
       getByText,
       component,
       fixture,
-      establishmentService,
+      establishmentServiceSpy,
       routerSpy,
     };
   }
@@ -82,7 +83,7 @@ describe('WorkplaceInfoPanel', () => {
   });
 
   it('should navigate to the selected workplace', async () => {
-    const { component, establishmentService, fixture, getByText, routerSpy } = await setup();
+    const { component, establishmentServiceSpy, fixture, getByText, routerSpy } = await setup();
 
     component.newHomeDesignParentFlag = true;
     component.canViewEstablishment = true;
@@ -91,11 +92,10 @@ describe('WorkplaceInfoPanel', () => {
 
     const workplaceNameLink = getByText(component.workplace.name);
 
-    spyOn(establishmentService, 'getEstablishment').and.callThrough();
-
     fireEvent.click(workplaceNameLink);
     fixture.detectChanges();
 
+    expect(establishmentServiceSpy).toHaveBeenCalled();
     expect(workplaceNameLink.getAttribute('href')).toBeTruthy();
     expect(routerSpy).toHaveBeenCalled();
   });

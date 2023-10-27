@@ -147,7 +147,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         this.router.navigate(['/workplace', this.workplace.uid, 'type-of-employer']);
       } else if (this.newHomeDesignParentFlag) {
         this.establishmentService.setIsSelectedWorkplace(true);
-        this.router.navigate(['/workplace', this.workplace.uid, 'home', { dashboard: 'dashboard' }]);
+        this.router.navigate(['/workplace', this.workplace.uid, 'home'], { fragment: 'dashboard' });
       } else {
         this.router.navigate(['/workplace', this.workplace.uid]);
       }

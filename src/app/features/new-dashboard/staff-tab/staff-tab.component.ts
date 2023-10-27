@@ -16,9 +16,11 @@ export class NewStaffTabComponent implements OnInit, OnDestroy {
   @Input() workers: Worker[];
   @Input() workerCount: number;
   @Input() staffLastUpdated: string;
+  @Input() isSelectedWorkplace: boolean;
 
   public canAddWorker: boolean;
   public alertMessage: string;
+  public workplaceUid: string;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -30,7 +32,7 @@ export class NewStaffTabComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.workerService.setAddStaffRecordInProgress(false);
     this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
-    this.breadcrumbService.show(JourneyType.STAFF_RECORDS_TAB);
+    this.breadcrumbService.show(JourneyType.STAFF_RECORDS_TAB, this.workplace.name);
     this.alertMessage = history.state?.alertMessage;
     this.showAlert();
   }

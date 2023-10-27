@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, OnChanges, DoCheck } from '@angular/core';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   templateUrl: './standAloneAccount.component.html',
   styleUrls: ['./standAloneAccount.component.scss'],
 })
-export class StandAloneAccountComponent implements OnInit, OnChanges {
+export class StandAloneAccountComponent implements OnInit, OnChanges, DoCheck {
   @Input() dashboardView: boolean;
 
   private subscriptions: Subscription = new Subscription();
@@ -31,6 +31,7 @@ export class StandAloneAccountComponent implements OnInit, OnChanges {
     private tabsService: TabsService,
     private benchmarksService: BenchmarksService,
     private router: Router,
+    private cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
@@ -40,11 +41,11 @@ export class StandAloneAccountComponent implements OnInit, OnChanges {
     this.getPermissions();
     this.setTabs();
     this.primaryWorkplaceName = isParent ? name : null;
-    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
+    this.getIsSelectedWorkpace();
   }
 
   ngOnChanges(): void {
-    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
+    this.getIsSelectedWorkpace();
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
@@ -69,8 +70,21 @@ export class StandAloneAccountComponent implements OnInit, OnChanges {
     this.tabs = tabs;
   }
 
+  public getIsSelectedWorkpace(): void {
+    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
+  }
+
+  ngDoCheck(): void {
+    if (this.isSelectedWorkplace === false) {
+      this.cd.detectChanges();
+    }
+  }
+
   public goBackToParent(): void {
     this.isSelectedWorkplace = false;
+    this.getIsSelectedWorkpace();
+    this.cd.detectChanges();
+    //this.router.navigate(['/dashboard'], { fragment: 'home' });
     this.router.navigate(['/']);
   }
 }

@@ -66,6 +66,21 @@ const routes: Routes = [
     data: { title: 'View My Workplaces' },
   },
   {
+    path: 'home',
+    canActivate: [CheckPermissionsGuard],
+    component: NewDashboardComponent,
+    data: {
+      permissions: ['canViewEstablishment'],
+      title: 'View Workplace',
+      workerPagination: true,
+    },
+    resolve: {
+      users: AllUsersForEstablishmentResolver,
+      workers: WorkersResolver,
+      totalStaffRecords: TotalStaffRecordsResolver,
+    },
+  },
+  {
     path: ':establishmentuid',
     component: EditWorkplaceComponent,
     resolve: { establishment: WorkplaceResolver },
