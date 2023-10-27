@@ -59,36 +59,36 @@ module.exports = function (sequelize, DataTypes) {
     District = CSSR.LocalAuthority (needs testing)
   */
   CSSR.getCSSRsFromEstablishmentId = async (establishmentId) => {
-    const establishment = await sequelize.models.establishment.findAll({
+    const establishments = await sequelize.models.establishment.findAll({
       attributes: ['postcode', 'id', 'cssrId'],
       where: { id: establishmentId },
     });
 
-    if (!establishment) {
-      console.error(`No establishment found for establishmentId ${establishmentId}`);
+    if (!establishments) {
+      console.error(`No establishments found for establishmentId ${establishmentId}`);
       return false;
     }
 
     // if we already have an attached cssrId
-    if (establishment[0].cssrId) {
+    if (establishments[0].cssrId) {
       return [
         await this.findOne({
           where: {
-            CssrId: establishment.cssrId,
+            CssrId: establishments[0].cssrId,
           },
         }),
       ]; //expects array return
     }
 
     // Try and match or loose match
-    const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(establishment.postcode);
+    const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(establishments[0].postcode);
 
     if (cssrResults[0] && cssrResults[0].cssrRecord) {
       return cssrResults[0].cssrRecord;
     }
 
     // Now try and retrieve CSSR based on district
-    return await CSSR.getIdFromPostcodeDistrict(establishment.postcode);
+    return await CSSR.getIdFromPostcodeDistrict(establishments[0].postcode);
   };
 
   CSSR.getCSSRsFromPostcode = async (postcode) => {

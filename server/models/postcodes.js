@@ -128,7 +128,7 @@ module.exports = function (sequelize, DataTypes) {
 
     // TODO
     //if more than one record then may need to be updated as is getAddressAPI records
-    if(foundPostcodes.length > 1) {
+    if (foundPostcodes.length > 1) {
       // Now for each foundPostcode need to check for full record
       // if not full then update record with getAddressAPI
       foundPostcodes.forEach(function (foundPostcode) {
@@ -144,47 +144,53 @@ module.exports = function (sequelize, DataTypes) {
       return foundPostcodes;
     }
 
-    const getAddressAPIResults = await getAddressAPI.getPostcodeData(postcode);
+    try {
+      const getAddressAPIResults = await getAddressAPI.getPostcodeData(postcode);
 
-    if (!getAddressAPIResults || getAddressAPIResults.addresses.length === 0) {
-      console.error(`Could not get a response from getAddress for postcode ${postcode}`);
-      return foundPostcodes;
-    }
+      //fallback fails if no response or key
+      if (!getAddressAPIResults || getAddressAPIResults.addresses.length === 0) {
+        console.error(`Could not get a response from getAddress for postcode ${postcode}`);
+        return foundPostcodes;
+      }
 
-    // Some records with this postcode are not full so we delete all with this postcode
-    // if getAddressAPI returns results
-    // TODO should actually map getAddressAPI results to foundPostcodes and then save TODO!!!
-    if (foundPostcodes.length) {
-      await this.destroy({ where: { postcode: postcode } });
-    }
+      // Some records with this postcode are not full so we delete all with this postcode
+      // if getAddressAPI returns results
+      // TODO should actually map getAddressAPI results to foundPostcodes and then save TODO!!!
+      if (foundPostcodes.length) {
+        await this.destroy({ where: { postcode: postcode } });
+      }
 
-    console.log(`New or updated postcodes data for: ${getAddressAPIResults.postcode}`);
+      console.log(`New or updated postcodes data for: ${getAddressAPIResults.postcode}`);
 
-    let results = [];
-    getAddressAPIResults.addresses.forEach(function (address) {
-      console.log(`Adding ${address.building_name}`);
-      results.push({
-        postcode: getAddressAPIResults.postcode,
-        latitude: getAddressAPIResults.latitude,
-        longitude: getAddressAPIResults.longitude,
-        thoroughfare: address.thoroughfare,
-        buildingName: address.building_name,
-        subBuildingName: address.sub_building_name,
-        subBuildingNumber: address.sub_building_number,
-        buildingNumber: address.building_number,
-        line1: address.line_1,
-        line2: address.line_2,
-        line3: address.line_3,
-        line4: address.line_4,
-        locality: address.locality,
-        townOrCity: address.town_or_city,
-        county: address.county,
-        district: address.district,
-        country: address.country,
+      let results = [];
+      getAddressAPIResults.addresses.forEach(function (address) {
+        console.log(`Adding ${address.building_name}`);
+        results.push({
+          postcode: getAddressAPIResults.postcode,
+          latitude: getAddressAPIResults.latitude,
+          longitude: getAddressAPIResults.longitude,
+          thoroughfare: address.thoroughfare,
+          buildingName: address.building_name,
+          subBuildingName: address.sub_building_name,
+          subBuildingNumber: address.sub_building_number,
+          buildingNumber: address.building_number,
+          line1: address.line_1,
+          line2: address.line_2,
+          line3: address.line_3,
+          line4: address.line_4,
+          locality: address.locality,
+          townOrCity: address.town_or_city,
+          county: address.county,
+          district: address.district,
+          country: address.country,
+        });
       });
-    });
 
-    return this.bulkCreate(results); // TODO await?
+      return this.bulkCreate(results);
+    } catch (e) {
+      console.error('DEFINE');
+      return null;
+    }
   };
 
   return postcodes;

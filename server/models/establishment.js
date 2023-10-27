@@ -958,6 +958,22 @@ module.exports = function (sequelize, DataTypes) {
       where: {
         id,
       },
+    });
+  };
+
+  Establishment.findAllbyId = async function (id) {
+    return await this.findAll({
+      where: {
+        id,
+      },
+    });
+  };
+
+  Establishment.findbyIdWithMainService = async function (id) {
+    return await this.findOne({
+      where: {
+        id,
+      },
       include: {
         model: sequelize.models.services,
         as: 'mainService',
