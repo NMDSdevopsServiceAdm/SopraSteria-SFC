@@ -16,7 +16,6 @@ export class NewStaffTabComponent implements OnInit, OnDestroy {
   @Input() workers: Worker[];
   @Input() workerCount: number;
   @Input() staffLastUpdated: string;
-  @Input() isSelectedWorkplace: boolean;
 
   public canAddWorker: boolean;
   public alertMessage: string;

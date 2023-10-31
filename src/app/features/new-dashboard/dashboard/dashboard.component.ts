@@ -1,13 +1,4 @@
-import {
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnDestroy,
-  OnInit,
-  OnChanges,
-  HostListener,
-  DoCheck,
-} from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, OnChanges, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -25,7 +16,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-new-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges, DoCheck {
+export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges {
   private subscriptions: Subscription = new Subscription();
   public selectedTab: string;
   public primaryEstablishment: Establishment;
@@ -60,15 +51,15 @@ export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges, DoCh
 
   ngOnInit(): void {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
-    //this.workplace = this.establishmentService.primaryWorkplace;
-    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace() ? true : false;
+
+    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     this.subWorkplace = this.establishmentService?.establishment;
     this.setWorkplace();
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
     this.tilesData = this.benchmarksService.benchmarksData;
 
-    this.isParent = this.workplace?.isParent;
+    this.isParent = !this.isSelectedWorkplace && this.primaryEstablishment?.isParent;
 
     this.authService.isOnAdminScreen = false;
     this.subscriptions.add(
@@ -89,36 +80,21 @@ export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges, DoCh
     if (target === 'backToParentLink') {
       this.isSelectedWorkplace = false;
 
-      //this.setWorkplace();
+      this.setWorkplace();
       this.workplace = this.primaryEstablishment;
-      this.cd.detectChanges();
+      this.isParent = !this.isSelectedWorkplace && this.primaryEstablishment?.isParent;
     }
   }
 
   ngOnChanges(): void {
-    this.isSelectedWorkplace = false;
-
+    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
+    this.isParent = !this.isSelectedWorkplace && this.primaryEstablishment?.isParent;
     this.setWorkplace();
-
-    //this.workplace = this.primaryEstablishment;
-    this.cd.detectChanges();
-  }
-
-  ngDoCheck(): void {
-    if (this.workplace === this.primaryEstablishment) {
-      //this.isSelectedWorkplace = false;
-      //this.workplace = this.primaryEstablishment;
-      this.cd.detectChanges();
-    }
   }
 
   private setWorkplace(): void {
     this.workplace = this.isSelectedWorkplace ? this.subWorkplace : this.primaryEstablishment;
   }
-
-  // private updateWorkplace(): void {
-
-  // }
 
   private getPermissions(): void {
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnInit, OnChanges, DoCheck } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, OnChanges } from '@angular/core';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -11,7 +11,7 @@ import { Router } from '@angular/router';
   templateUrl: './standAloneAccount.component.html',
   styleUrls: ['./standAloneAccount.component.scss'],
 })
-export class StandAloneAccountComponent implements OnInit, OnChanges, DoCheck {
+export class StandAloneAccountComponent implements OnInit, OnChanges {
   @Input() dashboardView: boolean;
 
   private subscriptions: Subscription = new Subscription();
@@ -41,11 +41,11 @@ export class StandAloneAccountComponent implements OnInit, OnChanges, DoCheck {
     this.getPermissions();
     this.setTabs();
     this.primaryWorkplaceName = isParent ? name : null;
-    this.getIsSelectedWorkpace();
+    this.getIsSelectedWorkplace();
   }
 
   ngOnChanges(): void {
-    this.getIsSelectedWorkpace();
+    this.getIsSelectedWorkplace();
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
@@ -70,21 +70,13 @@ export class StandAloneAccountComponent implements OnInit, OnChanges, DoCheck {
     this.tabs = tabs;
   }
 
-  public getIsSelectedWorkpace(): void {
+  public getIsSelectedWorkplace(): void {
     this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
-  }
-
-  ngDoCheck(): void {
-    if (this.isSelectedWorkplace === false) {
-      this.cd.detectChanges();
-    }
   }
 
   public goBackToParent(): void {
     this.isSelectedWorkplace = false;
-    this.getIsSelectedWorkpace();
-    this.cd.detectChanges();
-    //this.router.navigate(['/dashboard'], { fragment: 'home' });
+    this.establishmentService.setIsSelectedWorkplace(this.isSelectedWorkplace);
     this.router.navigate(['/']);
   }
 }
