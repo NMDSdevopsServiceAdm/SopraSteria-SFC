@@ -8,6 +8,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -31,22 +32,15 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
     private pdfService: PdfService,
     private elRef: ElementRef,
     private benchmarksService: BenchmarksServiceBase,
+    private featureFlagService: FeatureFlagsService,
     protected router: Router,
   ) {}
 
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    this.tilesData = this.benchmarksService.benchmarksData;
-
-    this.subscriptions.add(
-      this.benchmarksService
-        .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
-        .subscribe((data) => {
-          if (data) {
-            this.tilesData = data;
-          }
-        }),
-    );
+    this.tilesData = this.featureFlagService.newBenchmarksDataArea
+      ? this.benchmarksService.benchmarksData.oldBenchmarks
+      : this.benchmarksService.benchmarksData;
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
   }
 

@@ -90,33 +90,30 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
 
     this.calculateJourneyType();
     this.breadcrumbService.show(this.journey[this.journeyType]);
-    this.subscriptions.add(
-      this.benchmarksService
-        .getTileData(this.establishmentUid, ['sickness', 'turnover', 'pay', 'qualifications'])
-        .subscribe((data) => {
-          if (data) {
-            this.tilesData = data;
-            if (data.meta) {
-              this.metaDataAvailable = true;
-              this.lastUpdated = data.meta.lastUpdated;
-            }
-          }
-        }),
-    );
+    // this.subscriptions.add(
+    //   this.benchmarksService
+    //     .getTileData(this.establishmentUid, ['sickness', 'turnover', 'pay', 'qualifications'])
+    //     .subscribe((data) => {
+    //       if (data) {
+    //         this.tilesData = data;
+    //         if (data.meta) {
+    //           this.metaDataAvailable = true;
+    //           this.lastUpdated = data.meta.lastUpdated;
+    //         }
+    //       }
+    //     }),
+    // );
 
-    this.subscriptions.add(
-      this.benchmarksService.getAllRankingData(this.establishmentUid).subscribe((data: AllRankingsResponse) => {
-        this.rankings = data;
-        this.payContent = { ...this.rankings.pay, smallText: true, noData: MetricsContent.Pay.noData };
-        this.turnoverContent = { ...this.rankings.turnover, smallText: true, noData: MetricsContent.Turnover.noData };
-        this.sicknessContent = { ...this.rankings.sickness, smallText: true, noData: MetricsContent.Sickness.noData };
-        this.qualificationsContent = {
-          ...this.rankings.qualifications,
-          smallText: true,
-          noData: MetricsContent.Qualifications.noData,
-        };
-      }),
-    );
+    this.tilesData = this.benchmarksService.benchmarksData;
+    this.rankings = this.benchmarksService.rankingsData;
+    this.payContent = { ...this.rankings.pay, smallText: true, noData: MetricsContent.Pay.noData };
+    this.turnoverContent = { ...this.rankings.turnover, smallText: true, noData: MetricsContent.Turnover.noData };
+    this.sicknessContent = { ...this.rankings.sickness, smallText: true, noData: MetricsContent.Sickness.noData };
+    this.qualificationsContent = {
+      ...this.rankings.qualifications,
+      smallText: true,
+      noData: MetricsContent.Qualifications.noData,
+    };
   }
 
   ngOnDestroy(): void {

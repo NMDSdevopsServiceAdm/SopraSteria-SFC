@@ -62,15 +62,15 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
       this.canViewListOfWorkers && this.setWorkersAndTrainingValues();
     }
 
-    this.subscriptions.add(
-      this.benchmarksService
-        .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
-        .subscribe((data) => {
-          if (data) {
-            this.tilesData = data;
-          }
-        }),
-    );
+    // this.subscriptions.add(
+    //   this.benchmarksService
+    //     .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
+    //     .subscribe((data) => {
+    //       if (data) {
+    //         this.tilesData = data;
+    //       }
+    //     }),
+    // );
   }
 
   private getPermissions(): void {
