@@ -96,6 +96,7 @@ const adminReportGet = async (req, res) => {
       },
     );
 
+    // TODO very ugly way to parse
     if (runReport && Array.isArray(runReport)) {
       runReport.forEach((thisPrimaryLaEstablishment) => {
         csvString =
