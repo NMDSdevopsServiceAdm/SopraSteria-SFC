@@ -71,13 +71,11 @@ module.exports = function (sequelize, DataTypes) {
 
     // if we already have an attached cssrId
     if (establishments[0].cssrId) {
-      return [
-        await this.findOne({
-          where: {
-            CssrId: establishments[0].cssrId,
-          },
-        }),
-      ]; //expects array return
+      return await this.findOne({
+        where: {
+          CssrId: establishments[0].cssrId,
+        },
+      });
     }
 
     // Try and match or loose match
