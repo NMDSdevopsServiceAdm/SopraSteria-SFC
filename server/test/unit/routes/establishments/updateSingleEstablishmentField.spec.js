@@ -49,10 +49,10 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
       expect(res.statusCode).to.deep.equal(200);
     });
 
-    it('should return 200 when the provided field has been find', async () => {
+    it('should return 200 when the provided field has been found', async () => {
       const body = {
-        property: 'exampleFieldName',
-        value: 'Yes',
+        property: 'NameValue',
+        value: '',
       };
 
       await setup(body);
