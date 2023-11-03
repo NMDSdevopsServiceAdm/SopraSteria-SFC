@@ -82,17 +82,17 @@ export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges {
   @HostListener('document:click', ['$event.target.id']) onClick(target) {
     if (target === 'backToParentLink') {
       this.isSelectedWorkplace = false;
-
-      this.setWorkplace();
-      this.workplace = this.primaryEstablishment;
-      this.isParent = !this.isSelectedWorkplace && this.primaryEstablishment?.isParent;
+      this.workplace = this.route.snapshot.data.establishment;
+      //this.setWorkplace();
+      //this.workplace = this.primaryEstablishment;
+      //this.isParent = !this.isSelectedWorkplace && this.primaryEstablishment?.isParent;
     }
   }
 
   ngOnChanges(): void {
     this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
     this.isParent = !this.isSelectedWorkplace && this.primaryEstablishment?.isParent;
-    this.setWorkplace();
+    this.workplace = this.route.snapshot.data.establishment;
   }
 
   private setWorkplace(): void {
