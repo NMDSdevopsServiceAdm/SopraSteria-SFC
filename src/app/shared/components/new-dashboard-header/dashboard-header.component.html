@@ -7,13 +7,20 @@
           data-testid="column-one"
         >
           <ng-container *ngIf="tab === 'home'; else otherTab">
-            <ng-container *ngIf="isParent">
+            <ng-container *ngIf="isParent && !isSelectedWorkplace">
               <span class="govuk-caption-xl" data-testid="parentLabel">Parent</span>
             </ng-container>
 
-            <span *ngIf="workplace?.parentName" class="govuk-caption-xl" data-testid="parentNameLabel">{{
-              workplace?.parentName
-            }}</span>
+            <span
+              *ngIf="workplace?.parentName && !isSelectedWorkplace"
+              class="govuk-caption-xl"
+              data-testid="parentNameLabel"
+              >{{ workplace?.parentName }}</span
+            >
+
+            <span *ngIf="isSelectedWorkplace" class="govuk-caption-xl" data-testid="selectedWorkplaceLabel">
+              Selected workplace
+            </span>
 
             <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
               {{ workplace?.name }}

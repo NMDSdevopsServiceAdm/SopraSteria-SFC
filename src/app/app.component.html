@@ -10,7 +10,12 @@
       else otherView
     "
   >
-    <app-stand-alone-account [dashboardView]="dashboardView"></app-stand-alone-account>
+    <ng-container *ngIf="standAloneAccount || subsAccount; else parent">
+      <app-stand-alone-account [dashboardView]="dashboardView"></app-stand-alone-account>
+    </ng-container>
+    <ng-template #parent>
+      <app-parent-account [dashboardView]="dashboardView"></app-parent-account>
+    </ng-template>
   </ng-container>
   <ng-template #otherView>
     <div

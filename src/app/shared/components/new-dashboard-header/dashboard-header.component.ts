@@ -24,8 +24,8 @@ export class NewDashboardHeaderComponent implements OnInit {
   @Input() tAndQCount = 0;
   @Input() canEditWorker = false;
   @Input() hasWorkers = false;
+  @Input() workplace: Establishment;
 
-  public workplace: Establishment;
   public canDeleteEstablishment: boolean;
   public workplaceUid: string;
   public subsidiaryCount: number;
@@ -38,6 +38,7 @@ export class NewDashboardHeaderComponent implements OnInit {
   };
   public header: string;
   public isParent: boolean;
+  public isSelectedWorkplace: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -50,15 +51,16 @@ export class NewDashboardHeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
     this.getHeader();
     this.getPermissions();
-    this.isParent = this.establishmentService.primaryWorkplace?.isParent;
+    this.isParent = this.workplace?.isParent;
 
     if (this.workplace) {
       this.setSubsidiaryCount();
     }
+
+    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
   }
 
   public onDeleteWorkplace(event: Event): void {

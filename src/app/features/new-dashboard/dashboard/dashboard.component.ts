@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-new-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class NewDashboardComponent implements OnInit, OnDestroy {
+export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges {
   private subscriptions: Subscription = new Subscription();
   public selectedTab: string;
   public workplace: Establishment;
@@ -46,8 +46,8 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.workplace = this.route.snapshot.data.establishment;
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
-    this.workplace = this.establishmentService.primaryWorkplace;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
     this.tilesData = this.benchmarksService.benchmarksData;
 
@@ -66,6 +66,10 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
 
       this.canViewListOfWorkers && this.setWorkersAndTrainingValues();
     }
+  }
+
+  ngOnChanges(): void {
+    this.workplace = this.route.snapshot.data.establishment;
   }
 
   private getPermissions(): void {

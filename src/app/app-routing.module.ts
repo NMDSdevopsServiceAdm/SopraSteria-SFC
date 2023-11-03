@@ -119,6 +119,18 @@ const routes: Routes = [
         data: { title: 'Migrated User Terms And Conditions' },
       },
       {
+        path: 'selected-workplace',
+        loadChildren: () =>
+          import('@features/selected-workplace/selected-workplace.module').then((m) => m.SelectedWorkplaceModule),
+        data: { title: 'Workplace' },
+        resolve: {
+          benchmarks: BenchmarksResolver,
+          rankings: RankingsResolver,
+          usefulLinksPay: UsefulLinkPayResolver,
+          usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+        },
+      },
+      {
         path: 'workplace',
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },

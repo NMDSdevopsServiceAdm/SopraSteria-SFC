@@ -1,4 +1,4 @@
-<app-new-dashboard-header tab="home"></app-new-dashboard-header>
+<app-new-dashboard-header [workplace]="workplace" tab="home"></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
   <ng-container *ngIf="newHomeDesignParentFlag && isParentApprovedBannerViewed === false">
     <app-alert
