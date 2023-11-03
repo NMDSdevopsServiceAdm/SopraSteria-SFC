@@ -55,7 +55,8 @@ export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges {
     this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     this.subWorkplace = this.establishmentService?.establishment;
-    this.setWorkplace();
+    //this.setWorkplace();
+    this.workplace = this.route.snapshot.data.establishment;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
     this.tilesData = this.benchmarksService.benchmarksData;
 
@@ -74,6 +75,8 @@ export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges {
 
       this.canViewListOfWorkers && this.setWorkersAndTrainingValues();
     }
+
+    console.log(this.workplace);
   }
 
   @HostListener('document:click', ['$event.target.id']) onClick(target) {
