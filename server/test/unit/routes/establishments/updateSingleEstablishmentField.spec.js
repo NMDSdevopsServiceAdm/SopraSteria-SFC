@@ -20,7 +20,7 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
   describe('updateEstablishment', () => {
     let req;
     let res;
-    const establishmentId = 'a131313dasd123325453bac';
+    const establishmentId = '999999999';
 
     const setup = async (body) => {
       const request = {
@@ -36,7 +36,7 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
 
     it('should return 200 when the provided field has been updated', async () => {
       const body = {
-        property: 'exampleFieldName',
+        property: 'NameValue',
         value: 'Yes',
       };
 
@@ -46,7 +46,7 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
 
       await updateEstablishment(req, res);
 
-      expect(res.statusCode).to.deep.equal(500);
+      expect(res.statusCode).to.deep.equal(200);
     });
 
     it('should return 200 when the provided field has been find', async () => {

@@ -8,7 +8,7 @@ const updateEstablishment = async (req, res) => {
   if (req.body.property) {
     try {
       const where = {
-        id: req.establishmentId,
+        id: req.params.establishmentId,
       };
 
       const { property, value } = req.body;
