@@ -64,7 +64,6 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  // TODO Called too often for initial release i.e 'update'
   pcodedata.getLinkedCssrRecordsFromPostcode = async function (postcode) {
     const cssrRecords = await this.getLinkedCssrRecordsCompleteMatch(postcode);
 

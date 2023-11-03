@@ -126,7 +126,6 @@ module.exports = function (sequelize, DataTypes) {
     let foundPostcodes = await this.findAllByPostcode(postcode);
     let allPostcodeResultsFull = true;
 
-    // TODO
     //if more than one record then may need to be updated as is getAddressAPI records
     if (foundPostcodes.length > 1) {
       // Now for each foundPostcode need to check for full record
@@ -155,7 +154,6 @@ module.exports = function (sequelize, DataTypes) {
 
       // Some records with this postcode are not full so we delete all with this postcode
       // if getAddressAPI returns results
-      // TODO should actually map getAddressAPI results to foundPostcodes and then save TODO!!!
       if (foundPostcodes.length) {
         await this.destroy({ where: { postcode: postcode } });
       }

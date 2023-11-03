@@ -19,8 +19,8 @@ process.on('unhandledRejection', onUncaught);
 describe('/server/routes/reports/localAuthorityReport/admin', () => {
   describe('reportGet()', () => {
     let getValue, query, saveResponse, saveResponseOutput, queryOutput;
-    const startDate = '2021-08-11T00:00:00.000Z';
-    const endDate = '2025-09-12T00:00:00.000Z';
+    const startDate = '2021-08-11T00:00:00.000Z'; //TODO used to be zz would never have parsed correctly!
+    const endDate = '2025-09-12T00:00:00.000Z'; //TODO used to be zz would never have parsed correctly!
 
     beforeEach(() => {
       getValue = sinon.stub(models.AdminSettings, 'getValue').callsFake(async (args) => {

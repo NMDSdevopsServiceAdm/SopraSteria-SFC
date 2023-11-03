@@ -812,7 +812,6 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  // TODO
   Establishment.addHook('afterUpdate', (record) => {
     const postcode = record.dataValues.PostCode;
     if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
