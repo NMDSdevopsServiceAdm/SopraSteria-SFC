@@ -127,7 +127,7 @@ module.exports = function (sequelize, DataTypes) {
     let allPostcodeResultsFull = true;
 
     //if more than one record then may need to be updated as is getAddressAPI records
-    if (foundPostcodes.length > 1) {
+    if (foundPostcodes && foundPostcodes.length > 1) {
       // Now for each foundPostcode need to check for full record
       // if not full then update record with getAddressAPI
       foundPostcodes.forEach(function (foundPostcode) {

@@ -4,14 +4,11 @@ const pCodeCheck = require('../utils/postcodeSanitizer');
 const models = require('../models');
 
 const transformAddresses = (results) => {
-  return results
-    .filter((result) => result.cssrRecord != null)
-    .map((result) => createAddressObject(result.dataValues));
+  return results.filter((result) => result.cssrRecord != null).map((result) => createAddressObject(result.dataValues));
 };
 
 const transformGetAddressAPIResults = (results) => {
-  return results
-    .map((result) => createAddressObjectFromGetAddressesAPIResults(result, results.postcode));
+  return results.map((result) => createAddressObjectFromGetAddressesAPIResults(result, results.postcode));
 };
 
 const createAddressObject = (data) => {
@@ -76,7 +73,7 @@ const getAddressesWithPostcode = async (req, res) => {
 
     // if linked results by lacode then update the
     // establishments CssrIds
-    if (results && results[0].cssrRecord) {
+    if (results && results[0] && results[0].cssrRecord) {
       // update establishment cssrId
       await models.establishment.updateCssrIdsByPostcode(cleanPostcode, results[0].cssrRecord.id);
     }
@@ -90,7 +87,7 @@ const getAddressesWithPostcode = async (req, res) => {
     if (postcodeData.length === 0) {
       const postcodesRecords = await models.postcodes.firstOrCreate(cleanPostcode);
 
-      if (postcodesRecords == null) {
+      if (postcodesRecords == null || postcodesRecords.length == 0) {
         res.status(404);
         return res.send({
           success: 0,

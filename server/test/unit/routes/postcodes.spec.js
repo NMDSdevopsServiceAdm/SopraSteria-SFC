@@ -1,9 +1,9 @@
-// TODO restore tests getAddressFixes
-
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const postcodes = require('../../../routes/postcodes');
 const getAddressAPI = require('../../../utils/getAddressAPI');
+const models = require('../../../models');
+const httpMocks = require('node-mocks-http');
 
 describe('postcodes', () => {
   beforeEach(() => {
@@ -81,74 +81,80 @@ describe('postcodes', () => {
     });
   });
 
-  // describe('getAddressesWithPostcode', async () => {
-  //   it('returns a 200 when addresses are found', async () => {
-  //     const request = {
-  //       method: 'GET',
-  //       url: '/api/postcodes',
-  //       params: {
-  //         postcode: 'SW1 1AA',
-  //       },
-  //     };
+  describe('getAddressesWithPostcode', async () => {
+    it('returns a 200 when addresses are found', async () => {
+      const request = {
+        method: 'GET',
+        url: '/api/postcodes',
+        params: {
+          postcode: 'SW1 1AA',
+        },
+      };
 
-  //     const foundAddresses = [
-  //       {
-  //         dataValues: {
-  //           uprn: '100010824271',
-  //           sub_building_name: '',
-  //           building_name: '',
-  //           building_number: '91',
-  //           street_description: 'DRURY LANE',
-  //           post_town: 'LONDON',
-  //           postcode: 'SW1 1AA',
-  //           local_custodian_code: '1000',
-  //           county: 'GREATER LONDON',
-  //           rm_organisation_name: '',
-  //         },
-  //       },
-  //       {
-  //         dataValues: {
-  //           uprn: '100010824271',
-  //           sub_building_name: '',
-  //           building_name: '',
-  //           building_number: '92',
-  //           street_description: 'DRURY LANE',
-  //           post_town: 'LONDON',
-  //           postcode: 'SW1 1AA',
-  //           local_custodian_code: '1000',
-  //           county: 'GREATER LONDON',
-  //           rm_organisation_name: '',
-  //         },
-  //       },
-  //     ];
+      const foundAddresses = [
+        {
+          dataValues: {
+            uprn: '100010824271',
+            sub_building_name: '',
+            building_name: '',
+            building_number: '91',
+            street_description: 'DRURY LANE',
+            post_town: 'LONDON',
+            postcode: 'SW1 1AA',
+            local_custodian_code: '1000',
+            county: 'GREATER LONDON',
+            rm_organisation_name: '',
+          },
+          cssrRecord: {
+            local_custodian_code: '1000',
+          },
+        },
+        {
+          dataValues: {
+            uprn: '100010824271',
+            sub_building_name: '',
+            building_name: '',
+            building_number: '92',
+            street_description: 'DRURY LANE',
+            post_town: 'LONDON',
+            postcode: 'SW1 1AA',
+            local_custodian_code: '1000',
+            county: 'GREATER LONDON',
+            rm_organisation_name: '',
+          },
+          cssrRecord: {
+            local_custodian_code: '1000',
+          },
+        },
+      ];
 
-  //     sinon.stub(models.pcodedata, 'findAll').returns(foundAddresses);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').returns(foundAddresses);
 
-  //     const req = httpMocks.createRequest(request);
-  //     const res = httpMocks.createResponse();
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
 
-  //     await postcodes.getAddressesWithPostcode(req, res);
-  //     expect(res.statusCode).to.deep.equal(200);
-  //   });
+      await postcodes.getAddressesWithPostcode(req, res);
+      expect(res.statusCode).to.deep.equal(200);
+    });
 
-  // it('returns a 404 when no addresses are found', async () => {
-  //   const request = {
-  //     method: 'GET',
-  //     url: '/api/postcodes',
-  //     params: {
-  //       postcode: 'SW1 1AA',
-  //     },
-  //   };
+    it('returns a 404 when no addresses are found', async () => {
+      const request = {
+        method: 'GET',
+        url: '/api/postcodes',
+        params: {
+          postcode: 'SW1 1AA',
+        },
+      };
 
-  //   const foundAddresses = [];
+      const foundAddresses = [];
 
-  //   sinon.stub(models.pcodedata, 'findAll').returns(foundAddresses);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').returns(foundAddresses);
 
-  //   const req = httpMocks.createRequest(request);
-  //   const res = httpMocks.createResponse();
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
 
-  //   await postcodes.getAddressesWithPostcode(req, res);
-  //   expect(res.statusCode).to.deep.equal(404);
-  // });
-  // });
+      await postcodes.getAddressesWithPostcode(req, res);
+      expect(res.statusCode).to.deep.equal(404);
+    });
+  });
 });
