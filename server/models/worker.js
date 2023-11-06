@@ -1205,9 +1205,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  // TODO JMH:
   Worker.averageHourlyPay = async function (params) {
-    // console.log(establishmentId);
     const establishmentId = params.establishmentId;
     const mainJobFk = params.mainJob || 10;
     const annualOrHourly = params.annualOrHourly || 'Hourly';
@@ -1228,48 +1226,19 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.averageHourlyPayByEstablishmentId = async function (establishmentId) {
-    return this.findOne({
-      attributes: [[sequelize.fn('avg', sequelize.col('AnnualHourlyPayRate')), 'amount']],
-      where: {
-        MainJobFkValue: 10,
-        archived: false,
-        AnnualHourlyPayValue: 'Hourly',
-        AnnualHourlyPayRate: {
-          [Op.not]: null,
-        },
-        establishmentFk: establishmentId,
-      },
-      raw: true,
-    });
-  };
-
   Worker.yearOrMoreInRoleCount = async function (establishmentId) {
     const yearAgo = dayjs(new Date()).subtract(1, 'year').toDate();
     return this.count({
       where: {
         establishmentFk: establishmentId,
+        archived: false,
+        ContractValue: ['Permanent', 'Temporary'],
         MainJobStartDateValue: {
           [Op.lt]: yearAgo,
         },
       },
     });
   };
-
-  // TODO JMH:
-  // Worker.yearOrMoreInRoleCount = async function (establishmentId) {
-  //   const yearAgo = dayjs(new Date()).subtract(1, 'year').toDate();
-  //   return this.count({
-  //     where: {
-  //       establishmentFk: establishmentId,
-  //       archived: false,
-  //       ContractValue: ['Permanent', 'Temporary'],
-  //       MainJobStartDateValue: {
-  //         [Op.lt]: yearAgo,
-  //       },
-  //     },
-  //   });
-  // };
 
   Worker.countForPermAndTempNoStartDate = async function (establishmentId) {
     return this.count({

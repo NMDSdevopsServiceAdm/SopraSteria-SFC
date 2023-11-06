@@ -139,60 +139,19 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  // TODO JMH:
-  // Benchmarks.getBenchmarkData = async function (establishmentId, cssrId) {
-  //   console.log('{{{{{{{{{{{{{{{{{{{{{{{{{{');
-  // console.log({establishmentId},{cssrId});
-  //   const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
-
-  //   const reportingId = mainService.reportingID;
-  //   const specificMainServiceReportingIds = [1, 2, 8];
-  //   const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
-
-  //   if (!cssrId) return {};
-  //   return await this.findOne({
-  //     where: {
-  //       CssrID: cssrId,
-  //     },
-  //     include: [
-  //       {
-  //         attributes: ['id', 'reportingID'],
-  //         model: sequelize.models.services,
-  //         as: 'BenchmarkToService',
-  //         on: {
-  //           col1: sequelize.where(sequelize.col('benchmarks.MainServiceFK'), '=', mainServiceReportingId),
-  //         },
-  //         include: [
-  //           {
-  //             attributes: ['id'],
-  //             model: sequelize.models.establishment,
-  //             where: {
-  //               id: establishmentId,
-  //             },
-  //             as: 'establishmentsMainService',
-  //             required: true,
-  //           },
-  //         ],
-  //         required: true,
-  //       },
-  //     ],
-  //     raw: true,
-  //     logging:true
-  //   });
-  // };
-
-  Benchmarks.getBenchmarkData = async function (establishmentId) {
-    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
+  Benchmarks.getBenchmarkData = async function (establishmentId, cssrId) {
+    console.log('{{{{{{{{{{{{{{{{{{{{{{{{{{');
+    console.log({ establishmentId }, { cssrId });
     const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
 
     const reportingId = mainService.reportingID;
     const specificMainServiceReportingIds = [1, 2, 8];
     const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
 
-    if (!cssr) return {};
+    if (!cssrId) return {};
     return await this.findOne({
       where: {
-        CssrID: cssr.id,
+        CssrID: cssrId,
       },
       include: [
         {
@@ -217,6 +176,7 @@ module.exports = function (sequelize, DataTypes) {
         },
       ],
       raw: true,
+      logging: true,
     });
   };
 
