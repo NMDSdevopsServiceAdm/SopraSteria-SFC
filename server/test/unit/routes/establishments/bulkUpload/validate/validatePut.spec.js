@@ -5,7 +5,7 @@ const {
   generateJSONFromCSV,
 } = require('../../../../../../routes/establishments/bulkUpload/validate/validatePut');
 
-describe.skip('validatePut', () => {
+describe('validatePut', () => {
   describe('getMetadata', () => {
     const file = { filename: 'file1', username: 'testuser' };
 
