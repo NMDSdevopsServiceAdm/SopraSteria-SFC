@@ -139,8 +139,10 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Benchmarks.getBenchmarkData = async function (establishmentId, cssrId) {
+  Benchmarks.getBenchmarkData = async function (establishmentId) {
     console.log('{{{{{{{{{{{{{{{{{{{{{{{{{{');
+    const cssr = await sequelize.models.cssr.getCSSR(establishmentId);
+    const cssrId = cssr.id;
     console.log({ establishmentId }, { cssrId });
     const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
 
