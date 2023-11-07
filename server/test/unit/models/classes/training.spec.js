@@ -49,12 +49,13 @@ const workerTrainingRecords = {
 };
 
 describe('/server/models/class/training.js', () => {
-  afterEach(function () {
+  afterEach(() => {
     sandbox.restore();
   });
 
   beforeEach(() => {
     sandbox.stub(Training, 'fetch').returns(workerTrainingRecords);
+    sandbox.stub(Training, 'getAllMissingMandatoryTrainingCounts').returns(null);
   });
 
   describe('getExpiringAndExpiredTrainingCounts', () => {
