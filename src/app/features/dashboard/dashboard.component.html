@@ -39,7 +39,7 @@
       </app-tab>
 
       <app-tab *ngIf="workplace" [title]="'Benchmarks'">
-        <ng-container *ngIf="newDataAreaFlag ; else benchmarksTab">
+        <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
           <div class="govuk-grid-row">
             <div class="govuk-grid-column-one-half">
               <h2 class="govuk-heading-m govuk-!-margin-bottom-5 govuk-!-font-size-27">Benchmarks</h2>

@@ -8,6 +8,7 @@ import { Subscription } from 'rxjs';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-benchmarks-tab',
@@ -33,12 +34,13 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
     private elRef: ElementRef,
     private pdfService: PdfService,
     private permissionsService: PermissionsService,
+    private featureFlagsService: FeatureFlagsService,
     protected router: Router,
   ) {}
 
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    this.tilesData = this.benchmarksService.benchmarksData;
+    this.tilesData = this.featureFlagsService.newBenchmarksDataArea ? this.benchmarksService.benchmarksData.oldBenchmarks : this.benchmarksService.benchmarksData;
   }
 
   get payTile(): Tile {
