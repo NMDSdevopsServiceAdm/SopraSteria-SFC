@@ -88,6 +88,8 @@ import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 
 @NgModule({
   declarations: [
@@ -198,8 +200,8 @@ import { RankingsResolver } from '@core/resolvers/rankings.resolver';
     CqcStatusCheckResolver,
     BenchmarksResolver,
     RankingsResolver,
-    // UsefulLinkPayResolver,
-    // UsefulLinkRecruitmentResolver,
+    UsefulLinkPayResolver,
+    UsefulLinkRecruitmentResolver,
   ],
   bootstrap: [AppComponent],
 })
