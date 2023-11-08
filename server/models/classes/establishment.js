@@ -764,7 +764,7 @@ class Establishment extends EntityValidator {
 
         if (cssrResults) {
           this._cssrID = cssrResults[0].cssrRecord.id; //TODO!
-          nmdsLetter = cssrResults[0].cssrRecord.nmdsIdLetter;
+          nmdsLetter = cssrResults[0].cssrRecord.nmdsIdLetter; //TODO!
         }
 
         // catch all - because we don't want new establishments failing just because of old postcode data

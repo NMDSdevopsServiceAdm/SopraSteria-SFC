@@ -55,8 +55,6 @@ module.exports = function (sequelize, DataTypes) {
     2. Try to get CSSR the 'traditional' way using the relationship or loose
     3. Get district from postcodes table if exists
     4. Query getAddressAPI and cache result
-
-    District = CSSR.LocalAuthority (needs testing)
   */
   CSSR.getCSSRsFromEstablishmentId = async (establishmentId) => {
     const establishments = await sequelize.models.establishment.findAll({
@@ -110,7 +108,6 @@ module.exports = function (sequelize, DataTypes) {
     if (postcodesRecords && postcodesRecords[0].district) {
       const district = postcodesRecords[0].district;
 
-      // TODO test and improve.
       return await this.findOne({
         where: {
           LocalAuthority: { [Op.iLike]: `%${district}%` },
