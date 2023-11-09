@@ -1,9 +1,7 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { Metric, RankingsResponse } from '@core/model/benchmarks.model';
+import { Metric, RankingsResponse } from '@core/model/benchmarks-v2.model';
 import * as Highcharts from 'highcharts';
 import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-builder';
-
-// import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-builder';
 
 @Component({
   selector: 'app-data-area-barchart',

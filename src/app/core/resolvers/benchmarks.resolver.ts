@@ -10,7 +10,6 @@ export class BenchmarksResolver implements Resolve<any> {
   constructor(private establishmentService: EstablishmentService, private benchmarksService: BenchmarksServiceBase) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    console.log('**************** BENCHMARKS RESOLVER**************');
     const workplaceUid = route.paramMap.get('establishmentuid')
       ? route.paramMap.get('establishmentuid')
       : this.establishmentService.establishmentId;

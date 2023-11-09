@@ -8,12 +8,9 @@ export function BenchmarksServiceFactory(
   featureFlagService: FeatureFlagsService,
   httpClient: HttpClient,
 ): BenchmarksServiceBase {
-  console.log('*********************');
   if (featureFlagService.newBenchmarksDataArea) {
-    console.log('V2');
     return new BenchmarksV2Service(httpClient);
   } else {
-    console.log('V1');
     return new BenchmarksService(httpClient);
   }
 }

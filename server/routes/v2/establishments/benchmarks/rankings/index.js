@@ -18,18 +18,16 @@ const REGISTERED_NURSE_ID = 23;
 const REGISTERED_MANAGER_ID = 22;
 
 const workerMap = new Map([
-  [10, 8],
-  [25, 7],
-  [23, 16],
-  [22, 4],
+  [CARE_WORKER_ID, 8],
+  [SENIOR_CARE_WORKER_ID, 7],
+  [REGISTERED_NURSE_ID, 16],
+  [REGISTERED_MANAGER_ID, 4],
 ]);
 
 const getPayRanking = async function (establishmentId, mainService, workerId, cssr) {
   const annualOrHourly = [CARE_WORKER_ID, SENIOR_CARE_WORKER_ID].includes(workerId) ? 'Hourly' : 'Annually';
   const field = annualOrHourly === 'Hourly' ? 'AverageHourlyRate' : 'AverageAnnualFTE';
   const currentmetricValue = await getPay({ establishmentId, annualOrHourly, mainJob: workerId });
-
-  console.log('*** START ***');
 
   const groupRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
@@ -42,8 +40,6 @@ const getPayRanking = async function (establishmentId, mainService, workerId, cs
     cssr,
     workerId,
   );
-
-  console.log('****** 1 ******');
 
   const goodCqcRankings = await getComparisonGroupAndCalculateRanking(
     establishmentId,
@@ -206,7 +202,6 @@ const getComparisonGroupAndCalculateRanking = async function (
   cssr,
   workerId,
 ) {
-  console.log('***** PART 1');
   const comparisonGroupRankings = await getComparisonGroupRankings({
     benchmarksModel: models[benchmarksModel],
     establishmentId,
@@ -216,7 +211,6 @@ const getComparisonGroupAndCalculateRanking = async function (
     cssr,
   });
 
-  console.log('**** PART 2');
   const mappedComparisonGroupRankings = comparisonGroupRankings.map(mapComparisonGroupCallback).filter((a) => a);
 
   if (mappedComparisonGroupRankings.length === 0) {

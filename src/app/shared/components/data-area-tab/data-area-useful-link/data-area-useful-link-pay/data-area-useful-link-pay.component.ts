@@ -11,7 +11,6 @@ export class DataAreaUsefulLinkPayComponent implements OnInit {
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    console.log(this.route.snapshot);
     this.usefulLinkPay = this.route.snapshot.data.usefulLinksPay?.data;
   }
 }
