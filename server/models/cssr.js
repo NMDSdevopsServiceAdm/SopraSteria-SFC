@@ -67,11 +67,13 @@ module.exports = function (sequelize, DataTypes) {
       return false;
     }
 
+    const attachedCssrId = establishments.find((establishment) => establishment.CssrId != null);
+
     // if we already have an attached cssrId
-    if (establishments[0].cssrId) {
+    if (attachedCssrId) {
       return await this.findOne({
         where: {
-          CssrId: establishments[0].cssrId,
+          CssrId: attachedCssrId,
         },
       });
     }
