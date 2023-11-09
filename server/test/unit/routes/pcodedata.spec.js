@@ -72,4 +72,40 @@ describe('models.pcodedata', async () => {
       expect(stubPartialMatch.calledWith('HD1 1D'));
     });
   });
+
+  // TODO CircleCI does not talk to database
+  describe.skip('do not mock, should always return a response if data available', async () => {
+    it('this should always return a record if there is KT2 unless lookup has failed (Kingston upon Thames)', async () => {
+      let la2 = {
+        cssrRecord: {
+          id: 729,
+          name: 'Kingston upon Thames',
+          nmdsIdLetter: 'G',
+        },
+      };
+
+      let postcode = 'KT2 6AP';
+
+      const records = await models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
+
+      expect(records[0].cssrRecord.id).to.equal(la2.cssrRecord.id);
+      expect(records[0].cssrRecord.name).to.equal(la2.cssrRecord.name);
+    });
+
+    it('this should always return a record', async () => {
+      let la2 = {
+        cssrRecord: {
+          id: 110,
+          name: 'Sunderland',
+          nmdsIdLetter: '',
+        },
+      };
+
+      let postcode = 'SR2 7TZ';
+      const records = await models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
+
+      expect(records[0].cssrRecord.id).to.equal(la2.cssrRecord.id);
+      expect(records[0].cssrRecord.name).to.equal(la2.cssrRecord.name);
+    });
+  });
 });
