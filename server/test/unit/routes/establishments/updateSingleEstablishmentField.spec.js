@@ -35,7 +35,7 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
     };
 
     // TODO
-    it.skip('should return 200 when the provided field has been updated', async () => {
+    it('should return 200 when the provided field has been updated', async () => {
       const body = {
         property: 'NameValue',
         value: 'Yes',
@@ -44,13 +44,14 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
       await setup(body);
 
       sinon.stub(models.establishment, 'update').returns(null);
+      sinon.stub(models.establishment, 'findOne').returns(null);
 
       await updateEstablishment(req, res);
 
       expect(res.statusCode).to.deep.equal(200);
     });
 
-    it.skip('should return 200 when the provided field has been found', async () => {
+    it('should return 200 when the provided field has been found', async () => {
       const body = {
         property: 'NameValue',
         value: '',
@@ -58,7 +59,8 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
 
       await setup(body);
 
-      sinon.stub(models.establishment, 'findOne').returns(body);
+      sinon.stub(models.establishment, 'update').returns(body);
+      sinon.stub(models.establishment, 'findOne').returns(null);
 
       await updateEstablishment(req, res);
 
