@@ -345,7 +345,7 @@ const updateEstablishment = async (req, res) => {
       // TODO: JSON validation
 
       // by loading after the restore, only those properties defined in the
-      //  PUT body will be updated (peristed)
+      // PUT body will be updated (peristed)
 
       const isValidEstablishment = await thisEstablishment.load(req.body);
 
