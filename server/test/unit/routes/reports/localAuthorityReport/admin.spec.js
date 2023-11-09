@@ -16,7 +16,7 @@ function onUncaught(err) {
 
 process.on('unhandledRejection', onUncaught);
 
-describe.skip('/server/routes/reports/localAuthorityReport/admin', () => {
+describe('/server/routes/reports/localAuthorityReport/admin', () => {
   describe('reportGet()', () => {
     let getValue, query, saveResponse, saveResponseOutput, queryOutput;
     const startDate = '2021-08-11T00:00:00.000Z';
@@ -185,7 +185,7 @@ describe.skip('/server/routes/reports/localAuthorityReport/admin', () => {
 
     const res = httpMocks.createResponse();
 
-    it('should save the report', async () => {
+    it.skip('should save the report', async () => {
       await adminReportGet(req, res);
 
       sinon.assert.called(getValue);
@@ -203,7 +203,10 @@ describe.skip('/server/routes/reports/localAuthorityReport/admin', () => {
       sinon.assert.calledOnce(saveResponse);
       expect(saveResponseOutput.status).to.deep.equal(200);
       expect(saveResponseOutput.csv).to.deep.equal(
-        'Local Authority, Workplace ID,Number of parent account,Name of parent account(s),Latest update date,Status,Confirmed staff record numbers,Workplace data complete?,Staff records complete?,Number of workplaces/teams at these accounts,Number of complete workplaces/teams,Establishment Type,Main Service,Service User Group data,Capacity of Main Service,Utilisation of Main Service,Number of Staff Records (by job role),Number of Vacancies,Leavers in the past 12 months,Number of starters in the past 12 months,Number of staff records based on the organisation,Number of individual staff records,Number of individual staff records (not agency),Number of complete staff records (not agency),Percentage of complete staff reocrds (not agency),Number of individual agency records,Number of complete agency records,Percentage of complete agency staff records,Gender,Date of Birth,Ethinic Group,Main job role,Employment status,Contracted/Average hours,Sickness,Pay,Qualifications,Last Years confirmed numbers,Notes\nBradford,W1002065,1,Four Seasons Health Care Limited - Training Office FSHC,2021-06-29,Not updated,0,0,0,153,0,0,153,153,153,111,152,153,153,153,9037,9219,9219,0,0,0,0,0,9219,9210,9206,9219,9219,9035,9219,8738,3,0,\nKirklees,H1002350,1,Bluebird Care Camden & Hampstead,2021-07-26,"Update, complete",1239,0,0,2,0,2,2,2,2,2,2,2,2,2,3,5,5,0,0,0,0,0,1,4,1,5,5,1,1,1,1,7267,fjbdkjsbfkjdsb\n"WOZiTech, with even more care",G1001114,1,WOZiTech with even more care,2021-06-29,Not updated,0,0,0,12,0,3,12,10,11,10,11,11,11,11,105,37,37,0,0,0,0,0,23,23,23,37,37,25,22,19,21,0,\n',
+        `Local Authority,   Workplace ID,   Number of parent account,   Name of parent account(s),   Latest update date,   Status,   Confirmed staff record numbers,   Workplace data complete?,   Staff records complete?,   Number of workplaces/teams at these accounts,   Number of complete workplaces/teams,   Establishment Type,   Main Service,   Service User Group data,   Capacity of Main Service,   Utilisation of Main Service,   Number of Staff Records (by job role),   Number of Vacancies,   Leavers in the past 12 months,   Number of starters in the past 12 months,   Number of staff records based on the organisation,   Number of individual staff records,   Number of individual staff records (not agency),   Number of complete staff records (not agency),   Percentage of complete staff reocrds (not agency),   Number of individual agency records,   Number of complete agency records,   Percentage of complete agency staff records,   Gender,   Date of Birth,   Ethinic Group,   Main job role,   Employment status,   Contracted/Average hours,   Sickness,   Pay,   Qualifications,   Last Years confirmed numbers,   Notes
+Bradford,W1002065,1,Four Seasons Health Care Limited - Training Office FSHC,2021-06-29,Not updated,0,0,0,153,0,0,153,153,153,111,152,153,153,153,9037,9219,9219,0,0,0,0,0,9219,9210,9206,9219,9219,9035,9219,8738,3,0,
+Kirklees,H1002350,1,Bluebird Care Camden & Hampstead,2021-07-26,"Update, complete",1239,0,0,2,0,2,2,2,2,2,2,2,2,2,3,5,5,0,0,0,0,0,1,4,1,5,5,1,1,1,1,7267,fjbdkjsbfkjdsb
+"WOZiTech, with even more care",G1001114,1,WOZiTech with even more care,2021-06-29,Not updated,0,0,0,12,0,3,12,10,11,10,11,11,11,11,105,37,37,0,0,0,0,0,23,23,23,37,37,25,22,19,21,0,`,
       );
       expect(saveResponseOutput.options).to.deep.equal({
         'Content-Type': 'text/csv',
