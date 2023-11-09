@@ -2786,11 +2786,14 @@ class WorkplaceCSVValidator {
     // get all the other records that may already exist in the db but aren't being updated or deleted
     // and check how many registered managers there is
     const dataInDB = ['UNCHECKED', 'NOCHANGE']; // for theses statuses trust the data in the DB
-    (await Establishment.fetchMyEstablishmentsWorkers(this.id, this._key)).forEach((worker) => {
-      const workerFromCSV = myJSONWorkers.find((w) => {
+
+    const establishmentWorkers = await Establishment.fetchMyEstablishmentsWorkers(this.id, this._key);
+
+    establishmentWorkers.forEach((worker) => {
+      let workerFromCSV = myJSONWorkers.find((w) => {
         return w.uniqueWorkerId === worker.uniqueWorker;
       });
-      if (workerFromCSV && dataInDB.includes(workerFromCSV._status)) {
+      if (workerFromCSV && dataInDB.includes(workerFromCSV.status)) {
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
         worker.otherJobIds = worker.otherJobIds.length ? worker.otherJobIds.split(';') : [];
         worker.otherJobIds.map((otherJobId) => BUDI.jobRoles(BUDI.FROM_ASC, otherJobId));
@@ -2803,6 +2806,7 @@ class WorkplaceCSVValidator {
         registeredManagers += isRegManager(worker) ? 1 : 0;
       }
     });
+
     this._crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, totals);
     this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }
