@@ -88,7 +88,7 @@ const config = convict({
     port: {
       doc: 'Database port',
       format: 'port',
-      default: 5432,
+      default: 5433,
       env: 'DB_PORT',
     },
     dialect: {
@@ -266,7 +266,7 @@ const config = convict({
     apikey: {
       doc: 'API key for getAddress.io',
       format: 'String',
-      default: '',
+      default: 'XWMzPYQ8F0uIadZjnirlLA27971', // TODO 'XWMzPYQ8F0uIadZjnirlLA27971'
     },
   },
   aws: {
