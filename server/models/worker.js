@@ -1048,12 +1048,6 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  // TODO this will call getAddressAPI for every customer when first deployed
-  Worker.addHook('afterUpdate', (record) => {
-    const postcode = record.dataValues.PostcodeValue;
-    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
-  });
-
   Worker.associate = (models) => {
     Worker.belongsTo(models.establishment, {
       foreignKey: 'establishmentFk',
