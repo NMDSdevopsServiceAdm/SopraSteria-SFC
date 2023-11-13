@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -9,6 +8,9 @@ import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchmarks-tab.component';
 
 import { Establishment } from '../../../../mockdata/establishment';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('BenchmarksTabComponent', () => {
   let component: BenchmarksTabComponent;
@@ -20,7 +22,14 @@ describe('BenchmarksTabComponent', () => {
         imports: [RouterTestingModule, HttpClientTestingModule],
         declarations: [],
         providers: [
-          { provide: BenchmarksService, useClass: MockBenchmarksService },
+          {
+            provide: BenchmarksServiceBase,
+            useClass: MockBenchmarksService,
+          },
+          {
+            provide: FeatureFlagsService,
+            useClass: MockFeatureFlagsService,
+          },
           { provide: PermissionsService, useClass: MockPermissionsService },
         ],
       }).compileComponents();
