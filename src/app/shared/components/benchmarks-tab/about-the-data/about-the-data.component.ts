@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
@@ -24,7 +24,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   constructor(
     protected router: Router,
     protected route: ActivatedRoute,
-    protected benchmarksService: BenchmarksService,
+    protected benchmarksService: BenchmarksServiceBase,
     private permissionsService: PermissionsService,
   ) {}
 
@@ -36,6 +36,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     const canViewBenchmarks = this.permissionsService.can(workplaceUid, 'canViewBenchmarks');
 
     if (canViewBenchmarks) {
+      this.meta = this.benchmarksService.benchmarksData.meta;
       // this.subscriptions.add(
       //   this.benchmarksService.getTileData(workplaceUid, []).subscribe((data) => {
       //     if (data) {

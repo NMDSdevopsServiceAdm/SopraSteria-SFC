@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const models = require('../../../models');
+const models = require('../../../../models');
 const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
 const usage = require('./usage');
@@ -12,10 +12,10 @@ const REGISTERED_NURSE_ID = 23;
 const REGISTERED_MANAGER_ID = 22;
 
 const workerMap = new Map([
-  [10, 8],
-  [25, 7],
-  [23, 16],
-  [22, 4],
+  [CARE_WORKER_ID, 8],
+  [SENIOR_CARE_WORKER_ID, 7],
+  [REGISTERED_NURSE_ID, 16],
+  [REGISTERED_MANAGER_ID, 4],
 ]);
 
 const comparisonJson = {

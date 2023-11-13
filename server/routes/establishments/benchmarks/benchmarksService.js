@@ -2,7 +2,7 @@ const models = require('../../../models');
 const { Op } = require('sequelize');
 
 const getPay = async function (establishmentId) {
-  const averageHourlyPay = await models.worker.averageHourlyPay(establishmentId);
+  const averageHourlyPay = await models.worker.averageHourlyPay({ establishmentId });
 
   if (averageHourlyPay.amount === null) {
     return {
@@ -47,7 +47,7 @@ const getSickness = async function (establishmentId) {
 };
 
 const getTurnover = async function (establishmentId) {
-  const establishment = await models.establishment.turnoverData(establishmentId);
+  const establishment = await models.establishment.turnoverAndVacanciesData(establishmentId);
 
   const staffNumberIncorrectOrLeaversUnknown = await checkStaffNumberAndLeavers(establishmentId, establishment);
   if (staffNumberIncorrectOrLeaversUnknown) {

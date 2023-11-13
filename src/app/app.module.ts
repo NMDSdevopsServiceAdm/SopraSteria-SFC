@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -84,7 +84,12 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-
+import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 
 @NgModule({
   declarations: [
@@ -150,6 +155,11 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
   providers: [
     AuthGuard,
     AdminSkipService,
+    {
+      provide: BenchmarksServiceBase,
+      useFactory: BenchmarksServiceFactory,
+      deps: [FeatureFlagsService, HttpClient],
+    },
     BackService,
     CountryService,
     EstablishmentService,
@@ -188,10 +198,10 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     WorkersResolver,
     TotalStaffRecordsResolver,
     CqcStatusCheckResolver,
-    // BenchmarksResolver,
-    // RankingsResolver,
-    // UsefulLinkPayResolver,
-    // UsefulLinkRecruitmentResolver,
+    BenchmarksResolver,
+    RankingsResolver,
+    UsefulLinkPayResolver,
+    UsefulLinkRecruitmentResolver,
   ],
   bootstrap: [AppComponent],
 })

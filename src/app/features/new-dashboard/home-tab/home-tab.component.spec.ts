@@ -4,7 +4,7 @@ import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Meta } from '@core/model/benchmarks.model';
+import { Meta } from '@core/model/benchmarks-v2.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
@@ -92,8 +92,8 @@ describe('NewHomeTabComponent', () => {
       componentProperties: {
         workplace: establishment,
         meta: comparisonDataAvailable
-          ? { workplaces: noOfWorkplaces, staff: 4,  }
-          : ({ workplaces: 0, staff: 0,  } as Meta),
+          ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Something' }
+          : ({ workplaces: 0, staff: 0, localAuthority: 'Something' } as Meta),
       },
       schemas: [NO_ERRORS_SCHEMA],
     });

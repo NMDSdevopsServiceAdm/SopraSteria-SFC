@@ -8,7 +8,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 
 import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.component';
-import { BenchmarksV2Service } from '@core/services/benchmarks-v2.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 @Component({
   selector: 'app-data-area-tab',
@@ -37,13 +37,13 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
   constructor(
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
-    protected benchmarksV2Service: BenchmarksV2Service,
+    protected benchmarksService: BenchmarksServiceBase,
     protected router: Router,
   ) {}
 
   ngOnInit(): void {
-    // this.tilesData = this.benchmarksV2Service.benchmarksData;
-    this.rankingsData = this.benchmarksV2Service.rankingsData;
+    this.tilesData = this.benchmarksService.benchmarksData.newBenchmarks;
+    this.rankingsData = this.benchmarksService.rankingsData;
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.setDownloadBenchmarksText();
     this.checkComparisonDataExists();

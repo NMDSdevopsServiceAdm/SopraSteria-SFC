@@ -12,33 +12,15 @@ const {
   getTimeInRole,
 } = require('../benchmarksService');
 
-const CARE_WORKER_ID = 10;
-const SENIOR_CARE_WORKER_ID = 25;
-const REGISTERED_NURSE_ID = 23;
-const REGISTERED_MANAGER_ID = 22;
-
-const workerMap = new Map([
-  [10, 8],
-  [25, 7],
-  [23, 16],
-  [22, 4],
-]);
-
-
 const getPayRanking = async function (establishmentId) {
-  try {
-    return await getComparisonGroupAndCalculateRanking(
-      establishmentId,
-      models.benchmarksPay,
-      getPay,
-      (r) => r.pay,
-      calculateRankDesc
-    );
-  } catch (error) {
-    return res.status(500).json(error);
-  }
+  return await getComparisonGroupAndCalculateRanking(
+    establishmentId,
+    models.benchmarksPay,
+    getPay,
+    (r) => r.pay,
+    calculateRankDesc,
+  );
 };
-
 
 const getQualificationsRanking = async function (establishmentId) {
   return await getComparisonGroupAndCalculateRanking(
@@ -131,7 +113,6 @@ const getComparisonGroupAndCalculateRanking = async function (
   mapComparisonGroupCallback,
   calculateRankingCallback,
 ) {
-
   const comparisonGroupRankings = await getComparisonGroupRankings(establishmentId, benchmarksModel);
 
   if (comparisonGroupRankings.length === 0) {
@@ -141,10 +122,9 @@ const getComparisonGroupAndCalculateRanking = async function (
     };
   }
 
-
   const maxRank = comparisonGroupRankings.length + 1;
 
-  const metric = await getMetricCallback( establishmentId );
+  const metric = await getMetricCallback(establishmentId);
 
   if (metric.stateMessage) {
     return {
@@ -165,7 +145,6 @@ const getComparisonGroupAndCalculateRanking = async function (
 };
 
 const getResponse = async function (req, res, getRankingCallback) {
-
   try {
     const establishmentId = req.establishmentId;
 
@@ -178,10 +157,7 @@ const getResponse = async function (req, res, getRankingCallback) {
 };
 
 const getPayResponse = async (req, res) => {
-
-
   await getResponse(req, res, getPayRanking);
-
 };
 
 const getQualificationsResponse = async (req, res) => {
@@ -218,6 +194,8 @@ const getRankingsResponse = async (req, res) => {
     sickness,
     qualifications,
   };
+
+  console.log(data);
 
   res.status(200).json(data);
 };

@@ -188,6 +188,7 @@ module.exports = function (sequelize, DataTypes) {
         },
       ],
       raw: true,
+      logging: true,
     });
   };
 
