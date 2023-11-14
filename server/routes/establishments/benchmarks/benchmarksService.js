@@ -99,12 +99,12 @@ const checkStaffNumberAndLeavers = async function (establishmentId, establishmen
 };
 
 const getComparisonGroupRankings = async function (establishmentId, benchmarksModel) {
-  const cssrs = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
-  if (!cssrs) return [];
+  const cssr = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
+  if (!cssr) return [];
   return await benchmarksModel.findAll({
     attributes: { exclude: ['CssrID', 'MainServiceFK'] },
     where: {
-      CssrID: cssrs.id,
+      CssrID: cssr.id,
       EstablishmentFK: {
         [Op.not]: [establishmentId],
       },
