@@ -31,6 +31,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { ViewMyWorkplacesComponent } from '../view-my-workplaces/view-my-workplaces.component';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 describe('view-workplace', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
@@ -77,7 +78,7 @@ describe('view-workplace', () => {
           useClass: MockBreadcrumbService,
         },
         {
-          provide: BenchmarksService,
+          provide: BenchmarksServiceBase,
           useClass: MockBenchmarksService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },

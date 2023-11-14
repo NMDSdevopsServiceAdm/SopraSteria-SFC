@@ -18,6 +18,8 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { NewDashboardComponent } from './dashboard.component';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 
 describe('NewDashboardComponent', () => {
   const setup = async (tab = 'home', permissions = []) => {
@@ -27,6 +29,10 @@ describe('NewDashboardComponent', () => {
         {
           provide: TabsService,
           useFactory: MockTabsService.factory(tab),
+        },
+        {
+          provide: BenchmarksServiceBase,
+          useClass: MockBenchmarksService,
         },
         {
           provide: FeatureFlagsService,

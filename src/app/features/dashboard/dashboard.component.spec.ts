@@ -6,6 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Roles } from '@core/model/roles.enum';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -73,7 +74,7 @@ describe('DashboardComponent', () => {
           useClass: MockEstablishmentService,
         },
         {
-          provide: BenchmarksService,
+          provide: BenchmarksServiceBase,
           useClass: MockBenchmarksService,
         },
         { provide: WindowToken, useValue: MockWindow },

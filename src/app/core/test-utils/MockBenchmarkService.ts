@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AllRankingsResponse, BenchmarksResponse } from '@core/model/benchmarks.model';
+import { AllRankingsResponse } from '@core/model/benchmarks.model';
 import { URLStructure } from '@core/model/url.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { Observable, of } from 'rxjs';
 
 const { build, fake } = require('@jackfranklin/test-data-bot');
@@ -155,7 +155,18 @@ const returnTo = returnToBuilder();
 const allRankingsData = allRankingsResponseBuilder();
 
 @Injectable()
-export class MockBenchmarksService extends BenchmarksService {
+export class MockBenchmarksService extends BenchmarksServiceBase {
+  benchmarksData: any;
+  rankingsData: any;
+  setReturnTo(returnTo: URLStructure) {
+    throw new Error('Method not implemented.');
+  }
+  getTileData(establishmentId: string, tilesNeeded: string[]) {
+    throw new Error('Method not implemented.');
+  }
+  getRankingData(establishmentId: string, metric: string) {
+    throw new Error('Method not implemented.');
+  }
   public get returnTo(): URLStructure {
     return returnTo;
   }

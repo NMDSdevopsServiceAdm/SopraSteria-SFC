@@ -11,11 +11,6 @@ const {
   deleteEstablishment,
   updateEstablishment,
 } = require('../../services/establishment/establishment');
-// const { Op } = require('sequelize');
-
-// all user functionality is encapsulated
-// const Establishment = require('../../models/classes/establishment');
-// const models = require('../../models');
 
 const Name = require('./name');
 const MainService = require('./mainService');
