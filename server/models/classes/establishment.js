@@ -763,8 +763,8 @@ class Establishment extends EntityValidator {
         const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
         if (cssrResults) {
-          this._cssrID = cssrResults[0].cssrRecord.id; //TODO!
-          nmdsLetter = cssrResults[0].cssrRecord.nmdsIdLetter; //TODO!
+          this._cssrID = cssrResults[0].cssrRecord.id;
+          nmdsLetter = cssrResults[0].cssrRecord.nmdsIdLetter;
         }
 
         // catch all - because we don't want new establishments failing just because of old postcode data
