@@ -66,7 +66,6 @@ module.exports = function (sequelize, DataTypes) {
 
   pcodedata.getLinkedCssrRecordsFromPostcode = async function (postcode) {
     const cssrRecords = await this.getLinkedCssrRecordsCompleteMatch(postcode);
-
     if (!cssrRecords || cssrRecords.length == 0) {
       console.error('Could not obtain CSSR records from postcode non local custodian match');
       // no match so try nearest authority

@@ -210,20 +210,20 @@ const getBenchmarksData = async (establishmentId, mainService) => {
     meta: {},
   };
 
-  const cssrs = await models.cssr.getCSSRsFromEstablishmentId(establishmentId);
+  const cssr = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
 
-  if (cssrs) {
-    data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssrs[0]);
-    data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssrs[0]);
-    data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssrs[0]);
-    data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID, cssrs[0]);
-    data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService, cssrs[0]);
-    data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService, cssrs[0]);
-    data.qualifications = await qualificationsBenchmarks(establishmentId, mainService, cssrs[0]);
-    data.sickness = await sicknessBenchmarks(establishmentId, mainService, cssrs[0]);
-    data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssrs[0]);
+  if (cssr) {
+    data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
+    data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
+    data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssr);
+    data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID, cssr);
+    data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService, cssr);
+    data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService, cssr);
+    data.qualifications = await qualificationsBenchmarks(establishmentId, mainService, cssr);
+    data.sickness = await sicknessBenchmarks(establishmentId, mainService, cssr);
+    data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssr);
 
-    data.meta = await getMetaData(mainService, cssrs[0]);
+    data.meta = await getMetaData(mainService, cssr);
   }
   return data;
 };

@@ -306,10 +306,10 @@ const getTimeInRoleResponse = async (req, res) => {
 const getRankingsResponse = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
-    const { mainService } = await models.establishment.findbyId(establishmentId);
+    const { mainService } = await models.establishment.findbyIdWithMainService(establishmentId);
 
     const mainServiceID = [1, 2, 8].includes(mainService.reportingID) ? mainService.reportingID : 0;
-    const cssr = await models.cssr.getCSSR(establishmentId);
+    const cssr = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
 
     const data = { pay: {} };
 
