@@ -195,8 +195,6 @@ const getRankingsResponse = async (req, res) => {
     qualifications,
   };
 
-  console.log(data);
-
   res.status(200).json(data);
 };
 
