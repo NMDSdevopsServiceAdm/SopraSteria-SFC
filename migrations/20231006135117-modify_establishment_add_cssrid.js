@@ -11,7 +11,7 @@ module.exports = {
       'CssrID',
       {
         type: Sequelize.DataTypes.INTEGER,
-        allowNull: true, // TODO should never be null
+        allowNull: true,
         primaryKey: true,
       },
     );

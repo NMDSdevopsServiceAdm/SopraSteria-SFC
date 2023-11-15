@@ -83,6 +83,7 @@ module.exports = function (sequelize, DataTypes) {
 
     if (outwardCode.length == 0 || outwardCode.length > 4) {
       console.error(`Postcode: ${postcode} is invalid!`);
+      return cssrRecords;
     }
 
     while (!cssrRecords && inwardCode.length > 0) {
@@ -109,7 +110,6 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  // TODO how much power does this really use (how slow/hungry)?
   pcodedata.getLinkedCssrRecordsWithLikePostcode = async function (postcode) {
     return await this.findAll({
       where: {

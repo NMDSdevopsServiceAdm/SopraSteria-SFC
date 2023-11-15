@@ -64,7 +64,7 @@ module.exports = function (sequelize, DataTypes) {
 
     if (!establishments) {
       console.error(`No establishments found for establishmentId ${establishmentId}`);
-      return false;
+      return null;
     }
 
     const attachedCssrId = establishments.find((establishment) => establishment.CssrId != null);
@@ -89,11 +89,11 @@ module.exports = function (sequelize, DataTypes) {
     return await CSSR.getIdFromPostcodeDistrict(establishments[0].postcode);
   };
 
-  CSSR.getCSSRsFromPostcode = async (postcode) => {
+  CSSR.getCSSRFromPostcode = async (postcode) => {
     // Try and match or loose match
     const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
 
-    if (cssrResults[0] && cssrResults[0].cssrRecord) {
+    if (cssrResults && cssrResults[0].cssrRecord) {
       return cssrResults[0].cssrRecord;
     }
 
@@ -112,7 +112,7 @@ module.exports = function (sequelize, DataTypes) {
 
       return await this.findOne({
         where: {
-          LocalAuthority: { [Op.iLike]: `%${district}%` },
+          LocalAuthority: { [Op.iLike]: `%${district}%` }, // TODO inefficient for no reason I reckon
         },
       });
     }
