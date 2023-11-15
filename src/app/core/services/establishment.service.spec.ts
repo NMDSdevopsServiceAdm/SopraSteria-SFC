@@ -2,7 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 
 import { EstablishmentService } from './establishment.service';
-
+import { environment } from 'src/environments/environment';
 describe('EstablishmentService', () => {
   let service: EstablishmentService;
   let http: HttpTestingController;
@@ -34,7 +34,7 @@ describe('EstablishmentService', () => {
 
       service.updateSingleEstablishmentField('establishmentId', requestBody).subscribe();
 
-      const req = http.expectOne('/api/establishment/establishmentId/updateSingleEstablishmentField');
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/establishmentId/updateSingleEstablishmentField`);
 
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(requestBody);

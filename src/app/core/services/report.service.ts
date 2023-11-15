@@ -7,6 +7,7 @@ import { from, interval, Observable } from 'rxjs';
 import { concatMap, filter, map, startWith, take } from 'rxjs/operators';
 
 import { EstablishmentService } from './establishment.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -21,48 +22,48 @@ export class ReportService {
       params = new HttpParams().set('effectiveFrom', updatedEffectiveFrom);
     }
 
-    return this.http.get<WDFReport>(`/api/reports/wdf/establishment/${establishmentId}`, {
+    return this.http.get<WDFReport>(`${environment.appRunnerEndpoint}/api/reports/wdf/establishment/${establishmentId}`, {
       params,
     });
   }
 
   public getWdfSummaryReport(): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/reports/wdfSummary`, {
+    return this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/reports/wdfSummary`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
   }
 
   public getDeleteReport(): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/reports/delete/new`, {
+    return this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/reports/delete/new`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
   }
 
   public getRegistrationSurveyReport(): Observable<HttpResponse<Blob>> {
-    return this.http.get<any>('/api/reports/registrationSurvey/new', {
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/reports/registrationSurvey/new`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
   }
 
   public getTrainingAndQualificationsReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
-    return this.http.get<any>(`/api/reports/trainingAndQualifications/${workplaceUid}/report`, {
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/reports/trainingAndQualifications/${workplaceUid}/report`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
   }
 
   public getParentTrainingAndQualificationsReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
-    return this.http.get<any>(`/api/reports/trainingAndQualifications/parent/${workplaceUid}/report`, {
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/reports/trainingAndQualifications/parent/${workplaceUid}/report`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
   }
 
   public getSatisfactionSurveyReport(): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/reports/satisfactionSurvey/new`, {
+    return this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/reports/satisfactionSurvey/new`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
@@ -92,7 +93,7 @@ export class ReportService {
 
   public getParentWDFReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
     return this.checkWDFLockStatus(
-      () => this.http.get<Blob>(`/api/reports/wdf/establishment/${workplaceUid}/parent/report`),
+      () => this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/reports/wdf/establishment/${workplaceUid}/parent/report`),
       {
         observe: 'response',
         responseType: 'blob' as 'json',
@@ -104,10 +105,10 @@ export class ReportService {
   private checkLockStatus(httpOptions, workplaceUid, report): Observable<any> {
     let requestId;
     const reportData = {
-      training: `/api/reports/training/establishment/${workplaceUid}/training`,
-      la: `/api/reports/localAuthority/establishment/${workplaceUid}/user`,
-      adminla: '/api/reports/localauthority/admin',
-      trainingAndQuals: '/api/reports/trainingAndQualifications',
+      training: `${environment.appRunnerEndpoint}/api/reports/training/establishment/${workplaceUid}/training`,
+      la: `${environment.appRunnerEndpoint}/api/reports/localAuthority/establishment/${workplaceUid}/user`,
+      adminla: `${environment.appRunnerEndpoint}/api/reports/localauthority/admin`,
+      trainingAndQuals: `${environment.appRunnerEndpoint}/api/reports/trainingAndQualifications`,
     };
     const apiPath = reportData[report];
     // Run function every second until lock aquired
@@ -165,7 +166,7 @@ export class ReportService {
                 concatMap(() =>
                   from(
                     this.http.get<WDFLockStatus>(
-                      `/api/reports/wdf/establishment/${establishmentUid}/parent/lockstatus`,
+                      `${environment.appRunnerEndpoint}/api/reports/wdf/establishment/${establishmentUid}/parent/lockstatus`,
                     ),
                   ),
                 ),
@@ -178,7 +179,7 @@ export class ReportService {
           concatMap(() =>
             from(
               this.http.get<any>(
-                `/api/reports/wdf/establishment/${establishmentUid}/parent/response/${requestId}`,
+                `${environment.appRunnerEndpoint}/api/reports/wdf/establishment/${establishmentUid}/parent/response/${requestId}`,
                 httpOptions,
               ),
             ),

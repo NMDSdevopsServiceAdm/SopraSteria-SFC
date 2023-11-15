@@ -15,6 +15,7 @@ import { BenchmarksMetricComponent } from '@shared/components/benchmarks-tab/met
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 const payTileData = {
   workplaceValue: { value: 1000, hasValue: true },
@@ -80,12 +81,12 @@ const setup = (payTile, payRanking) => {
 
   const httpTestingController = TestBed.inject(HttpTestingController);
 
-  const req = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/?tiles=${metric}`);
+  const req = httpTestingController.expectOne(`${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/benchmarks/?tiles=${metric}`);
   req.flush({
     careWorkerPay: payTile,
   });
 
-  const req2 = httpTestingController.expectOne(`/api/establishment/${establishmentUid}/benchmarks/rankings/${metric}`);
+  const req2 = httpTestingController.expectOne(`${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/benchmarks/rankings/${metric}`);
   req2.flush(payRanking);
 };
 

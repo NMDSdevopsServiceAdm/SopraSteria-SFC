@@ -10,6 +10,7 @@ import { render } from '@testing-library/angular';
 
 import { BulkUploadModule } from '../bulk-upload.module';
 import { DragAndDropFilesUploadComponent } from './drag-and-drop-files-upload.component';
+import { environment } from 'src/environments/environment';
 
 describe('DragAndDropFilesUploadComponent', () => {
   const getDragAndDropFilesUploadComponent = async () => {
@@ -115,7 +116,7 @@ describe('DragAndDropFilesUploadComponent', () => {
       triggerFileInput();
 
       const establishmentId = TestBed.inject(EstablishmentService).primaryWorkplace.uid;
-      const requests = http.match(`/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
+      const requests = http.match(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkupload/uploadFiles`);
       expect(requests.length).toEqual(1);
     });
   });

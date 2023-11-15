@@ -24,6 +24,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.component';
+import { environment } from 'src/environments/environment';
 
 describe('DragAndDropFilesListComponent', () => {
   const setup = async () => {
@@ -347,7 +348,7 @@ describe('DragAndDropFilesListComponent', () => {
       component.deleteFile(event, filenameToDelete);
       fixture.detectChanges();
 
-      http.expectOne(`/api/establishment/${establishmentId}/bulkupload/delete/${filenameToDelete}`);
+      http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkupload/delete/${filenameToDelete}`);
     });
 
     it('should should show validation as not complete after deleting a file and clear error message', async () => {

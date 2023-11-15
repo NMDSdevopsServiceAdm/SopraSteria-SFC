@@ -5,6 +5,7 @@ import { Permissions, PermissionsResponse, PermissionType } from '@core/model/pe
 import { UserService } from '@core/services/user.service';
 import { BehaviorSubject, Observable, of } from 'rxjs';
 import { catchError, map, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -15,7 +16,7 @@ export class PermissionsService {
   constructor(private http: HttpClient, private router: Router, private userService: UserService) {}
 
   public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
-    return this.http.get<PermissionsResponse>(`/api/establishment/${workplaceUid}/permissions`);
+    return this.http.get<PermissionsResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/permissions`);
   }
 
   public clearPermissions(): void {

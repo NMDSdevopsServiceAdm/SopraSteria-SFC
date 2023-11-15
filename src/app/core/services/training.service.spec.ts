@@ -2,6 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 
 import { TrainingService } from './training.service';
+import { environment } from 'src/environments/environment';
 
 describe('TrainingService', () => {
   let service: TrainingService;
@@ -29,7 +30,7 @@ describe('TrainingService', () => {
     it('should call the endpoint for getting training by status', async () => {
       service.getAllTrainingByStatus('mock-uid', 'expired').subscribe();
 
-      const req = http.expectOne('/api/establishment/mock-uid/trainingAndQualifications/expired');
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/mock-uid/trainingAndQualifications/expired`);
       expect(req.request.method).toBe('GET');
     });
   });
@@ -38,7 +39,7 @@ describe('TrainingService', () => {
     it('should call the endpoint for getting missing mandatory training', async () => {
       service.getMissingMandatoryTraining('mock-uid').subscribe();
 
-      const req = http.expectOne('/api/establishment/mock-uid/trainingAndQualifications/missing-training');
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/mock-uid/trainingAndQualifications/missing-training`);
       expect(req.request.method).toBe('GET');
     });
   });

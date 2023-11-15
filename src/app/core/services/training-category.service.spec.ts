@@ -2,6 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 
 import { TrainingCategoryService } from './training-category.service';
+import { environment } from 'src/environments/environment';
 
 describe('TrainingCategoryService', () => {
   let service: TrainingCategoryService;
@@ -28,7 +29,7 @@ describe('TrainingCategoryService', () => {
 
       service.getTrainingCategory(establishmentUid, trainingCategoryId).subscribe();
 
-      const req = http.expectOne(`/api/trainingCategories/${establishmentUid}/${trainingCategoryId}`);
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/trainingCategories/${establishmentUid}/${trainingCategoryId}`);
       expect(req.request.method).toBe('GET');
     });
 
@@ -45,7 +46,7 @@ describe('TrainingCategoryService', () => {
       service.getTrainingCategory(establishmentUid, trainingCategoryId, queryParams).subscribe();
 
       const req = http.expectOne(
-        `/api/trainingCategories/${establishmentUid}/${trainingCategoryId}?sortBy=staffNameAsc&searchTerm=&pageIndex=1&itemsPerPage=15`,
+        `${environment.appRunnerEndpoint}/api/trainingCategories/${establishmentUid}/${trainingCategoryId}?sortBy=staffNameAsc&searchTerm=&pageIndex=1&itemsPerPage=15`,
       );
       expect(req.request.method).toBe('GET');
     });

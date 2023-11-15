@@ -11,6 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
 
 import { DeleteUserAccountComponent } from './delete-user-account.component';
+import { environment } from 'src/environments/environment';
 
 describe('DeleteUserAccountComponent', () => {
   async function setup() {
@@ -79,7 +80,7 @@ describe('DeleteUserAccountComponent', () => {
     component.fixture.detectChanges();
 
     const httpTestingController = TestBed.inject(HttpTestingController);
-    const req = httpTestingController.expectOne(`/api/user/establishment/${workplaceUid}/${userUid}`);
+    const req = httpTestingController.expectOne(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}/${userUid}`);
     expect(req.request.body).toBeNull();
   });
 

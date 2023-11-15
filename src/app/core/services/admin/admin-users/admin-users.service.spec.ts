@@ -3,6 +3,7 @@ import { TestBed } from '@angular/core/testing';
 import { Roles } from '@core/model/roles.enum';
 
 import { AdminUsersService } from './admin-users.service';
+import { environment } from 'src/environments/environment';
 
 describe('AdminUsersService', () => {
   let service: AdminUsersService;
@@ -45,7 +46,7 @@ describe('AdminUsersService', () => {
       };
       service.createAdminUser(newAdminUser).subscribe();
 
-      const req = http.expectOne('/api/user/add/admin');
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/user/add/admin`);
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(newAdminUser);
     });
@@ -55,7 +56,7 @@ describe('AdminUsersService', () => {
     it('should call the endpoint for retrieving a single admin user', () => {
       service.getAdminUser('mock-useruid').subscribe();
 
-      const req = http.expectOne('/api/user/admin/mock-useruid');
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/user/admin/mock-useruid`);
       expect(req.request.method).toBe('GET');
     });
   });
@@ -72,7 +73,7 @@ describe('AdminUsersService', () => {
       const userId = 'mock-userId';
       service.updateAdminUserDetails(userId, updatedAdminUser).subscribe();
 
-      const req = http.expectOne(`/api/user/admin/${userId}`);
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/user/admin/${userId}`);
       expect(req.request.method).toBe('PUT');
       expect(req.request.body).toEqual(updatedAdminUser);
     });
@@ -82,7 +83,7 @@ describe('AdminUsersService', () => {
     it('should call the delete admin user details endpoint', () => {
       service.deleteAdminUserDetails('mock-userId').subscribe();
 
-      const req = http.expectOne('/api/user/admin/mock-userId');
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/user/admin/mock-userId`);
       expect(req.request.method).toBe('DELETE');
     });
   });

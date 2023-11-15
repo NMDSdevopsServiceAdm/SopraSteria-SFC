@@ -9,6 +9,7 @@ export const environment = {
   configCatKey: 'Ag_ZCDm6FkSAA5-xhxheOA/KeZCUBHikUSw7OXsthDzLQ',
   cmsUri: 'https://sfccmstest.cloudapps.digital',
   dev: true,
+  appRunnerEndpoint: 'https://ztykfnse35.eu-west-1.awsapprunner.com',
 };
 
 /*

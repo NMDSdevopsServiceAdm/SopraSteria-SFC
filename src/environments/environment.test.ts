@@ -4,4 +4,5 @@ export const environment = {
   tracesSampleRate: 0.3,
   configCatKey: 'Ag_ZCDm6FkSAA5-xhxheOA/KeZCUBHikUSw7OXsthDzLQ',
   cmsUri: 'https://sfccmstest.cloudapps.digital',
+  appRunnerEndpoint: 'https://a3akknuhui.eu-west-1.awsapprunner.com',
 };
