@@ -10,11 +10,11 @@ phases:
 
   build:
     commands:
-      - COMMIT_HASH=$(aws ecr describe-images --repository-name sfc-backend-build-images --image-ids imageTag=staging --output text | awk '{print $2}' | tail -n1)
+      - COMMIT_HASH=$(aws ecr describe-images --repository-name sfc-backend-build-images --image-ids imageTag=staging --output text | awk '{print $2}' | grep -Ev 'latest|staging|preprod|prod|benchmark'| tail -n1)
       - echo Retagging the latest ecr image...
       - aws ecr batch-delete-image --repository-name sfc-backend-build-images --image-ids imageTag=preprod
       - aws ecr put-image --repository-name sfc-backend-build-images --image-tag preprod --image-manifest "$manifest"
-      - echo Copy s3 bucket from bnd to staging...
-      - aws s3 cp --recursive s3://sfc-frontend-build-artifacts/$COMMIT_HASH s3://sfc-frontend-preprod/
+      - echo Copy s3 bucket from bnd to preprod...
+      - aws s3 cp --recursive s3://sfc-frontend-build-artifacts/$COMMIT_HASH/preprod s3://sfc-frontend-preprod/
       - export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" $(aws sts assume-role --role-arn arn:aws:iam::114055388985:role/CodebuildApprunnerCrossAccountAccessRole --role-session-name MySessionName --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" --output text))
       - aws apprunner start-deployment --service-arn arn:aws:apprunner:eu-west-1:114055388985:service/sfc-app-runner-preprod/5738485b160d41f688e33c69b5204670
