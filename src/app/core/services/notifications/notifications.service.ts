@@ -54,14 +54,14 @@ export class NotificationsService {
   }
 
   public sendEstablishmentNotification(establishmentUid, notificationType, notificationContentUid?): Observable<any> {
-    return this.http.post<any>(`api/notification/establishment/${establishmentUid}`, {
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/notification/establishment/${establishmentUid}`, {
       notificationType,
       notificationContentUid,
     });
   }
 
   public sendUserNotification(userUid, notificationType, notificationContentUid, senderUid): Observable<any> {
-    return this.http.post<any>(`api/notification/user/${userUid}`, {
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/notification/user/${userUid}`, {
       notificationType,
       notificationContentUid,
       senderUid,
