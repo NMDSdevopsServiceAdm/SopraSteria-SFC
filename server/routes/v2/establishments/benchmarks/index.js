@@ -252,13 +252,14 @@ const getMetaData = async (mainService, cssr) => {
 const viewBenchmarks = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
+
+    // This is only to retrieve cssrId associated with establishmentId
+    // Some establishments should now have CssrID attached to their record
     const establishment = await models.establishment.findbyIdWithMainService(establishmentId);
-
     const reportingId = establishment.mainService.reportingID;
-    const specificMainServiceReportingIds = [1, 2, 8];
-    const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
 
-    const benchmarksData = await getBenchmarksData(establishmentId, mainServiceReportingId);
+    const mainServiceID = [1, 2, 8].includes(reportingId) ? reportingId : 0;
+    const benchmarksData = await getBenchmarksData(establishmentId, mainServiceID);
 
     return res.status(200).json(benchmarksData);
   } catch (err) {
