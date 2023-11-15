@@ -57,7 +57,17 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    const url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
+    const workplaceServiceId = this.form.get('workplaceService').value;
+    const headOfficeServicesId = 16;
+
+    let url;
+
+    if (workplaceServiceId === headOfficeServicesId) {
+      url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'parent-workplace-account'];
+    } else {
+      url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
+    }
+
     this.router.navigate(url);
   }
 }
