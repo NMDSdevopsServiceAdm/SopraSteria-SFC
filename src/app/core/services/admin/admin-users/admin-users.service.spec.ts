@@ -30,7 +30,7 @@ describe('AdminUsersService', () => {
     it('should call the endpoint for getting admin uses', () => {
       service.getAdminUsers().subscribe();
 
-      const req = http.expectOne('/api/user/admin');
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/user/admin`);
       expect(req.request.method).toBe('GET');
     });
   });
