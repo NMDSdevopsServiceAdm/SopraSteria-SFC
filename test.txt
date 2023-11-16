@@ -1,0 +1,15 @@
+ng update @angular/core@15 @angular/cli@15
+
+PRE-UPDATE TEST RESULTS
+test-headless
+TOTAL: 3776 SUCCESS
+
+=============================== Coverage summary ===============================
+Statements   : 82.44% ( 18966/23004 )
+Branches     : 59.7% ( 17197/28804 )
+Functions    : 75.78% ( 4782/6310 )
+Lines        : 82.95% ( 15398/18561 )
+
+backend tests
+ 1676 passing (3s)
+  48 pending
