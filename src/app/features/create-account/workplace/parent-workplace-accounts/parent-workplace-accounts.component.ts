@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
+import { RegistrationsService } from '@core/services/registrations.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
@@ -20,6 +21,7 @@ export class ParentWorkplaceAccounts implements OnInit {
   constructor(
     protected backService: BackService,
     protected backLinkService: BackLinkService,
+    public registrationService: RegistrationsService,
     protected router: Router,
     private route: ActivatedRoute,
     protected workplaceService: WorkplaceService,
