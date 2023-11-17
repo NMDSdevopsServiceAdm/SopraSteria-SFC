@@ -17,9 +17,23 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           stateMessage: '',
           allValues: [],
         },
+        goodCqcRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [],
+        },
       },
       seniorCareWorkerPay: {
         groupRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [],
+        },
+        goodCqcRankings: {
           currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
@@ -35,9 +49,23 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           stateMessage: '',
           allValues: [],
         },
+        goodCqcRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [],
+        },
       },
       registeredManagerPay: {
         groupRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [],
+        },
+        goodCqcRankings: {
           currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
@@ -53,6 +81,13 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
       },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [],
+      },
     },
     sickness: {
       groupRankings: {
@@ -60,6 +95,13 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
         hasValue: true,
         stateMessage: '',
+      },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [],
       },
     },
     qualifications: {
@@ -69,6 +111,13 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
       },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [],
+      },
     },
     vacancy: {
       groupRankings: {
@@ -77,6 +126,13 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
       },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [],
+      },
     },
     timeInRole: {
       groupRankings: {
@@ -84,6 +140,13 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
         hasValue: true,
         stateMessage: '',
+      },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [],
       },
     },
   },
@@ -146,13 +209,13 @@ export const benchmarksData = {
     staff: 460,
     workplacesGoodCqc: 22,
     staffGoodCqc: 315,
-    // localAuthority: 'LA1',
+    localAuthority: 'LA1',
     lastUpdated: new Date(),
   },
 };
 
 const returnTo = returnToBuilder();
-const allRankingsData = allRankingsResponseBuilder();
+export const allRankingsData = allRankingsResponseBuilder();
 
 @Injectable()
 export class MockBenchmarksService extends BenchmarksServiceBase {
