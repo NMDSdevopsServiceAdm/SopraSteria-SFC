@@ -18,7 +18,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { ParentWorkplaceAccount } from './parent-workplace-account.component';
 
-fdescribe('ParentWorkplaceAccount', () => {
+describe('ParentWorkplaceAccount', () => {
   async function setup(mainServicePrefilled = true, registrationFlow = true) {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
       ParentWorkplaceAccount,
@@ -90,6 +90,12 @@ fdescribe('ParentWorkplaceAccount', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the subheading of Workplace', async () => {
+    const { getByTestId } = await setup();
+
+    expect(getByTestId('subheading').innerText).toEqual('Workplace');
+  });
+
   it('should show the page title', async () => {
     const { getByText } = await setup();
 
@@ -98,24 +104,59 @@ fdescribe('ParentWorkplaceAccount', () => {
     expect(pageTitleText).toBeTruthy();
   });
 
-  xit('should show the continue button', async () => {
-    const { getByText } = await setup();
+  describe('inside the flow', () => {
+    it('should render the workplace and user account progress bars', async () => {
+      const { getByTestId } = await setup();
 
-    const buttonText = getByText('Continue');
+      expect(getByTestId('progress-bar-1')).toBeTruthy();
+      expect(getByTestId('progress-bar-2')).toBeTruthy();
+    });
 
-    expect(buttonText).toBeTruthy();
+    it('should show the continue button', async () => {
+      const { getByText } = await setup();
+
+      const buttonText = getByText('Continue');
+
+      expect(buttonText).toBeTruthy();
+    });
+
+    it('should go to the registration/add-total-staff url when the button is clicked', async () => {
+      const { getByText, spy } = await setup();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalledWith(['registration', 'add-total-staff']);
+    });
   });
 
-  xit('should submit and go to the registration/add-total-staff url when option selected and is not parent', async () => {
-    const { component, fixture, getByText, getByLabelText, spy } = await setup();
+  describe('outside the flow', () => {
+    it('should not render the progress bars when accessed from outside the flow', async () => {
+      const { queryByTestId } = await setup(false, false);
 
-    // component.isParent = false;
-    // component.isRegulated = true;
-    // fixture.detectChanges();
+      expect(queryByTestId('progress-bar-1')).toBeFalsy();
+      expect(queryByTestId('progress-bar-2')).toBeFalsy();
+    });
 
-    const continueButton = getByText('Continue');
-    fireEvent.click(continueButton);
+    it('should show the save and return button', async () => {
+      const { getByText } = await setup(false, false);
 
-    expect(spy).toHaveBeenCalledWith(['registration', 'add-total-staff']);
+      const buttonText = getByText('Save and return');
+
+      expect(buttonText).toBeTruthy();
+    });
+
+    it('should go to the registration/confirm-details url when the button is clicked', async () => {
+      const { component, fixture, getByText, spy } = await setup(true, false);
+
+      component.returnToConfirmDetails = true;
+
+      fixture.detectChanges();
+
+      const continueButton = getByText('Save and return');
+      fireEvent.click(continueButton);
+
+      expect(spy).toHaveBeenCalledWith(['registration/confirm-details']);
+    });
   });
 });

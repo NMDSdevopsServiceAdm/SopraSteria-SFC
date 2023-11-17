@@ -63,7 +63,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     let url;
 
     if (workplaceServiceId === headOfficeServicesId) {
-      url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'parent-workplace-account'];
+      url = [this.flow, 'parent-workplace-account'];
     } else {
       url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
     }
