@@ -8,6 +8,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { RegistrationService } from '@core/services/registration.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { SelectMainServiceDirective } from '@shared/directives/create-workplace/select-main-service/select-main-service.directive';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-select-main-service',
@@ -15,6 +16,7 @@ import { SelectMainServiceDirective } from '@shared/directives/create-workplace/
 })
 export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
+  public newHomeDesignParentFlag: boolean;
 
   constructor(
     public registrationService: RegistrationService,
@@ -25,6 +27,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     protected router: Router,
     protected workplaceService: WorkplaceService,
     private route: ActivatedRoute,
+    private featureFlagsService: FeatureFlagsService,
   ) {
     super(backService, backLinkService, errorSummaryService, formBuilder, router, workplaceService);
   }
@@ -35,6 +38,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     this.isRegulated = this.registrationService.isRegulated();
     this.isParent = false;
     this.returnToConfirmDetails = this.registrationService.returnTo$.value;
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
   }
 
   protected getServiceCategories(): void {
@@ -62,8 +66,8 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
 
     let url;
 
-    if (workplaceServiceId === headOfficeServicesId) {
-      url = [this.flow, 'parent-workplace-account'];
+    if (workplaceServiceId === headOfficeServicesId && this.newHomeDesignParentFlag) {
+      url = [this.flow, 'parent-workplace-accounts'];
     } else {
       url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
     }

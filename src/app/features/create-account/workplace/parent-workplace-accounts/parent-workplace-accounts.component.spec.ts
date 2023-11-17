@@ -16,12 +16,12 @@ import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { ParentWorkplaceAccount } from './parent-workplace-account.component';
+import { ParentWorkplaceAccounts } from './parent-workplace-accounts.component';
 
-describe('ParentWorkplaceAccount', () => {
+describe('ParentWorkplaceAccounts', () => {
   async function setup(mainServicePrefilled = true, registrationFlow = true) {
     const { fixture, getByText, getAllByText, queryByText, getByLabelText, getByTestId, queryByTestId } = await render(
-      ParentWorkplaceAccount,
+      ParentWorkplaceAccounts,
       {
         imports: [
           SharedModule,

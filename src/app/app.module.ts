@@ -91,7 +91,7 @@ import { SatisfactionSurveyComponent } from './features/satisfaction-survey/sati
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
-import { ParentWorkplaceAccount } from '@features/create-account/workplace/parent-workplace-account/parent-workplace-account.component';
+import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
 
 @NgModule({
   declarations: [
@@ -140,7 +140,7 @@ import { ParentWorkplaceAccount } from '@features/create-account/workplace/paren
     BecomeAParentComponent,
     RemoveLinkToParentComponent,
     LinkToParentComponent,
-    ParentWorkplaceAccount,
+    ParentWorkplaceAccounts,
   ],
   imports: [
     Angulartics2Module.forRoot({

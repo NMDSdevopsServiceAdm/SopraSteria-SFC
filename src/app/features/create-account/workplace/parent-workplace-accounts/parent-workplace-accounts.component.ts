@@ -7,10 +7,10 @@ import { WorkplaceService } from '@core/services/workplace.service';
 import { ProgressBarUtil } from '@core/utils/progress-bar-util';
 
 @Component({
-  selector: 'app-parent-workplace-account',
-  templateUrl: './parent-workplace-account.component.html',
+  selector: 'app-parent-workplace-accounts',
+  templateUrl: './parent-workplace-accounts.component.html',
 })
-export class ParentWorkplaceAccount implements OnInit {
+export class ParentWorkplaceAccounts implements OnInit {
   public insideFlow: boolean;
   public flow: string;
   public returnToConfirmDetails: boolean;

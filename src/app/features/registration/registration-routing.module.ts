@@ -28,7 +28,7 @@ import { RegulatedByCqcComponent } from '../create-account/workplace/regulated-b
 import { WorkplaceNotFoundComponent } from '../create-account/workplace/workplace-not-found/workplace-not-found.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
-import { ParentWorkplaceAccount } from '@features/create-account/workplace/parent-workplace-account/parent-workplace-account.component';
+import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
 
 const routes: Routes = [
   {
@@ -170,8 +170,8 @@ const routes: Routes = [
         data: { title: 'Select Main Service' },
       },
       {
-        path: 'parent-workplace-account',
-        component: ParentWorkplaceAccount,
+        path: 'parent-workplace-accounts',
+        component: ParentWorkplaceAccounts,
         canActivate: [RegisterGuard],
         data: { title: 'Parent Workplace Accounts' },
       },
@@ -249,8 +249,8 @@ const routes: Routes = [
     data: { title: 'Select Main Service' },
   },
   {
-    path: 'parent-workplace-account',
-    component: ParentWorkplaceAccount,
+    path: 'parent-workplace-accounts',
+    component: ParentWorkplaceAccounts,
     canActivate: [RegisterGuard],
     data: { title: 'Parent Workplace Accounts' },
   },
