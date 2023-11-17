@@ -17,6 +17,8 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class SelectMainServiceComponent extends SelectMainServiceDirective {
   public isRegulated: boolean;
   public newHomeDesignParentFlag: boolean;
+  public workplaceServiceId: number;
+  public headOfficeServicesId = 16;
 
   constructor(
     public registrationService: RegistrationService,
@@ -61,17 +63,14 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
   }
 
   protected navigateToNextPage(): void {
-    const workplaceServiceId = this.form.get('workplaceService').value;
-    const headOfficeServicesId = 16;
-
+    this.workplaceServiceId = this.form.get('workplaceService').value;
     let url;
 
-    if (workplaceServiceId === headOfficeServicesId && this.newHomeDesignParentFlag) {
+    if (this.workplaceServiceId === this.headOfficeServicesId && this.newHomeDesignParentFlag) {
       url = [this.flow, 'parent-workplace-accounts'];
     } else {
       url = this.returnToConfirmDetails ? [this.flow] : [this.flow, 'add-total-staff'];
     }
-
     this.router.navigate(url);
   }
 }

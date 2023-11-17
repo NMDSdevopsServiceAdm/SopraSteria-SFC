@@ -15,7 +15,8 @@ import { MockWorkplaceService } from '@core/test-utils/MockWorkplaceService';
 import { RegistrationModule } from '@features/registration/registration.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-
+import { BackService } from '@core/services/back.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ParentWorkplaceAccounts } from './parent-workplace-accounts.component';
 
 describe('ParentWorkplaceAccounts', () => {
@@ -32,6 +33,8 @@ describe('ParentWorkplaceAccounts', () => {
           ReactiveFormsModule,
         ],
         providers: [
+          BackService,
+          BackLinkService,
           {
             provide: RegistrationService,
             useClass: mainServicePrefilled ? MockRegistrationServiceWithMainService : MockRegistrationService,
