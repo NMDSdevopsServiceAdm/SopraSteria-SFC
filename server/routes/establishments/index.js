@@ -1,8 +1,6 @@
 // default route and registration of all sub routes
 const express = require('express');
 const router = express.Router();
-// const slack = require('../../utils/slack/slack-logger');
-// const sns = require('../../aws/sns');
 const Authorization = require('../../utils/security/isAuthenticated');
 const { hasPermission } = require('../../utils/security/hasPermission');
 const {

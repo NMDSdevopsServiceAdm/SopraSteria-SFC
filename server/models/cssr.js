@@ -112,7 +112,7 @@ module.exports = function (sequelize, DataTypes) {
 
       return await this.findOne({
         where: {
-          LocalAuthority: { [Op.iLike]: `%${district}%` }, // TODO inefficient for no reason I reckon
+          LocalAuthority: { [Op.iLike]: `%${district}%` },
         },
       });
     }
