@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AllRankingsResponse, BenchmarksResponse } from '@core/model/benchmarks.model';
+import { AllRankingsResponse } from '@core/model/benchmarks.model';
 import { URLStructure } from '@core/model/url.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { Observable, of } from 'rxjs';
 
 const { build, fake } = require('@jackfranklin/test-data-bot');
@@ -15,7 +15,24 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
+        },
+        goodCqcRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
       },
       seniorCareWorkerPay: {
@@ -24,7 +41,24 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
+        },
+        goodCqcRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
       },
       registeredNursePay: {
@@ -33,7 +67,24 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
+        },
+        goodCqcRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
       },
       registeredManagerPay: {
@@ -42,7 +93,24 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
+        },
+        goodCqcRankings: {
+          currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+          maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+          hasValue: true,
+          stateMessage: '',
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
       },
     },
@@ -53,6 +121,18 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
       },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
+      },
     },
     sickness: {
       groupRankings: {
@@ -60,6 +140,18 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
         hasValue: true,
         stateMessage: '',
+      },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
       },
     },
     qualifications: {
@@ -69,6 +161,18 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
       },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
+      },
     },
     vacancy: {
       groupRankings: {
@@ -77,6 +181,18 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         hasValue: true,
         stateMessage: '',
       },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
+      },
     },
     timeInRole: {
       groupRankings: {
@@ -84,6 +200,18 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
         hasValue: true,
         stateMessage: '',
+      },
+      goodCqcRankings: {
+        currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
+        maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
+        hasValue: true,
+        stateMessage: '',
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
       },
     },
   },
@@ -146,16 +274,27 @@ export const benchmarksData = {
     staff: 460,
     workplacesGoodCqc: 22,
     staffGoodCqc: 315,
-    // localAuthority: 'LA1',
+    localAuthority: 'LA1',
     lastUpdated: new Date(),
   },
 };
 
 const returnTo = returnToBuilder();
-const allRankingsData = allRankingsResponseBuilder();
+export const allRankingsData = allRankingsResponseBuilder();
 
 @Injectable()
-export class MockBenchmarksService extends BenchmarksService {
+export class MockBenchmarksService extends BenchmarksServiceBase {
+  benchmarksData: any;
+  rankingsData: any;
+  setReturnTo(returnTo: URLStructure) {
+    throw new Error('Method not implemented.');
+  }
+  getTileData(establishmentId: string, tilesNeeded: string[]) {
+    throw new Error('Method not implemented.');
+  }
+  getRankingData(establishmentId: string, metric: string) {
+    throw new Error('Method not implemented.');
+  }
   public get returnTo(): URLStructure {
     return returnTo;
   }

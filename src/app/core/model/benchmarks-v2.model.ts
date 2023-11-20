@@ -1,4 +1,9 @@
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { BenchmarksResponse as OldBenchmarksResponse } from './benchmarks.model';
+export interface CombinedResponse {
+  oldBenchmarks: OldBenchmarksResponse;
+  newBenchmarks: BenchmarksResponse;
+}
 
 export interface BenchmarksResponse {
   sickness?: Tile;
@@ -21,13 +26,9 @@ export interface Meta {
   localAuthority: string;
 }
 export interface Tile {
-  workplaceValue: BenchmarkValue;
-  comparisonGroup: BenchmarkValue;
-  goodCqc: BenchmarkValue;
-  // workplaceValue?: BenchmarkValue;
-  // comparisonGroup?: BenchmarkValue;
-  // groupRankings?: any;
-  // goodCqc?: BenchmarkValue;
+  workplaceValue?: BenchmarkValue;
+  comparisonGroup?: BenchmarkValue;
+  goodCqc?: BenchmarkValue;
   lowTurnover?: BenchmarkValue;
   workplaces?: number;
   staff?: number;

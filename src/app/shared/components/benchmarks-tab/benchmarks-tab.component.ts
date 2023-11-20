@@ -2,12 +2,13 @@ import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@ang
 import { Router } from '@angular/router';
 import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
 import { BenchmarksAboutTheDataComponent } from './about-the-data/about-the-data.component';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-benchmarks-tab',
@@ -29,28 +30,18 @@ export class BenchmarksTabComponent implements OnInit, OnDestroy {
   public tilesData: BenchmarksResponse;
 
   constructor(
-    private benchmarksService: BenchmarksService,
+    private benchmarksService: BenchmarksServiceBase,
     private elRef: ElementRef,
     private pdfService: PdfService,
     private permissionsService: PermissionsService,
+    private featureFlagsService: FeatureFlagsService,
     protected router: Router,
   ) {}
 
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    this.subscriptions.add(
-      this.benchmarksService
-        .getTileData(this.workplace.uid, ['sickness', 'turnover', 'pay', 'qualifications'])
-        .subscribe((data) => {
-          if (data) {
-            this.tilesData = data;
-          }
-
-        }),
-    );
+    this.tilesData = this.featureFlagsService.newBenchmarksDataArea ? this.benchmarksService.benchmarksData.oldBenchmarks : this.benchmarksService.benchmarksData;
   }
-
-
 
   get payTile(): Tile {
     return this.tilesData?.pay;

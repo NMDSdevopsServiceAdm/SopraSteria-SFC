@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-const models = require('../../../models');
+const models = require('../../../../models');
 const clonedeep = require('lodash.clonedeep');
 const rankings = require('./rankings');
 const usage = require('./usage');
@@ -12,10 +12,10 @@ const REGISTERED_NURSE_ID = 23;
 const REGISTERED_MANAGER_ID = 22;
 
 const workerMap = new Map([
-  [10, 8],
-  [25, 7],
-  [23, 16],
-  [22, 4],
+  [CARE_WORKER_ID, 8],
+  [SENIOR_CARE_WORKER_ID, 7],
+  [REGISTERED_NURSE_ID, 16],
+  [REGISTERED_MANAGER_ID, 4],
 ]);
 
 const comparisonJson = {
@@ -210,19 +210,21 @@ const getBenchmarksData = async (establishmentId, mainService) => {
     meta: {},
   };
 
-  const cssr = await models.cssr.getCSSR(establishmentId);
+  const cssr = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
 
-  data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
-  data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
-  data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssr);
-  data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID, cssr);
-  data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService, cssr);
-  data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService, cssr);
-  data.qualifications = await qualificationsBenchmarks(establishmentId, mainService, cssr);
-  data.sickness = await sicknessBenchmarks(establishmentId, mainService, cssr);
-  data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssr);
+  if (cssr) {
+    data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
+    data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
+    data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssr);
+    data.registeredManagerPay = await payBenchmarks(establishmentId, mainService, REGISTERED_MANAGER_ID, cssr);
+    data.vacancyRate = await vacanciesBenchmarks(establishmentId, mainService, cssr);
+    data.turnoverRate = await turnoverBenchmarks(establishmentId, mainService, cssr);
+    data.qualifications = await qualificationsBenchmarks(establishmentId, mainService, cssr);
+    data.sickness = await sicknessBenchmarks(establishmentId, mainService, cssr);
+    data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssr);
 
-  data.meta = await getMetaData(mainService, cssr);
+    data.meta = await getMetaData(mainService, cssr);
+  }
   return data;
 };
 
@@ -250,9 +252,13 @@ const getMetaData = async (mainService, cssr) => {
 const viewBenchmarks = async (req, res) => {
   try {
     const establishmentId = req.establishmentId;
-    const { mainService } = await models.establishment.findbyId(establishmentId);
 
-    const mainServiceID = [1, 2, 8].includes(mainService.reportingID) ? mainService.reportingID : 0;
+    // This is only to retrieve cssrId associated with establishmentId
+    // Some establishments should now have CssrID attached to their record
+    const establishment = await models.establishment.findbyIdWithMainService(establishmentId);
+    const reportingId = establishment.mainService.reportingID;
+
+    const mainServiceID = [1, 2, 8].includes(reportingId) ? reportingId : 0;
     const benchmarksData = await getBenchmarksData(establishmentId, mainServiceID);
 
     return res.status(200).json(benchmarksData);

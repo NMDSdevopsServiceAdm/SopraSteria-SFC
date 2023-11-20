@@ -2,7 +2,7 @@ import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/co
 import { ActivatedRoute, Data } from '@angular/router';
 import { BenchmarksResponse, Metric, NoData, RankingsResponse, Tile } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfService } from '@core/services/pdf.service';
@@ -44,7 +44,7 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   public rankingContent: RankingContent;
 
   constructor(
-    private benchmarksService: BenchmarksService,
+    private benchmarksService: BenchmarksServiceBase,
     private establishmentService: EstablishmentService,
     private route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
@@ -88,13 +88,9 @@ export class BenchmarksMetricComponent implements OnInit, OnDestroy {
   };
 
   handleBenchmarksResponse = (benchmarks: BenchmarksResponse): void => {
-
     this.tile = benchmarks[Metric[this.type]];
-  
 
     this.metaDataAvailable = Boolean(benchmarks.meta && this.tile.workplaces && this.tile.staff);
-
-
 
     if (this.metaDataAvailable) {
       this.numberOfWorkplaces = this.tile.workplaces;

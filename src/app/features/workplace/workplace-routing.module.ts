@@ -54,7 +54,10 @@ import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -85,10 +88,10 @@ const routes: Routes = [
           users: AllUsersForEstablishmentResolver,
           workers: WorkersResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
-          // benchmarks: BenchmarksResolver,
-          // rankings: RankingsResolver,
-          // usefulLinksPay: UsefulLinkPayResolver,
-          // usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+          benchmarks: BenchmarksResolver,
+          rankings: RankingsResolver,
+          usefulLinksPay: UsefulLinkPayResolver,
+          usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
         },
       },
       {
