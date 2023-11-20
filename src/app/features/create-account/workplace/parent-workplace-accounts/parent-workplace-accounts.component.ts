@@ -20,7 +20,7 @@ export class ParentWorkplaceAccounts implements OnInit {
 
   constructor(
     protected backService: BackService,
-    protected backLinkService: BackLinkService,
+    public backLinkService: BackLinkService,
     public registrationService: RegistrationsService,
     protected router: Router,
     private route: ActivatedRoute,
@@ -37,7 +37,7 @@ export class ParentWorkplaceAccounts implements OnInit {
 
     this.setBackLink();
   }
-  protected setBackLink(): void {
+  public setBackLink(): void {
     this.backLinkService.showBackLink();
   }
 

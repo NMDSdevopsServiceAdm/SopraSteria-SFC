@@ -131,6 +131,17 @@ describe('ParentWorkplaceAccounts', () => {
 
       expect(spy).toHaveBeenCalledWith(['registration', 'add-total-staff']);
     });
+
+    it('should set the correct back link when in the parent flow', async () => {
+      const { component, fixture } = await setup();
+
+      const backLinkSpy = spyOn(component.backLinkService, 'showBackLink');
+
+      component.setBackLink();
+      fixture.detectChanges();
+
+      expect(backLinkSpy).toHaveBeenCalled();
+    });
   });
 
   describe('outside the flow', () => {
