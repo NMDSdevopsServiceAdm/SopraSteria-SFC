@@ -15,14 +15,24 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
         goodCqcRankings: {
           currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
       },
       seniorCareWorkerPay: {
@@ -31,14 +41,24 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
         goodCqcRankings: {
           currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
       },
       registeredNursePay: {
@@ -47,14 +67,24 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
         goodCqcRankings: {
           currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
       },
       registeredManagerPay: {
@@ -63,14 +93,24 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
         goodCqcRankings: {
           currentRank: fake((f) => f.datatype.number({ min: 1, max: 100 })),
           maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
           hasValue: true,
           stateMessage: '',
-          allValues: [],
+          allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
         },
       },
     },
@@ -86,7 +126,12 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
         hasValue: true,
         stateMessage: '',
-        allValues: [],
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
       },
     },
     sickness: {
@@ -101,7 +146,12 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
         hasValue: true,
         stateMessage: '',
-        allValues: [],
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
       },
     },
     qualifications: {
@@ -116,7 +166,12 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
         hasValue: true,
         stateMessage: '',
-        allValues: [],
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
       },
     },
     vacancy: {
@@ -131,7 +186,12 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
         hasValue: true,
         stateMessage: '',
-        allValues: [],
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
       },
     },
     timeInRole: {
@@ -146,7 +206,12 @@ const allRankingsResponseBuilder = build('AllRankingsResponse', {
         maxRank: fake((f) => f.datatype.number({ min: 2, max: 100 })),
         hasValue: true,
         stateMessage: '',
-        allValues: [],
+        allValues: [
+            {
+              value: -1,
+              currentEst: true,
+            },
+          ],
       },
     },
   },
