@@ -111,46 +111,46 @@ describe('training route', () => {
         );
       });
 
-      // TODO
-      // it('should fail as username doesnt exist', async () => {
-      //   let workerTrainingRecord = createWorkerTrainingRecord(true);
-      //   sandbox.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').callsFake(() => {
-      //     return mandatoryTrainingRecords;
-      //   });
-      //   sandbox.stub(Training, 'fetch').callsFake(() => {
-      //     return workerTrainingRecord;
-      //   });
-      //   const updateStatus = (status) => {
-      //     expect(status).to.deep.equal(500);
-      //   };
-      //   const updateJson = (json) => {
-      //     expect(typeof json).to.deep.equal('object');
-      //     expect(json.training[0].uid).to.equal(mandatoryTrainingRecords[0].id);
-      //     expect(json.training[1].uid).to.not.equal(mandatoryTrainingRecords[1].id);
-      //   };
-      //   const updateSend = (string) => {
-      //     expect(typeof string).to.deep.equal('string');
-      //     expect(string).to.include('Failed to get Training Records for Worker');
-      //   };
+      it('should fail as username doesnt exist', async () => {
+        let workerTrainingRecord = createWorkerTrainingRecord(true);
+        sandbox.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').callsFake(() => {
+          return mandatoryTrainingRecords;
+        });
+        sandbox.stub(Training, 'fetch').callsFake(() => {
+          return workerTrainingRecord;
+        });
+        const updateStatus = (status) => {
+          expect(status).to.deep.equal(500);
+        };
+        const updateJson = (json) => {
+          expect(typeof json).to.deep.equal('object');
+          expect(json.training[0].uid).to.equal(mandatoryTrainingRecords[0].id);
+          expect(json.training[1].uid).to.not.equal(mandatoryTrainingRecords[1].id);
+        };
+        const updateSend = (string) => {
+          expect(typeof string).to.deep.equal('string');
+          expect(string).to.include('Failed to get Training Records for Worker');
+        };
 
-      //   await trainingRoute.getTrainingListWithMissingMandatoryTraining(
-      //     {
-      //       establishmentId: establishmentId,
-      //       username: 'test123',
-      //       params: {
-      //         workerId: 123456,
-      //       },
-      //       body: {
-      //         establishmentId: establishmentId,
-      //       },
-      //       headers: {
-      //         'x-override-put-return-all': false,
-      //       },
-      //     },
-      //     { status: updateStatus, json: updateJson, send: updateSend },
-      //   );
-      // });
+        await trainingRoute.getTrainingListWithMissingMandatoryTraining(
+          {
+            establishmentId: establishmentId,
+            username: 'test123',
+            params: {
+              workerId: 123456,
+            },
+            body: {
+              establishmentId: establishmentId,
+            },
+            headers: {
+              'x-override-put-return-all': false,
+            },
+          },
+          { status: updateStatus, json: updateJson, send: updateSend },
+        );
+      });
     });
+
     describe('No mandatory Training stubs', () => {
       afterEach(function () {
         sandbox.restore();
