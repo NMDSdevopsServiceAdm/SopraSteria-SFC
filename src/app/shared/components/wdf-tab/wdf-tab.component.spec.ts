@@ -151,7 +151,7 @@ describe('WdfTabComponent', () => {
     it('should display the not meeting requirements message when the user is not eligible', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const requirementsNotMetSentence = `Some of your workplaces' data does not meet the WDF ${year - 1} to ${
+      const requirementsNotMetSentence = `Some of your workplaces' data does not meet the WDF ${year} to ${
         year + 1
       } requirements`;
       const viewWorkplacesLink = 'View your workplaces';
