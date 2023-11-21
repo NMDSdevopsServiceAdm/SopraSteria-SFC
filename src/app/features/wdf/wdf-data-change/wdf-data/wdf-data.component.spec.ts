@@ -206,7 +206,7 @@ describe('WdfDataComponent', () => {
     it('should display the correct message and timeframe if meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const timeframeSentence = `Your data meets the WDF ${year - 1} to ${year} requirements`;
+      const timeframeSentence = `Your data meets the WDF ${year} to ${year + 1} requirements`;
 
       component.isStandalone = true;
       component.wdfEligibilityStatus.overall = true;
@@ -233,7 +233,7 @@ describe('WdfDataComponent', () => {
     it('should display the not meeting message if not meeting WDF requirements overall', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const notMeetingMessage = `Your data does not meet the WDF ${year - 1} to ${year} requirements`;
+      const notMeetingMessage = `Your data does not meet the WDF ${year} to ${year + 1} requirements`;
 
       component.isStandalone = true;
       component.wdfEligibilityStatus.overall = false;
@@ -245,7 +245,7 @@ describe('WdfDataComponent', () => {
     it('should display the correct message and timeframe for parents if meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const timeframeSentence = `Your data meets the WDF ${year - 1} to ${year} requirements`;
+      const timeframeSentence = `Your data meets the WDF ${year} to ${year + 1} requirements`;
 
       component.isStandalone = false;
       component.wdfEligibilityStatus.overall = true;
@@ -259,9 +259,9 @@ describe('WdfDataComponent', () => {
     it('should display the "keeping data up to date" message for parents if meeting WDF requirements with data changes', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const keepUpToDateMessage = `Your workplace met the WDF ${
-        year - 1
-      } to ${year} requirements, but keeping your data up to date will save you time next year`;
+      const keepUpToDateMessage = `Your workplace met the WDF ${year} to ${
+        year + 1
+      } requirements, but keeping your data up to date will save you time next year`;
 
       component.isStandalone = false;
       component.wdfEligibilityStatus.overall = true;
@@ -275,7 +275,7 @@ describe('WdfDataComponent', () => {
     it('should display the not meeting message for parents if not meeting WDF requirements overall', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const notMeetingMessage = `Your data does not meet the WDF ${year - 1} to ${year} requirements`;
+      const notMeetingMessage = `Your data does not meet the WDF ${year} to ${year + 1} requirements`;
 
       component.isStandalone = false;
       component.wdfEligibilityStatus.overall = false;

@@ -35,7 +35,7 @@ describe('WdfTabComponent', () => {
     it('should display the correct timeframe for meeting WDF requirements', async () => {
       const { getByText } = await setup();
       const year = new Date().getFullYear();
-      const timeframeSentence = `Your data has met the WDF ${year - 1} to ${year} requirements`;
+      const timeframeSentence = `Your data has met the WDF ${year} to ${year + 1} requirements`;
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
@@ -59,7 +59,7 @@ describe('WdfTabComponent', () => {
     it('should not display the meeting requirements message when the user is not eligible', async () => {
       const { component, fixture, queryByText } = await setup();
       const year = new Date().getFullYear();
-      const timeframeSentence = `Your data has met the WDF ${year - 1} to ${year} requirements`;
+      const timeframeSentence = `Your data has met the WDF ${year} to ${year + 1} requirements`;
       const requirementsMetMessage = 'Your data met the requirements on 21 July 2021';
 
       component.overallWdfEligibility = false;
@@ -72,7 +72,7 @@ describe('WdfTabComponent', () => {
     it('should display the not meeting requirements message when the user is not eligible', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const timeframeSentence = `Your data has does not meet the WDF ${year - 1} to ${year} requirements`;
+      const timeframeSentence = `Your data has does not meet the WDF ${year} to ${year + 1} requirements`;
       const viewWdfLink = 'View your WDF data';
       const viewWdfSentence = 'to see where it does not meet the requirements';
 
@@ -89,7 +89,7 @@ describe('WdfTabComponent', () => {
     it('should display the correct timeframe for parents for meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const timeframeSentence = `All of your workplaces have met the WDF ${year - 1} to ${year} data requirements`;
+      const timeframeSentence = `All of your workplaces have met the WDF ${year} to ${year + 1} data requirements`;
 
       component.isParent = true;
       component.parentOverallWdfEligibility = true;
@@ -139,7 +139,7 @@ describe('WdfTabComponent', () => {
     it('should not display the meeting requirements message when the parent is not eligible', async () => {
       const { component, fixture, queryByText } = await setup();
       const year = new Date().getFullYear();
-      const timeframeSentence = `All of your workplaces have met the WDF ${year - 1} to ${year} data requirements`;
+      const timeframeSentence = `All of your workplaces have met the WDF ${year} to ${year + 1} data requirements`;
 
       component.isParent = true;
       component.parentOverallWdfEligibility = false;
@@ -151,9 +151,9 @@ describe('WdfTabComponent', () => {
     it('should display the not meeting requirements message when the user is not eligible', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const requirementsNotMetSentence = `Some of your workplaces' data does not meet the WDF ${
-        year - 1
-      } to ${year} requirements`;
+      const requirementsNotMetSentence = `Some of your workplaces' data does not meet the WDF ${year - 1} to ${
+        year + 1
+      } requirements`;
       const viewWorkplacesLink = 'View your workplaces';
       const viewWorkplacesSentence = 'to see which have data that does not meet the requirements.';
 
