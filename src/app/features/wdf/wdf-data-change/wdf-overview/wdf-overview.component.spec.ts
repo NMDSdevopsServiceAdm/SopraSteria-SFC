@@ -46,7 +46,8 @@ describe('WdfOverviewComponent', () => {
 
     it('should display the correct timeframe for meeting WDF requirements', async () => {
       const { getByText } = await setup();
-      const timeframeSentence = 'Your data has met the WDF 2021 to 2022 requirements';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `Your data has met the WDF ${year - 1} to ${year} requirements`;
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
@@ -69,7 +70,8 @@ describe('WdfOverviewComponent', () => {
   describe('Unhappy path', async () => {
     it('should not display the meeting requirements message when the user is not eligible', async () => {
       const { component, fixture, queryByText } = await setup();
-      const timeframeSentence = 'Your data has met the WDF 2021 to 2022 requirements';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `Your data has met the WDF ${year - 1} to ${year} requirements`;
       const requirementsMetMessage = 'Your data met the requirements on 21 July 2021';
 
       component.overallWdfEligibility = false;
@@ -81,14 +83,15 @@ describe('WdfOverviewComponent', () => {
 
     it('should display the not meeting requirements message when the user is not eligible', async () => {
       const { component, fixture, getByText } = await setup();
-      const requirementsNotMetSentence = 'Your data does not meet the WDF 2021 to 2022 requirements';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `Your data does not meet the WDF ${year - 1} to ${year} requirements`;
       const viewWdfLink = 'View your WDF data';
       const viewWdfSentence = 'to see where it does not meet the requirements';
 
       component.overallWdfEligibility = false;
       fixture.detectChanges();
 
-      expect(getByText(requirementsNotMetSentence, { exact: false })).toBeTruthy();
+      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
       expect(getByText(viewWdfLink, { exact: false })).toBeTruthy();
       expect(getByText(viewWdfSentence, { exact: false })).toBeTruthy();
     });
@@ -97,7 +100,8 @@ describe('WdfOverviewComponent', () => {
   describe('Parent workplaces happy path', () => {
     it('should display the correct timeframe for parents for meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = 'All of your workplaces have met the WDF 2021 to 2022 data requirements';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `All of your workplaces have met the WDF ${year - 1} to ${year} data requirements`;
 
       component.isParent = true;
       component.parentOverallWdfEligibility = true;
@@ -146,7 +150,8 @@ describe('WdfOverviewComponent', () => {
   describe('Parent workplaces unhappy path', () => {
     it('should not display the meeting requirements message when the parent is not eligible', async () => {
       const { component, fixture, queryByText } = await setup();
-      const timeframeSentence = 'All of your workplaces have met the WDF 2021 to 2022 data requirements';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `All of your workplaces have met the WDF ${year - 1} to ${year} data requirements`;
 
       component.isParent = true;
       component.parentOverallWdfEligibility = false;
@@ -157,8 +162,10 @@ describe('WdfOverviewComponent', () => {
 
     it('should display the not meeting requirements message when the user is not eligible', async () => {
       const { component, fixture, getByText } = await setup();
-      const requirementsNotMetSentence =
-        "Some of your workplaces' data does not meet the WDF 2021 to 2022 requirements";
+      const year = new Date().getFullYear();
+      const requirementsNotMetSentence = `Some of your workplaces' data does not meet the WDF ${
+        year - 1
+      } to ${year} requirements`;
       const viewWorkplacesLink = 'View your workplaces';
       const viewWorkplacesSentence = 'to see which have data that does not meet the requirements.';
 

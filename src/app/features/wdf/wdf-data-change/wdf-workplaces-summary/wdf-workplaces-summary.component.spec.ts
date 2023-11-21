@@ -75,7 +75,8 @@ describe('WdfWorkplacesSummaryComponent', () => {
   describe('WdfParentStatusMessageComponent', async () => {
     it('should display the correct message and timeframe if meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = `All your workplaces' data meets the WDF 2021 to 2022 requirements`;
+      const year = new Date().getFullYear();
+      const timeframeSentence = `All your workplaces' data meets the WDF ${year - 1} to ${year} requirements`;
 
       component.parentOverallEligibilityStatus = true;
       component.parentCurrentEligibilityStatus = true;
@@ -86,7 +87,10 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
     it('should display the correct message if workplaces have met WDF requirements this year but not meeting currently', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = `Your workplaces met the WDF 2021 to 2022 requirements, but updating those currently shown as 'not meeting' will save you time next year.`;
+      const year = new Date().getFullYear();
+      const timeframeSentence = `Your workplaces met the WDF ${
+        year - 1
+      } to ${year} requirements, but updating those currently shown as 'not meeting' will save you time next year.`;
 
       component.parentOverallEligibilityStatus = true;
       component.parentCurrentEligibilityStatus = false;
@@ -97,7 +101,10 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
     it('should display the correct message if workplaces have not met WDF requirements this year', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = `Some of your workplaces' data does not meet the WDF 2021 to 2022 requirements`;
+      const year = new Date().getFullYear();
+      const timeframeSentence = `Some of your workplaces' data does not meet the WDF ${
+        year - 1
+      } to ${year} requirements`;
 
       component.parentOverallEligibilityStatus = false;
       component.parentCurrentEligibilityStatus = false;
