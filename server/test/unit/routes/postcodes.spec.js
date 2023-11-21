@@ -1,9 +1,9 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const postcodes = require('../../../routes/postcodes');
+const getAddressAPI = require('../../../utils/getAddressAPI');
 const models = require('../../../models');
 const httpMocks = require('node-mocks-http');
-const getAddressAPI = require('../../../utils/getAddressAPI');
 
 describe('postcodes', () => {
   beforeEach(() => {
@@ -105,6 +105,9 @@ describe('postcodes', () => {
             county: 'GREATER LONDON',
             rm_organisation_name: '',
           },
+          cssrRecord: {
+            local_custodian_code: '1000',
+          },
         },
         {
           dataValues: {
@@ -119,10 +122,13 @@ describe('postcodes', () => {
             county: 'GREATER LONDON',
             rm_organisation_name: '',
           },
+          cssrRecord: {
+            local_custodian_code: '1000',
+          },
         },
       ];
 
-      sinon.stub(models.pcodedata, 'findAll').returns(foundAddresses);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').returns(foundAddresses);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -142,7 +148,8 @@ describe('postcodes', () => {
 
       const foundAddresses = [];
 
-      sinon.stub(models.pcodedata, 'findAll').returns(foundAddresses);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').returns(foundAddresses);
+      sinon.stub(models.postcodes, 'firstOrCreate').returns(foundAddresses);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();

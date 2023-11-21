@@ -18,8 +18,6 @@ const models = require('../index');
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
 const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
 
-const getCssrRecordFromPostcode = require('../../services/cssr-records/cssr-record').GetCssrRecordFromPostcode;
-
 // associations
 const Worker = require('./worker').Worker;
 
@@ -67,6 +65,7 @@ class Establishment extends EntityValidator {
     this._town = null;
     this._county = null;
     this._locationId = null;
+    this._cssrID = null;
     this._provId = null;
     this._postcode = null;
     this._isRegulated = null;
@@ -761,11 +760,11 @@ class Establishment extends EntityValidator {
 
         // We use the postcode to get local custodian code
         // and use this to get the Cssr record
-        const cssrResult = await getCssrRecordFromPostcode(this._postcode);
+        const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
-        if (cssrResult) {
-          this._cssrID = cssrResult.theAuthority.id; //TODO!
-          nmdsLetter = cssrResult.theAuthority.nmdsIdLetter;
+        if (cssrResults) {
+          this._cssrID = cssrResults[0].cssrRecord.id;
+          nmdsLetter = cssrResults[0].cssrRecord.nmdsIdLetter;
         }
 
         // catch all - because we don't want new establishments failing just because of old postcode data
@@ -1515,16 +1514,16 @@ class Establishment extends EntityValidator {
           fetchResults.allServiceCapacityQuestions = null;
         }
 
-        // need to identify which, if any, of the shared authorities is attributed to the
-        //  primary Authority; that is the Local Authority associated with the physical area
-        //  of the given Establishment (using the postcode as the key)
-        // lookup primary authority by trying to resolve on specific postcode code
+        const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
-        const cssrResult = await getCssrRecordFromPostcode(this._postcode);
+        if (!cssrResults || cssrResults.length == 0) {
+          console.log('Could not retrieve cssr record');
+          return {};
+        }
 
         fetchResults.primaryAuthorityCssr = {
-          id: cssrResult.theAuthority.id,
-          name: cssrResult.theAuthority.name,
+          id: cssrResults[0].cssrRecord.id,
+          name: cssrResults[0].cssrRecord.name,
         };
 
         if (fetchResults.auditEvents) {
@@ -1655,7 +1654,7 @@ class Establishment extends EntityValidator {
           this.uid,
           nameId ? nameId.property : null,
           '',
-          `Failed to update (archive) estabalishment record with uid: ${this._uid}`,
+          `Failed to update (archive) establishment record with uid: ${this._uid}`,
         );
       }
     } catch (err) {
@@ -1672,7 +1671,7 @@ class Establishment extends EntityValidator {
         this.uid,
         nameId ? nameId.property : null,
         err,
-        `Failed to update (archive) estabalishment record with uid: ${this._uid}`,
+        `Failed to update (archive) establishment record with uid: ${this._uid}`,
       );
     }
   }

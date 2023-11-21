@@ -7,14 +7,14 @@ const userReport = require('../../../../../routes/reports/localAuthorityReport/u
 const models = require('../../../../../models');
 
 const la = {
-  theAuthority: {
+  cssrRecord: {
     id: 123,
     name: 'Kirklees',
     nmdsIdLetter: 'J',
   },
 };
 const la2 = {
-  theAuthority: {
+  cssrRecord: {
     id: 123,
     name: 'Kirklees',
     nmdsIdLetter: 'J',
@@ -24,16 +24,18 @@ const la2 = {
 describe('/server/routes/reports/localAuthorityReport/user', () => {
   describe('identifyLocalAuthority()', () => {
     beforeEach(() => {
-      sinon.stub(models.pcodedata, 'findOne').callsFake(async (args) => {
+      sinon.stub(models.pcodedata, 'findAll').callsFake(async (args) => {
         return args.where.postcode === 'LS1 1AA' ? { postcode: args.where.postcode, ...la } : null;
       });
     });
     afterEach(() => {
       sinon.restore();
     });
-    it('should return a la if one is not found in postcodedata table but it is found via fuzzy match', async () => {
+
+    // TODO restore test getAddressAPIFixes
+    it('should return a la if one is not found in postcodedata table but it is found via loose match', async () => {
       const localAuth = await userReport.identifyLocalAuthority('LS1 1AA');
-      expect(localAuth).to.deep.equal(la2.theAuthority.name);
+      expect(localAuth).to.deep.equal(la2.cssrRecord.name);
     });
     it('should return nothing if none is found', async () => {
       const localAuth = await userReport.identifyLocalAuthority('BD1 1AA');

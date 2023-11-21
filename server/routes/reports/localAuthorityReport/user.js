@@ -11,8 +11,6 @@ const cheerio = require('cheerio');
 const express = require('express');
 const router = express.Router();
 
-const getCssrRecordFromPostcode = require('../../../services/cssr-records/cssr-record').GetCssrRecordFromPostcode;
-
 //Constants string needed by this file in several places
 const folderName = 'template';
 const workplacesSheetName = path.join('xl', 'worksheets', 'sheet1.xml');
@@ -79,10 +77,10 @@ const identifyLocalAuthority = async (postcode) => {
 
   // We use the postcode to get local custodian code
   // and use this to get the Cssr record
-  const cssrResult = await getCssrRecordFromPostcode(postcode);
+  const cssrResult = await models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
 
   if (cssrResult) {
-    return cssrResult.theAuthority.name;
+    return cssrResult.cssrRecord.name;
   }
 
   //Couldn't get local authority name. Just leave it blank?

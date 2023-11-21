@@ -6,7 +6,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
@@ -19,6 +18,8 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { StandAloneAccountComponent } from './standAloneAccount.component';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 
 describe('StandAloneAccountComponent', () => {
   const homeTab = { title: 'Home', slug: 'home', active: true };
@@ -35,7 +36,10 @@ describe('StandAloneAccountComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
-        BenchmarksService,
+        {
+          provide: BenchmarksServiceBase,
+          useClass: MockBenchmarksService,
+        },
         {
           provide: FeatureFlagsService,
           useClass: MockFeatureFlagsService,
@@ -58,7 +62,7 @@ describe('StandAloneAccountComponent', () => {
 
     const component = fixture.componentInstance;
 
-    const benchmarksService = TestBed.inject(BenchmarksService);
+    const benchmarksService = TestBed.inject(BenchmarksServiceBase);
     const benchmarksSpy = spyOn(benchmarksService, 'postBenchmarkTabUsage').and.callThrough();
 
     return {

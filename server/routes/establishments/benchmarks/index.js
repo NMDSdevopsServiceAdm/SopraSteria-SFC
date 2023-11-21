@@ -6,8 +6,6 @@ const rankings = require('./rankings');
 const usage = require('./usage');
 const { getPay, getQualifications, getSickness, getTurnover } = require('./benchmarksService');
 
-const { hasPermission } = require('../../../utils/security/hasPermission');
-
 const comparisonJson = {
   value: 0,
   hasValue: false,
@@ -45,7 +43,6 @@ const getMetaData = async (benchmarkComparisonGroup) => {
 };
 
 const pay = async (establishmentId, benchmarkComparisonGroup) => {
-
   return await buildTile(establishmentId, benchmarkComparisonGroup, 'pay', getPay);
 };
 
@@ -62,8 +59,6 @@ const turnover = async (establishmentId, benchmarkComparisonGroup) => {
 };
 
 const buildTile = async (establishmentId, benchmarkComparisonGroup, key, getMetricCallback) => {
-
-
   const { value, stateMessage } = await getMetricCallback(establishmentId);
 
   const hasValue = !stateMessage || stateMessage.length === 0;
@@ -81,7 +76,6 @@ const buildTile = async (establishmentId, benchmarkComparisonGroup, key, getMetr
 };
 
 const buildComparisonGroupMetrics = (key, comparisonGroups) => {
-
   const comparisonGroupMetrics = clonedeep(comparisonGroupsJson);
   if (comparisonGroups) {
     comparisonGroupMetrics.comparisonGroup = buildMetric(comparisonGroups[key]);

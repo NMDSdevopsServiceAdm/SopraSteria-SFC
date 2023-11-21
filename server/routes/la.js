@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router({ mergeParams: true });
 const models = require('../models');
 const LaFormatters = require('../models/api/la');
-const getCssrRecordFromPostcode = require('../services/cssr-records/cssr-record').GetCssrRecordFromPostcode;
 
 // return the list of all Local Authorities
 router.route('/').get(async (req, res) => {
@@ -34,23 +33,23 @@ router.route('/').get(async (req, res) => {
 
 // returns the primary Local Authority for the given postcode
 router.route('/:postcode').get(async (req, res) => {
-  const givenPostcode = req.params.postcode;
   let primaryAuthorityCssr = null;
 
   try {
-    const cssrResult = await getCssrRecordFromPostcode(givenPostcode);
+    const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(req.params.postcode);
+
+    if (!cssrResults || cssrResults.length == 0) {
+      return res.status(404).send(`${req.params.postcode} not found`);
+    }
 
     primaryAuthorityCssr = {
-      id: cssrResult.theAuthority.id,
-      name: cssrResult.theAuthority.name,
+      id: cssrResults.cssrRecord.id,
+      name: cssrResults.cssrRecord.name,
     };
 
     if (primaryAuthorityCssr) {
       res.status(200);
-      return res.status(200).json({
-        id: primaryAuthorityCssr.id,
-        name: primaryAuthorityCssr.name,
-      });
+      return res.status(200).json(primaryAuthorityCssr);
     } else {
       return res.status(404).send('Not found');
     }
