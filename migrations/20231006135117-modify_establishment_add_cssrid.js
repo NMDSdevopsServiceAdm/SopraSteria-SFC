@@ -1,29 +1,42 @@
 'use strict';
 
-/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    queryInterface.addColumn(
-      {
-        tableName: 'Establishment',
-        schema: 'cqc',
-      },
-      'CssrID',
-      {
-        type: Sequelize.DataTypes.INTEGER,
-        allowNull: true,
-        primaryKey: true,
-      },
-    );
+    return queryInterface.sequelize.transaction(async (transaction) => {
+      await Promise.all([
+        queryInterface.addColumn(
+          {
+            tableName: 'Establishment',
+            schema: 'cqc',
+          },
+          'CssrID',
+          {
+            type: Sequelize.DataTypes.INTEGER,
+            allowNull: true,
+            primaryKey: true,
+          },
+          {
+            transaction,
+          },
+        ),
+      ]);
+    });
   },
 
   async down(queryInterface) {
-    queryInterface.removeColumn(
-      {
-        tableName: 'Establishment',
-        schema: 'cqc',
-      },
-      'CssrID',
-    );
+    return queryInterface.sequelize.transaction(async (transaction) => {
+      await Promise.all([
+        queryInterface.removeColumn(
+          {
+            tableName: 'Establishment',
+            schema: 'cqc',
+          },
+          'CssrID',
+          {
+            transaction,
+          },
+        ),
+      ]);
+    });
   },
 };
