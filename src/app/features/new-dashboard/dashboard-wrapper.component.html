@@ -1,13 +1,13 @@
 <ng-container *ngIf="standAloneAccount && newHomeDesignFlag; else parentSubDashboard">
-  <app-new-dashboard data-testid="standAloneDashboard" [isStandAloneAccount]="true"></app-new-dashboard>
+  <app-new-dashboard data-testid="standAloneDashboard" [isStandAloneAccount]="true" [workplace]="establishment"></app-new-dashboard>
 </ng-container>
 <ng-template #parentSubDashboard>
   <ng-container *ngIf="newHomeDesignParentFlag && parentAccount; else subsDashboard">
-    <app-new-dashboard data-testid="parentDashboard" [isParent]="true"></app-new-dashboard>
+    <app-new-dashboard data-testid="parentDashboard" [isParent]="true" [workplace]="establishment"></app-new-dashboard>
   </ng-container>
   <ng-template #subsDashboard>
     <ng-container *ngIf="newHomeDesignParentFlag && subsAccount; else oldParentSubDashboard">
-      <app-new-dashboard data-testid="subsDashboard" [isSubsAccount]="true"></app-new-dashboard>
+      <app-new-dashboard data-testid="subsDashboard" [isSubsAccount]="true" [workplace]="establishment"></app-new-dashboard>
     </ng-container>
     <ng-template #oldParentSubDashboard>
       <app-dashboard data-testid="parentSubDashboard"></app-dashboard>

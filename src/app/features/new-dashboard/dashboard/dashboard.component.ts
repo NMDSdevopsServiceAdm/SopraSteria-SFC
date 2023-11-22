@@ -19,7 +19,6 @@ import { Subscription } from 'rxjs';
 export class NewDashboardComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   public selectedTab: string;
-  public workplace: Establishment;
   public workerCount: number;
   public workers: Worker[];
   public trainingCounts: TrainingCounts;
@@ -33,12 +32,12 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public isParent: boolean;
   @Input() isStandAloneAccount: boolean;
   @Input() isSubsAccount: boolean;
+  @Input() workplace: Establishment;
 
   constructor(
     private route: ActivatedRoute,
     private tabsService: TabsService,
     protected benchmarksService: BenchmarksService,
-    private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private authService: AuthService,
     private cd: ChangeDetectorRef,
@@ -47,7 +46,6 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
-    this.workplace = this.establishmentService.primaryWorkplace;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
     this.tilesData = this.benchmarksService.benchmarksData;
 
