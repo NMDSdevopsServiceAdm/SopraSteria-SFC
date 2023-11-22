@@ -81,8 +81,8 @@ describe('WdfStaffRecordComponent', () => {
 
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = false;
-    component.wdfStartDate = '2021-01-01';
-    component.wdfEndDate = '2022-01-01';
+    component.wdfStartDate = `${year}-01-01`;
+    component.wdfEndDate = `${year+1}-01-01`;
     component.workerList = ['1', '2', '3', '4'];
 
     fixture.detectChanges();
@@ -105,8 +105,8 @@ describe('WdfStaffRecordComponent', () => {
 
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = true;
-    component.wdfStartDate = '2021-01-01';
-    component.wdfEndDate = '2022-01-01';
+    component.wdfStartDate = `${year}-01-01`;
+    component.wdfEndDate = `${year+1}-01-01`;
     component.workerList = ['1', '2', '3', '4'];
     fixture.detectChanges();
 

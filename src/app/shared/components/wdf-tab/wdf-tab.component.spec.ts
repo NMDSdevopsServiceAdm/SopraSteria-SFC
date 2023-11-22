@@ -62,7 +62,7 @@ describe('WdfTabComponent', () => {
       const { component, fixture, queryByText } = await setup();
       const year = new Date().getFullYear();
       const timeframeSentence = `Your data has met the WDF ${year} to ${year + 1} requirements`;
-      const requirementsMetMessage = 'Your data met the requirements on 21 July 2021';
+      const requirementsMetMessage = `Your data met the requirements on 21 July ${year}`;
 
       component.overallWdfEligibility = false;
       fixture.detectChanges();
@@ -74,7 +74,7 @@ describe('WdfTabComponent', () => {
     it('should display the not meeting requirements message when the user is not eligible', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const timeframeSentence = `Your data has does not meet the WDF ${year} to ${year + 1} requirements`;
+      const timeframeSentence = `Your data does not meet the WDF ${year} to ${year + 1} requirements`;
       const viewWdfLink = 'View your WDF data';
       const viewWdfSentence = 'to see where it does not meet the requirements';
 
@@ -102,11 +102,12 @@ describe('WdfTabComponent', () => {
 
     it('should display the correct date for when parent and all subs became eligible', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = `Your workplaces' data met the requirements on 31 July 2021`;
+      const year = new Date().getFullYear();
+      const timeframeSentence = `Your workplaces' data met the requirements on 31 July ${year}`;
 
       component.isParent = true;
       component.parentOverallWdfEligibility = true;
-      component.parentOverallEligibilityDate = dayjs('2021-07-31').format('D MMMM YYYY');
+      component.parentOverallEligibilityDate = dayjs(`${year}-07-31`).format('D MMMM YYYY');
       fixture.detectChanges();
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
@@ -114,7 +115,8 @@ describe('WdfTabComponent', () => {
 
     it('should display the correct date for parents for when WDF eligibility is valid until', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = 'and will continue to meet them until 31 March 2022.';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `and will continue to meet them until 31 March ${year+1}`;
 
       component.isParent = true;
       component.parentOverallWdfEligibility = true;
@@ -172,11 +174,12 @@ describe('WdfTabComponent', () => {
   describe('getParentAndSubs', async () => {
     it('should calculate parentOverallWdfEligibility to be true if all workplaces are eligible', async () => {
       const { component, fixture } = await setup();
+      const year = new Date().getFullYear();
 
       component.isParent = true;
       component.workplaces = [
-        { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
-        { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
+        { wdf: { overall: true, overallWdfEligibility: `${year}-07-31` } },
+        { wdf: { overall: true, overallWdfEligibility: `${year}-05-01` } },
       ];
 
       component.getParentOverallWdfEligibility();
@@ -187,10 +190,11 @@ describe('WdfTabComponent', () => {
 
     it('should calculate parentOverallWdfEligibility to be false if a workplace is ineligible', async () => {
       const { component, fixture } = await setup();
+      const year = new Date().getFullYear();
 
       component.isParent = true;
       component.workplaces = [
-        { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+        { wdf: { overall: true, overallWdfEligibility: `${year}-07-31` } },
         { wdf: { overall: false, overallWdfEligibility: '' } },
       ];
 
@@ -202,18 +206,19 @@ describe('WdfTabComponent', () => {
 
     it('should correctly calculate parentOverallEligibilityDate if all workplaces are eligible', async () => {
       const { component, fixture } = await setup();
+      const year = new Date().getFullYear();
 
       component.isParent = true;
       component.parentOverallWdfEligibility = true;
       component.workplaces = [
-        { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
-        { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
+        { wdf: { overall: true, overallWdfEligibility: `${year}-07-31` } },
+        { wdf: { overall: true, overallWdfEligibility: `${year}-05-01` } },
       ];
 
       component.getLastOverallEligibilityDate();
       fixture.detectChanges();
 
-      expect(component.parentOverallEligibilityDate).toEqual('31 July 2021');
+      expect(component.parentOverallEligibilityDate).toEqual(`31 July ${year}`);
     });
   });
 });

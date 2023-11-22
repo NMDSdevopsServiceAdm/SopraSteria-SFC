@@ -54,14 +54,16 @@ describe('WdfOverviewComponent', () => {
 
     it('should display the correct date for when the user became eligible', async () => {
       const { getByText } = await setup();
-      const timeframeSentence = 'Your data met the requirements on 21 July 2021';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `Your data met the requirements on 21 July ${year}`;
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
 
     it('should display the correct date for when WDF eligibility is valid until', async () => {
       const { getByText } = await setup();
-      const timeframeSentence = 'and will continue to meet them until 31 March 2022.';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `and will continue to meet them until 31 March ${year+1}.`;
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
@@ -112,11 +114,12 @@ describe('WdfOverviewComponent', () => {
 
     it('should display the correct date for when parent and all subs became eligible', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = "Your workplaces' data met the requirements on 31 July 2021";
+      const year = new Date().getFullYear();
+      const timeframeSentence = `Your workplaces' data met the requirements on 31 July ${year}`;
 
       component.isParent = true;
       component.parentOverallWdfEligibility = true;
-      component.parentOverallEligibilityDate = dayjs('2021-07-31').format('D MMMM YYYY');
+      component.parentOverallEligibilityDate = dayjs(`${year}-07-31`).format('D MMMM YYYY');
       fixture.detectChanges();
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
@@ -124,7 +127,8 @@ describe('WdfOverviewComponent', () => {
 
     it('should display the correct date for parents for when WDF eligibility is valid until', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = 'and will continue to meet them until 31 March 2022.';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `and will continue to meet them until 31 March ${year+1}.`;
 
       component.isParent = true;
       component.parentOverallWdfEligibility = true;

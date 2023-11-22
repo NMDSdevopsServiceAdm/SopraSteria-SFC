@@ -7,6 +7,9 @@ import { Observable, of } from 'rxjs';
 export class MockReportService extends ReportService {
   public getWDFReport(workplaceUid: string): Observable<WDFReport> {
     const d = new Date();
+    //21 July YEAR
+    d.setMonth(6);
+    d.setDate(21);
     d.setHours(0, 0, 0, 0);
     const dateString = d.toISOString();
 
