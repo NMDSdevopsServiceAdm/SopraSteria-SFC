@@ -42,14 +42,16 @@ describe('WdfTabComponent', () => {
 
     it('should display the correct date for when the user became eligible', async () => {
       const { getByText } = await setup();
-      const timeframeSentence = 'Your data met the requirements on 21 July 2021';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `Your data met the requirements on 21 July ${year}`;
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
 
     it('should display the correct date for when WDF eligibility is valid until', async () => {
       const { getByText } = await setup();
-      const timeframeSentence = 'and will continue to meet them until 31 March 2022.';
+      const year = new Date().getFullYear();
+      const timeframeSentence = `and will continue to meet them until 31 March ${year + 1}.`;
 
       expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
     });
