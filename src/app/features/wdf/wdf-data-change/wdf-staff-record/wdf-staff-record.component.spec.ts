@@ -72,7 +72,8 @@ describe('WdfStaffRecordComponent', () => {
 
   it('should display the "not meeting requirements" message and red cross when user does not meet WDF requirements overall and current staff record does not', async () => {
     const { component, fixture, getByText } = await setup();
-    const expectedStatusMessage = 'This record does not meet the WDF 2021 to 2022 requirements';
+    const year = new Date().getFullYear();
+    const expectedStatusMessage = `This record does not meet the WDF ${year} to ${year + 1} requirements`;
     const redCrossVisuallyHiddenMessage = 'Red cross';
 
     component.worker = workerBuilder() as Worker;
@@ -80,8 +81,8 @@ describe('WdfStaffRecordComponent', () => {
 
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = false;
-    component.wdfStartDate = '2021-01-01';
-    component.wdfEndDate = '2022-01-01';
+    component.wdfStartDate = `${year}-01-01`;
+    component.wdfEndDate = `${year+1}-01-01`;
     component.workerList = ['1', '2', '3', '4'];
 
     fixture.detectChanges();
@@ -92,7 +93,8 @@ describe('WdfStaffRecordComponent', () => {
 
   it('should not display the "not meeting requirements" or "update staff record" message when worker eligible', async () => {
     const { component, fixture, queryByText } = await setup();
-    const redCrossStatusMessage = 'This record does not meet the WDF 2021 to 2022 requirements';
+    const year = new Date().getFullYear();
+    const redCrossStatusMessage = `This record does not meet the WDF ${year} to ${year + 1} requirements`;
     const redCrossVisuallyHiddenMessage = 'Red cross';
 
     const orangeFlagStatusMessage = 'Update this staff record to save yourself time next year';
@@ -103,8 +105,8 @@ describe('WdfStaffRecordComponent', () => {
 
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = true;
-    component.wdfStartDate = '2021-01-01';
-    component.wdfEndDate = '2022-01-01';
+    component.wdfStartDate = `${year}-01-01`;
+    component.wdfEndDate = `${year+1}-01-01`;
     component.workerList = ['1', '2', '3', '4'];
     fixture.detectChanges();
 
