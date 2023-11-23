@@ -238,7 +238,7 @@ jobs:
           flags: backend
   performance:
     docker:
-      - image: cimg/node:18.18-browsers
+      - image: circleci/node:18.18-browsers
     steps:
       - checkout
       - attach_workspace:
