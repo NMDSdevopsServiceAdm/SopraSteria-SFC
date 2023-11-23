@@ -478,15 +478,15 @@ const routes: Routes = [
           title: 'Benchmarks',
         },
       },
-      // {
-      //   path: 'data-area',
-      //   loadChildren: () =>
-      //     import('@shared/components/data-area-tab/data-area-tab.module').then((m) => m.DataAreaTabModule),
+      {
+        path: 'data-area',
+        loadChildren: () =>
+          import('@shared/components/data-area-tab/data-area-tab.module').then((m) => m.DataAreaTabModule),
 
-      //   data: {
-      //     title: 'Data Area',
-      //   },
-      // },
+        data: {
+          title: 'Data Area',
+        },
+      },
 
       {
         path: 'add-and-manage-mandatory-training',
