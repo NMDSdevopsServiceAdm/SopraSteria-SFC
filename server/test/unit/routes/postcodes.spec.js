@@ -131,7 +131,7 @@ describe('postcodes', () => {
 
       const foundAddresses = [];
 
-      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').returns(foundAddresses);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsCompleteMatch').returns(foundAddresses);
       sinon.stub(models.postcodes, 'firstOrCreate').returns(foundAddresses);
 
       const req = httpMocks.createRequest(request);
