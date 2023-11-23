@@ -75,35 +75,35 @@ describe('WdfWorkplacesSummaryComponent', () => {
   describe('WdfParentStatusMessageComponent', async () => {
     it('should display the correct message and timeframe if meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = `All your workplaces' data meets the WDF 2021 to 2022 requirements`;
+      const timeFrameSentence = `All your workplaces' data meets the WDF 2021 to 2022 requirements`;
 
       component.parentOverallEligibilityStatus = true;
       component.parentCurrentEligibilityStatus = true;
       fixture.detectChanges();
 
-      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
     });
 
     it('should display the correct message if workplaces have met WDF requirements this year but not meeting currently', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = `Your workplaces met the WDF 2021 to 2022 requirements, but updating those currently shown as 'not meeting' will save you time next year.`;
+      const timeFrameSentence = `Your workplaces met the WDF 2021 to 2022 requirements, but updating those currently shown as 'not meeting' will save you time next year.`;
 
       component.parentOverallEligibilityStatus = true;
       component.parentCurrentEligibilityStatus = false;
       fixture.detectChanges();
 
-      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
     });
 
     it('should display the correct message if workplaces have not met WDF requirements this year', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = `Some of your workplaces' data does not meet the WDF 2021 to 2022 requirements`;
+      const timeFrameSentence = `Some of your workplaces' data does not meet the WDF 2021 to 2022 requirements`;
 
       component.parentOverallEligibilityStatus = false;
       component.parentCurrentEligibilityStatus = false;
       fixture.detectChanges();
 
-      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
     });
   });
 

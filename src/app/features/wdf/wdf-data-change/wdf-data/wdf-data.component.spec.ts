@@ -205,7 +205,7 @@ describe('WdfDataComponent', () => {
   describe('WdfDataStatusMessageComponent', async () => {
     it('should display the correct message and timeframe if meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = 'Your data meets the WDF 2021 to 2022 requirements';
+      const timeFrameSentence = 'Your data meets the WDF 2021 to 2022 requirements';
 
       component.isStandalone = true;
       component.wdfEligibilityStatus.overall = true;
@@ -213,7 +213,7 @@ describe('WdfDataComponent', () => {
       component.wdfEligibilityStatus.currentStaff = true;
       fixture.detectChanges();
 
-      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
     });
 
     it('should display the "Keeping data up to date" message if meeting WDF requirements with data changes', async () => {
@@ -242,7 +242,7 @@ describe('WdfDataComponent', () => {
 
     it('should display the correct message and timeframe for parents if meeting WDF requirements', async () => {
       const { component, fixture, getByText } = await setup();
-      const timeframeSentence = 'Your data meets the WDF 2021 to 2022 requirements';
+      const timeFrameSentence = 'Your data meets the WDF 2021 to 2022 requirements';
 
       component.isStandalone = false;
       component.wdfEligibilityStatus.overall = true;
@@ -250,7 +250,7 @@ describe('WdfDataComponent', () => {
       component.wdfEligibilityStatus.currentStaff = true;
       fixture.detectChanges();
 
-      expect(getByText(timeframeSentence, { exact: false })).toBeTruthy();
+      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
     });
 
     it('should display the "keeping data up to date" message for parents if meeting WDF requirements with data changes', async () => {
