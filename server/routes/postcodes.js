@@ -97,12 +97,14 @@ const getAddressesWithPostcode = async (req, res) => {
 
       if (postcodesRecords) {
         // associate cssrID with postcodes(county/district) and cssr(LocalAuthority/CssR)
-        const cssrID = await models.cssr.getIdFromPostcodeDistrict(cleanPostcode);
+        const cssr = await models.cssr.getCssrFromPostcodesDistrict(cleanPostcode);
 
-        // now update the cssrID for all establishments with this postcode
-        let establishments = await models.establishment.updateCssrIdsByPostcode(cleanPostcode, cssrID);
+        if (cssr && cssr.id) {
+          // now update the cssrID for all establishments with this postcode
+          let establishments = await models.establishment.updateCssrIdsByPostcode(cleanPostcode, cssr.id);
 
-        console.log(`Updated ${establishments.length} establishments with cssrId ${cssrID}`);
+          console.log(`Updated ${establishments.length} establishments with cssrId ${cssr.id}`);
+        }
       }
 
       postcodeData = transformGetAddressAPIResults(postcodesRecords);
