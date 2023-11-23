@@ -160,7 +160,7 @@ jobs:
     resource_class: large
     working_directory: ~/project
     docker:
-      - image: cimg/node:14.15.2-browsers
+      - image: cimg/node:18.18-browsers
     environment: NODE_OPTIONS=--max_old_space_size=8192
     steps:
       - checkout
@@ -171,7 +171,7 @@ jobs:
           if [ -d "/home/circleci/project/node_modules" ]; then
             echo "Skipping install as node modules already exists"
           else
-            npm install
+            npm ci
           fi
       - save_cache:
           key: node-deps-v2-{{ checksum "package-lock.json" }}
@@ -192,7 +192,7 @@ jobs:
   test_frontend:
     resource_class: large
     docker:
-      - image: cimg/node:14.15.2-browsers
+      - image: cimg/18.18-browsers
     steps:
       - checkout
       - restore_cache:
@@ -215,7 +215,7 @@ jobs:
           flags: frontend
   test_backend:
     docker:
-      - image: cimg/node:14.15.2-browsers
+      - image: cimg/18.18-browsers
     steps:
       - checkout
       - restore_cache:
@@ -238,7 +238,7 @@ jobs:
           flags: backend
   performance:
     docker:
-      - image: circleci/node:12.19.0-browsers
+      - image: cimg/node:18.18-browsers
     steps:
       - checkout
       - attach_workspace:
@@ -427,7 +427,7 @@ jobs:
           steps: << parameters.validate_steps >>
   sentry_release:
     docker:
-      - image: cimg/node:14.15.2-browsers
+      - image: cimg/node:18.18-browsers
     environment:
       SENTRY_ORG: skills-for-care
       SENTRY_PROJECT: skills-for-care
