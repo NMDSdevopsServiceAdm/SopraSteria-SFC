@@ -171,7 +171,7 @@ jobs:
           if [ -d "/home/circleci/project/node_modules" ]; then
             echo "Skipping install as node modules already exists"
           else
-            npm ci
+            npm install
           fi
       - save_cache:
           key: node-deps-v2-{{ checksum "package-lock.json" }}
