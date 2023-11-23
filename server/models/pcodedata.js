@@ -86,7 +86,7 @@ module.exports = function (sequelize, DataTypes) {
       return cssrRecords;
     }
 
-    while (!cssrRecords && inwardCode.length > 0) {
+    while (inwardCode.length > 0 && (cssrRecords === undefined || cssrRecords.length == 0)) {
       inwardCode = inwardCode.slice(0, -1);
       console.log(`Attempting to match cssr record for postcode like ${outwardCode} ${inwardCode}%`);
       // try loose matching

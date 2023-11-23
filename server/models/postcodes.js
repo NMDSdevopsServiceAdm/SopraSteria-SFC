@@ -127,7 +127,7 @@ module.exports = function (sequelize, DataTypes) {
     let allPostcodeResultsFull = true;
 
     // Check for 'empty' records of just postcode, lat, long
-    if (foundPostcodes) {
+    if (!(foundPostcodes === undefined || foundPostcodes.length == 0)) {
       // Now for each foundPostcode need to check for full record
       // if not full then update record with getAddressAPI
       foundPostcodes.forEach(function (foundPostcode) {
@@ -135,12 +135,12 @@ module.exports = function (sequelize, DataTypes) {
           allPostcodeResultsFull = false;
         }
       });
-    }
 
-    // If postcode exists and has a Country indicates it already has
-    // spoken to getAddressAPI
-    if (foundPostcodes && allPostcodeResultsFull) {
-      return foundPostcodes;
+      // If postcode exists and has a Country indicates it already has
+      // spoken to getAddressAPI
+      if (allPostcodeResultsFull) {
+        return foundPostcodes;
+      }
     }
 
     try {

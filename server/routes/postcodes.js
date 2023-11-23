@@ -69,7 +69,7 @@ const getAddressesWithPostcode = async (req, res) => {
 
     // Now try to get records with matching with Cssr on LAcode
     // This means we can associate a CssrID to the establishment
-    const results = await models.pcodedata.getLinkedCssrRecordsFromPostcode(cleanPostcode);
+    const results = await models.pcodedata.getLinkedCssrRecordsCompleteMatch(cleanPostcode);
 
     // if linked results by lacode then update the
     // establishments CssrIds
