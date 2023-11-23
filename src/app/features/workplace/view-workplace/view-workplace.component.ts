@@ -56,7 +56,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.establishmentService.establishment.mainService.reportingID);
     this.showBanner = history.state?.showBanner;
 
     this.establishmentService.setCheckCQCDetailsBanner(false);
