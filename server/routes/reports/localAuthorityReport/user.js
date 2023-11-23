@@ -79,7 +79,7 @@ const identifyLocalAuthority = async (postcode) => {
   // and use this to get the Cssr record
   const cssrResult = await models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
 
-  if (cssrResult) {
+  if (cssrResult && !(cssrResult === undefined || cssrResult === null)) {
     return cssrResult.cssrRecord.name;
   }
 

@@ -87,7 +87,7 @@ describe('postcodes', () => {
         method: 'GET',
         url: '/api/postcodes',
         params: {
-          postcode: 'SW1 1AA',
+          postcode: 'SW2 1SD',
         },
       };
 
@@ -100,24 +100,7 @@ describe('postcodes', () => {
             building_number: '91',
             street_description: 'DRURY LANE',
             post_town: 'LONDON',
-            postcode: 'SW1 1AA',
-            local_custodian_code: '1000',
-            county: 'GREATER LONDON',
-            rm_organisation_name: '',
-          },
-          cssrRecord: {
-            local_custodian_code: '1000',
-          },
-        },
-        {
-          dataValues: {
-            uprn: '100010824271',
-            sub_building_name: '',
-            building_name: '',
-            building_number: '92',
-            street_description: 'DRURY LANE',
-            post_town: 'LONDON',
-            postcode: 'SW1 1AA',
+            postcode: 'SW2 1SD',
             local_custodian_code: '1000',
             county: 'GREATER LONDON',
             rm_organisation_name: '',
@@ -128,7 +111,7 @@ describe('postcodes', () => {
         },
       ];
 
-      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').returns(foundAddresses);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsCompleteMatch').returns(foundAddresses);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
