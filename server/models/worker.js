@@ -1217,7 +1217,6 @@ module.exports = function (sequelize, DataTypes) {
         establishmentFk: establishmentId,
       },
       raw: true,
-      logging: true,
     });
   };
 

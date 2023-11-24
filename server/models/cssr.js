@@ -86,7 +86,7 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     // Now try and retrieve CSSR based on district
-    return await CSSR.getIdFromPostcodeDistrict(establishments[0].postcode);
+    return await CSSR.getCssrFromPostcodesDistrict(establishments[0].postcode);
   };
 
   CSSR.getCSSRFromPostcode = async (postcode) => {
@@ -98,14 +98,14 @@ module.exports = function (sequelize, DataTypes) {
     }
 
     // Now try and retrieve CSSR based on district
-    return await CSSR.getIdFromPostcodeDistrict(postcode);
+    return await CSSR.getCssrFromPostcodesDistrict(postcode);
   };
 
   // fallback queries getAddressAPI, caches results
   // then use district to match with cssr.LocalAuthority
-  CSSR.getIdFromPostcodeDistrict = async function (postcode) {
+  CSSR.getCssrFromPostcodesDistrict = async function (postcode) {
     // Check for full records in postcodes table or query getAddressAPI and cache
-    const postcodesRecords = sequelize.models.postcodes.firstOrCreate(postcode);
+    const postcodesRecords = await sequelize.models.postcodes.firstOrCreate(postcode);
 
     if (postcodesRecords && postcodesRecords[0].district) {
       const district = postcodesRecords[0].district;

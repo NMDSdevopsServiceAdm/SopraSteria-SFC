@@ -138,7 +138,7 @@ describe('view-workplace', () => {
       expect(getByText('Workplace users')).toBeTruthy();
     });
 
-    xit('should display the Benchmarks tab', async () => {
+    it('should display the Benchmarks tab', async () => {
       const { component, fixture, getByText } = await setup(true);
 
       const establishment = {
@@ -158,6 +158,26 @@ describe('view-workplace', () => {
       fixture.detectChanges();
 
       expect(getByTestId('red-flag')).toBeTruthy();
+    });
+
+    it('should display the old benchmarks tab when the service is non regulated', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.newDataAreaFlag = true;
+      component.canSeeNewDataArea = false;
+      fixture.detectChanges();
+
+      expect(getByTestId('benchmarks-tab')).toBeTruthy();
+    });
+
+    it(`should display the new benchmarks tab when the service is regulated`, async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.newDataAreaFlag = true;
+      component.canSeeNewDataArea = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('data-area-tab')).toBeTruthy();
     });
   });
 

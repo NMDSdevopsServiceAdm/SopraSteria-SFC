@@ -66,7 +66,8 @@ module.exports = function (sequelize, DataTypes) {
 
   pcodedata.getLinkedCssrRecordsFromPostcode = async function (postcode) {
     const cssrRecords = await this.getLinkedCssrRecordsCompleteMatch(postcode);
-    if (!cssrRecords || cssrRecords.length == 0) {
+
+    if (!cssrRecords || typeof cssrRecords === Object) {
       console.error('Could not obtain CSSR records from postcode non local custodian match');
       // no match so try nearest authority
       // The UK postcode consists of five to seven alphanumeric characters
@@ -86,7 +87,7 @@ module.exports = function (sequelize, DataTypes) {
       return cssrRecords;
     }
 
-    while (!cssrRecords && inwardCode.length > 0) {
+    while (inwardCode.length > 0 && (!cssrRecords || !cssrRecords.length)) {
       inwardCode = inwardCode.slice(0, -1);
       console.log(`Attempting to match cssr record for postcode like ${outwardCode} ${inwardCode}%`);
       // try loose matching
