@@ -6,13 +6,11 @@ describe('ValidationErrorMessageComponent', () => {
   let component: ValidationErrorMessageComponent;
   let fixture: ComponentFixture<ValidationErrorMessageComponent>;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       declarations: [ValidationErrorMessageComponent],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(ValidationErrorMessageComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

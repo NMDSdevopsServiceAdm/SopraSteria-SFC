@@ -96,9 +96,7 @@ describe('NewTrainingComponent', async () => {
       declarations: [],
       providers: [],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(NewTrainingComponent);
     component = fixture.componentInstance;
     component.canEditWorker = true;

@@ -6,13 +6,11 @@ describe('ServiceUnavailableComponent', () => {
   let component: ServiceUnavailableComponent;
   let fixture: ComponentFixture<ServiceUnavailableComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       declarations: [ServiceUnavailableComponent],
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(ServiceUnavailableComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

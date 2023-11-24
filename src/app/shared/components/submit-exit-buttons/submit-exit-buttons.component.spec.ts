@@ -7,14 +7,12 @@ describe('SubmitExitButtonsComponent', () => {
   let component: SubmitExitButtonsComponent;
   let fixture: ComponentFixture<SubmitExitButtonsComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       declarations: [SubmitExitButtonsComponent],
     }).compileComponents();
-  }));
 
-  beforeEach(() => {
     fixture = TestBed.createComponent(SubmitExitButtonsComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
