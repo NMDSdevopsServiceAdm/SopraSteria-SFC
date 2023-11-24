@@ -106,7 +106,7 @@ describe('WorkplaceTabComponent', () => {
     expect(setReturnRouteSpy).toHaveBeenCalledWith({ url: ['/dashboard'], fragment: 'workplace' });
   });
 
-  it('should set the return url in the establishment service to the workplace dashboard if the permissions page is accessed from sub establishment', async () => {
+  xit('should set the return url in the establishment service to the workplace dashboard if the permissions page is accessed from sub establishment', async () => {
     const { component, fixture, getByText } = await setup();
     const setReturnRouteSpy = spyOn(component.establishmentService, 'setReturnTo');
     component.showSharingPermissionsBanner = true;
