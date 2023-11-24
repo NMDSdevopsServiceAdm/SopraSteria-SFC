@@ -198,12 +198,12 @@ jobs:
       - restore_cache:
           keys:
             - node-deps-v2-{{ checksum "package-lock.json" }}
-      # - run:
-      #     command: npm run test-headless
-      #     environment:
-      #       JUNIT_REPORT_PATH: ./junit/
-      #       JUNIT_REPORT_NAME: test-results.xml
-      #     when: always
+      - run:
+          command: npm run test-headless
+          environment:
+            JUNIT_REPORT_PATH: ./junit/
+            JUNIT_REPORT_NAME: test-results.xml
+          when: always
       - store_test_results:
           path: ./junit
       - store_artifacts:
