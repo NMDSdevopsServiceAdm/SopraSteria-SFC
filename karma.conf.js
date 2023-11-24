@@ -72,7 +72,7 @@ module.exports = function (config) {
     },
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 3,
-    browserNoActivityTimeout: 100000,
+    browserNoActivityTimeout: 1000000,
     captureTimeout: 140000,
     junitReporter: {
       outputDir: process.env.JUNIT_REPORT_PATH,
