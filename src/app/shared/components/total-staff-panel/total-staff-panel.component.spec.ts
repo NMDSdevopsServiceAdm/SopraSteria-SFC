@@ -13,14 +13,17 @@ describe('TotalStaffPanelComponent', () => {
   let fixture: ComponentFixture<TotalStaffPanelComponent>;
   let permissionsService: PermissionsService;
 
-  beforeEach(() => {
+  beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
         imports: [RouterTestingModule, HttpClientTestingModule],
         declarations: [TotalStaffPanelComponent],
       }).compileComponents();
     }),
-      (fixture = TestBed.createComponent(TotalStaffPanelComponent));
+  );
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(TotalStaffPanelComponent);
     permissionsService = TestBed.inject(PermissionsService);
     permissionsService.setPermissions(Establishment.uid, Permissions.permissions);
     component = fixture.componentInstance;

@@ -7,12 +7,14 @@ describe('SummaryListComponent', () => {
   let component: SummaryListComponent;
   let fixture: ComponentFixture<SummaryListComponent>;
 
-  beforeEach(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       declarations: [SummaryListComponent],
     }).compileComponents();
+  }));
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(SummaryListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

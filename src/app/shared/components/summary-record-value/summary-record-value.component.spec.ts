@@ -7,13 +7,16 @@ describe('SummaryRecordValueComponent', () => {
   let component: SummaryRecordValueComponent;
   let fixture: ComponentFixture<SummaryRecordValueComponent>;
 
-  beforeEach(() => {
+  beforeEach(
     waitForAsync(() => {
       TestBed.configureTestingModule({
         declarations: [SummaryRecordValueComponent, EligibilityIconComponent],
       }).compileComponents();
     }),
-      (fixture = TestBed.createComponent(SummaryRecordValueComponent));
+  );
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(SummaryRecordValueComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -6,10 +6,13 @@ describe('RankingContentComponent', () => {
   let component: RankingContentComponent;
   let fixture: ComponentFixture<RankingContentComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [RankingContentComponent],
     }).compileComponents();
+  });
+
+  beforeEach(() => {
     fixture = TestBed.createComponent(RankingContentComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

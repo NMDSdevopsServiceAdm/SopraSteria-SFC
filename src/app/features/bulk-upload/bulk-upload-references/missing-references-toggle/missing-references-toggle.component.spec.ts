@@ -6,11 +6,13 @@ describe('MissingReferencesToggleComponent', () => {
   let component: MissingReferencesToggleComponent;
   let fixture: ComponentFixture<MissingReferencesToggleComponent>;
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  beforeEach(async () => {
+    await TestBed.configureTestingModule({
       declarations: [MissingReferencesToggleComponent],
     }).compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(MissingReferencesToggleComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

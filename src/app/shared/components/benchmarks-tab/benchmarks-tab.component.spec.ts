@@ -33,12 +33,15 @@ describe('BenchmarksTabComponent', () => {
           { provide: PermissionsService, useClass: MockPermissionsService },
         ],
       }).compileComponents();
-      fixture = TestBed.createComponent(BenchmarksTabComponent);
-      component = fixture.componentInstance;
-      component.workplace = Establishment;
-      fixture.detectChanges();
     }),
   );
+
+  beforeEach(() => {
+    fixture = TestBed.createComponent(BenchmarksTabComponent);
+    component = fixture.componentInstance;
+    component.workplace = Establishment;
+    fixture.detectChanges();
+  });
 
   it('should create', () => {
     expect(component).toBeTruthy();

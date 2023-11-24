@@ -6,11 +6,13 @@ describe('ExpiredActivationLinkComponent', () => {
   let component: ExpiredActivationLinkComponent;
   let fixture: ComponentFixture<ExpiredActivationLinkComponent>;
 
-  beforeEach(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ExpiredActivationLinkComponent],
     }).compileComponents();
+  }));
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(ExpiredActivationLinkComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();

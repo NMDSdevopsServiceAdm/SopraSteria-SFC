@@ -7,15 +7,17 @@ describe('WdfConfirmationPanelComponent', () => {
   let component: WdfConfirmationPanelComponent;
   let fixture: ComponentFixture<WdfConfirmationPanelComponent>;
 
-  beforeEach(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [RouterTestingModule],
       declarations: [WdfConfirmationPanelComponent],
     }).compileComponents();
+  }));
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(WdfConfirmationPanelComponent);
     component = fixture.componentInstance;
-    component.exitUrl = { url: ['/dashboard'], fragment: 'dashboard' };
+    component.exitUrl = { url: ['/dashboard'], fragment: 'dashboard' }
     fixture.detectChanges();
   });
 
