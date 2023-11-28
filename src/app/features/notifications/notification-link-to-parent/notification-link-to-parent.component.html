@@ -37,16 +37,16 @@
             <p>You have approved a request from {{ notificationRequestedFrom }} to link to you.</p>
           </ng-container>
           <ng-template #nonWorkplaceRequester>
-            <p>{{ notificationRequestedTo }}, {{ postCode }} has approved your request to link to them.</p>
+            <p>Your request to link to {{ notificationRequestedTo }}, {{ postCode }} has been approved.</p>
           </ng-template>
-          <p>The following permissions have been set:</p>
+          <h2 class="govuk-!-margin-top-6">Data permissions</h2>
         </div>
         <div *ngSwitchDefault></div>
       </div>
 
       <table class="govuk-table govuk-table__with-action" *ngIf="notification.typeContent.approvalStatus !== 'DENIED'">
         <thead class="govuk-table__head">
-          <tr class="govuk-table__row">
+          <tr class="govuk-table__row" data-testid="tableHeaders">
             <th scope="col" class="govuk-table__header">Workplace</th>
             <th scope="col" class="govuk-table__header">Permissions</th>
           </tr>
@@ -63,7 +63,7 @@
             </ng-container>
             <ng-template #notNone>
               <td class="govuk-table__cell">
-                View {{ notification.typeContent.permissionRequest | dataViewPermissions | lowercase }}
+                {{ notification.typeContent.permissionRequest | dataViewPermissions }} (view only)
               </td>
             </ng-template>
           </tr>
@@ -71,7 +71,7 @@
             <td class="govuk-table__cell">
               {{ notificationRequestedFrom }}
             </td>
-            <td class="govuk-table__cell">Edit workplace and staff records</td>
+            <td class="govuk-table__cell">Workplace and staff records (edit)</td>
           </tr>
         </tbody>
       </table>
