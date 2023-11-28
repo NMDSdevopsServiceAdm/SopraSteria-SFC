@@ -46,6 +46,7 @@
       "url": "http://localhost:8080",
       "webRoot": "${workspaceFolder}"
     },
+    // configuration for front-end testing
     {
       "type": "pwa-chrome",
       "request": "attach",

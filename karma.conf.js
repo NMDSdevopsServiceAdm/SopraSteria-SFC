@@ -63,10 +63,22 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: !isCI,
     singleRun: isCI,
-    browsers: ['ChromeHeadlessNoSandbox', 'Chrome'],
+    // browsers: ['ChromeHeadlessNoSandbox', 'ChromeNoSandbox'],
+    browsers: ['ChromeNoSandbox'],
     customLaunchers: {
-      ChromeHeadlessNoSandbox: {
-        base: 'ChromeHeadless',
+      // ChromeHeadlessNoSandbox: {
+      //   base: 'ChromeHeadless',
+      //   flags: [
+      //     '--no-sandbox',
+      //     '--user-data-dir=/tmp/chrome-test-profile',
+      //     '--disable-web-security',
+      //     '--remote-debugging-address=0.0.0.0',
+      //     '--remote-debugging-port=9222',
+      //   ],
+      //   debug: true,
+      // },
+      ChromeNoSandbox: {
+        base: 'Chrome',
         flags: [
           '--no-sandbox',
           '--user-data-dir=/tmp/chrome-test-profile',
@@ -75,10 +87,6 @@ module.exports = function (config) {
           '--remote-debugging-port=9222',
         ],
         debug: true,
-      },
-      Chrome: {
-        base: 'Chrome',
-        flags: ['--no-sandbox'],
       },
     },
     browserDisconnectTimeout: 10000,
