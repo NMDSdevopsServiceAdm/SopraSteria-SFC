@@ -1,6 +1,5 @@
 /* jshint indent: 2 */
-const getAddressAPI = require('../utils/getAddressAPI');
-const get = require('lodash/get');
+const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
   const CSSR = sequelize.define(
@@ -51,58 +50,75 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  CSSR.getIdFromDistrict = async function (postcode) {
-    const postcodeData = await getAddressAPI.getPostcodeData(postcode);
-    if (!get(postcodeData, 'addresses[0].district')) {
-      return false;
-    }
-
-    const district = postcodeData.addresses[0].district;
-    const cssr = await this.findOne({
-      attributes: ['id'],
-      where: {
-        LocalAuthority: district,
-      },
-    });
-
-    if (cssr && cssr.id) {
-      return { id: cssr.id, name: district };
-    } else {
-      return false;
-    }
-  };
-
-  CSSR.getCSSR = async (establishmentId) => {
-    const postcode = await sequelize.models.establishment.findOne({
-      attributes: ['postcode', 'id'],
+  /*
+    1. Use attached CssrId on establishment to get Cssr
+    2. Try to get CSSR the 'traditional' way using the relationship or loose
+    3. Get district from postcodes table if exists
+    4. Query getAddressAPI and cache result
+  */
+  CSSR.getCSSRFromEstablishmentId = async (establishmentId) => {
+    const establishments = await sequelize.models.establishment.findAll({
+      attributes: ['postcode', 'id', 'cssrId'],
       where: { id: establishmentId },
     });
-    if (!postcode) {
-      return false;
-    }
-    let cssr = await sequelize.models.pcodedata.findOne({
-      attributes: ['uprn', 'postcode'],
-      include: [
-        {
-          model: sequelize.models.cssr,
-          attributes: ['id', 'name'],
-          as: 'theAuthority',
-        },
-      ],
-      where: {
-        postcode: postcode.postcode,
-      },
-    });
 
-    if (cssr && cssr.theAuthority) {
-      cssr = cssr.theAuthority;
-    } else {
-      cssr = await CSSR.getIdFromDistrict(postcode.postcode);
-      if (!cssr) {
-        return false;
-      }
+    if (!establishments) {
+      console.error(`No establishments found for establishmentId ${establishmentId}`);
+      return null;
     }
-    return cssr;
+
+    const attachedCssrId = establishments.find((establishment) => establishment.CssrId != null);
+
+    // if we already have an attached cssrId
+    if (attachedCssrId) {
+      return await this.findOne({
+        where: {
+          CssrId: attachedCssrId,
+        },
+      });
+    }
+
+    // Try and match or loose match
+    const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(establishments[0].postcode);
+
+    if (cssrResults[0] && cssrResults[0].cssrRecord) {
+      return cssrResults[0].cssrRecord;
+    }
+
+    // Now try and retrieve CSSR based on district
+    return await CSSR.getCssrFromPostcodesDistrict(establishments[0].postcode);
   };
+
+  CSSR.getCSSRFromPostcode = async (postcode) => {
+    // Try and match or loose match
+    const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
+
+    if (cssrResults && cssrResults[0].cssrRecord) {
+      return cssrResults[0].cssrRecord;
+    }
+
+    // Now try and retrieve CSSR based on district
+    return await CSSR.getCssrFromPostcodesDistrict(postcode);
+  };
+
+  // fallback queries getAddressAPI, caches results
+  // then use district to match with cssr.LocalAuthority
+  CSSR.getCssrFromPostcodesDistrict = async function (postcode) {
+    // Check for full records in postcodes table or query getAddressAPI and cache
+    const postcodesRecords = await sequelize.models.postcodes.firstOrCreate(postcode);
+
+    if (postcodesRecords && postcodesRecords[0].district) {
+      const district = postcodesRecords[0].district;
+
+      return await this.findOne({
+        where: {
+          LocalAuthority: { [Op.iLike]: `%${district}%` },
+        },
+      });
+    }
+
+    return null;
+  };
+
   return CSSR;
 };

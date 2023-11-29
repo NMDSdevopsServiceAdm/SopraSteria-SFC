@@ -6,13 +6,20 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { NewComparisonGroupHeaderComponent } from './comparison-group-header.component';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 describe('NewComparisonGroupHeaderComponent', () => {
   const setup = async (metaData = {}, canViewFullContent = true) => {
     const meta = metaData ? metaData : null;
     const { fixture, getByText, getByTestId } = await render(NewComparisonGroupHeaderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [],
+      providers: [
+        {
+          provide: BenchmarksServiceBase,
+          useClass: MockBenchmarksService,
+        },
+      ],
       componentProperties: {
         meta: meta as Meta,
         workplaceID: 'mock-uid',

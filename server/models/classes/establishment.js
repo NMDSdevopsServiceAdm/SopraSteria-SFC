@@ -7,7 +7,6 @@
  * Also includes representation as JSON, in one or more presentations.
  */
 const moment = require('moment');
-
 const uuid = require('uuid');
 
 // Shorthand for hasOwnProperty that also works with bare objects
@@ -66,6 +65,7 @@ class Establishment extends EntityValidator {
     this._town = null;
     this._county = null;
     this._locationId = null;
+    this._cssrID = null;
     this._provId = null;
     this._postcode = null;
     this._isRegulated = null;
@@ -765,52 +765,20 @@ class Establishment extends EntityValidator {
     if (mustSave && this._isNew) {
       // create new Establishment
       try {
-        // when creating an establishment, need to calculate it's NMDS ID, which is combination of postcode area and sequence.
-        const cssrResults = await models.pcodedata.findOne({
-          where: {
-            postcode: this._postcode,
-          },
-          include: [
-            {
-              model: models.cssr,
-              as: 'theAuthority',
-              attributes: ['id', 'name', 'nmdsIdLetter'],
-            },
-          ],
-        });
+        let nmdsLetter = 'W';
 
-        let nmdsLetter = null;
-        if (
-          cssrResults &&
-          cssrResults.postcode === this._postcode &&
-          cssrResults.theAuthority &&
-          cssrResults.theAuthority.id &&
-          Number.isInteger(cssrResults.theAuthority.id)
-        ) {
-          nmdsLetter = cssrResults.theAuthority.nmdsIdLetter;
-        } else {
-          // No direct match so do the fuzzy match
-          const [firstHalfOfPostcode] = 'postcode'.split(' ');
-          const fuzzyCssrNmdsIdMatch = await models.sequelize.query(
-            `select "Cssr"."NmdsIDLetter"
-              from cqcref.pcodedata, cqc."Cssr"
-              where postcode like '${escape(firstHalfOfPostcode)}%'
-              and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode"
-              group by "Cssr"."NmdsIDLetter"
-              limit 1`,
-            {
-              type: models.sequelize.QueryTypes.SELECT,
-            },
-          );
+        // We use the postcode to get local custodian code
+        // and use this to get the Cssr record
+        const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
-          if (fuzzyCssrNmdsIdMatch && fuzzyCssrNmdsIdMatch[0] && fuzzyCssrNmdsIdMatch[0].NmdsIDLetter) {
-            nmdsLetter = fuzzyCssrNmdsIdMatch[0].NmdsIDLetter;
-          }
+        if (cssrResults) {
+          this._cssrID = cssrResults[0].cssrRecord.id;
+          nmdsLetter = cssrResults[0].cssrRecord.nmdsIdLetter;
         }
 
         // catch all - because we don't want new establishments failing just because of old postcode data
-        if (nmdsLetter === null) {
-          nmdsLetter = 'W';
+        if (nmdsLetter === 'W') {
+          console.error('Could not retrieve nmdsLetter as postcode cannot be matched');
         }
 
         let nextNmdsIdSeqNumber = 0;
@@ -818,12 +786,7 @@ class Establishment extends EntityValidator {
           type: models.sequelize.QueryTypes.SELECT,
         });
 
-        if (
-          nextNmdsIdSeqNumberResults &&
-          nextNmdsIdSeqNumberResults[0] &&
-          nextNmdsIdSeqNumberResults[0] &&
-          nextNmdsIdSeqNumberResults[0].nextval
-        ) {
+        if (nextNmdsIdSeqNumberResults && nextNmdsIdSeqNumberResults[0] && nextNmdsIdSeqNumberResults[0].nextval) {
           nextNmdsIdSeqNumber = parseInt(nextNmdsIdSeqNumberResults[0].nextval);
         } else {
           // no sequence number
@@ -855,6 +818,7 @@ class Establishment extends EntityValidator {
           dataPermissions: this._dataPermissions,
           isRegulated: this._isRegulated,
           locationId: this._locationId,
+          CssrID: this._cssrID,
           provId: this._provId,
           MainServiceFKValue: this.mainService.id,
           nmdsId: this._nmdsId,
@@ -1010,7 +974,7 @@ class Establishment extends EntityValidator {
           }
         }
 
-        // and foreign key constaint to Location
+        // and foreign key constraint to Location
         if (err.name && err.name === 'SequelizeForeignKeyConstraintError') {
           throw new EstablishmentExceptions.EstablishmentSaveException(
             null,
@@ -1040,7 +1004,7 @@ class Establishment extends EntityValidator {
         const updatedTimestamp = new Date();
 
         // need to update the existing Establishment record and add an
-        //  updated audit event within a single transaction
+        // updated audit event within a single transaction
         await models.sequelize.transaction(async (t) => {
           // the saving of an Establishment can be initiated within
           //  an external transaction
@@ -1562,58 +1526,17 @@ class Establishment extends EntityValidator {
           fetchResults.allServiceCapacityQuestions = null;
         }
 
-        // need to identify which, if any, of the shared authorities is attributed to the
-        //  primary Authority; that is the Local Authority associated with the physical area
-        //  of the given Establishment (using the postcode as the key)
-        // lookup primary authority by trying to resolve on specific postcode code
-        const cssrResults = await models.pcodedata.findOne({
-          where: {
-            postcode: fetchResults.postcode,
-          },
-          include: [
-            {
-              model: models.cssr,
-              as: 'theAuthority',
-              attributes: ['id', 'name', 'nmdsIdLetter'],
-            },
-          ],
-        });
+        const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
-        if (
-          cssrResults &&
-          cssrResults.postcode === fetchResults.postcode &&
-          cssrResults.theAuthority &&
-          cssrResults.theAuthority.id &&
-          Number.isInteger(cssrResults.theAuthority.id)
-        ) {
-          fetchResults.primaryAuthorityCssr = {
-            id: cssrResults.theAuthority.id,
-            name: cssrResults.theAuthority.name,
-          };
-        } else {
-          //  using just the first half of the postcode
-          const [firstHalfOfPostcode] = fetchResults.postcode.split(' ');
-
-          // must escape the string to prevent SQL injection
-          const fuzzyCssrIdMatch = await models.sequelize.query(
-            `select "Cssr"."CssrID", "Cssr"."CssR"
-              from cqcref.pcodedata, cqc."Cssr"
-              where postcode like '${escape(firstHalfOfPostcode)}%'
-              and pcodedata.local_custodian_code = "Cssr"."LocalCustodianCode"
-              group by "Cssr"."CssrID", "Cssr"."CssR"
-              limit 1`,
-            {
-              type: models.sequelize.QueryTypes.SELECT,
-            },
-          );
-
-          if (fuzzyCssrIdMatch && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0] && fuzzyCssrIdMatch[0].CssrID) {
-            fetchResults.primaryAuthorityCssr = {
-              id: fuzzyCssrIdMatch[0].CssrID,
-              name: fuzzyCssrIdMatch[0].CssR,
-            };
-          }
+        if (!cssrResults || cssrResults.length == 0) {
+          console.log('Could not retrieve cssr record');
+          return {};
         }
+
+        fetchResults.primaryAuthorityCssr = {
+          id: cssrResults[0].cssrRecord.id,
+          name: cssrResults[0].cssrRecord.name,
+        };
 
         if (fetchResults.auditEvents) {
           this._auditEvents = fetchResults.auditEvents;
@@ -1646,7 +1569,7 @@ class Establishment extends EntityValidator {
                   associatedLevel,
                 );
 
-                // TODO: once we have the unique worder id property, use that instead; for now, we only have the name or id.
+                // once we have the unique worker id property, use that instead; for now, we only have the name or id.
                 // without whitespace
                 this.associateWorker(newWorker.key, newWorker);
 
@@ -1743,7 +1666,7 @@ class Establishment extends EntityValidator {
           this.uid,
           nameId ? nameId.property : null,
           '',
-          `Failed to update (archive) estabalishment record with uid: ${this._uid}`,
+          `Failed to update (archive) establishment record with uid: ${this._uid}`,
         );
       }
     } catch (err) {
@@ -1760,7 +1683,7 @@ class Establishment extends EntityValidator {
         this.uid,
         nameId ? nameId.property : null,
         err,
-        `Failed to update (archive) estabalishment record with uid: ${this._uid}`,
+        `Failed to update (archive) establishment record with uid: ${this._uid}`,
       );
     }
   }

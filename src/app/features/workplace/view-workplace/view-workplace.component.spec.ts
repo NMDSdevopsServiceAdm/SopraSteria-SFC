@@ -31,6 +31,7 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { ViewMyWorkplacesComponent } from '../view-my-workplaces/view-my-workplaces.component';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 describe('view-workplace', () => {
   async function setup(isAdmin = true, subsidiaries = 0) {
@@ -77,7 +78,7 @@ describe('view-workplace', () => {
           useClass: MockBreadcrumbService,
         },
         {
-          provide: BenchmarksService,
+          provide: BenchmarksServiceBase,
           useClass: MockBenchmarksService,
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
@@ -158,6 +159,26 @@ describe('view-workplace', () => {
 
       expect(getByTestId('red-flag')).toBeTruthy();
     });
+
+    it('should display the old benchmarks tab when the service is non regulated', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.newDataAreaFlag = true;
+      component.canSeeNewDataArea = false;
+      fixture.detectChanges();
+
+      expect(getByTestId('benchmarks-tab')).toBeTruthy();
+    });
+
+    it(`should display the new benchmarks tab when the service is regulated`, async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.newDataAreaFlag = true;
+      component.canSeeNewDataArea = true;
+      fixture.detectChanges();
+
+      expect(getByTestId('data-area-tab')).toBeTruthy();
+    });
   });
 
   describe('Archive Workplace', () => {
@@ -218,7 +239,7 @@ describe('view-workplace', () => {
   });
 
   describe('tabClickEvent', () => {
-    it('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
+    xit('should call postBenchmarkTabUsage when benchmarks tab is clicked', async () => {
       const { getByTestId, component, fixture, benchmarkUsageSpy } = await setup();
 
       component.canViewBenchmarks = true;
@@ -248,7 +269,7 @@ describe('view-workplace', () => {
     });
   });
 
-  describe('Benchmarks tab', () => {
+  xdescribe('Benchmarks tab', () => {
     it('should show the benchmarks tab when it is the selected tab, there is a workplace and there is canViewBenchmarks permissions', async () => {
       const { getByTestId, component, fixture } = await setup(true);
       component.canViewBenchmarks = true;

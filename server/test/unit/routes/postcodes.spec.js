@@ -1,10 +1,17 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const postcodes = require('../../../routes/postcodes');
+const getAddressAPI = require('../../../utils/getAddressAPI');
 const models = require('../../../models');
 const httpMocks = require('node-mocks-http');
 
 describe('postcodes', () => {
+  beforeEach(() => {
+    sinon.stub(getAddressAPI, 'getPostcodeData').callsFake(async () => {
+      return null;
+    });
+  });
+
   afterEach(() => {
     sinon.restore();
   });
@@ -80,7 +87,7 @@ describe('postcodes', () => {
         method: 'GET',
         url: '/api/postcodes',
         params: {
-          postcode: 'SW1 1AA',
+          postcode: 'SW2 1SD',
         },
       };
 
@@ -93,29 +100,18 @@ describe('postcodes', () => {
             building_number: '91',
             street_description: 'DRURY LANE',
             post_town: 'LONDON',
-            postcode: 'SW1 1AA',
+            postcode: 'SW2 1SD',
             local_custodian_code: '1000',
             county: 'GREATER LONDON',
             rm_organisation_name: '',
           },
-        },
-        {
-          dataValues: {
-            uprn: '100010824271',
-            sub_building_name: '',
-            building_name: '',
-            building_number: '92',
-            street_description: 'DRURY LANE',
-            post_town: 'LONDON',
-            postcode: 'SW1 1AA',
+          cssrRecord: {
             local_custodian_code: '1000',
-            county: 'GREATER LONDON',
-            rm_organisation_name: '',
           },
         },
       ];
 
-      sinon.stub(models.pcodedata, 'findAll').returns(foundAddresses);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsCompleteMatch').returns(foundAddresses);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -135,7 +131,8 @@ describe('postcodes', () => {
 
       const foundAddresses = [];
 
-      sinon.stub(models.pcodedata, 'findAll').returns(foundAddresses);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsCompleteMatch').returns(foundAddresses);
+      sinon.stub(models.postcodes, 'firstOrCreate').returns(foundAddresses);
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();

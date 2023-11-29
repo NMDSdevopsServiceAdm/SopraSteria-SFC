@@ -9,11 +9,11 @@ describe('logout', () => {
   });
 
   it('should add a logout event to the user audit table for the current user', async () => {
-    sinon.stub(models.login, 'findByUsername').returns({registrationId: 123, user: { estblishmentId: 456 }});
+    sinon.stub(models.login, 'findByUsername').returns({ registrationId: 123, user: { establishmentId: 456 } });
     const expected = {
       userFk: 123,
       username: 'username',
-      type: 'logout'
+      type: 'logout',
     };
     const createLogoutEvent = sinon.mock(models.userAudit);
     createLogoutEvent.expects('create').withExactArgs(expected);
@@ -26,7 +26,7 @@ describe('logout', () => {
   });
 
   it('should show satisfaction survey when it has not been submitted and there are less than 3 logout events in the last 90 days', async () => {
-    sinon.stub(models.login, 'findByUsername').returns({registrationId: 123, user: { estblishmentId: 456 }});
+    sinon.stub(models.login, 'findByUsername').returns({ registrationId: 123, user: { establishmentId: 456 } });
     sinon.stub(models.userAudit, 'create').returns();
     sinon.stub(models.userAudit, 'countLogouts').returns(2);
     sinon.stub(models.satisfactionSurvey, 'countSubmissions').returns(0);
@@ -37,7 +37,7 @@ describe('logout', () => {
   });
 
   it('should not show satisfaction survey when it has been submitted in the last 90 days', async () => {
-    sinon.stub(models.login, 'findByUsername').returns({registrationId: 123, user: { estblishmentId: 456 }});
+    sinon.stub(models.login, 'findByUsername').returns({ registrationId: 123, user: { establishmentId: 456 } });
     sinon.stub(models.userAudit, 'create').returns();
     sinon.stub(models.userAudit, 'countLogouts').returns(2);
     sinon.stub(models.satisfactionSurvey, 'countSubmissions').returns(1);
@@ -48,7 +48,7 @@ describe('logout', () => {
   });
 
   it('should not show satisfaction survey when there are more than 3 logout events in the last 90 days', async () => {
-    sinon.stub(models.login, 'findByUsername').returns({registrationId: 123, user: { estblishmentId: 456 }});
+    sinon.stub(models.login, 'findByUsername').returns({ registrationId: 123, user: { establishmentId: 456 } });
     sinon.stub(models.userAudit, 'create').returns();
     sinon.stub(models.userAudit, 'countLogouts').returns(4);
     sinon.stub(models.satisfactionSurvey, 'countSubmissions').returns(0);
@@ -57,4 +57,4 @@ describe('logout', () => {
 
     expect(result.showSurvey).to.equal(false);
   });
-})
+});

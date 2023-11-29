@@ -150,6 +150,7 @@ describe('training route', () => {
         );
       });
     });
+
     describe('No mandatory Training stubs', () => {
       afterEach(function () {
         sandbox.restore();

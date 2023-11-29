@@ -139,17 +139,31 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Benchmarks.getBenchmarkData = async function (establishmentId, cssrId) {
-    const { mainService } = await sequelize.models.establishment.findbyId(establishmentId);
+  Benchmarks.getBenchmarkData = async function (establishmentId) {
+    // This is only to retrieve cssrId associated with establishmentId
+    // Some establishments should now have CssrID attached to their record
+    const establishment = await sequelize.models.establishment.findbyIdWithMainService(establishmentId);
 
-    const reportingId = mainService.reportingID;
+    const reportingId = establishment.mainService.reportingID;
     const specificMainServiceReportingIds = [1, 2, 8];
     const mainServiceReportingId = specificMainServiceReportingIds.includes(reportingId) ? reportingId : 10;
 
-    if (!cssrId) return {};
+    let CssrID = null;
+
+    // First check for a CssrID attached to establishment
+    if (establishment && establishment.CssrID) {
+      CssrID = establishment.CssrID;
+    } else {
+      // Relies on a relationship between pcodedata and Cssr
+      const cssr = await sequelize.models.cssr.getCSSRFromEstablishmentId(establishmentId);
+
+      if (!cssr) return {};
+      CssrID = cssr.id;
+    }
+
     return await this.findOne({
       where: {
-        CssrID: cssrId,
+        CssrID: CssrID,
       },
       include: [
         {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Metric, RankingsResponse } from '@core/model/benchmarks.model';
+import { Metric, RankingsResponse } from '@core/model/benchmarks-v2.model';
 import { FormatUtil } from '@core/utils/format-util';
 import cloneDeep from 'lodash/cloneDeep';
 import merge from 'lodash/merge';

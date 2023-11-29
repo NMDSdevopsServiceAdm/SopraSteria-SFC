@@ -4,7 +4,6 @@ import { BrowserModule, By } from '@angular/platform-browser';
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -13,6 +12,7 @@ import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.m
 import { within } from '@testing-library/angular';
 
 import { Establishment as MockEstablishment } from '../../../../../mockdata/establishment';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 describe('BenchmarksAboutTheDataComponent', () => {
   let component: BenchmarksAboutTheDataComponent;
@@ -23,7 +23,10 @@ describe('BenchmarksAboutTheDataComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, BenchmarksModule],
       declarations: [],
       providers: [
-        { provide: BenchmarksService, useClass: MockBenchmarksService },
+        {
+          provide: BenchmarksServiceBase,
+          useClass: MockBenchmarksService,
+        },
         {
           provide: ActivatedRoute,
           useValue: {

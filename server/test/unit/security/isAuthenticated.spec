@@ -40,7 +40,7 @@ describe('isAuthenticated', () => {
       claimReturn = {
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
-        EstblishmentId: 123,
+        EstablishmentId: 123,
         EstablishmentUID: establishmentUid,
         sub: 'anySub',
         userUid: 'someUid',
@@ -110,7 +110,7 @@ describe('isAuthenticated', () => {
       expect(data).to.deep.equal({ success: false, message: 'token is invalid' });
     });
 
-    it('returns a 400 status if EstblishmentId is missing from claim', async () => {
+    it('returns a 400 status if EstablishmentId is missing from claim', async () => {
       jwtStub.returns({ aud: config.get('jwt.aud.login'), iss: config.get('jwt.iss') });
 
       const req = httpMocks.createRequest({
@@ -127,11 +127,11 @@ describe('isAuthenticated', () => {
       expect(data).to.equal('Unknown Establishment');
     });
 
-    it('returns a 400 status if EstblishmentId is not a number', async () => {
+    it('returns a 400 status if EstablishmentId is not a number', async () => {
       jwtStub.returns({
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
-        EstblishmentId: 'foo',
+        EstablishmentId: 'foo',
       });
 
       const req = httpMocks.createRequest({
@@ -152,7 +152,7 @@ describe('isAuthenticated', () => {
       jwtStub.returns({
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
-        EstblishmentId: 1,
+        EstablishmentId: 1,
       });
 
       const req = httpMocks.createRequest({
@@ -173,7 +173,7 @@ describe('isAuthenticated', () => {
       jwtStub.returns({
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
-        EstblishmentId: 1,
+        EstablishmentId: 1,
         EstablishmentUID: 'not-a-uid',
       });
 
@@ -196,7 +196,7 @@ describe('isAuthenticated', () => {
       jwtStub.returns({
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
-        EstblishmentId: 1,
+        EstablishmentId: 1,
         EstablishmentUID: establishmentUid,
         role: 'Read',
       });
@@ -221,7 +221,7 @@ describe('isAuthenticated', () => {
     });
 
     it('returns a 403 if param ID does not match the establishment ID and claim is not a parent', async () => {
-      jwtStub.returns({ ...claimReturn, EstblishmentId: 13 });
+      jwtStub.returns({ ...claimReturn, EstablishmentId: 13 });
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -280,7 +280,7 @@ describe('isAuthenticated', () => {
         isParent: claimReturn.isParent,
         role: claimReturn.role,
         establishment: {
-          id: claimReturn.EstblishmentId,
+          id: claimReturn.EstablishmentId,
           uid: claimReturn.EstablishmentUID,
           isSubsidiary: Boolean(claimReturn.parentId),
           isParent: false,
@@ -353,7 +353,7 @@ describe('isAuthenticated', () => {
         isParent: claimReturn.isParent,
         role: claimReturn.role,
         establishment: {
-          id: claimReturn.EstblishmentId,
+          id: claimReturn.EstablishmentId,
           uid: claimReturn.EstablishmentUID,
           isSubsidiary: false,
           isParent: true,
@@ -444,7 +444,7 @@ describe('isAuthenticated', () => {
 
       expect(
         consoleSpy.calledOnceWithExactly(
-          `Found subsidiary establishment (${req.params.id}) for this known parent (${claimReturn.EstblishmentId}/${claimReturn.EstablishmentUID}), but access has not been given`,
+          `Found subsidiary establishment (${req.params.id}) for this known parent (${claimReturn.EstablishmentId}/${claimReturn.EstablishmentUID}), but access has not been given`,
         ),
       ).to.be.true;
 
@@ -489,7 +489,7 @@ describe('isAuthenticated', () => {
     });
 
     it('follows success if establishment ID does not match passed ID but token is from a parent - (Subsidiary path)', async () => {
-      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      jwtStub.returns({ ...claimReturn, isParent: true, EstablishmentId: 123 });
       dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ id: 133, parentId: 123 });
         return {
@@ -540,7 +540,7 @@ describe('isAuthenticated', () => {
     });
 
     it('follows success if establishment ID does not match passed ID but token is from a parent - (Parent path)', async () => {
-      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      jwtStub.returns({ ...claimReturn, isParent: true, EstablishmentId: 123 });
       dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ id: 143, parentId: 123 });
         return {
@@ -581,7 +581,7 @@ describe('isAuthenticated', () => {
         isParent: true,
         role: claimReturn.role,
         establishment: {
-          id: claimReturn.EstblishmentId,
+          id: claimReturn.EstablishmentId,
           uid: claimReturn.EstablishmentUID,
           isSubsidiary: false,
           isParent: true,
@@ -593,7 +593,7 @@ describe('isAuthenticated', () => {
     });
 
     it('follows success if establishment ID does not match passed ID but token is from a parent - (has establishment UID)', async () => {
-      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      jwtStub.returns({ ...claimReturn, isParent: true, EstablishmentId: 123 });
       dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ parentId: 123, uid: '000aedf4-8e1a-4450-905b-6039179f5fff' });
         return {
@@ -633,7 +633,7 @@ describe('isAuthenticated', () => {
         isParent: true,
         role: claimReturn.role,
         establishment: {
-          id: claimReturn.EstblishmentId,
+          id: claimReturn.EstablishmentId,
           uid: claimReturn.EstablishmentUID,
           isSubsidiary: false,
           isParent: true,
@@ -645,7 +645,7 @@ describe('isAuthenticated', () => {
     });
 
     it('returns 403 if not GET and user has read-only permissions', async () => {
-      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      jwtStub.returns({ ...claimReturn, isParent: true, EstablishmentId: 123 });
       dbStub.callsFake((where) => {
         expect(where).to.deep.equal({ parentId: 123, uid: '000aedf4-8e1a-4450-905b-6039179f5fff' });
         return {
@@ -677,7 +677,7 @@ describe('isAuthenticated', () => {
     });
 
     it('returns 403 if the database call throws', async () => {
-      jwtStub.returns({ ...claimReturn, isParent: true, EstblishmentId: 123 });
+      jwtStub.returns({ ...claimReturn, isParent: true, EstablishmentId: 123 });
       dbStub.throws();
 
       const req = httpMocks.createRequest({
@@ -764,7 +764,7 @@ describe('isAuthenticated', () => {
       claimReturn = {
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
-        EstblishmentId: null,
+        EstablishmentId: null,
         EstablishmentUID: null,
         sub: 'anySub',
         userUid: 'someUid',
@@ -847,7 +847,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(403);
-      expect(data).to.equal(`You're not admin`);
+      expect(data).to.equal("You're not admin");
     });
 
     it('returns a 401 with error message if there is not a token', async () => {
@@ -908,7 +908,7 @@ describe('isAuthenticated', () => {
       claimReturn = {
         aud: config.get('jwt.aud.login'),
         iss: config.get('jwt.iss'),
-        EstblishmentId: null,
+        EstablishmentId: null,
         EstablishmentUID: null,
         sub: 'anySub',
         userUid: 'someUid',
@@ -991,7 +991,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(403);
-      expect(data).to.equal(`You're not an admin manager`);
+      expect(data).to.equal("You're not an admin manager");
     });
 
     it('returns a 403 with error message if claim role is not an Admin Manager', async () => {
@@ -1007,7 +1007,7 @@ describe('isAuthenticated', () => {
 
       const data = res._getData();
       expect(res.statusCode).to.equal(403);
-      expect(data).to.equal(`You're not an admin manager`);
+      expect(data).to.equal("You're not an admin manager");
     });
 
     it('returns a 401 with error message if there is not a token', async () => {

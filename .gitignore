@@ -5,11 +5,9 @@
 /tmp
 /out-tsc
 
-
 # dependencies
 /node_modules
 */node_modules
-
 
 /.angular/cache
 
@@ -51,9 +49,6 @@ Thumbs.db
 /coverage
 /.nyc_output
 /fecoverage
-*/coverage
-*/.nyc_output
-*/fecoverage
 
 ./package-lock.json
 */package-lock.json
@@ -77,9 +72,14 @@ test-results.xml
 
 TESTS.xml
 
-#Cypress to ignore
+# Cypress to ignore
 cypress/screenshots
 cypress/videos
 cypress/fixtures
 
 docker/*.sql
+
+# Gource
+bin/
+lib/
+*.ppm
