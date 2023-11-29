@@ -1,10 +1,9 @@
 <ng-container *ngIf="notification">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-two-thirds" style="width: 70%">
       <div [ngSwitch]="notification.typeContent.approvalStatus">
         <div *ngSwitchCase="'REQUESTED'">
-          <p>You have a request from {{ notificationRequestedFrom }} to link to you.</p>
-          <p>Approve the request to set the following permissions:</p>
+          <p>{{ notificationRequestedFrom }}, {{ postCode }} want to link to you.</p>
         </div>
         <div *ngSwitchCase="'CANCELLED'">
           <p>You have a request from {{ notificationRequestedFrom }} to link to you.</p>
@@ -39,11 +38,15 @@
           <ng-template #nonWorkplaceRequester>
             <p>Your request to link to {{ notificationRequestedTo }}, {{ postCode }} has been approved.</p>
           </ng-template>
-          <h2 class="govuk-!-margin-top-6">Data permissions</h2>
         </div>
         <div *ngSwitchDefault></div>
       </div>
-
+      <div [ngSwitch]="notification.typeContent.approvalStatus">
+        <div *ngSwitchCase="'REQUESTED'"><h2 class="govuk-!-margin-top-7">Data permissions if approved</h2></div>
+        <div *ngSwitchCase="'APPROVED'">
+          <h2 class="govuk-!-margin-top-7">Data permissions</h2>
+        </div>
+      </div>
       <table class="govuk-table govuk-table__with-action" *ngIf="notification.typeContent.approvalStatus !== 'DENIED'">
         <thead class="govuk-table__head">
           <tr class="govuk-table__row" data-testid="tableHeaders">

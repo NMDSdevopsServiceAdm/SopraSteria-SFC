@@ -31,8 +31,8 @@ export interface NotificationTypes {
 
 export enum NotificationType {
   OWNERCHANGE = 'Change data owner',
-  LINKTOPARENTREQUEST = 'Link to parent organisation',
-  LINKTOPARENTAPPROVED = 'Link to parent organisation',
+  LINKTOPARENTREQUEST = 'Link request',
+  LINKTOPARENTAPPROVED = 'Link request: approved',
   LINKTOPARENTREJECTED = 'Link to parent organisation',
   DELINKTOPARENT = 'Remove link to parent organisation',
   BECOMEAPARENT = 'Become a parent organisation',
