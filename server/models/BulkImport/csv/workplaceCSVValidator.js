@@ -2793,7 +2793,7 @@ class WorkplaceCSVValidator {
       let workerFromCSV = myJSONWorkers.find((w) => {
         return w.uniqueWorkerId === worker.uniqueWorker;
       });
-      if (workerFromCSV && dataInDB.includes(workerFromCSV.status)) {
+      if (workerFromCSV && dataInDB.includes(workerFromCSV._status)) {
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
         worker.otherJobIds = worker.otherJobIds.length ? worker.otherJobIds.split(';') : [];
         worker.otherJobIds.map((otherJobId) => BUDI.jobRoles(BUDI.FROM_ASC, otherJobId));
