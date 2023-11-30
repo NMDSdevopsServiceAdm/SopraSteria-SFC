@@ -77,10 +77,10 @@ const identifyLocalAuthority = async (postcode) => {
 
   // We use the postcode to get local custodian code
   // and use this to get the Cssr record
-  const cssrResult = await models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
+  const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
 
-  if (cssrResult && !(cssrResult === undefined || cssrResult === null)) {
-    return cssrResult.cssrRecord.name;
+  if (cssrResults && !(cssrResults === undefined || cssrResults === null)) {
+    return cssrResults[0].cssrRecord.name;
   }
 
   //Couldn't get local authority name. Just leave it blank?
