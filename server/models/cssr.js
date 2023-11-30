@@ -107,7 +107,7 @@ module.exports = function (sequelize, DataTypes) {
     // Check for full records in postcodes table or query getAddressAPI and cache
     const postcodesRecords = await sequelize.models.postcodes.firstOrCreate(postcode);
 
-    if (postcodesRecords && postcodesRecords[0].district) {
+    if (postcodesRecords && postcodesRecords.length) {
       const district = postcodesRecords[0].district;
 
       return await this.findOne({
