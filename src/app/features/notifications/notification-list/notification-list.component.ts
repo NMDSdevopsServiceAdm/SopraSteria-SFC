@@ -48,7 +48,6 @@ export class NotificationListComponent implements OnInit {
       .subscribe((notification) => {
         this.notifications = notification.notifications;
         this.totalCount = notification.count;
-        console.log(this.notifications);
       });
   }
 

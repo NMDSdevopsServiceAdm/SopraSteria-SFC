@@ -58,8 +58,6 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     this.requestorName = this.notification.typeContent.requestorName;
     this.postCode = this.notification.typeContent.postCode;
     this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
-
-    console.log(this.notification);
   }
 
   private performAction(action: string) {
