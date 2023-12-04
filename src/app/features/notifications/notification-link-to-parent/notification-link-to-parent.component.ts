@@ -15,6 +15,7 @@ import { Observable, Subscription } from 'rxjs';
 @Component({
   selector: 'app-notification-link-to-parent',
   templateUrl: './notification-link-to-parent.component.html',
+  styleUrls: ['../notification/notification.component.scss'],
   providers: [DialogService, Overlay],
 })
 export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
@@ -57,6 +58,8 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     this.requestorName = this.notification.typeContent.requestorName;
     this.postCode = this.notification.typeContent.postCode;
     this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
+
+    console.log(this.notification);
   }
 
   private performAction(action: string) {

@@ -1,6 +1,6 @@
 <ng-container *ngIf="notification">
   <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds" style="width: 70%">
+    <div class="govuk-grid-column-two-thirds notificationTable">
       <div [ngSwitch]="notification.typeContent.approvalStatus">
         <div *ngSwitchCase="'REQUESTED'">
           <p>{{ notificationRequestedFrom }}, {{ postCode }} want to link to you.</p>

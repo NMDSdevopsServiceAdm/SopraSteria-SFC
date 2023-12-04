@@ -11,13 +11,13 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
 import { NotificationTypePipe } from '@shared/pipes/notification-type.pipe';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 import { NotificationComponent } from './notification.component';
 
 import createSpy = jasmine.createSpy;
 
-describe('NotificationBecomeAParentComponent', () => {
+describe('Notification', () => {
   async function setup(notificationType, approvalStatus = 'APPROVED') {
     const notificationStub = {
       created: '2020-01-01',
@@ -25,6 +25,7 @@ describe('NotificationBecomeAParentComponent', () => {
       type: notificationType,
       typeContent: {
         approvalStatus: approvalStatus,
+        status: 'Approved',
       },
     };
 
@@ -135,6 +136,42 @@ describe('NotificationBecomeAParentComponent', () => {
       const actionButtons = component.queryByTestId('actionButtons');
 
       expect(actionButtons).toBeNull();
+    });
+  });
+
+  describe('Subject', () => {
+    it('should show the subejct line', async () => {
+      const { component } = await setup('OWNERCHANGE');
+      const subjectText = component.queryByTestId('subject');
+
+      expect(subjectText).toBeTruthy();
+    });
+
+    it('should show status when owner change is approved', async () => {
+      const { component } = await setup('OWNERCHANGE', 'APPROVED');
+
+      const subjectTestId = component.queryByTestId('subject');
+      const subjectText = 'Subject: Change data owner request: approved';
+
+      expect(subjectTestId.textContent).toBe(subjectText);
+    });
+
+    it('should not show status when owner change is requested', async () => {
+      const { component } = await setup('OWNERCHANGE', 'REQUESTED');
+
+      const subjectTestId = component.queryByTestId('subject');
+      const subjectText = 'Subject: Change data owner request';
+
+      expect(subjectTestId.textContent).toBe(subjectText);
+    });
+
+    it('should show status when become a parent request is approved', async () => {
+      const { component } = await setup('BECOMEAPARENT', null);
+
+      const subjectTestId = component.queryByTestId('subject');
+      const subjectText = 'Subject: Parent request: approved';
+
+      expect(subjectTestId.textContent).toBe(subjectText);
     });
   });
 });
