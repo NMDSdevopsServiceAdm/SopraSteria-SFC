@@ -98,6 +98,7 @@ class Establishment extends EntityValidator {
     this._pensionContribution = null;
     this._sickPay = null;
     this._recruitmentJourneyExistingUserBanner = false;
+    this._primaryAuthorityCssr = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
     this._reasonsForLeaving = null;
@@ -390,6 +391,9 @@ class Establishment extends EntityValidator {
     return this._recruitmentJourneyExistingUserBanner;
   }
 
+  get primaryAuthorityCssr() {
+    return this._primaryAuthorityCssr;
+  }
   // used by save to initialise a new Establishment; returns true if having initialised this Establishment
   _initialise() {
     if (this._uid === null) {
@@ -606,6 +610,9 @@ class Establishment extends EntityValidator {
 
         if ('recruitmentJourneyExistingUserBanner' in document) {
           this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
+        }
+        if ('primaryAuthorityCssr' in document) {
+          this._primaryAuthorityCssr = document.primaryAuthorityCssr;
         }
       }
 
@@ -832,6 +839,7 @@ class Establishment extends EntityValidator {
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
+          primaryAuthorityCssr: this._primaryAuthorityCssr,
         };
 
         // need to create the Establishment record and the Establishment Audit event
@@ -1033,6 +1041,7 @@ class Establishment extends EntityValidator {
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
             recruitmentJourneyExistingUserBanner: bulkUploaded ? true : this._recruitmentJourneyExistingUserBanner,
+            primaryAuthorityCssr: this._primaryAuthorityCssr,
           };
 
           // Every time the establishment is saved, need to calculate
@@ -1293,7 +1302,6 @@ class Establishment extends EntityValidator {
       }
 
       const fetchResults = await models.establishment.findOne(fetchQuery);
-      console.log({ fetchResults: fetchResults });
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
         this._isNew = false;
@@ -1348,6 +1356,8 @@ class Establishment extends EntityValidator {
         this._pensionContribution = fetchResults.pensionContribution;
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
+
+        this._primaryAuthorityCssr = this.primaryAuthorityCssr;
         // if history of the User is also required; attach the association
         //  and order in reverse chronological - note, order on id (not when)
         //  because ID is primay key and hence indexed
@@ -1517,15 +1527,12 @@ class Establishment extends EntityValidator {
 
         const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
-        if (!cssrResults || cssrResults.length == 0) {
-          console.log('Could not retrieve cssr record');
-          return {};
+        if (cssrResults.length > 0) {
+          fetchResults.primaryAuthorityCssr = {
+            id: cssrResults[0].cssrRecord.id,
+            name: cssrResults[0].cssrRecord.name,
+          };
         }
-
-        fetchResults.primaryAuthorityCssr = {
-          id: cssrResults[0].cssrRecord.id,
-          name: cssrResults[0].cssrRecord.name,
-        };
 
         if (fetchResults.auditEvents) {
           this._auditEvents = fetchResults.auditEvents;
