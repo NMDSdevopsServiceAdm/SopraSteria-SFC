@@ -198,6 +198,12 @@ const getEstablishment = async (req, res) => {
   const showPropertyHistoryOnly = req.query.history === 'property';
 
   const thisEstablishment = new Establishment.Establishment(req.username);
+  console.log({
+    thisEstablishment: thisEstablishment,
+    establishmentId: establishmentId,
+    showHistory: showHistory,
+    history: req.query.history,
+  });
   try {
     if (await thisEstablishment.restore(establishmentId, showHistory && req.query.history !== 'property')) {
       // the property based framework for "other services" and "capacity services"
