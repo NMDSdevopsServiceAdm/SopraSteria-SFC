@@ -189,6 +189,7 @@ const addEstablishment = async (req, res) => {
 // gets requested establishment
 // optional parameter - "history" must equal "none" (default), "property", "timeline" or "full"
 const getEstablishment = async (req, res) => {
+  console.log('getEstablishment request');
   const establishmentId = req.params.id;
 
   const showHistory =
@@ -224,6 +225,7 @@ const getEstablishment = async (req, res) => {
       }
       if (!jsonResponse.isParent && jsonResponse.parentUid !== null) {
         const parentEstablishmentName = await thisEstablishment.fetchParentDetails(jsonResponse.parentUid);
+        console.log({ parentEstablishmentName: parentEstablishmentName });
         if (parentEstablishmentName) {
           jsonResponse.parentName = parentEstablishmentName.parentName;
         }
