@@ -1293,6 +1293,7 @@ class Establishment extends EntityValidator {
       }
 
       const fetchResults = await models.establishment.findOne(fetchQuery);
+      console.log({ fetchResults: fetchResults });
       if (fetchResults && fetchResults.id && Number.isInteger(fetchResults.id)) {
         // update self - don't use setters because they modify the change state
         this._isNew = false;

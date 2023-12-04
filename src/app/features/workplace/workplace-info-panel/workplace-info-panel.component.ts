@@ -138,6 +138,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     this.establishmentService.getEstablishment(this.workplace.uid).subscribe((data) => {
+      console.log({ workplaceDATA: data });
       if (data.employerType == null) {
         this.establishmentService.setEmployerTypeHasValue(false);
         this.router.navigate(['/workplace', this.workplace.uid, 'type-of-employer']);
