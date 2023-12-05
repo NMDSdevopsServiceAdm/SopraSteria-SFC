@@ -186,25 +186,39 @@ describe('Notification', () => {
     });
   });
 
-  describe('', () => {
-    it('should ', async () => {
-      const { component, fixture } = await setup('BECOMEAPARENT', null);
+  describe('showStatus', () => {
+    it('should show status in subject for become a parent is approved', async () => {
+      const { component, fixture, queryByTestId } = await setup('BECOMEAPARENT', null);
 
       component.approvalStatus = 'Approved';
+      const subjectTestId = queryByTestId('subject');
 
       fixture.detectChanges();
 
       expect(component.showStatus).toBeTrue();
+      expect(subjectTestId.textContent).toContain('approved');
     });
 
-    it('should ', async () => {
-      const { component } = await setup('OWNERCHANGE', 'APPROVED');
+    it('should show status in subject when owner change request is approved ', async () => {
+      const { component, queryByTestId } = await setup('OWNERCHANGE', 'APPROVED');
+
+      const subjectTestId = queryByTestId('subject');
 
       expect(component.showStatus).toBeTrue();
+      expect(subjectTestId.textContent).toContain('approved');
     });
 
-    it('should ', async () => {
-      const { component } = await setup('OWNERCHANGE', 'REQUESTED');
+    it('should not show status in subject when owner change is requested ', async () => {
+      const { component, queryByTestId } = await setup('OWNERCHANGE', 'REQUESTED');
+
+      const subjectTestId = queryByTestId('subject');
+
+      expect(component.showStatus).toBeFalse();
+      expect(subjectTestId.textContent).not.toContain('approved');
+    });
+
+    it('should be false when link to parent is approved ', async () => {
+      const { component } = await setup('LINKTOPARENTAPPROVED');
 
       expect(component.showStatus).toBeFalse();
     });
