@@ -29,50 +29,61 @@ describe('Notification', () => {
       },
     };
 
-    const component = await render(NotificationComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [NotificationTypePipe],
-      providers: [
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
-          provide: NotificationsService,
-          useValue: {
-            getNotificationDetails() {
-              return of(notificationStub);
-            },
-            setNotificationViewed() {
-              return of({
-                establishmentNotification: true,
-                notification: notificationStub,
-              });
-            },
+    const { fixture, getByText, queryByTestId, queryByText, getByLabelText, getByTestId } = await render(
+      NotificationComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        declarations: [NotificationTypePipe],
+        providers: [
+          {
+            provide: BreadcrumbService,
+            useClass: MockBreadcrumbService,
           },
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              params: {
-                notificationUid: '',
+          {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
+            provide: NotificationsService,
+            useValue: {
+              getNotificationDetails() {
+                return of(notificationStub);
+              },
+              setNotificationViewed() {
+                return of({
+                  establishmentNotification: true,
+                  notification: notificationStub,
+                });
               },
             },
           },
-        },
-      ],
-    });
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                params: {
+                  notificationUid: '',
+                },
+              },
+            },
+          },
+        ],
+        componentProperties: {},
+      },
+    );
 
+    const component = fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
 
     return {
       component,
+      fixture,
+      getByText,
+      queryByTestId,
+      getByLabelText,
+      getByTestId,
+      queryByText,
     };
   }
 
@@ -82,58 +93,58 @@ describe('Notification', () => {
   });
 
   it('should render notification-become-a-parent component if notificationType of BECOMEAPARENT', async () => {
-    const { component } = await setup('BECOMEAPARENT');
-    component.getByTestId('BECOMEAPARENT');
+    const { component, getByTestId } = await setup('BECOMEAPARENT');
+    expect(getByTestId('BECOMEAPARENT')).toBeTruthy();
   });
 
   it('should render notification-link-to-parent component if notificationType of LINKTOPARENTREQUEST', async () => {
-    const { component } = await setup('LINKTOPARENTREQUEST');
-    component.getByTestId('LINKTOPARENT');
+    const { component, getByTestId } = await setup('LINKTOPARENTREQUEST');
+    expect(getByTestId('LINKTOPARENT')).toBeTruthy();
   });
 
   it('should render notification-link-to-parent component if notificationType of LINKTOPARENTAPPROVED', async () => {
-    const { component } = await setup('LINKTOPARENTAPPROVED');
-    component.getByTestId('LINKTOPARENT');
+    const { component, getByTestId } = await setup('LINKTOPARENTAPPROVED');
+    expect(getByTestId('LINKTOPARENT')).toBeTruthy();
   });
 
   it('should render notification-link-to-parent component if notificationType of LINKTOPARENTREJECTED', async () => {
-    const { component } = await setup('LINKTOPARENTREJECTED');
-    component.getByTestId('LINKTOPARENT');
+    const { component, getByTestId } = await setup('LINKTOPARENTREJECTED');
+    expect(getByTestId('LINKTOPARENT')).toBeTruthy();
   });
 
   it('should render notification-delink-to-parent component if notificationType of DELINKTOPARENT', async () => {
-    const { component } = await setup('DELINKTOPARENT');
-    component.getByTestId('DELINKTOPARENT');
+    const { component, getByTestId } = await setup('DELINKTOPARENT');
+    expect(getByTestId('DELINKTOPARENT')).toBeTruthy();
   });
 
   it('should render notification-delink-to-parent component if notificationType of OWNERCHANGE', async () => {
-    const { component } = await setup('OWNERCHANGE');
-    component.getByTestId('OWNERCHANGE');
+    const { component, getByTestId } = await setup('OWNERCHANGE');
+    expect(getByTestId('OWNERCHANGE')).toBeTruthy();
   });
 
   describe('Action Buttons', async () => {
     it('should render when approval status is REQUESTED', async () => {
-      const { component } = await setup('BECOMEAPARENT', 'REQUESTED');
-      component.getByTestId('actionButtons');
+      const { component, getByTestId } = await setup('BECOMEAPARENT', 'REQUESTED');
+      expect(getByTestId('actionButtons')).toBeTruthy();
     });
 
     it('should render when approval status is CANCELLED', async () => {
-      const { component } = await setup('BECOMEAPARENT', 'CANCELLED');
-      component.getByTestId('actionButtons');
+      const { component, getByTestId } = await setup('BECOMEAPARENT', 'CANCELLED');
+      expect(getByTestId('actionButtons')).toBeTruthy();
     });
 
     it('should not render when approval status is APPROVED', async () => {
-      const { component } = await setup('BECOMEAPARENT', 'APPROVED');
+      const { component, queryByTestId } = await setup('BECOMEAPARENT', 'APPROVED');
 
-      const actionButtons = component.queryByTestId('actionButtons');
+      const actionButtons = queryByTestId('actionButtons');
 
       expect(actionButtons).toBeNull();
     });
 
     it('should not render when approval status is REJECTED', async () => {
-      const { component } = await setup('BECOMEAPARENT', 'REJECTED');
+      const { component, queryByTestId } = await setup('BECOMEAPARENT', 'REJECTED');
 
-      const actionButtons = component.queryByTestId('actionButtons');
+      const actionButtons = queryByTestId('actionButtons');
 
       expect(actionButtons).toBeNull();
     });
@@ -141,37 +152,61 @@ describe('Notification', () => {
 
   describe('Subject', () => {
     it('should show the subejct line', async () => {
-      const { component } = await setup('OWNERCHANGE');
-      const subjectText = component.queryByTestId('subject');
+      const { component, queryByTestId } = await setup('OWNERCHANGE');
+      const subjectText = queryByTestId('subject');
 
       expect(subjectText).toBeTruthy();
     });
 
     it('should show status when owner change is approved', async () => {
-      const { component } = await setup('OWNERCHANGE', 'APPROVED');
+      const { component, queryByTestId } = await setup('OWNERCHANGE', 'APPROVED');
 
-      const subjectTestId = component.queryByTestId('subject');
+      const subjectTestId = queryByTestId('subject');
       const subjectText = 'Subject: Change data owner request: approved';
 
       expect(subjectTestId.textContent).toBe(subjectText);
     });
 
     it('should not show status when owner change is requested', async () => {
-      const { component } = await setup('OWNERCHANGE', 'REQUESTED');
+      const { component, queryByTestId } = await setup('OWNERCHANGE', 'REQUESTED');
 
-      const subjectTestId = component.queryByTestId('subject');
+      const subjectTestId = queryByTestId('subject');
       const subjectText = 'Subject: Change data owner request';
 
       expect(subjectTestId.textContent).toBe(subjectText);
     });
 
     it('should show status when become a parent request is approved', async () => {
-      const { component } = await setup('BECOMEAPARENT', null);
+      const { component, queryByTestId } = await setup('BECOMEAPARENT', null);
 
-      const subjectTestId = component.queryByTestId('subject');
+      const subjectTestId = queryByTestId('subject');
       const subjectText = 'Subject: Parent request: approved';
 
       expect(subjectTestId.textContent).toBe(subjectText);
+    });
+  });
+
+  describe('', () => {
+    it('should ', async () => {
+      const { component, fixture } = await setup('BECOMEAPARENT', null);
+
+      component.approvalStatus = 'Approved';
+
+      fixture.detectChanges();
+
+      expect(component.showStatus).toBeTrue();
+    });
+
+    it('should ', async () => {
+      const { component } = await setup('OWNERCHANGE', 'APPROVED');
+
+      expect(component.showStatus).toBeTrue();
+    });
+
+    it('should ', async () => {
+      const { component } = await setup('OWNERCHANGE', 'REQUESTED');
+
+      expect(component.showStatus).toBeFalse();
     });
   });
 });

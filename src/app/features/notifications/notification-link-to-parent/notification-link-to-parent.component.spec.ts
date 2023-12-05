@@ -97,13 +97,13 @@ describe('NotificationLinkToParentComponent', () => {
     expect(permissionsTableHeading).toBeTruthy();
   });
 
-  it('show show the parent and postcode', async () => {
+  it('should show the parent and postcode', async () => {
     const { component, getByText } = await setup();
 
     const parentName = component.notification.typeContent.parentEstablishmentName;
     const parentPostCode = component.notification.typeContent.postCode;
 
-    const parentNameAndPostCodeText = `Your request to link to ${parentName}, ${parentPostCode} has been approved.`;
+    const parentNameAndPostCodeText = `Your request to link to ${parentName}, ${parentPostCode}, has been approved.`;
 
     expect(getByText(parentNameAndPostCodeText)).toBeTruthy();
   });
