@@ -66,10 +66,11 @@ export class NotificationComponent implements OnInit, OnDestroy {
       ? notification.typeContent?.approvalStatus.toUpperCase()
       : notification.typeContent?.status.toUpperCase();
 
-    if (this.approvalStatus === 'APPROVED') {
-      if (notification.type === 'BECOMEAPARENT' || notification.type === 'OWNERCHANGE') {
-        this.showStatus = true;
-      }
+    if (
+      (this.approvalStatus === 'APPROVED' && notification.type === 'BECOMEAPARENT') ||
+      (this.approvalStatus === 'APPROVED' && notification.type === 'OWNERCHANGE')
+    ) {
+      this.showStatus = true;
     } else {
       this.showStatus = false;
     }
