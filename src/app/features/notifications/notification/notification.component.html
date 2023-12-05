@@ -17,7 +17,7 @@
     <div data-testid="subject">
       <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-1">Subject:</h2>
       <p class="govuk-util__inline-block">
-        {{ notification?.type | notificationType }}<span *ngIf="showStatus">: {{ approvalStatus | lowercase }}</span>
+        {{ notification?.type | notificationType }}<span *ngIf="showStatus">: {{ approvalStatus }}</span>
       </p>
     </div>
   </div>

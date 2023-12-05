@@ -190,7 +190,7 @@ describe('Notification', () => {
     it('should show status in subject for become a parent is approved', async () => {
       const { component, fixture, queryByTestId } = await setup('BECOMEAPARENT', null);
 
-      component.approvalStatus = 'Approved';
+      component.approvalStatus = 'approved';
       const subjectTestId = queryByTestId('subject');
 
       fixture.detectChanges();

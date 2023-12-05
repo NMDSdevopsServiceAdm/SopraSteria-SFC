@@ -56,19 +56,19 @@ export class NotificationComponent implements OnInit, OnDestroy {
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
 
-      this.showStatusInSubject(this.notification);
+      this.approvalStatus = this.notification.typeContent?.approvalStatus
+        ? this.notification.typeContent?.approvalStatus.toLowerCase()
+        : this.notification.typeContent?.status.toLowerCase();
+
+      this.showStatusInSubject(this.notification.type, this.approvalStatus);
     });
     this.setNotificationViewed(this.notificationUid);
   }
 
-  public showStatusInSubject(notification): void {
-    this.approvalStatus = notification.typeContent?.approvalStatus
-      ? notification.typeContent?.approvalStatus.toUpperCase()
-      : notification.typeContent?.status.toUpperCase();
-
+  public showStatusInSubject(notificationType, approvalStatus): void {
     if (
-      (this.approvalStatus === 'APPROVED' && notification.type === 'BECOMEAPARENT') ||
-      (this.approvalStatus === 'APPROVED' && notification.type === 'OWNERCHANGE')
+      (approvalStatus === 'approved' && notificationType === 'BECOMEAPARENT') ||
+      (approvalStatus === 'approved' && notificationType === 'OWNERCHANGE')
     ) {
       this.showStatus = true;
     } else {
