@@ -1,9 +1,24 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-two-thirds notificationTable">
     <div [ngSwitch]="notification.typeContent.approvalStatus">
       <div *ngSwitchCase="'REQUESTED'">
-        <p>You have a request to transfer ownership of data to {{ ownerShipRequestedTo }}.</p>
-        <p>Approve the request to set the following permissions:</p>
+        <ng-container
+          *ngIf="
+            isWorkPlaceIsRequester && notification.typeContent.requestedOwnerType === 'Workplace';
+            else nonWorkPlaceRequester
+          "
+        >
+          <p>
+            {{ ownerShipRequestedTo }}, {{ ownerShipRequestedToPostCode }}, have sent you a change data owner request
+            because they want to be able to edit their own workplace details and staff records.
+          </p></ng-container
+        >
+        <ng-template #nonWorkPlaceRequester
+          ><p>
+            {{ ownerShipRequestedTo }}, {{ ownerShipRequestedToPostCode }}, have sent you a change data owner request
+            because they want to be able to edit your workplace details and staff records.
+          </p></ng-template
+        >
       </div>
       <div *ngSwitchCase="'CANCELLED'">
         <p>You have a request to transfer ownership of data to {{ ownerShipRequestedTo }}.</p>
@@ -27,18 +42,32 @@
       </div>
       <div *ngSwitchCase="'APPROVED'">
         <ng-container *ngIf="isWorkPlaceIsRequester; else nonWorkPlaceRequester">
-          <p>You approved the request to transfer ownership of data to {{ ownerShipRequestedFrom }}</p>
+          <p>You approved the request to transfer ownership of data to {{ ownerShipRequestedFrom }}.</p>
         </ng-container>
         <ng-template #nonWorkPlaceRequester>
-          <p>
-            {{ ownerShipRequestedTo }} has approved your request to become the data owner. You're now free to edit
-            workplace and staff data.
-          </p>
+          <ng-container
+            *ngIf="notification.typeContent.requestedOwnerType === 'Parent'; else nonParentRequestedOwnerType"
+            ><p>
+              {{ ownerShipRequestedTo }}, {{ ownerShipRequestedToPostCode }}, approved your change data owner request
+              and you can now edit your own workplace details and staff records.
+            </p></ng-container
+          >
+          <ng-template #nonParentRequestedOwnerType
+            ><p>
+              {{ ownerShipRequestedTo }}, {{ ownerShipRequestedToPostCode }}, approved your change data owner request
+              and you can now edit their workplace details and staff records.
+            </p></ng-template
+          >
         </ng-template>
       </div>
       <div *ngSwitchDefault></div>
     </div>
-
+    <div [ngSwitch]="notification.typeContent.approvalStatus">
+      <div *ngSwitchCase="'REQUESTED'"><h2 class="govuk-!-margin-top-6">Data permissions if approved</h2></div>
+      <div *ngSwitchCase="'APPROVED'">
+        <h2 class="govuk-!-margin-top-6">Data permissions</h2>
+      </div>
+    </div>
     <table
       class="govuk-table govuk-table__with-action"
       *ngIf="notification.typeContent.approvalStatus !== 'DENIED'"
@@ -64,7 +93,7 @@
             </ng-container>
             <ng-template #notNone>
               <td class="govuk-table__cell">
-                View {{ notification.typeContent.permissionRequest | dataViewPermissions | lowercase }}
+                {{ notification.typeContent.permissionRequest | dataViewPermissions }} (view only)
               </td>
             </ng-template>
           </tr>
@@ -72,7 +101,7 @@
             <td class="govuk-table__cell">
               {{ ownerShipRequestedTo }}
             </td>
-            <td class="govuk-table__cell">Edit workplace and staff records</td>
+            <td class="govuk-table__cell">Workplace and staff records (edit)</td>
           </tr>
         </ng-container>
         <ng-template #approved>
@@ -88,7 +117,7 @@
             </ng-container>
             <ng-template #notNone>
               <td class="govuk-table__cell">
-                View {{ notification.typeContent.permissionRequest | dataViewPermissions | lowercase }}
+                {{ notification.typeContent.permissionRequest | dataViewPermissions }} (view only)
               </td>
             </ng-template>
           </tr>
@@ -96,7 +125,7 @@
             <td class="govuk-table__cell">
               {{ ownerShipRequestedFrom }}
             </td>
-            <td class="govuk-table__cell">Edit workplace and staff records</td>
+            <td class="govuk-table__cell">Workplace and staff records (edit)</td>
           </tr>
         </ng-template>
       </tbody>
