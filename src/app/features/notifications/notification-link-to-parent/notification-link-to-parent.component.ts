@@ -15,6 +15,7 @@ import { Observable, Subscription } from 'rxjs';
 @Component({
   selector: 'app-notification-link-to-parent',
   templateUrl: './notification-link-to-parent.component.html',
+  styleUrls: ['../notification/notification.component.scss'],
   providers: [DialogService, Overlay],
 })
 export class NotificationLinkToParentComponent implements OnInit, OnDestroy {

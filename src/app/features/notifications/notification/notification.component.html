@@ -8,14 +8,18 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds" *ngIf="notification">
-    <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-2">From:</h2>
+    <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-1">From:</h2>
     <p class="govuk-util__inline-block">
       {{ notification.typeContent.requestorName ? notification.typeContent.requestorName : 'Skills For Care' }},
       {{ notification.created | longDate }}
     </p>
     <br />
-    <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-2">Subject:</h2>
-    <p class="govuk-util__inline-block">{{ notification?.type | notificationType }}</p>
+    <div data-testid="subject">
+      <h2 class="govuk-heading-s govuk-util__inline-block govuk-!-margin-right-1">Subject:</h2>
+      <p class="govuk-util__inline-block">
+        {{ notification?.type | notificationType }}<span *ngIf="showStatus">: {{ approvalStatus }}</span>
+      </p>
+    </div>
   </div>
 </div>
 <ng-container *ngIf="notification">
@@ -46,7 +50,7 @@
   </div>
   <div class="govuk-grid-row" *ngIf="displayActionButtons" data-testid="actionButtons">
     <div class="govuk-grid-column-two-thirds">
-      <div class="govuk-!-margin-top-2">
+      <div class="govuk-!-margin-top-6 notificationButtons">
         <button (click)="approveRequest()" type="submit" class="govuk-button">Approve request</button>
         <span class="govuk-visually-hidden">or</span>
         <button
