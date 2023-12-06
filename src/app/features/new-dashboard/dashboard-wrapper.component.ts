@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 

@@ -54,6 +54,7 @@ import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -63,6 +64,21 @@ const routes: Routes = [
     resolve: { childWorkplaces: ChildWorkplacesResolver },
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
+  },
+  {
+    path: 'home',
+    canActivate: [CheckPermissionsGuard],
+    component: NewDashboardComponent,
+    data: {
+      permissions: ['canViewEstablishment'],
+      title: 'View Workplace',
+      workerPagination: true,
+    },
+    resolve: {
+      users: AllUsersForEstablishmentResolver,
+      workers: WorkersResolver,
+      totalStaffRecords: TotalStaffRecordsResolver,
+    },
   },
   {
     path: ':establishmentuid',
@@ -75,6 +91,21 @@ const routes: Routes = [
         path: '',
         canActivate: [CheckPermissionsGuard],
         component: ViewWorkplaceComponent,
+        data: {
+          permissions: ['canViewEstablishment'],
+          title: 'View Workplace',
+          workerPagination: true,
+        },
+        resolve: {
+          users: AllUsersForEstablishmentResolver,
+          workers: WorkersResolver,
+          totalStaffRecords: TotalStaffRecordsResolver,
+        },
+      },
+      {
+        path: 'home',
+        canActivate: [CheckPermissionsGuard],
+        component: NewDashboardComponent,
         data: {
           permissions: ['canViewEstablishment'],
           title: 'View Workplace',

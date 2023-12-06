@@ -6,7 +6,8 @@
     *ngIf="
       (standAloneAccount && newHomeDesignFlag && !isAdminSection) ||
         (parentAccount && newHomeDesignParentFlag && !isAdminSection) ||
-        (subsAccount && newHomeDesignParentFlag && !isAdminSection);
+        (subsAccount && newHomeDesignParentFlag && !isAdminSection) ||
+        (isSelectedWorkplace && newHomeDesignParentFlag && !isAdminSection);
       else otherView
     "
   >

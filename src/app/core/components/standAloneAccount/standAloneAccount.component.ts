@@ -1,16 +1,17 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnInit, OnChanges } from '@angular/core';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-stand-alone-account',
   templateUrl: './standAloneAccount.component.html',
   styleUrls: ['./standAloneAccount.component.scss'],
 })
-export class StandAloneAccountComponent implements OnInit {
+export class StandAloneAccountComponent implements OnInit, OnChanges {
   @Input() dashboardView: boolean;
 
   private subscriptions: Subscription = new Subscription();
@@ -21,20 +22,30 @@ export class StandAloneAccountComponent implements OnInit {
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
+  public primaryWorkplaceName: string;
+  public isSelectedWorkplace: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private tabsService: TabsService,
     private benchmarksService: BenchmarksService,
+    private router: Router,
+    private cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit(): void {
-    const { uid, id } = this.establishmentService.primaryWorkplace;
+    const { uid, id, name, isParent } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
     this.getPermissions();
     this.setTabs();
+    this.primaryWorkplaceName = isParent ? name : null;
+    this.getIsSelectedWorkplace();
+  }
+
+  ngOnChanges(): void {
+    this.getIsSelectedWorkplace();
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
@@ -57,5 +68,15 @@ export class StandAloneAccountComponent implements OnInit {
     tabs.push(this.tabsService.benchmarksTab);
 
     this.tabs = tabs;
+  }
+
+  public getIsSelectedWorkplace(): void {
+    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
+  }
+
+  public goBackToParent(): void {
+    this.isSelectedWorkplace = false;
+    this.establishmentService.setIsSelectedWorkplace(this.isSelectedWorkplace);
+    this.router.navigate(['/']);
   }
 }

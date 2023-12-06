@@ -1,11 +1,12 @@
 <app-error-summary *ngIf="serverError" [serverError]="serverError"></app-error-summary>
 
-<div class="govuk-grid-row govuk-!-margin-bottom-5">
+<div class="govuk-grid-row govuk-!-margin-bottom-4">
   <div class="govuk-grid-column-full govuk__flex govuk__justify-content-space-between govuk__align-items-flex-end">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
       <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
       Your other workplaces ({{ activeWorkplaceCount }})
     </h1>
+
     <a
       *ngIf="canAddEstablishment"
       class="govuk-button govuk-!-margin-bottom-0"
@@ -15,6 +16,9 @@
     >
       Add a workplace
     </a>
+  </div>
+  <div class="govuk-grid-column-full govuk__flex govuk__justify-content-space-between govuk-!-margin-top-4">
+    <a [routerLink]="['/about-parents']" class="govuk-body govuk-link">What you can do as a parent workplace</a>
   </div>
 </div>
 
@@ -69,14 +73,14 @@
 <ng-template #noWorkplaces>
   <div data-testid="noWorkplacesMessage">
     <p><a [routerLink]="['/']">What you can do as a parent workplace</a></p>
-    <br/>
-      <p>You've not added any workplaces yet.</p>
-      <p>To add a workplace, you'll need to know:</p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>their main service and whether it's regulated by the Care Quality Commission (CQC)</li>
-        <li>the name and address of the workplace</li>
-        <li>what type of employer they are (for example, local authority, private)</li>
-        <li>how many members of staff they have</li>
-      </ul>
+    <br />
+    <p>You've not added any workplaces yet.</p>
+    <p>To add a workplace, you'll need to know:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>their main service and whether it's regulated by the Care Quality Commission (CQC)</li>
+      <li>the name and address of the workplace</li>
+      <li>what type of employer they are (for example, local authority, private)</li>
+      <li>how many members of staff they have</li>
+    </ul>
   </div>
 </ng-template>

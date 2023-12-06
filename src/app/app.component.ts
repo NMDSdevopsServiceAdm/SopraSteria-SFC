@@ -26,6 +26,7 @@ export class AppComponent implements OnInit {
   public newDataAreaFlag: boolean;
   public parentAccount: boolean;
   public subsAccount: boolean;
+  public isSelectedWorkplace: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -66,7 +67,7 @@ export class AppComponent implements OnInit {
       this.standAloneAccount = this.establishmentService.standAloneAccount;
       this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
       this.subsAccount = this.establishmentService.primaryWorkplace?.parentName ? true : false;
-
+      this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {
         (document.activeElement as HTMLElement).blur();

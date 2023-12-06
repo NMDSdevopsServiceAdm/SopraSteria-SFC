@@ -54,7 +54,7 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
-    this.breadcrumbService.show(JourneyType.TRAINING_AND_QUALIFICATIONS_TAB);
+    this.breadcrumbService.show(JourneyType.TRAINING_AND_QUALIFICATIONS_TAB, this.workplace.name);
 
     // if returning to this page from adding multiple training and using the back link
     // we need to remove any staff that were selected

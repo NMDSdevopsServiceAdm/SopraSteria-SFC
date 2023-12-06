@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="9px" height="14px" viewBox="0 0 9 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>White arrow left</title>
+    <g id="White-arrow-left" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" stroke-linecap="round" stroke-linejoin="round">
+        <polyline id="Path-5" stroke="#FFFFFF" stroke-width="2" transform="translate(4.5, 7) scale(-1, 1) translate(-4.5, -7)" points="2 2 7 7 2 12"></polyline>
+    </g>
+</svg>

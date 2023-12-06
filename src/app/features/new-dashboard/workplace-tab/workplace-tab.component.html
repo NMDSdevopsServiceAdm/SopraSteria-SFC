@@ -1,4 +1,8 @@
-<app-new-dashboard-header [tab]="'workplace'" [updatedDate]="workplace.updated"></app-new-dashboard-header>
+<app-new-dashboard-header
+  [tab]="'workplace'"
+  [updatedDate]="workplace.updated"
+  [workplace]="workplace"
+></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-padding-top-2">
   <ng-container *ngIf="canEditEstablishment && addWorkplaceDetailsBanner">
     <app-inset-text [color]="'todo'">

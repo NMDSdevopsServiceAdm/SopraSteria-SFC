@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, OnChanges, HostListener } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -16,10 +16,12 @@ import { Subscription } from 'rxjs';
   selector: 'app-new-dashboard',
   templateUrl: './dashboard.component.html',
 })
-export class NewDashboardComponent implements OnInit, OnDestroy {
+export class NewDashboardComponent implements OnInit, OnDestroy, OnChanges {
   private subscriptions: Subscription = new Subscription();
   public selectedTab: string;
+  public primaryEstablishment: Establishment;
   public workplace: Establishment;
+  public subWorkplace: Establishment;
   public workerCount: number;
   public workers: Worker[];
   public trainingCounts: TrainingCounts;
@@ -33,6 +35,8 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public isParent: boolean;
   @Input() isStandAloneAccount: boolean;
   @Input() isSubsAccount: boolean;
+  public primaryWorkplaceName: string;
+  public isSelectedWorkplace: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -47,11 +51,16 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
-    this.workplace = this.establishmentService.primaryWorkplace;
+
+    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
+    this.primaryEstablishment = this.establishmentService.primaryWorkplace;
+    this.subWorkplace = this.establishmentService?.establishment;
+    //this.setWorkplace();
+    this.workplace = this.route.snapshot.data.establishment;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
     this.tilesData = this.benchmarksService.benchmarksData;
 
-    this.isParent = this.workplace?.isParent;
+    this.isParent = !this.isSelectedWorkplace && this.primaryEstablishment?.isParent;
 
     this.authService.isOnAdminScreen = false;
     this.subscriptions.add(
@@ -66,6 +75,28 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
 
       this.canViewListOfWorkers && this.setWorkersAndTrainingValues();
     }
+
+    console.log(this.workplace);
+  }
+
+  @HostListener('document:click', ['$event.target.id']) onClick(target) {
+    if (target === 'backToParentLink') {
+      this.isSelectedWorkplace = false;
+      this.workplace = this.route.snapshot.data.establishment;
+      //this.setWorkplace();
+      //this.workplace = this.primaryEstablishment;
+      //this.isParent = !this.isSelectedWorkplace && this.primaryEstablishment?.isParent;
+    }
+  }
+
+  ngOnChanges(): void {
+    this.isSelectedWorkplace = this.establishmentService.getIsSelectedWorkplace();
+    this.isParent = !this.isSelectedWorkplace && this.primaryEstablishment?.isParent;
+    this.workplace = this.route.snapshot.data.establishment;
+  }
+
+  private setWorkplace(): void {
+    this.workplace = this.isSelectedWorkplace ? this.subWorkplace : this.primaryEstablishment;
   }
 
   private getPermissions(): void {
