@@ -190,12 +190,12 @@ describe('Notification', () => {
     it('should show status in subject for become a parent is approved', async () => {
       const { component, fixture, queryByTestId } = await setup('BECOMEAPARENT', null);
 
-      component.approvalStatus = 'approved';
       const subjectTestId = queryByTestId('subject');
 
       fixture.detectChanges();
 
-      expect(component.showStatus).toBeTrue();
+      expect(component.approvalStatus).toBe('approved');
+      expect(component.showStatus).toBe(true);
       expect(subjectTestId.textContent).toContain('approved');
     });
 
@@ -204,7 +204,7 @@ describe('Notification', () => {
 
       const subjectTestId = queryByTestId('subject');
 
-      expect(component.showStatus).toBeTrue();
+      expect(component.showStatus).toBe(true);
       expect(subjectTestId.textContent).toContain('approved');
     });
 
@@ -213,14 +213,14 @@ describe('Notification', () => {
 
       const subjectTestId = queryByTestId('subject');
 
-      expect(component.showStatus).toBeFalse();
+      expect(component.showStatus).toBe(false);
       expect(subjectTestId.textContent).not.toContain('approved');
     });
 
     it('should be false when link to parent is approved ', async () => {
       const { component } = await setup('LINKTOPARENTAPPROVED');
 
-      expect(component.showStatus).toBeFalse();
+      expect(component.showStatus).toBe(false);
     });
   });
 });

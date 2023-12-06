@@ -81,6 +81,8 @@ describe('NotificationOwnerChangeComponent', () => {
       component.workplace.name = component.notification.typeContent.parentEstablishmentName;
       fixture.detectChanges();
 
+      expect(component.ownerShipRequestedToPostCode).toEqual(component.notification.typeContent.subPostCode);
+      expect(component.ownerShipRequestedFromPostCode).toEqual(component.notification.typeContent.parentPostCode);
       expect(
         getByText(
           'Test Workplace, SB2 3JJ, have sent you a change data owner request because they want to be able to edit their own workplace details and staff records.',
@@ -96,6 +98,8 @@ describe('NotificationOwnerChangeComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
+      expect(component.ownerShipRequestedToPostCode).toEqual(component.notification.typeContent.parentPostCode);
+      expect(component.ownerShipRequestedFromPostCode).toEqual(component.notification.typeContent.subPostCode);
       expect(
         getByText(
           'Test Parent, PR1 2EE, have sent you a change data owner request because they want to be able to edit your workplace details and staff records.',
