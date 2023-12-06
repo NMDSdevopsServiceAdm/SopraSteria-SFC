@@ -42,9 +42,9 @@
         <div *ngSwitchDefault></div>
       </div>
       <div [ngSwitch]="notification.typeContent.approvalStatus">
-        <div *ngSwitchCase="'REQUESTED'"><h2 class="govuk-!-margin-top-7">Data permissions if approved</h2></div>
+        <div *ngSwitchCase="'REQUESTED'"><h2 class="govuk-!-margin-top-6">Data permissions if approved</h2></div>
         <div *ngSwitchCase="'APPROVED'">
-          <h2 class="govuk-!-margin-top-7">Data permissions</h2>
+          <h2 class="govuk-!-margin-top-6">Data permissions</h2>
         </div>
       </div>
       <table class="govuk-table govuk-table__with-action" *ngIf="notification.typeContent.approvalStatus !== 'DENIED'">
@@ -55,27 +55,52 @@
           </tr>
         </thead>
         <tbody class="govuk-tab">
-          <tr class="govuk-table__row govuk-error-table__row--no-border">
-            <td class="govuk-table__cell">
-              {{ notificationRequestedTo }}
-            </td>
-            <ng-container *ngIf="notification.typeContent.permissionRequest === 'None'; else notNone">
+          <ng-container *ngIf="isWorkPlaceRequester; else nonWorkplaceRequester"
+            ><tr class="govuk-table__row govuk-error-table__row--no-border">
               <td class="govuk-table__cell">
-                {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+                {{ notificationRequestedTo }}
               </td>
-            </ng-container>
-            <ng-template #notNone>
+              <ng-container *ngIf="notification.typeContent.permissionRequest === 'None'; else notNone">
+                <td class="govuk-table__cell">
+                  {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+                </td>
+              </ng-container>
+              <ng-template #notNone>
+                <td class="govuk-table__cell">
+                  {{ notification.typeContent.permissionRequest | dataViewPermissions }} (view only)
+                </td>
+              </ng-template>
+            </tr>
+            <tr class="govuk-table__row govuk-error-table__row--no-border">
               <td class="govuk-table__cell">
-                {{ notification.typeContent.permissionRequest | dataViewPermissions }} (view only)
+                {{ notificationRequestedFrom }}
               </td>
-            </ng-template>
-          </tr>
-          <tr class="govuk-table__row govuk-error-table__row--no-border">
-            <td class="govuk-table__cell">
-              {{ notificationRequestedFrom }}
-            </td>
-            <td class="govuk-table__cell">Workplace and staff records (edit)</td>
-          </tr>
+              <td class="govuk-table__cell">Workplace and staff records (edit)</td>
+            </tr></ng-container
+          >
+          <ng-template #nonWorkplaceRequester>
+            <tr class="govuk-table__row govuk-error-table__row--no-border">
+              <td class="govuk-table__cell">
+                {{ notificationRequestedFrom }}
+              </td>
+              <td class="govuk-table__cell">Workplace and staff records (edit)</td>
+            </tr>
+            <tr class="govuk-table__row govuk-error-table__row--no-border">
+              <td class="govuk-table__cell">
+                {{ notificationRequestedTo }}
+              </td>
+              <ng-container *ngIf="notification.typeContent.permissionRequest === 'None'; else notNone">
+                <td class="govuk-table__cell">
+                  {{ notification.typeContent.permissionRequest | dataViewPermissions }}
+                </td>
+              </ng-container>
+              <ng-template #notNone>
+                <td class="govuk-table__cell">
+                  {{ notification.typeContent.permissionRequest | dataViewPermissions }} (view only)
+                </td>
+              </ng-template>
+            </tr>
+          </ng-template>
         </tbody>
       </table>
     </div>

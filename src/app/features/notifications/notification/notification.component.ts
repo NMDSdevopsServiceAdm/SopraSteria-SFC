@@ -31,7 +31,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   public isSubWorkplace: boolean;
   public notificationsForDeletion: Array<any> = [];
   public approvalStatus: string;
-  public showStatus: boolean;
+  public showStatus: boolean = false;
 
   eventsSubject: Subject<string> = new Subject<string>();
 
@@ -71,8 +71,6 @@ export class NotificationComponent implements OnInit, OnDestroy {
       (approvalStatus === 'approved' && notificationType === 'OWNERCHANGE')
     ) {
       this.showStatus = true;
-    } else {
-      this.showStatus = false;
     }
   }
 
