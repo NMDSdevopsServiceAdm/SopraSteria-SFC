@@ -66,12 +66,12 @@ const createTableHeader = (WS1) => {
 
 const addCSSRData = async (establishmentsData) => {
   const results = {};
+  console.log(establishmentsData[0]);
   await Promise.all(
     establishmentsData.map(async (establishment) => {
       models.pcodedata.getLinkedCssrRecordsFromPostcode(establishment.postcode);
     }),
   );
-  console.log(results);
 
   //if no cssr results
   return results;
