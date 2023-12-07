@@ -26,7 +26,7 @@ import { of } from 'rxjs';
 
 import { ChangeDataOwnerComponent } from './change-data-owner.component';
 
-describe('ChangeDataOwnerComponent', () => {
+fdescribe('ChangeDataOwnerComponent', () => {
   async function setup() {
     const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
       ChangeDataOwnerComponent,
@@ -113,6 +113,28 @@ describe('ChangeDataOwnerComponent', () => {
       name: /data permissions/i,
     });
     expect(secondaryHeadingText).toBeTruthy();
+  });
+
+  it('should show the radio buttons', async () => {
+    const { fixture } = await setup();
+
+    const workplaceRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="Workplace"]`);
+    const workplaceAndStaffRadioButton = fixture.nativeElement.querySelector(
+      `input[ng-reflect-value="Workplace and Staff"]`,
+    );
+    const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+
+    expect(workplaceRadioButton).toBeTruthy();
+    expect(noneRadioButton).toBeTruthy();
+    expect(workplaceAndStaffRadioButton).toBeTruthy();
+  });
+
+  it('should show the correct labels for the radio buttons', async () => {
+    const { getByLabelText } = await setup();
+
+    expect(getByLabelText('Only your workplace details')).toBeTruthy();
+    expect(getByLabelText('Your workplace details and your staff records')).toBeTruthy();
+    expect(getByLabelText('No access to your data, linked only')).toBeTruthy();
   });
 
   it('should show the send change request button', async () => {
