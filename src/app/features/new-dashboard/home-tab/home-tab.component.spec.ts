@@ -670,10 +670,26 @@ describe('NewHomeTabComponent', () => {
           expect(getByText('Change data owner')).toBeTruthy();
         });
 
-        it('should show a change data owner dialog', async () => {
+        it('should show change data owner with the correct href when newHomeDesignParentFlag is true', async () => {
           const { component, fixture, getByText } = await setup();
 
           component.isOwnershipRequested = false;
+          component.newHomeDesignParentFlag = true;
+          fixture.detectChanges();
+
+          const changeDataOwnerLink = getByText('Change data owner');
+
+          fireEvent.click(changeDataOwnerLink);
+          fixture.detectChanges();
+
+          expect(changeDataOwnerLink.getAttribute('href')).toEqual('/change-data-owner');
+        });
+
+        it('should show a change data owner dialog when newHomeDesignParentFlag is false', async () => {
+          const { component, fixture, getByText } = await setup();
+
+          component.isOwnershipRequested = false;
+          component.newHomeDesignParentFlag = false;
           fixture.detectChanges();
 
           const changeDataOwnerLink = getByText('Change data owner');

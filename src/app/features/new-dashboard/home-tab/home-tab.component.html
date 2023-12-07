@@ -134,7 +134,12 @@
               <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
             </ng-container>
             <ng-template #changeDataOwner>
-              <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>
+              <ng-container *ngIf="newHomeDesignParentFlag; else dialogChangeDataOwner">
+                <a class="govuk-link" [routerLink]="['/change-data-owner']">Change data owner</a>
+              </ng-container>
+              <ng-template #dialogChangeDataOwner
+                ><a (click)="onChangeDataOwner($event)" href="#">Change data owner</a></ng-template
+              >
             </ng-template></app-link-with-arrow
           >
           <app-link-with-arrow *ngIf="canViewDataPermissionsLink">
