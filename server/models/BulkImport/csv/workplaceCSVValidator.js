@@ -453,6 +453,9 @@ class WorkplaceCSVValidator {
       status = false;
     }
 
+    console.log('DBG Local _validateLocalisedId Errors');
+    console.log(this._validationErrors);
+
     // need the LOCALSTID regardless of whether it has failed validation or not
     this._localId = myLocalId === null || myLocalId.length === 0 ? `SFCROW$${this._lineNumber}` : myLocalId;
     this._key = this._localId.replace(/\s/g, '');
@@ -567,6 +570,9 @@ class WorkplaceCSVValidator {
           break;
       }
 
+      console.log('DBG Local _validateStatus Errors');
+      console.log(this._validationErrors);
+
       this._status = myStatus;
       return true;
     }
@@ -588,6 +594,9 @@ class WorkplaceCSVValidator {
         column: 'ESTNAME',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateEstablishmentName Errors');
+      console.log(this._validationErrors);
       return false;
     } else if (myName.length > MAX_LENGTH) {
       this._validationErrors.push({
@@ -599,6 +608,9 @@ class WorkplaceCSVValidator {
         column: 'ESTNAME',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateEstablishmentName Errors');
+      console.log(this._validationErrors);
       return false;
     } else {
       this._name = myName;
@@ -685,6 +697,9 @@ class WorkplaceCSVValidator {
         column: 'POSTTOWN',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateAddress Errors');
+      console.log(this.localValidationErrors);
     }
     // TODO - registration/establishment APIs do not validate postcode (relies on the frontend - this must be fixed)
     const POSTCODE_MAX_LENGTH = 10;
@@ -744,6 +759,9 @@ class WorkplaceCSVValidator {
 
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
+
+      console.log('DBG Local Validation Errors');
+      localValidationErrors.forEach((thisValidation) => console.log(thisValidation));
       return false;
     }
 
@@ -833,6 +851,9 @@ class WorkplaceCSVValidator {
       });
     }
 
+    console.log('DBG Local _validateEstablishmentType Errors');
+    console.log(this.localValidationErrors);
+
     if (localValidationErrors.length > 0) {
       localValidationErrors.forEach((thisValidation) => this._validationErrors.push(thisValidation));
       return false;
@@ -855,10 +876,18 @@ class WorkplaceCSVValidator {
         column: 'PERMCQC',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateShareWithCQC Errors');
+      console.log(this._validationErrors);
+
       return false;
     } else {
       const shareWithCqcAsInt = parseInt(this._currentLine.PERMCQC, 10);
       this._shareWithCqc = Number.isNaN(shareWithCqcAsInt) ? this._currentLine.PERMCQC : shareWithCqcAsInt;
+
+      console.log('DBG Local _validateShareWithCQC Errors');
+      console.log(this._validationErrors);
+
       return true;
     }
   }
@@ -876,10 +905,16 @@ class WorkplaceCSVValidator {
         column: 'PERMLA',
         name: this._currentLine.LOCALESTID,
       });
+      console.log('DBG Local _validateShareWithLA Errors');
+      console.log(this._validationErrors);
+
       return false;
     } else {
       const shareWithLaAsInt = parseInt(this._currentLine.PERMLA, 10);
       this._shareWithLA = Number.isNaN(shareWithLaAsInt) ? this._currentLine.PERMLA : shareWithLaAsInt;
+
+      console.log('DBG Local _validateShareWithLA Errors');
+      console.log(this._validationErrors);
       return true;
     }
   }
@@ -899,6 +934,10 @@ class WorkplaceCSVValidator {
         column: 'REGTYPE',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateRegType Errors');
+      console.log(this._validationErrors);
+
       return false;
     } else if (Number.isNaN(myRegType) || (myRegType !== 0 && myRegType !== 2)) {
       this._validationErrors.push({
@@ -910,6 +949,10 @@ class WorkplaceCSVValidator {
         column: 'REGTYPE',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateRegType Errors');
+      console.log(this._validationErrors);
+
       return false;
     } else if (
       myRegType === 2 &&
@@ -926,6 +969,10 @@ class WorkplaceCSVValidator {
         column: 'REGTYPE/MAINSERVICE',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateRegType Errors');
+      console.log(this._validationErrors);
+
       return false;
     } else if (
       myRegType === 0 &&
@@ -942,9 +989,17 @@ class WorkplaceCSVValidator {
         column: 'REGTYPE/MAINSERVICE',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateRegType Errors');
+      console.log(this._validationErrors);
+
       return false;
     } else {
       this._regType = myRegType;
+
+      console.log('DBG Local _validateRegType Errors');
+      console.log(this._validationErrors);
+
       return true;
     }
   }
@@ -964,6 +1019,9 @@ class WorkplaceCSVValidator {
         column: 'PROVNUM',
         name: this._currentLine.LOCALESTID,
       });
+      console.log('DBG Local _validateProvID Errors');
+      console.log(this._validationErrors);
+
       return false;
     } else if (this._regType === 2 && !provIDRegex.test(myprovID)) {
       this._validationErrors.push({
@@ -975,6 +1033,10 @@ class WorkplaceCSVValidator {
         column: 'PROVNUM',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateProvID Errors');
+      console.log(this._validationErrors);
+
       return false;
     } else if (this._regType === 2) {
       this._provID = myprovID;
@@ -989,6 +1051,10 @@ class WorkplaceCSVValidator {
         column: 'PROVNUM',
         name: this._currentLine.LOCALESTID,
       });
+
+      console.log('DBG Local _validateProvID Errors');
+      console.log(this._validationErrors);
+
       return false;
     }
   }
@@ -1024,6 +1090,10 @@ class WorkplaceCSVValidator {
               column: 'LOCATIONID',
               name: this._currentLine.LOCALESTID,
             });
+
+            console.log('DBG Local _validateLocationID Errors');
+            console.log(this._validationErrors);
+
             return false;
           } else if (!locationIDRegex.test(myLocationID)) {
             this._validationErrors.push({
@@ -2748,6 +2818,9 @@ class WorkplaceCSVValidator {
       // this._validateNoChange(); // Not working, disabled for LA Window
     }
 
+    console.log('DBG workplaceCSVValidator Errors');
+    console.log(this.validationErrors);
+
     return this.validationErrors.length === 0;
   }
 
@@ -2793,7 +2866,7 @@ class WorkplaceCSVValidator {
       let workerFromCSV = myJSONWorkers.find((w) => {
         return w.uniqueWorkerId === worker.uniqueWorker;
       });
-      if (workerFromCSV && dataInDB.includes(workerFromCSV.status)) {
+      if (workerFromCSV && dataInDB.includes(workerFromCSV._status)) {
         worker.contractTypeId = BUDI.contractType(BUDI.FROM_ASC, worker.contractTypeId);
         worker.otherJobIds = worker.otherJobIds.length ? worker.otherJobIds.split(';') : [];
         worker.otherJobIds.map((otherJobId) => BUDI.jobRoles(BUDI.FROM_ASC, otherJobId));

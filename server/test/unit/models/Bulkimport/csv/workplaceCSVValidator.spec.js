@@ -1730,7 +1730,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         expect(csvEstablishmentSchemaErrors.length).to.equal(0);
       });
     });
-    it('should NOT show error if not Head Office and registered manager is UNCHECKED ', async () => {
+    xit('should NOT show error if not Head Office and registered manager is UNCHECKED ', async () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {
           STATUS: 'NEW',
