@@ -13,6 +13,7 @@ import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-o
 import { MoveWorkplaceDialogComponent } from '@shared/components/move-workplace/move-workplace-dialog.component';
 import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-workplace-info-panel',
@@ -30,6 +31,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public ownershipChangeRequestId: any = [];
   public ownershipChangeRequestCreatedByLoggegInUser: boolean;
   public ownershipChangeRequester: any;
+  public newHomeDesignParentFlag: boolean;
 
   constructor(
     private dialogService: DialogService,
@@ -39,6 +41,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private alertService: AlertService,
     private authService: AuthService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit() {
@@ -54,6 +57,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         }
       }),
     );
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
   }
 
   private changeOwnershipAndPermissions(): void {
