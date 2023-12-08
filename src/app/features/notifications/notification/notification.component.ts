@@ -17,6 +17,7 @@ const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
+  styleUrls: ['./notification.component.scss'],
 })
 export class NotificationComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
@@ -28,6 +29,9 @@ export class NotificationComponent implements OnInit, OnDestroy {
   public ownerShipRequestedFrom: string;
   public ownerShipRequestedTo: string;
   public isSubWorkplace: boolean;
+  public notificationsForDeletion: Array<any> = [];
+  public approvalStatus: string;
+  public showStatus: boolean = false;
 
   eventsSubject: Subject<string> = new Subject<string>();
 
@@ -36,6 +40,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
     private notificationsService: NotificationsService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -50,8 +55,23 @@ export class NotificationComponent implements OnInit, OnDestroy {
 
       this.displayActionButtons =
         details.typeContent.approvalStatus === 'REQUESTED' || details.typeContent.approvalStatus === 'CANCELLED';
+
+      this.approvalStatus = this.notification.typeContent?.approvalStatus
+        ? this.notification.typeContent?.approvalStatus.toLowerCase()
+        : this.notification.typeContent?.status.toLowerCase();
+
+      this.showStatusInSubject(this.notification.type, this.approvalStatus);
     });
     this.setNotificationViewed(this.notificationUid);
+  }
+
+  public showStatusInSubject(notificationType, approvalStatus): void {
+    if (
+      (approvalStatus === 'approved' && notificationType === 'BECOMEAPARENT') ||
+      (approvalStatus === 'approved' && notificationType === 'OWNERCHANGE')
+    ) {
+      this.showStatus = true;
+    }
   }
 
   public approveRequest() {
