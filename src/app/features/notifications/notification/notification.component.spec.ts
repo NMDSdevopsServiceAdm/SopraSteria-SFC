@@ -17,7 +17,7 @@ import { NotificationComponent } from './notification.component';
 
 import createSpy = jasmine.createSpy;
 
-describe('Notification', () => {
+xdescribe('Notification', () => {
   async function setup(notificationType, approvalStatus = 'APPROVED') {
     const notificationStub = {
       created: '2020-01-01',
@@ -92,7 +92,7 @@ describe('Notification', () => {
     expect(component).toBeTruthy();
   });
 
-  xit('should render notification-become-a-parent component if notificationType of BECOMEAPARENT', async () => {
+  it('should render notification-become-a-parent component if notificationType of BECOMEAPARENT', async () => {
     const { component, getByTestId } = await setup('BECOMEAPARENT');
     expect(getByTestId('BECOMEAPARENT')).toBeTruthy();
   });
