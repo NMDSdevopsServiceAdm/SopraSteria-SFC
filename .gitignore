@@ -5,11 +5,9 @@
 /tmp
 /out-tsc
 
-
 # dependencies
 /node_modules
 */node_modules
-
 
 /.angular/cache
 
@@ -74,9 +72,14 @@ test-results.xml
 
 TESTS.xml
 
-#Cypress to ignore
+# Cypress to ignore
 cypress/screenshots
 cypress/videos
 cypress/fixtures
 
 docker/*.sql
+
+# Gource
+bin/
+lib/
+*.ppm
