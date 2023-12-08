@@ -284,7 +284,11 @@ export const allRankingsData = allRankingsResponseBuilder();
 
 @Injectable()
 export class MockBenchmarksService extends BenchmarksServiceBase {
-  benchmarksData: any;
+  benchmarksData: any = {
+    ...benchmarksData,
+    newBenchmarks: benchmarksData,
+    oldBenchmarks: benchmarksData
+  };
   rankingsData: any;
   setReturnTo(returnTo: URLStructure) {
     throw new Error('Method not implemented.');

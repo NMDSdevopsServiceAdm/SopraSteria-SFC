@@ -21,7 +21,7 @@ import { BenchmarksSelectViewPanelComponent } from '../benchmarks-select-view-pa
 import { DataAreaTabComponent } from './data-area-tab.component';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
-xdescribe('DataAreaTabComponent', () => {
+describe('DataAreaTabComponent', () => {
   const setup = async (newDashboard = true) => {
     const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaTabComponent, {
