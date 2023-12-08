@@ -22,7 +22,7 @@ import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 
-fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
+describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   const yesterday = new Date();
