@@ -282,7 +282,6 @@ const routes: Routes = [
       anchorScrolling: 'enabled',
       onSameUrlNavigation: 'reload',
       paramsInheritanceStrategy: 'always',
-      relativeLinkResolution: 'legacy',
     }),
   ],
   exports: [RouterModule],
