@@ -299,10 +299,6 @@ export class MockBenchmarksService extends BenchmarksServiceBase {
     return returnTo;
   }
 
-  // public getTileData(establishmentUid, requiredTiles): Observable<BenchmarksResponse> {
-  //   return of(benchmarksData);
-  // }
-
   public getAllRankingData(establishmentUid): Observable<AllRankingsResponse> {
     return of(allRankingsData);
   }
@@ -310,8 +306,4 @@ export class MockBenchmarksService extends BenchmarksServiceBase {
   public postBenchmarkTabUsage(establishmentUid: number) {
     return of(null);
   }
-
-  // public get benchmarksData(): BenchmarksResponse {
-  //   return benchmarksData;
-  // }
 }
