@@ -27,7 +27,7 @@ export interface Auth {
 }
 
 export interface UserToken {
-  EstblishmentId: number;
+  EstablishmentId: number;
   EstablishmentUID: string;
   role: Roles;
   isParent: boolean;

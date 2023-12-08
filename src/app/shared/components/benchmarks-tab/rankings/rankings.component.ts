@@ -9,10 +9,11 @@ import {
   NoData,
   Tile,
 } from '@core/model/benchmarks.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { RankingContent } from '@shared/components/benchmark-metric/ranking-content/ranking-content.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -45,10 +46,11 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
   public journeyType: string;
 
   constructor(
-    private benchmarksService: BenchmarksService,
+    private benchmarksService: BenchmarksServiceBase,
     private route: ActivatedRoute,
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
@@ -90,45 +92,19 @@ export class BenchmarksRankingsComponent implements OnInit, OnDestroy {
 
     this.calculateJourneyType();
     this.breadcrumbService.show(this.journey[this.journeyType]);
-    this.subscriptions.add(
-      this.benchmarksService
-        .getTileData(this.establishmentUid, ['sickness', 'turnover', 'pay', 'qualifications'])
-        .subscribe((data) => {
-          if (data) {
-            this.tilesData = data;
-            if (data.meta) {
-              this.metaDataAvailable = true;
-              this.lastUpdated = data.meta.lastUpdated;
-            }
-          }
-        }),
-    );
 
-    this.subscriptions.add(
-      this.benchmarksService.getAllRankingData(this.establishmentUid).subscribe((data: AllRankingsResponse) => {
-        this.rankings = data;
-        this.payContent = {
-          ...this.rankings.pay.careWorkerPay.groupRankings,
-          smallText: true,
-          noData: MetricsContent.Pay.noData,
-        };
-        this.turnoverContent = {
-          ...this.rankings.turnover.groupRankings,
-          smallText: true,
-          noData: MetricsContent.Turnover.noData,
-        };
-        this.sicknessContent = {
-          ...this.rankings.sickness.groupRankings,
-          smallText: true,
-          noData: MetricsContent.Sickness.noData,
-        };
-        this.qualificationsContent = {
-          ...this.rankings.qualifications.groupRankings,
-          smallText: true,
-          noData: MetricsContent.Qualifications.noData,
-        };
-      }),
-    );
+    this.tilesData = this.featureFlagsService.newBenchmarksDataArea
+      ? this.benchmarksService.benchmarksData.oldBenchmarks
+      : this.benchmarksService.benchmarksData;
+    this.rankings = this.benchmarksService.rankingsData;
+    this.payContent = { ...this.rankings.pay, smallText: true, noData: MetricsContent.Pay.noData };
+    this.turnoverContent = { ...this.rankings.turnover, smallText: true, noData: MetricsContent.Turnover.noData };
+    this.sicknessContent = { ...this.rankings.sickness, smallText: true, noData: MetricsContent.Sickness.noData };
+    this.qualificationsContent = {
+      ...this.rankings.qualifications,
+      smallText: true,
+      noData: MetricsContent.Qualifications.noData,
+    };
   }
 
   ngOnDestroy(): void {

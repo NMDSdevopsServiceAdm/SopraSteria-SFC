@@ -45,44 +45,44 @@ const adminReportGet = async (req, res) => {
     // write the report header
     let csvString =
       'Local Authority, \
-Workplace ID,\
-Number of parent account,\
-Name of parent account(s),\
-Latest update date,\
-Status,\
-Confirmed staff record numbers,\
-Workplace data complete?,\
-Staff records complete?,\
-Number of workplaces/teams at these accounts,\
-Number of complete workplaces/teams,\
-Establishment Type,\
-Main Service,\
-Service User Group data,\
-Capacity of Main Service,\
-Utilisation of Main Service,\
-Number of Staff Records (by job role),\
-Number of Vacancies,\
-Leavers in the past 12 months,\
-Number of starters in the past 12 months,\
-Number of staff records based on the organisation,\
-Number of individual staff records,\
-Number of individual staff records (not agency),\
-Number of complete staff records (not agency),\
-Percentage of complete staff reocrds (not agency),\
-Number of individual agency records,\
-Number of complete agency records,\
-Percentage of complete agency staff records,\
-Gender,\
-Date of Birth,\
-Ethinic Group,\
-Main job role,\
-Employment status,\
-Contracted/Average hours,\
-Sickness,\
-Pay,\
-Qualifications,\
-Last Years confirmed numbers,\
-Notes' +
+  Workplace ID, \
+  Number of parent account, \
+  Name of parent account(s), \
+  Latest update date, \
+  Status, \
+  Confirmed staff record numbers, \
+  Workplace data complete?, \
+  Staff records complete?, \
+  Number of workplaces/teams at these accounts, \
+  Number of complete workplaces/teams, \
+  Establishment Type, \
+  Main Service, \
+  Service User Group data, \
+  Capacity of Main Service, \
+  Utilisation of Main Service, \
+  Number of Staff Records (by job role), \
+  Number of Vacancies, \
+  Leavers in the past 12 months, \
+  Number of starters in the past 12 months, \
+  Number of staff records based on the organisation, \
+  Number of individual staff records, \
+  Number of individual staff records (not agency), \
+  Number of complete staff records (not agency), \
+  Percentage of complete staff reocrds (not agency), \
+  Number of individual agency records, \
+  Number of complete agency records, \
+  Percentage of complete agency staff records, \
+  Gender, \
+  Date of Birth, \
+  Ethinic Group, \
+  Main job role, \
+  Employment status, \
+  Contracted/Average hours, \
+  Sickness, \
+  Pay, \
+  Qualifications, \
+  Last Years confirmed numbers, \
+  Notes' +
       NEWLINE;
 
     const runReport = await models.sequelize.query(
@@ -96,6 +96,7 @@ Notes' +
       },
     );
 
+    // TODO very ugly way to parse
     if (runReport && Array.isArray(runReport)) {
       runReport.forEach((thisPrimaryLaEstablishment) => {
         csvString =

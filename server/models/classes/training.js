@@ -415,7 +415,7 @@ class Training extends EntityValidator {
         this.expires = validatedTrainingRecord.expires ? validatedTrainingRecord.expires.toJSON().slice(0, 10) : null;
         this.notes = validatedTrainingRecord.notes;
       } else {
-        this._log(Training.LOG_ERROR, `Training::load - failed`);
+        this._log(Training.LOG_ERROR, 'Training::load - failed');
         return false;
       }
     } catch (err) {
@@ -430,14 +430,14 @@ class Training extends EntityValidator {
     if (this.hasMandatoryProperties === true) {
       return true;
     } else {
-      this._log(Training.LOG_ERROR, `Invalid properties`);
+      this._log(Training.LOG_ERROR, 'Invalid properties');
       return false;
     }
   }
 
   // saves the Training record to DB. Returns true if saved; false is not.
   // Throws "Error" on error
-  async save(savedBy, bulkUploaded = false, ttl = 0, externalTransaction = null) {
+  async save(savedBy, bulkUploaded = false, externalTransaction = null) {
     let mustSave = this._initialise();
 
     if (!this.uid) {
@@ -484,7 +484,7 @@ class Training extends EntityValidator {
             attributes: ['uid', 'created', 'updated'],
           };
 
-          //console.log("WA DEBUG creation document: ", creationDocument)
+          console.log('WA DEBUG creation document: ', creationDocument);
 
           // need to create the Training record only
           //  in one transaction
@@ -963,10 +963,10 @@ class Training extends EntityValidator {
             }
             if (training.expires) {
               let expiringDate = moment(training.expires);
-              let daysDiffrence = expiringDate.diff(currentDate, 'days');
-              if (daysDiffrence < 0) {
+              let daysDifference = expiringDate.diff(currentDate, 'days');
+              if (daysDifference < 0) {
                 worker.expiredTrainingCount++;
-              } else if (daysDiffrence >= 0 && daysDiffrence <= 90) {
+              } else if (daysDifference >= 0 && daysDifference <= 90) {
                 worker.expiringTrainingCount++;
               }
             }

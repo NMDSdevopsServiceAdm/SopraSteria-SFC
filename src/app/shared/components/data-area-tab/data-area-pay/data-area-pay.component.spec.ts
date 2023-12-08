@@ -7,6 +7,7 @@ import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, getByTestId, render } from '@testing-library/angular';
+import { allRankingsData, benchmarksData } from '@core/test-utils/MockBenchmarkService';
 
 import { DataAreaPayComponent } from './data-area-pay.component';
 
@@ -18,208 +19,8 @@ describe('DataAreaPayComponent', () => {
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
-        rankingsData: {
-          pay: {
-            careWorkerPay: {
-              groupRankings: {
-                maxRank: 14,
-                currentRank: 7,
-                hasValue: false,
-                allValues: [],
-              },
-              goodCqcRankings: {
-                hasValue: false,
-                stateMessage: 'no-comparison-data',
-              },
-            },
-            seniorCareWorkerPay: {
-              groupRankings: {
-                maxRank: 3,
-                hasValue: false,
-                stateMessage: 'no-pay-data',
-              },
-              goodCqcRankings: {
-                hasValue: false,
-                stateMessage: 'no-comparison-data',
-              },
-            },
-            registeredNursePay: {
-              groupRankings: {
-                maxRank: 9,
-                hasValue: false,
-                stateMessage: 'no-pay-data',
-              },
-              goodCqcRankings: {
-                maxRank: 3,
-                hasValue: false,
-                stateMessage: 'no-pay-data',
-              },
-            },
-            registeredManagerPay: {
-              groupRankings: {
-                hasValue: false,
-                stateMessage: 'no-comparison-data',
-              },
-              goodCqcRankings: {
-                hasValue: false,
-                stateMessage: 'no-comparison-data',
-              },
-            },
-          },
-          turnover: {
-            groupRankings: {
-              maxRank: 54,
-              currentRank: 32,
-              hasValue: true,
-              allValues: [],
-            },
-            goodCqcRankings: {
-              maxRank: 3,
-              currentRank: 2,
-              hasValue: true,
-              allValues: [
-                {
-                  value: -1,
-                  currentEst: false,
-                },
-                {
-                  value: 0.3333333333333333,
-                  currentEst: true,
-                },
-                {
-                  value: 5,
-                  currentEst: false,
-                },
-              ],
-            },
-          },
-          sickness: {
-            groupRankings: {
-              maxRank: 42,
-              currentRank: 11,
-              hasValue: true,
-              allValues: [],
-            },
-            goodCqcRankings: {
-              maxRank: 3,
-              currentRank: 3,
-              hasValue: true,
-              allValues: [],
-            },
-          },
-          qualifications: {
-            groupRankings: {
-              maxRank: 41,
-              currentRank: 1,
-              hasValue: true,
-              allValues: [],
-            },
-            goodCqcRankings: {
-              hasValue: false,
-              stateMessage: 'no-comparison-data',
-            },
-          },
-          vacancy: {
-            groupRankings: {
-              maxRank: 88,
-              currentRank: 21,
-              hasValue: true,
-              allValues: [],
-            },
-            goodCqcRankings: {
-              maxRank: 3,
-              currentRank: 1,
-              hasValue: true,
-              allValues: [],
-            },
-          },
-          timeInRole: {
-            groupRankings: {
-              maxRank: 47,
-              currentRank: 1,
-              hasValue: true,
-              allValues: [],
-            },
-            goodCqcRankings: {
-              maxRank: 3,
-              currentRank: 1,
-              hasValue: true,
-              allValues: [],
-            },
-          },
-        },
-        data: {
-          meta: {
-            workplaces: 0,
-            staff: 0,
-            localAuthority: 'Oxfordshire',
-          },
-          careWorkerPay: {
-            workplaceValue: {
-              value: 0,
-              hasValue: false,
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-data',
-            },
-            goodCqc: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-data',
-            },
-          },
-          seniorCareWorkerPay: {
-            workplaceValue: {
-              value: 0,
-              hasValue: false,
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-data',
-            },
-            goodCqc: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-data',
-            },
-          },
-          registeredNursePay: {
-            workplaceValue: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-pay-data',
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-data',
-            },
-            goodCqc: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-data',
-            },
-          },
-          registeredManagerPay: {
-            workplaceValue: {
-              value: 0,
-              hasValue: false,
-            },
-            comparisonGroup: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-data',
-            },
-            goodCqc: {
-              value: 0,
-              hasValue: false,
-              stateMessage: 'no-data',
-            },
-          },
-        },
+        rankingsData: allRankingsData,
+        data: benchmarksData
       },
     });
 
@@ -460,166 +261,32 @@ describe('DataAreaPayComponent', () => {
     it('should set the rankings data when all rankings data is provided', async () => {
       const { component } = await setup();
 
-      const rankings = {
-        pay: {
-          careWorkerPay: {
-            groupRankings: {
-              maxRank: 3,
-              hasValue: true,
-              currentRank: 2,
-            },
-            goodCqcRankings: {
-              maxRank: 10,
-              hasValue: true,
-              currentRank: 5,
-            },
-          },
-          seniorCareWorkerPay: {
-            groupRankings: {
-              maxRank: 11,
-              hasValue: true,
-              currentRank: 7,
-            },
-            goodCqcRankings: {
-              maxRank: 72,
-              hasValue: true,
-              currentRank: 50,
-            },
-          },
-          registeredNursePay: {
-            groupRankings: {
-              maxRank: 8,
-              hasValue: true,
-              currentRank: 5,
-            },
-            goodCqcRankings: {
-              maxRank: 12,
-              hasValue: true,
-              currentRank: 6,
-            },
-          },
-          registeredManagerPay: {
-            groupRankings: {
-              maxRank: 9,
-              hasValue: true,
-              currentRank: 8,
-            },
-            goodCqcRankings: {
-              maxRank: 11,
-              hasValue: true,
-              currentRank: 7,
-            },
-          },
-        },
-        turnover: {
-          groupRankings: {
-            maxRank: 54,
-            currentRank: 32,
-            hasValue: true,
-            allValues: [],
-          },
-          goodCqcRankings: {
-            maxRank: 3,
-            currentRank: 2,
-            hasValue: true,
-            allValues: [
-              {
-                value: -1,
-                currentEst: false,
-              },
-              {
-                value: 0.3333333333333333,
-                currentEst: true,
-              },
-              {
-                value: 5,
-                currentEst: false,
-              },
-            ],
-          },
-        },
-        sickness: {
-          groupRankings: {
-            maxRank: 42,
-            currentRank: 11,
-            hasValue: true,
-            allValues: [],
-          },
-          goodCqcRankings: {
-            maxRank: 3,
-            currentRank: 3,
-            hasValue: true,
-            allValues: [],
-          },
-        },
-        qualifications: {
-          groupRankings: {
-            maxRank: 41,
-            currentRank: 1,
-            hasValue: true,
-            allValues: [],
-          },
-          goodCqcRankings: {
-            hasValue: false,
-            stateMessage: 'no-comparison-data',
-          },
-        },
-        vacancy: {
-          groupRankings: {
-            maxRank: 88,
-            currentRank: 21,
-            hasValue: true,
-            allValues: [],
-          },
-          goodCqcRankings: {
-            maxRank: 3,
-            currentRank: 1,
-            hasValue: true,
-            allValues: [],
-          },
-        },
-        timeInRole: {
-          groupRankings: {
-            maxRank: 47,
-            currentRank: 1,
-            hasValue: true,
-            allValues: [],
-          },
-          goodCqcRankings: {
-            maxRank: 3,
-            currentRank: 1,
-            hasValue: true,
-            allValues: [],
-          },
-        },
-      };
       component.showRegisteredNurseSalary = true;
       component.viewBenchmarksComparisonGroups = false;
-      component.rankingsData = rankings;
       component.ngOnChanges();
 
       expect(component.rankings.careWorkerPay).toEqual({
         title: 'Care worker pay',
-        workplacesRankNumber: rankings.pay.careWorkerPay.groupRankings.currentRank,
-        totalWorkplaces: rankings.pay.careWorkerPay.groupRankings.maxRank,
+        workplacesRankNumber: allRankingsData.pay.careWorkerPay.groupRankings.currentRank,
+        totalWorkplaces: allRankingsData.pay.careWorkerPay.groupRankings.maxRank,
         noWorkplaceData: false,
       });
       expect(component.rankings.seniorCareWorkerPay).toEqual({
         title: 'Senior care worker pay',
-        workplacesRankNumber: rankings.pay.seniorCareWorkerPay.groupRankings.currentRank,
-        totalWorkplaces: rankings.pay.seniorCareWorkerPay.groupRankings.maxRank,
+        workplacesRankNumber: allRankingsData.pay.seniorCareWorkerPay.groupRankings.currentRank,
+        totalWorkplaces: allRankingsData.pay.seniorCareWorkerPay.groupRankings.maxRank,
         noWorkplaceData: false,
       });
       expect(component.rankings.registeredNursePay).toEqual({
         title: 'Registered nurse salary',
-        workplacesRankNumber: rankings.pay.registeredNursePay.groupRankings.currentRank,
-        totalWorkplaces: rankings.pay.registeredNursePay.groupRankings.maxRank,
+        workplacesRankNumber: allRankingsData.pay.registeredNursePay.groupRankings.currentRank,
+        totalWorkplaces: allRankingsData.pay.registeredNursePay.groupRankings.maxRank,
         noWorkplaceData: false,
       });
       expect(component.rankings.registeredManagerPay).toEqual({
         title: 'Registered manager salary',
-        workplacesRankNumber: rankings.pay.registeredManagerPay.groupRankings.currentRank,
-        totalWorkplaces: rankings.pay.registeredManagerPay.groupRankings.maxRank,
+        workplacesRankNumber: allRankingsData.pay.registeredManagerPay.groupRankings.currentRank,
+        totalWorkplaces: allRankingsData.pay.registeredManagerPay.groupRankings.maxRank,
         noWorkplaceData: false,
       });
 
@@ -628,26 +295,26 @@ describe('DataAreaPayComponent', () => {
 
       expect(component.rankings.careWorkerPay).toEqual({
         title: 'Care worker pay',
-        workplacesRankNumber: rankings.pay.careWorkerPay.goodCqcRankings.currentRank,
-        totalWorkplaces: rankings.pay.careWorkerPay.goodCqcRankings.maxRank,
+        workplacesRankNumber: allRankingsData.pay.careWorkerPay.goodCqcRankings.currentRank,
+        totalWorkplaces: allRankingsData.pay.careWorkerPay.goodCqcRankings.maxRank,
         noWorkplaceData: false,
       });
       expect(component.rankings.seniorCareWorkerPay).toEqual({
         title: 'Senior care worker pay',
-        workplacesRankNumber: rankings.pay.seniorCareWorkerPay.goodCqcRankings.currentRank,
-        totalWorkplaces: rankings.pay.seniorCareWorkerPay.goodCqcRankings.maxRank,
+        workplacesRankNumber: allRankingsData.pay.seniorCareWorkerPay.goodCqcRankings.currentRank,
+        totalWorkplaces: allRankingsData.pay.seniorCareWorkerPay.goodCqcRankings.maxRank,
         noWorkplaceData: false,
       });
       expect(component.rankings.registeredNursePay).toEqual({
         title: 'Registered nurse salary',
-        workplacesRankNumber: rankings.pay.registeredNursePay.goodCqcRankings.currentRank,
-        totalWorkplaces: rankings.pay.registeredNursePay.goodCqcRankings.maxRank,
+        workplacesRankNumber: allRankingsData.pay.registeredNursePay.goodCqcRankings.currentRank,
+        totalWorkplaces: allRankingsData.pay.registeredNursePay.goodCqcRankings.maxRank,
         noWorkplaceData: false,
       });
       expect(component.rankings.registeredManagerPay).toEqual({
         title: 'Registered manager salary',
-        workplacesRankNumber: rankings.pay.registeredManagerPay.goodCqcRankings.currentRank,
-        totalWorkplaces: rankings.pay.registeredManagerPay.goodCqcRankings.maxRank,
+        workplacesRankNumber: allRankingsData.pay.registeredManagerPay.goodCqcRankings.currentRank,
+        totalWorkplaces: allRankingsData.pay.registeredManagerPay.goodCqcRankings.maxRank,
         noWorkplaceData: false,
       });
     });
@@ -703,6 +370,33 @@ describe('DataAreaPayComponent', () => {
           },
         },
         turnover: {
+          groupRankings: {
+            maxRank: 54,
+            currentRank: 32,
+            hasValue: true,
+            allValues: [],
+          },
+          goodCqcRankings: {
+            maxRank: 3,
+            currentRank: 2,
+            hasValue: true,
+            allValues: [
+              {
+                value: -1,
+                currentEst: false,
+              },
+              {
+                value: 0.3333333333333333,
+                currentEst: true,
+              },
+              {
+                value: 5,
+                currentEst: false,
+              },
+            ],
+          },
+        },
+        turnoverRate: {
           groupRankings: {
             maxRank: 54,
             currentRank: 32,

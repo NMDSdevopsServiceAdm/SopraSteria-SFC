@@ -66,13 +66,12 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   public showStatusInSubject(notificationType, approvalStatus): void {
-    if (
-      (approvalStatus === 'approved' && notificationType === 'BECOMEAPARENT') ||
-      (approvalStatus === 'approved' && notificationType === 'OWNERCHANGE')
-    ) {
+    if ((approvalStatus === 'approved' && notificationType === 'BECOMEAPARENT') ||
+        (approvalStatus === 'approved' && notificationType === 'OWNERCHANGE')
+  ){
       this.showStatus = true;
-    }
   }
+}
 
   public approveRequest() {
     this.eventsSubject.next('APPROVE');

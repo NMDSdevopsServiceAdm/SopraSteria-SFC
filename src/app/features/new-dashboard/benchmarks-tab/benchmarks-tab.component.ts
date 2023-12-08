@@ -1,12 +1,15 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { BenchmarksResponse, MetricsContent } from '@core/model/benchmarks.model';
+import { BenchmarksResponse, MetricsContent, Tile } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-benchmarks-tab',
@@ -15,7 +18,7 @@ import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-t
 export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
-
+  private subscriptions: Subscription = new Subscription();
   public canViewFullBenchmarks: boolean;
   public payContent = MetricsContent.Pay;
   public turnoverContent = MetricsContent.Turnover;
@@ -28,12 +31,16 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private pdfService: PdfService,
     private elRef: ElementRef,
-    private benchmarksService: BenchmarksService,
+    private benchmarksService: BenchmarksServiceBase,
+    private featureFlagService: FeatureFlagsService,
+    protected router: Router,
   ) {}
 
   ngOnInit(): void {
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    this.tilesData = this.benchmarksService.benchmarksData;
+    this.tilesData = this.featureFlagService.newBenchmarksDataArea
+      ? this.benchmarksService.benchmarksData.oldBenchmarks
+      : this.benchmarksService.benchmarksData;
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
   }
 
@@ -44,6 +51,29 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
       this.workplace,
       'Benchmarks.pdf',
     );
+  }
+
+  get payTile(): Tile {
+    return this.tilesData?.pay;
+  }
+
+  get turnoverTile(): Tile {
+    return this.tilesData?.turnover;
+  }
+
+  get sicknessTile(): Tile {
+    return this.tilesData?.sickness;
+  }
+
+  get qualificationsTile(): Tile {
+    return this.tilesData?.qualifications;
+  }
+
+  public setReturn() {
+    this.benchmarksService.setReturnTo({
+      url: [this.router.url.split('#')[0]],
+      fragment: 'benchmarks',
+    });
   }
 
   ngOnDestroy(): void {

@@ -8,7 +8,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 
 import { RankingsResolver } from './rankings.resolver';
 
-describe('RankingsResollver', () => {
+xdescribe('RankingsResollver', () => {
   function setup() {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
+import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
@@ -10,7 +10,6 @@ import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
-import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
@@ -18,7 +17,6 @@ import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
-import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
@@ -89,6 +87,10 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
@@ -162,6 +164,11 @@ import { ParentWorkplaceAccounts } from '@features/create-account/workplace/pare
   providers: [
     AuthGuard,
     AdminSkipService,
+    {
+      provide: BenchmarksServiceBase,
+      useFactory: BenchmarksServiceFactory,
+      deps: [FeatureFlagsService, HttpClient],
+    },
     BackService,
     CountryService,
     EstablishmentService,
