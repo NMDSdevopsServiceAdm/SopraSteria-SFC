@@ -41,6 +41,7 @@ import {
   becomeAParentJourney,
   linkToParentJourney,
   removeLinkToParentJourney,
+  changeDataOwnerJourney,
 } from '@core/breadcrumb/journey.parent-requests';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
@@ -299,6 +300,11 @@ export class BreadcrumbService {
 
       case JourneyType.LINK_TO_PARENT: {
         routes = linkToParentJourney;
+        break;
+      }
+
+      case JourneyType.CHANGE_DATA_OWNER: {
+        routes = changeDataOwnerJourney;
         break;
       }
 
