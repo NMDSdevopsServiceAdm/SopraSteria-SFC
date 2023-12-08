@@ -90,7 +90,7 @@ describe('Notification', () => {
     expect(component).toBeTruthy();
   });
 
-  xit('should render notification-become-a-parent component if notificationType of BECOMEAPARENT', async () => {
+  it('should render notification-become-a-parent component if notificationType of BECOMEAPARENT', async () => {
     const { component, getByTestId } = await setup('BECOMEAPARENT');
     expect(getByTestId('BECOMEAPARENT')).toBeTruthy();
   });
