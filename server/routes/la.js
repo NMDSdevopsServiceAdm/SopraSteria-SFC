@@ -39,7 +39,7 @@ router.route('/:postcode').get(async (req, res) => {
     const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(req.params.postcode);
 
     if (!cssrResults || cssrResults.length == 0) {
-      return res.status(404).send(`${req.params.postcode} not found`);
+      return res.status(404).send('postcode not found');
     }
 
     primaryAuthorityCssr = {
