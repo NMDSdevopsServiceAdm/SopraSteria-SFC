@@ -80,7 +80,7 @@ module.exports = function (sequelize, DataTypes) {
 
   pcodedata.getLinkedCssrRecordsLooseMatch = async function (postcode) {
     let [outwardCode, inwardCode] = postcode.substring(0, 8).split(' '); //limit to avoid injection
-    let cssrRecords;
+    let cssrRecords = [];
 
     if (outwardCode.length == 0 || outwardCode.length > 4) {
       console.error(`Postcode: ${postcode} is invalid!`);
