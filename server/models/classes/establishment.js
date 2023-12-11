@@ -778,7 +778,7 @@ class Establishment extends EntityValidator {
         // and use this to get the Cssr record
         const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
-        if (cssrResults) {
+        if (cssrResults.length > 0) {
           this._cssrID = cssrResults[0].cssrRecord.id;
           nmdsLetter = cssrResults[0].cssrRecord.nmdsIdLetter;
         }
