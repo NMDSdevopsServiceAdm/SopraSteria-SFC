@@ -81,7 +81,7 @@ module.exports = function (sequelize, DataTypes) {
     // Try and match or loose match
     const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(establishments[0].postcode);
 
-    if (cssrResults && cssrResults.length > 0) {
+    if (cssrResults[0] && cssrResults[0].cssrRecord) {
       return cssrResults[0].cssrRecord;
     }
 
@@ -93,7 +93,7 @@ module.exports = function (sequelize, DataTypes) {
     // Try and match or loose match
     const cssrResults = await sequelize.models.pcodedata.getLinkedCssrRecordsFromPostcode(postcode);
 
-    if (cssrResults && cssrResults.length > 0) {
+    if (cssrResults && cssrResults[0].cssrRecord) {
       return cssrResults[0].cssrRecord;
     }
 
