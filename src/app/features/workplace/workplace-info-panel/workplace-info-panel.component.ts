@@ -22,6 +22,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   @Output() public changeOwnershipAndPermissionsEvent = new EventEmitter();
   @Input() public workplace: Workplace;
+  @Input() public subWorkplaceNumber: Number;
   public canViewEstablishment: boolean;
   public canChangePermissionsForSubsidiary: boolean;
   public primaryWorkplace: Establishment;
@@ -135,6 +136,15 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
           message: `Data permissions for ${this.workplace.name} have been set.`,
         });
       }
+    });
+  }
+
+  public navigateToChangeDataOwner(event: Event): void {
+    event.preventDefault();
+    // console.log(event);
+    //console.log(this.workplace);
+    this.router.navigate(['/workplace/change-data-owner'], {
+      queryParams: { changeDataOwner: this.subWorkplaceNumber },
     });
   }
 

@@ -135,7 +135,7 @@
             </ng-container>
             <ng-template #changeDataOwner>
               <ng-container *ngIf="newHomeDesignParentFlag; else dialogChangeDataOwner">
-                <a class="govuk-link" [routerLink]="['/change-data-owner']">Change data owner</a>
+                <a class="govuk-link" [routerLink]="['/workplace/change-data-owner']">Change data owner</a>
               </ng-container>
               <ng-template #dialogChangeDataOwner
                 ><a (click)="onChangeDataOwner($event)" href="#">Change data owner</a></ng-template

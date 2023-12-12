@@ -42,7 +42,6 @@ import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/
 import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
 import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
-import { ChangeDataOwnerComponent } from '@features/new-dashboard/change-data-owner/change-data-owner.component';
 
 const routes: Routes = [
   {
@@ -273,11 +272,6 @@ const routes: Routes = [
         path: 'link-to-parent',
         component: LinkToParentComponent,
         data: { title: 'Link to Parent' },
-      },
-      {
-        path: 'change-data-owner',
-        component: ChangeDataOwnerComponent,
-        data: { title: 'Change Data Owner' },
       },
     ],
   },

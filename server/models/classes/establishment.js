@@ -79,6 +79,7 @@ class Establishment extends EntityValidator {
     this._parentUid = null;
     this._parentId = null;
     this._parentName = null;
+    this._parentPostcode = null;
     this._dataOwner = null;
     this._dataPermissions = null;
     this._archived = null;
@@ -305,6 +306,10 @@ class Establishment extends EntityValidator {
 
   get parentName() {
     return this._parentName;
+  }
+
+  get parentPostcode() {
+    return this._parentPostcode;
   }
 
   get dataOwner() {
@@ -1273,8 +1278,10 @@ class Establishment extends EntityValidator {
       if (fetchDetails && fetchDetails.id && Number.isInteger(fetchDetails.id)) {
         this._parentName = fetchDetails.NameValue;
         this._id = fetchDetails.id;
+        this._parentPostcode = fetchDetails.postcode;
         parentDetails.parentName = this._parentName;
         parentDetails.id = this._id;
+        parentDetails.parentPostcode = this._parentPostcode;
       }
       return parentDetails;
     } catch (err) {

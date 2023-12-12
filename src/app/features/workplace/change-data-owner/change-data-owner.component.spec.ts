@@ -8,7 +8,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, getByText, render } from '@testing-library/angular';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -21,43 +21,73 @@ import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { ChangeDataOwnerComponent } from './change-data-owner.component';
 
 fdescribe('ChangeDataOwnerComponent', () => {
-  async function setup() {
-    const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
-      ChangeDataOwnerComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        declarations: [],
-        providers: [
-          AlertService,
-          WindowRef,
-          UntypedFormBuilder,
-          ErrorSummaryService,
-          { provide: BenchmarksService, useClass: MockBenchmarksService },
-          { provide: PermissionsService, useClass: MockPermissionsService },
-          {
-            provide: BreadcrumbService,
-            useClass: MockBreadcrumbService,
-          },
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService,
-          },
-          {
-            provide: FeatureFlagsService,
-            useClass: MockFeatureFlagsService,
-          },
-        ],
-        componentProperties: {
-          workplace: Establishment,
+  const mockparent = {
+    parentName: 'Test 2',
+    parentPostcode: 'L20 9LY',
+    uid: 'test-id-2',
+  };
+
+  async function setup(
+    dataOwner = 'Parent',
+    isParent = false,
+    parentName = mockparent.parentName,
+    parentUid = mockparent.uid,
+    parentPostcode = mockparent.parentPostcode,
+  ) {
+    const {
+      getAllByText,
+      getByRole,
+      getByText,
+      getByLabelText,
+      getByTestId,
+      findAllByText,
+      findByText,
+      fixture,
+      queryByText,
+    } = await render(ChangeDataOwnerComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      declarations: [],
+      providers: [
+        AlertService,
+        WindowRef,
+        UntypedFormBuilder,
+        ErrorSummaryService,
+        { provide: BenchmarksService, useClass: MockBenchmarksService },
+        { provide: PermissionsService, useClass: MockPermissionsService },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
         },
-      },
-    );
+        {
+          provide: EstablishmentService,
+          useValue: {
+            primaryWorkplace: {
+              name: 'Workplace sub',
+              dataOwner: dataOwner,
+              isParent: isParent,
+              uid: 'someuid',
+              parentName: parentName,
+              parentUid: parentUid,
+              parentPostcode: parentPostcode,
+            },
+          },
+          //useClass: MockEstablishmentService,
+        },
+        {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
+      ],
+      componentProperties: {},
+    });
     const component = fixture.componentInstance;
 
     const parentRequestsService = TestBed.inject(ParentRequestsService);
@@ -68,6 +98,7 @@ fdescribe('ChangeDataOwnerComponent', () => {
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       getAllByText,
       getByRole,
@@ -75,11 +106,14 @@ fdescribe('ChangeDataOwnerComponent', () => {
       getByLabelText,
       getByTestId,
       queryByText,
+      findByText,
+      findAllByText,
       fixture,
       component,
       routerSpy,
       parentRequestsService,
       establishmentService,
+      //getAllParentWithPostCodeSpy,
     };
   }
 
@@ -88,11 +122,28 @@ fdescribe('ChangeDataOwnerComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  describe('breadcrumbs', () => {
+    it('should show the journey for a sub', async () => {
+      const { component, queryByText } = await setup();
+
+      const workplacesBreadcrumbs = queryByText('Your other workplaces');
+      expect(workplacesBreadcrumbs).toBeFalsy();
+
+      expect(component.journeyType).toEqual(JourneyType.CHANGE_DATA_OWNER);
+    });
+
+    it('should show the journey for a parent', async () => {
+      const { component } = await setup('Workplace', true);
+
+      expect(component.journeyType).toEqual(JourneyType.ALL_WORKPLACES);
+    });
+  });
+
   it('should show the workplace name', async () => {
     const { component, getByTestId } = await setup();
 
     const mainHeadingTestId = getByTestId('mainHeading');
-    const workplaceName = component.workplace.name;
+    const workplaceName = component.primaryWorkplace.name;
 
     expect(mainHeadingTestId.textContent).toContain(workplaceName);
   });
@@ -113,6 +164,37 @@ fdescribe('ChangeDataOwnerComponent', () => {
       name: /data permissions/i,
     });
     expect(secondaryHeadingText).toBeTruthy();
+  });
+
+  describe('data owner', () => {
+    describe('is workplace', () => {
+      it('should show the name of the data owner to request from', async () => {
+        const { component, getByTestId, getByText, fixture, establishmentService } = await setup(
+          'Workplace',
+          true,
+          null,
+          null,
+        );
+
+        expect(getByTestId('dataPermissions').textContent).toContain('Workplace sub');
+      });
+    });
+
+    describe('is parent', () => {
+      xit('should show the name of the data owner and postcode', async () => {
+        const { component, getByText, fixture } = await setup();
+
+        //const dataOwnerAndPostcode = mockparentsWithPostCode[1].parentNameAndPostalcode;
+
+        //expect(getByText(dataOwnerAndPostcode)).toBeTruthy();
+      });
+
+      it('should show the name of the data owner to request from', async () => {
+        const { component, getByTestId, getByText, fixture, establishmentService } = await setup();
+
+        expect(getByTestId('dataPermissions').textContent).toContain('Test 2');
+      });
+    });
   });
 
   it('should show the radio buttons', async () => {
@@ -147,15 +229,28 @@ fdescribe('ChangeDataOwnerComponent', () => {
     expect(button).toBeTruthy();
   });
 
-  it('should show the cancel link with the correct href back to the home tab', async () => {
-    const { getByRole } = await setup();
+  describe('cancel link', () => {
+    it('should show with the correct href back to the home tab', async () => {
+      const { getByRole } = await setup();
 
-    const cancelLink = getByRole('link', {
-      name: /cancel/i,
+      const cancelLink = getByRole('link', {
+        name: /cancel/i,
+      });
+
+      expect(cancelLink).toBeTruthy();
+      expect(cancelLink.getAttribute('href')).toEqual('/dashboard');
     });
 
-    expect(cancelLink).toBeTruthy();
-    expect(cancelLink.getAttribute('href')).toEqual('/dashboard');
+    it('should show with the correct href back to the your other workplaces', async () => {
+      const { getByRole } = await setup('Workplace', true);
+
+      const cancelLink = getByRole('link', {
+        name: /cancel/i,
+      });
+
+      expect(cancelLink).toBeTruthy();
+      expect(cancelLink.getAttribute('href')).toEqual('/workplace/view-all-workplaces');
+    });
   });
 
   it('should show error message when nothing is submitted', async () => {

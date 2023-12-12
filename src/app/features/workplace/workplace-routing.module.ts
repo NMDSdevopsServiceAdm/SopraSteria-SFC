@@ -54,6 +54,7 @@ import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -63,6 +64,12 @@ const routes: Routes = [
     resolve: { childWorkplaces: ChildWorkplacesResolver },
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
+  },
+  {
+    path: 'change-data-owner',
+    component: ChangeDataOwnerComponent,
+    resolve: { childWorkplaces: ChildWorkplacesResolver },
+    data: { title: 'Change Data Owner' },
   },
   {
     path: ':establishmentuid',
