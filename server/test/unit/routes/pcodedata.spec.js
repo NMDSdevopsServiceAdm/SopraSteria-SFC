@@ -41,13 +41,13 @@ describe('models.pcodedata', async () => {
     let stubCompleteMatch;
     beforeEach(() => {
       stubCompleteMatch = sinon.stub(models.pcodedata, 'getLinkedCssrRecordsCompleteMatch').callsFake(async () => {
-        return null;
+        return [];
       });
     });
 
     it('should attempt to find a cssr corresponding to similar postcodes', async () => {
       const stubPartialMatch = sinon.stub(models.pcodedata, 'getLinkedCssrRecordsLooseMatch').callsFake(async () => {
-        return null;
+        return [];
       });
 
       await models.pcodedata.getLinkedCssrRecordsFromPostcode('HD1 1DA');
@@ -59,7 +59,7 @@ describe('models.pcodedata', async () => {
     });
 
     it('should return a cssr corresponding to a similar postcode', async () => {
-      const response = { postcode: 'HD1 1DZ', ...la };
+      const response = [{ postcode: 'HD1 1DZ', ...la }];
 
       const stubPartialMatch = sinon.stub(models.pcodedata, 'getLinkedCssrRecordsLooseMatch').callsFake(async () => {
         return response;
