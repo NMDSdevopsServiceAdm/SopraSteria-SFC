@@ -778,7 +778,10 @@ class Establishment extends EntityValidator {
         // and use this to get the Cssr record
         const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
-        if (cssrResults) {
+        console.log('DBG Establishment781: ----------------------');
+        console.log(cssrResults);
+
+        if (cssrResults && cssrResults.length > 0) {
           this._cssrID = cssrResults[0].cssrRecord.id;
           nmdsLetter = cssrResults[0].cssrRecord.nmdsIdLetter;
         }
@@ -1539,7 +1542,10 @@ class Establishment extends EntityValidator {
 
         const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
-        if (cssrResults.length > 0) {
+        console.log('DBG 1545: ----------------------');
+        console.log(cssrResults);
+
+        if (cssrResults && cssrResults.length > 0) {
           fetchResults.primaryAuthorityCssr = {
             id: cssrResults[0].cssrRecord.id,
             name: cssrResults[0].cssrRecord.name,
