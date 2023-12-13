@@ -682,7 +682,7 @@ describe('NewHomeTabComponent', () => {
           fireEvent.click(changeDataOwnerLink);
           fixture.detectChanges();
 
-          expect(changeDataOwnerLink.getAttribute('href')).toEqual('/change-data-owner');
+          expect(changeDataOwnerLink.getAttribute('href')).toEqual('/workplace/change-data-owner');
         });
 
         it('should show a change data owner dialog when newHomeDesignParentFlag is false', async () => {

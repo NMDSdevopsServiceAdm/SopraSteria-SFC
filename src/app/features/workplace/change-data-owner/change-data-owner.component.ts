@@ -35,7 +35,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
   public ownershipToUid: string;
   public ownershipFromUid: string;
   public ownershipFromPostCode: string;
-  public journeyType;
+  public journeyType: any;
   public alertMessage: any;
   public isParent: boolean;
   public subWorkplace: Establishment;
@@ -49,7 +49,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     private breadcrumbService: BreadcrumbService,
   ) {}
 
-  ngAfterViewInit(): void {
+  ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
@@ -57,10 +57,10 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     this.setDataPermissions();
     this.setupForm();
     this.setupFormErrorsMap();
-
+    this.setupServerErrorsMap();
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.primaryWorkplace?.isParent;
-    //this.getSubWorkplace();
+
     this.setWorkplaces();
     this.breadcrumbService.show(this.showJourneyType(), this.primaryWorkplace.name);
     this.alertMessage = {
@@ -69,7 +69,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     };
   }
 
-  public getSubWorkplace(): void {
+  public setSubWorkplace(): void {
     const indexOfChild = this.route.snapshot.queryParams?.changeDataOwner;
     if (indexOfChild) {
       const childWorkplaces = this.route.snapshot.data.childWorkplaces.childWorkplaces;
@@ -85,7 +85,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
   }
 
   private setWorkplaces(): void {
-    this.getSubWorkplace();
+    this.setSubWorkplace();
     this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
     this.isSubWorkplace =
       !this.subWorkplace.isParent && this.subWorkplace.uid === this.establishmentService.primaryWorkplace.uid
@@ -116,12 +116,9 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
   }
 
   private setupForm(): void {
-    this.form = this.formBuilder.group(
-      {
-        dataPermission: [null, Validators.required],
-      },
-      { updateOn: 'submit' },
-    );
+    this.form = this.formBuilder.group({
+      dataPermission: ['', { validators: [Validators.required], updateOn: 'submit' }],
+    });
   }
 
   /**
@@ -129,9 +126,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
    * Then return error message
    * @param error item
    */
-
-  public getFirstErrorMessage(item: string): string {
-    const errorType = Object.keys(this.form.get(item).errors)[0];
+  public getFormErrorMessage(item: string, errorType: string): string {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
@@ -149,12 +144,31 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     ];
   }
 
+  private setupServerErrorsMap(): void {
+    this.serverErrorsMap = [
+      {
+        name: 500,
+        message: 'We could not send request to change data owner. You can try again or contact us.',
+      },
+      {
+        name: 400,
+        message: 'Unable to send request to change data owner.',
+      },
+      {
+        name: 404,
+        message: 'Send request to change data owner service not found. You can try again or contact us.',
+      },
+    ];
+  }
+
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
     if (this.form.invalid) {
       this.errorSummaryService.scrollToErrorSummary();
       return;
+    } else {
+      this.changeOwnership();
     }
   }
 
@@ -163,7 +177,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
    * @return {void}
    */
 
-  public changeOwnership() {
+  public changeOwnership(): void {
     if (this.form.valid) {
       this.permissionType = this.form.value.dataPermission;
       const requestedPermission = {

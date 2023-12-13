@@ -141,8 +141,6 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
 
   public navigateToChangeDataOwner(event: Event): void {
     event.preventDefault();
-    // console.log(event);
-    //console.log(this.workplace);
     this.router.navigate(['/workplace/change-data-owner'], {
       queryParams: { changeDataOwner: this.subWorkplaceNumber },
     });

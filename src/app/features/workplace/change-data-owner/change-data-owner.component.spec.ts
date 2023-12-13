@@ -28,7 +28,7 @@ import { of } from 'rxjs';
 
 import { ChangeDataOwnerComponent } from './change-data-owner.component';
 
-fdescribe('ChangeDataOwnerComponent', () => {
+describe('ChangeDataOwnerComponent', () => {
   const mockparent = {
     parentName: 'Test 2',
     parentPostcode: 'L20 9LY',
@@ -211,12 +211,22 @@ fdescribe('ChangeDataOwnerComponent', () => {
     expect(workplaceAndStaffRadioButton).toBeTruthy();
   });
 
-  it('should show the correct labels for the radio buttons', async () => {
-    const { getByLabelText } = await setup();
+  describe('radio buttons', () => {
+    it('should show the correct labels for a sub', async () => {
+      const { getByLabelText } = await setup();
 
-    expect(getByLabelText('Only your workplace details')).toBeTruthy();
-    expect(getByLabelText('Your workplace details and your staff records')).toBeTruthy();
-    expect(getByLabelText('No access to your data, linked only')).toBeTruthy();
+      expect(getByLabelText('Only your workplace details')).toBeTruthy();
+      expect(getByLabelText('Your workplace details and your staff records')).toBeTruthy();
+      expect(getByLabelText('No access to your data, linked only')).toBeTruthy();
+    });
+
+    it('should show the correct labels for a parent', async () => {
+      const { getByLabelText } = await setup('Workplace', true);
+
+      expect(getByLabelText('Only their workplace details')).toBeTruthy();
+      expect(getByLabelText('Their workplace details and their staff records')).toBeTruthy();
+      expect(getByLabelText('No access to their data, linked only')).toBeTruthy();
+    });
   });
 
   it('should show the send change request button', async () => {

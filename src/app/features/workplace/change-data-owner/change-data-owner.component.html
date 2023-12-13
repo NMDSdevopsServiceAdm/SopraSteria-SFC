@@ -1,5 +1,5 @@
 <app-error-summary
-  *ngIf="(submitted && form.invalid) || isOwnershipError"
+  *ngIf="submitted && (form.invalid || isOwnershipError)"
   [formErrorsMap]="formErrorsMap"
   [form]="form"
   [serverError]="serverError"
@@ -22,7 +22,13 @@
         <span class="govuk-!-font-weight-bold">{{ ownershipFromName }}, {{ ownershipFromPostCode }}</span
         >.
       </p>
-      <p class="govuk-body">As the data owner, you'll be able to see and edit your own:</p>
+      <ng-container *ngIf="isParent; else subWorkplaceText">
+        <p class="govuk-body">As the data owner, you'll be able to see and edit their:</p>
+      </ng-container>
+      <ng-template #subWorkplaceText>
+        <p class="govuk-body">As the data owner, you'll be able to see and edit your own:</p>
+      </ng-template>
+
       <ul class="govuk-list govuk-list--bullet">
         <li>workplace details</li>
         <li>staff records</li>
@@ -32,7 +38,10 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds" data-testid="dataPermissions">
       <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" autocomplete="off" aria-label="form">
-        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('dataPermission').invalid">
+        <div
+          class="govuk-form-group"
+          [class.govuk-form-group--error]="(submitted && form.get('dataPermission').invalid) || serverError"
+        >
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
               <h2 class="govuk-fieldset__heading">Data permissions</h2>
@@ -44,11 +53,11 @@
             </p>
 
             <span
-              *ngIf="submitted && form.get('dataPermission').invalid"
+              *ngIf="submitted && form.get('dataPermission').errors"
               id="dataPermission-error"
               class="govuk-error-message"
             >
-              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('dataPermission') }}
+              <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('dataPermission', 'required') }}
             </span>
             <div class="govuk-radios" data-module="govuk-radios">
               <div class="govuk-radios__item">
@@ -63,7 +72,7 @@
                 />
 
                 <label class="govuk-label govuk-radios__label" for="dataPermission-0">
-                  {{ dataPermissions[0] | newDataViewPermissions }}
+                  {{ dataPermissions[0] | newDataViewPermissions: isParent }}
                 </label>
               </div>
               <div class="govuk-radios__item">
@@ -78,7 +87,7 @@
                 />
 
                 <label class="govuk-label govuk-radios__label" for="dataPermission-1">
-                  {{ dataPermissions[1] | newDataViewPermissions }}
+                  {{ dataPermissions[1] | newDataViewPermissions: isParent }}
                 </label>
               </div>
               <div class="govuk-radios__divider govuk-!-text-align-left govuk-!-padding-top-2 govuk-!-padding-bottom-2">
@@ -96,7 +105,7 @@
                 />
 
                 <label class="govuk-label govuk-radios__label" for="dataPermission-2">
-                  {{ dataPermissions[2] | newDataViewPermissions }}
+                  {{ dataPermissions[2] | newDataViewPermissions: isParent }}
                 </label>
               </div>
             </div>
@@ -104,7 +113,7 @@
         </div>
         <div class="govuk-grid-row">
           <div class="govuk-grid-column-two-thirds govuk-!-margin-top-5">
-            <button type="submit" (click)="changeOwnership()" class="govuk-button">Send change request</button>
+            <button type="submit" class="govuk-button" data-module="govuk-button">Send change request</button>
             <ng-container *ngIf="isParent; else subWorkplace"
               ><a
                 href="#"
