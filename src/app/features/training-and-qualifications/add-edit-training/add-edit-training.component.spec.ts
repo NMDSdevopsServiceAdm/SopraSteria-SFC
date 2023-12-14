@@ -210,6 +210,24 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
+  describe('Delete button', () => {
+    it('should navigate to delete confirmation page', async () => {
+      const { component, routerSpy, getByTestId } = await setup();
+      const deleteTrainingRecord = getByTestId('delete-this-training-record');
+
+      fireEvent.click(deleteTrainingRecord);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'training-and-qualifications-record',
+        component.worker.uid,
+        'training',
+        component.trainingRecordId,
+        'delete',
+      ]);
+    });
+  });
+
   describe('Cancel button', () => {
     it('should call navigate when pressing cancel', async () => {
       const { component, fixture, getByText, routerSpy } = await setup();
