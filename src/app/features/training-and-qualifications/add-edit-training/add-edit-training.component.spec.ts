@@ -211,10 +211,28 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('Delete button', () => {
-    it('should navigate to delete confirmation page', async () => {
-      const { component, routerSpy, getByTestId } = await setup();
-      const deleteTrainingRecord = getByTestId('delete-this-training-record');
+    it('should navigate to delete confirmation page with training category', async () => {
+      const { component, routerSpy, getByTestId, fixture } = await setup();
+      const deleteTrainingRecord = getByTestId('deleteButton');
+      component.trainingCategory = { id: 2, category: 'First aid' };
+      fixture.detectChanges();
 
+      fireEvent.click(deleteTrainingRecord);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'training-and-qualifications-record',
+        component.worker.uid,
+        'training',
+        component.trainingRecordId,
+        { trainingCategory: JSON.stringify(component.trainingCategory) },
+        'delete',
+      ]);
+    });
+
+    it('should navigate to delete confirmation page without training category', async () => {
+      const { component, routerSpy, getByTestId } = await setup();
+      const deleteTrainingRecord = getByTestId('deleteButton');
       fireEvent.click(deleteTrainingRecord);
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',

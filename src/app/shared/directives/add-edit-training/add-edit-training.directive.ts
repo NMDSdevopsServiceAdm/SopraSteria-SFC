@@ -66,8 +66,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setBackLink();
     this.getCategories();
     this.setupFormErrorsMap();
-
-    this.trainingRecordId = this.route.snapshot.params.trainingRecordId;
   }
 
   ngAfterViewInit(): void {
@@ -287,14 +285,27 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   protected navigateToDeleteTrainingRecord(): void {
-    this.router.navigate([
-      '/workplace',
-      this.workplace.uid,
-      'training-and-qualifications-record',
-      this.worker.uid,
-      'training',
-      this.trainingRecordId,
-      'delete',
-    ]);
+    if (this.trainingCategory) {
+      this.router.navigate([
+        '/workplace',
+        this.workplace.uid,
+        'training-and-qualifications-record',
+        this.worker.uid,
+        'training',
+        this.trainingRecordId,
+        { trainingCategory: JSON.stringify(this.trainingCategory) },
+        'delete',
+      ]);
+    } else {
+      this.router.navigate([
+        '/workplace',
+        this.workplace.uid,
+        'training-and-qualifications-record',
+        this.worker.uid,
+        'training',
+        this.trainingRecordId,
+        'delete',
+      ]);
+    }
   }
 }
