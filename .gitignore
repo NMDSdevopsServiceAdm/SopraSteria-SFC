@@ -1,7 +1,8 @@
 # See http://help.github.com/ignore-files/ for more about ignoring files.
 
 # compiled output
-/dist
+dist
+*/dist
 /tmp
 /out-tsc
 
@@ -9,7 +10,7 @@
 /node_modules
 */node_modules
 
-/.angular/cache
+frontend/.angular/cache
 
 # IDEs and editors
 .idea
@@ -46,9 +47,9 @@ TESTS.xml
 Thumbs.db
 
 # Coverage
-/coverage
-/.nyc_output
-/fecoverage
+*/coverage
+*/.nyc_output
+*/fecoverage
 */coverage
 */.nyc_output
 */fecoverage
