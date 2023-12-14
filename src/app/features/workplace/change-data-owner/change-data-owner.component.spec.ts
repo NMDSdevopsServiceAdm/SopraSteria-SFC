@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
@@ -8,7 +8,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { fireEvent, getByText, render } from '@testing-library/angular';
+import { fireEvent, getByTestId, getByText, render } from '@testing-library/angular';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -70,7 +70,7 @@ describe('ChangeDataOwnerComponent', () => {
           provide: EstablishmentService,
           useValue: {
             primaryWorkplace: {
-              name: 'Workplace sub',
+              name: 'Workplace Home',
               dataOwner: dataOwner,
               isParent: isParent,
               uid: 'someuid',
@@ -79,7 +79,37 @@ describe('ChangeDataOwnerComponent', () => {
               parentPostcode: parentPostcode,
             },
           },
-          //useClass: MockEstablishmentService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                childWorkplaces: {
+                  childWorkplaces: [
+                    {
+                      dataOwner: 'Workplace',
+                      dataOwnershipRequested: null,
+                      dataPermissions: 'Workplace and Staff',
+                      name: 'Workplace 1',
+                      postcode: 'WP1 1AA',
+                      uid: 'workplace-id-1',
+                      ustatus: null,
+                    },
+                    {
+                      dataOwner: 'Workplace',
+                      dataOwnershipRequested: null,
+                      dataPermissions: 'Workplace and Staff',
+                      name: 'Workplace 2',
+                      postcode: 'WP2 2BB',
+                      uid: 'workplace-id-2',
+                      ustatus: null,
+                    },
+                  ],
+                },
+              },
+            },
+          },
         },
         {
           provide: FeatureFlagsService,
@@ -106,7 +136,7 @@ describe('ChangeDataOwnerComponent', () => {
       getByLabelText,
       getByTestId,
       queryByText,
-      findByText,
+
       findAllByText,
       fixture,
       component,
@@ -176,17 +206,21 @@ describe('ChangeDataOwnerComponent', () => {
           null,
         );
 
-        expect(getByTestId('dataPermissions').textContent).toContain('Workplace sub');
+        expect(getByTestId('dataPermissions').textContent).toContain('Workplace Home');
       });
     });
 
     describe('is parent', () => {
       xit('should show the name of the data owner and postcode', async () => {
-        const { component, getByText, fixture } = await setup();
+        const { component, getByText, fixture, getByTestId } = await setup('Workplace', true, null, null, null);
 
-        //const dataOwnerAndPostcode = mockparentsWithPostCode[1].parentNameAndPostalcode;
+        component.route.snapshot.queryParams = { changeDataOwner: 0 };
+        fixture.detectChanges();
+        component.ngOnInit();
 
-        //expect(getByText(dataOwnerAndPostcode)).toBeTruthy();
+        const dataOwnerAndPostcode = 'Workplace 1, WP1 1AA';
+
+        expect(getByTestId('ownershipFromNameAndPostcode').textContent).toContain(dataOwnerAndPostcode);
       });
 
       it('should show the name of the data owner to request from', async () => {

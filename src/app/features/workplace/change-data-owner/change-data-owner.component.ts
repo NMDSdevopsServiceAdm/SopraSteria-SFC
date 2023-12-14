@@ -45,7 +45,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     private establishmentService: EstablishmentService,
     private formBuilder: UntypedFormBuilder,
     private router: Router,
-    protected route: ActivatedRoute,
+    public route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
   ) {}
 
@@ -71,7 +71,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
 
   public setSubWorkplace(): void {
     const indexOfChild = this.route.snapshot.queryParams?.changeDataOwner;
-    if (indexOfChild) {
+    if (indexOfChild >= 0) {
       const childWorkplaces = this.route.snapshot.data.childWorkplaces.childWorkplaces;
       this.subWorkplace = childWorkplaces[indexOfChild];
     } else {

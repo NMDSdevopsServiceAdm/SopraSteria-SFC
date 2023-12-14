@@ -25,14 +25,6 @@ export class NewDataViewPermissionsPipe implements PipeTransform {
           return 'No access to your data, linked only';
       }
     }
-    // switch (value) {
-    //   case DataPermissions.Workplace:
-    //     return 'Only your workplace details';
-    //   case DataPermissions.WorkplaceAndStaff:
-    //     return 'Your workplace details and your staff records';
-    //   case DataPermissions.None:
-    //     return 'No access to your data, linked only';
-    // }
     return null;
   }
 }

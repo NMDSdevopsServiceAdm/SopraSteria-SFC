@@ -19,7 +19,8 @@
     <div class="govuk-grid-column-two-thirds">
       <p>
         A change data owner request will be sent to
-        <span class="govuk-!-font-weight-bold">{{ ownershipFromName }}, {{ ownershipFromPostCode }}</span
+        <span class="govuk-!-font-weight-bold" data-testid="ownershipFromNameAndPostcode"
+          >{{ ownershipFromName }}, {{ ownershipFromPostCode }}</span
         >.
       </p>
       <ng-container *ngIf="isParent; else subWorkplaceText">
