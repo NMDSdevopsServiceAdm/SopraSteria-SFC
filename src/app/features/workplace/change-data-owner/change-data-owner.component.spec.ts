@@ -30,7 +30,7 @@ import { ChangeDataOwnerComponent } from './change-data-owner.component';
 
 describe('ChangeDataOwnerComponent', () => {
   const mockparent = {
-    parentName: 'Test 2',
+    parentName: 'Parent Workplace',
     parentPostcode: 'L20 9LY',
     uid: 'test-id-2',
   };
@@ -70,9 +70,10 @@ describe('ChangeDataOwnerComponent', () => {
           provide: EstablishmentService,
           useValue: {
             primaryWorkplace: {
-              name: 'Workplace Home',
+              name: 'Sub Workplace 1',
               dataOwner: dataOwner,
               isParent: isParent,
+              postcode: isParent ? mockparent.parentPostcode : 'WP1 1AA',
               uid: 'someuid',
               parentName: parentName,
               parentUid: parentUid,
@@ -91,7 +92,7 @@ describe('ChangeDataOwnerComponent', () => {
                       dataOwner: 'Workplace',
                       dataOwnershipRequested: null,
                       dataPermissions: 'Workplace and Staff',
-                      name: 'Workplace 1',
+                      name: 'Sub Workplace 1',
                       postcode: 'WP1 1AA',
                       uid: 'workplace-id-1',
                       ustatus: null,
@@ -100,7 +101,7 @@ describe('ChangeDataOwnerComponent', () => {
                       dataOwner: 'Workplace',
                       dataOwnershipRequested: null,
                       dataPermissions: 'Workplace and Staff',
-                      name: 'Workplace 2',
+                      name: 'Sub Workplace 2',
                       postcode: 'WP2 2BB',
                       uid: 'workplace-id-2',
                       ustatus: null,
@@ -197,36 +198,50 @@ describe('ChangeDataOwnerComponent', () => {
   });
 
   describe('data owner', () => {
-    describe('is workplace', () => {
+    describe('is the parent', async () => {
+      it('should show the name and postcode of data owner', async () => {
+        const { getByTestId } = await setup();
+
+        const dataOwnerAndPostcode = 'Parent Workplace, L20 9LY';
+
+        expect(getByTestId('ownershipFromNameAndPostcode').textContent).toContain(dataOwnerAndPostcode);
+      });
+
+      it('should show the name of the data owner to request from', async () => {
+        const { getByTestId } = await setup();
+
+        expect(getByTestId('dataPermissions').textContent).toContain('Parent Workplace');
+      });
+    });
+
+    describe('is the subsidiary', async () => {
+      // to fix
+      // fit('should show the name and postcode of data owner', async () => {
+      //   const { component, getByTestId, getByText, fixture, establishmentService } = await setup(
+      //     'Workplace',
+      //     true,
+      //     null,
+      //     null,
+      //     null,
+      //   );
+
+      //   const dataOwnerAndPostcode = 'Sub Workplace 1, WP1 1AA';
+
+      //   expect(getByTestId('ownershipFromNameAndPostcode').textContent).toContain(dataOwnerAndPostcode);
+      // });
+
       it('should show the name of the data owner to request from', async () => {
         const { component, getByTestId, getByText, fixture, establishmentService } = await setup(
           'Workplace',
           true,
           null,
           null,
+          null,
         );
 
-        expect(getByTestId('dataPermissions').textContent).toContain('Workplace Home');
-      });
-    });
-
-    describe('is parent', () => {
-      xit('should show the name of the data owner and postcode', async () => {
-        const { component, getByText, fixture, getByTestId } = await setup('Workplace', true, null, null, null);
-
-        component.route.snapshot.queryParams = { changeDataOwner: 0 };
         fixture.detectChanges();
-        component.ngOnInit();
 
-        const dataOwnerAndPostcode = 'Workplace 1, WP1 1AA';
-
-        expect(getByTestId('ownershipFromNameAndPostcode').textContent).toContain(dataOwnerAndPostcode);
-      });
-
-      it('should show the name of the data owner to request from', async () => {
-        const { component, getByTestId, getByText, fixture, establishmentService } = await setup();
-
-        expect(getByTestId('dataPermissions').textContent).toContain('Test 2');
+        expect(getByTestId('dataPermissions').textContent).toContain('Sub Workplace 1');
       });
     });
   });
@@ -266,12 +281,31 @@ describe('ChangeDataOwnerComponent', () => {
   it('should show the send change request button', async () => {
     const { component, getByRole } = await setup();
 
-    const button = getByRole('button', {
+    const sendChangeRequestbutton = getByRole('button', {
       name: /send change request/i,
     });
 
-    expect(button).toBeTruthy();
+    expect(sendChangeRequestbutton).toBeTruthy();
   });
+
+  // fix
+  // fit('should submit the change data owner request', async () => {
+  //   const { component, fixture, getByRole, establishmentService } = await setup();
+
+  //   const sendChangeRequestbutton = getByRole('button', {
+  //     name: /send change request/i,
+  //   });
+  //   const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+
+  //   fireEvent.click(noneRadioButton);
+
+  //   fireEvent.click(sendChangeRequestbutton);
+  //   fixture.detectChanges();
+
+  //   const changeDataOwnerSpy = spyOn(establishmentService, 'changeOwnership').and.callThrough();
+
+  //   expect(changeDataOwnerSpy).toHaveBeenCalled();
+  // });
 
   describe('cancel link', () => {
     it('should show with the correct href back to the home tab', async () => {
