@@ -155,7 +155,7 @@ describe('ParentWorkplaceAccounts', () => {
     it('should show the save and return button', async () => {
       const { getByText } = await setup(false, false);
 
-      const buttonText = getByText('Save and return');
+      const buttonText = getByText('Continue');
 
       expect(buttonText).toBeTruthy();
     });
@@ -167,7 +167,7 @@ describe('ParentWorkplaceAccounts', () => {
 
       fixture.detectChanges();
 
-      const continueButton = getByText('Save and return');
+      const continueButton = getByText('Continue');
       fireEvent.click(continueButton);
 
       expect(spy).toHaveBeenCalledWith(['registration/confirm-details']);
