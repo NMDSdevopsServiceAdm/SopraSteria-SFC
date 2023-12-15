@@ -14,7 +14,7 @@ enum Path {
   MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
   ABOUT_DATA = '/workplace/:workplaceUid/data-area/about-the-data',
   OTHER_WORKPLACES = '/workplace/other-workplaces',
-  CHANGE_DATA_OWNER = '/change-data-owner',
+  CHANGE_DATA_OWNER = '/workplace/change-data-owner',
 }
 
 export const workplaceTabJourney: JourneyRoute = {
