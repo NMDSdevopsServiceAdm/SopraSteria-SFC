@@ -294,6 +294,9 @@ app.use('/api/notification', [cacheMiddleware.nocache, notifications]);
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 
+const establishmentsV2 = require('./server/routes/v2/establishments');
+app.use('/api/v2/establishment', [cacheMiddleware.nocache, establishmentsV2]);
+
 app.use('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', authLimiter);
 app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
   res.sendFile(path.join(__dirname, 'loaderio-63e80cd3c669177f22e9ec997ea2594d.txt'));

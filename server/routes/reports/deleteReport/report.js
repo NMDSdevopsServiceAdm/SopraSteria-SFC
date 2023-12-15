@@ -63,14 +63,17 @@ const createTableHeader = (WS1) => {
     currentColumn = String.fromCharCode(currentColumn.charCodeAt(0) + 1);
   }
 };
+
 const addCSSRData = async (establishmentsData) => {
-  const result = {};
+  const results = {};
   await Promise.all(
     establishmentsData.map(async (establishment) => {
-      result[establishment.id] = await models.pcodedata.getCssrFromPostcode(establishment.postcode);
+      models.pcodedata.getLinkedCssrRecordsFromPostcode(establishment.postcode);
     }),
   );
-  return result;
+
+  //if no cssr results
+  return results;
 };
 
 const fillData = (reportData, laData, WS1) => {
@@ -84,9 +87,10 @@ const fillData = (reportData, laData, WS1) => {
     const parentName = establishment.Parent ? establishment.Parent.NameValue : '';
     let region = '';
     let la = '';
-    if (laData[establishment.id] && laData[establishment.id].theAuthority) {
-      region = laData[establishment.id].theAuthority.region;
-      la = laData[establishment.id].theAuthority.localAuthority;
+
+    if (laData[establishment.id] && laData[establishment.id].cssrRecord) {
+      region = laData[establishment.id].cssrRecord.region;
+      la = laData[establishment.id].cssrRecord.localAuthority;
     }
     const address = concatenateAddress(
       establishment.address,

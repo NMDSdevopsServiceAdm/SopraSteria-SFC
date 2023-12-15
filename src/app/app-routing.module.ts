@@ -11,6 +11,7 @@ import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
@@ -122,12 +123,6 @@ const routes: Routes = [
         path: 'workplace',
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },
-        resolve: {
-          benchmarks: BenchmarksResolver,
-          rankings: RankingsResolver,
-          usefulLinksPay: UsefulLinkPayResolver,
-          usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
-        },
       },
       {
         path: 'add-workplace',
@@ -287,7 +282,6 @@ const routes: Routes = [
       anchorScrolling: 'enabled',
       onSameUrlNavigation: 'reload',
       paramsInheritanceStrategy: 'always',
-      relativeLinkResolution: 'legacy',
     }),
   ],
   exports: [RouterModule],

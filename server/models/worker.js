@@ -1048,11 +1048,6 @@ module.exports = function (sequelize, DataTypes) {
     },
   );
 
-  Worker.addHook('afterUpdate', (record) => {
-    const postcode = record.dataValues.PostcodeValue;
-    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
-  });
-
   Worker.associate = (models) => {
     Worker.belongsTo(models.establishment, {
       foreignKey: 'establishmentFk',

@@ -4,8 +4,15 @@ const sinon = require('sinon');
 const models = require('../../../../models');
 
 const { updateEstablishment } = require('../../../../routes/establishments/updateSingleEstablishmentField');
+const getAddressAPI = require('../../../../utils/getAddressAPI');
 
 describe('server/routes/establishments/updateSingleEstablishmentField', () => {
+  beforeEach(() => {
+    sinon.stub(getAddressAPI, 'getPostcodeData').callsFake(async () => {
+      return null;
+    });
+  });
+
   afterEach(async () => {
     sinon.restore();
   });
@@ -13,7 +20,7 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
   describe('updateEstablishment', () => {
     let req;
     let res;
-    const establishmentId = 'a131313dasd123325453bac';
+    const establishmentId = '999999999';
 
     const setup = async (body) => {
       const request = {
@@ -27,30 +34,33 @@ describe('server/routes/establishments/updateSingleEstablishmentField', () => {
       res = httpMocks.createResponse();
     };
 
+    // TODO
     it('should return 200 when the provided field has been updated', async () => {
       const body = {
-        property: 'exampleFieldName',
+        property: 'NameValue',
         value: 'Yes',
       };
 
       await setup(body);
 
       sinon.stub(models.establishment, 'update').returns(null);
+      sinon.stub(models.establishment, 'findOne').returns(null);
 
       await updateEstablishment(req, res);
 
-      expect(res.statusCode).to.deep.equal(500);
+      expect(res.statusCode).to.deep.equal(200);
     });
 
-    it('should return 200 when the provided field has been find', async () => {
+    it('should return 200 when the provided field has been found', async () => {
       const body = {
-        property: 'exampleFieldName',
-        value: 'Yes',
+        property: 'NameValue',
+        value: '',
       };
 
       await setup(body);
 
-      sinon.stub(models.establishment, 'findOne').returns(body);
+      sinon.stub(models.establishment, 'update').returns(body);
+      sinon.stub(models.establishment, 'findOne').returns(null);
 
       await updateEstablishment(req, res);
 

@@ -1,31 +1,23 @@
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 export interface BenchmarksResponse {
+  pay?: Tile;
   sickness?: Tile;
   qualifications?: Tile;
-  turnoverRate?: Tile;
-  vacancyRate?: Tile;
-  careWorkerPay?: Tile;
-  seniorCareWorkerPay?: Tile;
-  registeredNursePay?: Tile;
-  registeredManagerPay?: Tile;
-  timeInRole?: Tile;
+  turnover?: Tile;
   meta: Meta;
 }
 export interface Meta {
-  workplaces: number;
+  workplaces?: number;
   staff: number;
-  workplacesGoodCqc?: number;
-  staffGoodCqc?: number;
   lastUpdated?: Date;
   localAuthority: string;
 }
 export interface Tile {
-  workplaceValue?: BenchmarkValue;
-  comparisonGroup?: BenchmarkValue;
-  groupRankings?: any;
-  goodCqc?: BenchmarkValue;
-  lowTurnover?: BenchmarkValue;
+  workplaceValue: BenchmarkValue;
+  comparisonGroup: BenchmarkValue;
+  goodCqc: BenchmarkValue;
+  lowTurnover: BenchmarkValue;
   workplaces?: number;
   staff?: number;
 }
@@ -36,36 +28,17 @@ export interface BenchmarkValue {
 }
 
 export interface RankingsResponse {
-  currentRank?: number;
-  maxRank?: number;
+  currentRank: number;
+  maxRank: number;
   hasValue: boolean;
-  stateMessage?: string;
-  allValues?: Array<RankingsValue>;
-}
-export interface RankingsValue {
-  value: number;
-  currentEst: boolean;
-}
-
-export interface CompareGroupsRankingsResponse {
-  groupRankings: RankingsResponse;
-  goodCqcRankings: RankingsResponse;
-}
-
-export interface PayRankingsResponse {
-  careWorkerPay: CompareGroupsRankingsResponse;
-  seniorCareWorkerPay: CompareGroupsRankingsResponse;
-  registeredNursePay: CompareGroupsRankingsResponse;
-  registeredManagerPay: CompareGroupsRankingsResponse;
+  stateMessage: string;
 }
 
 export interface AllRankingsResponse {
-  pay: PayRankingsResponse;
-  qualifications: CompareGroupsRankingsResponse;
-  sickness: CompareGroupsRankingsResponse;
-  turnover: CompareGroupsRankingsResponse;
-  vacancy: CompareGroupsRankingsResponse;
-  timeInRole: CompareGroupsRankingsResponse;
+  pay: RankingsResponse;
+  qualifications: RankingsResponse;
+  sickness: RankingsResponse;
+  turnover: RankingsResponse;
 }
 
 export enum Metric {
@@ -73,12 +46,6 @@ export enum Metric {
   'turnover',
   'qualifications',
   'sickness',
-  'vacancy',
-  'timeInRole',
-  'careWorkerPay',
-  'seniorCareWorkerPay',
-  'registeredManagerPay',
-  'registeredNursePay',
 }
 
 export interface NoData {
@@ -90,7 +57,6 @@ export interface NoData {
   'no-pay-data'?: string;
   'no-sickness-data'?: string;
   'no-qualifications-data'?: string;
-  'no-comparison-data'?: string;
 }
 
 export class MetricsContent {

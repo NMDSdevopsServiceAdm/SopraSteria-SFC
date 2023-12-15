@@ -760,6 +760,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: 'IsParentApprovedBannerViewed',
       },
+      cssrId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"CssrID"',
+      },
     },
     {
       defaultScope: {
@@ -811,11 +816,6 @@ module.exports = function (sequelize, DataTypes) {
       updatedAt: false,
     },
   );
-
-  Establishment.addHook('afterUpdate', (record) => {
-    const postcode = record.dataValues.PostCode;
-    if (postcode) sequelize.models.postcodes.firstOrCreate(postcode);
-  });
 
   Establishment.associate = (models) => {
     Establishment.belongsTo(models.establishment, {
@@ -908,6 +908,23 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Establishment.turnoverData = function (establishmentId) {
+    return this.findByPk(establishmentId, {
+      attributes: ['id', 'NumberOfStaffValue', 'LeaversValue'],
+    });
+  };
+
+  Establishment.updateCssrIdsByPostcode = async function (postcode, cssrId) {
+    return await this.update(
+      { cssrId: cssrId },
+      {
+        where: {
+          postcode: postcode,
+        },
+      },
+    );
+  };
+
   Establishment.findWithWorkersAndTraining = function (establishmentId) {
     return this.findByPk(establishmentId, {
       attributes: ['id'],
@@ -936,6 +953,22 @@ module.exports = function (sequelize, DataTypes) {
   };
 
   Establishment.findbyId = async function (id) {
+    return await this.findOne({
+      where: {
+        id,
+      },
+    });
+  };
+
+  Establishment.findAllbyId = async function (id) {
+    return await this.findAll({
+      where: {
+        id,
+      },
+    });
+  };
+
+  Establishment.findbyIdWithMainService = async function (id) {
     return await this.findOne({
       where: {
         id,

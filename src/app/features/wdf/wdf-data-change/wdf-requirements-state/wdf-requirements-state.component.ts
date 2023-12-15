@@ -8,7 +8,5 @@ export class WdfRequirementsStateComponent implements OnInit {
   @Input() overallWdfEligibility: boolean;
   @Input() currentWdfEligibility: boolean;
 
-  ngOnInit(): void {
-    console.log(this.currentWdfEligibility);
-  }
+  ngOnInit(): void {}
 }

@@ -588,6 +588,7 @@ class WorkplaceCSVValidator {
         column: 'ESTNAME',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else if (myName.length > MAX_LENGTH) {
       this._validationErrors.push({
@@ -599,6 +600,7 @@ class WorkplaceCSVValidator {
         column: 'ESTNAME',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else {
       this._name = myName;
@@ -855,10 +857,12 @@ class WorkplaceCSVValidator {
         column: 'PERMCQC',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else {
       const shareWithCqcAsInt = parseInt(this._currentLine.PERMCQC, 10);
       this._shareWithCqc = Number.isNaN(shareWithCqcAsInt) ? this._currentLine.PERMCQC : shareWithCqcAsInt;
+
       return true;
     }
   }
@@ -876,6 +880,7 @@ class WorkplaceCSVValidator {
         column: 'PERMLA',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else {
       const shareWithLaAsInt = parseInt(this._currentLine.PERMLA, 10);
@@ -899,6 +904,7 @@ class WorkplaceCSVValidator {
         column: 'REGTYPE',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else if (Number.isNaN(myRegType) || (myRegType !== 0 && myRegType !== 2)) {
       this._validationErrors.push({
@@ -910,6 +916,7 @@ class WorkplaceCSVValidator {
         column: 'REGTYPE',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else if (
       myRegType === 2 &&
@@ -926,6 +933,7 @@ class WorkplaceCSVValidator {
         column: 'REGTYPE/MAINSERVICE',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else if (
       myRegType === 0 &&
@@ -942,6 +950,7 @@ class WorkplaceCSVValidator {
         column: 'REGTYPE/MAINSERVICE',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else {
       this._regType = myRegType;
@@ -964,6 +973,7 @@ class WorkplaceCSVValidator {
         column: 'PROVNUM',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else if (this._regType === 2 && !provIDRegex.test(myprovID)) {
       this._validationErrors.push({
@@ -975,6 +985,7 @@ class WorkplaceCSVValidator {
         column: 'PROVNUM',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     } else if (this._regType === 2) {
       this._provID = myprovID;
@@ -989,6 +1000,7 @@ class WorkplaceCSVValidator {
         column: 'PROVNUM',
         name: this._currentLine.LOCALESTID,
       });
+
       return false;
     }
   }
@@ -2786,8 +2798,11 @@ class WorkplaceCSVValidator {
     // get all the other records that may already exist in the db but aren't being updated or deleted
     // and check how many registered managers there is
     const dataInDB = ['UNCHECKED', 'NOCHANGE']; // for theses statuses trust the data in the DB
-    (await Establishment.fetchMyEstablishmentsWorkers(this.id, this._key)).forEach((worker) => {
-      const workerFromCSV = myJSONWorkers.find((w) => {
+
+    const establishmentWorkers = await Establishment.fetchMyEstablishmentsWorkers(this.id, this._key);
+
+    establishmentWorkers.forEach((worker) => {
+      let workerFromCSV = myJSONWorkers.find((w) => {
         return w.uniqueWorkerId === worker.uniqueWorker;
       });
       if (workerFromCSV && dataInDB.includes(workerFromCSV._status)) {
@@ -2803,6 +2818,7 @@ class WorkplaceCSVValidator {
         registeredManagers += isRegManager(worker) ? 1 : 0;
       }
     });
+
     this._crossValidateTotalPermTemp(csvEstablishmentSchemaErrors, totals);
     this._crossValidateAllJobRoles(csvEstablishmentSchemaErrors, registeredManagers);
   }

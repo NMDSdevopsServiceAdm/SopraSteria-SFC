@@ -4,8 +4,8 @@ import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { AuthService } from '@core/services/auth.service';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -37,7 +37,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   constructor(
     private route: ActivatedRoute,
     private tabsService: TabsService,
-    protected benchmarksService: BenchmarksService,
+    protected benchmarksService: BenchmarksServiceBase,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private authService: AuthService,
