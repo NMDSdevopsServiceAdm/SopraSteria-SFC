@@ -9,7 +9,7 @@ dist
 # dependencies
 /node_modules
 */node_modules
-
+.angular
 frontend/.angular/cache
 
 # IDEs and editors

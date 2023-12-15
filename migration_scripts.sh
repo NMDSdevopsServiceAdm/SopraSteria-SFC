@@ -435,7 +435,6 @@ echo 'Finished settng up backend folder'
 echo '***** CLEAN UP OLD FOLDERS & FILES *****'
 echo 'Remove node modules from the root directory'
 rm -rf ./node_modules
-rm -rf ./.circleci
 
 echo 'Remove manifest files and original package.json files'
 manifestFiles=('manifest.benchmarks.yml' 'manifest.prod.yml' 'manifest.preprod.yml' 'manifest.test.yml' 'package.json' 'package-lock.json')
