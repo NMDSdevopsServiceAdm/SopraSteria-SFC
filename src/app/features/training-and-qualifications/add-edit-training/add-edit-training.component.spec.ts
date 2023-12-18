@@ -210,6 +210,42 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
+  describe('Delete button', () => {
+    it('should navigate to delete confirmation page with training category', async () => {
+      const { component, routerSpy, getByTestId, fixture } = await setup();
+      const deleteTrainingRecord = getByTestId('deleteButton');
+      component.trainingCategory = { id: 2, category: 'First aid' };
+      fixture.detectChanges();
+
+      fireEvent.click(deleteTrainingRecord);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'training-and-qualifications-record',
+        component.worker.uid,
+        'training',
+        component.trainingRecordId,
+        { trainingCategory: JSON.stringify(component.trainingCategory) },
+        'delete',
+      ]);
+    });
+
+    it('should navigate to delete confirmation page without training category', async () => {
+      const { component, routerSpy, getByTestId } = await setup();
+      const deleteTrainingRecord = getByTestId('deleteButton');
+      fireEvent.click(deleteTrainingRecord);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'training-and-qualifications-record',
+        component.worker.uid,
+        'training',
+        component.trainingRecordId,
+        'delete',
+      ]);
+    });
+  });
+
   describe('Cancel button', () => {
     it('should call navigate when pressing cancel', async () => {
       const { component, fixture, getByText, routerSpy } = await setup();
