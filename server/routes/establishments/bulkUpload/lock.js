@@ -141,7 +141,7 @@ const lockStatusGet = async (req, res) => {
 
   const currentLockState = await lockStatus(establishmentId);
 
-  console.log(`DBG currentLockState ${currentLockState}`);
+  console.log(`DBG currentLockState ${currentLockState[0].bulkUploadLockHeld}`);
 
   res
     .status(200) // don't allow this to be able to test if an establishment exists so always return a 200 response
