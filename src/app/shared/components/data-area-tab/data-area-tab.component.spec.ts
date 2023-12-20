@@ -4,7 +4,6 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -20,6 +19,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { BenchmarksSelectViewPanelComponent } from '../benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { DataAreaTabComponent } from './data-area-tab.component';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 describe('DataAreaTabComponent', () => {
   const setup = async (newDashboard = true) => {
@@ -41,7 +41,7 @@ describe('DataAreaTabComponent', () => {
           useClass: MockBreadcrumbService,
         },
         {
-          provide: BenchmarksService,
+          provide: BenchmarksServiceBase,
           useClass: MockBenchmarksService,
         },
         {

@@ -12,7 +12,7 @@ const { rawDataBuilder } = require('../../../../factories/deleteReport/deleteRep
 describe('/server/routes/reports/deleteReport/report', () => {
   describe('deleteReport()', () => {
     beforeEach(() => {
-      sinon.stub(models.pcodedata, 'getCssrFromPostcode').callsFake(async () => {
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').callsFake(async () => {
         return {};
       });
     });

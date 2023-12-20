@@ -1,19 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import {
-  AllRankingsResponse,
-  BenchmarksResponse,
-  CompareGroupsRankingsResponse,
-  PayRankingsResponse,
-} from '@core/model/benchmarks.model';
+import { AllRankingsResponse, BenchmarksResponse, RankingsResponse } from '@core/model/benchmarks.model';
 import { URLStructure } from '@core/model/url.model';
 import { Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
+import { BenchmarksServiceBase } from './benchmarks-base.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class BenchmarksService {
+export class BenchmarksService implements BenchmarksServiceBase {
   private returnToURL: URLStructure;
   private _benchmarksData$: BenchmarksResponse = null;
   private _rankingsData$: AllRankingsResponse = null;
@@ -56,14 +51,8 @@ export class BenchmarksService {
     return this.http.get<BenchmarksResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/benchmarks/${param}`);
   }
 
-  getRankingData(establishmentId: string, metric: string): Observable<CompareGroupsRankingsResponse> {
-    return this.http.get<CompareGroupsRankingsResponse>(
-      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/benchmarks/rankings/${metric}`,
-    );
-  }
-
-  getPayRankingData(establishmentId: string): Observable<PayRankingsResponse> {
-    return this.http.get<PayRankingsResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/benchmarks/rankings/pay`);
+  getRankingData(establishmentId: string, metric: string): Observable<RankingsResponse> {
+    return this.http.get<RankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings/${metric}`);
   }
 
   getAllRankingData(establishmentId: string): Observable<AllRankingsResponse> {

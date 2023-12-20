@@ -6,13 +6,20 @@ import { Observable, of } from 'rxjs';
 @Injectable()
 export class MockReportService extends ReportService {
   public getWDFReport(workplaceUid: string): Observable<WDFReport> {
+    const d = new Date();
+    //21 July YEAR
+    d.setMonth(6);
+    d.setDate(21);
+    d.setHours(0, 0, 0, 0);
+    const dateString = d.toISOString();
+
     return of({
       establishmentId: 1,
-      timestamp: '2021-04-12T00:00:00.000Z',
-      effectiveFrom: '2021-04-01T00:00:00.000Z',
+      timestamp: dateString,
+      effectiveFrom: dateString,
       wdf: {
         overall: true,
-        overallWdfEligibility: '2021-07-21T00:00:00.000Z',
+        overallWdfEligibility: dateString,
         workplace: true,
         staff: true,
       },
