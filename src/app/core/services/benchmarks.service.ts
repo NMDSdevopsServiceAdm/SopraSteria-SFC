@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { AllRankingsResponse, BenchmarksResponse, RankingsResponse } from '@core/model/benchmarks.model';
+import { AllRankingsResponse, BenchmarksResponse, PayRankingsResponse, CompareGroupsRankingsResponse } from '@core/model/benchmarks-v2.model';
 import { URLStructure } from '@core/model/url.model';
 import { Observable } from 'rxjs';
 import { BenchmarksServiceBase } from './benchmarks-base.service';
