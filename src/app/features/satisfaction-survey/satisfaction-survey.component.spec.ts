@@ -11,6 +11,8 @@ import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { SatisfactionSurveyComponent } from './satisfaction-survey.component';
+import { environment } from 'src/environments/environment';
+
 
 const getSatisfactionSurveyComponent = async () => {
   return render(SatisfactionSurveyComponent, {
@@ -50,7 +52,7 @@ describe('SatisfactionSurveyComponent', () => {
 
       const submit = getByRole('button');
       fireEvent.click(submit);
-      const req = TestBed.inject(HttpTestingController).expectOne('/api/satisfactionSurvey');
+      const req = TestBed.inject(HttpTestingController).expectOne(`${environment.appRunnerEndpoint}/api/satisfactionSurvey`);
       req.flush({});
 
       function getElementById(id) {

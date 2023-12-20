@@ -6,6 +6,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { take } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -35,14 +36,14 @@ export class SwitchWorkplaceService {
   }
 
   public getAllNotificationWorkplace(nmdsId, params) {
-    return this.http.get<any>(`/api/user/swap/establishment/notification/${nmdsId}`, params);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/user/swap/establishment/notification/${nmdsId}`, params);
   }
 
   public getNewEstablishmentId(id, username) {
     const data = {
       username: username,
     };
-    return this.http.post<any>('/api/user/swap/establishment/' + id, data, { observe: 'response' });
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/user/swap/establishment/` + id, data, { observe: 'response' });
   }
 
   private onSwapSuccess(data) {

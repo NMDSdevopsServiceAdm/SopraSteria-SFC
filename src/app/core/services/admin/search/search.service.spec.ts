@@ -2,6 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 
 import { SearchService } from './search.service';
+import { environment } from 'src/environments/environment';
 
 describe('SearchService', () => {
   let service: SearchService;
@@ -26,7 +27,7 @@ describe('SearchService', () => {
     service.searchWorkplaces({ postcode: 'ab3 4de' }).subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/search/establishments');
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/search/establishments`);
 
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ postcode: 'ab3 4de' });
@@ -36,7 +37,7 @@ describe('SearchService', () => {
     service.searchUsers({ name: 'Joe Bloggs' }).subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/search/users');
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/search/users`);
 
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ name: 'Joe Bloggs' });
@@ -46,7 +47,7 @@ describe('SearchService', () => {
     service.searchGroups({ employerType: 'All', parent: true }).subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/search/groups');
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/search/groups`);
 
     expect(req.request.method).toBe('POST');
     expect(req.request.body).toEqual({ employerType: 'All', parent: true });

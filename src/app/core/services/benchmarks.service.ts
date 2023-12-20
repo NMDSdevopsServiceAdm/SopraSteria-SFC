@@ -4,6 +4,7 @@ import { AllRankingsResponse, BenchmarksResponse, RankingsResponse } from '@core
 import { URLStructure } from '@core/model/url.model';
 import { Observable } from 'rxjs';
 import { BenchmarksServiceBase } from './benchmarks-base.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -40,7 +41,10 @@ export class BenchmarksService implements BenchmarksServiceBase {
 
   postBenchmarkTabUsage(establishmentId: number) {
     const viewedTime = new Date();
-    return this.http.post<any>(`/api/establishment/${establishmentId}/benchmarks/usage`, { viewedTime });
+    return this.http.post<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/benchmarks/usage`,
+      { viewedTime },
+    );
   }
 
   getTileData(establishmentId: string, tilesNeeded: string[]): Observable<BenchmarksResponse> {
@@ -48,7 +52,9 @@ export class BenchmarksService implements BenchmarksServiceBase {
     if (tilesNeeded.length) {
       param = '?tiles=' + tilesNeeded.join(',');
     }
-    return this.http.get<BenchmarksResponse>(`/api/establishment/${establishmentId}/benchmarks/${param}`);
+    return this.http.get<BenchmarksResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/benchmarks/${param}`,
+    );
   }
 
   getRankingData(establishmentId: string, metric: string): Observable<RankingsResponse> {
@@ -56,6 +62,8 @@ export class BenchmarksService implements BenchmarksServiceBase {
   }
 
   getAllRankingData(establishmentId: string): Observable<AllRankingsResponse> {
-    return this.http.get<AllRankingsResponse>(`/api/establishment/${establishmentId}/benchmarks/rankings`);
+    return this.http.get<AllRankingsResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/benchmarks/rankings`,
+    );
   }
 }

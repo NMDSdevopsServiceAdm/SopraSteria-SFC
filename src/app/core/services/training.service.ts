@@ -5,6 +5,7 @@ import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryRespo
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -19,30 +20,30 @@ export class TrainingService {
 
   getCategories(): Observable<TrainingCategory[]> {
     return this.http
-      .get<TrainingCategoryResponse>('/api/trainingCategories')
+      .get<TrainingCategoryResponse>(`${environment.appRunnerEndpoint}/api/trainingCategories`)
       .pipe(map((res) => res.trainingCategories));
   }
 
   getAllTrainingByStatus(workplaceUid: string, status: string, queryParams?: Params): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`, {
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`, {
       params: queryParams,
     });
   }
 
   getMissingMandatoryTraining(workplaceUid: string, queryParams?: Params): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${workplaceUid}/trainingAndQualifications/missing-training`, {
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/trainingAndQualifications/missing-training`, {
       params: queryParams,
     });
   }
 
   getCategoryById(categoryId): Observable<TrainingCategory[]> {
     return this.http
-      .get<TrainingCategoryResponse>(`/api/trainingCategories/${categoryId}`)
+      .get<TrainingCategoryResponse>(`${environment.appRunnerEndpoint}/api/trainingCategories/${categoryId}`)
       .pipe(map((res) => res.trainingCategories));
   }
 
   public deleteCategoryById(establishmentId, categoryId) {
-    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining/${categoryId}`);
+    return this.http.delete(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mandatoryTraining/${categoryId}`);
   }
 
   public updateSelectedStaff(formValue): void {
@@ -63,11 +64,11 @@ export class TrainingService {
 
   //get all mandatory training
   public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
-    return this.http.get<allMandatoryTrainingCategories>(`/api/establishment/${establishmentId}/mandatoryTraining`);
+    return this.http.get<allMandatoryTrainingCategories>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mandatoryTraining`);
   }
 
   public deleteAllMandatoryTraining(establishmentId: number) {
-    return this.http.delete(`/api/establishment/${establishmentId}/mandatoryTraining`);
+    return this.http.delete(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mandatoryTraining`);
   }
 
   public get trainingOrQualificationPreviouslySelected(): string {

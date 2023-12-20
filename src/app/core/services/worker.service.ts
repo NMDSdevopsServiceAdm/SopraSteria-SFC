@@ -16,6 +16,7 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 export interface Reason {
   id: number;
@@ -111,35 +112,35 @@ export class WorkerService {
 
   getWorker(workplaceUid: string, workerId: string, wdf: boolean = false): Observable<Worker> {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
-    return this.http.get<Worker>(`/api/establishment/${workplaceUid}/worker/${workerId}`, { params });
+    return this.http.get<Worker>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}`, { params });
   }
 
   public getAllWorkers(establishmentuid: string, queryParams?: Params): Observable<WorkersResponse> {
     return this.http
-      .get<WorkersResponse>(`/api/establishment/${establishmentuid}/worker`, { params: queryParams || {} })
+      .get<WorkersResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/worker`, { params: queryParams || {} })
       .pipe(map((data) => data));
   }
 
   public getTotalStaffRecords(establishmentuid: string): Observable<number> {
     return this.http
-      .get<TotalStaffRecordsResponse>(`/api/establishment/${establishmentuid}/worker/total`)
+      .get<TotalStaffRecordsResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/worker/total`)
       .pipe(map((response) => response.total));
   }
 
   getLeaveReasons() {
-    return this.http.get<LeaveReasonsResponse>('/api/worker/leaveReasons').pipe(map((r) => r.reasons));
+    return this.http.get<LeaveReasonsResponse>(`${environment.appRunnerEndpoint}/api/worker/leaveReasons`).pipe(map((r) => r.reasons));
   }
 
   createWorker(workplaceUid: string, props) {
-    return this.http.post<WorkerEditResponse>(`/api/establishment/${workplaceUid}/worker`, props);
+    return this.http.post<WorkerEditResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker`, props);
   }
 
   updateWorker(workplaceUid: string, workerId: string, props) {
-    return this.http.put<WorkerEditResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}`, props);
+    return this.http.put<WorkerEditResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}`, props);
   }
 
   deleteWorker(workplaceUid: string, workerId: string, reason?: any) {
-    return this.http.request<any>('delete', `/api/establishment/${workplaceUid}/worker/${workerId}`, {
+    return this.http.request<any>('delete', `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}`, {
       ...(reason && {
         body: reason,
       }),
@@ -151,7 +152,7 @@ export class WorkerService {
 
     return this.http
       .get<AvailableQualificationsResponse>(
-        `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/available`,
+        `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification/available`,
         {
           params,
         },
@@ -161,34 +162,34 @@ export class WorkerService {
 
   createQualification(workplaceUid: string, workerId: string, record: QualificationRequest) {
     return this.http.post<QualificationRequest>(
-      `/api/establishment/${workplaceUid}/worker/${workerId}/qualification`,
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification`,
       record,
     );
   }
 
   updateQualification(workplaceUid: string, workerId: string, qualificationId: string, record) {
     return this.http.put(
-      `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`,
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`,
       record,
     );
   }
 
   deleteQualification(workplaceUid: string, workerId: string, qualificationId: string) {
-    return this.http.delete(`/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`);
+    return this.http.delete(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`);
   }
 
   getQualifications(workplaceUid: string, workerId: string) {
-    return this.http.get<QualificationsResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}/qualification`);
+    return this.http.get<QualificationsResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification`);
   }
 
   getQualification(workplaceUid: string, workerId: string, qualificationId: string) {
     return this.http.get<QualificationResponse>(
-      `/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`,
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`,
     );
   }
 
   createMultipleTrainingRecords(workplaceUid: string, workerUids: string[], record: TrainingRecordRequest) {
-    return this.http.post<MultipleTrainingResponse>(`/api/establishment/${workplaceUid}/worker/multiple-training`, {
+    return this.http.post<MultipleTrainingResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/multiple-training`, {
       trainingRecord: record,
       workerUids,
     });
@@ -196,7 +197,7 @@ export class WorkerService {
 
   createTrainingRecord(workplaceUid: string, workerId: string, record: TrainingRecordRequest) {
     return this.http.post<TrainingRecordRequest>(
-      `/api/establishment/${workplaceUid}/worker/${workerId}/training`,
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training`,
       record,
     );
   }
@@ -208,17 +209,17 @@ export class WorkerService {
     record: TrainingRecordRequest,
   ) {
     return this.http.put<TrainingRecordRequest>(
-      `/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`,
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`,
       record,
     );
   }
 
   deleteTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {
-    return this.http.delete(`/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`);
+    return this.http.delete(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`);
   }
 
   getTrainingRecords(workplaceUid: string, workerId: string) {
-    return this.http.get<TrainingResponse>(`/api/establishment/${workplaceUid}/worker/${workerId}/training`);
+    return this.http.get<TrainingResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training`);
   }
 
   getAllTrainingAndQualificationRecords(
@@ -226,12 +227,12 @@ export class WorkerService {
     workerId: string,
   ): Observable<TrainingAndQualificationRecords> {
     return this.http.get<TrainingAndQualificationRecords>(
-      `/api/establishment/${workplaceUid}/worker/${workerId}/trainingAndQualifications/getAllTrainingAndQualifications`,
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/trainingAndQualifications/getAllTrainingAndQualifications`,
     );
   }
 
   getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {
-    return this.http.get<any>(`/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`);
   }
 
   setCreateStaffResponse(success: number) {
@@ -249,12 +250,12 @@ export class WorkerService {
     request: LocalIdentifiersRequest,
   ): Observable<LocalIdentifiersResponse> {
     return this.http.put<LocalIdentifiersResponse>(
-      `/api/establishment/${establishmentUid}/worker/localIdentifier`,
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/worker/localIdentifier`,
       request,
     );
   }
 
   public getLongTermAbsenceReasons(): Observable<Array<string>> {
-    return this.http.get<any>('/api/longTermAbsence').pipe(map((res) => res.reasons));
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/longTermAbsence`).pipe(map((res) => res.reasons));
   }
 }
