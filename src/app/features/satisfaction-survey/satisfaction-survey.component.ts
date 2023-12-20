@@ -4,6 +4,7 @@ import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-satisfaction-survey',
@@ -54,7 +55,7 @@ export class SatisfactionSurveyComponent implements AfterViewInit {
 
     const survey = this.buildSatisfactionSurveyBody(this.form.value);
 
-    this.http.post('/api/satisfactionSurvey', survey).subscribe(
+    this.http.post(`${environment.appRunnerEndpoint}/api/satisfactionSurvey`, survey).subscribe(
       () => this.navigateToLogin(),
       (err) => this.navigateToLogin(),
     );

@@ -22,10 +22,10 @@ export class DataChangeService {
   }
 
   public updateBUDataChangeLastUpdated(establishmentId: string, lastUpdated: Date): Observable<DataChange> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/bulkUpload/dataChange`, { lastUpdated });
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkUpload/dataChange`, { lastUpdated });
   }
 
   public getDataChangesLastUpdate(establishmentId: string): Observable<DataChange> {
-    return this.http.get<any>(`/api/establishment/${establishmentId}/bulkUpload/dataChange`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkUpload/dataChange`);
   }
 }

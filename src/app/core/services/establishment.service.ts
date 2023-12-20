@@ -20,6 +20,7 @@ import { map, tap } from 'rxjs/operators';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
+import { environment } from 'src/environments/environment';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -163,7 +164,7 @@ export class EstablishmentService {
   public getAllServices(establishmentId): Observable<ServiceGroup[]> {
     const params = new HttpParams().set('all', 'true');
     return this.http
-      .get<AllServicesResponse>(`/api/establishment/${establishmentId}/services`, { params })
+      .get<AllServicesResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/services`, { params })
       .pipe(map((res) => res.allOtherServices));
   }
 
@@ -219,87 +220,87 @@ export class EstablishmentService {
 
   getEstablishment(id: string, wdf: boolean = false) {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
-    return this.http.get<any>(`/api/establishment/${id}`, { params });
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${id}`, { params });
   }
 
   getCapacity(establishmentId, all = false) {
     const params = new HttpParams().set('all', `${all}`);
-    return this.http.get<any>(`/api/establishment/${establishmentId}/capacity`, { params });
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/capacity`, { params });
   }
 
   updateCapacity(establishmentId, data) {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/capacity`, data);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/capacity`, data);
   }
 
   getJobs() {
-    return this.http.get<any>(`/api/establishment/${this.establishmentId}/jobs`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/jobs`);
   }
 
   getStaff(establishmentuid: string) {
-    return this.http.get<any>(`/api/establishment/${establishmentuid}/staff`).pipe(map((res) => res.numberOfStaff));
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/staff`).pipe(map((res) => res.numberOfStaff));
   }
 
   postStaff(workplaceUid: string, numberOfStaff: number) {
-    return this.http.post<any>(`/api/establishment/${workplaceUid}/staff/${numberOfStaff}`, null);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/staff/${numberOfStaff}`, null);
   }
 
   getEmployerType() {
-    return this.http.get<EmployerTypeResponse>(`/api/establishment/${this.establishmentId}/employerType`);
+    return this.http.get<EmployerTypeResponse>(`${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/employerType`);
   }
 
   public updateWorkplace(workplaceUid: string, data): Observable<any> {
-    return this.http.put<any>(`/api/establishment/${workplaceUid}`, data);
+    return this.http.put<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}`, data);
   }
 
   updateServiceUsers(establishmentId, data) {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/serviceUsers`, data);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/serviceUsers`, data);
   }
 
   updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest) {
-    return this.http.post<EmployerTypeResponse>(`/api/establishment/${establishmentId}/employerType`, data);
+    return this.http.post<EmployerTypeResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/employerType`, data);
   }
 
   updateOtherServices(establishmentId, data: PostServicesModel) {
-    return this.http.post<PostServicesModel>(`/api/establishment/${establishmentId}/services`, data);
+    return this.http.post<PostServicesModel>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/services`, data);
   }
 
   updateMainService(establishmentId: string, data: MainServiceRequest) {
-    return this.http.post<MainServiceRequest>(`/api/establishment/${establishmentId}/mainService`, data);
+    return this.http.post<MainServiceRequest>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mainService`, data);
   }
 
   updateDataSharing(establishmentId, data: ShareWithRequest): Observable<any> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/share`, data);
+    return this.http.post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/share`, data);
   }
 
   updateSingleEstablishmentField(establishmentId: string, data: any): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/updateSingleEstablishmentField`, data);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/updateSingleEstablishmentField`, data);
   }
 
   updateLocalAuthorities(establishmentId, data) {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/localAuthorities`, data);
+    return this.http.post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/localAuthorities`, data);
   }
 
   updateJobs(establishmentId, data: UpdateJobsRequest): Observable<Establishment> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/jobs`, data);
+    return this.http.post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/jobs`, data);
   }
 
   updateWorkers(establishmentId, data) {
-    return this.http.put<any>(`/api/establishment/${establishmentId}/workers`, data);
+    return this.http.put<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/workers`, data);
   }
 
   public updateLocalIdentifiers(request: LocalIdentifiersRequest): Observable<LocalIdentifiersResponse> {
     return this.http.put<LocalIdentifiersResponse>(
-      `/api/establishment/${this.establishmentId}/localIdentifier`,
+      `${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/localIdentifier`,
       request,
     );
   }
 
   updateLocationDetails(establishmentId, data: CQCLocationChangeRequest): Observable<any> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/locationDetails`, data);
+    return this.http.post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/locationDetails`, data);
   }
 
   public deleteWorkplace(workplaceUid: string): Observable<any> {
-    return this.http.delete<any>(`/api/establishment/${workplaceUid}`);
+    return this.http.delete<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}`);
   }
 
   public isOwnWorkplace() {
@@ -307,48 +308,53 @@ export class EstablishmentService {
   }
 
   public changeOwnership(establishmentId, data: ChangeOwner): Observable<Establishment> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/ownershipChange`, data);
+    return this.http.post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/ownershipChange`, data);
   }
   public changeOwnershipDetails(establishmentId): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${establishmentId}/ownershipChange/details`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/ownershipChange/details`);
   }
 
   public cancelOwnership(establishmentId, ownershipChangeId, data: CancelOwnerShip): Observable<Establishment> {
     return this.http.post<Establishment>(
-      `/api/establishment/${establishmentId}/ownershipChange/${ownershipChangeId}`,
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/ownershipChange/${ownershipChangeId}`,
       data,
     );
   }
 
   public setDataPermission(establishmentId, data: setPermission): Observable<Establishment> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/dataPermissions`, data);
+    return this.http.post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/dataPermissions`, data);
   }
   //get all parent with Post code
   public getAllParentWithPostCode(): Observable<any> {
-    return this.http.get<any>(`/api/parentLinkingDetails/parents`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/parentLinkingDetails/parents`);
   }
 
   //Send data for link to parent
   public setRequestToParentForLink(establishmentId, data: setPermission): Observable<Establishment> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent`, data);
+    return this.http.post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/linkToParent`, data);
   }
   //Send data for link to parent
   public cancelRequestToParentForLink(establishmentId, data): Observable<Establishment> {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/linkToParent/cancel`, data);
+    return this.http.post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/linkToParent/cancel`, data);
   }
   //Send data for de-link to parent
   public removeParentAssociation(establishmentId, data): Observable<Establishment> {
-    return this.http.put<Establishment>(`/api/establishment/${establishmentId}/linkToParent/delink`, data);
+    return this.http.put<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/linkToParent/delink`, data);
+  }
+
+  //get request for link to parent
+  public getRequestedLinkToParent(establishmentId, data) {
+    return this.http.put<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/linkToParent/requested`, data);
   }
 
   //update mandatory training
   public createAndUpdateMandatoryTraining(establishmentId, data: mandatoryTraining) {
-    return this.http.post<Establishment>(`/api/establishment/${establishmentId}/mandatoryTraining`, data);
+    return this.http.post<Establishment>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mandatoryTraining`, data);
   }
 
   //Move workplace as an admin
   public adminMoveWorkplace(data: adminMoveWorkplace): Observable<any> {
-    return this.http.post<any>(`/api/admin/move-workplace`, data);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/move-workplace`, data);
   }
 
   public getCQCRegistrationStatus(locationID, requestParams): Observable<any> {
@@ -357,28 +363,28 @@ export class EstablishmentService {
     params = params.set('postcode', `${requestParams.postcode}`);
     params = params.set('mainService', `${requestParams.mainService}`);
 
-    return this.http.get<any>(`/api/cqcStatusCheck/${locationID}`, { params });
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/cqcStatusCheck/${locationID}`, { params });
   }
 
   public getExpiresSoonAlertDates(establishmentId: string): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/expiresSoonAlertDates`);
   }
 
   public setExpiresSoonAlertDates(establishmentId: string, expiresSoonAlertDate: string): Observable<any> {
-    return this.http.post<any>(`/api/establishment/${establishmentId}/expiresSoonAlertDates`, { expiresSoonAlertDate });
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/expiresSoonAlertDates`, { expiresSoonAlertDate });
   }
 
   public removeParentStatus(data: any): Observable<any> {
-    return this.http.post<any>(`/api/admin/remove-parent-status`, data);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/remove-parent-status`, data);
   }
 
   public getChildWorkplaces(establishmentId: string, queryParams?: Params): Observable<GetChildWorkplacesResponse> {
     return this.http
-      .get<any>(`/api/establishment/${establishmentId}/childWorkplaces`, { params: queryParams || {} })
+      .get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/childWorkplaces`, { params: queryParams || {} })
       .pipe(map((data) => data));
   }
 
   public getCertificate(establishmentId: string, years: string): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${establishmentId}/certificate/${years}`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/certificate/${years}`);
   }
 }

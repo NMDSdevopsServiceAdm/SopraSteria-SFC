@@ -6,6 +6,7 @@ import { SecurityDetails } from '@core/model/security-details.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { WorkplaceInterfaceService } from './workplace-interface.service';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -21,12 +22,12 @@ export class RegistrationService extends WorkplaceInterfaceService {
   }
 
   public postRegistration(registrationPayload: RegistrationPayload): Observable<any> {
-    return this.http.post<any>('/api/registration/', registrationPayload);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/registration/`, registrationPayload);
   }
 
   /* TODO: Give proper return */
   public getUsernameDuplicate(id: string): Observable<any> {
-    return this.http.get(`/api/registration/username/${id}`);
+    return this.http.get(`${environment.appRunnerEndpoint}/api/registration/username/${id}`);
   }
 
   public resetService(): void {

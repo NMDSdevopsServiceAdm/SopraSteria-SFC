@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { FeedbackModel } from '@core/model/feedback.model';
 import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -13,7 +14,7 @@ export class FeedbackService {
   constructor(private http: HttpClient) {}
 
   post(feedback: FeedbackModel) {
-    return this.http.post<any>('/api/feedback', feedback);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/feedback`, feedback);
   }
 
   public get returnTo(): URLStructure {

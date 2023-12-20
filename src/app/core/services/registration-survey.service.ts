@@ -2,6 +2,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -35,7 +36,7 @@ export class RegistrationSurveyService {
   }
 
   public submit(data): Observable<any> {
-    return this.http.post<any>('/api/registrationSurvey', data);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/registrationSurvey`, data);
   }
 
   public submitSurvey() {
