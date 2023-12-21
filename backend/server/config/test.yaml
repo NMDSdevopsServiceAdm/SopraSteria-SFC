@@ -12,7 +12,7 @@ db:
   pool:
     min: 15
     max: 15
-  ssl: true
+  ssl: false
 
 slack:
   level: 3 # enables Slack notifications
