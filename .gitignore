@@ -81,6 +81,5 @@ cypress/fixtures
 docker/*.sql
 
 # Gource
-bin/
 lib/
 *.ppm
