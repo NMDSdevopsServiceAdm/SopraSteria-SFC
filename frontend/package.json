@@ -44,7 +44,7 @@
       "dayjs": "^1.10.7",
       "details-element-polyfill": "^2.4.0",
       "file-saver": "^2.0.5",
-      "govuk-frontend": "^3.14.2",
+      "govuk-frontend": "^3.14.0",
       "highcharts": "^8.2.2",
       "highcharts-angular": "^2.8.2",
       "is-ci": "^3.0.0",
