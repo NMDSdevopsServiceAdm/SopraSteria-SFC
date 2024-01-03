@@ -26,7 +26,15 @@ module.exports = {
 
   down: async (queryInterface) => {
     return queryInterface.sequelize.transaction(async (transaction) => {
-      await Promise.all([await queryInterface.removeColumn('cqcref.postcodes', 'uuid', { transaction })]);
+      await Promise.all([await queryInterface.removeColumn(
+          {
+            tableName: 'postcodes',
+            schema: 'cqcref',
+          }
+          , 'uuid',
+          { transaction }
+        )
+      ]);
     });
   },
 };
