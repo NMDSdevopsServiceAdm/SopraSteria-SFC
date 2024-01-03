@@ -22,7 +22,7 @@ db:
     max: 150
     acquire: 240000
     idle: 200000
-  ssl: true
+  ssl: false
   username: sfcapp
 
 notify:
