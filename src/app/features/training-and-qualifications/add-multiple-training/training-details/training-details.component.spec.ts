@@ -126,7 +126,6 @@ describe('MultipleTrainingDetailsComponent', () => {
       await setup();
 
     const categoryOption = component.categories[0].id.toString();
-
     userEvent.selectOptions(getByLabelText('Training category'), categoryOption);
     userEvent.type(getByLabelText('Training name'), 'Training');
     userEvent.click(getByLabelText('Yes'));

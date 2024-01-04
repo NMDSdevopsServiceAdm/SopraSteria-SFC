@@ -283,4 +283,29 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     event.preventDefault();
     this.router.navigate(this.previousUrl);
   }
+
+  protected navigateToDeleteTrainingRecord(): void {
+    if (this.trainingCategory) {
+      this.router.navigate([
+        '/workplace',
+        this.workplace.uid,
+        'training-and-qualifications-record',
+        this.worker.uid,
+        'training',
+        this.trainingRecordId,
+        { trainingCategory: JSON.stringify(this.trainingCategory) },
+        'delete',
+      ]);
+    } else {
+      this.router.navigate([
+        '/workplace',
+        this.workplace.uid,
+        'training-and-qualifications-record',
+        this.worker.uid,
+        'training',
+        this.trainingRecordId,
+        'delete',
+      ]);
+    }
+  }
 }

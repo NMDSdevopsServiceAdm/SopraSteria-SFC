@@ -561,7 +561,7 @@ class Worker extends EntityValidator {
 
   // saves the Worker to DB. Returns true if saved; false is not.
   // Throws "WorkerSaveException" on error
-  async save(savedBy, bulkUploaded = false, ttl = 0, externalTransaction = null, associatedEntities = false) {
+  async save(savedBy, bulkUploaded = false, externalTransaction = null, associatedEntities = false) {
     const mustSave = this._initialise();
 
     // with bulk upload, if this entity's status is "UNCHECKED", do not save it
@@ -627,7 +627,7 @@ class Worker extends EntityValidator {
           const wdfAudit = await this.setWdfProperties(modifedCreationDocument, updatedTimestamp, savedBy);
 
           // now save the document
-          const creation = await models.worker.create(modifedCreationDocument, { transaction: thisTransaction });
+          const creation = await models.worker.create(modifedCreationDocument);
 
           const sanitisedResults = creation.get({ plain: true });
 
