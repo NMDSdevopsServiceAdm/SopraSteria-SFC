@@ -1539,11 +1539,9 @@ class Establishment extends EntityValidator {
 
         const cssrResults = await models.pcodedata.getLinkedCssrRecordsFromPostcode(this._postcode);
 
-        if (cssrResults && cssrResults.length > 0) {
-          fetchResults.primaryAuthorityCssr = {
-            id: cssrResults[0].cssrRecord.id,
-            name: cssrResults[0].cssrRecord.name,
-          };
+        if (!cssrResults || cssrResults.length == 0) {
+          console.log('Could not retrieve cssr record');
+          fetchResults.primaryAuthorityCssr = null;
         }
 
         if (fetchResults.auditEvents) {
