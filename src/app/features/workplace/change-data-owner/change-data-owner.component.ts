@@ -70,10 +70,10 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
   }
 
   public setSubWorkplace(): void {
-    const indexOfChild = this.route.snapshot.queryParams?.changeDataOwner;
-    if (indexOfChild >= 0) {
+    const changeDataOwnerFromUid = this.route.snapshot.queryParams?.changeDataOwnerFrom;
+    if (this.isParent && changeDataOwnerFromUid) {
       const childWorkplaces = this.route.snapshot.data.childWorkplaces.childWorkplaces;
-      this.subWorkplace = childWorkplaces[indexOfChild];
+      this.subWorkplace = childWorkplaces.find((sub) => sub.uid === changeDataOwnerFromUid);
     } else {
       this.subWorkplace = this.establishmentService.primaryWorkplace;
     }

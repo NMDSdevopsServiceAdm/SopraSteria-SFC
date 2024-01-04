@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
@@ -68,9 +67,10 @@ describe('ChangeDataOwnerComponent', () => {
         },
         {
           provide: EstablishmentService,
+          //useClass: MockEstablishmentService,
           useValue: {
             primaryWorkplace: {
-              name: 'Sub Workplace 1',
+              name: 'Primary Workplace',
               dataOwner: dataOwner,
               isParent: isParent,
               postcode: isParent ? mockparent.parentPostcode : 'WP1 1AA',
@@ -85,6 +85,7 @@ describe('ChangeDataOwnerComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
+              queryParams: { changeDataOwnerFrom: 'workplace-id-1' },
               data: {
                 childWorkplaces: {
                   childWorkplaces: [
@@ -121,11 +122,10 @@ describe('ChangeDataOwnerComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    const parentRequestsService = TestBed.inject(ParentRequestsService);
-
-    const establishmentService = TestBed.inject(EstablishmentService);
-
     const injector = getTestBed();
+
+    const establishmentService = injector.inject(EstablishmentService);
+
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
@@ -137,14 +137,11 @@ describe('ChangeDataOwnerComponent', () => {
       getByLabelText,
       getByTestId,
       queryByText,
-
       findAllByText,
       fixture,
       component,
       routerSpy,
-      parentRequestsService,
       establishmentService,
-      //getAllParentWithPostCodeSpy,
     };
   }
 
@@ -215,29 +212,16 @@ describe('ChangeDataOwnerComponent', () => {
     });
 
     describe('is the subsidiary', async () => {
-      // to fix
-      // fit('should show the name and postcode of data owner', async () => {
-      //   const { component, getByTestId, getByText, fixture, establishmentService } = await setup(
-      //     'Workplace',
-      //     true,
-      //     null,
-      //     null,
-      //     null,
-      //   );
+      it('should show the name and postcode of data owner', async () => {
+        const { getByTestId, getByText } = await setup('Workplace', true, null, null, null);
 
-      //   const dataOwnerAndPostcode = 'Sub Workplace 1, WP1 1AA';
+        const dataOwnerAndPostcode = 'Sub Workplace 1, WP1 1AA';
 
-      //   expect(getByTestId('ownershipFromNameAndPostcode').textContent).toContain(dataOwnerAndPostcode);
-      // });
+        expect(getByTestId('ownershipFromNameAndPostcode').textContent).toContain(dataOwnerAndPostcode);
+      });
 
       it('should show the name of the data owner to request from', async () => {
-        const { component, getByTestId, getByText, fixture, establishmentService } = await setup(
-          'Workplace',
-          true,
-          null,
-          null,
-          null,
-        );
+        const { component, getByTestId, getByText, fixture } = await setup('Workplace', true, null, null, null);
 
         fixture.detectChanges();
 
@@ -290,7 +274,7 @@ describe('ChangeDataOwnerComponent', () => {
 
   // fix
   // fit('should submit the change data owner request', async () => {
-  //   const { component, fixture, getByRole, establishmentService } = await setup();
+  //   const { component, fixture, getByRole, routerSpy, establishmentService } = await setup();
 
   //   const sendChangeRequestbutton = getByRole('button', {
   //     name: /send change request/i,
@@ -302,9 +286,11 @@ describe('ChangeDataOwnerComponent', () => {
   //   fireEvent.click(sendChangeRequestbutton);
   //   fixture.detectChanges();
 
-  //   const changeDataOwnerSpy = spyOn(establishmentService, 'changeOwnership').and.callThrough();
+  //   const establishmentServiceSpy = spyOn(establishmentService, 'changeOwnership').and.callThrough();
 
-  //   expect(changeDataOwnerSpy).toHaveBeenCalled();
+  //   expect(establishmentServiceSpy).toHaveBeenCalled();
+  //   expect(routerSpy).toHaveBeenCalled();
+  //   expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
   // });
 
   describe('cancel link', () => {

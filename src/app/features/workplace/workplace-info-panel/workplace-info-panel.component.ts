@@ -22,7 +22,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   @Output() public changeOwnershipAndPermissionsEvent = new EventEmitter();
   @Input() public workplace: Workplace;
-  @Input() public subWorkplaceNumber: Number;
+  @Input() public subWorkplaceNumber: number;
   public canViewEstablishment: boolean;
   public canChangePermissionsForSubsidiary: boolean;
   public primaryWorkplace: Establishment;
@@ -142,7 +142,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public navigateToChangeDataOwner(event: Event): void {
     event.preventDefault();
     this.router.navigate(['/workplace/change-data-owner'], {
-      queryParams: { changeDataOwner: this.subWorkplaceNumber },
+      queryParams: { changeDataOwnerFrom: this.workplace.uid },
     });
   }
 
