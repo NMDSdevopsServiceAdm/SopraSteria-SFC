@@ -4,7 +4,7 @@ import {
   BenchmarksResponse,
   BenchmarkValue,
   RankingsResponse,
-} from '@core/model/benchmarks.model';
+} from '@core/model/benchmarks-v2.model';
 import { FormatUtil } from '@core/utils/format-util';
 
 @Component({

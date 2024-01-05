@@ -1,7 +1,6 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { Metric, RankingsResponse } from '@core/model/benchmarks.model';
+import { Metric, RankingsResponse } from '@core/model/benchmarks-v2.model';
 import * as Highcharts from 'highcharts';
-
 import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-builder';
 
 @Component({
@@ -9,7 +8,7 @@ import { DataAreaBarchartOptionsBuilder } from './data-area-barchart-options-bui
   templateUrl: './data-area-barchart.component.html',
   styleUrls: ['./data-area-barchart.component.scss'],
 })
-export class DataAreaBarchartComponent implements OnChanges, OnInit {
+export class DataAreaBarchartComponent implements OnChanges {
   Highcharts: typeof Highcharts = Highcharts;
 
   @Input() section = '';
@@ -17,15 +16,16 @@ export class DataAreaBarchartComponent implements OnChanges, OnInit {
   @Input() rankingsData: RankingsResponse = null;
   @Input() altDescription = '';
   @Input() isPay: boolean;
-  @Input() noWorkplaceData: boolean = false;
+  @Input() noWorkplaceData = false;
   public options: Highcharts.Options;
   public numberOfWorkplaces: number;
   public rank: number;
   public sectionInSummary: string;
 
   constructor(private builder: DataAreaBarchartOptionsBuilder) {}
+  // constructor() {}
 
-  ngOnInit(): void {}
+  // ngOnInit(): void {}
 
   ngOnChanges(): void {
     this.formatSection(this.type);

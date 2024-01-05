@@ -1,5 +1,8 @@
 // BUDI maps bulk imports and exports
 
+// TODO This is a different system of queries
+// Also needs testing or checking or writing
+
 // uses Database Reference data - initialised within the singleton on startup
 const dbmodels = require('../../../models');
 const { ready } = require('../../cache/singletons/ready');

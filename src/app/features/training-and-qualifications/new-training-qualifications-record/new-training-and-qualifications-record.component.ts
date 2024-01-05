@@ -101,7 +101,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   private async getPdfCount() {
     const pdf = await this.downloadAsPDF(false);
-    const numberOfPages = pdf.getNumberOfPages();
+    const numberOfPages = pdf?.getNumberOfPages();
 
     return (this.pdfCount = numberOfPages);
   }

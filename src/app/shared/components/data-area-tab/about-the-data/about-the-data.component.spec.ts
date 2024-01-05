@@ -2,8 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-
-import { BenchmarksService } from '@core/services/benchmarks.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -16,6 +14,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { SharedModule } from '@shared/shared.module';
 import { getTestBed } from '@angular/core/testing';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 describe('DataAreaAboutTheDataComponent', () => {
   async function setup() {
@@ -23,7 +22,7 @@ describe('DataAreaAboutTheDataComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
-        { provide: BenchmarksService, useClass: MockBenchmarksService },
+        { provide: BenchmarksServiceBase, useClass: MockBenchmarksService },
         { provide: PermissionsService, useClass: MockPermissionsService },
         {
           provide: BreadcrumbService,
