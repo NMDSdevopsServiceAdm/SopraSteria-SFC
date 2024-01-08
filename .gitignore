@@ -53,6 +53,7 @@ Thumbs.db
 */coverage
 */.nyc_output
 */fecoverage
+.angular
 
 # localhost config variations
 /server/config/localhost.*.yaml
