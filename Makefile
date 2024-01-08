@@ -4,19 +4,10 @@
 all: install run
 
 install:
+	echo "Ensure you are using Node 18"
 	npm install --prefix backend
 	npm install --prefix frontend
 
-run: run_frontend run_backend
-
-run_frontend:
-	echo "Frontend"
-	cd frontend
-	npm run build:watch
-	cd ..
-
-run_backend:
-	echo "Backend"
-	cd backend
-	npm run
-	cd ..
+run:
+	(cd backend && docker-compose up) & \
+	(cd frontend && npm run build:watch)
