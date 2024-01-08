@@ -4,6 +4,7 @@
 all: install run
 
 install:
+	export DB_HOST=localhost
 	npm install --prefix frontend
 
 run:
