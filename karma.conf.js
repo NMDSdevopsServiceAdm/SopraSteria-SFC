@@ -63,11 +63,15 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: !isCI,
     singleRun: isCI,
-    // browsers: ['ChromeHeadlessNoSandbox', 'ChromeNoSandbox'],
-    browsers: ['ChromeNoSandbox'],
+    //browsers: ['ChromeHeadlessNoSandbox', 'ChromeNoSandbox'],
+    browsers: ['ChromeHeadlessNoSandbox'],
     customLaunchers: {
-      // ChromeHeadlessNoSandbox: {
-      //   base: 'ChromeHeadless',
+      ChromeHeadlessNoSandbox: {
+        base: 'ChromeHeadless',
+        flags: ['--no-sandbox'],
+      },
+      // ChromeNoSandbox: {
+      //   base: 'Chrome',
       //   flags: [
       //     '--no-sandbox',
       //     '--user-data-dir=/tmp/chrome-test-profile',

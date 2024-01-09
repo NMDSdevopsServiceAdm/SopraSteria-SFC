@@ -75,22 +75,20 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
       const childWorkplaces = this.route.snapshot.data.childWorkplaces.childWorkplaces;
       this.subWorkplace = childWorkplaces.find((sub) => sub.uid === changeDataOwnerFromUid);
     } else {
-      this.subWorkplace = this.establishmentService.primaryWorkplace;
+      this.subWorkplace = this.primaryWorkplace;
     }
   }
 
   public showJourneyType(): any {
-    this.journeyType = this.primaryWorkplace.isParent ? JourneyType.ALL_WORKPLACES : JourneyType.CHANGE_DATA_OWNER;
+    this.journeyType = this.isParent ? JourneyType.ALL_WORKPLACES : JourneyType.CHANGE_DATA_OWNER;
     return this.journeyType;
   }
 
   private setWorkplaces(): void {
     this.setSubWorkplace();
-    this.dataPermissionsRequester = this.establishmentService.primaryWorkplace;
+    this.dataPermissionsRequester = this.primaryWorkplace;
     this.isSubWorkplace =
-      !this.subWorkplace.isParent && this.subWorkplace.uid === this.establishmentService.primaryWorkplace.uid
-        ? true
-        : false;
+      !this.subWorkplace.isParent && this.subWorkplace.uid === this.primaryWorkplace.uid ? true : false;
 
     if (this.subWorkplace.dataOwner === 'Workplace') {
       this.ownershipToName = this.isSubWorkplace ? this.subWorkplace.parentName : this.dataPermissionsRequester.name;
@@ -184,6 +182,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
         permissionRequest: this.permissionType,
         notificationRecipientUid: this.ownershipToUid,
       };
+
       this.subscriptions.add(
         this.establishmentService.changeOwnership(this.subWorkplace.uid, requestedPermission).subscribe(
           (data) => {
