@@ -3,8 +3,10 @@
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 8.2.3.
 
 ## Development server
-1. Run `npm run server` for a dev server. This will compile the assets using `npm run build:watch` and also start the Express app using `npm run server`.
-2. Navigate to `http://localhost:8080/` to view the application
+1. Ensure Docker is running or start it.
+2. `make install` will set your DB_HOST variable and install dependencies for the front-end
+3. `make run` will start the docker container for redis and the back-end Express app. In parallel it will start the front-end angular app
+4. Navigate to `http://localhost:8080/` to view the application
 
 #### Note: ####
 Any FE changes should re-compile the assets and refresh the browser automatically.
