@@ -2,6 +2,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { TestBed } from '@angular/core/testing';
 
 import { LocalAuthoritiesReturnService } from './local-authorities-return.service';
+import { environment } from 'src/environments/environment';
 
 describe('LocalAuthoriesReturnService', () => {
   let service: LocalAuthoritiesReturnService;
@@ -26,7 +27,7 @@ describe('LocalAuthoriesReturnService', () => {
     service.getDates().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/local-authority-return/dates');
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/local-authority-return/dates`);
 
     expect(req.request.method).toBe('GET');
   });
@@ -41,7 +42,7 @@ describe('LocalAuthoriesReturnService', () => {
     service.setDates(data).subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/local-authority-return/dates');
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/local-authority-return/dates`);
 
     expect(req.request.method).toBe('POST');
     expect(req.request.body.laReturnStartDate).toEqual(laReturnStartDate);
@@ -52,7 +53,7 @@ describe('LocalAuthoriesReturnService', () => {
     service.getLAs().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/local-authority-return/monitor');
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/local-authority-return/monitor`);
 
     expect(req.request.method).toBe('GET');
   });
@@ -61,7 +62,7 @@ describe('LocalAuthoriesReturnService', () => {
     service.resetLAs().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne('/api/admin/local-authority-return/monitor/reset');
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/local-authority-return/monitor/reset`);
 
     expect(req.request.method).toBe('PUT');
     expect(req.request.body).toEqual({});

@@ -10,6 +10,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { RegistrationSurveyModule } from '../registration-survey.module';
 import { ThankYouComponent } from '../thank-you/thank-you.component';
 import { HowDidYouHearAboutComponent } from './how-did-you-hear-about.component';
+import { environment } from 'src/environments/environment';
 
 describe('HowDidYouHearAboutComponent', () => {
   async function setup() {
@@ -79,7 +80,7 @@ describe('HowDidYouHearAboutComponent', () => {
       const component = await setup();
       const submit = component.getByRole('button');
       fireEvent.click(submit);
-      const req = TestBed.inject(HttpTestingController).expectOne('/api/registrationSurvey');
+      const req = TestBed.inject(HttpTestingController).expectOne(`${environment.appRunnerEndpoint}/api/registrationSurvey`);
       req.flush({});
       expect(req.request.body).toEqual(expectedRequestBody);
     });

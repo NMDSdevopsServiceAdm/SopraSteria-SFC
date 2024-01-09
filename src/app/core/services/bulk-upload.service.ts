@@ -25,6 +25,7 @@ import { BehaviorSubject, from, interval, Observable } from 'rxjs';
 import { concatMap, filter, map, startWith, take, tap } from 'rxjs/operators';
 
 import { UserService } from './user.service';
+import { environment } from 'src/environments/environment';
 
 export interface isFirstBulkupload {
   isFirstBulkUpload: boolean;
@@ -100,7 +101,7 @@ export class BulkUploadService {
     return this.checkLockStatus(
       () =>
         this.http.post<BulkUploadLock>(
-          `/api/establishment/${this.establishmentService.establishmentId}/bulkupload/${this.endpoint}`,
+          `${environment.appRunnerEndpoint}/api/establishment/${this.establishmentService.establishmentId}/bulkupload/${this.endpoint}`,
           payload,
         ),
       undefined,
@@ -113,7 +114,7 @@ export class BulkUploadService {
   }
 
   public deleteFile(workplaceUid: string, fileName: string): Observable<any> {
-    return this.http.delete(`/api/establishment/${workplaceUid}/bulkupload/delete/${fileName}`);
+    return this.http.delete(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/delete/${fileName}`);
   }
 
   public getFileType(fileName: string): string {
@@ -123,14 +124,14 @@ export class BulkUploadService {
 
   public preValidateFiles(workplaceUid: string): Observable<ValidatedFile[]> {
     return this.checkLockStatus(
-      () => this.http.put<ValidatedFile[]>(`/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}`, null),
+      () => this.http.put<ValidatedFile[]>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}`, null),
       undefined,
     );
   }
 
   public getUploadedFiles(workplaceUid: string): Observable<ValidatedFile[]> {
     return this.checkLockStatus(
-      () => this.http.get<UploadedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}`),
+      () => this.http.get<UploadedFilesResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}`),
       undefined,
     ).pipe(map((response) => response.files));
   }
@@ -139,7 +140,7 @@ export class BulkUploadService {
     return this.checkLockStatus(
       () =>
         this.http.get<UploadedFilesRequestToDownloadResponse>(
-          `/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}/${key}`,
+          `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}/${key}`,
         ),
       undefined,
     ).pipe(map((response) => response.file.signedUrl));
@@ -149,7 +150,7 @@ export class BulkUploadService {
     const params = new HttpParams().set('downloadType', type);
 
     return this.checkLockStatus(
-      () => this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}/${key}`, { params }),
+      () => this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/${this.endpoint}/${key}`, { params }),
       {
         observe: 'response',
         responseType: 'blob' as 'json',
@@ -159,14 +160,14 @@ export class BulkUploadService {
 
   public validateFiles(workplaceUid: string): Observable<ValidatedFilesResponse> {
     return this.checkLockStatus(
-      () => this.http.put<ValidatedFilesResponse>(`/api/establishment/${workplaceUid}/bulkupload/validate`, null),
+      () => this.http.put<ValidatedFilesResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/validate`, null),
       undefined,
     );
   }
 
   public getReport(workplaceUid: string, reportType: ReportTypeRequestItem): Observable<HttpResponse<Blob>> {
     return this.checkLockStatus(
-      () => this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/report/${reportType}`),
+      () => this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/report/${reportType}`),
       {
         observe: 'response',
         responseType: 'blob' as 'json',
@@ -176,27 +177,27 @@ export class BulkUploadService {
 
   public getBulkUploadStatus(establishmentUid: string): Observable<string> {
     return this.http
-      .get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`)
+      .get<BulkUploadStatus>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/bulkupload/lockstatus`)
       .pipe(map((status) => status.bulkUploadState));
   }
 
   public getBUReport(workplaceUid: string): Observable<HttpResponse<Blob>> {
-    return this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/errorReport/report`, {
+    return this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/errorReport/report`, {
       observe: 'response',
       responseType: 'blob' as 'json',
     });
   }
 
   public getLastBulkUpload(workplaceUid: string): Observable<[lastBulkUploadFile]> {
-    return this.http.get<[lastBulkUploadFile]>(`/api/establishment/${workplaceUid}/bulkupload/history`);
+    return this.http.get<[lastBulkUploadFile]>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/history`);
   }
 
   public getMissingRef(workplaceUid: string): Observable<MissingReferences> {
-    return this.http.get<MissingReferences>(`/api/establishment/${workplaceUid}/localIdentifiers/missing`);
+    return this.http.get<MissingReferences>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/localIdentifiers/missing`);
   }
 
   public isFirstBulkUpload(workplaceUid: string): Observable<isFirstBulkupload> {
-    return this.http.get<isFirstBulkupload>(`/api/establishment/${workplaceUid}/localIdentifiers`);
+    return this.http.get<isFirstBulkupload>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/localIdentifiers`);
   }
 
   public getDataCSV(workplaceUid: string, type: BulkUploadFileType): Observable<any> {
@@ -219,7 +220,7 @@ export class BulkUploadService {
         break;
     }
     return this.checkLockStatus(
-      () => this.http.get<Blob>(`/api/establishment/${workplaceUid}/bulkupload/download/${url}`),
+      () => this.http.get<Blob>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/download/${url}`),
       {
         observe: 'response',
         responseType: 'blob' as 'json',
@@ -228,7 +229,7 @@ export class BulkUploadService {
   }
 
   public complete(workplaceUid: string) {
-    return this.checkLockStatus(() => this.http.post(`/api/establishment/${workplaceUid}/bulkupload/complete`, null), {
+    return this.checkLockStatus(() => this.http.post(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/complete`, null), {
       observe: 'body',
       responseType: 'json',
     });
@@ -236,7 +237,7 @@ export class BulkUploadService {
 
   public errorReport(workplaceUid: string): Observable<ErrorReport> {
     return this.checkLockStatus(
-      () => this.http.get<ErrorReport>(`/api/establishment/${workplaceUid}/bulkupload/errorReport`),
+      () => this.http.get<ErrorReport>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/errorReport`),
       {
         observe: 'response',
         responseType: 'json',
@@ -251,11 +252,11 @@ export class BulkUploadService {
   }
 
   public getLockStatus(workplaceUid: string): Observable<BulkUploadStatus> {
-    return this.http.get<BulkUploadStatus>(`/api/establishment/${workplaceUid}/bulkupload/lockstatus`);
+    return this.http.get<BulkUploadStatus>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/lockstatus`);
   }
 
   public unlockBulkUpload(workplaceUid: string): Observable<any> {
-    return this.http.get<any>(`/api/establishment/${workplaceUid}/bulkupload/unlock`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/bulkupload/unlock`);
   }
 
   public formErrorsMap(): Array<ErrorDetails> {
@@ -334,7 +335,7 @@ export class BulkUploadService {
               .pipe(startWith(0))
               .pipe(
                 concatMap(() =>
-                  from(this.http.get<BulkUploadStatus>(`/api/establishment/${establishmentUid}/bulkupload/lockstatus`)),
+                  from(this.http.get<BulkUploadStatus>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/bulkupload/lockstatus`)),
                 ),
               ),
           ),
@@ -345,7 +346,7 @@ export class BulkUploadService {
           concatMap(() =>
             from(
               this.http.get<any>(
-                `/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`,
+                `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/bulkupload/response/${requestId}`,
                 httpOptions,
               ),
             ),

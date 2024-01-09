@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { GetJobsResponse, Job } from '@core/model/job.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ export class JobService {
   constructor(private http: HttpClient) {}
 
   public getJobs(): Observable<Job[]> {
-    return this.http.get<GetJobsResponse>('/api/jobs').pipe(map(this.sortJobs));
+    return this.http.get<GetJobsResponse>(`${environment.appRunnerEndpoint}/api/jobs`).pipe(map(this.sortJobs));
   }
 
   private sortJobs(response): Job[] {

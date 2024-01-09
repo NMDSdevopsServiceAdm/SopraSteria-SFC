@@ -5,6 +5,7 @@ import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 interface GetAllUsersResponse {
   users: Array<UserDetails>;
@@ -48,7 +49,7 @@ export class UserService {
   }
 
   public getLoggedInUser(): Observable<UserDetails> {
-    return this.http.get<UserDetails>(`/api/user/me`).pipe(tap((user) => (this.loggedInUser = user)));
+    return this.http.get<UserDetails>(`${environment.appRunnerEndpoint}/api/user/me`).pipe(tap((user) => (this.loggedInUser = user)));
   }
 
   public get returnUrl() {
@@ -115,46 +116,46 @@ export class UserService {
    * GET /api/user/establishment/:establishmentUID
    */
   public getUsernameFromEstbId(workplaceUid: string) {
-    return this.http.get<any>(`/api/user/establishment/${workplaceUid}`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}`);
   }
 
   /*
    * GET /api/user/establishment/:establishmentUID/:userUID
    */
   public getUserDetails(workplaceUid: string, userUid: string): Observable<UserDetails> {
-    return this.http.get<any>(`/api/user/establishment/${workplaceUid}/${userUid}`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}/${userUid}`);
   }
 
   /*
    * GET /api/user/establishment/:establishmentUID/:userUID
    */
   public getMyDetails(workplaceUid: string, userUid: string): Observable<UserDetails> {
-    return this.http.get<any>(`/api/user/establishment/${workplaceUid}/${userUid}`);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}/${userUid}`);
   }
 
   /*
    * PUT /api/user/establishment/:establishmentUID/:userUID
    */
   public updateUserDetails(workplaceUid: string, userUid: string, userDetails: UserDetails): Observable<UserDetails> {
-    return this.http.put<UserDetails>(`/api/user/establishment/${workplaceUid}/${userUid}`, userDetails);
+    return this.http.put<UserDetails>(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}/${userUid}`, userDetails);
   }
 
   public updateAdminUserDetails(userUid: string, userDetails: UserDetails): Observable<UserDetails> {
-    return this.http.put<UserDetails>(`/api/user/admin/me/${userUid}`, userDetails);
+    return this.http.put<UserDetails>(`${environment.appRunnerEndpoint}/api/user/admin/me/${userUid}`, userDetails);
   }
 
   /*
    * DELETE /api/user/establishment/:establishmentUID/:userUID
    */
   public deleteUser(workplaceUid: string, userUid: string) {
-    return this.http.delete(`/api/user/establishment/${workplaceUid}/${userUid}`);
+    return this.http.delete(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}/${userUid}`);
   }
 
   /*
    * POST /api/user/:userUID/resend-activation
    */
   public resendActivationLink(useruid: string) {
-    return this.http.post(`/api/user/${useruid}/resend-activation`, null, {
+    return this.http.post(`${environment.appRunnerEndpoint}/api/user/${useruid}/resend-activation`, null, {
       responseType: 'text' as 'json',
     });
   }
@@ -164,7 +165,7 @@ export class UserService {
    */
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
-    return this.http.get<GetWorkplacesResponse>(`/api/user/my/establishments`, { params });
+    return this.http.get<GetWorkplacesResponse>(`${environment.appRunnerEndpoint}/api/user/my/establishments`, { params });
   }
 
   /*
@@ -172,7 +173,7 @@ export class UserService {
    */
   public getAllUsersForEstablishment(workplaceUid: string): Observable<Array<UserDetails>> {
     return this.http
-      .get<GetAllUsersResponse>(`/api/user/establishment/${workplaceUid}`)
+      .get<GetAllUsersResponse>(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}`)
       .pipe(map((response) => response.users));
   }
 }

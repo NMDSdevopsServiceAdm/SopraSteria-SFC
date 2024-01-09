@@ -1,3 +1,5 @@
+import { environment } from 'src/environments/environment';
+
 export const DATE_PARSE_FORMAT = 'YYYY-MM-DD';
 export const DATE_DISPLAY_DEFAULT = 'DD/MM/YYYY';
 export const DATE_DISPLAY_FULL = 'D MMMM YYYY';
@@ -10,7 +12,7 @@ export const INT_PATTERN = /^-?[0-9]*$/;
 export const FLOAT_PATTERN = /^([0-9]*[.])?[0-9]+$/;
 export const SALARY_PATTERN = /^-?\d*$|^-?\d*\.\d{0,2}$/;
 export const API_PATTERN = /^\/api\//;
-export const ADD_USER_API = '/api/user/add';
+export const ADD_USER_API = `${environment.appRunnerEndpoint}/api/user/add`;
 export const ALPHA_NUMERIC_WITH_HYPHENS_UNDERSCORES = /^[A-Za-z0-9_-]*$/;
 export const FILE_UPLOAD_TYPES = ['CSV', 'ZIP'];
 export const EMAIL_PATTERN = /^[A-Za-z0-9._'%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,63}$/;
