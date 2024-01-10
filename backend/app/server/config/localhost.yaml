@@ -22,7 +22,7 @@ db:
   username: sfcadmin
 
 log:
-  sequelize: false
+  sequelize: true
 
 bulkupload:
   region: eu-west-2
@@ -37,18 +37,5 @@ satisfactionSurvey:
   timeSpan: 1
   unit: m
 
-# certificate:
-#   region: eu-west-2
-#   bucketname: sfc-public-staging
-
-disbursement:
-  region: eu-west-2
-  bucketname: wdf-disbursement-preprod
-
-locks:
-  region: eu-west-1
-  bucketname: sfc-locks-preprod
-
-public:
-  download:
-    baseurl:  https://sfc-public-dev.s3.eu-west-2.amazonaws.com/public/download
+redis:
+  url: redis://localhost:6379

@@ -1,0 +1,14 @@
+version: '3'
+services:
+  sfc-redis:
+    image: redis
+    ports:
+      - '6379:6379'
+  sfc-backend:
+    build: .
+    ports:
+      - '3000:3000'
+    depends_on:
+      - sfc-redis
+    links:
+      - sfc-redis:sfc-redis

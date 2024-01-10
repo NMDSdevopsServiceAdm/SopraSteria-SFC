@@ -81,17 +81,6 @@ module.exports = function (config) {
       //   ],
       //   debug: true,
       // },
-      ChromeNoSandbox: {
-        base: 'Chrome',
-        flags: [
-          '--no-sandbox',
-          '--user-data-dir=/tmp/chrome-test-profile',
-          '--disable-web-security',
-          '--remote-debugging-address=0.0.0.0',
-          '--remote-debugging-port=9222',
-        ],
-        debug: true,
-      },
     },
     browserDisconnectTimeout: 10000,
     browserDisconnectTolerance: 3,
