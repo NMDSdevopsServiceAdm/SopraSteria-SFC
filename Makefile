@@ -8,5 +8,8 @@ install:
 	npm install --prefix frontend
 
 run:
-	(cd backend && docker-compose up) & \
+	(cd backend && docker-compose up --build) & \
 	(cd frontend && npm run build:watch)
+
+test:
+	npm run test --prefix frontend
