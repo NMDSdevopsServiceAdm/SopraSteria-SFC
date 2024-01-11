@@ -627,7 +627,7 @@ class Worker extends EntityValidator {
           const wdfAudit = await this.setWdfProperties(modifedCreationDocument, updatedTimestamp, savedBy);
 
           // now save the document
-          const creation = await models.worker.create(modifedCreationDocument);
+          const creation = await models.worker.create(modifedCreationDocument, { transaction: thisTransaction });
 
           const sanitisedResults = creation.get({ plain: true });
 
