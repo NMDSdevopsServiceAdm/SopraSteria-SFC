@@ -1,7 +1,7 @@
 aws:
     region: eu-west-1
     secrets:
-        use: true
+        use: false
         wallet: benchmarks/api
     sns:
       enabled: true
