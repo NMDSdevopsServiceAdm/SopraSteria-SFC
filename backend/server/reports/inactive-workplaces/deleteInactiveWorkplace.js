@@ -27,7 +27,7 @@ const addWorksheet = (workbook) => {
     { header: 'Data owner', key: 'dataOwner' },
     { header: 'Workplace Address', key: 'address' },
     { header: 'Parent Workplace NmdsId', key: 'parentNmdsId' },
-    { header: 'CQC', key: 'cQC' },
+    { header: 'CQC Regulated', key: 'cQC' },
   ];
 
   const headerRow = worksheet.getRow(1);
