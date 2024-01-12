@@ -15,7 +15,6 @@ phases:
       - aws ecr batch-delete-image --repository-name sfc-backend-build-images --image-ids imageTag=benchmark
       - aws ecr put-image --repository-name sfc-backend-build-images --image-tag benchmark --image-manifest "$manifest"
       - echo Copy s3 bucket from bnd to benchmark...
-      # This will be uncommented when we generate frontend assets for benchmark
-      # - aws s3 cp --recursive s3://sfc-frontend-build-artifacts/$COMMIT_HASH/benchmark s3://sfc-frontend-benchmark/
+      - aws s3 cp --recursive s3://sfc-frontend-build-artifacts/$COMMIT_HASH/prod s3://sfc-frontend-benchmark/
       - export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" $(aws sts assume-role --role-arn arn:aws:iam::702856547275:role/CodebuildApprunnerCrossAccountAccessRole --role-session-name MySessionName --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" --output text))
       - aws apprunner start-deployment --service-arn arn:aws:apprunner:eu-west-1:702856547275:service/sfc-app-runner-benchmark/147f2ec134464e94baca5c7864f92e2e
