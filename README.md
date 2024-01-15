@@ -32,7 +32,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 Database connection parameters can be overridden using environment variables:
 * `DB_HOST` - hostname or IP address
 * `DB_PORT` - port number
-* `DB_NAME` - name of database
+* `DB_NAME` - database name
 * `DB_USER` - database username
 * `DB_PASS` - database password
 
