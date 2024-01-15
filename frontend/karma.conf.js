@@ -64,9 +64,9 @@ module.exports = function (config) {
     autoWatch: !isCI,
     singleRun: isCI,
     //browsers: ['ChromeHeadlessNoSandbox', 'ChromeNoSandbox'],
-    browsers: ['ChromeHeadlessNoSandbox'],
+    browsers: ['HeadlessChrome'],
     customLaunchers: {
-      ChromeHeadlessNoSandbox: {
+      HeadlessChrome: {
         base: 'ChromeHeadless',
         flags: ['--no-sandbox'],
       },
