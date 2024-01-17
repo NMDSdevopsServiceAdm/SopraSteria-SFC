@@ -58,6 +58,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { AboutParentsComponent } from '@features/pages/about-parents/about-parents.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -67,6 +68,13 @@ const routes: Routes = [
     resolve: { childWorkplaces: ChildWorkplacesResolver },
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
+  },
+  {
+    path: 'about-parents',
+    component: AboutParentsComponent,
+    data: {
+      title: 'What you can do as a parent workplace'
+    },
   },
   {
     path: ':establishmentuid',

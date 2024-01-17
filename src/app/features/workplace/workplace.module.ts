@@ -63,6 +63,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { AboutParentsComponent } from './about-parents/about-parents.component';
 
 @NgModule({
   imports: [
@@ -121,6 +122,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
     PensionsComponent,
+    AboutParentsComponent
   ],
   providers: [
     DialogService,
