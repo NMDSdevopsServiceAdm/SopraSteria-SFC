@@ -70,7 +70,7 @@ module.exports = function (config) {
         flags: ['--no-sandbox'],
       },
     },
-    browserDisconnectTimeout: 10000,
+    browserDisconnectTimeout: 60000,
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 100000,
     captureTimeout: 140000,

@@ -5,18 +5,94 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "sendingEmails:HelloWorldFunction (nodejs12.x)",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "${workspaceFolder}/lambdas/sendingEmails/template.yaml",
+        "logicalId": "HelloWorldFunction"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {},
+        "runtime": "nodejs12.x"
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "API sendingEmails:HelloWorldFunction (nodejs12.x)",
+      "invokeTarget": {
+        "target": "api",
+        "templatePath": "${workspaceFolder}/lambdas/sendingEmails/template.yaml",
+        "logicalId": "HelloWorldFunction"
+      },
+      "api": {
+        "path": "/hello",
+        "httpMethod": "get",
+        "payload": {
+          "json": {}
+        }
+      },
+      "lambda": {
+        "runtime": "nodejs12.x"
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "lambda-nodejs12.x:HelloWorldFunction (nodejs12.x)",
+      "invokeTarget": {
+        "target": "template",
+        "templatePath": "${workspaceFolder}/lambdas/sendingEmails/lambda-nodejs12.x/template.yaml",
+        "logicalId": "HelloWorldFunction"
+      },
+      "lambda": {
+        "payload": {},
+        "environmentVariables": {},
+        "runtime": "nodejs12.x"
+      }
+    },
+    {
+      "type": "aws-sam",
+      "request": "direct-invoke",
+      "name": "API lambda-nodejs12.x:HelloWorldFunction (nodejs12.x)",
+      "invokeTarget": {
+        "target": "api",
+        "templatePath": "${workspaceFolder}/lambdas/sendingEmails/lambda-nodejs12.x/template.yaml",
+        "logicalId": "HelloWorldFunction"
+      },
+      "api": {
+        "path": "/hello",
+        "httpMethod": "get",
+        "payload": {
+          "json": {}
+        }
+      },
+      "lambda": {
+        "runtime": "nodejs12.x"
+      }
+    },
+    {
+      "name": "Debug Angular",
+      "request": "launch",
+      "type": "chrome",
+      "url": "http://localhost:8080",
+      "webRoot": "${workspaceFolder}"
+    },
+    {
       "name": "ng serve",
       "type": "chrome",
       "request": "launch",
       "preLaunchTask": "npm: start",
       "url": "http://localhost:8080"
     },
-
-    // configuration for backend debugging
     {
       "type": "node",
       "request": "attach",
       "name": "Debug Node",
+      "port": 9229,
       "processId": "${command:PickProcess}"
     },
     {
@@ -24,7 +100,6 @@
       "request": "launch",
       "name": "Launch Program",
       "program": "${workspaceFolder}/server.js",
-      "skipFiles": ["node_modules/**/*.js"],
       "stopOnEntry": true
     },
     {
@@ -46,37 +121,19 @@
       "url": "http://localhost:8080",
       "webRoot": "${workspaceFolder}"
     },
-    // configuration for front-end testing
     {
-      "type": "pwa-chrome",
+      "type": "chrome",
       "request": "attach",
-      "name": "Attach to Karma",
-      "address": "localhost",
-      "restart": true,
+      "name": "Attach to Chrome",
       "port": 9222,
-      "timeout": 600000,
-      "sourceMaps": true,
-      "webRoot": "${workspaceFolder}",
-      "pathMapping": {
-        "/_karma_webpack_": "${workspaceFolder}"
-      }
-    },
-    {
-      "type": "node",
-      "request": "launch",
-      "name": "Run Karma test file",
-      "skipFiles": ["<node_internals>/**"],
-      "console": "integratedTerminal",
-      "program": "${workspaceFolder}/node_modules/.bin/ng",
-      "args": ["test", "--include", "${relativeFile}"],
-      "outFiles": ["${workspaceFolder}/**/*.js"]
+      "webRoot": "${workspaceFolder}"
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Mocha All",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["--fullTrace true --timeout", "999999", "--colors", "${workspaceFolder}/server/test/**/*.spec.js"],
+      "args": ["--timeout", "999999", "--colors", "${workspaceFolder}/test"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**/*.js"]
@@ -86,7 +143,7 @@
       "request": "launch",
       "name": "Mocha Current File",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["--fullTrace true --timeout", "999999", "--colors", "${file}"],
+      "args": ["--timeout", "999999", "--colors", "${file}"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**/*.js"]
