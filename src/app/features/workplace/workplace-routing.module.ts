@@ -12,6 +12,8 @@ import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
+import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
@@ -74,6 +76,8 @@ const routes: Routes = [
     component: AboutParentsComponent,
     data: {
       title: 'What you can do as a parent workplace'
+    }, resolve: {
+      pages: PageResolver,
     },
   },
   {
