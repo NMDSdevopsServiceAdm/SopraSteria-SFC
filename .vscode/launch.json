@@ -46,20 +46,36 @@
       "url": "http://localhost:8080",
       "webRoot": "${workspaceFolder}"
     },
-    // configuration for front-end testing
     {
-      "type": "chrome",
+      "type": "pwa-chrome",
       "request": "attach",
-      "name": "Attach to Chrome",
-            "port": 9222,
-      "webRoot": "${workspaceFolder}"
+      "name": "Attach to Karma",
+      "address": "localhost",
+      "restart": true,
+      "port": 9222,
+      "timeout": 600000,
+      "sourceMaps": true,
+      "webRoot": "${workspaceFolder}",
+      "pathMapping": {
+        "/_karma_webpack_": "${workspaceFolder}"
+      }
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Run Karma test file",
+      "skipFiles": ["<node_internals>/**"],
+      "console": "integratedTerminal",
+      "program": "${workspaceFolder}/node_modules/.bin/ng",
+      "args": ["test", "--include", "${relativeFile}"],
+      "outFiles": ["${workspaceFolder}/**/*.js"]
     },
     {
       "type": "node",
       "request": "launch",
       "name": "Mocha All",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["--timeout", "999999", "--colors", "${workspaceFolder}/test"],
+      "args": ["--fullTrace true --timeout", "999999", "--colors", "${workspaceFolder}/server/test/**/*.spec.js"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**/*.js"]
@@ -69,7 +85,7 @@
       "request": "launch",
       "name": "Mocha Current File",
       "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
-      "args": ["--timeout", "999999", "--colors", "${file}"],
+      "args": ["--fullTrace true --timeout", "999999", "--colors", "${file}"],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen",
       "skipFiles": ["<node_internals>/**/*.js"]
