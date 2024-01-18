@@ -4,13 +4,12 @@
     <h4 class="govuk-heading-l govuk-!-margin-bottom-7">What you can do as a parent workplace</h4>
     <div class="asc-cms-content" [innerHTML]="pages.content"></div>
     <a
-      *ngIf="returnToHomeButton"
       role="button"
       draggable="false"
       class="govuk-button govuk-!-margin-top-3"
-      [routerLink]="['/']"
+      (click)="returnToPreviousPage()"
     >
-      Return to home
+      Return to previous page
     </a>
   </div>
 </div>
