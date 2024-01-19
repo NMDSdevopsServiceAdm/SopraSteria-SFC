@@ -39,7 +39,7 @@
   "dependencies": {
     "@angular/animations": "^15.2.10",
     "@angular/cdk": "^14.2.7",
-    "@angular/cli": "^15.2.10",
+    "@angular/cli": "^17.1.0",
     "@angular/common": "^15.2.10",
     "@angular/compiler": "^15.2.10",
     "@angular/compiler-cli": "^15.2.10",
