@@ -4,11 +4,12 @@
 all: install run
 
 install:
-	export DB_HOST=localhost
+	export DB_HOST=127.0.0.1
 	npm install --prefix frontend
+	npm install --prefix backend
 
 run:
-	(cd backend && docker-compose up --build) & \
+	(cd backend && npm run new-start) & \
 	(cd frontend && npm run build:watch)
 
 test:
