@@ -52,7 +52,7 @@
     "@babel/runtime": "^7.21.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@sentry/browser": "^6.13.1",
-    "@sentry/integrations": "^6.13.1",
+    "@sentry/integrations": "^7.94.1",
     "@sentry/node": "^6.13.1",
     "@sentry/tracing": "^6.13.1",
     "@types/offscreencanvas": "^2019.7.0",
