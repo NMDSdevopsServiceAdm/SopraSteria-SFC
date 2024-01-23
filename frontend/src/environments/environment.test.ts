@@ -3,6 +3,6 @@ export const environment = {
   environmentName: 'test',
   tracesSampleRate: 0.3,
   configCatKey: 'Ag_ZCDm6FkSAA5-xhxheOA/KeZCUBHikUSw7OXsthDzLQ',
-  cmsUri: 'https://sfccmstest.cloudapps.digital',
+  cmsUri: 'https://asc-wds-test.directus.app',
   appRunnerEndpoint: '',
 };
