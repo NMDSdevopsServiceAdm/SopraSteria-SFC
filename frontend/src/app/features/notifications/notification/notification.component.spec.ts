@@ -54,6 +54,7 @@ xdescribe('Notification', () => {
                   notification: notificationStub,
                 });
               },
+              notifications: [notificationStub],
             },
           },
           {
