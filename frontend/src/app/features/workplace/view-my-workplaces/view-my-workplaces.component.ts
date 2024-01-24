@@ -31,6 +31,8 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public currentPageIndex = 0;
   private searchTerm = '';
   public alertMessage: string;
+  public locationId: string;
+  public isMissingCQCWorkplaces: boolean;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -58,6 +60,8 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.alertMessage = history.state?.alertMessage;
 
     this.sendAlert();
+
+    this.showMissingCQCWorkplacesMessage();
   }
 
   private setSearchIfPrevious(): void {
@@ -128,6 +132,12 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
         type: 'success',
         message: this.alertMessage,
       });
+    }
+  }
+
+  public showMissingCQCWorkplacesMessage(): void {
+    if (this.totalWorkplaceCount > 0) {
+      this.isMissingCQCWorkplaces = true;
     }
   }
 
