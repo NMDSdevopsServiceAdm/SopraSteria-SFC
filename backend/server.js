@@ -69,6 +69,7 @@ var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
 var registrationSurvey = require('./server/routes/registrationSurvey');
 var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 var longTermAbsence = require('./server/routes/longTermAbsence');
+var cqcProvider = require('./server/routes/cqcProvider');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -230,7 +231,6 @@ app.use(unless('/api', 'test', xssClean()));
 app.set('views', path.join(__dirname, '/server/views'));
 app.set('view engine', 'pug');
 
-
 app.use(
   morgan('short', {
     stream: {
@@ -292,6 +292,7 @@ app.use('/api/wdf', [cacheMiddleware.nocache, WDFRoute]);
 app.use('/api/notification', [cacheMiddleware.nocache, notifications]);
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
+app.use('/api/cqcProvider', [cacheMiddleware.nocache], cqcProvider);
 
 const establishmentsV2 = require('./server/routes/v2/establishments');
 app.use('/api/v2/establishment', [cacheMiddleware.nocache, establishmentsV2]);
@@ -303,7 +304,7 @@ app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
 
 app.use('*', authLimiter);
 // app.get('*', function (req, res) {
-  // return res.sendFile(path.join(__dirname, 'dist/index.html'));
+// return res.sendFile(path.join(__dirname, 'dist/index.html'));
 // });
 
 app.all('*', function (req, res) {
