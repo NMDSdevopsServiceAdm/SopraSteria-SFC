@@ -91,7 +91,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
               this.notificationsService.notifications[i] = resp.notification;
             }
           });
-          this.notificationsService.notifications$.next(this.notificationsService.notifications);
+          this.notificationsService.notifications = this.notificationsService.notifications;
         }
       }),
     );
