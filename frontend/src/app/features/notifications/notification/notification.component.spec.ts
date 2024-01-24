@@ -16,7 +16,7 @@ import { NotificationComponent } from './notification.component';
 
 import createSpy = jasmine.createSpy;
 
-xdescribe('Notification', () => {
+describe('Notification', () => {
   async function setup(notificationType, approvalStatus = 'APPROVED') {
     const notificationStub = {
       created: '2020-01-01',
