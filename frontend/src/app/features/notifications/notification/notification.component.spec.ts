@@ -14,9 +14,6 @@ import { of } from 'rxjs';
 
 import { NotificationComponent } from './notification.component';
 
-import createSpy = jasmine.createSpy;
-import { MockNotificationsService } from '@core/test-utils/MockNotificationsService';
-
 describe('Notification', () => {
   async function setup(notificationType, approvalStatus = 'APPROVED') {
     const notificationStub = {
