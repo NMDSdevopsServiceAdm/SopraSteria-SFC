@@ -30,6 +30,9 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public currentPageIndex = 0;
   private searchTerm = '';
 
+  public locationId: string;
+  public isMissingCQCWorkplaces: boolean;
+
   constructor(
     private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
@@ -51,6 +54,10 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
     this.setupServerErrorsMap();
     this.setSearchIfPrevious();
+
+    this.locationId = this.primaryWorkplace.locationId;
+
+    this.showMissingCQCWorkplacesMessage();
   }
 
   private setSearchIfPrevious(): void {
@@ -113,6 +120,12 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     });
     this.searchTerm = searchTerm;
     this.handlePageUpdate(0);
+  }
+
+  public showMissingCQCWorkplacesMessage(): void {
+    if (this.totalWorkplaceCount > 0) {
+      this.isMissingCQCWorkplaces = true;
+    }
   }
 
   ngOnDestroy(): void {

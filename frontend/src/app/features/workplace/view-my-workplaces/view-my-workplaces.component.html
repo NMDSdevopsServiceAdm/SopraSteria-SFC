@@ -13,9 +13,28 @@
       role="button"
       draggable="false"
     >
-      Add a new workplace
+      Add a workplace
     </a>
   </div>
+</div>
+
+<div *ngIf="isMissingCQCWorkplaces" data-testid="missingCqcWorkplaces">
+  <app-inset-text [color]="'todo'">
+    <p class="govuk-body govuk-!-font-weight-bold">Have you added all of your workplaces?</p>
+
+    <p>
+      There are more workplaces linked to {{ primaryWorkplace.name }} in the Care Quality Commission (CQC) database than
+      you've added in the Adult Social Care Workforce Data Set (ASC-WDS).
+    </p>
+
+    <p>
+      <a href="https://www.cqc.org.uk/provider/{{ locationId }}" class="govuk-link--no-visited-state" target="_blank"
+        >Please check your CQC workplaces</a
+      >
+      and then add any you want to include in ASC-WDS.
+    </p>
+    <p>You may be able to claim from the Workforce Development Fund for each workplace that you add into ASC-WDS.</p>
+  </app-inset-text>
 </div>
 
 <div *ngIf="totalWorkplaceCount; else noWorkplaces">

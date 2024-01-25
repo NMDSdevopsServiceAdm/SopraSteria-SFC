@@ -29,9 +29,8 @@ import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
 describe('ViewMyWorkplacesComponent', () => {
   async function setup(hasChildWorkplaces = true, qsParamGetMock = sinon.fake()) {
-    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText } = await render(
-      ViewMyWorkplacesComponent,
-      {
+    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText, queryByTestId } =
+      await render(ViewMyWorkplacesComponent, {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
         declarations: [WorkplaceInfoPanelComponent],
         providers: [
@@ -87,8 +86,7 @@ describe('ViewMyWorkplacesComponent', () => {
             },
           },
         ],
-      },
-    );
+      });
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -109,6 +107,7 @@ describe('ViewMyWorkplacesComponent', () => {
       queryByText,
       getByLabelText,
       queryByLabelText,
+      queryByTestId,
       getChildWorkplacesSpy,
       establishmentService,
     };
@@ -260,6 +259,28 @@ describe('ViewMyWorkplacesComponent', () => {
       fixture.autoDetectChanges();
 
       expect((getByLabelText('Search child workplace records') as HTMLInputElement).value).toBe('mysupersearch');
+    });
+  });
+
+  describe('missing cqc workplaces message', () => {
+    it('should not show if there is no child workplaces', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('missingCqcWorkplaces')).toBeFalsy();
+    });
+
+    it('should show if there are child workplaces', async () => {
+      const { getByTestId } = await setup(true);
+
+      expect(getByTestId('missingCqcWorkplaces')).toBeTruthy();
+    });
+
+    it('should show the primary workplace name, if there are child workplaces', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      const missingCqcWorkplacesMessage = getByTestId('missingCqcWorkplaces');
+
+      expect(missingCqcWorkplacesMessage.textContent).toContain(component.primaryWorkplace.name);
     });
   });
 });
