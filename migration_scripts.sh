@@ -46,11 +46,7 @@ else
       "build:test": "npm run build:clean && npm run build -- --configuration=test",
       "test": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng --source-map=false test",
       "cover:test": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng test --source-map=false --no-watch --code-coverage",
-<<<<<<< HEAD
-      "test-headless": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng test --source-map=false --no-watch --code-coverage --browsers=ChromeHeadless",
-=======
       "test-headless": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng test --source-map=false --no-watch --code-coverage --browsers=ChromeHeadlessNoSandbox",
->>>>>>> main
       "lint": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng lint"
     },
     "private": true,
@@ -136,11 +132,7 @@ else
       "jasmine-core": "^3.10.0",
       "jasmine-spec-reporter": "^7.0.0",
       "karma": "^6.3.11",
-<<<<<<< HEAD
-      "karma-chrome-launcher": "^3.1.0",
-=======
       "karma-chrome-launcher": "^3.2.0",
->>>>>>> main
       "karma-coverage": "~2.0.3",
       "karma-jasmine": "^4.0.1",
       "karma-junit-reporter": "^2.0.1",
@@ -371,11 +363,7 @@ else
     "jasmine-core": "^3.10.0",
     "jasmine-spec-reporter": "^7.0.0",
     "karma": "^6.3.11",
-<<<<<<< HEAD
-    "karma-chrome-launcher": "^3.1.0",
-=======
     "karma-chrome-launcher": "^3.2.0",
->>>>>>> main
     "karma-coverage": "~2.0.3",
     "karma-jasmine": "^4.0.1",
     "karma-junit-reporter": "^2.0.1",
