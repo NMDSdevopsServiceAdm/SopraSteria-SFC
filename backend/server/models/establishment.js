@@ -2119,7 +2119,17 @@ module.exports = function (sequelize, DataTypes) {
     const offset = pageIndex * limit;
 
     const data = await this.findAndCountAll({
-      attributes: ['uid', 'updated', 'NameValue', 'dataOwner', 'dataPermissions', 'dataOwnershipRequested', 'ustatus'],
+      attributes: [
+        'uid',
+        'updated',
+        'NameValue',
+        'dataOwner',
+        'dataPermissions',
+        'dataOwnershipRequested',
+        'ustatus',
+        'postcode',
+        'locationId',
+      ],
       include: [
         {
           model: sequelize.models.services,

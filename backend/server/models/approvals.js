@@ -162,7 +162,7 @@ module.exports = (sequelize, DataTypes) => {
         'Data',
         'Reviewer',
         'InReview',
-        'createdAt',
+        'updatedAt',
       ],
       include: [
         {
