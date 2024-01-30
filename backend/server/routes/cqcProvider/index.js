@@ -4,15 +4,13 @@ const moment = require('moment');
 const CQCProviderDataAPI = require('../../utils/CQCProviderDataAPI');
 const { celebrate, Joi, errors } = require('celebrate');
 const models = require('../../models');
-const { getChildWorkplaces, formatChildWorkplaces } = require('../../routes/establishments/childWorkplaces');
 
 const cqcProvider = async (req, res) => {
   const locationID = req.params.locationID;
   const establishmentUid = req.query.establishmentUid;
   const establishmentId = req.query.establishmentId;
-  const itemsPerPage = 10;
+  const itemsPerPage = 20;
   const pageIndex = 0;
-  const searchTerm = 'sab';
 
   const result = {};
 
@@ -20,29 +18,32 @@ const cqcProvider = async (req, res) => {
     let CQCProviderData = await CQCProviderDataAPI.getCQCProviderData(locationID);
 
     if (cqcProvider) {
-      const childWorkplaces = await models.establishment.getChildWorkplaces(
-        establishmentUid,
-        itemsPerPage,
-        pageIndex,
-        // searchTerm,
-      );
+      const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
 
-      const weeksSinceParentApproval = await getWeeksSinceParentApproval(establishmentId);
+      const parentApproval = await models.Approvals.findbyEstablishmentId(establishmentId, 'BecomeAParent', 'Approved');
+
+      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
 
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
 
-      const missingMissCqcLocations = await findMissingCqcLocationIds(
+      const missingCqcLocations = await findMissingCqcLocationIds(
         CQCProviderData.locationIds,
         childWorkplacesLocationIds,
       );
 
+      result.showMissingCqcMessage = await checkMissingWorkplacesAndParentApprovalRule(
+        weeksSinceParentApproval,
+        missingCqcLocations.count,
+      );
+
       result.weeksSinceParentApproval = weeksSinceParentApproval;
-      result.missingMissCqcLocations = missingMissCqcLocations;
+      result.missingCqcLocations = missingCqcLocations;
     }
   } catch (error) {
     console.error('CQC Provider API Error: ', error);
+    result.showMissingCqcMessage = false;
     result.weeksSinceParentApproval = 0;
-    result.missingMissCqcLocations = { count: 0, missingMissCqcLocationIds: [] };
+    result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
   }
   return res.status(200).send(result);
 };
@@ -57,15 +58,10 @@ router.route('/:locationID').get(
   }),
 );
 
-const getWeeksSinceParentApproval = async (establishmentId) => {
-  try {
-    const dateNow = moment();
-    const parentApproval = await models.Approvals.findbyEstablishmentId(establishmentId, 'BecomeAParent', 'Approved');
-    let dateOfParentApproval = moment(parentApproval.updatedAt);
-    return dateNow.diff(dateOfParentApproval, 'weeks');
-  } catch {
-    console.error();
-  }
+const getWeeksSinceParentApproval = async (parentApproval) => {
+  const dateNow = moment();
+  let dateOfParentApproval = moment(parentApproval.updatedAt);
+  return dateNow.diff(dateOfParentApproval, 'weeks');
 };
 
 const getChildWorkplacesLocationIds = async (childWorkplaces) => {
@@ -77,20 +73,27 @@ const getChildWorkplacesLocationIds = async (childWorkplaces) => {
 };
 
 const findMissingCqcLocationIds = async (cqcLocationIds, childWorkplacesLocationIds) => {
-  let missingMissCqcLocations = {};
-  missingMissCqcLocations.count = 0;
-  missingMissCqcLocations.missingMissCqcLocationIds = [];
+  let missingCqcLocations = {};
+  missingCqcLocations.count = 0;
+  missingCqcLocations.missingCqcLocationIds = [];
 
   cqcLocationIds.map((cqcLocationId) => {
     if (childWorkplacesLocationIds.includes(cqcLocationId)) {
-      missingMissCqcLocations.count;
+      missingCqcLocations.count;
     } else {
-      missingMissCqcLocations.count = missingMissCqcLocations.count + 1;
-      missingMissCqcLocations.missingMissCqcLocationIds.push(cqcLocationId);
+      missingCqcLocations.count = missingCqcLocations.count + 1;
+      missingCqcLocations.missingCqcLocationIds.push(cqcLocationId);
     }
   });
 
-  return missingMissCqcLocations;
+  return missingCqcLocations;
+};
+
+const checkMissingWorkplacesAndParentApprovalRule = async (weeksSinceParentApproval, missingCqcLocationsCount) => {
+  if (weeksSinceParentApproval >= 8 && missingCqcLocationsCount > 5) {
+    return true;
+  }
+  return false;
 };
 
 router.use('/:locationID', errors());
@@ -100,3 +103,4 @@ module.exports.cqcProvider = cqcProvider;
 module.exports.getWeeksSinceParentApproval = getWeeksSinceParentApproval;
 module.exports.getChildWorkplacesLocationIds = getChildWorkplacesLocationIds;
 module.exports.findMissingCqcLocationIds = findMissingCqcLocationIds;
+module.exports.checkMissingWorkplacesAndParentApprovalRule = checkMissingWorkplacesAndParentApprovalRule;
