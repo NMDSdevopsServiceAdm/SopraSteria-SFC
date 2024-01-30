@@ -20,8 +20,6 @@ db:
     min: 15
     max: 15
   ssl: false
-  username: postgres
-  password: password
 
 redis:
   url: redis://localhost:6379
