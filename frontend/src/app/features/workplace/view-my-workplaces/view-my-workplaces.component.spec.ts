@@ -264,19 +264,75 @@ describe('ViewMyWorkplacesComponent', () => {
 
   describe('missing cqc workplaces message', () => {
     it('should not show if there is no child workplaces', async () => {
-      const { queryByTestId } = await setup(false);
+      const { component, establishmentService, queryByTestId } = await setup(false);
+
+      const getMissingCqcLocationsSpy = spyOn(establishmentService, 'getMissingCqcLocations').and.callThrough();
+
+      component.ngOnInit();
+
+      expect(getMissingCqcLocationsSpy).not.toHaveBeenCalled();
+      expect(queryByTestId('missingCqcWorkplaces')).toBeFalsy();
+    });
+
+    it('should not show if there is no location id', async () => {
+      const { component, establishmentService, fixture, queryByTestId } = await setup();
+
+      component.locationId = 'null';
+
+      const getMissingCqcLocationsSpy = spyOn(establishmentService, 'getMissingCqcLocations').and.callThrough();
+
+      fixture.detectChanges();
+
+      expect(getMissingCqcLocationsSpy).not.toHaveBeenCalled();
+      expect(queryByTestId('missingCqcWorkplaces')).toBeFalsy();
+    });
+
+    it('should not show if there are no missing cqc workplaces', async () => {
+      const { component, establishmentService, queryByTestId } = await setup(true);
+
+      spyOn(establishmentService, 'getMissingCqcLocations').and.callThrough();
+
+      component.ngOnInit();
 
       expect(queryByTestId('missingCqcWorkplaces')).toBeFalsy();
     });
 
-    it('should show if there are child workplaces', async () => {
-      const { getByTestId } = await setup(true);
+    it('should call getMissingCqcLocations', async () => {
+      const { component, establishmentService } = await setup(true);
+
+      const getMissingCqcLocationsSpy = spyOn(establishmentService, 'getMissingCqcLocations').and.callThrough();
+
+      component.ngOnInit();
+
+      expect(getMissingCqcLocationsSpy).toHaveBeenCalled();
+    });
+
+    it('should show if there are missing cqc workplaces', async () => {
+      const { component, getByTestId, establishmentService, fixture } = await setup(true);
+
+      spyOn(establishmentService, 'getMissingCqcLocations').and.returnValue(
+        of({
+          showMissingCqcMessage: true,
+        }),
+      );
+
+      component.ngOnInit();
+      fixture.detectChanges();
 
       expect(getByTestId('missingCqcWorkplaces')).toBeTruthy();
     });
 
     it('should show the primary workplace name, if there are child workplaces', async () => {
-      const { component, getByTestId } = await setup(true);
+      const { component, getByTestId, establishmentService, fixture } = await setup(true);
+
+      spyOn(establishmentService, 'getMissingCqcLocations').and.returnValue(
+        of({
+          showMissingCqcMessage: true,
+        }),
+      );
+
+      component.ngOnInit();
+      fixture.detectChanges();
 
       const missingCqcWorkplacesMessage = getByTestId('missingCqcWorkplaces');
 

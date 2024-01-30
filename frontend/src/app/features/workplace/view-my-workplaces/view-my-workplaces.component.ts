@@ -32,6 +32,8 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
   public locationId: string;
   public isMissingCQCWorkplaces: boolean;
+  public showMissingCqcMessage: boolean;
+  public missingCqcLocations: any;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -57,7 +59,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
     this.locationId = this.primaryWorkplace.locationId;
 
-    this.showMissingCQCWorkplacesMessage();
+    this.getMissingCqcLocations();
   }
 
   private setSearchIfPrevious(): void {
@@ -96,6 +98,18 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
       );
   }
 
+  public getMissingCqcLocations() {
+    if (this.totalWorkplaceCount > 0 && this.locationId) {
+      this.subscriptions.add(
+        this.establishmentService
+          .getMissingCqcLocations(this.locationId, { uid: this.primaryWorkplace.uid, id: this.primaryWorkplace.id })
+          .subscribe((data) => {
+            this.showMissingCQCWorkplacesMessage(data);
+          }),
+      );
+    }
+  }
+
   public handlePageUpdate(pageIndex: number): void {
     this.currentPageIndex = pageIndex;
 
@@ -122,8 +136,8 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.handlePageUpdate(0);
   }
 
-  public showMissingCQCWorkplacesMessage(): void {
-    if (this.totalWorkplaceCount > 0) {
+  public showMissingCQCWorkplacesMessage(missingCqcLocations): void {
+    if (missingCqcLocations.showMissingCqcMessage) {
       this.isMissingCQCWorkplaces = true;
     }
   }
