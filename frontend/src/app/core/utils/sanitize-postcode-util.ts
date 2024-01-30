@@ -1,6 +1,5 @@
 export class SanitizePostcodeUtil {
   public static sanitizePostcode = (postcode: string): string => {
-    
     let cleanedPostcode = postcode.replace(/[^0-9a-zA-Z]/g, '').toUpperCase();
 
     if (cleanedPostcode.length === 6) {
@@ -11,10 +10,10 @@ export class SanitizePostcodeUtil {
       cleanedPostcode = cleanedPostcode.substr(0, 2) + ' ' + cleanedPostcode.substr(2);
     }
 
-
-
-    return /^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$/.test(postcode)
-      ? postcode
+    return /([Gg][Ii][Rr] 0[Aa]{2})|((([A-Za-z][0-9]{1,2})|(([A-Za-z][A-Ha-hJ-Yj-y][0-9]{1,2})|(([A-Za-z][0-9][A-Za-z])|([A-Za-z][A-Ha-hJ-Yj-y][0-9][A-Za-z]?))))\s?[0-9][A-Za-z]{2})/.test(
+      cleanedPostcode,
+    )
+      ? cleanedPostcode
       : null;
   };
 }
