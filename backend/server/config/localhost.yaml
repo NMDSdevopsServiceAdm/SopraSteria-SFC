@@ -15,12 +15,14 @@ jwt:
   ttl:
     login: 60
 db:
+  host: localhost
   pool:
     min: 15
     max: 15
   ssl: false
-  username: sfcadmin
-  host: localhost
+
+redis:
+  url: redis://localhost:6379
 
 log:
   sequelize: false
@@ -37,6 +39,3 @@ sentry:
 satisfactionSurvey:
   timeSpan: 1
   unit: m
-
-redis:
-  url: redis://localhost:6379

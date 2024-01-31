@@ -8,5 +8,6 @@ router.use('/updateWorkplaceId', require('./updateWorkplaceId'));
 router.use('/updateRegistrationStatus', require('./updateRegistrationStatus'));
 router.use('/addRegistrationNote', require('./addRegistrationNote'));
 router.use('/getRegistrationNotes', require('./getRegistrationNotes'));
+router.use('/updatePostcode', require('./updatePostcode'));
 
 module.exports = router;
