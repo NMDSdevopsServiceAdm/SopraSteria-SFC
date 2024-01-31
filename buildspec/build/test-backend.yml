@@ -11,6 +11,6 @@ phases:
       nodejs: 18
   build:
     commands:
-      - cd lambda/bulkupload && npm ci
+      - cd lambdas/bulkupload && npm ci
       - cd ../backend && npm ci
       - npm run server:lambda:cover:unit:ci; EXITCODE=$?
