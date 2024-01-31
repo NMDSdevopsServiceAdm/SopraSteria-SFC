@@ -13,6 +13,7 @@ enum Path {
   TRAINING_AND_QUALIFICATIONS_RECORD = '/workplace/:workplaceUid/training-and-qualifications-record/:workerUid/training',
   MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
   ABOUT_DATA = '/workplace/:workplaceUid/data-area/about-the-data',
+  OTHER_WORKPLACES = '/workplace/other-workplaces',
 }
 
 export const workplaceTabJourney: JourneyRoute = {

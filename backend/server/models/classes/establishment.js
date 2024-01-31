@@ -98,6 +98,7 @@ class Establishment extends EntityValidator {
     this._pensionContribution = null;
     this._sickPay = null;
     this._recruitmentJourneyExistingUserBanner = false;
+    this._isParentApprovedBannerViewed = null;
     this._primaryAuthorityCssr = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
@@ -391,6 +392,10 @@ class Establishment extends EntityValidator {
     return this._recruitmentJourneyExistingUserBanner;
   }
 
+  get isParentApprovedBannerViewed() {
+    return this._isParentApprovedBannerViewed;
+  }
+
   get primaryAuthorityCssr() {
     return this._primaryAuthorityCssr;
   }
@@ -610,6 +615,10 @@ class Establishment extends EntityValidator {
 
         if ('recruitmentJourneyExistingUserBanner' in document) {
           this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
+        }
+
+        if ('isParentApprovedBannerViewed' in document) {
+          this._isParentApprovedBannerViewed = document.isParentApprovedBannerViewed;
         }
         if ('primaryAuthorityCssr' in document) {
           this._primaryAuthorityCssr = document.primaryAuthorityCssr;
@@ -839,6 +848,7 @@ class Establishment extends EntityValidator {
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
+          isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
         };
 
@@ -1041,6 +1051,7 @@ class Establishment extends EntityValidator {
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
             recruitmentJourneyExistingUserBanner: bulkUploaded ? true : this._recruitmentJourneyExistingUserBanner,
+            isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
             primaryAuthorityCssr: this._primaryAuthorityCssr,
           };
 
@@ -1356,6 +1367,7 @@ class Establishment extends EntityValidator {
         this._pensionContribution = fetchResults.pensionContribution;
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
+        this._isParentApprovedBannerViewed = fetchResults.isParentApprovedBannerViewed;
 
         this._primaryAuthorityCssr = this.primaryAuthorityCssr;
         // if history of the User is also required; attach the association
@@ -1796,6 +1808,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.pensionContribution = this.pensionContribution;
         myDefaultJSON.careWorkersLeaveDaysPerYear = this.careWorkersLeaveDaysPerYear;
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
+        myDefaultJSON.isParentApprovedBannerViewed = this.isParentApprovedBannerViewed;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

@@ -1,8 +1,6 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { AllRankingsResponse, MetricsContent } from '@core/model/benchmarks-v2.model';
-import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
+import { AllRankingsResponse, MetricsContent, BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';

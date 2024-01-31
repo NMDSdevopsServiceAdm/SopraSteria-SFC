@@ -249,21 +249,6 @@ class TrainingCsvValidator {
       source: errorSource,
       column: columnName,
     });
-
-    const tempError = {
-      origin: 'Training',
-      worker: this.currentLine.UNIQUEWORKERID,
-      name: this.currentLine.LOCALESTID,
-      lineNumber: this.lineNumber,
-      errCode: TrainingCsvValidator[errorType],
-      errType: errorType,
-      error: errorMessage,
-      source: errorSource,
-      column: columnName,
-    };
-
-    console.log('DBG trainingCSVValidator Errors');
-    console.log(tempError);
   }
 }
 

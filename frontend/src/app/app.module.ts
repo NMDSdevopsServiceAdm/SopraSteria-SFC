@@ -47,6 +47,7 @@ import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certific
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
+import { ParentHomeTabComponent } from '@features/new-dashboard/parent-home-tab/parent-home-tab.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { FirstLoginWizardComponent } from '@features/first-login-wizard/first-login-wizard.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
@@ -75,7 +76,9 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { Angulartics2Module } from 'angulartics2';
 import { HighchartsChartModule } from 'highcharts-angular';
-
+import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
+import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
+import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BenefitAccordionComponent } from './features/benefits-bundle/benefit-accordion/benefit-accordion.component';
@@ -90,6 +93,7 @@ import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
 
 @NgModule({
   declarations: [
@@ -105,6 +109,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     ForgotYourPasswordEditComponent,
     HeaderComponent,
     HomeTabComponent,
+    ParentHomeTabComponent,
     LoginComponent,
     LogoutComponent,
     MigratedUserTermsConditionsComponent,
@@ -134,6 +139,10 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     CardComponent,
     SummarySectionComponent,
     StaffBasicRecord,
+    BecomeAParentComponent,
+    RemoveLinkToParentComponent,
+    LinkToParentComponent,
+    ParentWorkplaceAccounts,
   ],
   imports: [
     Angulartics2Module.forRoot({

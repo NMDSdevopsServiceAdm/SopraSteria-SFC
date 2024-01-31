@@ -1,7 +1,9 @@
 .asc-card {
   background-color: #f3f2f1;
   padding-top: 15px;
-  padding-bottom: 35px;
+  padding-bottom: 15px;
+  min-height: 420px;
+  max-height: 444px;
 
   &__image {
     width: 100%;
