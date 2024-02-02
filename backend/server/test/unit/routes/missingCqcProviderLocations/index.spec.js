@@ -106,7 +106,42 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       expect(res.statusCode).to.deep.equal(200);
     });
 
-    it('should return ', async () => {
+    it('should return false for showMissingCqcMessage and missingCqcLocations with an empty array if invalid locationid format sent', async () => {
+      const request = {
+        method: 'GET',
+        url: `/api/missingCqcProviderLocations`,
+        params: {
+          locationID: 'locationId',
+        },
+        query: {
+          establishmentUid: 'some-uuid',
+        },
+      };
+
+      sinon.restore();
+      sinon.stub(CQCProviderDataAPI, 'getCQCProviderData').callsFake(async (locationID) => {
+        return {};
+      });
+
+      const expectedResult = {
+        showMissingCqcMessage: false,
+        weeksSinceParentApproval: 0,
+        missingCqcLocations: {
+          count: 0,
+          missingCqcLocationIds: [],
+        },
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await missingCqcProviderLocations(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return all data', async () => {
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });

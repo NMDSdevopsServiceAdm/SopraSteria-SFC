@@ -27,7 +27,7 @@ const missingCqcProviderLocations = async (req, res) => {
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
 
       const missingCqcLocations = await findMissingCqcLocationIds(
-        CQCProviderData.locationIds,
+        CQCProviderData?.locationIds,
         childWorkplacesLocationIds,
       );
 

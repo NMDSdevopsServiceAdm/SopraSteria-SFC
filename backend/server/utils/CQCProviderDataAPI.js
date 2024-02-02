@@ -2,10 +2,15 @@ const axios = require('axios');
 
 module.exports = {
   getCQCProviderData: async function (locationID) {
-    const { data } = await axios.get(
-      'https://api.cqc.org.uk/public/v1/providers/' + locationID + '?partnerCode=SkillsForCare',
-    );
+    const regex = new RegExp('^[0-9 -]{1,}$', 'gm');
+    let isCorrectFormat = regex.test(locationID);
 
-    return data;
+    if (isCorrectFormat) {
+      const { data } = await axios.get(
+        'https://api.cqc.org.uk/public/v1/providers/' + locationID + '?partnerCode=SkillsForCare',
+      );
+      return data;
+    }
+    return {};
   },
 };
