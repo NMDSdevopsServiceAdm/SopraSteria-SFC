@@ -5,7 +5,7 @@ const CQCProviderDataAPI = require('../../utils/CQCProviderDataAPI');
 const { celebrate, Joi, errors } = require('celebrate');
 const models = require('../../models');
 
-const cqcProvider = async (req, res) => {
+const missingCqcProviderLocations = async (req, res) => {
   const locationID = req.params.locationID;
   const establishmentUid = req.query.establishmentUid;
   const establishmentId = req.query.establishmentId;
@@ -17,7 +17,7 @@ const cqcProvider = async (req, res) => {
   try {
     let CQCProviderData = await CQCProviderDataAPI.getCQCProviderData(locationID);
 
-    if (cqcProvider) {
+    if (missingCqcProviderLocations) {
       const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
 
       const parentApproval = await models.Approvals.findbyEstablishmentId(establishmentId, 'BecomeAParent', 'Approved');
@@ -49,7 +49,7 @@ const cqcProvider = async (req, res) => {
 };
 
 router.route('/:locationID').get(
-  cqcProvider,
+  missingCqcProviderLocations,
   celebrate({
     query: Joi.object().keys({
       locationID: Joi.string().required(),
@@ -99,7 +99,7 @@ const checkMissingWorkplacesAndParentApprovalRule = async (weeksSinceParentAppro
 router.use('/:locationID', errors());
 
 module.exports = router;
-module.exports.cqcProvider = cqcProvider;
+module.exports.missingCqcProviderLocations = missingCqcProviderLocations;
 module.exports.getWeeksSinceParentApproval = getWeeksSinceParentApproval;
 module.exports.getChildWorkplacesLocationIds = getChildWorkplacesLocationIds;
 module.exports.findMissingCqcLocationIds = findMissingCqcLocationIds;

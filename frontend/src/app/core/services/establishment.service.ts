@@ -464,6 +464,8 @@ export class EstablishmentService {
     params = params.set('establishmentUid', `${requestParams.uid}`);
     params = params.set('establishmentId', `${requestParams.id}`);
 
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/cqcProvider/${locationID}`, { params });
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/missingCqcProviderLocations/${locationID}`, {
+      params,
+    });
   }
 }

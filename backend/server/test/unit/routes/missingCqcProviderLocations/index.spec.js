@@ -6,14 +6,14 @@ const models = require('../../../../models/index');
 const CQCProviderDataAPI = require('../../../../utils/CQCProviderDataAPI');
 
 const {
-  cqcProvider,
+  missingCqcProviderLocations,
   getWeeksSinceParentApproval,
   getChildWorkplacesLocationIds,
   findMissingCqcLocationIds,
   checkMissingWorkplacesAndParentApprovalRule,
-} = require('../../../../routes/cqcProvider');
+} = require('../../../../routes/missingCqcProviderLocations');
 
-describe('server/routes/establishments/cqcProvider', async () => {
+describe('server/routes/establishments/missingCqcProviderLocations', async () => {
   describe('get locationIDs', async () => {
     const locationId = '1-2003';
 
@@ -56,7 +56,7 @@ describe('server/routes/establishments/cqcProvider', async () => {
     it('should return a 200 status when call is successful', async () => {
       const request = {
         method: 'GET',
-        url: `/api/cqcProvider`,
+        url: `/api/missingCqcProviderLocations`,
         params: {
           locationID: 'locationId',
         },
@@ -68,7 +68,7 @@ describe('server/routes/establishments/cqcProvider', async () => {
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
 
-      await cqcProvider(req, res);
+      await missingCqcProviderLocations(req, res);
 
       expect(res.statusCode).to.deep.equal(200);
     });
@@ -76,7 +76,7 @@ describe('server/routes/establishments/cqcProvider', async () => {
     it('should return false for showMissingCqcMessage and missingCqcLocations with an empty array if CQCProviderDataAPI has an error', async () => {
       const request = {
         method: 'GET',
-        url: `/api/cqcProvider`,
+        url: `/api/missingCqcProviderLocations`,
         params: {
           locationID: 'locationId',
         },
@@ -100,7 +100,7 @@ describe('server/routes/establishments/cqcProvider', async () => {
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
 
-      await cqcProvider(req, res);
+      await missingCqcProviderLocations(req, res);
 
       expect(res._getData()).to.deep.equal(expectedResult);
       expect(res.statusCode).to.deep.equal(200);
@@ -115,7 +115,7 @@ describe('server/routes/establishments/cqcProvider', async () => {
 
       const request = {
         method: 'GET',
-        url: `/api/cqcProvider`,
+        url: `/api/missingCqcProviderLocations`,
         params: {
           locationID: 'locationId',
         },
@@ -136,7 +136,7 @@ describe('server/routes/establishments/cqcProvider', async () => {
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
 
-      await cqcProvider(req, res);
+      await missingCqcProviderLocations(req, res);
 
       expect(res._getData()).to.deep.equal(expectedResult);
       expect(res.statusCode).to.deep.equal(200);
