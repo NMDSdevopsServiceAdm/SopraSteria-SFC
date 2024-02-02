@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
   templateUrl: './summary-section.component.html',
   styleUrls: ['./summary-section.component.scss'],
 })
-export class SummarySectionComponent implements OnInit {
+export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
   @Input() workersCreatedDate;
@@ -21,6 +21,7 @@ export class SummarySectionComponent implements OnInit {
   @Input() workersNotCompleted: Worker[];
   @Input() canViewListOfWorkers: boolean;
   @Input() canViewEstablishment: boolean;
+  @Input() showMissingCqcMessage: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -35,8 +36,14 @@ export class SummarySectionComponent implements OnInit {
     },
   ];
 
+  public otherWorkplacesSection = {
+    linkText: 'Your other workplaces',
+    message: '',
+    redFlag: false,
+    link: true,
+  };
+
   public isParent: boolean;
-  public workplacesSummaryMessage: string;
 
   constructor(
     private tabsService: TabsService,
@@ -50,7 +57,11 @@ export class SummarySectionComponent implements OnInit {
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
     this.isParent = this.workplace?.isParent;
-    this.getWorkplacesSummaryMessage();
+    this.getOtherWorkplacesSummaryMessage();
+  }
+
+  ngOnChanges(): void {
+    this.getOtherWorkplacesSummaryMessage();
   }
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
@@ -158,8 +169,13 @@ export class SummarySectionComponent implements OnInit {
     return afterWorkerCreated;
   }
 
-  getWorkplacesSummaryMessage(): void {
-    this.workplacesSummaryMessage = `You've not added any other workplaces yet `;
+  public getOtherWorkplacesSummaryMessage(): void {
+    if (this.showMissingCqcMessage) {
+      this.otherWorkplacesSection.message = 'Have you added all of your workplaces?';
+      this.otherWorkplacesSection.link = true;
+    } else {
+      this.otherWorkplacesSection.link = false;
+    }
   }
 
   public showViewSummaryLinks(linkText: string): void {

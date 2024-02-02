@@ -31,7 +31,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   private searchTerm = '';
 
   public locationId: string;
-  public isMissingCQCWorkplaces: boolean;
   public showMissingCqcMessage: boolean;
   public missingCqcLocations: any;
 
@@ -104,7 +103,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
         this.establishmentService
           .getMissingCqcLocations(this.locationId, { uid: this.primaryWorkplace.uid, id: this.primaryWorkplace.id })
           .subscribe((data) => {
-            this.showMissingCQCWorkplacesMessage(data);
+            this.showMissingCqcMessage = data.showMissingCqcMessage;
           }),
       );
     }
@@ -134,12 +133,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     });
     this.searchTerm = searchTerm;
     this.handlePageUpdate(0);
-  }
-
-  public showMissingCQCWorkplacesMessage(missingCqcLocations): void {
-    if (missingCqcLocations.showMissingCqcMessage) {
-      this.isMissingCQCWorkplaces = true;
-    }
   }
 
   ngOnDestroy(): void {
