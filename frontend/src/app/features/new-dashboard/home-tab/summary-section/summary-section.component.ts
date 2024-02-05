@@ -22,6 +22,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() canViewListOfWorkers: boolean;
   @Input() canViewEstablishment: boolean;
   @Input() showMissingCqcMessage: boolean;
+  @Input() workplacesCount: number;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -39,7 +40,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   public otherWorkplacesSection = {
     linkText: 'Your other workplaces',
     message: '',
-    redFlag: false,
+    orangeFlag: false,
     link: true,
   };
 
@@ -170,11 +171,18 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   }
 
   public getOtherWorkplacesSummaryMessage(): void {
-    if (this.showMissingCqcMessage) {
+    if (this.workplacesCount === 0) {
+      this.otherWorkplacesSection.message = "You've not added any other workplaces yet";
+      this.otherWorkplacesSection.link = false;
+      this.otherWorkplacesSection.orangeFlag = false;
+    } else if (this.showMissingCqcMessage) {
       this.otherWorkplacesSection.message = 'Have you added all of your workplaces?';
       this.otherWorkplacesSection.link = true;
+      this.otherWorkplacesSection.orangeFlag = true;
     } else {
+      this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
       this.otherWorkplacesSection.link = false;
+      this.otherWorkplacesSection.orangeFlag = false;
     }
   }
 

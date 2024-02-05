@@ -82,6 +82,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public alertMessage: string;
   public showMissingCqcMessage: boolean;
   public locationId: string;
+  public workplacesCount: number;
 
   constructor(
     private userService: UserService,
@@ -169,6 +170,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.updateOnRemoveLinkToParentSuccess();
 
     this.getMissingCqcLocations();
+
+    console.log(this.route.snapshot.data);
   }
 
   private setBenchmarksCard(): void {
