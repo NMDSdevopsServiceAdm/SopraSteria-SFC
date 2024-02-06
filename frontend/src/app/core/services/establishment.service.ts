@@ -458,13 +458,14 @@ export class EstablishmentService {
     );
   }
 
-  public getMissingCqcLocations(locationID, requestParams): Observable<any> {
+  public getMissingCqcLocations(requestParams): Observable<any> {
     let params = new HttpParams();
 
+    params = params.set('locationId', `${requestParams.locationId}`);
     params = params.set('establishmentUid', `${requestParams.uid}`);
     params = params.set('establishmentId', `${requestParams.id}`);
 
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/missingCqcProviderLocations/${locationID}`, {
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/missingCqcProviderLocations`, {
       params,
     });
   }

@@ -168,7 +168,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.updateCancelLinkToParentRequest();
     this.updateOnRemoveLinkToParentSuccess();
 
-    this.getMissingCqcLocations();
+    this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
   }
 
   private setBenchmarksCard(): void {
@@ -471,21 +471,21 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     }
   }
 
-  public getMissingCqcLocations(): void {
-    if (this.locationId) {
-      this.subscriptions.add(
-        this.establishmentService
-          .getMissingCqcLocations(this.locationId, { uid: this.workplace.uid, id: this.workplace.id })
-          .subscribe((data) => {
-            this.updateShowMissingCqcMessage(data);
-          }),
-      );
-    }
-  }
+  // public getMissingCqcLocations(): void {
+  //   if (this.locationId) {
+  //     this.subscriptions.add(
+  //       this.establishmentService
+  //         .getMissingCqcLocations({ locationId: this.locationId, uid: this.workplace.uid, id: this.workplace.id })
+  //         .subscribe((data) => {
+  //           this.updateShowMissingCqcMessage(data);
+  //         }),
+  //     );
+  //   }
+  // }
 
-  public updateShowMissingCqcMessage(missingCqcLocations) {
-    this.showMissingCqcMessage = missingCqcLocations.showMissingCqcMessage;
-  }
+  // public updateShowMissingCqcMessage(missingCqcLocations) {
+  //   this.showMissingCqcMessage = missingCqcLocations.showMissingCqcMessage;
+  // }
 
   ngOnDestroy(): void {
     this.updateIsParentApprovedBannerViewed();

@@ -14,13 +14,13 @@ const {
 } = require('../../../../routes/missingCqcProviderLocations');
 
 describe('server/routes/establishments/missingCqcProviderLocations', async () => {
-  describe('get locationIDs', async () => {
+  describe('get missingCqcProviderLocations', async () => {
     const locationId = '1-2003';
 
     const cqcLocationIds = ['1-12427547986', '1-2043158439', '1-5310224737'];
 
     beforeEach(() => {
-      sinon.stub(CQCProviderDataAPI, 'getCQCProviderData').callsFake(async (locationID) => {
+      sinon.stub(CQCProviderDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
         return {
           providerId: locationId,
           locationIds: cqcLocationIds,
@@ -53,15 +53,43 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       ],
     };
 
+    const request = {
+      method: 'GET',
+      url: `/api/missingCqcProviderLocations`,
+      params: {},
+      query: {
+        locationId: locationId,
+        establishmentUid: 'some-uuid',
+        establishmentId: 2,
+      },
+    };
+
     it('should return a 200 status when call is successful', async () => {
-      const request = {
-        method: 'GET',
-        url: `/api/missingCqcProviderLocations`,
-        params: {
-          locationID: 'locationId',
-        },
-        query: {
-          establishmentUid: 'some-uuid',
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
+        updatedAt: moment(moment().subtract(21, 'days')),
+      });
+
+      await missingCqcProviderLocations(req, res);
+
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return all data', async () => {
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
+        updatedAt: moment(moment().subtract(21, 'days')),
+      });
+
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
+
+      const expectedResult = {
+        showMissingCqcMessage: false,
+        weeksSinceParentApproval: 3,
+        missingCqcLocations: {
+          count: 3,
+          missingCqcLocationIds: cqcLocationIds,
         },
       };
 
@@ -70,27 +98,22 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
 
       await missingCqcProviderLocations(req, res);
 
+      expect(res._getData()).to.deep.equal(expectedResult);
       expect(res.statusCode).to.deep.equal(200);
     });
 
     it('should return false for showMissingCqcMessage and missingCqcLocations with an empty array if CQCProviderDataAPI has an error', async () => {
-      const request = {
-        method: 'GET',
-        url: `/api/missingCqcProviderLocations`,
-        params: {
-          locationID: 'locationId',
-        },
-        query: {
-          establishmentUid: 'some-uuid',
-        },
-      };
-
       sinon.restore();
+
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
+        updatedAt: moment(moment().subtract(21, 'days')),
+      });
+
       sinon.stub(CQCProviderDataAPI, 'getCQCProviderData').throws();
 
       const expectedResult = {
         showMissingCqcMessage: false,
-        weeksSinceParentApproval: 0,
+        weeksSinceParentApproval: 3,
         missingCqcLocations: {
           count: 0,
           missingCqcLocationIds: [],
@@ -110,61 +133,27 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       const request = {
         method: 'GET',
         url: `/api/missingCqcProviderLocations`,
-        params: {
-          locationID: 'locationId',
-        },
         query: {
+          locationId: '1-locationId',
           establishmentUid: 'some-uuid',
+          establishmentId: 2,
         },
       };
 
       sinon.restore();
-      sinon.stub(CQCProviderDataAPI, 'getCQCProviderData').callsFake(async (locationID) => {
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
+        updatedAt: moment(moment().subtract(21, 'days')),
+      });
+      sinon.stub(CQCProviderDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
         return {};
       });
 
       const expectedResult = {
         showMissingCqcMessage: false,
-        weeksSinceParentApproval: 0,
+        weeksSinceParentApproval: 3,
         missingCqcLocations: {
           count: 0,
           missingCqcLocationIds: [],
-        },
-      };
-
-      const req = httpMocks.createRequest(request);
-      const res = httpMocks.createResponse();
-
-      await missingCqcProviderLocations(req, res);
-
-      expect(res._getData()).to.deep.equal(expectedResult);
-      expect(res.statusCode).to.deep.equal(200);
-    });
-
-    it('should return all data', async () => {
-      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
-        updatedAt: moment(moment().subtract(21, 'days')),
-      });
-
-      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
-
-      const request = {
-        method: 'GET',
-        url: `/api/missingCqcProviderLocations`,
-        params: {
-          locationID: 'locationId',
-        },
-        query: {
-          establishmentUid: 'some-uuid',
-        },
-      };
-
-      const expectedResult = {
-        showMissingCqcMessage: false,
-        weeksSinceParentApproval: 3,
-        missingCqcLocations: {
-          count: 3,
-          missingCqcLocationIds: cqcLocationIds,
         },
       };
 

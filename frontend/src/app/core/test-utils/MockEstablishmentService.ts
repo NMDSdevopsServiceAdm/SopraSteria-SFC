@@ -270,7 +270,7 @@ export class MockEstablishmentService extends EstablishmentService {
     } as Establishment);
   }
 
-  public getMissingCqcLocations(locationid: string, { uid: uid, id: id }): Observable<any> {
+  public getMissingCqcLocations({ locationid: locationId, uid: uid, id: id }): Observable<any> {
     return of({
       showMissingCqcMessage: false,
       missingCqcLocations: {
