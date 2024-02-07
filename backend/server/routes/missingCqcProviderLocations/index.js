@@ -2,27 +2,31 @@
 const router = require('express').Router();
 const moment = require('moment');
 const CQCProviderDataAPI = require('../../utils/CQCProviderDataAPI');
-const { celebrate, Joi, errors } = require('celebrate');
 const models = require('../../models');
+const Authorization = require('../../utils/security/isAuthenticated');
 
 const missingCqcProviderLocations = async (req, res) => {
-  const locationID = req.params.locationID;
+  const locationId = req.query.locationId;
   const establishmentUid = req.query.establishmentUid;
   const establishmentId = req.query.establishmentId;
-  const itemsPerPage = 20;
+  const itemsPerPage = 50;
   const pageIndex = 0;
+  let weeksSinceParentApproval = 0;
 
   const result = {};
 
   try {
-    let CQCProviderData = await CQCProviderDataAPI.getCQCProviderData(locationID);
-
-    if (missingCqcProviderLocations) {
-      const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
-
+    if (establishmentId) {
       const parentApproval = await models.Approvals.findbyEstablishmentId(establishmentId, 'BecomeAParent', 'Approved');
 
-      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+      weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+      result.weeksSinceParentApproval = weeksSinceParentApproval;
+    }
+
+    if (locationId) {
+      let CQCProviderData = await CQCProviderDataAPI.getCQCProviderData(locationId);
+
+      const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
 
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
 
@@ -35,28 +39,20 @@ const missingCqcProviderLocations = async (req, res) => {
         weeksSinceParentApproval,
         missingCqcLocations.count,
       );
-
-      result.weeksSinceParentApproval = weeksSinceParentApproval;
       result.missingCqcLocations = missingCqcLocations;
+    } else {
+      result.showMissingCqcMessage = false;
+
+      result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
     }
   } catch (error) {
     console.error('CQC Provider API Error: ', error);
     result.showMissingCqcMessage = false;
-    result.weeksSinceParentApproval = 0;
+
     result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
   }
   return res.status(200).send(result);
 };
-
-router.route('/:locationID').get(
-  missingCqcProviderLocations,
-  celebrate({
-    query: Joi.object().keys({
-      locationID: Joi.string().required(),
-      establishmentUid: Joi.string().required(),
-    }),
-  }),
-);
 
 const getWeeksSinceParentApproval = async (parentApproval) => {
   const dateNow = moment();
@@ -96,7 +92,7 @@ const checkMissingWorkplacesAndParentApprovalRule = async (weeksSinceParentAppro
   return false;
 };
 
-router.use('/:locationID', errors());
+router.route('/').get(Authorization.isAuthorised, missingCqcProviderLocations);
 
 module.exports = router;
 module.exports.missingCqcProviderLocations = missingCqcProviderLocations;

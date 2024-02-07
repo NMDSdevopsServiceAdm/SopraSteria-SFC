@@ -58,7 +58,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
     this.locationId = this.primaryWorkplace.locationId;
 
-    this.getMissingCqcLocations();
+    this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
   }
 
   private setSearchIfPrevious(): void {
@@ -95,18 +95,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
           this.errorSummaryService.scrollToErrorSummary();
         },
       );
-  }
-
-  public getMissingCqcLocations() {
-    if (this.totalWorkplaceCount > 0 && this.locationId) {
-      this.subscriptions.add(
-        this.establishmentService
-          .getMissingCqcLocations(this.locationId, { uid: this.primaryWorkplace.uid, id: this.primaryWorkplace.id })
-          .subscribe((data) => {
-            this.showMissingCqcMessage = data.showMissingCqcMessage;
-          }),
-      );
-    }
   }
 
   public handlePageUpdate(pageIndex: number): void {
