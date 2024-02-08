@@ -40,6 +40,7 @@ const formatChildWorkplaces = (childWorkplaces) => {
       uid: workplace.uid,
       updated: workplace.updated,
       ustatus: workplace.ustatus,
+      postcode: workplace.postcode,
     };
   });
 };

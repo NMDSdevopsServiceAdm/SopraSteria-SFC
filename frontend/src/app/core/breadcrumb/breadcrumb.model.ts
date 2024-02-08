@@ -33,6 +33,7 @@ export enum JourneyType {
   BECOME_A_PARENT,
   REMOVE_LINK_TO_PARENT,
   LINK_TO_PARENT,
+  CHANGE_DATA_OWNER,
 }
 
 export interface JourneyRoute {

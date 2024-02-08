@@ -31,7 +31,7 @@
 
   <div *ngIf="workplaceCount; else noWorkplacesFoundInSearch">
     <ul class="govuk-list">
-      <ng-container *ngFor="let workplace of workplaces">
+      <ng-container *ngFor="let workplace of workplaces; let indexOfelement = index">
         <li
           class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue"
           *ngIf="workplace.ustatus === 'PENDING' || workplace.ustatus === 'IN PROGRESS'"
@@ -46,6 +46,7 @@
         <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngIf="workplace.ustatus === null">
           <app-workplace-info-panel
             [workplace]="workplace"
+            [subWorkplaceNumber]="indexOfelement"
             (changeOwnershipAndPermissionsEvent)="changeOwnershipAndPermissions($event)"
           >
           </app-workplace-info-panel>
@@ -69,14 +70,14 @@
 <ng-template #noWorkplaces>
   <div data-testid="noWorkplacesMessage">
     <p><a [routerLink]="['/']">What you can do as a parent workplace</a></p>
-    <br/>
-      <p>You've not added any workplaces yet.</p>
-      <p>To add a workplace, you'll need to know:</p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>their main service and whether it's regulated by the Care Quality Commission (CQC)</li>
-        <li>the name and address of the workplace</li>
-        <li>what type of employer they are (for example, local authority, private)</li>
-        <li>how many members of staff they have</li>
-      </ul>
+    <br />
+    <p>You've not added any workplaces yet.</p>
+    <p>To add a workplace, you'll need to know:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>their main service and whether it's regulated by the Care Quality Commission (CQC)</li>
+      <li>the name and address of the workplace</li>
+      <li>what type of employer they are (for example, local authority, private)</li>
+      <li>how many members of staff they have</li>
+    </ul>
   </div>
 </ng-template>

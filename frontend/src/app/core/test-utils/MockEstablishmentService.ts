@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Establishment, mandatoryTraining, UpdateJobsRequest } from '@core/model/establishment.model';
+import { Establishment, mandatoryTraining, UpdateJobsRequest, ChangeOwner } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -107,6 +107,7 @@ export class MockEstablishmentService extends EstablishmentService {
     employerType: { other: 'other employer type', value: 'Other' },
     id: 0,
     isRegulated: false,
+    isParent: false,
     leavers: undefined,
     localAuthorities: [],
     mainService: { name: 'Care', id: 123, isCQC: false },
@@ -210,6 +211,7 @@ export class MockEstablishmentService extends EstablishmentService {
       employerType: { value: 'Private Sector' },
       id: 0,
       isRegulated: false,
+      isParent: false,
       leavers: undefined,
       localAuthorities: [],
       mainService: { name: 'Care', id: 123, isCQC: true },
@@ -252,6 +254,10 @@ export class MockEstablishmentService extends EstablishmentService {
       count: 3,
       activeWorkplaceCount: 2,
     } as GetChildWorkplacesResponse);
+  }
+
+  public changeOwnership(establishmentId, data: ChangeOwner): Observable<Establishment> {
+    return of(this.establishment);
   }
 
   public updateJobs(establishmemntId, data: UpdateJobsRequest): Observable<Establishment> {
@@ -319,6 +325,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     employerType: undefined,
     id: 0,
     isRegulated: false,
+    isParent: false,
     leavers: undefined,
     localAuthorities: [],
     mainService: { name: 'Care', id: 123, isCQC: false },

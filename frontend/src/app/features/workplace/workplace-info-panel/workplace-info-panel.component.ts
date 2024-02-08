@@ -13,6 +13,7 @@ import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-o
 import { MoveWorkplaceDialogComponent } from '@shared/components/move-workplace/move-workplace-dialog.component';
 import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-workplace-info-panel',
@@ -21,6 +22,7 @@ import { Subscription } from 'rxjs';
 export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   @Output() public changeOwnershipAndPermissionsEvent = new EventEmitter();
   @Input() public workplace: Workplace;
+  @Input() public subWorkplaceNumber: number;
   public canViewEstablishment: boolean;
   public canChangePermissionsForSubsidiary: boolean;
   public primaryWorkplace: Establishment;
@@ -30,6 +32,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public ownershipChangeRequestId: any = [];
   public ownershipChangeRequestCreatedByLoggegInUser: boolean;
   public ownershipChangeRequester: any;
+  public newHomeDesignParentFlag: boolean;
 
   constructor(
     private dialogService: DialogService,
@@ -39,6 +42,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private alertService: AlertService,
     private authService: AuthService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit() {
@@ -54,6 +58,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         }
       }),
     );
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
   }
 
   private changeOwnershipAndPermissions(): void {
@@ -131,6 +136,13 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
           message: `Data permissions for ${this.workplace.name} have been set.`,
         });
       }
+    });
+  }
+
+  public navigateToChangeDataOwner(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/workplace/change-data-owner'], {
+      queryParams: { changeDataOwnerFrom: this.workplace.uid },
     });
   }
 

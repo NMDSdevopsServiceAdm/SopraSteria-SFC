@@ -17,7 +17,6 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import sinon from 'sinon';
 
-
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
 
@@ -332,18 +331,18 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
 
     it('should show an error when expiry date is before the completed date', async () => {
-      const { component,getByTestId, getByText, fixture, getAllByText } = await setup();
-    component.form.markAsDirty();
-    const today = new Date();
-    const completedDate = getByTestId('completedDate');
-    userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
-    userEvent.type(within(completedDate).getByLabelText('Month'), `${today.getMonth()+1}`);
-    userEvent.type(within(completedDate).getByLabelText('Year'), `${today.getFullYear()}`);
-    const expiresDate = getByTestId('expiresDate');
-    userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
-    userEvent.type(within(expiresDate).getByLabelText('Month'), `${today.getMonth()+1}`);
-     userEvent.type(within(expiresDate).getByLabelText('Year'), `${today.getFullYear()}`);
-    fireEvent.click(getByText('Continue'));
+      const { component, getByTestId, getByText, fixture, getAllByText } = await setup();
+      component.form.markAsDirty();
+      const today = new Date();
+      const completedDate = getByTestId('completedDate');
+      userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
+      userEvent.type(within(completedDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
+      userEvent.type(within(completedDate).getByLabelText('Year'), `${today.getFullYear()}`);
+      const expiresDate = getByTestId('expiresDate');
+      userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
+      userEvent.type(within(expiresDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
+      userEvent.type(within(expiresDate).getByLabelText('Year'), `${today.getFullYear()}`);
+      fireEvent.click(getByText('Continue'));
       fixture.detectChanges();
 
       expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
