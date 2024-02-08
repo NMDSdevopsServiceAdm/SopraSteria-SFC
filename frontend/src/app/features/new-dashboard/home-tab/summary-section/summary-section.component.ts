@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
   templateUrl: './summary-section.component.html',
   styleUrls: ['./summary-section.component.scss'],
 })
-export class SummarySectionComponent implements OnInit, OnChanges {
+export class SummarySectionComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
   @Input() workersCreatedDate;
@@ -58,10 +58,6 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
     this.isParent = this.workplace?.isParent;
-    this.getOtherWorkplacesSummaryMessage();
-  }
-
-  ngOnChanges(): void {
     this.getOtherWorkplacesSummaryMessage();
   }
 

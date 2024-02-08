@@ -52,6 +52,8 @@ describe('Summary section', () => {
         isParent: false,
         canViewListOfWorkers: canViewListOfWorkers,
         canViewEstablishment: canViewEstablishment,
+        showMissingCqcMessage: false,
+        workplacesCount: 0,
       },
     });
 
@@ -568,7 +570,7 @@ describe('Summary section', () => {
     });
   });
 
-  fdescribe('your other workplaces summary section', () => {
+  describe('your other workplaces summary section', () => {
     it('should show the row', async () => {
       const { component, fixture, getByTestId } = await setup();
 
@@ -594,6 +596,8 @@ describe('Summary section', () => {
 
       component.isParent = true;
       component.workplacesCount = 0;
+      component.showMissingCqcMessage = false;
+
       component.ngOnInit();
       fixture.detectChanges();
 
@@ -611,6 +615,7 @@ describe('Summary section', () => {
       component.isParent = true;
       component.showMissingCqcMessage = true;
       component.otherWorkplacesSection.orangeFlag = true;
+
       component.ngOnInit();
       fixture.detectChanges();
 
@@ -626,6 +631,7 @@ describe('Summary section', () => {
 
       component.workplacesCount = 1;
       component.isParent = true;
+
       component.ngOnInit();
       fixture.detectChanges();
 

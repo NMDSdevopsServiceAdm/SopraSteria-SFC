@@ -91,6 +91,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           count: 3,
           missingCqcLocationIds: cqcLocationIds,
         },
+        childWorkplacesCount: 3,
       };
 
       const req = httpMocks.createRequest(request);
@@ -118,6 +119,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           count: 0,
           missingCqcLocationIds: [],
         },
+        childWorkplacesCount: 0,
       };
 
       const req = httpMocks.createRequest(request);
@@ -155,6 +157,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           count: 0,
           missingCqcLocationIds: [],
         },
+        childWorkplacesCount: 0,
       };
 
       const req = httpMocks.createRequest(request);
