@@ -1,0 +1,43 @@
+aws:
+    region: eu-west-1
+    secrets:
+        use: false
+        wallet: benchmarks/api
+    sns:
+      enabled: true
+      registrations: arn:aws:sns:eu-west-1:364648107127:registrations-dev
+      feedback: 	arn:aws:sns:eu-west-1:364648107127:feedback-dev
+
+db:
+    pool:
+        min: 10
+        max: 10
+    ssl: false
+
+slack:
+    level : 3     # enables Slack notifications
+
+jwt:
+    iss: 'sfcbenchmarks.cloudapps.digital'
+    ttl:
+        login: 30
+
+bulkupload:
+    region: eu-west-2
+    bucketname: sfc-bulkupload-dev
+    validation:
+        timeout: 300
+    completion:
+        timeout: 180
+    lambda:
+        stage: sfcbenchmarks
+
+disbursement:
+    region: eu-west-2
+    bucketname: wdf-disbursement-dev
+
+locks:
+    region: eu-west-1
+    bucketname: sfc-locks-dev
+
+# no notify definition - not used in development
