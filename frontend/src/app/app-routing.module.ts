@@ -43,6 +43,7 @@ import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/
 import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
 import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 
 const routes: Routes = [
   {
@@ -149,6 +150,7 @@ const routes: Routes = [
           establishment: PrimaryWorkplaceResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
           cqcStatusCheck: CqcStatusCheckResolver,
+          cqcLocations: GetMissingCqcLocationsResolver,
           benchmarks: BenchmarksResolver,
           rankings: RankingsResolver,
           usefulLinksPay: UsefulLinkPayResolver,
