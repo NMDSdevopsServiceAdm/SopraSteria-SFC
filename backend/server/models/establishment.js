@@ -2133,6 +2133,7 @@ module.exports = function (sequelize, DataTypes) {
         'dataOwnershipRequested',
         'ustatus',
         'postcode',
+        'locationId',
       ],
       include: [
         {
