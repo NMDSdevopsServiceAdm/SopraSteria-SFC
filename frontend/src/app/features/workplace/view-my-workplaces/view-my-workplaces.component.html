@@ -1,0 +1,83 @@
+<app-error-summary *ngIf="serverError" [serverError]="serverError"></app-error-summary>
+
+<div class="govuk-grid-row govuk-!-margin-bottom-5">
+  <div class="govuk-grid-column-full govuk__flex govuk__justify-content-space-between govuk__align-items-flex-end">
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+      <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
+      Your other workplaces ({{ activeWorkplaceCount }})
+    </h1>
+    <a
+      *ngIf="canAddEstablishment"
+      class="govuk-button govuk-!-margin-bottom-0"
+      [routerLink]="['/add-workplace/start']"
+      role="button"
+      draggable="false"
+    >
+      Add a workplace
+    </a>
+  </div>
+</div>
+
+<div *ngIf="totalWorkplaceCount; else noWorkplaces">
+  <div *ngIf="totalWorkplaceCount > itemsPerPage" class="govuk-grid-row govuk-!-margin-bottom-5">
+    <div class="govuk-grid-column-three-quarters">
+      <app-search-input
+        accessibleLabel="child workplace records"
+        [prevSearch]="searchTerm"
+        (emitInput)="handleSearch($event)"
+      ></app-search-input>
+    </div>
+  </div>
+
+  <div *ngIf="workplaceCount; else noWorkplacesFoundInSearch">
+    <ul class="govuk-list">
+      <ng-container *ngFor="let workplace of workplaces; let indexOfelement = index">
+        <li
+          class="govuk-util__list-record govuk-!-margin-bottom-0 govuk-panel--light-blue"
+          *ngIf="workplace.ustatus === 'PENDING' || workplace.ustatus === 'IN PROGRESS'"
+        >
+          <div>
+            <span class="govuk-!-padding-left-3"
+              >Your application for {{ workplace.name }} is being reviewed by Skills for Care.</span
+            >
+            <span class="govuk-util__float-right govuk-!-padding-right-3">Pending</span>
+          </div>
+        </li>
+        <li class="govuk-util__list-record govuk-!-margin-bottom-0" *ngIf="workplace.ustatus === null">
+          <app-workplace-info-panel
+            [workplace]="workplace"
+            [subWorkplaceNumber]="indexOfelement"
+            (changeOwnershipAndPermissionsEvent)="changeOwnershipAndPermissions($event)"
+          >
+          </app-workplace-info-panel>
+        </li>
+      </ng-container>
+    </ul>
+  </div>
+  <ng-template #noWorkplacesFoundInSearch>
+    <p class="govuk-util__bold">There are no matching results</p>
+    <p>Make sure that your spelling is correct.</p>
+  </ng-template>
+
+  <app-pagination
+    [itemsPerPage]="itemsPerPage"
+    [totalNoOfItems]="workplaceCount"
+    (currentPageIndexChange)="handlePageUpdate($event)"
+    [currentPageIndex]="currentPageIndex"
+  ></app-pagination>
+</div>
+
+<ng-template #noWorkplaces>
+  <div data-testid="noWorkplacesMessage">
+    <p><a [routerLink]="['/workplace/about-parents']">What you can do as a parent workplace</a></p>
+    <br/>
+      <p>You've not added any workplaces yet.</p>
+      <p>To add a workplace, you'll need to know:</p>
+      <ul class="govuk-list govuk-list--bullet">
+        <li>their main service and whether it's regulated by the Care Quality Commission (CQC)</li>
+        <li>the name and address of the workplace</li>
+        <li>what type of employer they are (for example, local authority, private)</li>
+        <li>how many members of staff they have</li>
+      </ul>
+  </div>
+</ng-template>
