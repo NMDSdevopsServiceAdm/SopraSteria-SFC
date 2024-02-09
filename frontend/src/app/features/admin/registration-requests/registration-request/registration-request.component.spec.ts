@@ -109,14 +109,12 @@ describe('RegistrationRequestComponent', () => {
     const address = component.registration.establishment.address;
     const address2 = component.registration.establishment.address2;
     const address3 = component.registration.establishment.address3;
-    const postcode = component.registration.establishment.postcode;
     const town = component.registration.establishment.town;
     const county = component.registration.establishment.county;
 
     expect(getByText(address, { exact: false })).toBeTruthy();
     expect(getByText(address2, { exact: false })).toBeTruthy();
     expect(getByText(address3, { exact: false })).toBeTruthy();
-    expect(getByText(postcode, { exact: false })).toBeTruthy();
     expect(getByText(town, { exact: false })).toBeTruthy();
     expect(getByText(county, { exact: false })).toBeTruthy();
   });
@@ -343,6 +341,30 @@ describe('RegistrationRequestComponent', () => {
     });
   });
 
+  describe('Updating postcode', () => {
+    it('should have a success alert when postcode is successfully updated', async () => {
+      const { component, fixture, getByText } = await setup();
+
+      spyOn(component.registrationsService, 'updatePostcode').and.returnValue(of({}));
+
+      const alertService = TestBed.inject(AlertService);
+      const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
+      const form = component.postcodeForm;
+
+      form.controls['postcode'].setValue('LA9 4DQ');
+      form.controls['postcode'].markAsDirty();
+
+      fireEvent.click(getByText('Save this postcode'));
+      fixture.detectChanges();
+
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'The Postcode has been successfully updated to LA9 4DQ',
+      });
+    });
+
+  });
   describe('Checkbox component', () => {
     it('should show a PENDING banner when no one is reviewing the registration', async () => {
       const { queryByText } = await setup();

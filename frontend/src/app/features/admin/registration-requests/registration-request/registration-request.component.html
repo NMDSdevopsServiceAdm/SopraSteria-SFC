@@ -56,7 +56,34 @@
           {{ registration.establishment.address3 }}<br />
           {{ registration.establishment.county }}<br />
           {{ registration.establishment.town }}<br />
-          {{ registration.establishment.postcode }}
+          <form #formEl (ngSubmit)="updatePostcode()" [formGroup]="postcodeForm" id="postcodeForm">
+          <input
+              class="govuk-input govuk-input--width-10"
+              id="postcode"
+              name="postcode"
+              [formControlName]="'postcode'"
+              pattern="^[A-Z].*"
+              type="text"
+            />
+            <button type="submit" class="govuk-button govuk-button--secondary govuk-!-margin-left-6">
+              Save this postcode
+            </button>
+            <span *ngIf="postcode.invalid && invalidPostcodeEntered" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span>
+              <span *ngIf="postcode.errors | getFirstError: postcode.errors?.required">
+                To update, enter a valid Postcode
+              </span>
+              <span *ngIf="postcode.errors | getFirstError: postcode.errors?.minlength">
+                Postcode must be minimum 6 characters
+              </span>
+              <span *ngIf="postcode.errors | getFirstError: postcode.errors?.maxlength">
+                Postcode must be 8 characters or fewer
+              </span>
+              <span *ngIf="postcode.errors | getFirstError: postcode.errors?.pattern">
+                Enter a valid workplace postcode
+              </span>
+            </span>
+          </form>
         </dd>
       </div>
       <div class="govuk-summary-list__row">

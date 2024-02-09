@@ -63,14 +63,14 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     autoWatch: !isCI,
     singleRun: isCI,
-    browsers: ['HeadlessChrome'],
+    browsers: ['ChromeHeadlessNoSandbox'],
     customLaunchers: {
-      HeadlessChrome: {
+      ChromeHeadlessNoSandbox: {
         base: 'ChromeHeadless',
-        flags: ['--no-sandbox'],
-      },
+        flags: ['--no-sandbox']
+      }
     },
-    browserDisconnectTimeout: 10000,
+    browserDisconnectTimeout: 60000,
     browserDisconnectTolerance: 3,
     browserNoActivityTimeout: 100000,
     captureTimeout: 140000,
