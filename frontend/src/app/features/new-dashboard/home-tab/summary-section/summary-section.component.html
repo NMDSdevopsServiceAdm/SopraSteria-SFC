@@ -48,11 +48,22 @@
     <div class="summary-section" data-testid="workplaces-row">
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body-l summary-section__links">
         <a class="govuk-link--no-visited-state" [routerLink]="['/workplace', 'view-all-workplaces']">
-          Your other workplaces
+          {{ otherWorkplacesSection.linkText }}
         </a>
       </div>
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body summary-section__summary-text">
-        {{ workplacesSummaryMessage }}
+        <ng-container *ngIf="otherWorkplacesSection.message; else noWorkplacesMessage">
+          <img
+            src="/assets/images/flag-orange.svg"
+            alt="action-required-orange-flag"
+            class="govuk-!-margin-right-2"
+            data-testid="orange-flag"
+          />
+          <a [routerLink]="['/workplace', 'view-all-workplaces']" href="#"> {{ otherWorkplacesSection.message }}</a>
+        </ng-container>
+        <ng-template #noWorkplacesMessage>
+          <span>You've not added any other workplaces yet</span>
+        </ng-template>
       </div>
     </div>
   </ng-container>

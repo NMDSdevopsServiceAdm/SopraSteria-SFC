@@ -80,6 +80,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public successAlertMessage: string;
   public canViewEstablishment: boolean;
   public alertMessage: string;
+  public showMissingCqcMessage: boolean;
+  public locationId: string;
 
   constructor(
     private userService: UserService,
@@ -157,6 +159,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.alertMessage = history.state?.alertMessage;
 
     this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;
+    this.locationId = this.workplace.locationId;
+    this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
 
     this.sendAlert();
 
