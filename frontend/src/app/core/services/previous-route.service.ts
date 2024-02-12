@@ -25,17 +25,22 @@ constructor(private router: Router) {
   }
 
   public getPreviousUrl() {
-      return this.previousUrl;
+    return this.previousUrl;
   }
 
   // all-workplaces/about-parents
+  // dashboard#home
   public getPreviousPage() {
     let previousPage = this.previousUrl;
     if(previousPage) {
-      let previousPages = previousPage.split("/");
-      previousPage = previousPages[previousPages.length - 1].split("-").join(" ");
+      const regexSplit = /\/|\#/
+      //split the url by slashes or hashes
+      let previousPages = previousPage.split(regexSplit);
+      // take the end of the url and remove dashes from the name
+      previousPage = previousPages[previousPages.length - 1]
+        .split("-")
+        .join(" ");
     }
-    console.log(previousPage);
     return previousPage;
   }
 };
