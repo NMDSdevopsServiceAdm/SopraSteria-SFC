@@ -6,6 +6,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Page } from '@core/model/page.model';
 import {Location} from '@angular/common';
+import { PreviousRouteService } from '../../../core/services/previous-route.service';
 
 @Component({
   selector: 'app-about-parents',
@@ -16,21 +17,26 @@ export class AboutParentsComponent implements OnInit {
   public returnToHomeButton: boolean;
   public routeData: string;
   public pages: Page;
+  public previousPage: string;
 
   constructor(
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
     private route: ActivatedRoute,
-    private _location: Location
+    private _location: Location,
+    private previousRouteService: PreviousRouteService
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.breadcrumbService.show(JourneyType.WORKPLACE_TAB, this.workplace?.name);
     this.pages = this.route.snapshot.data.pages?.data[0];
+    // this.previousPage = document.referrer;
+    this.previousPage = this.previousRouteService.getPreviousUrl();
   }
 
   returnToPreviousPage() {
     this._location.back();
+    // this.route.navigate("..");
   }
 }

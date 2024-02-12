@@ -94,6 +94,7 @@ import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @NgModule({
   declarations: [
@@ -186,6 +187,7 @@ import { ParentWorkplaceAccounts } from '@features/create-account/workplace/pare
     TrainingService,
     WindowRef,
     WorkerService,
+    PreviousRouteService,
     { provide: WindowToken, useFactory: windowProvider },
     {
       provide: HTTP_INTERCEPTORS,
