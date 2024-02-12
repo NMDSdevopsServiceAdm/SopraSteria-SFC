@@ -31,8 +31,7 @@ export class AboutParentsComponent implements OnInit {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.breadcrumbService.show(JourneyType.WORKPLACE_TAB, this.workplace?.name);
     this.pages = this.route.snapshot.data.pages?.data[0];
-    // this.previousPage = document.referrer;
-    this.previousPage = this.previousRouteService.getPreviousUrl();
+    this.previousPage = this.previousRouteService.getPreviousPage();
   }
 
   returnToPreviousPage() {

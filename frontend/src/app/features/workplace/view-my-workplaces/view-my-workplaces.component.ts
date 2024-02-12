@@ -12,6 +12,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { AlertService } from '@core/services/alert.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
   selector: 'app-view-my-workplaces',
@@ -40,6 +41,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private alertService: AlertService,
+    private previousRouteService: PreviousRouteService,
   ) {}
 
   ngOnInit(): void {
