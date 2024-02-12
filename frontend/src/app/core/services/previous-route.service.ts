@@ -19,8 +19,6 @@ constructor(private router: Router) {
     .subscribe((event: NavigationEnd) => {
       this.previousUrl = this.currentUrl;
       this.currentUrl = event.urlAfterRedirects;
-      console.log("prev: ", this.previousUrl)
-      console.log("curr: ", this.currentUrl)
     });
   }
 
