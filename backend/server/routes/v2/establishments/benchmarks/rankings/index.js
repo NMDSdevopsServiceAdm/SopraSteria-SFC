@@ -233,7 +233,7 @@ const getComparisonGroupAndCalculateRanking = async function (
     });
 
   const maxRank = mappedComparisonGroupRankings.length + 1;
-  if (metric.stateMessage) {
+  if (metric.stateMessage || metric.value === 0) {
     return {
       allValues: valuesData,
       maxRank,
