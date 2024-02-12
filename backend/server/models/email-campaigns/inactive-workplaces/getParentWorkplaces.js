@@ -2,6 +2,7 @@ const moment = require('moment');
 
 const models = require('../../index');
 
+// inactiveWorkplaces
 const getParentWorkplaces = async () => {
   const lastEmailDate = moment().subtract(5, 'months').startOf('month').format('YYYY-MM-DD');
 

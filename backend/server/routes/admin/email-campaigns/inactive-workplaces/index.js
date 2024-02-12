@@ -46,6 +46,7 @@ const inactiveWorkplacesIdsForDeletions = async (req, res) => {
   }
 };
 
+//inactiveWorkplaces
 const createCampaign = async (req, res) => {
   try {
     const user = await models.user.findByUUID(req.userUid);
@@ -111,6 +112,7 @@ const getHistory = async (_req, res) => {
 router.route('/').get(getInactiveWorkplaces);
 router.route('/inactiveWorkplacesForDeletion').get(getInactiveWorkplcesForDeletion);
 router.route('/inactiveWorkplacesIdsForDeletions').post(inactiveWorkplacesIdsForDeletions);
+// inactiveWorkplaces
 router.route('/').post(createCampaign);
 router.route('/history').get(getHistory);
 router.use('/report', require('./report'));

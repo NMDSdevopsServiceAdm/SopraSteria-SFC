@@ -1,0 +1,8 @@
+SELECT usr."EstablishmentID", COUNT(usr."RegistrationID") AS NumberOfNotPrimaryWorkers
+FROM cqc."User" usr
+JOIN cqc."Establishment" est ON usr."EstablishmentID" = est."EstablishmentID"
+WHERE est."Archived" = False
+AND usr."IsPrimary" = FALSE
+AND usr."Archived" = FALSE
+AND usr."UserRoleValue" = 'Edit'
+GROUP BY usr."EstablishmentID";

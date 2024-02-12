@@ -37,6 +37,7 @@ export class InactiveEmailsComponent {
     this.subscriptions.unsubscribe();
   }
 
+  // front end inactiveWorkplacesEmails
   public confirmSendEmails(event: Event, emailCount: number): void {
     event.preventDefault();
 
@@ -76,6 +77,7 @@ export class InactiveEmailsComponent {
     );
   }
 
+  // inactiveWorkplaces front-end
   private sendInactiveEmails(): void {
     this.subscriptions.add(
       this.emailCampaignService

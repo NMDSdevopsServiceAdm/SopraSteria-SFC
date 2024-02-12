@@ -12,6 +12,7 @@ const getInactiveWorkplaces = async () => {
   const lastActivity = lastMonth.clone().subtract(6, 'months').endOf('month').endOf('day').format('YYYY-MM-DD');
   const lastEmailDate = moment().subtract(5, 'months').startOf('month').format('YYYY-MM-DD');
 
+  // TODO inactive workplace e-mails?
   return models.sequelize.query(
     `
   SELECT

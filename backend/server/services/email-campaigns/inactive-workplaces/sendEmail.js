@@ -52,6 +52,7 @@ const getParams = (workplace) => {
   return params;
 };
 
+// sendEmail inactiveWorkplaces
 const sendEmail = async (workplace, index) => {
   if (!isWhitelisted.isWhitelisted(workplace.user.email)) {
     return;

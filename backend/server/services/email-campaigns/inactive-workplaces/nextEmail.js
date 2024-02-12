@@ -35,6 +35,7 @@ const templates = {
   },
 };
 
+// inactiveWorkplaces match template
 const getTemplate = (inactiveWorkplace) => {
   const lastLogin = moment(inactiveWorkplace.LastLogin);
   const lastUpdated = moment(inactiveWorkplace.LastUpdated);

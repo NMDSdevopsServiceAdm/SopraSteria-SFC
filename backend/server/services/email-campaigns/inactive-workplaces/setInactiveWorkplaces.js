@@ -29,6 +29,7 @@ const transformInactiveWorkplaces = (inactiveWorkplace) => {
   };
 };
 
+// inactiveWorkplaces
 const findInactiveWorkplaces = async () => {
   await refreshInactiveWorkplaces();
 

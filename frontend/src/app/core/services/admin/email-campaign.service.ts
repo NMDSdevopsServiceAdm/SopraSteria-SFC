@@ -20,6 +20,7 @@ export class EmailCampaignService {
     return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions`, {});
   }
 
+  // inactiveWorkplaces
   createInactiveWorkplacesCampaign(): Observable<any> {
     return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces`, {});
   }
