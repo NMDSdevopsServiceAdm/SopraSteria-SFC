@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -23,6 +23,7 @@ export class AboutParentsComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
     private route: ActivatedRoute,
+    private router: Router,
     private _location: Location,
     private previousRouteService: PreviousRouteService
   ) {}
@@ -34,11 +35,16 @@ export class AboutParentsComponent implements OnInit {
 
     if(this.previousRouteService.getPreviousPage() != "about parents") {
       this.previousPage = this.previousRouteService.getPreviousPage();
+
+      // temporary as the url for your other workplaces is view all workplaces
+      if(this.previousPage == "view all workplaces") {
+        this.previousPage = "your other workplaces";
+      }
     }
   }
 
   returnToPreviousPage() {
     this._location.back();
-    // this.route.navigate("..");
+    // this.router.navigate(this.previousRouteService.getPreviousUrl());
   }
 }

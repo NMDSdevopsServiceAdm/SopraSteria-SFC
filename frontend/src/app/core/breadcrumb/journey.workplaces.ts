@@ -26,7 +26,7 @@ export const workplaceTabJourney: JourneyRoute = {
       fragment: 'workplace',
       children: [
         {
-          title: 'About Parents',
+          title: 'What you can do as a parent workplace',
           path: Path.ABOUT_PARENTS,
           referrer: {
             path: Path.WORKPLACE,
