@@ -22,6 +22,10 @@ constructor(private router: Router) {
     });
   }
 
+  public setPreviousTab(url: string) {
+    this.previousUrl = url;
+  }
+
   public getPreviousUrl() {
     return this.previousUrl;
   }
