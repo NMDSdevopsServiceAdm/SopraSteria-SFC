@@ -284,6 +284,7 @@ export class MockEstablishmentService extends EstablishmentService {
         missingCqcLocationIds: [],
       },
       weeksSinceParentApproval: 0,
+      childWorkplacesCount: 0,
     });
   }
 
