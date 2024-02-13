@@ -29,9 +29,8 @@ import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
 describe('ViewMyWorkplacesComponent', () => {
   async function setup(hasChildWorkplaces = true, qsParamGetMock = sinon.fake()) {
-    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText } = await render(
-      ViewMyWorkplacesComponent,
-      {
+    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText, queryByTestId } =
+      await render(ViewMyWorkplacesComponent, {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
         declarations: [WorkplaceInfoPanelComponent],
         providers: [
@@ -82,13 +81,19 @@ describe('ViewMyWorkplacesComponent', () => {
                         count: 0,
                         activeWorkplaceCount: 0,
                       },
+                  cqcLocations: hasChildWorkplaces
+                    ? {
+                        showMissingCqcMessage: true,
+                      }
+                    : {
+                        showMissingCqcMessage: false,
+                      },
                 },
               },
             },
           },
         ],
-      },
-    );
+      });
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -112,6 +117,7 @@ describe('ViewMyWorkplacesComponent', () => {
       queryByText,
       getByLabelText,
       queryByLabelText,
+      queryByTestId,
       getChildWorkplacesSpy,
       establishmentService,
       alertServiceSpy,
@@ -281,6 +287,28 @@ describe('ViewMyWorkplacesComponent', () => {
     expect(alertServiceSpy).toHaveBeenCalledWith({
       type: 'success',
       message: message,
+    });
+  });
+
+  describe('missing cqc workplaces message', () => {
+    it('should not show if missingCqcWorkplaces is false ', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('missingCqcWorkplaces')).toBeFalsy();
+    });
+
+    it('should not show if missingCqcWorkplaces is true', async () => {
+      const { queryByTestId } = await setup(true);
+
+      expect(queryByTestId('missingCqcWorkplaces')).toBeTruthy();
+    });
+
+    it('should show the primary workplace name, if missingCqcWorkplaces is true', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      const missingCqcWorkplacesMessage = getByTestId('missingCqcWorkplaces');
+
+      expect(missingCqcWorkplacesMessage.textContent).toContain(component.primaryWorkplace.name);
     });
   });
 });

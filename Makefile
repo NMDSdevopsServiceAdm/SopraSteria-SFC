@@ -11,5 +11,8 @@ run:
 	(cd backend && npm run new-start) & \
 	(cd frontend && npm run build:watch)
 
-test:
+test-fe:
 	npm run test --prefix frontend
+
+test-be:
+	npm run server:test:unit --prefix backend

@@ -64,6 +64,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 
 @NgModule({
   imports: [
@@ -135,6 +136,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     RankingsResolver,
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
+    GetMissingCqcLocationsResolver,
   ],
 })
 export class WorkplaceModule {}

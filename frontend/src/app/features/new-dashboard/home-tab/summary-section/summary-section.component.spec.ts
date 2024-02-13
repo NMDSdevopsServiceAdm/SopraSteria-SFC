@@ -26,6 +26,7 @@ describe('Summary section', () => {
     workersNotCompleted = [workerBuilder()] as Worker[],
     canViewListOfWorkers = true,
     canViewEstablishment = true,
+    showMissingCqcMessage = false,
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule, RouterModule, RouterTestingModule],
@@ -52,6 +53,7 @@ describe('Summary section', () => {
         isParent: false,
         canViewListOfWorkers: canViewListOfWorkers,
         canViewEstablishment: canViewEstablishment,
+        showMissingCqcMessage: showMissingCqcMessage,
       },
     });
 
@@ -569,23 +571,57 @@ describe('Summary section', () => {
   });
 
   describe('your other workplaces summary section', () => {
+    it('should show the row', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.isParent = true;
+      fixture.detectChanges();
+
+      const workplacesRow = getByTestId('workplaces-row');
+      expect(workplacesRow).toBeTruthy();
+    });
+
     it('should show you other workplaces link', async () => {
       const { component, getByText } = await setup();
 
       component.isParent = true;
+      const yourOtherWorkplacesText = getByText('Your other workplaces');
 
-      expect(getByText('Your other workplaces')).toBeTruthy();
+      expect(yourOtherWorkplacesText).toBeTruthy();
+      expect(yourOtherWorkplacesText.getAttribute('href')).toBeTruthy();
     });
 
-    it('should show the no workplace message when there is no workplaces added', async () => {
-      const { component, getByTestId } = await setup();
+    it('should show message if showMissingCqcMessage is true', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(1, 'year'),
+        numberOfStaff: 12,
+      };
+
+      const date = [dayjs().subtract(1, 'year')];
+
+      const { component, fixture, getByText } = await setup(false, establishment, 0, {}, date, [], false, false, true);
 
       component.isParent = true;
 
-      const workplacesRow = getByTestId('workplaces-row');
+      fixture.detectChanges();
 
-      expect(workplacesRow).toBeTruthy();
-      expect(within(workplacesRow).getByText(`You've not added any other workplaces yet`)).toBeTruthy();
+      const yourOtherWorkplacesSummaryText = getByText('Have you added all of your workplaces?');
+
+      expect(yourOtherWorkplacesSummaryText).toBeTruthy();
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBe('/workplace/view-all-workplaces');
+    });
+
+    it('should show the no workplace message when showMissingCqcMessage is false', async () => {
+      const { component, getByText, fixture } = await setup();
+
+      component.isParent = true;
+      fixture.detectChanges();
+
+      const yourOtherWorkplacesSummaryText = getByText(`You've not added any other workplaces yet`);
+
+      expect(yourOtherWorkplacesSummaryText).toBeTruthy();
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBeFalsy();
     });
   });
 });
