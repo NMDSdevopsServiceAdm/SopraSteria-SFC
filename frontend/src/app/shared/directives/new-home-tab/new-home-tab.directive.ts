@@ -82,6 +82,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public alertMessage: string;
   public showMissingCqcMessage: boolean;
   public locationId: string;
+  public workplacesCount: number;
 
   constructor(
     private userService: UserService,
@@ -160,6 +161,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
 
     this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;
     this.locationId = this.workplace.locationId;
+    this.workplacesCount = this.route.snapshot.data.cqcLocations?.childWorkplacesCount;
     this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
 
     this.sendAlert();

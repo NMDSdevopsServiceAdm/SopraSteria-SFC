@@ -52,17 +52,18 @@
         </a>
       </div>
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body summary-section__summary-text">
-        <ng-container *ngIf="otherWorkplacesSection.message; else noWorkplacesMessage">
+        <ng-container *ngIf="otherWorkplacesSection.link; else noWorkplacesLink">
           <img
             src="/assets/images/flag-orange.svg"
             alt="action-required-orange-flag"
             class="govuk-!-margin-right-2"
-            data-testid="orange-flag"
+            data-testid="workplaces-orange-flag"
+            *ngIf="otherWorkplacesSection.orangeFlag"
           />
           <a [routerLink]="['/workplace', 'view-all-workplaces']" href="#"> {{ otherWorkplacesSection.message }}</a>
         </ng-container>
-        <ng-template #noWorkplacesMessage>
-          <span>You've not added any other workplaces yet</span>
+        <ng-template #noWorkplacesLink>
+          {{ otherWorkplacesSection.message }}
         </ng-template>
       </div>
     </div>
