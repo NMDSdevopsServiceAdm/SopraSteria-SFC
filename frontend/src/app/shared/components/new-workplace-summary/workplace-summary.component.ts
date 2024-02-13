@@ -36,6 +36,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public numberOfStaffError: boolean;
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
+  public isParent: boolean;
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
@@ -44,6 +45,8 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     private cqcStatusChangeService: CqcStatusChangeService,
     private tabsService: TabsService,
   ) {
+    this.isParent = establishmentService.primaryWorkplace.isParent;
+
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
       other: '# beds available',

@@ -1,4 +1,13 @@
 <ng-container *ngIf="workplace">
+  <br/>
+  <div class="govuk-width-container govuk-!-margin-bottom-5">
+    <h2 class="govuk-heading-m govuk-!-margin-bottom-5">
+      Your workplace details
+    </h2>
+    <p *ngIf="isParent"
+    ><a [routerLink]="['/workplace/about-parents']">What you can do as a parent workplace</a></p>
+  </div>
+
   <div data-testid="workplace-section">
     <dl class="govuk-summary-list govuk-summary-list--medium govuk-!-margin-top-7 govuk-!-margin-bottom-0">
       <div
