@@ -36,15 +36,15 @@ export class AboutParentsComponent implements OnInit {
     if(this.previousRouteService.getPreviousPage() != "about parents") {
       this.previousPage = this.previousRouteService.getPreviousPage();
 
-      // temporary as the url for your other workplaces is view all workplaces
       if(this.previousPage == "view all workplaces") {
         this.previousPage = "your other workplaces";
+      } else if(this.previousPage == "workplace") {
+        this.previousPage = "your workplace details";
       }
     }
   }
 
   returnToPreviousPage() {
     this._location.back();
-    // this.router.navigate(this.previousRouteService.getPreviousUrl());
   }
 }
