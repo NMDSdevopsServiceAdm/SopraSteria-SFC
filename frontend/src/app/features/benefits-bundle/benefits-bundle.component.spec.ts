@@ -237,7 +237,7 @@ describe('BenefitsBundleComponent', () => {
     it('should display the supervision link in the 5 free downloads content', async () => {
       const { getByText } = await setup();
 
-      const link = getByText('Effective supervision guide');
+      const link = getByText('A positive culture toolkit for adult social care');
 
       expect(link.getAttribute('href')).toBe(
         'https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Managing-people/Supervision/Effective-supervision-guide.pdf',
@@ -245,10 +245,10 @@ describe('BenefitsBundleComponent', () => {
       expect(link.getAttribute('target')).toBe('_blank');
     });
 
-    it('should display the Social media masterclasses by LikeMind Media link in the 5 free downloads content', async () => {
+    it('should display the Top tips for adult social care workforce retentionlink in the 5 free downloads content', async () => {
       const { getByText } = await setup();
 
-      const link = getByText('Social media masterclasses by LikeMind Media');
+      const link = getByText('Top tips for adult social care workforce retention');
 
       expect(link.getAttribute('href')).toBe(
         'https://www.skillsforcare.org.uk/Recruitment-support/Application-and-selection-process/Digital-masterclasses.aspx',
