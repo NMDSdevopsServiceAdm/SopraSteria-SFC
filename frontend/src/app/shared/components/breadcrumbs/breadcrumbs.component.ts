@@ -4,6 +4,8 @@ import { JourneyRoute } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { Establishment } from '@core/model/establishment.model';
 
 @Component({
   selector: 'app-breadcrumbs',
@@ -12,10 +14,17 @@ import { Subscription } from 'rxjs';
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
   public breadcrumbs: JourneyRoute[];
   private subscriptions: Subscription = new Subscription();
+  private workplace: Establishment;
 
-  constructor(private breadcrumbService: BreadcrumbService, private router: Router, private tabsService: TabsService) {}
+  constructor(
+    private breadcrumbService: BreadcrumbService,
+    private tabsService: TabsService,
+    private establishmentService: EstablishmentService,
+  ) {}
 
   ngOnInit(): void {
+    this.workplace = this.establishmentService.primaryWorkplace;
+
     this.subscriptions.add(
       this.breadcrumbService.routes$.subscribe((routes) => {
         this.breadcrumbs = routes ? this.getBreadcrumbs(routes) : null;
