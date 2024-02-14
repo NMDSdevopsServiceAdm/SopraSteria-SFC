@@ -36,7 +36,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public numberOfStaffError: boolean;
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
-  public isParent: boolean;
+  private isParent: boolean;
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,

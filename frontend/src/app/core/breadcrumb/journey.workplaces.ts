@@ -160,7 +160,16 @@ export const allWorkplacesJourney: JourneyRoute = {
     {
       title: 'Your other workplaces',
       path: Path.ALL_WORKPLACES,
+      fragment: 'workplaces',
       children: [
+        {
+          title: 'About Parents',
+          path: Path.ABOUT_PARENTS,
+          referrer: {
+            path: Path.WORKPLACE,
+            fragment: 'about-parents',
+          },
+        },
         {
           title: 'Change data owner',
           path: Path.CHANGE_DATA_OWNER,
@@ -169,14 +178,6 @@ export const allWorkplacesJourney: JourneyRoute = {
           title: 'Workplace',
           path: Path.WORKPLACE,
           children: [
-            {
-              title: 'About Parents',
-              path: Path.ABOUT_PARENTS,
-              referrer: {
-                path: Path.WORKPLACE,
-                fragment: 'about-parents',
-              },
-            },
             {
               title: 'Staff record',
               path: Path.STAFF_RECORD,

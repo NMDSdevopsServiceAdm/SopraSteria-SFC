@@ -32,6 +32,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public currentPageIndex = 0;
   private searchTerm = '';
   public alertMessage: string;
+  private isParent: boolean;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -42,7 +43,9 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private router: Router,
     private alertService: AlertService,
     private previousRouteService: PreviousRouteService,
-  ) {}
+  ) {
+    this.isParent = establishmentService.primaryWorkplace.isParent;
+  }
 
   ngOnInit(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;

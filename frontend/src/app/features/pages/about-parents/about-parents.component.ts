@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -17,31 +17,44 @@ export class AboutParentsComponent implements OnInit {
   public returnToHomeButton: boolean;
   public routeData: string;
   public pages: Page;
-  public previousPage: string;
+  public previousPageText: string;
+  public journeyType: any;
 
   constructor(
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
     private route: ActivatedRoute,
-    private router: Router,
     private _location: Location,
     private previousRouteService: PreviousRouteService
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.breadcrumbService.show(JourneyType.WORKPLACE_TAB, this.workplace?.name);
     this.pages = this.route.snapshot.data.pages?.data[0];
+    this.setPreviousPageText();
+    this.breadcrumbService.show(this.showJourneyType(), this.workplace?.name);
+  }
 
+  private setPreviousPageText() {
     if(this.previousRouteService.getPreviousPage() != "about parents") {
-      this.previousPage = this.previousRouteService.getPreviousPage();
+      this.previousPageText = this.previousRouteService.getPreviousPage();
 
-      if(this.previousPage == "view all workplaces") {
-        this.previousPage = "your other workplaces";
-      } else if(this.previousPage == "workplace") {
-        this.previousPage = "your workplace";
+      if(this.previousPageText == "view all workplaces") {
+        this.previousPageText = "your other workplaces";
+      } else if(this.previousPageText == "workplace") {
+        this.previousPageText = "your workplace";
       }
     }
+  }
+
+  // JourneyType.WORKPLACE_TAB Home -> Workplaces -> What you can do as a parent workplace
+  // workplaceTabJourney
+  // JourneyType.OTHER_WORKPLACES Home -> Workplaces -> Your other workplaces
+
+  //allWorkplacesJourney
+  private showJourneyType(): any {
+    this.journeyType = JourneyType.ALL_WORKPLACES;
+    return this.journeyType;
   }
 
   returnToPreviousPage() {

@@ -308,6 +308,11 @@ export class BreadcrumbService {
         break;
       }
 
+      case JourneyType.ABOUT_PARENTS: {
+        routes = workplaceTabJourney;
+        break;
+      }
+
       default: {
         routes = null;
       }
