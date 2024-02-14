@@ -755,6 +755,11 @@ module.exports = function (sequelize, DataTypes) {
         values: ['Yes', 'No', "Don't know"],
         field: 'SickPay',
       },
+      isParentApprovedBannerViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'IsParentApprovedBannerViewed',
+      },
       cssrId: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -2119,7 +2124,17 @@ module.exports = function (sequelize, DataTypes) {
     const offset = pageIndex * limit;
 
     const data = await this.findAndCountAll({
-      attributes: ['uid', 'updated', 'NameValue', 'dataOwner', 'dataPermissions', 'dataOwnershipRequested', 'ustatus'],
+      attributes: [
+        'uid',
+        'updated',
+        'NameValue',
+        'dataOwner',
+        'dataPermissions',
+        'dataOwnershipRequested',
+        'ustatus',
+        'postcode',
+        'locationId',
+      ],
       include: [
         {
           model: sequelize.models.services,

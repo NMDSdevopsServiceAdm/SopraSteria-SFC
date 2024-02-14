@@ -13,6 +13,7 @@ import { Establishment } from '@core/model/establishment.model';
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
   public breadcrumbs: JourneyRoute[];
+  public overrideMessage: string;
   private subscriptions: Subscription = new Subscription();
   private workplace: Establishment;
 
@@ -29,6 +30,9 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
       this.breadcrumbService.routes$.subscribe((routes) => {
         this.breadcrumbs = routes ? this.getBreadcrumbs(routes) : null;
       }),
+    );
+    this.subscriptions.add(
+      this.breadcrumbService.overrideMessage$.subscribe(overrideMessage => this.overrideMessage = overrideMessage ? overrideMessage : undefined)
     );
   }
 

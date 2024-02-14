@@ -29,9 +29,8 @@ import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
 describe('ViewMyWorkplacesComponent', () => {
   async function setup(hasChildWorkplaces = true, qsParamGetMock = sinon.fake()) {
-    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText } = await render(
-      ViewMyWorkplacesComponent,
-      {
+    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText, queryByTestId } =
+      await render(ViewMyWorkplacesComponent, {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
         declarations: [WorkplaceInfoPanelComponent],
         providers: [
@@ -82,13 +81,19 @@ describe('ViewMyWorkplacesComponent', () => {
                         count: 0,
                         activeWorkplaceCount: 0,
                       },
+                  cqcLocations: hasChildWorkplaces
+                    ? {
+                        showMissingCqcMessage: true,
+                      }
+                    : {
+                        showMissingCqcMessage: false,
+                      },
                 },
               },
             },
           },
         ],
-      },
-    );
+      });
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -98,6 +103,9 @@ describe('ViewMyWorkplacesComponent', () => {
     const router = injector.inject(Router);
 
     const getChildWorkplacesSpy = spyOn(establishmentService, 'getChildWorkplaces').and.callThrough();
+
+    const alertService = TestBed.inject(AlertService);
+    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     return {
       router,
@@ -109,8 +117,10 @@ describe('ViewMyWorkplacesComponent', () => {
       queryByText,
       getByLabelText,
       queryByLabelText,
+      queryByTestId,
       getChildWorkplacesSpy,
       establishmentService,
+      alertServiceSpy,
     };
   }
 
@@ -138,12 +148,12 @@ describe('ViewMyWorkplacesComponent', () => {
 
   it('should display activeWorkplaceCount returned from getChildWorkplaces (2)', async () => {
     const { queryByText } = await setup();
-    expect(queryByText('All workplaces (2)')).toBeTruthy();
+    expect(queryByText('Your other workplaces (2)')).toBeTruthy();
   });
 
   it('should display no workplaces message when workplace has no child workplaces', async () => {
-    const { queryByText } = await setup(false);
-    expect(queryByText('There are no workplaces.')).toBeTruthy();
+    const { getByTestId } = await setup(false);
+    expect(getByTestId('noWorkplacesMessage')).toBeTruthy();
   });
 
   describe('calls getChildWorkplaces on establishmentService when using search', () => {
@@ -234,7 +244,7 @@ describe('ViewMyWorkplacesComponent', () => {
 
       fixture.detectChanges();
 
-      expect(getByText('All workplaces (2)'));
+      expect(getByText('Your other workplaces (2)'));
       expect(component.workplaceCount).toEqual(1);
     });
 
@@ -260,6 +270,45 @@ describe('ViewMyWorkplacesComponent', () => {
       fixture.autoDetectChanges();
 
       expect((getByLabelText('Search child workplace records') as HTMLInputElement).value).toBe('mysupersearch');
+    });
+  });
+
+  it('should show the banner message if there is an alert message', async () => {
+    const { component, fixture, alertServiceSpy } = await setup();
+
+    const message = "You've sent a change data owner request";
+
+    window.history.pushState({ alertMessage: message }, '', '');
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    expect(component.alertMessage).toEqual(message);
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: message,
+    });
+  });
+
+  describe('missing cqc workplaces message', () => {
+    it('should not show if missingCqcWorkplaces is false ', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('missingCqcWorkplaces')).toBeFalsy();
+    });
+
+    it('should not show if missingCqcWorkplaces is true', async () => {
+      const { queryByTestId } = await setup(true);
+
+      expect(queryByTestId('missingCqcWorkplaces')).toBeTruthy();
+    });
+
+    it('should show the primary workplace name, if missingCqcWorkplaces is true', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      const missingCqcWorkplacesMessage = getByTestId('missingCqcWorkplaces');
+
+      expect(missingCqcWorkplacesMessage.textContent).toContain(component.primaryWorkplace.name);
     });
   });
 });

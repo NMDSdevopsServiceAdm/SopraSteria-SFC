@@ -75,6 +75,7 @@ describe('NewDashboardHeaderComponent', () => {
         tAndQCount: 5,
         canEditWorker,
         hasWorkers,
+        isParent: false,
       },
     });
 
@@ -92,6 +93,7 @@ describe('NewDashboardHeaderComponent', () => {
       queryByText,
       establishmentService,
       router,
+      fixture,
     };
   };
 
@@ -112,6 +114,22 @@ describe('NewDashboardHeaderComponent', () => {
       expect(queryByTestId('lastUpdatedDate')).toBeFalsy();
     });
 
+    it('should not show parent above workplace name if it is not a parent', async () => {
+      const { component, queryByTestId } = await setup();
+
+      component.isParent = false;
+
+      expect(queryByTestId('parentLabel')).toBeFalsy();
+    });
+
+    it('should show parent above workplace name if it is a parent', async () => {
+      const { component, queryByTestId } = await setup();
+
+      component.isParent = true;
+
+      expect(queryByTestId('parentLabel')).toBeTruthy();
+    });
+
     it('should show Skills for Care contact info', async () => {
       const { getByTestId } = await setup();
 
@@ -126,6 +144,19 @@ describe('NewDashboardHeaderComponent', () => {
 
       expect(column1.getAttribute('class')).toContain('govuk-grid-column-one-half');
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-half');
+    });
+
+    it('should show the parent name for a sub account', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.isParent = false;
+      component.workplace.parentName = 'My parent';
+
+      fixture.detectChanges();
+
+      const parentName = getByTestId('parentNameLabel');
+
+      expect(parentName).toBeTruthy();
     });
   });
 

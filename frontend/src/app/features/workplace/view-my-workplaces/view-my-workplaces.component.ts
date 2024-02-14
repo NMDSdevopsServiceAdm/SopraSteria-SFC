@@ -11,6 +11,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-view-my-workplaces',
@@ -29,6 +30,11 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public itemsPerPage = 12;
   public currentPageIndex = 0;
   private searchTerm = '';
+  public alertMessage: string;
+
+  public locationId: string;
+  public showMissingCqcMessage: boolean;
+  public missingCqcLocations: any;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -37,11 +43,12 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES, this.primaryWorkplace.name);
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
 
     const childWorkplaces = this.route.snapshot.data.childWorkplaces;
@@ -51,6 +58,14 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
     this.setupServerErrorsMap();
     this.setSearchIfPrevious();
+
+    this.alertMessage = history.state?.alertMessage;
+
+    this.sendAlert();
+
+    this.locationId = this.primaryWorkplace.locationId;
+
+    this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
   }
 
   private setSearchIfPrevious(): void {
@@ -115,7 +130,17 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.handlePageUpdate(0);
   }
 
+  public sendAlert(): void {
+    if (this.alertMessage) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: this.alertMessage,
+      });
+    }
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.alertService.removeAlert();
   }
 }

@@ -54,19 +54,27 @@ import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.component';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
   {
     path: 'view-all-workplaces',
     component: ViewMyWorkplacesComponent,
-    resolve: { childWorkplaces: ChildWorkplacesResolver },
+    resolve: { childWorkplaces: ChildWorkplacesResolver, cqcLocations: GetMissingCqcLocationsResolver },
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
+  },
+  {
+    path: 'change-data-owner',
+    component: ChangeDataOwnerComponent,
+    resolve: { childWorkplaces: ChildWorkplacesResolver },
+    data: { title: 'Change Data Owner' },
   },
   {
     path: ':establishmentuid',

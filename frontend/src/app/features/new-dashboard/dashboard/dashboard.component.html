@@ -1,6 +1,15 @@
 <ng-container [ngSwitch]="selectedTab">
   <ng-container *ngSwitchCase="'home'">
-    <app-new-home-tab [workplace]="workplace" [meta]="tilesData?.meta" data-testid="home-tab"></app-new-home-tab>
+    <ng-container *ngIf="!isParent; else parent">
+      <app-new-home-tab [workplace]="workplace" [meta]="tilesData?.meta" data-testid="home-tab"></app-new-home-tab>
+    </ng-container>
+    <ng-template #parent>
+      <app-parent-home-tab
+        [workplace]="workplace"
+        [meta]="tilesData?.meta"
+        data-testid="parentHomeTab"
+      ></app-parent-home-tab>
+    </ng-template>
   </ng-container>
 
   <ng-container *ngSwitchCase="'workplace'">

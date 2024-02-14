@@ -1,0 +1,53 @@
+<div class="govuk-grid-row govuk-!-padding-bottom-1">
+  <div class="govuk-grid-column-two-thirds">
+    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+      <span class="govuk-caption-l" data-testid="subheading">Workplace</span>
+      <h1 class="govuk-fieldset__heading">Parent workplace accounts</h1>
+    </legend>
+    <p>
+      Because you selected <span class="govuk-body govuk-!-font-weight-bold">head office services</span> as your main
+      service, you might want to have a parent workplace account.
+    </p>
+    <h2>Become a parent</h2>
+    <p>
+      With your ASC-WDS account, you can add other workplaces that do not use ASC-WDS and manage their data for them.
+    </p>
+    <p>
+      This type of account is sometimes called a
+      <span class="govuk-body govuk-!-font-weight-bold">parent workplace account</span> as it lets you manage workplace
+      details, staff records, and training and qualification records for other workplaces.
+    </p>
+    <p>
+      To manage another workplace's data you'll need to click on the 'Become a parent and manage other workplaces' data'
+      link when you sign into ASC-WDS.
+    </p>
+    <h2>Link to a parent</h2>
+    <p>
+      Other workplaces that already use ASC-WDS in your group or organisation can also send you link requests and tell
+      you which information you'll have access to.
+    </p>
+  </div>
+  <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+    <div class="govuk-!-margin-left-8">
+      <app-progress-bar
+        data-testid="progress-bar-1"
+        [header]="'Workplace'"
+        [sections]="workplaceSections"
+        [currentSection]="'Main service'"
+      ></app-progress-bar>
+      <app-progress-bar
+        *ngIf="this.flow.includes('registration')"
+        data-testid="progress-bar-2"
+        [header]="'User account'"
+        [sections]="userAccountSections"
+        [currentSection]="'Main service'"
+      ></app-progress-bar>
+    </div>
+  </div>
+</div>
+
+<app-registration-submit-buttons
+  (click)="onClick()"
+  [insideFlow]="true"
+  [returnRoute]="flow"
+></app-registration-submit-buttons>

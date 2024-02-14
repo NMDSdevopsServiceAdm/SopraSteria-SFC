@@ -1,10 +1,13 @@
-<div class="govuk-width-container govuk-!-margin-top-7 summary-box" data-testid="summaryBox">
+<div class="govuk-width-container govuk-!-margin-top-4 summary-box" data-testid="summaryBox">
   <ng-container *ngFor="let section of sections; index as index">
     <div class="summary-section" [attr.data-testid]="section.fragment + '-row'">
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body-l summary-section__links">
-        <a (click)="navigateToTab($event, section.fragment)" class="govuk-link--no-visited-state" href="#">
-          {{ section.linkText }}
-        </a>
+        <ng-container *ngIf="section.link; else noLinkForText">
+          <a (click)="navigateToTab($event, section.fragment)" class="govuk-link--no-visited-state" href="#">
+            {{ section.linkText }}
+          </a>
+        </ng-container>
+        <ng-template #noLinkForText>{{ section.linkText }}</ng-template>
       </div>
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body summary-section__summary-text">
         <ng-container *ngIf="section.message; else noMessage">
@@ -36,9 +39,33 @@
         </ng-template>
       </div>
     </div>
-    <hr
-      *ngIf="index < sections.length - 1"
-      class="govuk-section-break govuk-section-break--visible govuk-!-margin-left-4 govuk-!-margin-right-4"
-    />
+    <ng-container *ngIf="index < sections.length - 1">
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-left-4 govuk-!-margin-right-4" />
+    </ng-container>
+  </ng-container>
+  <ng-container *ngIf="isParent">
+    <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-left-4 govuk-!-margin-right-4" />
+    <div class="summary-section" data-testid="workplaces-row">
+      <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body-l summary-section__links">
+        <a class="govuk-link--no-visited-state" [routerLink]="['/workplace', 'view-all-workplaces']">
+          {{ otherWorkplacesSection.linkText }}
+        </a>
+      </div>
+      <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body summary-section__summary-text">
+        <ng-container *ngIf="otherWorkplacesSection.link; else noWorkplacesLink">
+          <img
+            src="/assets/images/flag-orange.svg"
+            alt="action-required-orange-flag"
+            class="govuk-!-margin-right-2"
+            data-testid="workplaces-orange-flag"
+            *ngIf="otherWorkplacesSection.orangeFlag"
+          />
+          <a [routerLink]="['/workplace', 'view-all-workplaces']" href="#"> {{ otherWorkplacesSection.message }}</a>
+        </ng-container>
+        <ng-template #noWorkplacesLink>
+          {{ otherWorkplacesSection.message }}
+        </ng-template>
+      </div>
+    </div>
   </ng-container>
 </div>

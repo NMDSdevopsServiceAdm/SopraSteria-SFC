@@ -1,5 +1,5 @@
 const WorkerCsvValidator =
-  require('../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
+  require('../../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
 const mappings = require('../../../../../models/BulkImport/BUDI/index.js').mappings;
 
 const {
