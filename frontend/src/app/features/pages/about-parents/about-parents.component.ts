@@ -5,7 +5,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Page } from '@core/model/page.model';
-import {Location} from '@angular/common';
+import { Location } from '@angular/common';
 import { PreviousRouteService } from '../../../core/services/previous-route.service';
 
 @Component({
