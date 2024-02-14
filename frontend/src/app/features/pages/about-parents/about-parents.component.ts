@@ -18,7 +18,7 @@ export class AboutParentsComponent implements OnInit {
   public routeData: string;
   public pages: Page;
   public previousPageText: string;
-  public journeyType: any;
+  public journeyType = JourneyType.WORKPLACE_TAB;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -41,19 +41,15 @@ export class AboutParentsComponent implements OnInit {
 
       if(this.previousPageText == "view all workplaces") {
         this.previousPageText = "your other workplaces";
+        this.journeyType = JourneyType.ALL_WORKPLACES;
       } else if(this.previousPageText == "workplace") {
         this.previousPageText = "your workplace";
+        this.journeyType = JourneyType.WORKPLACE_TAB;
       }
     }
   }
 
-  // JourneyType.WORKPLACE_TAB Home -> Workplaces -> What you can do as a parent workplace
-  // workplaceTabJourney
-  // JourneyType.OTHER_WORKPLACES Home -> Workplaces -> Your other workplaces
-
-  //allWorkplacesJourney
   private showJourneyType(): any {
-    this.journeyType = JourneyType.ALL_WORKPLACES;
     return this.journeyType;
   }
 
