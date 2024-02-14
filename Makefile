@@ -16,3 +16,7 @@ test-fe:
 
 test-be:
 	npm run server:test:unit --prefix backend
+
+db-migrate:
+	cd backend && export NODE_ENV=localhost & \
+	npm run db:migrate --prefix backend
