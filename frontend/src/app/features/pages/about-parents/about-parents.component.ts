@@ -39,7 +39,7 @@ export class AboutParentsComponent implements OnInit {
       if(this.previousPage == "view all workplaces") {
         this.previousPage = "your other workplaces";
       } else if(this.previousPage == "workplace") {
-        this.previousPage = "your workplace details";
+        this.previousPage = "your workplace";
       }
     }
   }
