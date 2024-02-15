@@ -240,7 +240,7 @@ describe('BenefitsBundleComponent', () => {
       const link = getByText('A positive culture toolkit for adult social care');
 
       expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/resources/documents/Support-for-leaders-and-managers/Managing-people/Supervision/Effective-supervision-guide.pdf',
+        'https://www.skillsforcare.org.uk/Support-for-leaders-and-managers/Managing-a-service/Positive-workplace-culture/A-positive-culture-toolkit-for-adult-social-care.aspx',
       );
       expect(link.getAttribute('target')).toBe('_blank');
     });
@@ -251,7 +251,7 @@ describe('BenefitsBundleComponent', () => {
       const link = getByText('Top tips for adult social care workforce retention');
 
       expect(link.getAttribute('href')).toBe(
-        'https://www.skillsforcare.org.uk/Recruitment-support/Application-and-selection-process/Digital-masterclasses.aspx',
+        'https://www.skillsforcare.org.uk/Recruitment-support/Retaining-your-workforce/Top-tips-for-adult-social-care-workforce-retention/Top-tips-for-adult-social-care-workforce-retention.aspx',
       );
       expect(link.getAttribute('target')).toBe('_blank');
     });
