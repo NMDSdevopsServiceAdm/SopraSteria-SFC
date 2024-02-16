@@ -29,6 +29,7 @@ import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 declare global {
   interface Window {
@@ -83,6 +84,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   public showMissingCqcMessage: boolean;
   public locationId: string;
   public workplacesCount: number;
+  public isParentSubsidiaryView: boolean;
 
   constructor(
     private userService: UserService,
@@ -90,14 +92,15 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     private parentRequestsService: ParentRequestsService,
     private dialogService: DialogService,
     private tabsService: TabsService,
-    private route: ActivatedRoute,
+    public route: ActivatedRoute,
     @Inject(WindowToken) private window: Window,
     private serviceNamePipe: ServiceNamePipe,
     private reportsService: ReportService,
     private featureFlagsService: FeatureFlagsService,
     private alertService: AlertService,
     private router: Router,
-    private establishmentService: EstablishmentService,
+    public establishmentService: EstablishmentService,
+    public parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -221,7 +224,9 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
       this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
-    this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
+    //this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
+
+    this.canViewEstablishment = true;
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }

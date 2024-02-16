@@ -6,19 +6,11 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { SharedModule } from '@shared/shared.module';
 
 import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
+import { ViewSubsidiaryHomeComponent } from './view-subsidiary-home.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    ReactiveFormsModule,
-    SharedModule,
-    OverlayModule,
-    SubsidiaryRoutingModule,
-  ],
-  declarations: [
-  ],
-  providers: [
-    WorkplaceResolver,
-  ],
+  imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, SubsidiaryRoutingModule],
+  declarations: [ViewSubsidiaryHomeComponent],
+  providers: [WorkplaceResolver],
 })
 export class SubsidiaryModule {}

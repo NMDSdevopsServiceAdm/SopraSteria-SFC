@@ -23,6 +23,7 @@ export class SummarySectionComponent implements OnInit {
   @Input() canViewEstablishment: boolean;
   @Input() showMissingCqcMessage: boolean;
   @Input() workplacesCount: number;
+  @Input() isParentSubsidiaryView: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -63,7 +64,9 @@ export class SummarySectionComponent implements OnInit {
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();
-
+    if (this.isParentSubsidiaryView) {
+      await this.router.navigate(['subsidiary', fragment]);
+    }
     if (route) {
       await this.router.navigate(route);
     }

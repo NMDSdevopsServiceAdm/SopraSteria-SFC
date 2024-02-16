@@ -22,14 +22,21 @@ const routes: Routes = [
   {
     path: 'dashboard/:subsidiaryId',
     component: ViewSubsidiaryHomeComponent,
-    resolve: { },
+    resolve: {},
     canActivate: [ParentGuard],
     data: { title: 'Dashboard' },
   },
   {
+    path: 'home/:subsidiaryId',
+    component: ViewSubsidiaryHomeComponent,
+    resolve: {},
+    canActivate: [ParentGuard],
+    data: { title: 'Home' },
+  },
+  {
     path: 'workplace/:subsidiaryId',
     component: ViewSubsidiaryWorkplaceComponent,
-    resolve: { },
+    resolve: {},
     canActivate: [ParentGuard],
     data: { title: 'Workplace' },
   },
