@@ -11,7 +11,7 @@
     <ng-template #recruitmentAndRetention>
       <p class="govuk-body govuk-!-margin-top-2 govuk-!-margin-right-8" data-testid="all-recruitment-data">
         Your workplace has a higher {{ sectionInSummary | lowercase }} than
-        <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces - rank }}</span> others in a comparision group of
+        <span class="govuk-!-font-weight-bold">{{ rank - 1 }}</span> others in a comparision group of
         <span class="govuk-!-font-weight-bold">{{ numberOfWorkplaces }} </span> workplaces.
       </p>
     </ng-template>
