@@ -63,6 +63,7 @@ export class SummarySectionComponent implements OnInit {
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();
+
     if (route) {
       await this.router.navigate(route);
     }
@@ -71,7 +72,6 @@ export class SummarySectionComponent implements OnInit {
 
   public getWorkplaceSummaryMessage(): void {
     const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;
-
     this.sections[0].redFlag = false;
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';

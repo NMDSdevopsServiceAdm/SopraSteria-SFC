@@ -59,9 +59,7 @@ import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-ta
 import { NewComparisonGroupHeaderComponent } from '@features/new-dashboard/benchmarks-tab/comparison-group-header/comparison-group-header.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
-import { CardComponent } from '@features/new-dashboard/home-tab/card/card.component';
 import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
-import { SummarySectionComponent } from '@features/new-dashboard/home-tab/summary-section/summary-section.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { NewStaffTabComponent } from '@features/new-dashboard/staff-tab/staff-tab.component';
 import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
@@ -137,8 +135,6 @@ import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLoc
     NewBenchmarksTabComponent,
     NewTrainingLinkPanelComponent,
     NewComparisonGroupHeaderComponent,
-    CardComponent,
-    SummarySectionComponent,
     StaffBasicRecord,
     BecomeAParentComponent,
     RemoveLinkToParentComponent,
