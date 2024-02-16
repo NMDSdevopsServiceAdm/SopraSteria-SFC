@@ -6,7 +6,7 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { SharedModule } from '@shared/shared.module';
 
 import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
-import { ViewSubsidiaryHomeComponent } from './view-subsidiary-home.component';
+import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, SubsidiaryRoutingModule],
