@@ -116,6 +116,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
 import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-data-link/about-the-data-link.component';
 import { CardComponent } from './components/card/card.component';
 import { SummarySectionComponent } from './components/summary-section/summary-section.component';
+import { BackToParentComponent } from './components/back-to-parent-link/back-to-parent-link.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -233,6 +234,7 @@ import { SummarySectionComponent } from './components/summary-section/summary-se
     AboutTheDataLinkComponent,
     CardComponent,
     SummarySectionComponent,
+    BackToParentComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -346,6 +348,7 @@ import { SummarySectionComponent } from './components/summary-section/summary-se
     AboutTheDataLinkComponent,
     CardComponent,
     SummarySectionComponent,
+    BackToParentComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
