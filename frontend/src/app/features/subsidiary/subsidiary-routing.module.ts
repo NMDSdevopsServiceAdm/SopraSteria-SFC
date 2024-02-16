@@ -10,6 +10,7 @@ import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-
 
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { ViewSubsidiaryWorkplaceComponent } from './view-subsidiary-workplace.component';
+import { ViewSubsidiaryHomeComponent } from './view-subsidiary-home.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -20,7 +21,7 @@ const routes: Routes = [
   },
   {
     path: 'dashboard/:subsidiaryId',
-    component: ViewSubsidiaryWorkplaceComponent,
+    component: ViewSubsidiaryHomeComponent,
     resolve: { },
     canActivate: [ParentGuard],
     data: { title: 'Dashboard' },
@@ -32,34 +33,34 @@ const routes: Routes = [
     canActivate: [ParentGuard],
     data: { title: 'Workplace' },
   },
-  {
-    path: 'staff-records/:subsidiaryId',
-    component: ViewSubsidiaryWorkplaceComponent,
-    resolve: { },
-    canActivate: [ParentGuard],
-    data: { title: 'Staff Records' },
-  },
-  {
-    path: 'training-and-qualifications/:subsidiaryId',
-    component: ViewSubsidiaryWorkplaceComponent,
-    resolve: { },
-    canActivate: [ParentGuard],
-    data: { title: 'Training and qualifications' },
-  },
-  {
-    path: 'benchmarks/:subsidiaryId',
-    component: ViewSubsidiaryWorkplaceComponent,
-    resolve: { },
-    canActivate: [ParentGuard],
-    data: { title: 'Benchmarks' },
-  },
-  {
-    path: 'workplace-users/:subsidiaryId',
-    component: ViewSubsidiaryWorkplaceComponent,
-    resolve: { },
-    canActivate: [ParentGuard],
-    data: { title: 'Workplace users' },
-  },
+  // {
+  //   path: 'staff-records/:subsidiaryId',
+  //   component: ViewSubsidiaryWorkplaceComponent,
+  //   resolve: { },
+  //   canActivate: [ParentGuard],
+  //   data: { title: 'Staff Records' },
+  // },
+  // {
+  //   path: 'training-and-qualifications/:subsidiaryId',
+  //   component: ViewSubsidiaryWorkplaceComponent,
+  //   resolve: { },
+  //   canActivate: [ParentGuard],
+  //   data: { title: 'Training and qualifications' },
+  // },
+  // {
+  //   path: 'benchmarks/:subsidiaryId',
+  //   component: ViewSubsidiaryWorkplaceComponent,
+  //   resolve: { },
+  //   canActivate: [ParentGuard],
+  //   data: { title: 'Benchmarks' },
+  // },
+  // {
+  //   path: 'workplace-users/:subsidiaryId',
+  //   component: ViewSubsidiaryWorkplaceComponent,
+  //   resolve: { },
+  //   canActivate: [ParentGuard],
+  //   data: { title: 'Workplace users' },
+  // },
 ];
 
 @NgModule({
