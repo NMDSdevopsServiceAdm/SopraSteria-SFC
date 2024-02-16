@@ -5,13 +5,12 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
-  selector: 'app-view-subsidiary-workplace',
-  templateUrl: './view-subsidiary-workplace.component.html',
+  selector: 'app-view-subsidiary-training-and-qualifications',
+  templateUrl: './view-subsidiary-training-and-qualifications.component.html',
 })
-export class ViewSubsidiaryWorkplaceComponent implements OnInit {
+export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit {
   public primaryEstablishment: Establishment;
   public workplace: Establishment;
   public summaryReturnUrl: URLStructure;
@@ -31,7 +30,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
 
   constructor(
     // private alertService: AlertService,
-    private breadcrumbService: BreadcrumbService,
+    // private breadcrumbService: BreadcrumbService,
     // private dialogService: DialogService,
     // private establishmentService: EstablishmentService,
     // private benchmarksService: BenchmarksServiceBase,
@@ -47,7 +46,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     // this.showBanner = history.state?.showBanner;
 
     // this.establishmentService.setCheckCQCDetailsBanner(false);
-    this.breadcrumbService.show(JourneyType.SUBSIDIARY);
+    // this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     // this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     // this.workplace = this.establishmentService.establishment;
     // this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
