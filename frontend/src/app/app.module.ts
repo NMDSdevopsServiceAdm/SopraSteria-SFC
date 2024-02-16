@@ -93,6 +93,7 @@ import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver'
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { ViewSubsidiaryWorkplaceComponent } from '@features/subsidiary/workplace/view-subsidiary-workplace.component';
 
 @NgModule({
   declarations: [
@@ -140,6 +141,7 @@ import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLoc
     RemoveLinkToParentComponent,
     LinkToParentComponent,
     ParentWorkplaceAccounts,
+    ViewSubsidiaryWorkplaceComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
