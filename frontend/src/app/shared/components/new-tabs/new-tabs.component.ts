@@ -2,6 +2,7 @@ import { Location } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TabsService } from '@core/services/tabs.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -25,6 +26,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     private location: Location,
     private route: ActivatedRoute,
     private tabsService: TabsService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private router: Router,
   ) {}
 
@@ -53,7 +55,10 @@ export class NewTabsComponent implements OnInit, OnDestroy {
         if (tabIndex > -1) {
           const tab = this.tabs[tabIndex];
           tab.active = true;
-          if (this.dashboardView) {
+          if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+            let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
+            this.router.navigate([`/subsidiary/${tab.slug}/${subsidiaryUid}`]);
+          } else if (this.dashboardView) {
             this.location.replaceState(`/dashboard#${tab.slug}`);
           } else if (this.clickEvent) {
             this.router.navigate(['/dashboard'], { fragment: tab.slug });

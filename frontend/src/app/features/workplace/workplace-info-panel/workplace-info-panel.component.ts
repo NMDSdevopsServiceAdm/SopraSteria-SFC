@@ -14,6 +14,7 @@ import { MoveWorkplaceDialogComponent } from '@shared/components/move-workplace/
 import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { Subscription } from 'rxjs';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-workplace-info-panel',
@@ -43,6 +44,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     private alertService: AlertService,
     private authService: AuthService,
     private featureFlagsService: FeatureFlagsService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit() {
@@ -146,6 +148,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     });
   }
 
+  // refactor and rename
   public setEmployerType(event: Event): void {
     event.preventDefault();
 
@@ -154,6 +157,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         this.establishmentService.setEmployerTypeHasValue(false);
         this.router.navigate(['/workplace', this.workplace.uid, 'type-of-employer']);
       } else {
+        this.parentSubsidiaryViewService.setViewingSubAsParent(this.workplace.uid);
         this.router.navigate(['/subsidiary/workplace/', this.workplace.uid]);
       }
     });
