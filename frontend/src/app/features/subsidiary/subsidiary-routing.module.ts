@@ -20,7 +20,7 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'dashboard/:subsidiaryId',
+    path: 'home/:subsidiaryId',
     component: ViewSubsidiaryHomeComponent,
     resolve: { },
     canActivate: [ParentGuard],
