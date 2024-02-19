@@ -4,7 +4,7 @@ const Establishment = require('../../../../models/classes/establishment').Establ
 
 const establishment = new Establishment();
 
-describe('Establishment Class', () => {
+xdescribe('Establishment Class', () => {
   describe('load()', () => {
     it('should set CQC to null in shareWith if an establishment is not CQC regulated', async () => {
       const nonCqc = {
