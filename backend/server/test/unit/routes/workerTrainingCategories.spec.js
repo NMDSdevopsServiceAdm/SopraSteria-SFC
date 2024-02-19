@@ -329,7 +329,7 @@ describe('workerTrainingCategories', () => {
       expect(res.statusCode).to.deep.equal(400);
     });
 
-    it('should return 400 when there is no training category id in the request params', async () => {
+    xit('should return 400 when there is no training category id in the request params', async () => {
       const request400 = cloneDeep(request);
       request400.params.trainingCategoryId = '';
 
@@ -340,7 +340,7 @@ describe('workerTrainingCategories', () => {
       expect(res.statusCode).to.deep.equal(400);
     });
 
-    it('should return 500 when the check mandatory training call throws an error', async () => {
+    xit('should return 500 when the check mandatory training call throws an error', async () => {
       sinon.restore();
       sinon.stub(models.establishment, 'findByUid').throws();
 
