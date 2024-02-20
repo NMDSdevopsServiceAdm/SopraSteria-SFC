@@ -340,19 +340,23 @@ describe('workerTrainingCategories', () => {
       expect(res.statusCode).to.deep.equal(400);
     });
 
-    xit('should return 500 when the check mandatory training call throws an error', async () => {
+    it('should return 500 when the check mandatory training call throws an error', async () => {
       sinon.restore();
       sinon.stub(models.establishment, 'findByUid').throws();
 
-      await getCategoryTraining(req, res);
+      call = async () => {
+        await getCategoryTraining(req, res);
+      };
 
       expect(res.statusCode).to.deep.equal(500);
     });
 
-    xit('should return 500 when the check mandatory training call throws an error', async () => {
+    it('should return 500 when the check mandatory training call throws an error', async () => {
       sinon.stub(models.MandatoryTraining, 'checkIfTrainingCategoryIsMandatory').throws();
 
-      await getCategoryTraining(req, res);
+      call = async () => {
+        await getCategoryTraining(req, res);
+      };
 
       expect(res.statusCode).to.deep.equal(500);
     });
