@@ -49,14 +49,8 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
   ngOnInit(): void {
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.breadcrumbService.show(JourneyType.WORKPLACE_TAB);
-    // this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
-    // this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
-    // this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
-
     this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
-
-    // this.subsidiaryWorkplace = this.parentSubsidiaryViewService.getSubsidiaryWorkplace();
 
     // this.route.data.subscribe(data => {
     //   console.log(data.resolvedData);
@@ -68,6 +62,10 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
         if (workplace) {
           this.establishmentService.setPrimaryWorkplace(workplace);
           this.subsidiaryWorkplace = workplace;
+
+          this.canEditEstablishment = this.permissionsService.can(this.subsidiaryWorkplace?.uid, 'canEditEstablishment');
+          this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
+          this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
         }
     });
   }
