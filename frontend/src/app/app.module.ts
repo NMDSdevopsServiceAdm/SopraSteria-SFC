@@ -96,6 +96,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
 import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { ViewSubsidiaryWorkplaceComponent } from '@features/subsidiary/workplace/view-subsidiary-workplace.component';
+import { SubsidiaryAccountComponent } from '@core/components/subsidiaryAccount/subsidiaryAccount.component';
 
 @NgModule({
   declarations: [
@@ -129,6 +130,7 @@ import { ViewSubsidiaryWorkplaceComponent } from '@features/subsidiary/workplace
     BenefitsELearningComponent,
     TailoredSeminarsComponent,
     StandAloneAccountComponent,
+    SubsidiaryAccountComponent,
     DashboardWrapperComponent,
     NewDashboardComponent,
     NewHomeTabComponent,
