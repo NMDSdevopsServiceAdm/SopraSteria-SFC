@@ -22,6 +22,7 @@ export class SubsidiaryAccountComponent implements OnInit {
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
+  public selectedTab: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -37,9 +38,13 @@ export class SubsidiaryAccountComponent implements OnInit {
     this.workplaceId = id;
     this.getPermissions();
     this.setTabs();
+    this.selectedTab = "home";
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
+    console.log(properties.tabSlug);
+    this.selectedTab = properties.tabSlug;
+
     if (properties.tabSlug === 'benchmarks') {
       this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplaceId).subscribe());
     }

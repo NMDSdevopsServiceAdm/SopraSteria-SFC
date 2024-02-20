@@ -48,7 +48,6 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
 
   ngOnInit(): void {
     this.establishmentService.setInStaffRecruitmentFlow(false);
-    this.breadcrumbService.show(JourneyType.WORKPLACE_TAB);
     this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 

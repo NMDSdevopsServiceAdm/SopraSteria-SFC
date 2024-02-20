@@ -1,7 +1,7 @@
 <div id="content">
   <div class="asc-tabs-container">
   <div class="govuk-width-container">
-    <app-new-tabs (selectedTabClick)="tabClickEvent($event)"  [tabs]="tabs" [dashboardView]="dashboardView">
+    <app-new-tabs (selectedTabClick)="tabClickEvent($event)" [tabs]="tabs">
     </app-new-tabs>
   </div>
 </div>
@@ -15,7 +15,7 @@
 </div>
 
 <app-new-dashboard-header
-  [tab]="'workplace'"
+  [tab]="selectedTab"
 ></app-new-dashboard-header>
 
 <div [class]="{ 'govuk-width-container': !dashboardView }">
@@ -31,7 +31,7 @@
     role="main"
     tabindex="-1"
   >
-    <router-outlet> </router-outlet>
+    <router-outlet></router-outlet>
   </main>
 </div>
 </div>

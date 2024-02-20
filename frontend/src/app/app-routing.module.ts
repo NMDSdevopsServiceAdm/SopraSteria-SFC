@@ -272,14 +272,7 @@ const routes: Routes = [
       },
       {
         path: 'subsidiary',
-        // canActivate: [HasPermissionsGuard],
-        // canActivateChild: [AuthGuard],
         loadChildren: () => import('@features/subsidiary/subsidiary.module').then((m) => m.SubsidiaryModule),
-        // resolve: {
-        //   loggedInUser: LoggedInUserResolver,
-        //   primaryWorkplace: PrimaryWorkplaceResolver,
-        //   notifications: NotificationsListResolver,
-        // },
       },
     ],
   },

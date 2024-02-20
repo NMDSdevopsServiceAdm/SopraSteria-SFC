@@ -5,6 +5,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-view-subsidiary-training-and-qualifications',
@@ -40,6 +41,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     // private workerService: WorkerService,
     // private route: ActivatedRoute,
     // private featureFlagsService: FeatureFlagsService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
