@@ -26,6 +26,8 @@ export class ViewSubsidiaryHomeComponent extends NewHomeTabDirective {
       ? this.parentSubsidiaryViewService.getSubsidiaryUid()
       : this.route.snapshot.params.subsidiaryId;
 
+    console.log(this.route.snapshot);
+
     //this.establishmentService.getEstablishment(this.subId);
 
     //console.log(this.route.snapshot);
@@ -34,22 +36,11 @@ export class ViewSubsidiaryHomeComponent extends NewHomeTabDirective {
     //   this.workplace = data;
     // });
 
-    this.establishmentService.getEstablishment(this.subId).subscribe((workplace) => {
-      if (workplace) {
-        this.establishmentService.setPrimaryWorkplace(workplace);
-        this.subsidiaryWorkplace = workplace;
-        this.workplace = workplace;
-        console.log(this.subsidiaryWorkplace);
-        console.log(this.establishmentService.primaryWorkplace);
-        this.setPermissionLinks();
-      }
-    });
-
     console.log(this.canEditEstablishment);
 
     //this.subsidiaryWorkplace = this.establishmentService.establishment;
 
-    this.handlePageRefresh();
+    //this.handlePageRefresh();
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
 
     console.log(this.isParentSubsidiaryView);

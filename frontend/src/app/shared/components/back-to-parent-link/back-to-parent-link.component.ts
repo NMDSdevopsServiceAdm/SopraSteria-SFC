@@ -14,7 +14,7 @@ export class BackToParentComponent implements OnInit {
 
   constructor(
     private establishmentService: EstablishmentService,
-    private route: Router,
+    private router: Router,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
@@ -23,8 +23,9 @@ export class BackToParentComponent implements OnInit {
   public backToParentLinkClick(event: Event) {
     event.preventDefault();
 
-    this.backToParentLinkClicked.emit(event);
+    //this.backToParentLinkClicked.emit(event);
     this.parentSubsidiaryViewService.clearViewingSubAsParent();
-    this.route.navigate(['dashboard']);
+    //this.router.navigate(['/dashboard'], { fragment: 'home' });
+    this.router.navigate(['/dashboard']);
   }
 }

@@ -45,7 +45,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() meta: Meta;
 
-  private subscriptions: Subscription = new Subscription();
+  public subscriptions: Subscription = new Subscription();
   public benchmarksMessage: string;
   public canViewWorkplaces: boolean;
   public canViewReports: boolean;

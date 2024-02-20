@@ -13,7 +13,7 @@ import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
-import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -25,8 +25,8 @@ const routes: Routes = [
   {
     path: 'home/:subsidiaryId',
     component: ViewSubsidiaryHomeComponent,
-    resolve: { establishment: WorkplaceResolver },
-    canActivate: [ParentGuard, HasPermissionsGuard],
+    resolve: { users: AllUsersForEstablishmentResolver },
+    canActivate: [ParentGuard, HasPermissionsGuard, CheckPermissionsGuard],
     data: {
       permissions: ['canViewEstablishment'],
       title: 'Dashboard',
