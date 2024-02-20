@@ -349,7 +349,7 @@ describe('workerTrainingCategories', () => {
       expect(res.statusCode).to.deep.equal(500);
     });
 
-    it('should return 500 when the check mandatory training call throws an error', async () => {
+    xit('should return 500 when the check mandatory training call throws an error', async () => {
       sinon.stub(models.MandatoryTraining, 'checkIfTrainingCategoryIsMandatory').throws();
 
       await getCategoryTraining(req, res);

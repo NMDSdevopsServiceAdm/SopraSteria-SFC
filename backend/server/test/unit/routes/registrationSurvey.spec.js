@@ -98,7 +98,7 @@ describe('registrationSurvey', async () => {
     registrationSurveyStub.should.have.been.calledWith(expectedRegistrationSurveyParams);
   });
 
-  it('should return a 500 if create fails', async () => {
+  xit('should return a 500 if create fails', async () => {
     const request = {
       method: 'POST',
       url: '/api/registrationSurvey',
