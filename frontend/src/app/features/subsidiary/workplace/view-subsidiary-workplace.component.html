@@ -1,3 +1,24 @@
-<!-- <ng-container *ngIf="newDashboard"> -->
-    <app-new-dashboard-header [tab]="'benchmarks'"></app-new-dashboard-header>
-<!-- </ng-container> -->
+<!-- <app-new-dashboard-header [tab]="'workplace'" [updatedDate]="workplace.updated"></app-new-dashboard-header> -->
+<app-new-dashboard-header [tab]="'workplace'"></app-new-dashboard-header>
+<div class="govuk-width-container govuk-!-padding-top-2">
+  <ng-container *ngIf="canEditEstablishment && addWorkplaceDetailsBanner">
+    <app-inset-text [color]="'todo'">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-full">
+          <a [routerLink]="['/workplace', workplace?.uid, 'start']">Start to add more details about your workplace</a>
+        </div>
+      </div>
+    </app-inset-text>
+  </ng-container>
+  <ng-container *ngIf="canEditEstablishment && showCqcDetailsBanner">
+    <app-check-cqc-details data-testid="check-cqc-details-banner"></app-check-cqc-details>
+  </ng-container>
+
+  <app-new-workplace-summary
+    *ngIf="subsidiaryWorkplace"
+    [workplace]="subsidiaryWorkplace"
+    [workerCount]="workerCount"
+    [return]="summaryReturnUrl"
+    data-testid="workplace-summary"
+  ></app-new-workplace-summary>
+</div>
