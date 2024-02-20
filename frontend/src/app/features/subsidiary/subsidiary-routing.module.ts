@@ -13,6 +13,7 @@ import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -24,16 +25,12 @@ const routes: Routes = [
   {
     path: 'home/:subsidiaryId',
     component: ViewSubsidiaryHomeComponent,
-    resolve: {},
-    canActivate: [ParentGuard],
-    data: { title: 'Dashboard' },
-  },
-  {
-    path: 'home/:subsidiaryId',
-    component: ViewSubsidiaryHomeComponent,
-    resolve: {},
-    canActivate: [ParentGuard],
-    data: { title: 'Home' },
+    resolve: { establishment: WorkplaceResolver },
+    canActivate: [ParentGuard, HasPermissionsGuard],
+    data: {
+      permissions: ['canViewEstablishment'],
+      title: 'Dashboard',
+    },
   },
   {
     path: 'workplace/:subsidiaryId',
@@ -45,28 +42,28 @@ const routes: Routes = [
   {
     path: 'staff-records/:subsidiaryId',
     component: ViewSubsidiaryStaffRecordsComponent,
-    resolve: { },
+    resolve: {},
     canActivate: [ParentGuard],
     data: { title: 'Staff Records' },
   },
   {
     path: 'training-and-qualifications/:subsidiaryId',
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
-    resolve: { },
+    resolve: {},
     canActivate: [ParentGuard],
     data: { title: 'Training and qualifications' },
   },
   {
     path: 'benchmarks/:subsidiaryId',
     component: ViewSubsidiaryBenchmarksComponent,
-    resolve: { },
+    resolve: {},
     canActivate: [ParentGuard],
     data: { title: 'Benchmarks' },
   },
   {
     path: 'workplace-users/:subsidiaryId',
     component: ViewSubsidiaryWorkplaceUsersComponent,
-    resolve: { },
+    resolve: {},
     canActivate: [ParentGuard],
     data: { title: 'Workplace users' },
   },

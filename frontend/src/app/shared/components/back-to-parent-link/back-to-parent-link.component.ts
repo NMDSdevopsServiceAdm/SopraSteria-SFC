@@ -1,6 +1,7 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Router } from '@angular/router';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-back-to-parent-link',
@@ -8,16 +9,22 @@ import { Router } from '@angular/router';
   styleUrls: ['./back-to-parent-link.component.scss'],
 })
 export class BackToParentComponent implements OnInit {
-  @Input() primaryWorkplaceName: string;
+  @Input() parentWorkplaceName: string;
   @Output() backToParentLinkClicked = new EventEmitter();
 
-  constructor(private establishmentService: EstablishmentService, private route: Router) {}
+  constructor(
+    private establishmentService: EstablishmentService,
+    private route: Router,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+  ) {}
 
   ngOnInit() {}
 
   public backToParentLinkClick(event: Event) {
     event.preventDefault();
-    this.route.navigate(['dashboard']);
+
     this.backToParentLinkClicked.emit(event);
+    this.parentSubsidiaryViewService.clearViewingSubAsParent();
+    this.route.navigate(['dashboard']);
   }
 }

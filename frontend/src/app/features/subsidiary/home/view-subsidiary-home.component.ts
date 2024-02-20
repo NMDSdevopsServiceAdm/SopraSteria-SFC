@@ -15,21 +15,48 @@ import { NewHomeTabDirective } from '@shared/directives/new-home-tab/new-home-ta
   providers: [ServiceNamePipe],
 })
 export class ViewSubsidiaryHomeComponent extends NewHomeTabDirective {
-  public primaryWorkplaceName: string;
+  public parentWorkplaceName: string;
+  public subId: string;
+  public subsidiaryWorkplace: string;
 
   ngOnInit(): void {
-    this.primaryWorkplaceName = this.establishmentService.primaryWorkplace.name;
-    const subId = this.parentSubsidiaryViewService.getSubsidiaryUid();
-    console.log(subId);
+    this.parentWorkplaceName = this.establishmentService.primaryWorkplace.name;
 
-    this.establishmentService.getEstablishment(subId);
+    this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid()
+      ? this.parentSubsidiaryViewService.getSubsidiaryUid()
+      : this.route.snapshot.params.subsidiaryId;
 
-    this.workplace = this.establishmentService.establishment;
+    //this.establishmentService.getEstablishment(this.subId);
 
-    console.log(this.workplace);
+    //console.log(this.route.snapshot);
 
+    // this.establishmentService.getEstablishment(this.subId).subscribe((data) => {
+    //   this.workplace = data;
+    // });
+
+    this.establishmentService.getEstablishment(this.subId).subscribe((workplace) => {
+      if (workplace) {
+        this.establishmentService.setPrimaryWorkplace(workplace);
+        this.subsidiaryWorkplace = workplace;
+        this.workplace = workplace;
+        console.log(this.subsidiaryWorkplace);
+        console.log(this.establishmentService.primaryWorkplace);
+        this.setPermissionLinks();
+      }
+    });
+
+    console.log(this.canEditEstablishment);
+
+    //this.subsidiaryWorkplace = this.establishmentService.establishment;
+
+    this.handlePageRefresh();
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
 
     console.log(this.isParentSubsidiaryView);
+  }
+
+  public handlePageRefresh(): void {
+    console.log('function');
+    this.parentSubsidiaryViewService.setViewingSubAsParent(this.subId);
   }
 }

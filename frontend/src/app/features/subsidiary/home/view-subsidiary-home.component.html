@@ -1,14 +1,14 @@
 <!-- <app-new-dashboard-header tab="home"></app-new-dashboard-header> -->
 
 TEMPORARY POSITION
-<app-back-to-parent-link [primaryWorkplaceName]="primaryWorkplaceName"></app-back-to-parent-link>
+<app-back-to-parent-link [parentWorkplaceName]="parentWorkplaceName"></app-back-to-parent-link>
 <div class="govuk-width-container govuk-!-margin-top-7">
-  <ng-container *ngIf="newHomeDesignParentFlag || newHomeDesignParentFlag">
+  <ng-container *ngIf="(newHomeDesignParentFlag && workplace) || newHomeDesignParentFlag">
     <app-alert></app-alert>
   </ng-container>
   <app-summary-section
     [canViewListOfWorkers]="canViewListOfWorkers"
-    [workplace]="workplace"
+    [workplace]="subsidiaryWorkplace"
     [workerCount]="workerCount"
     [workersCreatedDate]="workersCreatedDate"
     [trainingCounts]="trainingCounts"
