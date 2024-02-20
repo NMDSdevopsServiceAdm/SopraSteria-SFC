@@ -5,6 +5,8 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 
 @Component({
   selector: 'app-view-subsidiary-workplace-users',
@@ -30,7 +32,7 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
 
   constructor(
     // private alertService: AlertService,
-    // private breadcrumbService: BreadcrumbService,
+    private breadcrumbService: BreadcrumbService,
     // private dialogService: DialogService,
     // private establishmentService: EstablishmentService,
     // private benchmarksService: BenchmarksServiceBase,
@@ -40,13 +42,14 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
     // private workerService: WorkerService,
     // private route: ActivatedRoute,
     // private featureFlagsService: FeatureFlagsService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
     // this.showBanner = history.state?.showBanner;
 
     // this.establishmentService.setCheckCQCDetailsBanner(false);
-    // this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
+    this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     // this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     // this.workplace = this.establishmentService.establishment;
     // this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
