@@ -5,6 +5,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { Establishment } from '@core/model/establishment.model';
 
 @Component({
   selector: 'app-subsidiary-account',
@@ -23,6 +24,8 @@ export class SubsidiaryAccountComponent implements OnInit {
   public canViewBenchmarks: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
   public selectedTab: string;
+
+  public subsidiaryWorkplace: Establishment;
 
   constructor(
     private establishmentService: EstablishmentService,

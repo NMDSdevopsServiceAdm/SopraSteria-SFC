@@ -25,33 +25,21 @@ const routes: Routes = [
   {
     path: 'home/:subsidiaryUid',
     component: ViewSubsidiaryHomeComponent,
-    resolve: {
-      subsidiaryResolver: SubsidiaryResolver,
-    },
     data: { title: 'Dashboard' },
   },
   {
     path: 'workplace/:subsidiaryUid',
     component: ViewSubsidiaryWorkplaceComponent,
-    resolve: {
-      subsidiaryResolver: SubsidiaryResolver,
-    },
     data: { title: 'Workplace' },
   },
   {
     path: 'staff-records/:subsidiaryUid',
     component: ViewSubsidiaryStaffRecordsComponent,
-    resolve: {
-      subsidiaryResolver: SubsidiaryResolver,
-    },
     data: { title: 'Staff Records' },
   },
   {
     path: 'training-and-qualifications/:subsidiaryUid',
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
-    resolve: {
-      subsidiaryResolver: SubsidiaryResolver,
-    },
     data: { title: 'Training and qualifications' },
   },
   {
@@ -63,9 +51,6 @@ const routes: Routes = [
   {
     path: 'workplace-users/:subsidiaryUid',
     component: ViewSubsidiaryWorkplaceUsersComponent,
-    resolve: {
-      subsidiaryResolver: SubsidiaryResolver,
-    },
     data: { title: 'Workplace users' },
   },
 ];

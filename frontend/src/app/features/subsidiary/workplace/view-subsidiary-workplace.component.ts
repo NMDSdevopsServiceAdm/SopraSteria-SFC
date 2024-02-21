@@ -52,8 +52,8 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 
     this.route.data.subscribe(data => {
-      console.log("resolvedData: ", data.resolvedData);
       this.subsidiaryWorkplace = data.resolvedData;
+      console.log("resolvedData: ", data.resolvedData);
     });
 
     this.establishmentService.getEstablishment(this.parentSubsidiaryViewService.getSubsidiaryUid())
