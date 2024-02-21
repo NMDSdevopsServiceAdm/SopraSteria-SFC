@@ -4,8 +4,7 @@
   </div>
   <div class="asc-tabs-container">
     <div class="govuk-width-container">
-      <app-new-tabs (selectedTabClick)="tabClickEvent($event)" [tabs]="tabs" [dashboardView]="dashboardView">
-      </app-new-tabs>
+      <app-new-tabs (selectedTabClick)="tabClickEvent($event)" [tabs]="tabs"> </app-new-tabs>
     </div>
   </div>
 
@@ -17,7 +16,7 @@
     </div>
   </div>
 
-  <app-new-dashboard-header [tab]="'workplace'"></app-new-dashboard-header>
+  <app-new-dashboard-header [tab]="selectedTab"></app-new-dashboard-header>
 
   <div [class]="{ 'govuk-width-container': !dashboardView }">
     <ng-container *ngIf="!dashboardView">
@@ -32,7 +31,7 @@
       role="main"
       tabindex="-1"
     >
-      <router-outlet> </router-outlet>
+      <router-outlet></router-outlet>
     </main>
   </div>
 </div>

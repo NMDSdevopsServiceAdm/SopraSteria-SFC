@@ -28,6 +28,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   public parentWorkplaceName: string;
   public subWorkplace: Establishment;
   public subId: string;
+  public selectedTab: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -72,9 +73,13 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
         this.parentWorkplaceName = this.subWorkplace?.parentName;
       }),
     );
+    this.selectedTab = 'home';
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
+    console.log(properties.tabSlug);
+    this.selectedTab = properties.tabSlug;
+
     if (properties.tabSlug === 'benchmarks') {
       this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplaceId).subscribe());
     }

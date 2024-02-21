@@ -14,18 +14,19 @@ import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-su
 
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
+import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
   {
-    path: ':subsidiaryId',
-    redirectTo: 'dashboard/:subsidiaryId',
+    path: ':subsidiaryUid',
+    redirectTo: 'dashboard/:subsidiaryUid',
     pathMatch: 'full',
   },
   {
-    path: 'home/:subsidiaryId',
+    path: 'home/:subsidiaryUid',
     component: ViewSubsidiaryHomeComponent,
-    resolve: { users: AllUsersForEstablishmentResolver },
+    resolve: { users: AllUsersForEstablishmentResolver, subsidiaryResolver: SubsidiaryResolver },
     canActivate: [ParentGuard, HasPermissionsGuard, CheckPermissionsGuard],
     data: {
       permissions: ['canViewEstablishment'],
@@ -33,35 +34,37 @@ const routes: Routes = [
     },
   },
   {
-    path: 'workplace/:subsidiaryId',
+    path: 'workplace/:subsidiaryUid',
     component: ViewSubsidiaryWorkplaceComponent,
-    resolve: {},
+    resolve: {
+      subsidiaryResolver: SubsidiaryResolver,
+    },
     canActivate: [ParentGuard],
     data: { title: 'Workplace' },
   },
   {
-    path: 'staff-records/:subsidiaryId',
+    path: 'staff-records/:subsidiaryUid',
     component: ViewSubsidiaryStaffRecordsComponent,
     resolve: {},
     canActivate: [ParentGuard],
     data: { title: 'Staff Records' },
   },
   {
-    path: 'training-and-qualifications/:subsidiaryId',
+    path: 'training-and-qualifications/:subsidiaryUid',
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
     resolve: {},
     canActivate: [ParentGuard],
     data: { title: 'Training and qualifications' },
   },
   {
-    path: 'benchmarks/:subsidiaryId',
+    path: 'benchmarks/:subsidiaryUid',
     component: ViewSubsidiaryBenchmarksComponent,
     resolve: {},
     canActivate: [ParentGuard],
     data: { title: 'Benchmarks' },
   },
   {
-    path: 'workplace-users/:subsidiaryId',
+    path: 'workplace-users/:subsidiaryUid',
     component: ViewSubsidiaryWorkplaceUsersComponent,
     resolve: {},
     canActivate: [ParentGuard],

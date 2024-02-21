@@ -31,10 +31,10 @@ export class NewDashboardHeaderComponent implements OnInit {
   public subsidiaryCount: number;
   public showLastUpdatedDate: boolean;
   public tabsMap = {
-    workplace: 'Workplace',
+    'workplace': 'Workplace',
     'staff-records': 'Staff records',
     'training-and-qualifications': 'Training and qualifications',
-    benchmarks: 'Benchmarks',
+    'benchmarks': 'Benchmarks',
   };
   public header: string;
   public isParent: boolean;

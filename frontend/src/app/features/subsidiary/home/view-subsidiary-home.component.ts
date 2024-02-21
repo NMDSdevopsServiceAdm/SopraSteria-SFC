@@ -8,6 +8,7 @@ import { Worker } from '@core/model/worker.model';
 import { SharedModule } from '@shared/shared.module';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { NewHomeTabDirective } from '@shared/directives/new-home-tab/new-home-tab.directive';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-view-subsidiary-home',
@@ -18,6 +19,26 @@ export class ViewSubsidiaryHomeComponent extends NewHomeTabDirective {
   public parentWorkplaceName: string;
   public subId: string;
   public subsidiaryWorkplace: string;
+  public primaryEstablishment: Establishment;
+  public workplace: Establishment;
+  public summaryReturnUrl: URLStructure;
+  public canDeleteEstablishment: boolean;
+  public canViewListOfUsers: boolean;
+  public canViewListOfWorkers: boolean;
+  public canViewBenchmarks: boolean;
+  public totalStaffRecords: number;
+  public trainingAlert: number;
+  public workers: Worker[];
+  public trainingCounts: TrainingCounts;
+  public workerCount: number;
+  public showSharingPermissionsBanner: boolean;
+  private showBanner = false;
+  public newDataAreaFlag: boolean;
+  public canSeeNewDataArea: boolean;
+
+  // constructor(
+  //   private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+  // ) {}
 
   ngOnInit(): void {
     this.parentWorkplaceName = this.establishmentService.primaryWorkplace.name;
@@ -49,5 +70,14 @@ export class ViewSubsidiaryHomeComponent extends NewHomeTabDirective {
   public handlePageRefresh(): void {
     console.log('function');
     this.parentSubsidiaryViewService.setViewingSubAsParent(this.subId);
+    // this.establishmentService.setCheckCQCDetailsBanner(false);
+    // this.primaryEstablishment = this.establishmentService.primaryWorkplace;
+    // this.workplace = this.establishmentService.establishment;
+    // this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
+    // this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
+    // this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
+    // this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
+    // this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
+    // this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
   }
 }
