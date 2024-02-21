@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable } from 'rxjs';
+import { Resolve, Router, ActivatedRouteSnapshot } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { of } from 'rxjs';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -14,19 +15,23 @@ export class SubsidiaryResolver implements Resolve<any> {
     private parentSubsidiaryViewService: ParentSubsidiaryViewService
   ) { }
 
-  resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<any> | Promise<any> | any {
-    // const subsidiaryUid = route.paramMap.get('subsidiaryUid');
-
-    const subsidiaryUid = this.parentSubsidiaryViewService.getSubsidiaryUid();
+  resolve(route: ActivatedRouteSnapshot) {
+    const subsidiaryUid = this.parentSubsidiaryViewService.getSubsidiaryUid() ?
+      this.parentSubsidiaryViewService.getSubsidiaryUid() :
+      route.paramMap.get('subsidiaryUid');
     console.log("SubsidaryUid resolver: ", subsidiaryUid);
-    return new Observable(observer => {
-      this.establishmentService.getEstablishment(subsidiaryUid)
-        .subscribe(workplace => {
-          observer.next(workplace);
-          observer.complete();
-          console.log("Workplace: ", workplace);
-        });
-    });
+
+    if (subsidiaryUid) {
+      return this.establishmentService.getEstablishment(subsidiaryUid).pipe(
+        tap((workplace) => {
+          this.establishmentService.setPrimaryWorkplace(workplace);
+          const standAloneAccount = !(workplace?.isParent || workplace?.parentUid);
+          this.establishmentService.standAloneAccount = standAloneAccount;
+        }),
+      );
+    }
+
+    return of(null);
   }
 }
 
