@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -49,6 +49,12 @@ export class ViewSubsidiaryHomeComponent extends NewHomeTabDirective {
 
     console.log(this.route.snapshot);
 
+    this.subsidiaryWorkplace = this.route.snapshot.data.subsidiaryResolver;
+
+    console.log(this.workplace);
+
+    console.log(this.canViewEstablishment);
+
     //this.establishmentService.getEstablishment(this.subId);
 
     //console.log(this.route.snapshot);
@@ -65,6 +71,10 @@ export class ViewSubsidiaryHomeComponent extends NewHomeTabDirective {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
 
     console.log(this.isParentSubsidiaryView);
+  }
+
+  ngOnChanges(): void {
+    this.setPermissionLinks();
   }
 
   public handlePageRefresh(): void {

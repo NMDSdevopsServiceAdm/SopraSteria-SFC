@@ -22,10 +22,7 @@ export class BackToParentComponent implements OnInit {
 
   public backToParentLinkClick(event: Event) {
     event.preventDefault();
-
-    //this.backToParentLinkClicked.emit(event);
     this.parentSubsidiaryViewService.clearViewingSubAsParent();
-    //this.router.navigate(['/dashboard'], { fragment: 'home' });
     this.router.navigate(['/dashboard']);
   }
 }

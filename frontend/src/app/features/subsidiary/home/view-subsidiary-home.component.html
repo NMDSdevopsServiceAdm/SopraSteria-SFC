@@ -3,6 +3,7 @@
     <app-alert></app-alert>
   </ng-container>
   <app-summary-section
+    *ngIf="subsidiaryWorkplace"
     [canViewListOfWorkers]="canViewListOfWorkers"
     [workplace]="subsidiaryWorkplace"
     [workerCount]="workerCount"

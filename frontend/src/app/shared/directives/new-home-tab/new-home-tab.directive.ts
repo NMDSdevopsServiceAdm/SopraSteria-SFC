@@ -1,4 +1,4 @@
-import { Directive, Inject, Input, OnDestroy, OnInit } from '@angular/core';
+import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
@@ -41,7 +41,7 @@ declare global {
 window.dataLayer = window.dataLayer || {};
 
 @Directive()
-export class NewHomeTabDirective implements OnInit, OnDestroy {
+export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   @Input() workplace: Establishment;
   @Input() meta: Meta;
 

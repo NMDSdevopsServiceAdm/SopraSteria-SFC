@@ -48,7 +48,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.getPermissions();
     this.setTabs();
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-    //this.parentWorkplaceName = this.subWorkplace?.parentName;
 
     this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid()
       ? this.parentSubsidiaryViewService.getSubsidiaryUid()
@@ -56,13 +55,11 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
 
     this.setWorkplace();
 
-    console.log(this.parentWorkplaceName);
-    //console.log(this.subWorkplace?.parentName);
+    console.log(this.route.snapshot.data.subsidiaryResolver);
   }
 
   ngOnChanges(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-    //this.parentWorkplaceName = this.subWorkplace?.parentName;
   }
 
   private setWorkplace(): void {
