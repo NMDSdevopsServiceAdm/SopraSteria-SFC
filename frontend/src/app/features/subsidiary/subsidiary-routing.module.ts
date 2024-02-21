@@ -28,7 +28,6 @@ const routes: Routes = [
     resolve: {
       subsidiaryResolver: SubsidiaryResolver,
     },
-    canActivate: [ParentGuard],
     data: { title: 'Dashboard' },
   },
   {
@@ -37,35 +36,36 @@ const routes: Routes = [
     resolve: {
       subsidiaryResolver: SubsidiaryResolver,
     },
-    canActivate: [ParentGuard],
     data: { title: 'Workplace' },
   },
   {
     path: 'staff-records/:subsidiaryUid',
     component: ViewSubsidiaryStaffRecordsComponent,
-    resolve: { },
-    canActivate: [ParentGuard],
+    resolve: {
+      subsidiaryResolver: SubsidiaryResolver,
+    },
     data: { title: 'Staff Records' },
   },
   {
     path: 'training-and-qualifications/:subsidiaryUid',
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
-    resolve: { },
-    canActivate: [ParentGuard],
+    resolve: {
+      subsidiaryResolver: SubsidiaryResolver,
+    },
     data: { title: 'Training and qualifications' },
   },
   {
     path: 'benchmarks/:subsidiaryUid',
     component: ViewSubsidiaryBenchmarksComponent,
     resolve: { },
-    canActivate: [ParentGuard],
     data: { title: 'Benchmarks' },
   },
   {
     path: 'workplace-users/:subsidiaryUid',
     component: ViewSubsidiaryWorkplaceUsersComponent,
-    resolve: { },
-    canActivate: [ParentGuard],
+    resolve: {
+      subsidiaryResolver: SubsidiaryResolver,
+    },
     data: { title: 'Workplace users' },
   },
 ];

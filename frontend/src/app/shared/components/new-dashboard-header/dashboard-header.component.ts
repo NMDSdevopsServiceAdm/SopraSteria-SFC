@@ -10,6 +10,7 @@ import { take } from 'rxjs/operators';
 import { AlertService } from '@core/services/alert.service';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { UserService } from '@core/services/user.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-new-dashboard-header',
@@ -47,11 +48,13 @@ export class NewDashboardHeaderComponent implements OnInit {
     private router: Router,
     private alertService: AlertService,
     private userService: UserService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.workplace ? this.workplace.uid : null;
+
     this.getHeader();
     this.getPermissions();
     this.isParent = this.establishmentService.primaryWorkplace?.isParent;
