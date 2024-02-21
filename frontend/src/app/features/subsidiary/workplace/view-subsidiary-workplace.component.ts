@@ -51,10 +51,10 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 
-    // this.route.data.subscribe(data => {
-    //   console.log(data.resolvedData);
-    //   this.subsidiaryWorkplace = data.resolvedData;
-    // });
+    this.route.data.subscribe(data => {
+      this.subsidiaryWorkplace = data.resolvedData;
+      console.log("resolvedData: ", data.resolvedData);
+    });
 
     this.establishmentService.getEstablishment(this.parentSubsidiaryViewService.getSubsidiaryUid())
       .subscribe((workplace) => {

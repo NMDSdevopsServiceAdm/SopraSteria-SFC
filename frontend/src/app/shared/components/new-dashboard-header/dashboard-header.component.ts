@@ -4,12 +4,13 @@ import { AuthService } from '@core/services/auth.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { AlertService } from '@core/services/alert.service';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { UserService } from '@core/services/user.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-new-dashboard-header',
@@ -24,6 +25,8 @@ export class NewDashboardHeaderComponent implements OnInit {
   @Input() tAndQCount = 0;
   @Input() canEditWorker = false;
   @Input() hasWorkers = false;
+
+  // @Input() workplace: Establishment;
 
   public workplace: Establishment;
   public canDeleteEstablishment: boolean;
@@ -45,13 +48,35 @@ export class NewDashboardHeaderComponent implements OnInit {
     private permissionsService: PermissionsService,
     private authService: AuthService,
     private router: Router,
+    private route: ActivatedRoute,
     private alertService: AlertService,
     private userService: UserService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
-    this.workplace = this.establishmentService.primaryWorkplace;
-    this.workplaceUid = this.workplace ? this.workplace.uid : null;
+    // this.establishmentService.getEstablishment("9a130dba-34d2-429d-91b2-3204d14ca283")
+
+    console.log("route uid: ",  this.route.snapshot.params['subsidiaryUid']);
+
+    console.log("parentSubsidiaryViewService: ", this.parentSubsidiaryViewService.getSubsidiaryUid());
+
+    this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe(subsidiaryUid => {
+      this.establishmentService.getEstablishment(subsidiaryUid)
+      .subscribe((workplace) => {
+        if (workplace) {
+          this.establishmentService.setPrimaryWorkplace(workplace);
+          this.workplace = workplace;
+          console.log("Dashboard Header Workplace: ", workplace);
+        }
+      });
+    });
+
+    if(!this.workplace) {
+      this.workplace = this.establishmentService.primaryWorkplace;
+      this.workplaceUid = this.workplace ? this.workplace.uid : null;
+    }
+
     this.getHeader();
     this.getPermissions();
     this.isParent = this.establishmentService.primaryWorkplace?.isParent;

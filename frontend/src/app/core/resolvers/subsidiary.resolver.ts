@@ -18,12 +18,13 @@ export class SubsidiaryResolver implements Resolve<any> {
     // const subsidiaryUid = route.paramMap.get('subsidiaryUid');
 
     const subsidiaryUid = this.parentSubsidiaryViewService.getSubsidiaryUid();
-    console.log("SubsidaryUid: ", subsidiaryUid);
+    console.log("SubsidaryUid resolver: ", subsidiaryUid);
     return new Observable(observer => {
       this.establishmentService.getEstablishment(subsidiaryUid)
         .subscribe(workplace => {
           observer.next(workplace);
           observer.complete();
+          console.log("Workplace: ", workplace);
         });
     });
   }

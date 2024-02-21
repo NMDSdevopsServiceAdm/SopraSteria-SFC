@@ -30,6 +30,8 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   public subId: string;
   public selectedTab: string;
 
+  public subsidiaryWorkplace: Establishment;
+
   constructor(
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,

@@ -36,38 +36,27 @@ const routes: Routes = [
   {
     path: 'workplace/:subsidiaryUid',
     component: ViewSubsidiaryWorkplaceComponent,
-    resolve: {
-      subsidiaryResolver: SubsidiaryResolver,
-    },
-    canActivate: [ParentGuard],
     data: { title: 'Workplace' },
   },
   {
     path: 'staff-records/:subsidiaryUid',
     component: ViewSubsidiaryStaffRecordsComponent,
-    resolve: {},
-    canActivate: [ParentGuard],
     data: { title: 'Staff Records' },
   },
   {
     path: 'training-and-qualifications/:subsidiaryUid',
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
-    resolve: {},
-    canActivate: [ParentGuard],
     data: { title: 'Training and qualifications' },
   },
   {
     path: 'benchmarks/:subsidiaryUid',
     component: ViewSubsidiaryBenchmarksComponent,
     resolve: {},
-    canActivate: [ParentGuard],
     data: { title: 'Benchmarks' },
   },
   {
     path: 'workplace-users/:subsidiaryUid',
     component: ViewSubsidiaryWorkplaceUsersComponent,
-    resolve: {},
-    canActivate: [ParentGuard],
     data: { title: 'Workplace users' },
   },
 ];
