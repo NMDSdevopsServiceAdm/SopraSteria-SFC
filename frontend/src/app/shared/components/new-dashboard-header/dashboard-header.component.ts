@@ -26,8 +26,6 @@ export class NewDashboardHeaderComponent implements OnInit {
   @Input() canEditWorker = false;
   @Input() hasWorkers = false;
 
-  // @Input() workplace: Establishment;
-
   public workplace: Establishment;
   public canDeleteEstablishment: boolean;
   public workplaceUid: string;
@@ -55,6 +53,8 @@ export class NewDashboardHeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    //subscribe to changes in the subsidiaryUid. Need to really subscribe to a parent workplace request change
+    // (Use the resolver)
     this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe(subsidiaryUid => {
       this.setWorkplace(subsidiaryUid);
     });

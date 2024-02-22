@@ -45,7 +45,6 @@ const routes: Routes = [
   {
     path: 'benchmarks/:subsidiaryUid',
     component: ViewSubsidiaryBenchmarksComponent,
-    resolve: { },
     data: { title: 'Benchmarks' },
   },
   {
