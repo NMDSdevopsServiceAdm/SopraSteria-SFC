@@ -14,6 +14,7 @@ import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-su
 
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
+import { SubsidiaryWorkerResolver } from '@core/resolvers/subsidiary-worker.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -41,6 +42,10 @@ const routes: Routes = [
     path: 'training-and-qualifications/:subsidiaryUid',
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
     data: { title: 'Training and qualifications' },
+    resolve: {
+      subsidiaryWorkplaceResolver: SubsidiaryResolver,
+      // subsidiaryWorkerResolver: SubsidiaryWorkerResolver,
+    }
   },
   {
     path: 'benchmarks/:subsidiaryUid',
