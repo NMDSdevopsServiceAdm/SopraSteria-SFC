@@ -8,6 +8,10 @@ import { SharedModule } from '@shared/shared.module';
 
 import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
 
+import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
+
+
 @NgModule({
   imports: [
     CommonModule,
@@ -17,6 +21,8 @@ import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
     SubsidiaryRoutingModule,
   ],
   declarations: [
+    ViewSubsidiaryWorkplaceComponent,
+    ViewSubsidiaryTrainingAndQualificationsComponent,
   ],
   providers: [
     SubsidiaryResolver,

@@ -34,6 +34,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   public newDataAreaFlag: boolean;
   public canSeeNewDataArea: boolean;
   private subsidiaryUid: string;
+  public totalRecords: number;
 
   constructor(
     // private alertService: AlertService,
@@ -51,6 +52,8 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   ) {}
 
   ngOnInit(): void {
+    this.totalRecords = 0;
+
     this.showBanner = history.state?.showBanner;
     this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);

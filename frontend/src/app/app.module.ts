@@ -147,7 +147,6 @@ import { SubsidiaryAccountComponent } from '@core/components/subsidiaryAccount/s
     RemoveLinkToParentComponent,
     LinkToParentComponent,
     ParentWorkplaceAccounts,
-    ViewSubsidiaryWorkplaceComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
