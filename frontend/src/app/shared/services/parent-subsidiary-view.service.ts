@@ -8,10 +8,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 })
 export class ParentSubsidiaryViewService {
   private subsidiaryUidSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private subsidiaryWorkplace: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
 
   private viewingSubAsParent = false;
   private subsidiaryUid: string
-  private subsidiaryWorkplace: Establishment;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -21,6 +21,15 @@ export class ParentSubsidiaryViewService {
     this.subsidiaryUid = subsidiaryUid;
     this.viewingSubAsParent = true;
     this.subsidiaryUidSubject.next(subsidiaryUid);
+
+    this.establishmentService.getEstablishment(subsidiaryUid)
+    .subscribe((workplace) => {
+      if (workplace) {
+        this.establishmentService.setPrimaryWorkplace(workplace);
+        this.subsidiaryWorkplace.next(workplace);
+        console.log("parentSubsidiaryViewService Workplace: ", workplace);
+      }
+    });
   }
 
   clearViewingSubAsParent() {
@@ -40,5 +49,10 @@ export class ParentSubsidiaryViewService {
   // Method to get the current UID as an observable
   getObservableSubsidiaryUid(): Observable<string> {
     return this.subsidiaryUidSubject.asObservable();
+  }
+
+  // Method to get the current UID as an observable
+  getObservableSubsidiary(): Observable<Establishment> {
+    return this.subsidiaryWorkplace.asObservable();
   }
 }
