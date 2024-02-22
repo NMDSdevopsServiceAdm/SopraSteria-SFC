@@ -1,4 +1,4 @@
-import { Injectable, Output, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -7,7 +7,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
   providedIn: 'root'
 })
 export class ParentSubsidiaryViewService {
-  // @Output() subsidiaryUidEmitter = new EventEmitter<string>();
   private subsidiaryUidSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   private viewingSubAsParent = false;
@@ -21,13 +20,13 @@ export class ParentSubsidiaryViewService {
   setViewingSubAsParent(subsidiaryUid: string) {
     this.subsidiaryUid = subsidiaryUid;
     this.viewingSubAsParent = true;
-    // this.subsidiaryUidEmitter.emit(subsidiaryUid);
     this.subsidiaryUidSubject.next(subsidiaryUid);
   }
 
   clearViewingSubAsParent() {
     this.subsidiaryUid = null;
     this.viewingSubAsParent = false;
+    this.subsidiaryUidSubject.next("");
   }
 
   getViewingSubAsParent() {
