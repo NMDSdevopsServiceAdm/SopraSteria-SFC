@@ -19,7 +19,7 @@
     </div>
   </div>
 
-  <app-new-dashboard-header [tab]="selectedTab"></app-new-dashboard-header>
+  <app-new-dashboard-header [tab]="selectedTab" [updatedDate]="subWorkplace.updated"></app-new-dashboard-header>
 
   <div [class]="{ 'govuk-width-container': !dashboardView }">
     <ng-container *ngIf="!dashboardView">
@@ -28,8 +28,7 @@
 
     <main
       id="main-content"
-      class="govuk-main-wrapper app-main-class govuk-util__no-focus"
-      [ngClass]="{ 'govuk-!-padding-top-0': dashboardView }"
+      class="govuk-main-wrapper app-main-class govuk-util__no-focus govuk-!-padding-top-0"
       #content
       role="main"
       tabindex="-1"
