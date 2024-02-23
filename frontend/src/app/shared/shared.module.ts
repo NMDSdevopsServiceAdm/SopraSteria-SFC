@@ -117,6 +117,7 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
 import { CardComponent } from './components/card/card.component';
 import { SummarySectionComponent } from './components/summary-section/summary-section.component';
 import { BackToParentComponent } from './components/back-to-parent-link/back-to-parent-link.component';
+import { OtherLinksComponent } from './components/other-links/other-links.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -235,6 +236,7 @@ import { BackToParentComponent } from './components/back-to-parent-link/back-to-
     CardComponent,
     SummarySectionComponent,
     BackToParentComponent,
+    OtherLinksComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -349,6 +351,7 @@ import { BackToParentComponent } from './components/back-to-parent-link/back-to-
     CardComponent,
     SummarySectionComponent,
     BackToParentComponent,
+    OtherLinksComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

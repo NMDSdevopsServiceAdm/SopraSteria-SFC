@@ -29,6 +29,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   public subWorkplace: Establishment;
   public subId: string;
   public selectedTab: string;
+  public parentUid: string;
 
   public subsidiaryWorkplace: Establishment;
 
@@ -44,7 +45,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
 
   ngOnInit(): void {
     console.log(this.establishmentService.primaryWorkplace);
-    const { uid, id } = this.establishmentService.primaryWorkplace;
+    const { uid, id, name } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
     this.getPermissions();
@@ -57,7 +58,9 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
 
     this.setWorkplace();
 
-    console.log(this.route.snapshot.data.subsidiaryResolver);
+    this.parentWorkplaceName = name;
+
+    console.log(this.establishmentService.primaryWorkplace);
   }
 
   ngOnChanges(): void {
@@ -70,6 +73,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
         this.subWorkplace = workplace;
         this.establishmentService.setState(workplace);
         this.parentWorkplaceName = this.subWorkplace?.parentName;
+        this.parentUid = this.subWorkplace?.parentUid;
       }),
     );
     this.selectedTab = 'home';

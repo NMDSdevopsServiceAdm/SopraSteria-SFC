@@ -62,9 +62,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     this.getOtherWorkplacesSummaryMessage();
   }
 
-  ngOnChanges(): void {
-    console.log(this.isParentSubsidiaryView);
-  }
+  ngOnChanges(): void {}
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();

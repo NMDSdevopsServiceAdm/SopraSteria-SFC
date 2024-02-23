@@ -1,13 +1,23 @@
 import { Component, OnInit, OnChanges } from '@angular/core';
+import { HttpResponse } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
-import { URLStructure } from '@core/model/url.model';
+import { UserDetails } from '@core/model/userDetails.model';
 import { Worker } from '@core/model/worker.model';
+import { ParentRequestsService } from '@core/services/parent-requests.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
+import { UserService } from '@core/services/user.service';
+import { WindowToken } from '@core/services/window';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { isAdminRole } from '@core/utils/check-role-util';
+import { URLStructure } from '@core/model/url.model';
 import { SharedModule } from '@shared/shared.module';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
-import { NewHomeTabDirective } from '@shared/directives/new-home-tab/new-home-tab.directive';
+import { Subscription } from 'rxjs';
+
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
@@ -15,79 +25,127 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
   templateUrl: './view-subsidiary-home.component.html',
   providers: [ServiceNamePipe],
 })
-export class ViewSubsidiaryHomeComponent extends NewHomeTabDirective {
-  public parentWorkplaceName: string;
+export class ViewSubsidiaryHomeComponent implements OnInit {
   public subId: string;
-  public subsidiaryWorkplace: string;
+  public subsidiaryWorkplace: Establishment;
   public primaryEstablishment: Establishment;
   public workplace: Establishment;
   public summaryReturnUrl: URLStructure;
-  public canDeleteEstablishment: boolean;
-  public canViewListOfUsers: boolean;
+  public subscriptions: Subscription = new Subscription();
+  public benchmarksMessage: string;
+  public canViewWorkplaces: boolean;
+  public canViewReports: boolean;
+  public canViewChangeDataOwner: boolean;
+  public canViewDataPermissionsLink: boolean;
+  public canLinkToParent: boolean;
+  public canRemoveParentAssociation: boolean;
+  public canBecomeAParent: boolean;
+  public linkToParentRequestedStatus: boolean;
+  public parentStatusRequested: boolean;
+  public isLocalAuthority = false;
+  public canRunLocalAuthorityReport: boolean;
+  public canBulkUpload: boolean;
+  public canEditEstablishment: boolean;
   public canViewListOfWorkers: boolean;
-  public canViewBenchmarks: boolean;
-  public totalStaffRecords: number;
-  public trainingAlert: number;
-  public workers: Worker[];
   public trainingCounts: TrainingCounts;
+  public now: Date = new Date();
+  public user: UserDetails;
+  public workplaceSummaryMessage: string;
+  public workersCreatedDate;
   public workerCount: number;
-  public showSharingPermissionsBanner: boolean;
-  private showBanner = false;
-  public newDataAreaFlag: boolean;
-  public canSeeNewDataArea: boolean;
+  public workersNotCompleted: Worker[];
+  public addWorkplaceDetailsBanner: boolean;
+  public bigThreeServices: boolean;
+  public hasBenchmarkComparisonData: boolean;
+  public isParent: boolean;
+  public certificateYears: string;
+  public newHomeDesignParentFlag: boolean;
+  public isParentApprovedBannerViewed: boolean;
+  public isOwnershipRequested = false;
+  public canAddWorker: boolean;
+  public ownershipChangeRequestId: any = [];
+  public successAlertMessage: string;
+  public canViewEstablishment: boolean;
+  public alertMessage: string;
+  public showMissingCqcMessage: boolean;
+  public locationId: string;
+  public workplacesCount: number;
+  public isParentSubsidiaryView: boolean;
 
-  // constructor(
-  //   private parentSubsidiaryViewService: ParentSubsidiaryViewService,
-  // ) {}
+  constructor(
+    private userService: UserService,
+    private permissionsService: PermissionsService,
+    private tabsService: TabsService,
+    public route: ActivatedRoute,
+    private featureFlagsService: FeatureFlagsService,
+    private router: Router,
+    public parentSubsidiaryViewService: ParentSubsidiaryViewService,
+  ) {}
 
   ngOnInit(): void {
-    this.parentWorkplaceName = this.establishmentService.primaryWorkplace.name;
-
-    this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid()
-      ? this.parentSubsidiaryViewService.getSubsidiaryUid()
-      : this.route.snapshot.params.subsidiaryId;
-
-    console.log(this.route.snapshot);
-
     this.subsidiaryWorkplace = this.route.snapshot.data.subsidiaryResolver;
+    this.workersCreatedDate = this.route.snapshot.data.workers?.workersCreatedDate;
+    this.workerCount = this.route.snapshot.data.workers?.workerCount;
+    this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
+    this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
 
-    console.log(this.workplace);
-
-    console.log(this.canViewEstablishment);
-
-    //this.establishmentService.getEstablishment(this.subId);
-
-    //console.log(this.route.snapshot);
-
-    // this.establishmentService.getEstablishment(this.subId).subscribe((data) => {
-    //   this.workplace = data;
-    // });
-
-    console.log(this.canEditEstablishment);
-
-    //this.subsidiaryWorkplace = this.establishmentService.establishment;
-
-    //this.handlePageRefresh();
-    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-
-    console.log(this.isParentSubsidiaryView);
-  }
-
-  ngOnChanges(): void {
+    this.user = this.userService.loggedInUser;
+    this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();
+
+    this.subId = this.route.snapshot.data.subsidiaryResolver.uid;
+
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
+
+    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
   }
 
-  public handlePageRefresh(): void {
-    console.log('function');
-    this.parentSubsidiaryViewService.setViewingSubAsParent(this.subId);
-    // this.establishmentService.setCheckCQCDetailsBanner(false);
-    // this.primaryEstablishment = this.establishmentService.primaryWorkplace;
-    // this.workplace = this.establishmentService.establishment;
-    // this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    // this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
-    // this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-    // this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
-    // this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
-    // this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+  ngOnChanges(): void {}
+
+  public setPermissionLinks(): void {
+    const workplaceUid: string = this.subsidiaryWorkplace ? this.subsidiaryWorkplace.uid : null;
+    this.canEditEstablishment = this.permissionsService.can(workplaceUid, 'canEditEstablishment');
+    this.canAddWorker = this.permissionsService.can(workplaceUid, 'canAddWorker');
+    this.canViewListOfWorkers = this.permissionsService.can(workplaceUid, 'canViewListOfWorkers');
+    this.canBulkUpload = this.permissionsService.can(workplaceUid, 'canBulkUpload');
+    this.canViewWorkplaces = this.subsidiaryWorkplace && this.subsidiaryWorkplace.isParent;
+    this.canViewChangeDataOwner =
+      this.subsidiaryWorkplace &&
+      this.subsidiaryWorkplace.parentUid != null &&
+      this.subsidiaryWorkplace.dataOwner !== 'Workplace' &&
+      this.user.role != 'Read';
+    this.canViewDataPermissionsLink =
+      this.subsidiaryWorkplace &&
+      this.subsidiaryWorkplace.parentUid != null &&
+      this.subsidiaryWorkplace.dataOwner === 'Workplace' &&
+      this.user.role != 'Read';
+    this.canViewReports =
+      this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
+      this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
+
+    this.canViewEstablishment = true;
+    if (this.canViewChangeDataOwner && this.subsidiaryWorkplace.dataOwnershipRequested) {
+      this.isOwnershipRequested = true;
+    }
+
+    if (isAdminRole(this.user.role)) {
+      this.canLinkToParent =
+        this.subsidiaryWorkplace && this.subsidiaryWorkplace.parentUid === null && !this.parentStatusRequested;
+      this.canRemoveParentAssociation = this.subsidiaryWorkplace && this.subsidiaryWorkplace.parentUid !== null;
+    } else {
+      this.canLinkToParent =
+        this.permissionsService.can(workplaceUid, 'canLinkToParent') && !this.parentStatusRequested;
+      this.canRemoveParentAssociation = this.permissionsService.can(workplaceUid, 'canRemoveParentAssociation');
+    }
+    if (this.canLinkToParent && this.subsidiaryWorkplace.linkToParentRequested) {
+      this.linkToParentRequestedStatus = true;
+    }
+    this.canBecomeAParent =
+      this.permissionsService.can(workplaceUid, 'canBecomeAParent') && !this.linkToParentRequestedStatus;
+  }
+
+  public navigateToTab(event: Event, selectedTab: string): void {
+    event.preventDefault();
+    this.tabsService.selectedTab = selectedTab;
   }
 }
