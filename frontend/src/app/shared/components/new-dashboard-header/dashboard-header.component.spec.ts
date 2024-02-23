@@ -158,6 +158,21 @@ describe('NewDashboardHeaderComponent', () => {
 
       expect(parentName).toBeTruthy();
     });
+
+    it('should show the selected workplace caption if a sub in parent view', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+      component.isParent = false;
+      component.isParentSubsidiaryView = true;
+
+      fixture.detectChanges();
+
+      const selectedWorkplaceLabel = getByTestId('selectedWorkplaceLabel');
+      const parentName = queryByTestId('parentNameLabel');
+
+      expect(selectedWorkplaceLabel).toBeTruthy();
+      expect(parentName).toBeFalsy();
+    });
   });
 
   describe('Workplace tab', () => {

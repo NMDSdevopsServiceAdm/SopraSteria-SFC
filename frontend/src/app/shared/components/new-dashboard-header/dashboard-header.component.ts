@@ -32,13 +32,15 @@ export class NewDashboardHeaderComponent implements OnInit {
   public subsidiaryCount: number;
   public showLastUpdatedDate: boolean;
   public tabsMap = {
-    'workplace': 'Workplace',
+    workplace: 'Workplace',
     'staff-records': 'Staff records',
     'training-and-qualifications': 'Training and qualifications',
-    'benchmarks': 'Benchmarks',
+    benchmarks: 'Benchmarks',
   };
   public header: string;
   public isParent: boolean;
+  public isParentSubsidiaryView: boolean;
+  public showLastUpdated: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -55,7 +57,7 @@ export class NewDashboardHeaderComponent implements OnInit {
   ngOnInit(): void {
     //subscribe to changes in the subsidiaryUid. Need to really subscribe to a parent workplace request change
     // (Use the resolver)
-    this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe(subsidiaryUid => {
+    this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe((subsidiaryUid) => {
       this.setWorkplace(subsidiaryUid);
     });
 
@@ -66,20 +68,29 @@ export class NewDashboardHeaderComponent implements OnInit {
     if (this.workplace) {
       this.setSubsidiaryCount();
     }
+
+    this.setIsParentSubsidiaryView();
+  }
+
+  ngOnChanges(): void {
+    this.setIsParentSubsidiaryView();
+    this.getHeader();
+  }
+
+  public setIsParentSubsidiaryView(): void {
+    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
   }
 
   private setWorkplace(subsidiaryUid: string) {
-    if(subsidiaryUid == "") {
+    if (subsidiaryUid == '') {
       this.workplace = this.establishmentService.primaryWorkplace;
       this.workplaceUid = this.workplace ? this.workplace.uid : null;
     } else {
-      this.establishmentService.getEstablishment(subsidiaryUid)
-      .subscribe((workplace) => {
+      this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
         if (workplace) {
           this.establishmentService.setPrimaryWorkplace(workplace);
           this.workplace = this.establishmentService.primaryWorkplace;
           this.workplaceUid = this.workplace ? this.workplace.uid : null;
-          console.log("Dashboard Header Workplace: ", workplace);
         }
       });
     }
@@ -148,13 +159,19 @@ export class NewDashboardHeaderComponent implements OnInit {
   }
 
   private getPermissions(): void {
-    this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
+    if (this.isParent) {
+      this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
+    }
+    // else {
+    //   this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
+    // }
   }
 
   private setSubsidiaryCount(): void {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe((res) => {
         this.subsidiaryCount = res.subsidaries ? res.subsidaries.count : 0;
+        console.log(this.subsidiaryCount);
       }),
     );
   }
