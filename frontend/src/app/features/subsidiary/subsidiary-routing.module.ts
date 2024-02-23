@@ -45,31 +45,45 @@ const routes: Routes = [
     path: 'workplace/:establishmentuid',
     component: ViewSubsidiaryWorkplaceComponent,
     data: { title: 'Workplace' },
+    resolve: {
+      users: AllUsersForEstablishmentResolver,
+      subsidiaryResolver: SubsidiaryResolver,
+      workers: WorkersResolver,
+    },
   },
   {
     path: 'staff-records/:establishmentuid',
     component: ViewSubsidiaryStaffRecordsComponent,
     data: { title: 'Staff Records' },
+    resolve: {
+      subsidiaryResolver: SubsidiaryResolver,
+    },
   },
   {
     path: 'training-and-qualifications/:establishmentuid',
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
     data: { title: 'Training and qualifications' },
     resolve: {
-      subsidiaryWorkplaceResolver: SubsidiaryResolver,
-      // subsidiaryWorkerResolver: SubsidiaryWorkerResolver,
+      users: AllUsersForEstablishmentResolver,
+      subsidiaryResolver: SubsidiaryResolver,
+      workers: WorkersResolver,
     },
   },
   {
     path: 'benchmarks/:establishmentuid',
     component: ViewSubsidiaryBenchmarksComponent,
-    resolve: {},
     data: { title: 'Benchmarks' },
+    resolve: {
+      subsidiaryResolver: SubsidiaryResolver,
+    },
   },
   {
     path: 'workplace-users/:establishmentuid',
     component: ViewSubsidiaryWorkplaceUsersComponent,
     data: { title: 'Workplace users' },
+    resolve: {
+      subsidiaryResolver: SubsidiaryResolver,
+    },
   },
 ];
 
