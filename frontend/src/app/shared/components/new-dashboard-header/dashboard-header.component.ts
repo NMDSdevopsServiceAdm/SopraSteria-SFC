@@ -26,8 +26,6 @@ export class NewDashboardHeaderComponent implements OnInit {
   @Input() canEditWorker = false;
   @Input() hasWorkers = false;
 
-  // @Input() workplace: Establishment;
-
   public workplace: Establishment;
   public canDeleteEstablishment: boolean;
   public workplaceUid: string;
@@ -55,27 +53,11 @@ export class NewDashboardHeaderComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // this.establishmentService.getEstablishment("9a130dba-34d2-429d-91b2-3204d14ca283")
-
-    console.log("route uid: ",  this.route.snapshot.params['subsidiaryUid']);
-
-    console.log("parentSubsidiaryViewService: ", this.parentSubsidiaryViewService.getSubsidiaryUid());
-
+    //subscribe to changes in the subsidiaryUid. Need to really subscribe to a parent workplace request change
+    // (Use the resolver)
     this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe(subsidiaryUid => {
-      this.establishmentService.getEstablishment(subsidiaryUid)
-      .subscribe((workplace) => {
-        if (workplace) {
-          this.establishmentService.setPrimaryWorkplace(workplace);
-          this.workplace = workplace;
-          console.log("Dashboard Header Workplace: ", workplace);
-        }
-      });
+      this.setWorkplace(subsidiaryUid);
     });
-
-    if(!this.workplace) {
-      this.workplace = this.establishmentService.primaryWorkplace;
-      this.workplaceUid = this.workplace ? this.workplace.uid : null;
-    }
 
     this.getHeader();
     this.getPermissions();
@@ -83,6 +65,23 @@ export class NewDashboardHeaderComponent implements OnInit {
 
     if (this.workplace) {
       this.setSubsidiaryCount();
+    }
+  }
+
+  private setWorkplace(subsidiaryUid: string) {
+    if(subsidiaryUid == "") {
+      this.workplace = this.establishmentService.primaryWorkplace;
+      this.workplaceUid = this.workplace ? this.workplace.uid : null;
+    } else {
+      this.establishmentService.getEstablishment(subsidiaryUid)
+      .subscribe((workplace) => {
+        if (workplace) {
+          this.establishmentService.setPrimaryWorkplace(workplace);
+          this.workplace = this.establishmentService.primaryWorkplace;
+          this.workplaceUid = this.workplace ? this.workplace.uid : null;
+          console.log("Dashboard Header Workplace: ", workplace);
+        }
+      });
     }
   }
 

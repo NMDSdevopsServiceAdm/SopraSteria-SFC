@@ -9,9 +9,16 @@ import { SharedModule } from '@shared/shared.module';
 import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
 import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
 
+import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
+
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, SubsidiaryRoutingModule],
-  declarations: [ViewSubsidiaryHomeComponent],
+  declarations: [
+    ViewSubsidiaryHomeComponent,
+    ViewSubsidiaryWorkplaceComponent,
+    ViewSubsidiaryTrainingAndQualificationsComponent,
+  ],
   providers: [SubsidiaryResolver],
 })
 export class SubsidiaryModule {}

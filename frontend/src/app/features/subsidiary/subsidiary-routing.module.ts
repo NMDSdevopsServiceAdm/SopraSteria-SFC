@@ -17,6 +17,7 @@ import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-
 import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { SubsidiaryWorkerResolver } from '@core/resolvers/subsidiary-worker.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -54,6 +55,10 @@ const routes: Routes = [
     path: 'training-and-qualifications/:establishmentuid',
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
     data: { title: 'Training and qualifications' },
+    resolve: {
+      subsidiaryWorkplaceResolver: SubsidiaryResolver,
+      // subsidiaryWorkerResolver: SubsidiaryWorkerResolver,
+    },
   },
   {
     path: 'benchmarks/:establishmentuid',

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Resolve, Router, ActivatedRouteSnapshot } from '@angular/router';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkerService } from '@core/services/worker.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { of } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -8,10 +8,10 @@ import { tap } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root'
 })
-export class SubsidiaryResolver implements Resolve<any> {
+export class SubsidiaryWorkerResolver implements Resolve<any> {
 
   constructor(
-    private establishmentService: EstablishmentService,
+    private workerService: WorkerService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService
   ) { }
 
@@ -21,17 +21,14 @@ export class SubsidiaryResolver implements Resolve<any> {
       route.paramMap.get('subsidiaryUid');
     console.log("SubsidaryUid resolver: ", subsidiaryUid);
 
+    const workerId = route.paramMap.get('id'); //FIX
+
     if (subsidiaryUid) {
-      return this.establishmentService.getEstablishment(subsidiaryUid).pipe(
-        tap((workplace) => {
-          this.establishmentService.setPrimaryWorkplace(workplace);
-          const standAloneAccount = !(workplace?.isParent || workplace?.parentUid);
-          this.establishmentService.standAloneAccount = standAloneAccount;
-        }),
-      );
+      return this.workerService.getWorker(
+        subsidiaryUid,
+        workerId);
     }
 
     return of(null);
   }
 }
-

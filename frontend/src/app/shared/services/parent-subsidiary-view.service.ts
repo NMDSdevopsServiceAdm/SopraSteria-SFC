@@ -1,4 +1,4 @@
-import { Injectable, Output, EventEmitter } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -7,12 +7,11 @@ import { EstablishmentService } from '@core/services/establishment.service';
   providedIn: 'root'
 })
 export class ParentSubsidiaryViewService {
-  // @Output() subsidiaryUidEmitter = new EventEmitter<string>();
   private subsidiaryUidSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  private subsidiaryWorkplace: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
 
   private viewingSubAsParent = false;
   private subsidiaryUid: string
-  private subsidiaryWorkplace: Establishment;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -21,13 +20,22 @@ export class ParentSubsidiaryViewService {
   setViewingSubAsParent(subsidiaryUid: string) {
     this.subsidiaryUid = subsidiaryUid;
     this.viewingSubAsParent = true;
-    // this.subsidiaryUidEmitter.emit(subsidiaryUid);
     this.subsidiaryUidSubject.next(subsidiaryUid);
+
+    this.establishmentService.getEstablishment(subsidiaryUid)
+    .subscribe((workplace) => {
+      if (workplace) {
+        this.establishmentService.setPrimaryWorkplace(workplace);
+        this.subsidiaryWorkplace.next(workplace);
+        console.log("parentSubsidiaryViewService Workplace: ", workplace);
+      }
+    });
   }
 
   clearViewingSubAsParent() {
     this.subsidiaryUid = null;
     this.viewingSubAsParent = false;
+    this.subsidiaryUidSubject.next("");
   }
 
   getViewingSubAsParent() {
@@ -41,5 +49,10 @@ export class ParentSubsidiaryViewService {
   // Method to get the current UID as an observable
   getObservableSubsidiaryUid(): Observable<string> {
     return this.subsidiaryUidSubject.asObservable();
+  }
+
+  // Method to get the current UID as an observable
+  getObservableSubsidiary(): Observable<Establishment> {
+    return this.subsidiaryWorkplace.asObservable();
   }
 }
