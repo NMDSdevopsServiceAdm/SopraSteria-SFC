@@ -171,7 +171,6 @@ export class NewDashboardHeaderComponent implements OnInit {
     this.subscriptions.add(
       this.userService.getEstablishments().subscribe((res) => {
         this.subsidiaryCount = res.subsidaries ? res.subsidaries.count : 0;
-        console.log(this.subsidiaryCount);
       }),
     );
   }
