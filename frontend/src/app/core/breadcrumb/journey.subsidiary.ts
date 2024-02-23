@@ -1,12 +1,12 @@
 import { JourneyRoute } from './breadcrumb.model';
 
 enum Path {
-  DASHBOARD                   = '/subsidiary/home/:subsidiaryUid',
-  WORKPLACE                   = '/subsidiary/workplace/:subsidiaryUid',
-  STAFF_RECORDS               = '/subsidiary/staff-records/:subsidiaryUid',
-  TRAINING_AND_QUALIFICATIONS = '/subsidiary/training-and-qualifications/:subsidiaryUid',
-  BENCHMARKS                  = '/subsidiary/benchmarks/:subsidiaryUid',
-  WORKPLACE_USERS             = '/subsidiary/workplace-users/:subsidiaryUid',
+  DASHBOARD = '/subsidiary/home/:establishmentuid',
+  WORKPLACE = '/subsidiary/workplace/:establishmentuid',
+  STAFF_RECORDS = '/subsidiary/staff-records/:establishmentuid',
+  TRAINING_AND_QUALIFICATIONS = '/subsidiary/training-and-qualifications/:establishmentuid',
+  BENCHMARKS = '/subsidiary/benchmarks/:establishmentuid',
+  WORKPLACE_USERS = '/subsidiary/workplace-users/:establishmentuid',
 }
 
 export const subsidiaryJourney: JourneyRoute = {

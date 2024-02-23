@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
   templateUrl: './summary-section.component.html',
   styleUrls: ['./summary-section.component.scss'],
 })
-export class SummarySectionComponent implements OnInit {
+export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
   @Input() workersCreatedDate;
@@ -23,6 +23,7 @@ export class SummarySectionComponent implements OnInit {
   @Input() canViewEstablishment: boolean;
   @Input() showMissingCqcMessage: boolean;
   @Input() workplacesCount: number;
+  @Input() isParentSubsidiaryView: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -61,8 +62,14 @@ export class SummarySectionComponent implements OnInit {
     this.getOtherWorkplacesSummaryMessage();
   }
 
+  ngOnChanges(): void {}
+
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();
+
+    if (this.isParentSubsidiaryView) {
+      await this.router.navigate(['/subsidiary/', fragment, this.workplace.uid]);
+    }
     if (route) {
       await this.router.navigate(route);
     }
@@ -71,7 +78,6 @@ export class SummarySectionComponent implements OnInit {
 
   public getWorkplaceSummaryMessage(): void {
     const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;
-
     this.sections[0].redFlag = false;
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';

@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -6,13 +6,14 @@ import { TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Establishment } from '@core/model/establishment.model';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-subsidiary-account',
   templateUrl: './subsidiaryAccount.component.html',
   styleUrls: ['./subsidiaryAccount.component.scss'],
 })
-export class SubsidiaryAccountComponent implements OnInit {
+export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   @Input() dashboardView: boolean;
 
   private subscriptions: Subscription = new Subscription();
@@ -23,7 +24,12 @@ export class SubsidiaryAccountComponent implements OnInit {
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
+  public isParentSubsidiaryView: boolean;
+  public parentWorkplaceName: string;
+  public subWorkplace: Establishment;
+  public subId: string;
   public selectedTab: string;
+  public parentUid: string;
 
   public subsidiaryWorkplace: Establishment;
 
@@ -33,15 +39,44 @@ export class SubsidiaryAccountComponent implements OnInit {
     private tabsService: TabsService,
     private benchmarksService: BenchmarksServiceBase,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private route: ActivatedRoute,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    const { uid, id } = this.establishmentService.primaryWorkplace;
+    console.log(this.establishmentService.primaryWorkplace);
+    const { uid, id, name } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
     this.getPermissions();
     this.setTabs();
-    this.selectedTab = "home";
+    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
+
+    this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid()
+      ? this.parentSubsidiaryViewService.getSubsidiaryUid()
+      : this.route.snapshot.params.subsidiaryId;
+
+    this.setWorkplace();
+
+    this.parentWorkplaceName = name;
+
+    console.log(this.establishmentService.primaryWorkplace);
+  }
+
+  ngOnChanges(): void {
+    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
+  }
+
+  private setWorkplace(): void {
+    this.subscriptions.add(
+      this.establishmentService.getEstablishment(this.subId, true).subscribe((workplace) => {
+        this.subWorkplace = workplace;
+        this.establishmentService.setState(workplace);
+        this.parentWorkplaceName = this.subWorkplace?.parentName;
+        this.parentUid = this.subWorkplace?.parentUid;
+      }),
+    );
+    this.selectedTab = 'home';
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {

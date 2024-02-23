@@ -28,7 +28,7 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { ParentHomeTabComponent } from './parent-home-tab.component';
-import { SummarySectionComponent } from '../home-tab/summary-section/summary-section.component';
+import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 
 const MockWindow = {
   dataLayer: {

@@ -1,0 +1,27 @@
+<div class="govuk-!-margin-top-7" data-cy="home-other-links">
+  <h3 class="govuk-heading-s">Other links</h3>
+  <ul class="govuk-list govuk-!-margin-bottom-6">
+    <app-link-with-arrow>
+      <a class="govuk-link" [routerLink]="['/asc-wds-certificate']"
+        ><p class="govuk-tag govuk-tag--blue govuk-!-margin-right-6 asc-tag" style="float: right">NEW</p>
+        Get your ASC-WDS certificate</a
+      >
+    </app-link-with-arrow>
+
+    <app-link-with-arrow *ngIf="canBulkUpload">
+      <a class="govuk-link" [routerLink]="['/bulk-upload']">Bulk upload your data</a>
+    </app-link-with-arrow>
+
+    <app-link-with-arrow *ngIf="canViewReports">
+      <a class="govuk-link" [routerLink]="['/wdf']">Does your data meet WDF requirements?</a>
+    </app-link-with-arrow>
+
+    <app-link-with-arrow>
+      <a class="govuk-link" [routerLink]="['/about-ascwds']">About ASC-WDS</a>
+    </app-link-with-arrow>
+
+    <app-link-with-arrow>
+      <a class="govuk-link" [routerLink]="['/first-login-wizard']">Help to get you started</a>
+    </app-link-with-arrow>
+  </ul>
+</div>

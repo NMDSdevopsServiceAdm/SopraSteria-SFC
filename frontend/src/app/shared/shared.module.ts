@@ -114,6 +114,10 @@ import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-data-link/about-the-data-link.component';
+import { CardComponent } from './components/card/card.component';
+import { SummarySectionComponent } from './components/summary-section/summary-section.component';
+import { BackToParentComponent } from './components/back-to-parent-link/back-to-parent-link.component';
+import { OtherLinksComponent } from './components/other-links/other-links.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -229,6 +233,10 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     ServiceNamePipe,
     FormatAmpersandPipe,
     AboutTheDataLinkComponent,
+    CardComponent,
+    SummarySectionComponent,
+    BackToParentComponent,
+    OtherLinksComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -340,6 +348,10 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     ServiceNamePipe,
     FormatAmpersandPipe,
     AboutTheDataLinkComponent,
+    CardComponent,
+    SummarySectionComponent,
+    BackToParentComponent,
+    OtherLinksComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
