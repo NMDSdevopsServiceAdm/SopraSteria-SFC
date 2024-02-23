@@ -51,21 +51,42 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 
-    this.route.data.subscribe(data => {
+    this.route.snapshot.data.subsidiaryWorkplaceResolver.subscribe(data => {
       this.subsidiaryWorkplace = data.resolvedData;
       console.log("resolvedData: ", data.resolvedData);
     });
 
-    this.establishmentService.getEstablishment(this.parentSubsidiaryViewService.getSubsidiaryUid())
-      .subscribe((workplace) => {
-        if (workplace) {
-          this.establishmentService.setPrimaryWorkplace(workplace);
-          this.subsidiaryWorkplace = workplace;
+    // this.subsidiaryWorkplace = this.route.snapshot.data.subsidiaryWorkplaceResolver;
+    this.workers = this.route.snapshot.data.workers?.workers;
+    this.workerCount = this.route.snapshot.data.workers?.workerCount;
+    this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
 
-          this.canEditEstablishment = this.permissionsService.can(this.subsidiaryWorkplace?.uid, 'canEditEstablishment');
-          this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
-          this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
-        }
-    });
+    this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
+    this.canEditEstablishment = this.permissionsService.can(this.subsidiaryWorkplace?.uid, 'canEditEstablishment');
+
+    this.establishmentService.setPrimaryWorkplace(this.subsidiaryWorkplace);
+
+    // create nice logs for all the variables above
+    console.log("subsidiaryWorkplace updated: ", this.subsidiaryWorkplace.updated);
+    console.log("workers: ", this.workers);
+    console.log("workerCount: ", this.workerCount);
+    console.log("trainingCounts: ", this.trainingCounts);
+
+    // this.route.data.subscribe(data => {
+    //   this.subsidiaryWorkplace = data.resolvedData;
+    //   console.log("resolvedData: ", data.resolvedData);
+    // });
+
+    // this.establishmentService.getEstablishment(this.parentSubsidiaryViewService.getSubsidiaryUid())
+    //   .subscribe((workplace) => {
+    //     if (workplace) {
+    //       this.establishmentService.setPrimaryWorkplace(workplace);
+    //       this.subsidiaryWorkplace = workplace;
+
+    //       this.canEditEstablishment = this.permissionsService.can(this.subsidiaryWorkplace?.uid, 'canEditEstablishment');
+    //       this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
+    //       this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
+    //     }
+    // });
   }
 }

@@ -1,9 +1,6 @@
-TRAINING AND QUALIFICATIONS
 <div class="govuk-width-container govuk-!-padding-top-2">
-  {{ workers.length}}
   <div class="govuk-!-margin-top-6">
     <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
-      WORKERS
       <app-new-training-link-panel
         data-testid="trainingLinkPanel"
         [workplace]="workplace"
