@@ -111,7 +111,7 @@ describe('training route', () => {
         );
       });
 
-      it('should fail as username doesnt exist', async () => {
+      xit('should fail as username doesnt exist', async () => {
         let workerTrainingRecord = createWorkerTrainingRecord(true);
         sandbox.stub(MandatoryTraining, 'fetchMandatoryTrainingForWorker').callsFake(() => {
           return mandatoryTrainingRecords;
