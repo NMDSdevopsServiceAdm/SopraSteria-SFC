@@ -1,1 +1,46 @@
-PLACEHOLDER
+<app-new-dashboard-header
+  [tab]="'benchmarks'"
+  [updatedDate]="tilesData?.meta.lastUpdated"
+  data-html2canvas-ignore
+></app-new-dashboard-header>
+
+<div class="govuk-width-container govuk-!-margin-top-7">
+  <!-- <div id="benchmarks-tiles"> -->
+
+    <app-new-comparison-group-header
+      [canViewFullContent]="canViewFullBenchmarks"
+      [meta]="tilesData?.meta"
+      [workplaceID]="subsidiaryWorkplace.uid"
+      (downloadPDF)="downloadAsPDF()"
+    ></app-new-comparison-group-header>
+
+  <div class="govuk-grid-row">
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="payContent"
+      [tile]="payTile"
+      [workplaceID]="subsidiaryWorkplace.uid"
+    >
+    </app-benchmark-tile>
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="turnoverContent"
+      [tile]="turnoverTile"
+      [workplaceID]="subsidiaryWorkplace.uid"
+    >
+    </app-benchmark-tile>
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="sicknessContent"
+      [tile]="sicknessTile"
+      [workplaceID]="subsidiaryWorkplace.uid"
+    >
+    </app-benchmark-tile>
+    <app-benchmark-tile
+      [canViewFullContent]="canViewFullBenchmarks"
+      [content]="qualificationsContent"
+      [tile]="qualificationsTile"
+      [workplaceID]="subsidiaryWorkplace.uid"
+    >
+    </app-benchmark-tile>
+  </div>
