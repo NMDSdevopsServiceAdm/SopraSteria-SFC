@@ -42,6 +42,8 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   public viewTrainingByCategory = false;
   public staffSortByValue = 'trainingExpired';
   public trainingSortByValue = '0_expired';
+  public canEditWorker = true; // TODO
+  public canEditEstablishment = true; // TODO
 
   private subsidiaryUid: string;
 

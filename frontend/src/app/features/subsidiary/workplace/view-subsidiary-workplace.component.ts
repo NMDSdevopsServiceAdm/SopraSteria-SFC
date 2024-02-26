@@ -20,6 +20,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
   public canEditEstablishment: boolean;
   public addWorkplaceDetailsBanner: boolean;
   public showCqcDetailsBanner: boolean;
+  public isParentViewingSubsidiary: boolean;
 
   public workplace: Establishment;
   public workerCount: number;
@@ -34,6 +35,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.isParentViewingSubsidiary = true; // TODO use original component and use this to differentiate
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
