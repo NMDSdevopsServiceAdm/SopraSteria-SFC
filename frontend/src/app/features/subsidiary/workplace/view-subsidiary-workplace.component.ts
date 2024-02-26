@@ -38,11 +38,6 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 
-    this.route.snapshot.data.subsidiaryWorkplaceResolver.subscribe(data => {
-      this.workplace = data.resolvedData;
-      console.log("resolvedData: ", data.resolvedData);
-    });
-
     this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
       if (subsidiaryWorkplace) {
         this.workplace = subsidiaryWorkplace;
@@ -51,23 +46,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
         this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
         this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
         this.establishmentService.setPrimaryWorkplace(this.workplace);
-
-        // create nice logs for all the variables above
-        console.log("subsidiaryWorkplace updated: ", this.workplace.updated);
-        console.log("workerCount: ", this.workerCount);
       }
     });
-
-    // this.establishmentService.getEstablishment(this.parentSubsidiaryViewService.getSubsidiaryUid())
-    //   .subscribe((workplace) => {
-    //     if (workplace) {
-    //       this.establishmentService.setPrimaryWorkplace(workplace);
-    //       this.workplace = workplace;
-
-    //       // this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
-    //       // this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
-    //       // this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
-    //     }
-    // });
   }
 }
