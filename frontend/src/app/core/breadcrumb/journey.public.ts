@@ -4,7 +4,6 @@ enum Path {
   FEEDBACK = '/feedback',
   COOKIE_POLICY = '/cookie-policy',
   CONTACT_US = '/contact-us',
-  ABOUT_ASCWDS = '/about-ascwds',
   ACCESSIBILITY_STATEMENT = '/accessibility-statement',
   TERMS_AND_CONDITIONS = '/terms-and-conditions',
   PRIVACY_NOTICE = '/privacy-notice',
@@ -15,10 +14,6 @@ enum Path {
 
 export const publicJourney: JourneyRoute = {
   children: [
-    {
-      title: 'about-ascwds',
-      path: Path.ABOUT_ASCWDS,
-    },
     {
       title: 'Get your ASC-WDS certificate',
       path: Path.CERTIFICATES,
