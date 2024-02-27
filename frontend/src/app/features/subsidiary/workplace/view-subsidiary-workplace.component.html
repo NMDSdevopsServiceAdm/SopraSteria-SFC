@@ -1,10 +1,15 @@
 <div class="govuk-width-container govuk-!-padding-top-2"
-  *ngIf="subsidiaryWorkplace">
+  *ngIf="workplace">
   <ng-container *ngIf="canEditEstablishment && addWorkplaceDetailsBanner">
     <app-inset-text [color]="'todo'">
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
-          <a [routerLink]="['/workplace', workplace?.uid, 'start']">Start to add more details about your workplace</a>
+          <a *ngIf="!isParentViewingSubsidiary"
+            [routerLink]="['/workplace', workplace?.uid, 'start']">
+              Start to add more details about your workplace</a>
+          <a *ngIf="isParentViewingSubsidiary"
+            [routerLink]="['/subsidiary/workplace', workplace?.uid, 'start']">
+              Start to add more details about your workplace</a>
         </div>
       </div>
     </app-inset-text>
@@ -14,7 +19,7 @@
   </ng-container>
 
   <app-new-workplace-summary
-    [workplace]="subsidiaryWorkplace"
+    [workplace]="workplace"
     [workerCount]="workerCount"
     [return]="summaryReturnUrl"
     data-testid="workplace-summary"

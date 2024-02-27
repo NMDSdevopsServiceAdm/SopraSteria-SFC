@@ -3,6 +3,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -19,9 +20,13 @@ export class StartComponent implements OnInit, OnDestroy {
   private workplaceUid: string;
   private fragment: string;
 
-  constructor(public backService: BackService, private establishmentService: EstablishmentService) {}
+  constructor(
+    public backService: BackService,
+    private establishmentService: EstablishmentService,
+  ) {}
 
   ngOnInit(): void {
+    console.log("StartComponent init");
     this.subscriptions.add(
       this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
         this.establishment = establishment;

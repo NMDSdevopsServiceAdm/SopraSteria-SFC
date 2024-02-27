@@ -18,8 +18,7 @@ export class SubsidiaryWorkerResolver implements Resolve<any> {
   resolve(route: ActivatedRouteSnapshot) {
     const subsidiaryUid = this.parentSubsidiaryViewService.getSubsidiaryUid() ?
       this.parentSubsidiaryViewService.getSubsidiaryUid() :
-      route.paramMap.get('subsidiaryUid');
-    console.log("SubsidaryUid resolver: ", subsidiaryUid);
+      route.paramMap.get('establishmentuid');
 
     const workerId = route.paramMap.get('id'); //FIX
 

@@ -16,26 +16,14 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
   templateUrl: './view-subsidiary-workplace.component.html',
 })
 export class ViewSubsidiaryWorkplaceComponent implements OnInit {
-  public summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
+  // public summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
   public canEditEstablishment: boolean;
   public addWorkplaceDetailsBanner: boolean;
   public showCqcDetailsBanner: boolean;
+  public isParentViewingSubsidiary: boolean;
 
-  public primaryEstablishment: Establishment;
-  public subsidiaryWorkplace: Establishment;
-  public canDeleteEstablishment: boolean;
-  public canViewListOfUsers: boolean;
-  public canViewListOfWorkers: boolean;
-  public canViewBenchmarks: boolean;
-  public totalStaffRecords: number;
-  public trainingAlert: number;
-  public workers: Worker[];
-  public trainingCounts: TrainingCounts;
+  public workplace: Establishment;
   public workerCount: number;
-  public showSharingPermissionsBanner: boolean;
-  private showBanner = false;
-  public newDataAreaFlag: boolean;
-  public canSeeNewDataArea: boolean;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -47,25 +35,20 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.isParentViewingSubsidiary = true; // TODO use original component and use this to differentiate
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 
-    this.route.data.subscribe(data => {
-      this.subsidiaryWorkplace = data.resolvedData;
-      console.log("resolvedData: ", data.resolvedData);
-    });
+    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
+      if (subsidiaryWorkplace) {
+        this.workplace = subsidiaryWorkplace;
 
-    this.establishmentService.getEstablishment(this.parentSubsidiaryViewService.getSubsidiaryUid())
-      .subscribe((workplace) => {
-        if (workplace) {
-          this.establishmentService.setPrimaryWorkplace(workplace);
-          this.subsidiaryWorkplace = workplace;
-
-          this.canEditEstablishment = this.permissionsService.can(this.subsidiaryWorkplace?.uid, 'canEditEstablishment');
-          this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
-          this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
-        }
+        this.workerCount = this.route.snapshot.data.workers?.workerCount;
+        this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
+        this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
+        this.establishmentService.setPrimaryWorkplace(this.workplace);
+      }
     });
   }
 }
