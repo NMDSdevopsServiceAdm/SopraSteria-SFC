@@ -12,7 +12,7 @@ import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and
 import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 
-import { StartComponent } from '../workplace/start/start.component';
+import { StartComponent } from '@features/workplace/start/start.component';
 import { UsersComponent } from '@features/workplace/users/users.component';
 import { StaffRecruitmentStartComponent } from '@features/workplace/staff-recruitment/staff-recruitment-start.component';
 import { RegulatedByCqcComponent } from '@features/workplace/regulated-by-cqc/regulated-by-cqc.component';
@@ -24,6 +24,8 @@ import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { SubsidiaryWorkerResolver } from '@core/resolvers/subsidiary-worker.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+
+import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-workplace.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -49,7 +51,7 @@ const routes: Routes = [
   },
   {
     path: 'workplace/:establishmentuid',
-    component: ViewSubsidiaryWorkplaceComponent,
+    component: EditWorkplaceComponent,
     data: { title: 'Workplace' },
     resolve: {
       users: AllUsersForEstablishmentResolver,
@@ -58,6 +60,25 @@ const routes: Routes = [
       totalStaffRecords: TotalStaffRecordsResolver,
     },
     children: [
+      {
+        path: '',
+        component: ViewSubsidiaryWorkplaceComponent,
+        // resolve: {
+        //   users: AllUsersForEstablishmentResolver,
+        //   subsidiaryResolver: SubsidiaryResolver,
+        //   workers: WorkersResolver,
+        // },
+        data: { title: 'Workplace' },
+      },
+      {
+        path: 'edit',
+        component: EditWorkplaceComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Edit Workplace',
+        },
+      },
       {
         path: 'users',
         component: UsersComponent,
@@ -93,7 +114,16 @@ const routes: Routes = [
           title: 'Regulated by CQC',
         }
       },
-    ],
+      {
+        path: 'other-services',
+        component: RegulatedByCqcComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Regulated by CQC',
+        }
+      },
+    ]
   },
   {
     path: 'staff-records/:establishmentuid',

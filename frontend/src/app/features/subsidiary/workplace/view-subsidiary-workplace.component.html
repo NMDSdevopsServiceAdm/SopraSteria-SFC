@@ -5,11 +5,11 @@
       <div class="govuk-grid-row">
         <div class="govuk-grid-column-full">
           <a *ngIf="!isParentViewingSubsidiary"
-          [routerLink]="['/workplace', workplace?.uid, 'start']">
-          Start to add more details about your workplace</a>
+            [routerLink]="['/workplace', workplace?.uid, 'start']">
+              Start to add more details about your workplace</a>
           <a *ngIf="isParentViewingSubsidiary"
-          [routerLink]="['/subsidiary/workplace', workplace?.uid, 'start']">
-          Start to add more details about your workplace</a>
+            [routerLink]="['/subsidiary/workplace', workplace?.uid, 'start']">
+              Start to add more details about your workplace</a>
         </div>
       </div>
     </app-inset-text>
