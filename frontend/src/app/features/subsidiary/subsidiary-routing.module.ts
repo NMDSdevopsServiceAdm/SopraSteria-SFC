@@ -24,7 +24,6 @@ import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { SubsidiaryWorkerResolver } from '@core/resolvers/subsidiary-worker.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
-
 import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-workplace.component';
 
 // eslint-disable-next-line max-len
@@ -41,12 +40,14 @@ const routes: Routes = [
       users: AllUsersForEstablishmentResolver,
       subsidiaryResolver: SubsidiaryResolver,
       workers: WorkersResolver,
+      totalStaffRecords: TotalStaffRecordsResolver,
       articleList: ArticleListResolver,
     },
-    //canActivate: [ParentGuard, HasPermissionsGuard, CheckPermissionsGuard],
+    canActivate: [CheckPermissionsGuard, HasPermissionsGuard],
     data: {
       permissions: ['canViewEstablishment'],
       title: 'Dashboard',
+      workerPagination: true,
     },
   },
   {

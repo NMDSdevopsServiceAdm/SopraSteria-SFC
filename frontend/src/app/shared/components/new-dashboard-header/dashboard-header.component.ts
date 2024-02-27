@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { AuthService } from '@core/services/auth.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -10,14 +10,16 @@ import { take } from 'rxjs/operators';
 import { AlertService } from '@core/services/alert.service';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { UserService } from '@core/services/user.service';
+import { isAdminRole } from '@core/utils/check-role-util';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { UserDetails } from '@core/model/userDetails.model';
 
 @Component({
   selector: 'app-new-dashboard-header',
   templateUrl: './dashboard-header.component.html',
   styleUrls: ['./dashboard-header.component.scss'],
 })
-export class NewDashboardHeaderComponent implements OnInit {
+export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   private subscriptions: Subscription = new Subscription();
   @Input() tab: string;
   @Input() canAddWorker = false;
@@ -32,13 +34,15 @@ export class NewDashboardHeaderComponent implements OnInit {
   public subsidiaryCount: number;
   public showLastUpdatedDate: boolean;
   public tabsMap = {
-    'workplace': 'Workplace',
+    workplace: 'Workplace',
     'staff-records': 'Staff records',
     'training-and-qualifications': 'Training and qualifications',
-    'benchmarks': 'Benchmarks',
+    benchmarks: 'Benchmarks',
   };
   public header: string;
   public isParent: boolean;
+  public isParentSubsidiaryView: boolean;
+  public user: UserDetails;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -55,31 +59,44 @@ export class NewDashboardHeaderComponent implements OnInit {
   ngOnInit(): void {
     //subscribe to changes in the subsidiaryUid. Need to really subscribe to a parent workplace request change
     // (Use the resolver)
-    this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe(subsidiaryUid => {
+    this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe((subsidiaryUid) => {
       this.setWorkplace(subsidiaryUid);
     });
 
-    this.getHeader();
-    this.getPermissions();
     this.isParent = this.establishmentService.primaryWorkplace?.isParent;
+
+    this.setIsParentSubsidiaryView();
 
     if (this.workplace) {
       this.setSubsidiaryCount();
     }
+
+    this.getPermissions();
+
+    this.getHeader();
+  }
+
+  ngOnChanges(): void {
+    this.setIsParentSubsidiaryView();
+    this.setSubsidiaryCount();
+    this.getPermissions();
+    this.getHeader();
+  }
+
+  public setIsParentSubsidiaryView(): void {
+    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
   }
 
   private setWorkplace(subsidiaryUid: string) {
-    if(subsidiaryUid == "") {
+    if (subsidiaryUid == '') {
       this.workplace = this.establishmentService.primaryWorkplace;
       this.workplaceUid = this.workplace ? this.workplace.uid : null;
     } else {
-      this.establishmentService.getEstablishment(subsidiaryUid)
-      .subscribe((workplace) => {
+      this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
         if (workplace) {
           this.establishmentService.setPrimaryWorkplace(workplace);
           this.workplace = this.establishmentService.primaryWorkplace;
           this.workplaceUid = this.workplace ? this.workplace.uid : null;
-          console.log("Dashboard Header Workplace: ", workplace);
         }
       });
     }
@@ -148,7 +165,18 @@ export class NewDashboardHeaderComponent implements OnInit {
   }
 
   private getPermissions(): void {
-    this.canDeleteEstablishment = this.permissionsService.can(this.workplaceUid, 'canDeleteAllEstablishments');
+    this.user = this.userService.loggedInUser;
+    if (isAdminRole(this.user?.role)) {
+      this.canDeleteEstablishment = this.permissionsService.can(
+        this.establishmentService.primaryWorkplace.uid,
+        'canDeleteAllEstablishments',
+      );
+    } else {
+      this.canDeleteEstablishment = this.permissionsService.can(
+        this.establishmentService.primaryWorkplace.uid,
+        'canDeleteEstablishment',
+      );
+    }
   }
 
   private setSubsidiaryCount(): void {
