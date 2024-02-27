@@ -9,7 +9,6 @@ export class OtherLinksComponent implements OnInit {
   @Input() canViewReports: boolean;
   @Input() canLinkToParent: boolean;
   @Input() isParent: boolean;
-  @Input() newHomeDesignParentFlag: boolean;
   @Input() canBecomeAParent: boolean;
   @Input() linkToParentRequestedStatus: boolean;
   @Input() canRemoveParentAssociation: boolean;

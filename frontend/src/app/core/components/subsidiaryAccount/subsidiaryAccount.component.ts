@@ -44,7 +44,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.establishmentService.primaryWorkplace);
     const { uid, id, name } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
@@ -52,15 +51,11 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.setTabs();
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
 
-    this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid()
-      ? this.parentSubsidiaryViewService.getSubsidiaryUid()
-      : this.route.snapshot.params.subsidiaryId;
+    this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid();
 
     this.setWorkplace();
 
     this.parentWorkplaceName = name;
-
-    console.log(this.establishmentService.primaryWorkplace);
   }
 
   ngOnChanges(): void {
@@ -80,7 +75,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
-    console.log(properties.tabSlug);
     this.selectedTab = properties.tabSlug;
 
     if (properties.tabSlug === 'benchmarks') {
