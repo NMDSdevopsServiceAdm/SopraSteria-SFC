@@ -37,6 +37,8 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
 
+  public link: string = '/workplace';
+
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
     private permissionsService: PermissionsService,
@@ -44,6 +46,14 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     private cqcStatusChangeService: CqcStatusChangeService,
     private tabsService: TabsService,
   ) {
+
+    if(!this.workplace?.isParent) {
+      console.log("Changing workplace links as is subsidiary");
+      this.link = '/subsidiary/workplace';
+    } else {
+      console.log("Not changing workplace links as is parent");
+    }
+
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
       other: '# beds available',

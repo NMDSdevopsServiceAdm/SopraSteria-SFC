@@ -3,6 +3,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
@@ -23,15 +24,26 @@ export class StartComponent implements OnInit, OnDestroy {
   constructor(
     public backService: BackService,
     private establishmentService: EstablishmentService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
     console.log("StartComponent init");
-    this.subscriptions.add(
-      this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
-        this.establishment = establishment;
-      }),
-    );
+
+    if(this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+      this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
+        if (subsidiaryWorkplace) {
+          this.establishment = subsidiaryWorkplace;
+        }
+      });
+    } else {
+      this.subscriptions.add(
+        this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
+          this.establishment = establishment;
+        }),
+      );
+    }
+
     this.fragment = history.state?.navigatedFromFragment;
     this.setReturnLink();
     this.setBackLink();
