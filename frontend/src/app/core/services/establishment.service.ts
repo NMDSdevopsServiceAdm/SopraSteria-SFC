@@ -109,6 +109,7 @@ export class EstablishmentService {
   }
 
   public setPrimaryWorkplace(workplace: Establishment) {
+    console.log("Setting primary workplace in establishment service: ", workplace.name);
     this._primaryWorkplace$.next(workplace);
   }
 

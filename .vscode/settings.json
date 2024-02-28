@@ -26,5 +26,9 @@
   "[scss]": {
     "editor.formatOnSave": true,
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "search.exclude": {
+    "**.spec.ts": true,
+    "**/.angular/**": true,
+  },
 }

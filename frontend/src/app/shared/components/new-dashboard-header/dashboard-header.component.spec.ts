@@ -20,6 +20,8 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { Roles } from '@core/model/roles.enum';
 import { getTestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 const MockWindow = {
   dataLayer: {
     push: () => {
@@ -67,6 +69,7 @@ describe('NewDashboardHeaderComponent', () => {
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
+        { provide: ParentSubsidiaryViewService, useClass: MockParentSubsidiaryViewService },
       ],
       componentProperties: {
         tab,
@@ -76,6 +79,7 @@ describe('NewDashboardHeaderComponent', () => {
         canEditWorker,
         hasWorkers,
         isParent: false,
+        isParentSubsidiaryView: false,
       },
     });
 
@@ -157,6 +161,21 @@ describe('NewDashboardHeaderComponent', () => {
       const parentName = getByTestId('parentNameLabel');
 
       expect(parentName).toBeTruthy();
+    });
+
+    it('should show the selected workplace caption if a sub in parent view', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+      component.isParent = false;
+      component.isParentSubsidiaryView = true;
+
+      fixture.detectChanges();
+
+      const selectedWorkplaceLabel = getByTestId('selectedWorkplaceLabel');
+      const parentName = queryByTestId('parentNameLabel');
+
+      expect(selectedWorkplaceLabel).toBeTruthy();
+      expect(parentName).toBeFalsy();
     });
   });
 
@@ -336,9 +355,22 @@ describe('NewDashboardHeaderComponent', () => {
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
     });
   });
+
   describe('Archive Workplace', () => {
     it('should display a Delete Workplace link if user is an admin', async () => {
       const { component, getByText } = await setup();
+
+      getByText('Delete Workplace');
+    });
+
+    it('should display a Delete Workplace link if parent is viewing a subsidiary', async () => {
+      const { component, fixture, getByText } = await setup('home', false, true, false, false, false, 1);
+
+      component.isParent = true;
+      component.isParentSubsidiaryView = true;
+      component.canDeleteEstablishment = true;
+
+      fixture.detectChanges();
 
       getByText('Delete Workplace');
     });
