@@ -18,9 +18,7 @@ import { UsersComponent } from '@features/workplace/users/users.component';
 import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
 import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
-import {
-  ViewSubsidiaryTrainingAndQualificationsComponent,
-} from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
+import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 
