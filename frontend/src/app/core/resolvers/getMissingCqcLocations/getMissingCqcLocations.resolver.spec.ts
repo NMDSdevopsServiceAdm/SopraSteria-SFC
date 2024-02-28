@@ -32,7 +32,7 @@ describe('GetMissingCqcLocationsResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  fit('should call getMissingCqcLocations', async () => {
+  it('should call getMissingCqcLocations', async () => {
     const { resolver, route, establishmentService } = await setup();
     const getMissingCqcLocationsSpy = spyOn(establishmentService, 'getMissingCqcLocations').and.callThrough();
     resolver.resolve(route.snapshot);
@@ -41,7 +41,7 @@ describe('GetMissingCqcLocationsResolver', () => {
       locationId: '1-11111111',
       uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
       id: 0,
-     
+
     });
   });
 });
