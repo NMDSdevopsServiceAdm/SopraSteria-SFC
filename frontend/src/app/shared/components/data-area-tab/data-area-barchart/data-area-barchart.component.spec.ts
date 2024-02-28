@@ -8,171 +8,182 @@ import { DataAreaBarchartComponent } from './data-area-barchart.component';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 
 describe('DataAreaBarchartComponent', () => {
-  // const setup = async () => {
-  //   const { fixture, getByText, getByTestId, queryByTestId, queryByText } = await render(DataAreaBarchartComponent, {
-  //     imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-  //     providers: [{ provide: EstablishmentService, useClass: MockEstablishmentService }],
-  //     schemas: [NO_ERRORS_SCHEMA],
-  //     componentProperties: {
-  //       isPay: false,
-  //       type: '',
-  //       section: '',
-  //       rankingsData: {
-  //         maxRank: 14,
-  //         currentRank: 7,
-  //         hasValue: true,
-  //         allValues: [],
-  //       } as RankingsResponse,
-  //     },
-  //   });
+  const setup = async () => {
+    const { fixture, getByText, getByTestId, queryByTestId, queryByText } = await render(DataAreaBarchartComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      providers: [
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService
+        },
+        {
+          provide: BenchmarksServiceBase,
+          useClass: MockBenchmarksService,
+        }],
+      schemas: [NO_ERRORS_SCHEMA],
+      componentProperties: {
+        isPay: false,
+        type: '',
+        section: '',
+        rankingsData: {
+          maxRank: 14,
+          currentRank: 7,
+          hasValue: true,
+          stateMessage: null,
+          allValues: []
+        }
+      },
+    });
 
-  //   const component = fixture.componentInstance;
+    const component = fixture.componentInstance;
 
-  //   return {
-  //     component,
-  //     fixture,
-  //     getByText,
-  //     getByTestId,
-  //     queryByTestId,
-  //     queryByText,
-  //   };
-  // };
+    return {
+      component,
+      fixture,
+      getByText,
+      getByTestId,
+      queryByTestId,
+      queryByText,
+    };
+  };
 
-  // it('should create', async () => {
-  //   const { component } = await setup();
-  //   expect(component).toBeTruthy();
-  // });
+  it('should create', async () => {
+    const { component } = await setup();
+    expect(component).toBeTruthy();
+  });
 
-  // describe('The default message when all data is provided', () => {
-  //   it('should show pay message if isPay is true', async () => {
-  //     const { component, queryByTestId } = await setup();
+  describe('The default message when all data is provided', () => {
+    it('should show pay message if isPay is true', async () => {
+      const { component, queryByTestId } = await setup();
 
-  //     component.isPay = true;
+      component.isPay = true;
 
-  //     expect(queryByTestId('all-pay-data')).toBeTruthy();
-  //     expect(queryByTestId('all-recruitment-data')).toBeFalsy();
-  //   });
+      expect(queryByTestId('all-pay-data')).toBeTruthy();
+      expect(queryByTestId('all-recruitment-data')).toBeFalsy();
+    });
 
-  //   it('should show retention message if isPay is false', async () => {
-  //     const { component, queryByTestId, fixture } = await setup();
+    it('should show retention message if isPay is false', async () => {
+      const { component, queryByTestId, fixture } = await setup();
 
-  //     component.isPay = false;
-  //     fixture.detectChanges();
+      component.isPay = false;
+      fixture.detectChanges();
 
-  //     expect(queryByTestId('all-recruitment-data')).toBeTruthy();
-  //     expect(queryByTestId('all-pay-data')).toBeFalsy();
-  //   });
-  // });
+      expect(queryByTestId('all-recruitment-data')).toBeTruthy();
+      expect(queryByTestId('all-pay-data')).toBeFalsy();
+    });
+  });
 
-  // it('should show the no comparison group message when no comparsion group data is provided', async () => {
-  //   const { component, queryByTestId, fixture } = await setup();
-  //   component.rankingsData = {
-  //     stateMessage: 'no-comparison-data',
-  //     hasValue: false,
-  //     allValues: [{ value: 1, currentEst: true }],
-  //   } as RankingsResponse;
+  it('should show the no comparison group message when no comparsion group data is provided', async () => {
+    const { component, queryByTestId, fixture } = await setup();
+    component.rankingsData = {
+      stateMessage: 'no-comparison-data',
+      hasValue: false,
+      allValues: [{ value: 1, currentEst: true }],
+    };
 
-  //   component.ngOnChanges();
-  //   expect(queryByTestId('no-comparison-data')).toBeTruthy();
-  // });
+    component.ngOnChanges();
+    expect(queryByTestId('no-comparison-data')).toBeTruthy();
+  });
 
-  // describe('no workplace data message', () => {
-  //   it('should show when no pay workplace data is provided', async () => {
-  //     const { component, queryByTestId, fixture } = await setup();
-  //     component.rankingsData = {
-  //       stateMessage: 'no-pay-data',
-  //       hasValue: false,
-  //       allValues: [{ value: 34, currentEst: false }],
-  //     } as RankingsResponse;
-  //     component.isPay = true;
+  describe('no workplace data message', () => {
+    it('should show when no pay workplace data is provided', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+      component.rankingsData = {
+        stateMessage: 'no-pay-data',
+        hasValue: false,
+        allValues: [{ value: 34, currentEst: false }],
+      };
+      component.isPay = true;
 
-  //     fixture.detectChanges();
-  //     expect(queryByTestId('no-workplace-pay-data')).toBeTruthy();
-  //   });
+      fixture.detectChanges();
+      expect(queryByTestId('no-workplace-pay-data')).toBeTruthy();
+    });
 
-  //   it('should show the when no vacancy workplace data is provided', async () => {
-  //     const { component, queryByTestId, fixture } = await setup();
-  //     component.rankingsData = {
-  //       stateMessage: 'no-vacancies',
-  //       hasValue: false,
-  //       allValues: [{ value: 34, currentEst: false }],
-  //     } as RankingsResponse;
-  //     component.isPay = false;
-  //     component.type = 'vacancy';
+    it('should show when no vacancy workplace data is provided', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+      component.rankingsData = {
+        stateMessage: 'no-vacancies',
+        hasValue: false,
+        allValues: [{ value: 34, currentEst: false }],
+      };
+      component.isPay = false;
+      component.type = 'vacancy';
 
-  //     fixture.detectChanges();
-  //     expect(queryByTestId('no-workplace-vacancy-data')).toBeTruthy();
-  //   });
+      fixture.detectChanges();
+      expect(queryByTestId('no-workplace-vacancy-data')).toBeTruthy();
+    });
 
-  //   it('should show the when no turnover workplace data is provided', async () => {
-  //     const { component, queryByTestId, fixture } = await setup();
-  //     component.rankingsData = {
-  //       stateMessage: 'no-leavers',
-  //       hasValue: false,
-  //       allValues: [{ value: 34, currentEst: false }],
-  //     } as RankingsResponse;
-  //     component.isPay = false;
-  //     component.type = 'turnover';
+    it('should show when no turnover workplace data is provided', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+      component.rankingsData = {
+        stateMessage: 'no-leavers',
+        hasValue: false,
+        allValues: [{ value: 34, currentEst: false }],
+      };
+      component.isPay = false;
+      component.type = 'turnover';
 
-  //     fixture.detectChanges();
-  //     expect(queryByTestId('no-workplace-turnover-or-percent-data')).toBeTruthy();
-  //   });
+      fixture.detectChanges();
+      expect(queryByTestId('no-workplace-turnover-or-percent-data')).toBeTruthy();
+    });
 
-  //   it('should show the when no time in role workplace data is provided', async () => {
-  //     const { component, queryByTestId, fixture } = await setup();
-  //     component.rankingsData = {
-  //       stateMessage: 'not-enough-data',
-  //       hasValue: false,
-  //       allValues: [{ value: 34, currentEst: false }],
-  //     } as RankingsResponse;
-  //     component.isPay = false;
-  //     component.type = 'timeInRole';
+    it('should show the when no time in role workplace data is provided', async () => {
+      const { component, queryByTestId, fixture } = await setup();
+      component.rankingsData = {
+        stateMessage: 'not-enough-data',
+        hasValue: false,
+        allValues: [{ value: 34, currentEst: false }],
+      };
+      component.isPay = false;
+      component.type = 'timeInRole';
 
-  //     fixture.detectChanges();
+      fixture.detectChanges();
 
-  //     expect(queryByTestId('no-workplace-turnover-or-percent-data')).toBeTruthy();
-  //   });
-  // });
+      expect(queryByTestId('no-workplace-turnover-or-percent-data')).toBeTruthy();
+    });
+  });
 
-  // it('should show the correct summary for time in role', async () => {
-  //   const { component } = await setup();
+  it('should show the correct summary for time in role', async () => {
+    const { component } = await setup();
 
-  //   component.isPay = false;
-  //   component.type = 'timeInRole';
-  //   component.section = 'percentage of staff still in their main job role after 12 months';
+    component.isPay = false;
+    component.type = 'timeInRole';
+    component.section = 'percentage of staff still in their main job role after 12 months';
 
-  //   component.ngOnChanges();
+    component.ngOnChanges();
 
-  //   expect(component.sectionInSummary).toEqual('percentage still in their main job role');
-  // });
+    expect(component.sectionInSummary).toEqual('percentage still in their main job role');
+  });
 
-  // it('should show the correct summary for vacancy', async () => {
-  //   const { component } = await setup();
+  it('should show the correct summary for vacancy', async () => {
+    const { component } = await setup();
 
-  //   component.isPay = false;
-  //   component.type = 'vacancy';
-  //   component.section = 'vacancy rate';
+    component.isPay = false;
+    component.type = 'vacancy';
+    component.section = 'vacancy rate';
 
-  //   component.ngOnChanges();
+    component.ngOnChanges();
 
-  //   expect(component.sectionInSummary).toEqual('vacancy rate');
-  // });
+    expect(component.sectionInSummary).toEqual('vacancy rate');
+  });
 
-  // it('should show the no comparison and workplace data message when no comparison or workplace data is provided', async () => {
-  //   const { component, queryByTestId, fixture } = await setup();
-  //   component.rankingsData = {
-  //     stateMessage: 'no-comparison-data',
-  //     maxRank: undefined,
-  //     hasValue: false,
-  //     allValues: [],
-  //   } as RankingsResponse;
-  //   component.noWorkplaceData = true;
+  it('should show the no comparison and workplace data message when no comparison or workplace data is provided', async () => {
+    const { component, queryByTestId, fixture } = await setup();
+    component.rankingsData = {
+      stateMessage: 'no-comparison-data',
+      maxRank: undefined,
+      hasValue: false,
+      allValues: [],
+    };
+    component.noWorkplaceData = true;
 
-  //   fixture.detectChanges();
-  //   component.ngOnChanges();
+    fixture.detectChanges();
+    component.ngOnChanges();
 
-  //   expect(queryByTestId('no-workplace-or-comparison-data')).toBeTruthy();
-  // });
+    expect(queryByTestId('no-workplace-or-comparison-data')).toBeTruthy();
+  });
 });
