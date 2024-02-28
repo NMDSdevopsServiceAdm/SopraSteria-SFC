@@ -1,1 +1,104 @@
-PLACEHOLDER
+<div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
+  <app-benchmarks-select-view-panel
+    data-testid="selectCategoryLinks"
+    [falseSelectionName]="'Pay'"
+    [trueSelectionName]="'Recruitment and retention'"
+    (handleViewToggle)="handleViewBenchmarksByCategory($event)"
+  >
+  </app-benchmarks-select-view-panel>
+
+  <div class="govuk-!-margin-top-7" data-testid="benchmarksCategoryHeading">
+    <ng-container *ngIf="viewBenchmarksByCategory; else payCategory">
+      <h2 class="govuk-heading-m govuk-!-font-size-27">Recruitment and retention</h2>
+    </ng-container>
+    <ng-template #payCategory>
+      <h2 class="govuk-heading-m govuk-!-font-size-27">Pay</h2>
+    </ng-template>
+  </div>
+
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-one-third">
+      <div class="govuk-!-margin-top-1">
+        <app-about-the-data-link></app-about-the-data-link>
+      </div>
+
+      <div *ngIf="tilesData?.meta.lastUpdated" data-testid="benchmarksLastUpdatedDate" class="govuk-!-margin-top-5">
+        <p>The comparison group data was refreshed on {{ tilesData?.meta.lastUpdated | date: 'd MMMM y' }}.</p>
+      </div>
+
+      <app-benchmarks-select-comparison-group
+        [comparisonDataExists]="comparisonDataExists"
+        [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+        (handleViewToggle)="handleViewComparisonGroups($event)"
+        [mainServiceName]="workplace.mainService.name"
+        [localAuthorityLocation]="tilesData?.meta.localAuthority"
+      >
+      </app-benchmarks-select-comparison-group>
+    </div>
+
+    <div class="govuk-grid-column-two-thirds">
+      <ng-container *ngIf="viewBenchmarksComparisonGroups; else nonGoodCqcComparisonGroup">
+        <h3 class="govuk-heading-m">
+          Good and outstanding CQC providers in {{ tilesData?.meta.localAuthority | formatAmpersand }}
+        </h3>
+      </ng-container>
+      <ng-template #nonGoodCqcComparisonGroup>
+        <h3 class="govuk-heading-m">
+          {{ workplace.mainService.name | serviceName }} providers in
+          {{ tilesData?.meta.localAuthority | formatAmpersand }}
+        </h3>
+      </ng-template>
+      <ng-container *ngIf="comparisonDataExists">
+        <ng-container *ngIf="viewBenchmarksComparisonGroups; else nonGoodCqcComparisonGroup">
+          <p>
+            Your selected comparison group is a maximum
+            <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
+            staff from
+            <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
+            workplaces using ASC-WDS, rated as good or outstanding CQC providers and providing
+            <span class="govuk-body govuk-!-font-weight-bold">{{
+              workplace.mainService.name | serviceName | lowercase
+            }}</span>
+            in {{ tilesData?.meta.localAuthority | formatAmpersand }}.
+          </p>
+        </ng-container>
+        <ng-template #nonGoodCqcComparisonGroup>
+          <p class="govuk-body">
+            Your selected comparison group is a maximum
+            <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staff | number }}</span>
+            staff from
+            <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplaces | number }}</span>
+            workplaces using ASC-WDS and providing
+            <span class="govuk-body govuk-!-font-weight-bold">{{
+              workplace.mainService.name | serviceName | lowercase
+            }}</span>
+            in {{ tilesData?.meta.localAuthority | formatAmpersand }}.
+          </p>
+        </ng-template>
+      </ng-container>
+
+      <ng-container *ngIf="viewBenchmarksByCategory; else showPay">
+        <app-data-area-recruitment-and-retention
+          [data]="tilesData"
+          [rankingsData]="rankingsData"
+          [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+          data-testid="recruitmentAndRetentionArea"
+        ></app-data-area-recruitment-and-retention>
+      </ng-container>
+      <ng-template #showPay>
+        <app-data-area-pay
+          [data]="tilesData"
+          [rankingsData]="rankingsData"
+          data-testid="payArea"
+          [viewBenchmarksComparisonGroups]="viewBenchmarksComparisonGroups"
+          [showRegisteredNurseSalary]="showRegisteredNurseSalary"
+        ></app-data-area-pay>
+      </ng-template>
+    </div>
+    <!-- <app-data-area-about-the-data
+      #aboutData
+      class="govuk-visually-hidden"
+      [workplace]="workplace"
+    ></app-data-area-about-the-data> -->
+  </div>
+</div>

@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -13,8 +15,6 @@ import dayjs from 'dayjs';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 
 describe('Summary section', () => {
   const setup = async (
