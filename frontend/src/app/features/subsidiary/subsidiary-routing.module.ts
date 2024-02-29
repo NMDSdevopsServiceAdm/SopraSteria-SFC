@@ -26,6 +26,9 @@ import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-s
 import { SelectWorkplaceComponent } from '@features/workplace/select-workplace/select-workplace.component';
 import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
 import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
+import { TotalStaffQuestionComponent } from '@features/workplace/total-staff-question/total-staff-question.component';
+import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
+import { SelectMainServiceComponent } from '@features/workplace/select-main-service/select-main-service.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -135,24 +138,24 @@ const routes: Routes = [
           title: 'Update Workplace Details',
         },
       },
-      // {
-      //   path: 'type-of-employer',
-      //   component: TypeOfEmployerComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Type of Employer',
-      //   },
-      // },
-      // {
-      //   path: 'main-service',
-      //   component: SelectMainServiceComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Main Service',
-      //   },
-      // },
+      {
+        path: 'type-of-employer',
+        component: TypeOfEmployerComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Type of Employer',
+        },
+      },
+      {
+        path: 'main-service',
+        component: SelectMainServiceComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Main Service',
+        },
+      },
       {
         path: 'main-service-cqc',
         component: SelectMainServiceCqcComponent,
@@ -207,15 +210,15 @@ const routes: Routes = [
       //     title: 'Share Data',
       //   },
       // },
-      // {
-      //   path: 'total-staff',
-      //   component: TotalStaffQuestionComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Total Staff',
-      //   },
-      // },
+      {
+        path: 'total-staff',
+        component: TotalStaffQuestionComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Total Staff',
+        },
+      },
       // {
       //   path: 'vacancies',
       //   component: VacanciesComponent,

@@ -47,7 +47,6 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
         this.workerCount = this.route.snapshot.data.workers?.workerCount;
         this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
         this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
-        this.establishmentService.setPrimaryWorkplace(this.workplace);
       }
     });
   }

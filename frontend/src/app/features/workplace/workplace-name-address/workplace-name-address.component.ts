@@ -9,16 +9,15 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
 import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-workplace-name-address',
-  templateUrl:
-    '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
+  templateUrl: '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html'
 })
+
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public workplace: Establishment;
-  public link: string = '/workplace'
+  public link: string = '/workplace';
 
   constructor(
     private workplaceService: WorkplaceService,
@@ -29,23 +28,12 @@ export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective
     protected route: ActivatedRoute,
     protected router: Router,
     private establishmentService: EstablishmentService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {
     super(backService, backLinkService, errorSummaryService, formBuilder, route, router, workplaceService);
   }
 
   protected init(): void {
-    console.log("workplace name address init");
-
-    if(this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-      this.link = '/subsidiary/workplace';
-      this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((workplace) => {
-        this.workplace = workplace;
-      });
-    } else {
-      this.workplace = this.establishmentService.establishment;
-    }
-
+    this.workplace = this.establishmentService.establishment;
     this.isWorkPlaceUpdate = true;
     this.setLocationAddress();
   }

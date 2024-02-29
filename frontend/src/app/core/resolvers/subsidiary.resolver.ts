@@ -23,7 +23,9 @@ export class SubsidiaryResolver implements Resolve<any> {
     if (subsidiaryUid) {
       return this.establishmentService.getEstablishment(subsidiaryUid).pipe(
         tap((workplace) => {
+          this.establishmentService.setWorkplace(workplace);
           this.establishmentService.setPrimaryWorkplace(workplace);
+
           const standAloneAccount = !(workplace?.isParent || workplace?.parentUid);
           this.establishmentService.standAloneAccount = standAloneAccount;
         }),
