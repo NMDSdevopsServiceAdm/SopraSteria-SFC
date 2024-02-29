@@ -17,10 +17,10 @@ import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
-import { environment } from 'src/environments/environment';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -109,7 +109,6 @@ export class EstablishmentService {
   }
 
   public setPrimaryWorkplace(workplace: Establishment) {
-    console.log("Setting primary workplace in establishment service: ", workplace.name);
     this._primaryWorkplace$.next(workplace);
   }
 
