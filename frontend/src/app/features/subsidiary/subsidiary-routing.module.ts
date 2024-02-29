@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edit-user-permissions.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
@@ -29,6 +30,41 @@ import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-nam
 import { TotalStaffQuestionComponent } from '@features/workplace/total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
 import { SelectMainServiceComponent } from '@features/workplace/select-main-service/select-main-service.component';
+
+import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
+import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
+import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
+import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
+
+import { AcceptPreviousCareCertificateComponent } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
+import { BenefitsStatutorySickPayComponent } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
+import { CheckAnswersComponent } from '@features/workplace/check-answers/check-answers.component';
+import { ConfirmStaffRecruitmentAndBenefitsComponent } from '@features/workplace/confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
+import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
+import { DeleteUserAccountComponent } from '@features/workplace/delete-user-account/delete-user-account.component';
+import { LeaversComponent } from '@features/workplace/leavers/leavers.component';
+import { NumberOfInterviewsComponent } from '@features/workplace/number-of-interviews/number-of-interviews.component';
+import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
+import { PensionsComponent } from '@features/workplace/pensions/pensions.component';
+import { RecruitmentAdvertisingCostComponent } from '@features/workplace/recruitment-advertising-cost/recruitment-advertising-cost.component';
+import { SelectPrimaryUserDeleteComponent } from '@features/workplace/select-primary-user-delete/select-primary-user-delete.component';
+import { SelectPrimaryUserComponent } from '@features/workplace/select-primary-user/select-primary-user.component';
+import { ServiceUsersComponent } from '@features/workplace/service-users/service-users.component';
+import { ServicesCapacityComponent } from '@features/workplace/services-capacity/services-capacity.component';
+import { StaffBenefitCashLoyaltyComponent } from '@features/workplace/staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
+import { StaffBenefitHolidayLeaveComponent } from '@features/workplace/staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
+import { StaffRecruitmentCaptureTrainingRequirementComponent } from '@features/workplace/staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
+import { StartersComponent } from '@features/workplace/starters/starters.component';
+import { UserAccountEditPermissionsComponent } from '@features/workplace/user-account-edit-permissions/user-account-edit-permissions.component';
+import { VacanciesComponent } from '@features/workplace/vacancies/vacancies.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -65,6 +101,25 @@ const routes: Routes = [
       totalStaffRecords: TotalStaffRecordsResolver,
     },
     children: [
+      // {
+      //   path: '',
+      //   canActivate: [CheckPermissionsGuard],
+      //   component: ViewWorkplaceComponent,
+      //   data: {
+      //     permissions: ['canViewEstablishment'],
+      //     title: 'View Workplace',
+      //     workerPagination: true,
+      //   },
+      //   resolve: {
+      //     users: AllUsersForEstablishmentResolver,
+      //     workers: WorkersResolver,
+      //     totalStaffRecords: TotalStaffRecordsResolver,
+      //     benchmarks: BenchmarksResolver,
+      //     rankings: RankingsResolver,
+      //     usefulLinksPay: UsefulLinkPayResolver,
+      //     usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+      //   },
+      // },
       {
         path: '',
         component: ViewSubsidiaryWorkplaceComponent,
@@ -165,51 +220,51 @@ const routes: Routes = [
           title: 'Main Service',
         },
       },
-      // {
-      //   path: 'main-service-cqc-confirm',
-      //   component: SelectMainServiceCqcConfirmComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Main Service',
-      //   },
-      // },
-      // {
-      //   path: 'other-services',
-      //   component: OtherServicesComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Other Services',
-      //   },
-      // },
-      // {
-      //   path: 'capacity-of-services',
-      //   component: ServicesCapacityComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Capacity of Services',
-      //   },
-      // },
-      // {
-      //   path: 'service-users',
-      //   component: ServiceUsersComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Service Users',
-      //   },
-      // },
-      // {
-      //   path: 'sharing-data',
-      //   component: DataSharingComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Share Data',
-      //   },
-      // },
+      {
+        path: 'main-service-cqc-confirm',
+        component: SelectMainServiceCqcConfirmComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Main Service',
+        },
+      },
+      {
+        path: 'other-services',
+        component: OtherServicesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Other Services',
+        },
+      },
+      {
+        path: 'capacity-of-services',
+        component: ServicesCapacityComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Capacity of Services',
+        },
+      },
+      {
+        path: 'service-users',
+        component: ServiceUsersComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Service Users',
+        },
+      },
+      {
+        path: 'sharing-data',
+        component: DataSharingComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Share Data',
+        },
+      },
       {
         path: 'total-staff',
         component: TotalStaffQuestionComponent,
@@ -219,206 +274,206 @@ const routes: Routes = [
           title: 'Total Staff',
         },
       },
-      // {
-      //   path: 'vacancies',
-      //   component: VacanciesComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   resolve: { jobs: JobsResolver },
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Vacancies',
-      //   },
-      // },
-      // {
-      //   path: 'starters',
-      //   component: StartersComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   resolve: { jobs: JobsResolver },
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Starters',
-      //   },
-      // },
-      // {
-      //   path: 'leavers',
-      //   component: LeaversComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   resolve: { jobs: JobsResolver },
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Leavers',
-      //   },
-      // },
-      // {
-      //   path: 'recruitment-advertising-cost',
-      //   component: RecruitmentAdvertisingCostComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Recruitment Advertising Cost',
-      //   },
-      // },
-      // {
-      //   path: 'number-of-interviews',
-      //   component: NumberOfInterviewsComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Number Of Interviews',
-      //   },
-      // },
-      // {
-      //   path: 'staff-recruitment-capture-training-requirement',
-      //   component: StaffRecruitmentCaptureTrainingRequirementComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Staff Recruitment Capture Training Requirement',
-      //   },
-      // },
-      // {
-      //   path: 'confirm-staff-recruitment-and-benefits',
-      //   component: ConfirmStaffRecruitmentAndBenefitsComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Confirm Staff Recruitment And Benefits',
-      //   },
-      // },
-      // {
-      //   path: 'staff-benefit-holiday-leave',
-      //   component: StaffBenefitHolidayLeaveComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Staff Benefit Holiday Leave',
-      //   },
-      // },
-      // {
-      //   path: 'accept-previous-care-certificate',
-      //   component: AcceptPreviousCareCertificateComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Accept Previous Care Certificate',
-      //   },
-      // },
-      // {
-      //   path: 'cash-loyalty',
-      //   component: StaffBenefitCashLoyaltyComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Cash Loyalty',
-      //   },
-      // },
+      {
+        path: 'vacancies',
+        component: VacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Vacancies',
+        },
+      },
+      {
+        path: 'starters',
+        component: StartersComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Starters',
+        },
+      },
+      {
+        path: 'leavers',
+        component: LeaversComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Leavers',
+        },
+      },
+      {
+        path: 'recruitment-advertising-cost',
+        component: RecruitmentAdvertisingCostComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Recruitment Advertising Cost',
+        },
+      },
+      {
+        path: 'number-of-interviews',
+        component: NumberOfInterviewsComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Number Of Interviews',
+        },
+      },
+      {
+        path: 'staff-recruitment-capture-training-requirement',
+        component: StaffRecruitmentCaptureTrainingRequirementComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Staff Recruitment Capture Training Requirement',
+        },
+      },
+      {
+        path: 'confirm-staff-recruitment-and-benefits',
+        component: ConfirmStaffRecruitmentAndBenefitsComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Confirm Staff Recruitment And Benefits',
+        },
+      },
+      {
+        path: 'staff-benefit-holiday-leave',
+        component: StaffBenefitHolidayLeaveComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Staff Benefit Holiday Leave',
+        },
+      },
+      {
+        path: 'accept-previous-care-certificate',
+        component: AcceptPreviousCareCertificateComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Accept Previous Care Certificate',
+        },
+      },
+      {
+        path: 'cash-loyalty',
+        component: StaffBenefitCashLoyaltyComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Cash Loyalty',
+        },
+      },
 
-      // {
-      //   path: 'benefits-statutory-sick-pay',
-      //   component: BenefitsStatutorySickPayComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Benefits Statutory Sick Pay',
-      //   },
-      // },
-      // {
-      //   path: 'check-answers',
-      //   component: CheckAnswersComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Check Answers',
-      //   },
-      // },
-      // {
-      //   path: 'pensions',
-      //   component: PensionsComponent,
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Pensions',
-      //   },
-      // },
-      // {
-      //   path: 'user/create',
-      //   canActivate: [CheckPermissionsGuard],
-      //   component: CreateUserAccountComponent,
-      //   data: {
-      //     permissions: ['canAddUser'],
-      //     title: 'Create User Account',
-      //   },
-      // },
-      // {
-      //   path: 'user/saved/:useruid',
-      //   canActivate: [CheckPermissionsGuard],
-      //   component: UserAccountSavedComponent,
-      //   resolve: { user: UserAccountResolver },
-      //   data: {
-      //     permissions: ['canAddUser'],
-      //     title: 'User has been added',
-      //   },
-      // },
-      // {
-      //   path: 'user/:useruid',
-      //   data: { title: 'View User Account' },
-      //   children: [
-      //     {
-      //       path: '',
-      //       component: UserAccountViewComponent,
-      //       resolve: { user: UserAccountResolver },
-      //     },
-      //     {
-      //       path: 'permissions',
-      //       component: UserAccountEditPermissionsComponent,
-      //       canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
-      //       resolve: { user: UserAccountResolver },
-      //       data: {
-      //         permissions: ['canEditUser'],
-      //         title: 'Edit Permissions',
-      //       },
-      //     },
-      //     {
-      //       path: 'select-primary-user',
-      //       component: SelectPrimaryUserComponent,
-      //       canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
-      //       resolve: { user: UserAccountResolver },
-      //       data: {
-      //         permissions: ['canEditUser'],
-      //         title: 'Select primary user',
-      //       },
-      //     },
-      //     {
-      //       path: 'select-primary-user-delete',
-      //       component: SelectPrimaryUserDeleteComponent,
-      //       canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
-      //       resolve: { user: UserAccountResolver },
-      //       data: {
-      //         permissions: ['canEditUser'],
-      //         title: 'Select primary user to delete',
-      //       },
-      //     },
-      //     {
-      //       path: 'edit-details',
-      //       component: UserAccountEditDetailsComponent,
-      //       canActivate: [CheckPermissionsGuard],
-      //       resolve: { user: UserAccountResolver },
-      //       data: {
-      //         permissions: ['canEditUser'],
-      //         title: 'Edit User Details',
-      //       },
-      //     },
-      //     {
-      //       path: 'delete-user',
-      //       component: DeleteUserAccountComponent,
-      //       canActivate: [CheckPermissionsGuard],
-      //       resolve: { user: UserAccountResolver },
-      //       data: {
-      //         permissions: ['canDeleteUser'],
-      //         title: 'Delete User',
-      //       },
-      //     },
-      //   ],
-      // },
+      {
+        path: 'benefits-statutory-sick-pay',
+        component: BenefitsStatutorySickPayComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Benefits Statutory Sick Pay',
+        },
+      },
+      {
+        path: 'check-answers',
+        component: CheckAnswersComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Check Answers',
+        },
+      },
+      {
+        path: 'pensions',
+        component: PensionsComponent,
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Pensions',
+        },
+      },
+      {
+        path: 'user/create',
+        canActivate: [CheckPermissionsGuard],
+        component: CreateUserAccountComponent,
+        data: {
+          permissions: ['canAddUser'],
+          title: 'Create User Account',
+        },
+      },
+      {
+        path: 'user/saved/:useruid',
+        canActivate: [CheckPermissionsGuard],
+        component: UserAccountSavedComponent,
+        resolve: { user: UserAccountResolver },
+        data: {
+          permissions: ['canAddUser'],
+          title: 'User has been added',
+        },
+      },
+      {
+        path: 'user/:useruid',
+        data: { title: 'View User Account' },
+        children: [
+          {
+            path: '',
+            component: UserAccountViewComponent,
+            resolve: { user: UserAccountResolver },
+          },
+          {
+            path: 'permissions',
+            component: UserAccountEditPermissionsComponent,
+            canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              permissions: ['canEditUser'],
+              title: 'Edit Permissions',
+            },
+          },
+          {
+            path: 'select-primary-user',
+            component: SelectPrimaryUserComponent,
+            canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              permissions: ['canEditUser'],
+              title: 'Select primary user',
+            },
+          },
+          {
+            path: 'select-primary-user-delete',
+            component: SelectPrimaryUserDeleteComponent,
+            canActivate: [CheckPermissionsGuard, EditUserPermissionsGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              permissions: ['canEditUser'],
+              title: 'Select primary user to delete',
+            },
+          },
+          {
+            path: 'edit-details',
+            component: UserAccountEditDetailsComponent,
+            canActivate: [CheckPermissionsGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              permissions: ['canEditUser'],
+              title: 'Edit User Details',
+            },
+          },
+          {
+            path: 'delete-user',
+            component: DeleteUserAccountComponent,
+            canActivate: [CheckPermissionsGuard],
+            resolve: { user: UserAccountResolver },
+            data: {
+              permissions: ['canDeleteUser'],
+              title: 'Delete User',
+            },
+          },
+        ],
+      },
     ]
   },
   {
