@@ -45,7 +45,7 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.tabsService.selectedTab = 'benchmark';
+    this.tabsService.selectedTab = 'benchmarks';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.newDashboard = true;
 
