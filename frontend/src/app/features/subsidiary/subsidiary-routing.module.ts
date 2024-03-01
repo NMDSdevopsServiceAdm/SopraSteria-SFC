@@ -427,6 +427,7 @@ const routes: Routes = [
     data: { title: 'Staff Records' },
     resolve: {
       subsidiaryResolver: SubsidiaryResolver,
+      workers: WorkersResolver,
     },
   },
   {

@@ -14,6 +14,7 @@ import {
   ViewSubsidiaryTrainingAndQualificationsComponent,
 } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, SubsidiaryRoutingModule,  BenchmarksModule,DataAreaTabModule,],
@@ -21,6 +22,7 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
     ViewSubsidiaryHomeComponent,
     ViewSubsidiaryWorkplaceComponent,
     ViewSubsidiaryHomeComponent,
+    ViewSubsidiaryStaffRecordsComponent,
     ViewSubsidiaryTrainingAndQualificationsComponent,
     ViewSubsidiaryBenchmarksComponent,
   ],

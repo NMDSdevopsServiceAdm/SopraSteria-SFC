@@ -7,56 +7,47 @@ import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { TabsService } from '@core/services/tabs.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WorkerService } from '@core/services/worker.service';
 
 @Component({
   selector: 'app-view-subsidiary-staff-records',
   templateUrl: './view-subsidiary-staff-records.component.html',
 })
 export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
-  public primaryEstablishment: Establishment;
   public workplace: Establishment;
-  public summaryReturnUrl: URLStructure;
-  public canDeleteEstablishment: boolean;
-  public canViewListOfUsers: boolean;
-  public canViewListOfWorkers: boolean;
-  public canViewBenchmarks: boolean;
-  public totalStaffRecords: number;
-  public trainingAlert: number;
   public workers: Worker[];
-  public trainingCounts: TrainingCounts;
   public workerCount: number;
-  public showSharingPermissionsBanner: boolean;
-  private showBanner = false;
-  public newDataAreaFlag: boolean;
-  public canSeeNewDataArea: boolean;
+  public createStaffResponse = null;
+  public errors;
+  public canAddWorker: boolean;
 
   constructor(
-    // private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
-    // private dialogService: DialogService,
-    // private establishmentService: EstablishmentService,
-    // private benchmarksService: BenchmarksServiceBase,
-    // private permissionsService: PermissionsService,
-    // private router: Router,
-    // private userService: UserService,
-    // private workerService: WorkerService,
-    // private route: ActivatedRoute,
-    // private featureFlagsService: FeatureFlagsService,
+    private permissionsService: PermissionsService,
+    private workerService: WorkerService,
+    private route: ActivatedRoute,
+    private tabsService: TabsService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
-    // this.showBanner = history.state?.showBanner;
-
-    // this.establishmentService.setCheckCQCDetailsBanner(false);
+    this.tabsService.selectedTab = 'staff-records';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
-    // this.primaryEstablishment = this.establishmentService.primaryWorkplace;
-    // this.workplace = this.establishmentService.establishment;
-    // this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    // this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
-    // this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-    // this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
-    // this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
-    // this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+    this.workerService.setAddStaffRecordInProgress(false);
+    this.createStaffResponse = this.workerService.getCreateStaffResponse();
+
+    this.workers = this.route.snapshot.data.workers?.workers;
+    this.workerCount = this.route.snapshot.data.workers?.workerCount;
+
+    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
+      if (subsidiaryWorkplace) {
+        this.workplace = subsidiaryWorkplace;
+        this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
+      }
+    });
+
+
   }
 }
