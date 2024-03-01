@@ -474,6 +474,15 @@ const routes: Routes = [
           },
         ],
       },
+      {
+        path: 'staff-record',
+        loadChildren: () => import('@features/workers/workers.module').then((m) => m.WorkersModule),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canViewWorker'],
+          title: 'Staff Records',
+        },
+      },
     ]
   },
   {
