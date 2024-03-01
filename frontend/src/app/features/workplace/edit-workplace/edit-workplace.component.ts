@@ -10,7 +10,8 @@ export class EditWorkplaceComponent implements OnInit, OnDestroy {
   constructor(private route: ActivatedRoute, private establishmentService: EstablishmentService) {}
 
   ngOnInit() {
-    this.establishmentService.setState(this.route.snapshot.data.establishment);
+    // this.establishmentService.setState(this.route.snapshot.data.establishment); // TODO
+    console.log('edit workplace component', this.route.snapshot.data.establishment);
   }
 
   ngOnDestroy(): void {
