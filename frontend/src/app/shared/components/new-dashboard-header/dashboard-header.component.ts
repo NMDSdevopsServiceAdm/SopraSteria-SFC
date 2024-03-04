@@ -94,7 +94,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     } else {
       this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
         if (workplace) {
-          this.establishmentService.setPrimaryWorkplace(workplace);
+          this.establishmentService.setWorkplace(workplace);
           this.workplace = this.establishmentService.primaryWorkplace;
           this.workplaceUid = this.workplace ? this.workplace.uid : null;
         }

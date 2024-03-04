@@ -16,7 +16,7 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
   templateUrl: './view-subsidiary-workplace.component.html',
 })
 export class ViewSubsidiaryWorkplaceComponent implements OnInit {
-  // public summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
+  public summaryReturnUrl: URLStructure = { url: ['/dashboard'], fragment: 'workplace' };
   public canEditEstablishment: boolean;
   public addWorkplaceDetailsBanner: boolean;
   public showCqcDetailsBanner: boolean;
@@ -49,5 +49,11 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
         this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
       }
     });
+  }
+
+  ngOnDestroy(): void {
+    // need to manually remove breadcrumbs on tabs, because a
+    // navigation event isn't called when going from one tab to another
+    this.breadcrumbService.removeRoutes();
   }
 }
