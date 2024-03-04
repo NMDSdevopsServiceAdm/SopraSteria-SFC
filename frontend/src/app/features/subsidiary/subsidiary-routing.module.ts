@@ -72,10 +72,6 @@ import { UsersComponent } from '@features/workplace/users/users.component';
 import { VacanciesComponent } from '@features/workplace/vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
-import {
-  AboutTheDataLinkComponent,
-} from '@shared/components/data-area-tab/about-the-data-link/about-the-data-link.component';
-import { DataAreaAboutTheDataComponent } from '@shared/components/data-area-tab/about-the-data/about-the-data.component';
 
 import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
 import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
@@ -123,19 +119,12 @@ const routes: Routes = [
     children: [
       {
         path: 'data-area',
-        component: DataAreaAboutTheDataComponent,
+        loadChildren: () =>
+          import('@shared/components/data-area-tab/data-area-tab.module').then((m) => m.DataAreaTabModule),
+
         data: {
           title: 'Data Area',
         },
-
-        children: [{
-          path:'about-the-data',
-          component: AboutTheDataLinkComponent,
-          data: {
-            title: 'About the data',
-          },
-        }
-      ]
       },
       // {
       //   path: '',
