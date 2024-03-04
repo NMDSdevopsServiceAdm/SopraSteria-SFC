@@ -12,11 +12,13 @@ export class SubsidiaryRouterService extends Router {
 
   navigate(commands: any[], extras?: any): Promise<boolean> {
     if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-      if(commands[0].startsWith('/subsidiary')) {
+      if(commands[0].includes('subsidiary')) {
         return super.navigate(commands, extras);
       } else {
-        const modifiedCommands = [`subsidiary/${commands[0]}`].concat(commands.shift());
-        return super.navigate(modifiedCommands, extras);
+        const modifiedCommand = `subsidiary${commands[0]}`;
+        commands.shift();
+        console.log("Modified Commands: ", [modifiedCommand].concat(commands));
+        return super.navigate([modifiedCommand].concat(commands), extras);
       }
     } else {
       return super.navigate(commands, extras);
