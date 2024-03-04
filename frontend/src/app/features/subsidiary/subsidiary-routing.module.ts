@@ -7,64 +7,84 @@ import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
-import { WorkersResolver } from '@core/resolvers/workers.resolver';
-import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-workplace.component';
-import { RegulatedByCqcComponent } from '@features/workplace/regulated-by-cqc/regulated-by-cqc.component';
-import { StaffRecruitmentStartComponent } from '@features/workplace/staff-recruitment/staff-recruitment-start.component';
-import { StartComponent } from '@features/workplace/start/start.component';
-import { UsersComponent } from '@features/workplace/users/users.component';
-
-import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
-import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
-import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
-import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
-import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
-import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
-
-import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import { SelectWorkplaceComponent } from '@features/workplace/select-workplace/select-workplace.component';
-import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
-import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
-import { TotalStaffQuestionComponent } from '@features/workplace/total-staff-question/total-staff-question.component';
-import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
-import { SelectMainServiceComponent } from '@features/workplace/select-main-service/select-main-service.component';
-
-import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
-import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
-import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
-import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
-import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
-import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
-import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
-import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
-import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
-import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
-import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
-
-import { AcceptPreviousCareCertificateComponent } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
-import { BenefitsStatutorySickPayComponent } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
+import { WorkersResolver } from '@core/resolvers/workers.resolver';
+import {
+  AcceptPreviousCareCertificateComponent,
+} from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
+import {
+  BenefitsStatutorySickPayComponent,
+} from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { CheckAnswersComponent } from '@features/workplace/check-answers/check-answers.component';
-import { ConfirmStaffRecruitmentAndBenefitsComponent } from '@features/workplace/confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
+import {
+  ConfirmStaffRecruitmentAndBenefitsComponent,
+} from '@features/workplace/confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
+import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from '@features/workplace/delete-user-account/delete-user-account.component';
+import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-workplace.component';
 import { LeaversComponent } from '@features/workplace/leavers/leavers.component';
 import { NumberOfInterviewsComponent } from '@features/workplace/number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
 import { PensionsComponent } from '@features/workplace/pensions/pensions.component';
-import { RecruitmentAdvertisingCostComponent } from '@features/workplace/recruitment-advertising-cost/recruitment-advertising-cost.component';
-import { SelectPrimaryUserDeleteComponent } from '@features/workplace/select-primary-user-delete/select-primary-user-delete.component';
+import {
+  RecruitmentAdvertisingCostComponent,
+} from '@features/workplace/recruitment-advertising-cost/recruitment-advertising-cost.component';
+import { RegulatedByCqcComponent } from '@features/workplace/regulated-by-cqc/regulated-by-cqc.component';
+import {
+  SelectMainServiceCqcConfirmComponent,
+} from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
+import { SelectMainServiceComponent } from '@features/workplace/select-main-service/select-main-service.component';
+import {
+  SelectPrimaryUserDeleteComponent,
+} from '@features/workplace/select-primary-user-delete/select-primary-user-delete.component';
 import { SelectPrimaryUserComponent } from '@features/workplace/select-primary-user/select-primary-user.component';
+import { SelectWorkplaceComponent } from '@features/workplace/select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from '@features/workplace/service-users/service-users.component';
 import { ServicesCapacityComponent } from '@features/workplace/services-capacity/services-capacity.component';
-import { StaffBenefitCashLoyaltyComponent } from '@features/workplace/staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
-import { StaffBenefitHolidayLeaveComponent } from '@features/workplace/staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
-import { StaffRecruitmentCaptureTrainingRequirementComponent } from '@features/workplace/staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
+import {
+  StaffBenefitCashLoyaltyComponent,
+} from '@features/workplace/staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
+import {
+  StaffBenefitHolidayLeaveComponent,
+} from '@features/workplace/staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
+import {
+  StaffRecruitmentCaptureTrainingRequirementComponent,
+} from '@features/workplace/staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentStartComponent } from '@features/workplace/staff-recruitment/staff-recruitment-start.component';
+import { StartComponent } from '@features/workplace/start/start.component';
 import { StartersComponent } from '@features/workplace/starters/starters.component';
-import { UserAccountEditPermissionsComponent } from '@features/workplace/user-account-edit-permissions/user-account-edit-permissions.component';
+import { TotalStaffQuestionComponent } from '@features/workplace/total-staff-question/total-staff-question.component';
+import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
+import {
+  UserAccountEditDetailsComponent,
+} from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import {
+  UserAccountEditPermissionsComponent,
+} from '@features/workplace/user-account-edit-permissions/user-account-edit-permissions.component';
+import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
+import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
+import { UsersComponent } from '@features/workplace/users/users.component';
 import { VacanciesComponent } from '@features/workplace/vacancies/vacancies.component';
+import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
+import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
+import {
+  AboutTheDataLinkComponent,
+} from '@shared/components/data-area-tab/about-the-data-link/about-the-data-link.component';
+import { DataAreaAboutTheDataComponent } from '@shared/components/data-area-tab/about-the-data/about-the-data.component';
+
+import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
+import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
+import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
+import {
+  ViewSubsidiaryTrainingAndQualificationsComponent,
+} from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
+import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
+import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -101,6 +121,22 @@ const routes: Routes = [
       totalStaffRecords: TotalStaffRecordsResolver,
     },
     children: [
+      {
+        path: 'data-area',
+        component: DataAreaAboutTheDataComponent,
+        data: {
+          title: 'Data Area',
+        },
+
+        children: [{
+          path:'about-the-data',
+          component: AboutTheDataLinkComponent,
+          data: {
+            title: 'About the data',
+          },
+        }
+      ]
+      },
       // {
       //   path: '',
       //   canActivate: [CheckPermissionsGuard],
@@ -523,6 +559,7 @@ const routes: Routes = [
       subsidiaryResolver: SubsidiaryResolver,
     },
   },
+
 ];
 
 @NgModule({

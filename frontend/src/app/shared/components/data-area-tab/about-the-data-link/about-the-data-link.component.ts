@@ -22,17 +22,12 @@ export class AboutTheDataLinkComponent implements OnInit {
   ngOnInit(): void {
     this.workplaceUid = this.establishmentService ? this.establishmentService.primaryWorkplace.uid : null;
 
-    if(this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
       this.link = '/subsidiary/workplace';
     }
   }
 
   public setReturn(): void {
-    if(!this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-      this.benchmarksService.setReturnTo({
-        url: [this.router.url.split('#')[0]],
-        fragment: 'benchmarks',
-      });
-    }
+   this.router.navigate([this.link, this.workplaceUid, 'data-area', 'about-the-data']);
   }
 }
