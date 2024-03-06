@@ -37,7 +37,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
 
-  public link: string = '/workplace';
+  public link: string = '/workplace';  // TODO REMOVE! REVERT!
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,

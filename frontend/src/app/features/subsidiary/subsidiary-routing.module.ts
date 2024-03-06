@@ -503,6 +503,9 @@ const routes: Routes = [
       subsidiaryResolver: SubsidiaryResolver,
       workers: WorkersResolver,
     },
+    // child: [
+    //   // TODO /training
+    // ]
   },
   {
     path: 'benchmarks/:establishmentuid',
