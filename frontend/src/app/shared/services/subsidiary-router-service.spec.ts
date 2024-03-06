@@ -4,7 +4,7 @@ import { SubsidiaryRouterService } from './subsidiary-router-service';
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 import { Router } from '@angular/router';
 
-fdescribe('SubsidiaryRouterService', () => {
+describe('SubsidiaryRouterService', () => {
   let service: SubsidiaryRouterService;
   let subViewServiceSpy: jasmine.SpyObj<ParentSubsidiaryViewService>;
   let routerSpy: jasmine.Spy;
