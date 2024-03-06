@@ -46,17 +46,26 @@ describe('SubsidiaryRouterService', () => {
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
     })
 
-    it('should take fragments and use the sub equivalent', async() => {
-      subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
-      subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
-      service.navigate(['expected', 'test', 'route'], {fragment: 'test-fragment'});
-      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
-    })
-
     it('should remove a leading slash from the route', async() => {
       subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
       service.navigate(['/expected', 'test', 'route'], undefined);
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
+    })
+
+    describe('fragments', () => {
+      it('should reroute to the sub equivalent pages on dashboard', async() => {
+        subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
+        subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
+        service.navigate(['dashboard', 'test', 'route'], {fragment: 'test-fragment'});
+        expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
+      })
+
+      it('should use default fragments', async() => {
+        subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
+        subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
+        service.navigate(['expected', 'test', 'route'], {fragment: 'test-fragment'});
+        expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], {fragment: 'test-fragment'});
+      })
     })
   })
 

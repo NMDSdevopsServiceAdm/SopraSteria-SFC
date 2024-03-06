@@ -13,7 +13,7 @@ export class SubsidiaryRouterService extends Router {
   navigate(commands: any[], extras?: any): Promise<boolean> {
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && (!commands[0].includes('subsidiary'))) {
       commands.splice(0, 1, commands[0].replace('/', ''));
-      if(extras?.fragment) {
+      if(commands[0].toLowerCase() === 'dashboard' && extras?.fragment) {
         commands = [extras.fragment, this.parentSubsidiaryViewService.getSubsidiaryUid()];
         extras = undefined;
       }
