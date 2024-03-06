@@ -2,8 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SubsidiaryRouterService } from './subsidiary-router-service';
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
-import { of } from 'rxjs';
-import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 
 fdescribe('SubsidiaryRouterService', () => {
@@ -46,6 +44,12 @@ fdescribe('SubsidiaryRouterService', () => {
       subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
       service.navigate(['expected', 'test', 'route']);
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
+    })
+
+    it('should apply fragments to the route', async() => {
+      subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
+      service.navigate(['expected', 'test', 'route'], {fragment: 'test-fragment'});
+      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], {fragment: 'test-fragment'});
     })
   })
 
