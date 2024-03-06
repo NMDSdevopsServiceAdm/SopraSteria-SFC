@@ -41,13 +41,7 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
     this.workers = this.route.snapshot.data.workers?.workers;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
 
-    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
-      if (subsidiaryWorkplace) {
-        this.workplace = subsidiaryWorkplace;
-        this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
-      }
-    });
-
-
+    this.workplace = this.route.snapshot.data.subsidiaryResolver;
+    this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
   }
 }

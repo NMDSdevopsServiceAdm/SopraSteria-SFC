@@ -76,11 +76,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     console.log("workerCount: ", this.workerCount);
     console.log("trainingCounts: ", this.trainingCounts);
 
-    // USE RESOLVER
-    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
-      this.workplace = subsidiaryWorkplace;
-      console.log("Subsidiary Workplace: ", this.workplace);
-    });
+    this.workplace = this.route.snapshot.data.subsidiaryResolver;
 
     const alertMessage = history.state?.alertMessage;
     alertMessage && this.showAlert(alertMessage);
