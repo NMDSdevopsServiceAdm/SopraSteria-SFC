@@ -10,7 +10,7 @@ describe('SubsidiaryRouterService', () => {
   let routerSpy: jasmine.Spy;
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj('ParentSubsidiaryViewService', ['getViewingSubAsParent']);
+    const spy = jasmine.createSpyObj('ParentSubsidiaryViewService', ['getViewingSubAsParent', 'getSubsidiaryUid']);
     routerSpy = spyOn(Router.prototype, 'navigate');
 
     TestBed.configureTestingModule({
@@ -46,10 +46,11 @@ describe('SubsidiaryRouterService', () => {
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
     })
 
-    it('should apply fragments to the route', async() => {
+    it('should take fragments and use the sub equivalent', async() => {
       subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
+      subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
       service.navigate(['expected', 'test', 'route'], {fragment: 'test-fragment'});
-      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], {fragment: 'test-fragment'});
+      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
     })
 
     it('should remove a leading slash from the route', async() => {

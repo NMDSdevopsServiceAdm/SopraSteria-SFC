@@ -15,6 +15,10 @@ export class SubsidiaryRouterService extends Router {
       if(Array.from(commands[0])[0] === '/') {
         commands.splice(0, 1, commands[0].replace('/', ''));
       }
+      if(extras?.fragment) {
+        commands = [extras.fragment, this.parentSubsidiaryViewService.getSubsidiaryUid()];
+        extras = undefined;
+      }
       commands.unshift('subsidiary');
     }
     return super.navigate(commands, extras);
