@@ -16,9 +16,9 @@ export class SubsidiaryRouterService extends Router {
       let modifiedCommands = commands;
 
       if(!commands[0].includes('subsidiary')) {
-        const modifiedCommand = `subsidiary${commands[0]}`;
-        commands.shift();
-        modifiedCommands = [modifiedCommand].concat(commands)
+        // const modifiedCommand = `subsidiary${commands[0]}`;
+        modifiedCommands.unshift('subsidiary');
+        // modifiedCommands = [modifiedCommand].concat(commands)
       }
 
       if(extras && extras.fragment) {
