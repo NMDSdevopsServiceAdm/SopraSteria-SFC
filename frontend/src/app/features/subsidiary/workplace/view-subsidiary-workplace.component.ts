@@ -39,16 +39,10 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
-
-    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
-      if (subsidiaryWorkplace) {
-        this.workplace = subsidiaryWorkplace;
-
-        this.workerCount = this.route.snapshot.data.workers?.workerCount;
-        this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
-        this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
-      }
-    });
+    this.workplace = this.route.snapshot.data.subsidiaryResolver;
+    this.workerCount = this.route.snapshot.data.workers?.workerCount;
+    this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
+    this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
   }
 
   ngOnDestroy(): void {
