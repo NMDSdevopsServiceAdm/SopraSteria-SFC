@@ -19,7 +19,11 @@
     </div>
   </div>
 
-  <app-new-dashboard-header [tab]="selectedTab"></app-new-dashboard-header>
+  <app-new-dashboard-header
+    [canAddWorker]="canAddWorker"
+    [updatedDate]="updatedDate"
+    [tab]="selectedTab">
+  </app-new-dashboard-header>
 
   <div [class]="{ 'govuk-width-container': !dashboardView }">
     <ng-container *ngIf="!dashboardView">

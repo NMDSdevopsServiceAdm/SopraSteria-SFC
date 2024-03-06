@@ -1,12 +1,12 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
-import { Subscription } from 'rxjs';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { Establishment } from '@core/model/establishment.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-subsidiary-account',
@@ -15,6 +15,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   @Input() dashboardView: boolean;
+  @Input() canAddWorker = false;
+  @Input() updatedDate: Date;
 
   private subscriptions: Subscription = new Subscription();
   public workplaceUid: string;
@@ -44,7 +46,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    const { uid, id, name } = this.establishmentService.primaryWorkplace;
+    const { uid, id, name, updated  } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
     this.getPermissions();
@@ -54,9 +56,11 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid();
 
     this.setWorkplace();
-
+    this.canAddWorker = this.permissionsService.can(this.workplaceUid, 'canAddWorker');
     this.parentWorkplaceName = name;
+    this.updatedDate = updated
   }
+
 
   ngOnChanges(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
