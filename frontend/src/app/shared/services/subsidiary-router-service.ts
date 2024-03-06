@@ -11,10 +11,11 @@ export class SubsidiaryRouterService extends Router {
   }
 
   navigate(commands: any[], extras?: any): Promise<boolean> {
-    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-      if(!commands[0].includes('subsidiary')) {
-        commands.unshift('subsidiary');
+    if (this.parentSubsidiaryViewService.getViewingSubAsParent() && (!commands[0].includes('subsidiary'))) {
+      if(Array.from(commands[0])[0] === '/') {
+        commands.splice(0, 1, commands[0].replace('/', ''));
       }
+      commands.unshift('subsidiary');
     }
     return super.navigate(commands, extras);
   }
