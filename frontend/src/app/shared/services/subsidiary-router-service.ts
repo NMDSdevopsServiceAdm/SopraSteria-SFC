@@ -11,6 +11,7 @@ export class SubsidiaryRouterService extends Router {
   }
 
   navigate(commands: any[], extras?: any): Promise<boolean> {
+    console.log('SubsidiaryRouterService.navigate', commands, extras);
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && (!commands[0].includes('subsidiary'))) {
       commands.splice(0, 1, commands[0].replace('/', ''));
       if(commands[0].toLowerCase() === 'dashboard' && extras?.fragment) {
@@ -18,6 +19,7 @@ export class SubsidiaryRouterService extends Router {
         extras = undefined;
       }
       commands.unshift('subsidiary');
+      console.log('SubsidiaryRouterService navigate modified: ', commands, extras);
     }
     return super.navigate(commands, extras);
   }
