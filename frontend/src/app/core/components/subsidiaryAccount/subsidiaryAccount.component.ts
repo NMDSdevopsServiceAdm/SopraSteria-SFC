@@ -1,12 +1,13 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
-import { Subscription } from 'rxjs';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { Establishment } from '@core/model/establishment.model';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-subsidiary-account',
@@ -15,6 +16,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   @Input() dashboardView: boolean;
+  public canShowBanner = true;
 
   private subscriptions: Subscription = new Subscription();
   public workplaceUid: string;
@@ -38,6 +40,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     private permissionsService: PermissionsService,
     private tabsService: TabsService,
     private benchmarksService: BenchmarksServiceBase,
+    private breadcrumbService: BreadcrumbService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private route: ActivatedRoute,
     private router: Router,
@@ -56,6 +59,12 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.setWorkplace();
 
     this.parentWorkplaceName = name;
+
+    this.subscriptions.add(
+      this.breadcrumbService.canShowBanner$.subscribe((canShowBanner) => {
+        this.canShowBanner = canShowBanner;
+      }),
+    );
   }
 
   ngOnChanges(): void {
