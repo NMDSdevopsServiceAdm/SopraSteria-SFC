@@ -1,7 +1,9 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { Establishment, SortTrainingAndQualsOptionsCat } from '@core/model/establishment.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
 
@@ -23,18 +25,27 @@ export class TrainingAndQualificationsCategoriesComponent implements OnInit, OnD
   public showMandatoryTraining = false;
   public mandatoryTrainingCount = 0;
   private subscriptions: Subscription = new Subscription();
+  link = '/workplace';
 
   constructor(
     protected trainingStatusService: TrainingStatusService,
     private establishmentService: EstablishmentService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit(): void {
+    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+      this.link = '/subsidiary/workplace';
+    }
     this.getMandatoryTrainingCount();
     this.sortTrainingAndQualsOptions = SortTrainingAndQualsOptionsCat;
-
     this.orderTrainingCategories(this.sortByValue);
     this.setExpiresSoonAlertDates();
+  }
+
+  public hideBanner() {
+    this.breadcrumbService.canShowBanner = false;
   }
 
   private getMandatoryTrainingCount(): void {

@@ -6,6 +6,7 @@ import {
   SortTrainingAndQualsOptionsWorkerNoMissing,
 } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
@@ -46,6 +47,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
     protected trainingCategoryService: TrainingCategoryService,
     protected backLinkService: BackLinkService,
     private route: ActivatedRoute,
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit(): void {
@@ -135,6 +137,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
   }
 
   public returnToHome(): void {
+    this.breadcrumbService.canShowBanner = true;
     const returnLink =
       this.workplace.uid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
     this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });

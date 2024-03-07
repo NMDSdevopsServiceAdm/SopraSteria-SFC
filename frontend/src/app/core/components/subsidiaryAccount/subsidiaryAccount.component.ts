@@ -21,6 +21,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   @Input() updatedDate: Date;
 
   private subscriptions: Subscription = new Subscription();
+  private breadcrumbSubscriptions: Subscription = new Subscription();
   public workplaceUid: string;
   public workplaceId: number;
   public canViewEstablishment: boolean;
@@ -62,7 +63,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.canAddWorker = this.permissionsService.can(this.workplaceUid, 'canAddWorker');
     this.parentWorkplaceName = name;
 
-    this.subscriptions.add(
+    this.breadcrumbSubscriptions.add(
       this.breadcrumbService.canShowBanner$.subscribe((canShowBanner) => {
         this.canShowBanner = canShowBanner;
       }),
@@ -72,6 +73,9 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
 
   }
 
+  ngOnDestroy(): void {
+    this.breadcrumbSubscriptions.unsubscribe();
+  }
 
   ngOnChanges(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
@@ -90,6 +94,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
+    this.canShowBanner = true;
     this.selectedTab = properties.tabSlug;
 
     if (properties.tabSlug === 'benchmarks') {

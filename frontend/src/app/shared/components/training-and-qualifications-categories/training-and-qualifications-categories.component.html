@@ -123,9 +123,10 @@
               <a
                 class="govuk-link--no-visited-state"
                 href="#"
+                (click)="hideBanner()"
                 data-testid="more-link"
                 [routerLink]="[
-                  '/workplace',
+                  this.link,
                   this.workplace.uid,
                   'training-and-qualifications-record',
                   'view-training-category',
