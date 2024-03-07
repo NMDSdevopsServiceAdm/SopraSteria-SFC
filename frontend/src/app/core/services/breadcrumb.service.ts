@@ -27,7 +27,14 @@ import { bulkUploadHelpJourney, bulkUploadJourney } from '@core/breadcrumb/journ
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
+import {
+  becomeAParentJourney,
+  changeDataOwnerJourney,
+  linkToParentJourney,
+  removeLinkToParentJourney,
+} from '@core/breadcrumb/journey.parent-requests';
 import { publicJourney } from '@core/breadcrumb/journey.public';
+import { subsidiaryJourney } from '@core/breadcrumb/journey.subsidiary';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
@@ -37,16 +44,6 @@ import {
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
 } from '@core/breadcrumb/journey.workplaces';
-import {
-  becomeAParentJourney,
-  linkToParentJourney,
-  removeLinkToParentJourney,
-  changeDataOwnerJourney,
-} from '@core/breadcrumb/journey.parent-requests';
-import {
-  subsidiaryJourney,
-} from '@core/breadcrumb/journey.subsidiary';
-
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { parse } from 'url';
@@ -59,6 +56,8 @@ export class BreadcrumbService {
   public readonly routes$: Observable<Array<JourneyRoute>> = this._routes$.asObservable();
   private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
+  private _canShowBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  public readonly canShowBanner$: Observable<boolean> = this._canShowBanner$.asObservable();
 
   constructor(private router: Router, private location: Location) {
     this.router.events
@@ -81,6 +80,14 @@ export class BreadcrumbService {
     const routes = this.getRoutes(this.getRoutesConfig(journey), segments);
     this._routes$.next(routes);
     this._overrideMessage$.next(overrideMessage);
+  }
+
+  public get canShowBanner(): boolean {
+    return this._canShowBanner$.value;
+  }
+
+  public set canShowBanner(canShowBanner: boolean) {
+    this._canShowBanner$.next(canShowBanner);
   }
 
   public removeRoutes(): void {

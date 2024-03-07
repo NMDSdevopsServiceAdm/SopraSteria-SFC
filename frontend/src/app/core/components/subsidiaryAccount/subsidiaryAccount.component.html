@@ -19,7 +19,9 @@
     </div>
   </div>
 
-  <app-new-dashboard-header [tab]="selectedTab"></app-new-dashboard-header>
+  <div *ngIf="canShowBanner">
+    <app-new-dashboard-header [tab]="selectedTab"></app-new-dashboard-header>
+  </div>
 
   <div [class]="{ 'govuk-width-container': !dashboardView }">
     <ng-container *ngIf="!dashboardView">
