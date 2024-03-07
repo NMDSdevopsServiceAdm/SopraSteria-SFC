@@ -508,6 +508,27 @@ const routes: Routes = [
           title: 'Staff Records',
         },
       },
+      {
+        path: 'training-and-qualifications',
+        loadChildren: () =>
+          import('@features/training-and-qualifications/training-and-qualifications.module').then(
+            (m) => m.TrainingAndQualificationsModule,
+          ),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canViewWorker'],
+          title: 'Training and qualifications',
+        },
+      },
+      {
+        path: 'training-and-qualifications-record',
+        loadChildren: () => import('@features/workers/workers.module').then((m) => m.WorkersModule),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canViewWorker'],
+          title: 'Training and qualifications record',
+        },
+      },
     ]
   },
   {

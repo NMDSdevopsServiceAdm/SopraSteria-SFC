@@ -15,6 +15,7 @@ import {
 } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 
 @NgModule({
   imports: [
@@ -35,6 +36,7 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
     ViewSubsidiaryBenchmarksComponent,
   ],
   providers: [
+    ExpiresSoonAlertDatesResolver,
     SubsidiaryResolver
   ],
 })
