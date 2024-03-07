@@ -17,6 +17,8 @@ import { Subscription } from 'rxjs';
 export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   @Input() dashboardView: boolean;
   public canShowBanner = true;
+  @Input() canAddWorker = false;
+  @Input() updatedDate: Date;
 
   private subscriptions: Subscription = new Subscription();
   public workplaceUid: string;
@@ -47,7 +49,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    const { uid, id, name } = this.establishmentService.primaryWorkplace;
+    const { uid, id, name, updated  } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
     this.getPermissions();
@@ -57,7 +59,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid();
 
     this.setWorkplace();
-
+    this.canAddWorker = this.permissionsService.can(this.workplaceUid, 'canAddWorker');
     this.parentWorkplaceName = name;
 
     this.subscriptions.add(
@@ -65,7 +67,11 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
         this.canShowBanner = canShowBanner;
       }),
     );
+
+    this.updatedDate = updated
+
   }
+
 
   ngOnChanges(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
