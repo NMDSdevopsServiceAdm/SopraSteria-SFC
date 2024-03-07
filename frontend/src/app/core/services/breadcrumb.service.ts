@@ -57,6 +57,7 @@ export class BreadcrumbService {
   private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
   private _canShowBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  public readonly canShowBanner$: Observable<boolean> = this._canShowBanner$.asObservable();
 
   constructor(private router: Router, private location: Location) {
     this.router.events
@@ -79,10 +80,6 @@ export class BreadcrumbService {
     const routes = this.getRoutes(this.getRoutesConfig(journey), segments);
     this._routes$.next(routes);
     this._overrideMessage$.next(overrideMessage);
-  }
-
-  public get canShowBanner$(): Observable<boolean> {
-    return this._canShowBanner$.asObservable();
   }
 
   public get canShowBanner(): boolean {
