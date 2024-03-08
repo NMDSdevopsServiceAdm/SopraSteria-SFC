@@ -39,7 +39,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
-    this.workplace = this.route.snapshot.data.subsidiaryResolver;
+    this.workplace = this.route.snapshot.data.establishment;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');

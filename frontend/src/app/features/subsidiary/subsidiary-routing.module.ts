@@ -94,7 +94,7 @@ const routes: Routes = [
     component: ViewSubsidiaryHomeComponent,
     resolve: {
       users: AllUsersForEstablishmentResolver,
-      subsidiaryResolver: SubsidiaryResolver,
+      establishment: SubsidiaryResolver,
       workers: WorkersResolver,
       totalStaffRecords: TotalStaffRecordsResolver,
       articleList: ArticleListResolver,
@@ -112,7 +112,7 @@ const routes: Routes = [
     data: { title: 'Workplace' },
     resolve: {
       users: AllUsersForEstablishmentResolver,
-      subsidiaryResolver: SubsidiaryResolver,
+      establishment: SubsidiaryResolver,
       workers: WorkersResolver,
       totalStaffRecords: TotalStaffRecordsResolver,
     },
@@ -150,7 +150,7 @@ const routes: Routes = [
         component: ViewSubsidiaryWorkplaceComponent,
         // resolve: {
         //   users: AllUsersForEstablishmentResolver,
-        //   subsidiaryResolver: SubsidiaryResolver,
+        //   establishment: SubsidiaryResolver,
         //   workers: WorkersResolver,
         // },
         data: { title: 'Workplace' },
@@ -536,7 +536,7 @@ const routes: Routes = [
     component: ViewSubsidiaryStaffRecordsComponent,
     data: { title: 'Staff Records' },
     resolve: {
-      subsidiaryResolver: SubsidiaryResolver,
+      establishment: SubsidiaryResolver,
       workers: WorkersResolver,
     },
   },
@@ -546,7 +546,7 @@ const routes: Routes = [
     data: { title: 'Training and qualifications' },
     resolve: {
       users: AllUsersForEstablishmentResolver,
-      subsidiaryResolver: SubsidiaryResolver,
+      establishment: SubsidiaryResolver,
       workers: WorkersResolver,
     },
     // child: [
@@ -558,7 +558,7 @@ const routes: Routes = [
     component: ViewSubsidiaryBenchmarksComponent,
     data: { title: 'Benchmarks' },
     resolve: {
-      subsidiaryResolver: SubsidiaryResolver,
+      establishment: SubsidiaryResolver,
       benchmarksResolver: BenchmarksResolver,
       rankingsResolver: RankingsResolver,
 
@@ -569,7 +569,7 @@ const routes: Routes = [
     component: ViewSubsidiaryWorkplaceUsersComponent,
     data: { title: 'Workplace users' },
     resolve: {
-      subsidiaryResolver: SubsidiaryResolver,
+      establishment: SubsidiaryResolver,
     },
   },
 
