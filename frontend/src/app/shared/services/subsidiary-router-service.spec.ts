@@ -46,9 +46,9 @@ describe('SubsidiaryRouterService', () => {
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
     })
 
-    it('should remove a leading slash from the route', async() => {
+    it('should remove forward slashes from the route', async() => {
       subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
-      service.navigate(['/expected', 'test', 'route'], undefined);
+      service.navigate(['/expected', '/test/route'], undefined);
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
     })
 
