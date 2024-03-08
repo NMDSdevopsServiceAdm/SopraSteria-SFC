@@ -545,7 +545,7 @@ const routes: Routes = [
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
     data: { title: 'Training and qualifications' },
     resolve: {
-      users: AllUsersForEstablishmentResolver,
+      // users: AllUsersForEstablishmentResolver,
       establishment: SubsidiaryResolver,
       workers: WorkersResolver,
     },
