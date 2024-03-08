@@ -60,7 +60,7 @@ describe('SubsidiaryRouterService', () => {
         expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
       })
 
-      it('should reroute to the sub equivalent pages on dashboard', async() => {
+      it('should reroute to the sub equivalent pages on dashboard when a leading slash is present', async() => {
         subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
         subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
         service.navigate(['/dashboard', 'test', 'route'], {fragment: 'test-fragment'});
