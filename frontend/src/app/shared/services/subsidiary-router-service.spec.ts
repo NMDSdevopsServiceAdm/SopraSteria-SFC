@@ -60,6 +60,13 @@ describe('SubsidiaryRouterService', () => {
         expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
       })
 
+      it('should reroute to the sub equivalent pages on dashboard', async() => {
+        subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
+        subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
+        service.navigate(['/dashboard', 'test', 'route'], {fragment: 'test-fragment'});
+        expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
+      })
+
       it('should use default fragments', async() => {
         subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
         subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
