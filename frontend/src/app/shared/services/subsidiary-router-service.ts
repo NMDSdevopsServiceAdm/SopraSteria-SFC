@@ -4,8 +4,14 @@ import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { URLStructure } from '@core/model/url.model';
 
+const exitSubsidiaryViewPages = [
+  'login',
+  'satisfaction-survey',
+]
+
 @Injectable()
 export class SubsidiaryRouterService extends Router {
+
   constructor(
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private establishmentService: EstablishmentService,
@@ -13,8 +19,20 @@ export class SubsidiaryRouterService extends Router {
     super()
   }
 
+  // any navigation to ... should clear the parentViewingSubAsParent flag
+  // ref header.component
+  // '/'
+  // '/registration'
+  // '/login'
+  // etc...
   navigate(commands: any[], extras?: any): Promise<boolean> {
     console.log('SubsidiaryRouterService.navigate', commands, extras);
+
+    if (exitSubsidiaryViewPages.some(command => commands[0].includes(command))) {
+        this.parentSubsidiaryViewService.clearViewingSubAsParent();
+    }
+
+    // if viewingSubsidaryAsParent, then all routes should be prefixed with 'subsidiary'
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && (!commands[0].includes('subsidiary'))) {
       // If routing to the dashboard, override fragments
       if(commands[0].toLowerCase().includes('dashboard') && extras?.fragment) {
@@ -31,14 +49,6 @@ export class SubsidiaryRouterService extends Router {
       console.log('SubsidiaryRouterService navigate modified: ', commands, extras);
     }
 
-    // const returnURL: URLStructure = {
-    //   url: commands,
-    //   fragment: (extras && extras.fragment) ? extras.fragment : null,
-    //   queryParams: (extras && extras.queryParams) ? extras.queryParams : null,
-    // };
-
-    // console.log('SubsidiaryRouterService setReturnTo: ', returnURL);
-    // this.establishmentService.setReturnTo(returnURL);
     return super.navigate(commands, extras);
   }
 }
