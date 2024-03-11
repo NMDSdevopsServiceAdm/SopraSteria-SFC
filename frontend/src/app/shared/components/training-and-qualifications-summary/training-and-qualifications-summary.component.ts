@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment, SortTrainingAndQualsOptionsWorker } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
 import { take } from 'rxjs/operators';
@@ -38,6 +39,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
     private router: Router,
     private workerService: WorkerService,
     private route: ActivatedRoute,
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit(): void {
@@ -87,6 +89,7 @@ export class TrainingAndQualificationsSummaryComponent implements OnInit {
 
   public getWorkerTrainingAndQualificationsPath(event: Event, worker: Worker): void {
     event.preventDefault();
+    this.breadcrumbService.canShowBanner = false;
     const path = this.wdfView
       ? ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training', 'wdf-summary']
       : ['/workplace', this.workplace.uid, 'training-and-qualifications-record', worker.uid, 'training'];
