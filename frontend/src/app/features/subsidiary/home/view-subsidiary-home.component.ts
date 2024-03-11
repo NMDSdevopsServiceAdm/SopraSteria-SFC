@@ -83,7 +83,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.subsidiaryWorkplace = this.route.snapshot.data.subsidiaryResolver;
+    this.subsidiaryWorkplace = this.route.snapshot.data.establishment;
     this.workersCreatedDate = this.route.snapshot.data.workers?.workersCreatedDate;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
@@ -93,7 +93,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();
 
-    this.subId = this.route.snapshot.data.subsidiaryResolver.uid;
+    this.subId = this.route.snapshot.data.establishment.uid;
 
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 

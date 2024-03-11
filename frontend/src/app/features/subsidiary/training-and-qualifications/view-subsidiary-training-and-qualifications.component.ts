@@ -76,7 +76,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     console.log("workerCount: ", this.workerCount);
     console.log("trainingCounts: ", this.trainingCounts);
 
-    this.workplace = this.route.snapshot.data.subsidiaryResolver;
+    this.workplace = this.route.snapshot.data.establishment;
 
     const alertMessage = history.state?.alertMessage;
     alertMessage && this.showAlert(alertMessage);

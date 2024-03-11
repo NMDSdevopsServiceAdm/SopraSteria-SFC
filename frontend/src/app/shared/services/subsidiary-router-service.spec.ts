@@ -46,9 +46,9 @@ describe('SubsidiaryRouterService', () => {
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
     })
 
-    it('should remove a leading slash from the route', async() => {
+    it('should remove forward slashes from the route', async() => {
       subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
-      service.navigate(['/expected', 'test', 'route'], undefined);
+      service.navigate(['/expected', '/test/route'], undefined);
       expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
     })
 
@@ -57,6 +57,13 @@ describe('SubsidiaryRouterService', () => {
         subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
         subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
         service.navigate(['dashboard', 'test', 'route'], {fragment: 'test-fragment'});
+        expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
+      })
+
+      it('should reroute to the sub equivalent pages on dashboard when a leading slash is present', async() => {
+        subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
+        subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
+        service.navigate(['/dashboard', 'test', 'route'], {fragment: 'test-fragment'});
         expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
       })
 
