@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationBehaviorOptions, Router, UrlSegment, UrlSegmentGroup, UrlTree } from '@angular/router';
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { URLStructure } from '@core/model/url.model';
@@ -13,8 +13,7 @@ export class SubsidiaryRouterService extends Router {
     super()
   }
 
-  navigate(commands: any[], extras?: any): Promise<boolean> {
-    console.log('SubsidiaryRouterService.navigate', commands, extras);
+  getNewRoute(commands: any[], extras?: any) {
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && (!commands[0].includes('subsidiary'))) {
       // If routing to the dashboard, override fragments
       if(commands[0].toLowerCase().includes('dashboard') && extras?.fragment) {
@@ -30,15 +29,21 @@ export class SubsidiaryRouterService extends Router {
       commands.unshift('subsidiary');
       console.log('SubsidiaryRouterService navigate modified: ', commands, extras);
     }
+    return { commands, extras };
+  }
 
-    // const returnURL: URLStructure = {
-    //   url: commands,
-    //   fragment: (extras && extras.fragment) ? extras.fragment : null,
-    //   queryParams: (extras && extras.queryParams) ? extras.queryParams : null,
-    // };
+  navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
+    let urlArray = [];
+    for(let segment of url.root.children.primary.segments) {
+      urlArray.push(segment.path);
+    }
+    const navigationExtras = {
+      fragment: url.fragment
+    }
 
-    // console.log('SubsidiaryRouterService setReturnTo: ', returnURL);
-    // this.establishmentService.setReturnTo(returnURL);
-    return super.navigate(commands, extras);
+    const newRoute = this.getNewRoute(urlArray, navigationExtras);
+    url = super.createUrlTree(newRoute.commands, newRoute.extras);
+
+    return super.navigateByUrl(url, extras);
   }
 }

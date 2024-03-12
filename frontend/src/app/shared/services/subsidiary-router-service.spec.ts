@@ -2,7 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SubsidiaryRouterService } from './subsidiary-router-service';
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
-import { Router } from '@angular/router';
+import { Router, UrlSegmentGroup, UrlTree } from '@angular/router';
 
 describe('SubsidiaryRouterService', () => {
   let service: SubsidiaryRouterService;
@@ -11,7 +11,7 @@ describe('SubsidiaryRouterService', () => {
 
   beforeEach(() => {
     const spy = jasmine.createSpyObj('ParentSubsidiaryViewService', ['getViewingSubAsParent', 'getSubsidiaryUid']);
-    routerSpy = spyOn(Router.prototype, 'navigate');
+    routerSpy = spyOn(Router.prototype, 'navigateByUrl');
 
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
@@ -34,44 +34,67 @@ describe('SubsidiaryRouterService', () => {
   describe('When not viewing sub as parent', () => {
     it('should navigate to the provided route', async() => {
       subViewServiceSpy.getViewingSubAsParent.and.returnValue(false);
-      service.navigate(['expected', 'test', 'route']);
-      expect(routerSpy).toHaveBeenCalledWith(['expected', 'test', 'route'], undefined);
+      const urlTree = service.createUrlTree(['expected', 'test', 'route']);
+      const expectedUrlTree = service.createUrlTree(['expected', 'test', 'route'], undefined);
+
+      service.navigateByUrl(urlTree);
+
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
     });
   });
 
   describe('When viewing sub as a parent', () => {
     it('should prepend the route with the subsidiary route', async() => {
       subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
-      service.navigate(['expected', 'test', 'route']);
-      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
+      const urlTree = service.createUrlTree(['expected', 'test', 'route']);
+      const expectedUrlTree = service.createUrlTree(['subsidiary', 'expected', 'test', 'route'], undefined);
+
+      service.navigateByUrl(urlTree);
+
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
     })
 
     it('should remove forward slashes from the route', async() => {
       subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
-      service.navigate(['/expected', '/test/route'], undefined);
-      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], undefined);
+      const urlTree = service.createUrlTree(['/expected', '/test/route'], undefined);
+      const expectedUrlTree = service.createUrlTree(['subsidiary', 'expected', 'test', 'route'], undefined);
+
+      service.navigateByUrl(urlTree);
+
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
     })
 
     describe('fragments', () => {
       it('should reroute to the sub equivalent pages on dashboard', async() => {
         subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
         subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
-        service.navigate(['dashboard', 'test', 'route'], {fragment: 'test-fragment'});
-        expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
+        const urlTree = service.createUrlTree(['dashboard', 'test', 'route'], {fragment: 'test-fragment'});
+        const expectedUrlTree = service.createUrlTree(['subsidiary', 'test-fragment', '1234'], undefined);
+
+        service.navigateByUrl(urlTree);
+
+        expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
       })
 
       it('should reroute to the sub equivalent pages on dashboard when a leading slash is present', async() => {
         subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
         subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
-        service.navigate(['/dashboard', 'test', 'route'], {fragment: 'test-fragment'});
-        expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'test-fragment', '1234'], undefined);
+        const urlTree = service.createUrlTree(['/dashboard', 'test', 'route'], {fragment: 'test-fragment'});
+        const expectedUrlTree = service.createUrlTree(['subsidiary', 'test-fragment', '1234'], undefined);
+
+        service.navigateByUrl(urlTree);
+
+        expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
       })
 
       it('should use default fragments', async() => {
         subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
-        subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
-        service.navigate(['expected', 'test', 'route'], {fragment: 'test-fragment'});
-        expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'expected', 'test', 'route'], {fragment: 'test-fragment'});
+        const urlTree = service.createUrlTree(['expected', 'test', 'route'], {fragment: 'test-fragment'});
+        const expectedUrlTree = service.createUrlTree(['subsidiary', 'expected', 'test', 'route'], {fragment: 'test-fragment'});
+
+        service.navigateByUrl(urlTree);
+
+        expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
       })
     })
   })
