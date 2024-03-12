@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationBehaviorOptions, Router, UrlSegment, UrlSegmentGroup, UrlTree } from '@angular/router';
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { URLStructure } from '@core/model/url.model';
@@ -20,20 +20,19 @@ export class SubsidiaryRouterService extends Router {
     super()
   }
 
-  // any navigation to ... should clear the parentViewingSubAsParent flag
-  // ref header.component
-  // '/'
-  // '/registration'
-  // '/login'
-  // etc...
-  navigate(commands: any[], extras?: any): Promise<boolean> {
-    console.log('SubsidiaryRouterService.navigate', commands, extras);
-
-    if (exitSubsidiaryViewPages.some(command => commands[0].includes(command))) {
-      this.parentSubsidiaryViewService.clearViewingSubAsParent();
+  getCommands(urlTree: UrlTree) {
+    let commands = [];
+    for(let segment of urlTree.root.children.primary.segments) {
+      commands.push(segment.path);
+    }
+    const navigationExtras = {
+      fragment: urlTree.fragment
     }
 
-    // if viewingSubsidaryAsParent, then all routes should be prefixed with 'subsidiary'
+    return { commands, navigationExtras }
+  }
+
+  getNewRoute(commands: any[], extras?: any) {
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && (!commands[0].includes('subsidiary'))) {
       // If routing to the dashboard, override fragments
       if(commands[0].toLowerCase().includes('dashboard') && extras?.fragment) {
@@ -49,7 +48,20 @@ export class SubsidiaryRouterService extends Router {
       commands.unshift('subsidiary');
       console.log('SubsidiaryRouterService navigate modified: ', commands, extras);
     }
+    return { commands, extras };
+  }
 
-    return super.navigate(commands, extras);
+  navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
+    const {commands, navigationExtras} = this.getCommands(url);
+
+    if (exitSubsidiaryViewPages.some(command => commands[0].includes(command))) {
+      this.parentSubsidiaryViewService.clearViewingSubAsParent();
+    } else {
+      const newRoute = this.getNewRoute(commands, navigationExtras);
+      url = super.createUrlTree(newRoute.commands, newRoute.extras);
+    }
+
+
+    return super.navigateByUrl(url, extras);
   }
 }
