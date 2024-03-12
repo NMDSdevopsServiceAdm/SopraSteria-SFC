@@ -20,12 +20,19 @@ export class SubsidiaryRouterService extends Router {
     super()
   }
 
-  getNewRoute(commands: any[], extras?: any) {
-
-    if (exitSubsidiaryViewPages.some(command => commands[0].includes(command))) {
-      this.parentSubsidiaryViewService.clearViewingSubAsParent();
+  getCommands(urlTree: UrlTree) {
+    let commands = [];
+    for(let segment of urlTree.root.children.primary.segments) {
+      commands.push(segment.path);
+    }
+    const navigationExtras = {
+      fragment: urlTree.fragment
     }
 
+    return { commands, navigationExtras }
+  }
+
+  getNewRoute(commands: any[], extras?: any) {
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && (!commands[0].includes('subsidiary'))) {
       // If routing to the dashboard, override fragments
       if(commands[0].toLowerCase().includes('dashboard') && extras?.fragment) {
@@ -45,17 +52,15 @@ export class SubsidiaryRouterService extends Router {
   }
 
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
+    const {commands, navigationExtras} = this.getCommands(url);
 
-    let urlArray = [];
-    for(let segment of url.root.children.primary.segments) {
-      urlArray.push(segment.path);
-    }
-    const navigationExtras = {
-      fragment: url.fragment
+    if (exitSubsidiaryViewPages.some(command => commands[0].includes(command))) {
+      this.parentSubsidiaryViewService.clearViewingSubAsParent();
+    } else {
+      const newRoute = this.getNewRoute(commands, navigationExtras);
+      url = super.createUrlTree(newRoute.commands, newRoute.extras);
     }
 
-    const newRoute = this.getNewRoute(urlArray, navigationExtras);
-    url = super.createUrlTree(newRoute.commands, newRoute.extras);
 
     return super.navigateByUrl(url, extras);
   }
