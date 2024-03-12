@@ -7,6 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 const exitSubsidiaryViewPages = [
   'login',
   'satisfaction-survey',
+  'notifications'
 ]
 
 @Injectable()
@@ -29,7 +30,7 @@ export class SubsidiaryRouterService extends Router {
     console.log('SubsidiaryRouterService.navigate', commands, extras);
 
     if (exitSubsidiaryViewPages.some(command => commands[0].includes(command))) {
-        this.parentSubsidiaryViewService.clearViewingSubAsParent();
+      this.parentSubsidiaryViewService.clearViewingSubAsParent();
     }
 
     // if viewingSubsidaryAsParent, then all routes should be prefixed with 'subsidiary'
