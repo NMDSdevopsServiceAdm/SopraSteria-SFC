@@ -4,8 +4,15 @@ import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { URLStructure } from '@core/model/url.model';
 
+const exitSubsidiaryViewPages = [
+  'login',
+  'satisfaction-survey',
+  'notifications'
+]
+
 @Injectable()
 export class SubsidiaryRouterService extends Router {
+
   constructor(
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private establishmentService: EstablishmentService,
@@ -14,6 +21,11 @@ export class SubsidiaryRouterService extends Router {
   }
 
   getNewRoute(commands: any[], extras?: any) {
+
+    if (exitSubsidiaryViewPages.some(command => commands[0].includes(command))) {
+      this.parentSubsidiaryViewService.clearViewingSubAsParent();
+    }
+
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && (!commands[0].includes('subsidiary'))) {
       // If routing to the dashboard, override fragments
       if(commands[0].toLowerCase().includes('dashboard') && extras?.fragment) {
@@ -33,6 +45,7 @@ export class SubsidiaryRouterService extends Router {
   }
 
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
+
     let urlArray = [];
     for(let segment of url.root.children.primary.segments) {
       urlArray.push(segment.path);
