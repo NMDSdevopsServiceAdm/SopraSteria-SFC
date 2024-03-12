@@ -10,7 +10,7 @@ describe('SubsidiaryRouterService', () => {
   let routerSpy: jasmine.Spy;
 
   beforeEach(() => {
-    const spy = jasmine.createSpyObj('ParentSubsidiaryViewService', ['getViewingSubAsParent', 'getSubsidiaryUid']);
+    const parentSubViewSpy = jasmine.createSpyObj('ParentSubsidiaryViewService', ['getViewingSubAsParent', 'getSubsidiaryUid', 'clearViewingSubAsParent']);
     routerSpy = spyOn(Router.prototype, 'navigateByUrl');
 
     TestBed.configureTestingModule({
@@ -19,7 +19,7 @@ describe('SubsidiaryRouterService', () => {
         SubsidiaryRouterService,
         {
           provide: ParentSubsidiaryViewService,
-          useValue: spy,
+          useValue: parentSubViewSpy,
         }],
     });
 
@@ -42,6 +42,42 @@ describe('SubsidiaryRouterService', () => {
       expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
     });
   });
+
+  describe('When hitting exit sub view pages', () => {
+    it('should clear the value for the view sub service at login page', async () => {
+      subViewServiceSpy.getViewingSubAsParent.and.returnValue(false);
+      const urlTree = service.createUrlTree(['login']);
+      const expectedUrlTree = service.createUrlTree(['login'], undefined);
+
+      service.navigateByUrl(urlTree);
+
+      expect(subViewServiceSpy.clearViewingSubAsParent).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
+    });
+
+    it('should clear the value for the view sub service at notifications page', async () => {
+      subViewServiceSpy.getViewingSubAsParent.and.returnValue(false);
+      const urlTree = service.createUrlTree(['notifications']);
+      const expectedUrlTree = service.createUrlTree(['notifications'], undefined);
+
+      service.navigateByUrl(urlTree);
+
+      expect(subViewServiceSpy.clearViewingSubAsParent).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
+    });
+
+    it('should clear the value for the view sub service at notifications page', async () => {
+      subViewServiceSpy.getViewingSubAsParent.and.returnValue(false);
+      const urlTree = service.createUrlTree(['satisfaction-survey']);
+      const expectedUrlTree = service.createUrlTree(['satisfaction-survey'], undefined);
+
+      service.navigateByUrl(urlTree);
+
+      expect(subViewServiceSpy.clearViewingSubAsParent).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
+    });
+  });
+
 
   describe('When viewing sub as a parent', () => {
     it('should prepend the route with the subsidiary route', async() => {
