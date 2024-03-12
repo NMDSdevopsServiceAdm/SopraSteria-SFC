@@ -48,8 +48,8 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     this.tabsService.selectedTab = 'benchmarks';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.newDashboard = true;
-
-    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
+    this.breadcrumbService.canShowBanner = true;
+    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
       if (subsidiaryWorkplace) {
         this.workplace = subsidiaryWorkplace;
         this.subsidiaryUid = this.workplace?.uid;
@@ -98,5 +98,6 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();
+    this.breadcrumbService.canShowBanner = false;
   }
 }

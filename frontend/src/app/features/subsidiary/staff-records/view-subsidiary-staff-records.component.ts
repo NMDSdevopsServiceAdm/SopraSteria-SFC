@@ -1,15 +1,13 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
-import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { TabsService } from '@core/services/tabs.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { WorkerService } from '@core/services/worker.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-view-subsidiary-staff-records',
@@ -43,5 +41,10 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
 
     this.workplace = this.route.snapshot.data.establishment;
     this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
+    this.breadcrumbService.canShowBanner = true;
+  }
+
+  ngOnDestroy(): void {
+    this.breadcrumbService.canShowBanner = false;
   }
 }

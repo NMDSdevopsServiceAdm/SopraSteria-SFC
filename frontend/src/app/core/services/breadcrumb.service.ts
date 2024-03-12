@@ -56,7 +56,7 @@ export class BreadcrumbService {
   public readonly routes$: Observable<Array<JourneyRoute>> = this._routes$.asObservable();
   private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
-  private _canShowBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  private _canShowBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public readonly canShowBanner$: Observable<boolean> = this._canShowBanner$.asObservable();
 
   constructor(private router: Router, private location: Location) {
