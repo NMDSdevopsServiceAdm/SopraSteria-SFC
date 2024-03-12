@@ -2,19 +2,16 @@ import { Component, OnInit, SimpleChanges } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingRecordCategories } from '@core/model/training.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { WorkerService } from '@core/services/worker.service';
-import { TrainingService } from '@core/services/training.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
-import { AlertService } from '@core/services/alert.service';
+import { TrainingService } from '@core/services/training.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
-import { TrainingRecordCategories } from '@core/model/training.model';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -96,6 +93,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
     console.log("Subsidiary Training and Qualifications: ", this.workplace);
     console.log("Subsidiary Workers: ", this.workers);
+    this.breadcrumbService.canShowBanner = true;
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -152,5 +150,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.breadcrumbService.canShowBanner = false;
   }
 }

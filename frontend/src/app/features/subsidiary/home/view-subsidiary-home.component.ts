@@ -1,24 +1,19 @@
-import { Component, OnInit, OnChanges } from '@angular/core';
-import { HttpResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { Worker } from '@core/model/worker.model';
-import { ParentRequestsService } from '@core/services/parent-requests.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
-import { WindowToken } from '@core/services/window';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { isAdminRole } from '@core/utils/check-role-util';
-import { URLStructure } from '@core/model/url.model';
-import { SharedModule } from '@shared/shared.module';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
-import { Subscription } from 'rxjs';
-
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-view-subsidiary-home',
@@ -80,6 +75,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     private featureFlagsService: FeatureFlagsService,
     private router: Router,
     public parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit(): void {
@@ -98,6 +94,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
+    this.breadcrumbService.canShowBanner = true;
   }
 
   ngOnChanges(): void {}
@@ -147,5 +144,9 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public navigateToTab(event: Event, selectedTab: string): void {
     event.preventDefault();
     this.tabsService.selectedTab = selectedTab;
+  }
+
+  ngOnDestroy(): void {
+    this.breadcrumbService.canShowBanner = false;
   }
 }
