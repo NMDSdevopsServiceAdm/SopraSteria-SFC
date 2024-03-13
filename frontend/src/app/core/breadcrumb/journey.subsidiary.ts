@@ -4,6 +4,8 @@ enum Path {
   DASHBOARD = '/subsidiary/home/:establishmentuid',
   WORKPLACE = '/subsidiary/workplace/:establishmentuid',
   STAFF_RECORDS = '/subsidiary/staff-records/:establishmentuid',
+  // STAFF_RECORDS = '/subsidiary/workplace/:workplaceUid/staff-record/:workerUid/staff-record-summary',
+  // MANDATORY_DETAILS = '/workplace/:workplaceUid/staff-record/:workerUid/mandatory-details',
   TRAINING_AND_QUALIFICATIONS = '/subsidiary/training-and-qualifications/:establishmentuid',
   BENCHMARKS = '/subsidiary/benchmarks/:establishmentuid',
   WORKPLACE_USERS = '/subsidiary/workplace-users/:establishmentuid',
@@ -22,11 +24,7 @@ export const subsidiaryJourney: JourneyRoute = {
       path: Path.WORKPLACE,
       fragment: 'workplace',
     },
-    {
-      title: 'Staff records',
-      path: Path.STAFF_RECORDS,
-      fragment: 'staff-records',
-    },
+
     {
       title: 'Training and qualifications',
       path: Path.TRAINING_AND_QUALIFICATIONS,
@@ -46,6 +44,35 @@ export const subsidiaryJourney: JourneyRoute = {
       title: 'About the data',
       path: Path.ABOUT_DATA,
       fragment: 'benchmark',
+    },
+  ],
+};
+
+export const subsidiaryStaffRecordsTabJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Staff records',
+      path: Path.STAFF_RECORDS,
+
+
+      // children: [
+      //   {
+      //     title: 'Staff record',
+      //     path: Path.STAFF_RECORDS,
+      // referrer: {
+      //   path: Path.DASHBOARD,
+      //   fragment: 'staff-records',
+      // },
+      // },
+      // {
+      //   title: 'Staff record',
+      //   path: Path.MANDATORY_DETAILS,
+      //   referrer: {
+      //     path: Path.DASHBOARD,
+      //     fragment: 'staff-records',
+      //   },
+      // },
+      // ],
     },
   ],
 };

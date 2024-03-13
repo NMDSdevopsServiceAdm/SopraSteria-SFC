@@ -35,6 +35,8 @@ export enum JourneyType {
   LINK_TO_PARENT,
   CHANGE_DATA_OWNER,
   SUBSIDIARY,
+  SUBSIDIARY_STAFFRECORD_TAB
+
 }
 
 export interface JourneyRoute {
