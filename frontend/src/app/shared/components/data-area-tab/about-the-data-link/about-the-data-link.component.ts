@@ -10,7 +10,7 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 })
 export class AboutTheDataLinkComponent implements OnInit {
   public workplaceUid: string;
-  link = '/workplace';
+
   constructor(
     private establishmentService: EstablishmentService,
     protected benchmarksService: BenchmarksServiceBase,
@@ -21,12 +21,9 @@ export class AboutTheDataLinkComponent implements OnInit {
   ngOnInit(): void {
     this.workplaceUid = this.establishmentService ? this.establishmentService.primaryWorkplace.uid : null;
 
-    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-      this.link = '/subsidiary/workplace';
-    }
   }
 
   public setReturn(): void {
-    this.router.navigate([this.link, this.workplaceUid, 'data-area', 'about-the-data']);
+    this.router.navigate(['/workplace', this.workplaceUid, 'data-area', 'about-the-data']);
   }
 }
