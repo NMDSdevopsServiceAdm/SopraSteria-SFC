@@ -37,6 +37,7 @@ export class ParentSubsidiaryViewService {
     this.subsidiaryUid = null;
     this.viewingSubAsParent = false;
     this.subsidiaryUidSubject.next("");
+    this.subsidiaryWorkplace.next(null);
   }
 
   getViewingSubAsParent() {
