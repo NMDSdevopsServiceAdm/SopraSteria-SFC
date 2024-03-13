@@ -5,9 +5,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { URLStructure } from '@core/model/url.model';
 
 const exitSubsidiaryViewPages = [
+  'account-management',
   'login',
-  'satisfaction-survey',
-  'notifications'
+  'notifications',
+  'satisfaction-survey'
 ]
 
 @Injectable()
