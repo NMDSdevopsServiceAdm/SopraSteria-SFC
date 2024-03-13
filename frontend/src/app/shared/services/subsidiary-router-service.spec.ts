@@ -76,6 +76,17 @@ describe('SubsidiaryRouterService', () => {
       expect(subViewServiceSpy.clearViewingSubAsParent).toHaveBeenCalled();
       expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
     });
+
+    it('should clear the value for the view sub service at account-management page', async () => {
+      subViewServiceSpy.getViewingSubAsParent.and.returnValue(false);
+      const urlTree = service.createUrlTree(['account-management']);
+      const expectedUrlTree = service.createUrlTree(['account-management'], undefined);
+
+      service.navigateByUrl(urlTree);
+
+      expect(subViewServiceSpy.clearViewingSubAsParent).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
+    });
   });
 
 
