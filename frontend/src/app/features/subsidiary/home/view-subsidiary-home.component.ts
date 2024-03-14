@@ -94,7 +94,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-    this.breadcrumbService.canShowBanner = true;
   }
 
   ngOnChanges(): void {}
@@ -144,9 +143,5 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public navigateToTab(event: Event, selectedTab: string): void {
     event.preventDefault();
     this.tabsService.selectedTab = selectedTab;
-  }
-
-  ngOnDestroy(): void {
-    this.breadcrumbService.canShowBanner = false;
   }
 }

@@ -9,6 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class ParentSubsidiaryViewService {
   private subsidiaryUidSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private subsidiaryWorkplace: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
+  private _canShowBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   private viewingSubAsParent = false;
   private subsidiaryUid: string
@@ -53,8 +54,16 @@ export class ParentSubsidiaryViewService {
     return this.subsidiaryUidSubject.asObservable();
   }
 
-  // Method to get the current UID as an observable
+  // Method to get the current subsidiary as an observable
   getObservableSubsidiary(): Observable<Establishment> {
     return this.subsidiaryWorkplace.asObservable();
+  }
+
+  public get canShowBannerObservable(): Observable<boolean> {
+    return this._canShowBanner$.asObservable();
+  }
+
+  public set canShowBanner(canShowBanner: boolean) {
+    this._canShowBanner$.next(canShowBanner);
   }
 }

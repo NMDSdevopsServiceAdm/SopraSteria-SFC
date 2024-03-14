@@ -62,12 +62,11 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.canAddWorker = this.permissionsService.can(this.workplaceUid, 'canAddWorker');
     this.parentWorkplaceName = name;
 
-    this.subscriptions.add(
-      this.breadcrumbService.canShowBanner$.subscribe((canShowBanner) => {
-        this.canShowBanner = canShowBanner;
-      }),
-    );
+    this.parentSubsidiaryViewService.canShowBannerObservable.subscribe((canShowBanner) => {
+      this.canShowBanner = canShowBanner;
+    });
 
+    this.parentSubsidiaryViewService
     this.updatedDate = updated
 
   }

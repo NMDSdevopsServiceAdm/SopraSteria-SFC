@@ -93,7 +93,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
     console.log("Subsidiary Training and Qualifications: ", this.workplace);
     console.log("Subsidiary Workers: ", this.workers);
-    this.breadcrumbService.canShowBanner = true;
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -150,6 +149,5 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-    this.breadcrumbService.canShowBanner = false;
   }
 }
