@@ -40,10 +40,5 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
 
     this.workplace = this.route.snapshot.data.establishment;
     this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
-    this.breadcrumbService.canShowBanner = true;
-  }
-
-  ngOnDestroy(): void {
-    this.breadcrumbService.canShowBanner = false;
   }
 }

@@ -12,6 +12,7 @@ import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import {
   AcceptPreviousCareCertificateComponent,
 } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
@@ -561,7 +562,7 @@ const routes: Routes = [
       establishment: SubsidiaryResolver,
       benchmarksResolver: BenchmarksResolver,
       rankingsResolver: RankingsResolver,
-
+      usefulLinksPay: UsefulLinkPayResolver,
     },
   },
   {

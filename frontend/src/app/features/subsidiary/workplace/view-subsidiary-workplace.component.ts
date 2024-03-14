@@ -40,13 +40,12 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
-    this.breadcrumbService.canShowBanner = true;
+    this.parentSubsidiaryViewService.canShowBanner = true;
   }
 
   ngOnDestroy(): void {
     // need to manually remove breadcrumbs on tabs, because a
     // navigation event isn't called when going from one tab to another
     this.breadcrumbService.removeRoutes();
-    this.breadcrumbService.canShowBanner = false;
   }
 }

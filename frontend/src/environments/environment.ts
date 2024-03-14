@@ -7,7 +7,7 @@ export const environment = {
   environmentName: 'other',
   tracesSampleRate: 0,
   configCatKey: 'Ag_ZCDm6FkSAA5-xhxheOA/KeZCUBHikUSw7OXsthDzLQ',
-  cmsUri: 'https://sfccmstest.cloudapps.digital',
+  cmsUri: 'https://asc-wds-cms.skillsforcare.org.uk',
   dev: true,
   appRunnerEndpoint: '',
 };

@@ -3,6 +3,7 @@ import { NavigationBehaviorOptions, Router, UrlSegment, UrlSegmentGroup, UrlTree
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { URLStructure } from '@core/model/url.model';
+import { BehaviorSubject } from 'rxjs';
 
 const exitSubsidiaryViewPages = [
   'account-management',
@@ -39,12 +40,16 @@ export class SubsidiaryRouterService extends Router {
       if(commands[0].toLowerCase().includes('dashboard') && extras?.fragment) {
         commands = [extras.fragment, this.parentSubsidiaryViewService.getSubsidiaryUid()];
         extras = undefined;
+
+      this.parentSubsidiaryViewService.canShowBanner = true;
     } else {
       // Remove forward slashes from the route
       for(let i = 0; i < commands.length; i++) {
         const splitString = commands[i].split('/').filter((command) => command.length > 0);
         Array.prototype.splice.apply(commands, [i, 1].concat(splitString));
       }
+
+      this.parentSubsidiaryViewService.canShowBanner = false;
     }
       commands.unshift('subsidiary');
       console.log('SubsidiaryRouterService navigate modified: ', commands, extras);
