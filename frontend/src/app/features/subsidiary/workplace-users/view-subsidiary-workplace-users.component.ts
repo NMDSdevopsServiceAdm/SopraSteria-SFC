@@ -1,62 +1,79 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Component, Input, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
-import { URLStructure } from '@core/model/url.model';
-import { Worker } from '@core/model/worker.model';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { Roles } from '@core/model/roles.enum';
+import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
+import { getUserPermissionsTypes } from '@core/utils/users-util';
+import orderBy from 'lodash/orderBy';
+import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'app-view-subsidiary-workplace-users',
   templateUrl: './view-subsidiary-workplace-users.component.html',
 })
 export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
-  public primaryEstablishment: Establishment;
+  @Input() showSecondUserBanner: boolean;
+
   public workplace: Establishment;
-  public summaryReturnUrl: URLStructure;
-  public canDeleteEstablishment: boolean;
-  public canViewListOfUsers: boolean;
-  public canViewListOfWorkers: boolean;
-  public canViewBenchmarks: boolean;
-  public totalStaffRecords: number;
-  public trainingAlert: number;
-  public workers: Worker[];
-  public trainingCounts: TrainingCounts;
-  public workerCount: number;
-  public showSharingPermissionsBanner: boolean;
-  private showBanner = false;
-  public newDataAreaFlag: boolean;
-  public canSeeNewDataArea: boolean;
+  private subscriptions: Subscription = new Subscription();
+  public users: Array<UserDetails> = [];
+  public canAddUser: boolean;
+  public canViewUser: boolean;
+  public userPermissionsTypes: UserPermissionsType[];
 
   constructor(
-    // private alertService: AlertService,
-    private breadcrumbService: BreadcrumbService,
-    // private dialogService: DialogService,
-    // private establishmentService: EstablishmentService,
-    // private benchmarksService: BenchmarksServiceBase,
-    // private permissionsService: PermissionsService,
-    // private router: Router,
-    // private userService: UserService,
-    // private workerService: WorkerService,
-    // private route: ActivatedRoute,
-    // private featureFlagsService: FeatureFlagsService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private route: ActivatedRoute,
+    private userService: UserService,
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit(): void {
-    // this.showBanner = history.state?.showBanner;
+    this.setUsers();
+    this.setUserServiceReturnUrl();
+  }
 
-    // this.establishmentService.setCheckCQCDetailsBanner(false);
-    this.breadcrumbService.show(JourneyType.SUBSIDIARY);
-    // this.primaryEstablishment = this.establishmentService.primaryWorkplace;
-    // this.workplace = this.establishmentService.establishment;
-    // this.canViewBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
-    // this.canViewListOfUsers = this.permissionsService.can(this.workplace.uid, 'canViewListOfUsers');
-    // this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-    // this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
-    // this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
-    // this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+  public setUsers(): void {
+    const workplace = this.route.snapshot.data.establishment;
+    const users = this.route.snapshot.data.users ? this.route.snapshot.data.users : [];
+    this.userPermissionsTypes = getUserPermissionsTypes(true);
+    this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
+    this.canAddUser = this.permissionsService.can(this.workplace.uid, 'canAddUser') && this.userSlotsAvailable(users);
+
+    this.users = orderBy(
+      users,
+      ['status', 'isPrimary', 'role', (user: UserDetails) => (user.fullname ? user.fullname.toLowerCase() : 'a')],
+      ['desc', 'desc', 'asc', 'asc'],
+    );
+  }
+
+  public getUserType(user: UserDetails): string {
+    const userType = this.userPermissionsTypes.find(
+      (type) =>
+        type.role === user.role &&
+        type.canManageWdfClaims === user.canManageWdfClaims &&
+        !!user.isPrimary === !!type.isPrimary,
+    );
+
+    return userType?.userTableValue;
+  }
+
+  public isPending(user: UserDetails): boolean {
+    return user.status === UserStatus.Pending;
+  }
+
+  private userSlotsAvailable(users: Array<UserDetails>): boolean {
+    const readOnlyLimit = this.workplace.isParent ? 20 : 3;
+    const editUsers = users.filter((user) => user.role === Roles.Edit);
+    const readOnlyUsers = users.filter((user) => user.role === Roles.Read);
+    return editUsers.length < 3 || readOnlyUsers.length < readOnlyLimit;
+  }
+
+  private setUserServiceReturnUrl(): void {
+    this.userService.updateReturnUrl({
+      url: ['/workplace', this.workplace.uid],
+      fragment: 'workplace-users',
+    });
   }
 }
