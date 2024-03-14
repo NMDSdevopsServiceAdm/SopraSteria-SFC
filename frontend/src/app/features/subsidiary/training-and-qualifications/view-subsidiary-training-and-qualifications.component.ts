@@ -60,7 +60,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.subsidiaryUid = this.route.snapshot.params['subsidiaryUid'];
 
-    console.log("SubsidiaryUid: ", this.subsidiaryUid);
+    console.log('SubsidiaryUid: ', this.subsidiaryUid);
 
     // this.workplace = this.route.snapshot.data.subsidiaryWorkplaceResolver;
     this.workers = this.route.snapshot.data.workers?.workers;
@@ -68,10 +68,10 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
 
     // log all these variables above
-    console.log("Training and Qualifications: ");
-    console.log("workers: ", this.workers);
-    console.log("workerCount: ", this.workerCount);
-    console.log("trainingCounts: ", this.trainingCounts);
+    console.log('Training and Qualifications: ');
+    console.log('workers: ', this.workers);
+    console.log('workerCount: ', this.workerCount);
+    console.log('trainingCounts: ', this.trainingCounts);
 
     this.workplace = this.route.snapshot.data.establishment;
 
@@ -91,8 +91,8 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.getAllTrainingByCategory();
     this.trainingTotals();
 
-    console.log("Subsidiary Training and Qualifications: ", this.workplace);
-    console.log("Subsidiary Workers: ", this.workers);
+    console.log('Subsidiary Training and Qualifications: ', this.workplace);
+    console.log('Subsidiary Workers: ', this.workers);
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
@@ -126,6 +126,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   public navigateToStaffRecords(event: Event): void {
     event.preventDefault();
     // this.workerService.tabChanged.next(true);
+    this.parentSubsidiaryViewService.showSelectedTab = 'staff-records';
     this.router.navigate(['/subsidiary/staff-records', this.workplace.uid]);
   }
 
