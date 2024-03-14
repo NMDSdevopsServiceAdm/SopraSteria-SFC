@@ -5,6 +5,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import dayjs from 'dayjs';
 
 @Component({
@@ -51,6 +52,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     private tabsService: TabsService,
     private establishmentService: EstablishmentService,
     private router: Router,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -73,6 +75,9 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     if (route) {
       await this.router.navigate(route);
     }
+
+    this.parentSubsidiaryViewService.showSelectedTab = fragment;
+
     this.navigateToTab(event, fragment);
   }
 
