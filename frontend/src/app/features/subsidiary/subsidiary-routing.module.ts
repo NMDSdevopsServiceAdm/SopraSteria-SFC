@@ -149,11 +149,10 @@ const routes: Routes = [
       {
         path: '',
         component: ViewSubsidiaryWorkplaceComponent,
-        // resolve: {
-        //   users: AllUsersForEstablishmentResolver,
-        //   establishment: SubsidiaryResolver,
-        //   workers: WorkersResolver,
-        // },
+        resolve: {
+          establishment: SubsidiaryResolver,
+          workers: WorkersResolver,
+        },
         data: { title: 'Workplace' },
       },
       {
