@@ -7,8 +7,8 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class DataAreaUsefulLinkPayComponent implements OnInit {
   public usefulLinkPay = {
-    title: '',
-    content: '',
+    'title': '',
+    'content': '',
   };
 
   constructor(private route: ActivatedRoute) {}

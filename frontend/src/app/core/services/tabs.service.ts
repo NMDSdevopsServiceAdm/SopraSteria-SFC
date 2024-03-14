@@ -16,6 +16,7 @@ export class TabsService {
   public staffRecordsTab: Tab = { title: 'Staff records', slug: 'staff-records', active: false };
   public tAndQTab: Tab = { title: 'Training and qualifications', slug: 'training-and-qualifications', active: false };
   public benchmarksTab: Tab = { title: 'Benchmarks', slug: 'benchmarks', active: false };
+  public workplaceUsers: Tab = { title: 'Workplace users', slug: 'workplace-users', active: false };
 
   private _selectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 

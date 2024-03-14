@@ -38,6 +38,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     'staff-records': 'Staff records',
     'training-and-qualifications': 'Training and qualifications',
     benchmarks: 'Benchmarks',
+    'workplace-users': 'Workplace users',
   };
   public header: string;
   public isParent: boolean;

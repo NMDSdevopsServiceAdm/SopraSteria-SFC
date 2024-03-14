@@ -532,7 +532,7 @@ const routes: Routes = [
       },
     ]
   },
-  { // ???
+  {
     path: 'staff-records/:establishmentuid',
     component: ViewSubsidiaryStaffRecordsComponent,
     data: { title: 'Staff Records' },
@@ -546,13 +546,9 @@ const routes: Routes = [
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
     data: { title: 'Training and qualifications' },
     resolve: {
-      // users: AllUsersForEstablishmentResolver,
       establishment: SubsidiaryResolver,
       workers: WorkersResolver,
     },
-    // child: [
-    //   // TODO /training
-    // ]
   },
   {
     path: 'benchmarks/:establishmentuid',

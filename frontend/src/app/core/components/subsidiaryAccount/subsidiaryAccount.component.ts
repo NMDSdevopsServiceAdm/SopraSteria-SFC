@@ -105,9 +105,17 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
 
   private setTabs(): void {
     const tabs = [this.tabsService.homeTab];
-    this.canViewEstablishment && tabs.push(this.tabsService.workplaceTab);
-    this.canViewListOfWorkers && tabs.push(this.tabsService.staffRecordsTab, this.tabsService.tAndQTab);
-    tabs.push(this.tabsService.benchmarksTab);
+    this.canViewEstablishment && tabs.push(
+      this.tabsService.workplaceTab
+    );
+    this.canViewListOfWorkers && tabs.push(
+      this.tabsService.staffRecordsTab,
+      this.tabsService.tAndQTab,
+    );
+    tabs.push(
+      this.tabsService.benchmarksTab,
+      this.tabsService.workplaceUsers,
+    );
 
     this.tabs = tabs;
   }
