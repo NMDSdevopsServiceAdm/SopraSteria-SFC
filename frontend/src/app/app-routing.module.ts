@@ -45,6 +45,7 @@ import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
 import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
 
 const routes: Routes = [
   {
@@ -274,6 +275,12 @@ const routes: Routes = [
       {
         path: 'subsidiary',
         loadChildren: () => import('@features/subsidiary/subsidiary.module').then((m) => m.SubsidiaryModule),
+        resolve: {
+          users: AllUsersForEstablishmentResolver,
+          establishment: SubsidiaryResolver,
+          workers: WorkersResolver,
+          totalStaffRecords: TotalStaffRecordsResolver,
+        },
       },
     ],
   },
