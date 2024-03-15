@@ -35,7 +35,6 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
   ngOnInit(): void {
     this.isParentViewingSubsidiary = true; // TODO use original component and use this to differentiate
     this.establishmentService.setInStaffRecruitmentFlow(false);
-    this.tabsService.selectedTab = 'workplace';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;

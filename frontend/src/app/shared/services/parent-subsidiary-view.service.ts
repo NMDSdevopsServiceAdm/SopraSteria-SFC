@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
-import { BehaviorSubject, Observable } from 'rxjs';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,6 +9,8 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class ParentSubsidiaryViewService {
   private subsidiaryUidSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private subsidiaryWorkplace: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
+  private _showSelectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
+  public readonly showSelectedTab$: Observable<string> = this._showSelectedTab$.asObservable();
   private _canShowBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
 
   private viewingSubAsParent = false;
@@ -17,6 +19,14 @@ export class ParentSubsidiaryViewService {
   constructor(
     private establishmentService: EstablishmentService,
   ) {}
+
+  public get showSelectedTab(): string {
+    return this._showSelectedTab$.value;
+  }
+
+  public set showSelectedTab(selectedTab: string) {
+    this._showSelectedTab$.next(selectedTab);
+  }
 
   setViewingSubAsParent(subsidiaryUid: string) {
     this.subsidiaryUid = subsidiaryUid;

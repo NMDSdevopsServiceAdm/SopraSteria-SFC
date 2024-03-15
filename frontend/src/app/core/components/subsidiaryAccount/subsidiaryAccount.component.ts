@@ -66,6 +66,13 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
       this.canShowBanner = canShowBanner;
     });
 
+    this.subscriptions.add(
+      this.parentSubsidiaryViewService.showSelectedTab$.subscribe((selectedTab) => {
+        this.selectedTab = selectedTab;
+      }),
+    );
+
+
     this.parentSubsidiaryViewService
     this.updatedDate = updated
 
