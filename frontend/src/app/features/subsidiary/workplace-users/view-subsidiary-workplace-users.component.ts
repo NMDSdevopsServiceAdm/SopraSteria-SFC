@@ -9,7 +9,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { getUserPermissionsTypes } from '@core/utils/users-util';
 import orderBy from 'lodash/orderBy';
-import { Subscription } from 'rxjs/internal/Subscription';
 
 @Component({
   selector: 'app-view-subsidiary-workplace-users',
@@ -19,7 +18,6 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
   @Input() showSecondUserBanner: boolean;
 
   public workplace: Establishment;
-  private subscriptions: Subscription = new Subscription();
   public users: Array<UserDetails> = [];
   public canAddUser: boolean;
   public canViewUser: boolean;

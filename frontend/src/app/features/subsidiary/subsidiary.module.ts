@@ -15,6 +15,7 @@ import {
 } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
+import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 
 @NgModule({
@@ -34,6 +35,7 @@ import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertD
     ViewSubsidiaryStaffRecordsComponent,
     ViewSubsidiaryTrainingAndQualificationsComponent,
     ViewSubsidiaryBenchmarksComponent,
+    ViewSubsidiaryWorkplaceUsersComponent
   ],
   providers: [
     ExpiresSoonAlertDatesResolver,
