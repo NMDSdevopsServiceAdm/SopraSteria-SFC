@@ -127,13 +127,33 @@ const routes: Routes = [
           title: 'Data Area',
         },
       },
+      // {
+      //   path: '',
+      //   canActivate: [CheckPermissionsGuard],
+      //   component: ViewWorkplaceComponent,
+      //   data: {
+      //     permissions: ['canViewEstablishment'],
+      //     title: 'View Workplace',
+      //     workerPagination: true,
+      //   },
+      //   resolve: {
+      //     users: AllUsersForEstablishmentResolver,
+      //     workers: WorkersResolver,
+      //     totalStaffRecords: TotalStaffRecordsResolver,
+      //     benchmarks: BenchmarksResolver,
+      //     rankings: RankingsResolver,
+      //     usefulLinksPay: UsefulLinkPayResolver,
+      //     usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+      //   },
+      // },
       {
         path: '',
         component: ViewSubsidiaryWorkplaceComponent,
-        resolve: {
-          establishment: SubsidiaryResolver,
-          workers: WorkersResolver,
-        },
+        // resolve: {
+        //   users: AllUsersForEstablishmentResolver,
+        //   establishment: SubsidiaryResolver,
+        //   workers: WorkersResolver,
+        // },
         data: { title: 'Workplace' },
       },
       {
@@ -512,7 +532,7 @@ const routes: Routes = [
       },
     ]
   },
-  {
+  { // ???
     path: 'staff-records/:establishmentuid',
     component: ViewSubsidiaryStaffRecordsComponent,
     data: { title: 'Staff Records' },
@@ -526,9 +546,13 @@ const routes: Routes = [
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
     data: { title: 'Training and qualifications' },
     resolve: {
+      // users: AllUsersForEstablishmentResolver,
       establishment: SubsidiaryResolver,
       workers: WorkersResolver,
     },
+    // child: [
+    //   // TODO /training
+    // ]
   },
   {
     path: 'benchmarks/:establishmentuid',
@@ -547,7 +571,6 @@ const routes: Routes = [
     data: { title: 'Workplace users' },
     resolve: {
       establishment: SubsidiaryResolver,
-      users: AllUsersForEstablishmentResolver,
     },
   },
 
