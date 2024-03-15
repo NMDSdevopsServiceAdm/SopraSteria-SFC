@@ -1,9 +1,6 @@
 import { Injectable } from '@angular/core';
 import { NavigationBehaviorOptions, Router, UrlSegment, UrlSegmentGroup, UrlTree } from '@angular/router';
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { URLStructure } from '@core/model/url.model';
-import { BehaviorSubject } from 'rxjs';
 
 const exitSubsidiaryViewPages = [
   'account-management',
@@ -17,7 +14,6 @@ export class SubsidiaryRouterService extends Router {
 
   constructor(
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
-    private establishmentService: EstablishmentService,
   ) {
     super()
   }
