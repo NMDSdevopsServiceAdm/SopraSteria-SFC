@@ -51,7 +51,7 @@
                 <div
                   *ngIf="
                     (workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING') ||
-                    (isParent && canDeleteEstablishment && isParentSubsidiaryView)
+                    (canDeleteEstablishment && isParentSubsidiaryView)
                   "
                 >
                   <button

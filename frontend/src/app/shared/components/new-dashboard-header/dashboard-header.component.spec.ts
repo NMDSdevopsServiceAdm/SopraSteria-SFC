@@ -366,7 +366,6 @@ describe('NewDashboardHeaderComponent', () => {
     it('should display a Delete Workplace link if parent is viewing a subsidiary', async () => {
       const { component, fixture, getByText } = await setup('home', false, true, false, false, false, 1);
 
-      component.isParent = true;
       component.isParentSubsidiaryView = true;
       component.canDeleteEstablishment = true;
 
