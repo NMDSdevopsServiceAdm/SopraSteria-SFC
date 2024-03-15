@@ -94,6 +94,10 @@ const routes: Routes = [
     path: 'home/:establishmentuid',
     component: ViewSubsidiaryHomeComponent,
     resolve: {
+      users: AllUsersForEstablishmentResolver,
+      establishment: SubsidiaryResolver,
+      workers: WorkersResolver,
+      totalStaffRecords: TotalStaffRecordsResolver,
       articleList: ArticleListResolver,
     },
     canActivate: [CheckPermissionsGuard, HasPermissionsGuard],
@@ -107,6 +111,12 @@ const routes: Routes = [
     path: 'workplace/:establishmentuid',
     component: EditWorkplaceComponent,
     data: { title: 'Workplace' },
+    resolve: {
+      users: AllUsersForEstablishmentResolver,
+      establishment: SubsidiaryResolver,
+      workers: WorkersResolver,
+      totalStaffRecords: TotalStaffRecordsResolver,
+    },
     children: [
       {
         path: 'data-area',
@@ -117,9 +127,33 @@ const routes: Routes = [
           title: 'Data Area',
         },
       },
+      // {
+      //   path: '',
+      //   canActivate: [CheckPermissionsGuard],
+      //   component: ViewWorkplaceComponent,
+      //   data: {
+      //     permissions: ['canViewEstablishment'],
+      //     title: 'View Workplace',
+      //     workerPagination: true,
+      //   },
+      //   resolve: {
+      //     users: AllUsersForEstablishmentResolver,
+      //     workers: WorkersResolver,
+      //     totalStaffRecords: TotalStaffRecordsResolver,
+      //     benchmarks: BenchmarksResolver,
+      //     rankings: RankingsResolver,
+      //     usefulLinksPay: UsefulLinkPayResolver,
+      //     usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+      //   },
+      // },
       {
         path: '',
         component: ViewSubsidiaryWorkplaceComponent,
+        // resolve: {
+        //   users: AllUsersForEstablishmentResolver,
+        //   establishment: SubsidiaryResolver,
+        //   workers: WorkersResolver,
+        // },
         data: { title: 'Workplace' },
       },
       {
@@ -498,21 +532,35 @@ const routes: Routes = [
       },
     ]
   },
-  {
+  { // ???
     path: 'staff-records/:establishmentuid',
     component: ViewSubsidiaryStaffRecordsComponent,
     data: { title: 'Staff Records' },
+    resolve: {
+      establishment: SubsidiaryResolver,
+      workers: WorkersResolver,
+    },
   },
   {
     path: 'training-and-qualifications/:establishmentuid',
     component: ViewSubsidiaryTrainingAndQualificationsComponent,
     data: { title: 'Training and qualifications' },
+    resolve: {
+      // users: AllUsersForEstablishmentResolver,
+      establishment: SubsidiaryResolver,
+      workers: WorkersResolver,
+    },
+    // child: [
+    //   // TODO /training
+    // ]
   },
   {
     path: 'benchmarks/:establishmentuid',
     component: ViewSubsidiaryBenchmarksComponent,
     data: { title: 'Benchmarks' },
     resolve: {
+      establishment: SubsidiaryResolver,
+      benchmarksResolver: BenchmarksResolver,
       rankingsResolver: RankingsResolver,
       usefulLinksPay: UsefulLinkPayResolver,
     },
@@ -521,6 +569,9 @@ const routes: Routes = [
     path: 'workplace-users/:establishmentuid',
     component: ViewSubsidiaryWorkplaceUsersComponent,
     data: { title: 'Workplace users' },
+    resolve: {
+      establishment: SubsidiaryResolver,
+    },
   },
 
 ];
