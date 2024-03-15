@@ -34,12 +34,12 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
+    this.workplace = this.route.snapshot.data.establishment;
     this.setUsers();
     this.setUserServiceReturnUrl();
   }
 
   public setUsers(): void {
-    const workplace = this.route.snapshot.data.establishment;
     const users = this.route.snapshot.data.users ? this.route.snapshot.data.users : [];
     this.userPermissionsTypes = getUserPermissionsTypes(true);
     this.canViewUser = this.permissionsService.can(this.workplace.uid, 'canViewUser');
