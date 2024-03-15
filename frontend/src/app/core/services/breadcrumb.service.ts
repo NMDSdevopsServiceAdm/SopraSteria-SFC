@@ -47,6 +47,7 @@ import {
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { parse } from 'url';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Injectable({
   providedIn: 'root',
@@ -57,7 +58,11 @@ export class BreadcrumbService {
   private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
 
-  constructor(private router: Router, private location: Location) {
+  constructor(
+    private router: Router,
+    private location: Location,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService
+  ) {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -71,8 +76,18 @@ export class BreadcrumbService {
       });
   }
 
+  // Parent  , Home, Your other workplaces, Workplace, Staff record
+  // Sketch  , Home, Staff Records
+  // Sub view, Home, Users, User details, Permissions
   public show(journey: JourneyType, overrideMessage: string = null) {
-    const urlTree = this.router.parseUrl(this.location.path());
+    console.log("Breadcrumb service, ", this.getRoutesConfig(journey), overrideMessage);
+
+    let path = this.location.path();
+    if(journey !== JourneyType.SUBSIDIARY) {
+      path = path.replace("/subsidiary", "");
+    }
+
+    const urlTree = this.router.parseUrl(path);
     const segmentGroup = urlTree.root.children[PRIMARY_OUTLET];
     const segments = segmentGroup ? segmentGroup.segments : null;
     const routes = this.getRoutes(this.getRoutesConfig(journey), segments);

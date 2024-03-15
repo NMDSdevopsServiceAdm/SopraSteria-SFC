@@ -2,7 +2,9 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { getUserPermissionsTypes } from '@core/utils/users-util';
@@ -27,9 +29,11 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
     private route: ActivatedRoute,
     private userService: UserService,
     private permissionsService: PermissionsService,
+    private breadcrumbService: BreadcrumbService,
   ) {}
 
   ngOnInit(): void {
+    this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.setUsers();
     this.setUserServiceReturnUrl();
   }
