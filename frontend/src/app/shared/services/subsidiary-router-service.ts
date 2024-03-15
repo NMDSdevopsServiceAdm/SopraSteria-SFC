@@ -6,7 +6,8 @@ const exitSubsidiaryViewPages = [
   'account-management',
   'login',
   'notifications',
-  'satisfaction-survey'
+  'satisfaction-survey',
+  'sfcadmin'
 ]
 
 @Injectable()
