@@ -40,5 +40,6 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
 
     this.workplace = this.route.snapshot.data.establishment;
     this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
+    this.parentSubsidiaryViewService.canShowBanner = true;
   }
 }
