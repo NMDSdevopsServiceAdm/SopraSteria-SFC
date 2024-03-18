@@ -95,6 +95,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
 
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
     this.parentSubsidiaryViewService.canShowBanner = true;
+    this.parentSubsidiaryViewService.getLastUpdatedDate = null;
   }
 
   ngOnChanges(): void {}

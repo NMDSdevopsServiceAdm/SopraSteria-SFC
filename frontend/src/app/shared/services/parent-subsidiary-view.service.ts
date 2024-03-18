@@ -12,6 +12,7 @@ export class ParentSubsidiaryViewService {
   private _showSelectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   public readonly showSelectedTab$: Observable<string> = this._showSelectedTab$.asObservable();
   private _canShowBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
+  private _getLastUpdatedDate$: BehaviorSubject<string> = new BehaviorSubject<string>('');
 
   private viewingSubAsParent = false;
   private subsidiaryUid: string
@@ -74,5 +75,13 @@ export class ParentSubsidiaryViewService {
 
   public set canShowBanner(canShowBanner: boolean) {
     this._canShowBanner$.next(canShowBanner);
+  }
+
+  public get getLastUpdatedDateObservable(): Observable<string> {
+    return this._getLastUpdatedDate$.asObservable();
+  }
+
+  public set getLastUpdatedDate(lastUpdatedDate: string) {
+    this._getLastUpdatedDate$.next(lastUpdatedDate);
   }
 }

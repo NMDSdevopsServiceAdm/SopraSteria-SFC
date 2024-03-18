@@ -64,6 +64,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.workers = this.route.snapshot.data.workers?.workers;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
+    this.tAndQsLastUpdated  = this.route.snapshot.data.workers?.tAndQsLastUpdated;
 
     this.workplace = this.route.snapshot.data.establishment;
 
@@ -84,6 +85,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.trainingTotals();
 
     this.parentSubsidiaryViewService.canShowBanner = true;
+    this.parentSubsidiaryViewService.getLastUpdatedDate = this.tAndQsLastUpdated;
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
