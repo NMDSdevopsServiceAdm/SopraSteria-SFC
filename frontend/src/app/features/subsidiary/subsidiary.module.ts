@@ -17,6 +17,7 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
 import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 
 @NgModule({
   imports: [
@@ -39,7 +40,8 @@ import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertD
   ],
   providers: [
     ExpiresSoonAlertDatesResolver,
-    SubsidiaryResolver
+    SubsidiaryResolver,
+    UserAccountResolver,
   ],
 })
 export class SubsidiaryModule {}

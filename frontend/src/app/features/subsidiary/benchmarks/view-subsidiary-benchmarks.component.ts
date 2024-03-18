@@ -59,6 +59,7 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
         this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;
       }
     });
+    this.parentSubsidiaryViewService.canShowBanner = true;
   }
 
   public checkComparisonDataExists(): void {

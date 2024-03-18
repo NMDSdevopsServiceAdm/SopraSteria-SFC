@@ -81,7 +81,7 @@ export class EstablishmentService {
   private _standAloneAccount$: boolean;
 
   constructor(private http: HttpClient) {
-    console.log('EstablishmentService constructor');
+    
   }
 
   private _establishmentId: string = null;
@@ -111,12 +111,10 @@ export class EstablishmentService {
   }
 
   public setPrimaryWorkplace(workplace: Establishment) {
-    console.log("EstablishmentService setPrimaryWorkplace: ", workplace);
     this._primaryWorkplace$.next(workplace);
   }
 
   public setWorkplace(workplace: Establishment) {
-    console.log("EstablishmentService setWorkplace: ", workplace);
     this._establishment$.next(workplace);
   }
 
@@ -132,7 +130,6 @@ export class EstablishmentService {
   }
 
   public get establishment() {
-    console.log("EstablishmentService get establishment: ", this._establishment$.value);
     return this._establishment$.value as Establishment;
   }
 

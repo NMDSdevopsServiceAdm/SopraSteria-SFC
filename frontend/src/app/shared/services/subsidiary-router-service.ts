@@ -1,12 +1,14 @@
 import { Injectable } from '@angular/core';
-import { NavigationBehaviorOptions, Router, UrlSegment, UrlSegmentGroup, UrlTree } from '@angular/router';
+import { NavigationBehaviorOptions, Router, UrlTree } from '@angular/router';
+
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 
 const exitSubsidiaryViewPages = [
   'account-management',
   'login',
   'notifications',
-  'satisfaction-survey'
+  'satisfaction-survey',
+  'sfcadmin'
 ]
 
 @Injectable()
@@ -48,7 +50,6 @@ export class SubsidiaryRouterService extends Router {
       this.parentSubsidiaryViewService.canShowBanner = false;
     }
       commands.unshift('subsidiary');
-      console.log('SubsidiaryRouterService navigate modified: ', commands, extras);
     }
     return { commands, extras };
   }

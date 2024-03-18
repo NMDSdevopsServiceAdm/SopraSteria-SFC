@@ -4,7 +4,6 @@ import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -28,8 +27,6 @@ export class StartComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log("StartComponent init");
-
     if(this.parentSubsidiaryViewService.getViewingSubAsParent()) {
       this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
         if (subsidiaryWorkplace) {

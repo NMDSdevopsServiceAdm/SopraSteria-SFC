@@ -16,11 +16,9 @@ export class EditWorkplaceComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // this.establishmentService.setState(this.route.snapshot.data.establishment); // TODO
-    console.log('edit workplace component', this.route.snapshot.data.establishment);
   }
 
   ngOnDestroy(): void {
-    console.log('edit workplace component destroyed');
     // if not in subs view
     if(!this.parentSubsidiaryViewService.getViewingSubAsParent()) {
       this.establishmentService.setReturnTo(null);

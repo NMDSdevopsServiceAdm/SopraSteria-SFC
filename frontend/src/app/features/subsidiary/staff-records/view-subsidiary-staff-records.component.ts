@@ -42,5 +42,6 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
     this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
 
     this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
+    this.parentSubsidiaryViewService.canShowBanner = true;
   }
 }
