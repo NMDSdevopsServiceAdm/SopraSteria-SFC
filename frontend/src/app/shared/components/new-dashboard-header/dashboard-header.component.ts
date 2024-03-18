@@ -75,13 +75,16 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.getPermissions();
 
     this.getHeader();
+    this.getValuesForHeader();
   }
 
   ngOnChanges(): void {
     this.setIsParentSubsidiaryView();
     this.setSubsidiaryCount();
     this.getPermissions();
+
     this.getHeader();
+    this.getValuesForHeader();
   }
 
   public setIsParentSubsidiaryView(): void {
@@ -99,6 +102,16 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
           this.workplace = this.establishmentService.primaryWorkplace;
           this.workplaceUid = this.workplace ? this.workplace.uid : null;
         }
+      });
+    }
+  }
+
+  public getValuesForHeader(): void {
+    if (this.isParentSubsidiaryView) {
+      this.hasWorkers = this.parentSubsidiaryViewService.getHasWorkers();
+
+      this.parentSubsidiaryViewService.totalTrainingRecords$.subscribe((totalTrainingRecords) => {
+        this.tAndQCount = totalTrainingRecords;
       });
     }
   }

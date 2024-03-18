@@ -34,8 +34,9 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   public subId: string;
   public selectedTab: string;
   public parentUid: string;
-
   public subsidiaryWorkplace: Establishment;
+  public canEditWorker: boolean;
+  public hasWorkers: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -59,7 +60,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid();
 
     this.setWorkplace();
-    this.canAddWorker = this.permissionsService.can(this.workplaceUid, 'canAddWorker');
+
     this.parentWorkplaceName = name;
 
     this.parentSubsidiaryViewService.canShowBannerObservable.subscribe((canShowBanner) => {
@@ -79,11 +80,12 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
       this.updatedDate = getLastUpdatedDate;
     });
 
+    this.parentSubsidiaryViewService;
   }
-
 
   ngOnChanges(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
+    this.getPermissions();
   }
 
   private setWorkplace(): void {
@@ -111,21 +113,15 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.canViewListOfUsers = this.permissionsService.can(this.workplaceUid, 'canViewListOfUsers');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
     this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
+    this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
+    this.canAddWorker = this.permissionsService.can(this.workplaceUid, 'canAddWorker');
   }
 
   private setTabs(): void {
     const tabs = [this.tabsService.homeTab];
-    this.canViewEstablishment && tabs.push(
-      this.tabsService.workplaceTab
-    );
-    this.canViewListOfWorkers && tabs.push(
-      this.tabsService.staffRecordsTab,
-      this.tabsService.tAndQTab,
-    );
-    tabs.push(
-      this.tabsService.benchmarksTab,
-      this.tabsService.workplaceUsers,
-    );
+    this.canViewEstablishment && tabs.push(this.tabsService.workplaceTab);
+    this.canViewListOfWorkers && tabs.push(this.tabsService.staffRecordsTab, this.tabsService.tAndQTab);
+    tabs.push(this.tabsService.benchmarksTab, this.tabsService.workplaceUsers);
 
     this.tabs = tabs;
   }
