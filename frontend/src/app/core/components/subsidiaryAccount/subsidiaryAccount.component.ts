@@ -60,8 +60,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid();
 
     this.setWorkplace();
-    console.log(this.establishmentService.primaryWorkplace);
-    // this.canAddWorker = this.permissionsService.can(this.workplaceUid, 'canAddWorker');
 
     this.parentWorkplaceName = name;
 
@@ -82,7 +80,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   ngOnChanges(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
     this.getPermissions();
-    console.log(this.parentSubsidiaryViewService.getHasWorkers());
   }
 
   private setWorkplace(): void {
