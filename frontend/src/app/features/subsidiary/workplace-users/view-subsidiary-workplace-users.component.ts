@@ -1,13 +1,14 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { getUserPermissionsTypes } from '@core/utils/users-util';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import orderBy from 'lodash/orderBy';
 
 @Component({
@@ -28,11 +29,13 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
     private userService: UserService,
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
+    this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace.updated.toString()
     this.setUsers();
     this.setUserServiceReturnUrl();
   }

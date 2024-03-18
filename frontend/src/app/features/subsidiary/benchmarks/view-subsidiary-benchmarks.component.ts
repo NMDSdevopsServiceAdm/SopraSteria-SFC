@@ -60,6 +60,7 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
       }
     });
     this.parentSubsidiaryViewService.canShowBanner = true;
+    this.parentSubsidiaryViewService.getLastUpdatedDate = this.tilesData?.meta.lastUpdated.toString()
   }
 
   public checkComparisonDataExists(): void {
