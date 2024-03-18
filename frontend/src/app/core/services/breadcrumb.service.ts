@@ -44,10 +44,10 @@ import {
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
 } from '@core/breadcrumb/journey.workplaces';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { parse } from 'url';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Injectable({
   providedIn: 'root',
@@ -80,8 +80,6 @@ export class BreadcrumbService {
   // Sketch  , Home, Staff Records
   // Sub view, Home, Users, User details, Permissions
   public show(journey: JourneyType, overrideMessage: string = null) {
-    console.log("Breadcrumb service, ", this.getRoutesConfig(journey), overrideMessage);
-
     let path = this.location.path();
     if(journey !== JourneyType.SUBSIDIARY) {
       path = path.replace("/subsidiary", "");
