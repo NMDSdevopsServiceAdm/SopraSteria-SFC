@@ -67,11 +67,9 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
 
-    // log all these variables above
-    console.log('Training and Qualifications: ');
-    console.log('workers: ', this.workers);
-    console.log('workerCount: ', this.workerCount);
-    console.log('trainingCounts: ', this.trainingCounts);
+    this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
+
+    this.parentSubsidiaryViewService.canShowBanner = true;
 
     this.workplace = this.route.snapshot.data.establishment;
 
@@ -90,13 +88,11 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
     this.getAllTrainingByCategory();
     this.trainingTotals();
-
-    console.log('Subsidiary Training and Qualifications: ', this.workplace);
-    console.log('Subsidiary Workers: ', this.workers);
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
     if ('workers' in changes || 'trainingCounts' in changes) {
+      console.log('changes');
       this.trainingTotals();
     }
   }
@@ -137,6 +133,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.totalExpiringTraining = this.trainingCounts.totalExpiringTraining;
     this.missingMandatoryTraining = this.trainingCounts.missingMandatoryTraining;
     this.staffMissingMandatoryTraining = this.trainingCounts.staffMissingMandatoryTraining;
+    this.parentSubsidiaryViewService.setTotalTrainingRecords(this.trainingCounts.totalRecords);
   }
 
   public handleViewTrainingByCategory(visible: boolean): void {
