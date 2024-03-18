@@ -94,6 +94,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
+    this.parentSubsidiaryViewService.canShowBanner = true;
   }
 
   ngOnChanges(): void {}

@@ -93,6 +93,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
     console.log('Subsidiary Training and Qualifications: ', this.workplace);
     console.log('Subsidiary Workers: ', this.workers);
+    this.parentSubsidiaryViewService.canShowBanner = true;
   }
 
   public ngOnChanges(changes: SimpleChanges): void {
