@@ -120,7 +120,7 @@ const getTurnoverRanking = async function (establishmentId, mainService, cssr) {
     ['TurnoverRate'],
     currentmetricValue,
     (r) => parseFloat(r.TurnoverRate),
-    calculateRankDesc,
+    calculateRankAsc,
     cssr,
   );
 
@@ -131,7 +131,7 @@ const getTurnoverRanking = async function (establishmentId, mainService, cssr) {
     ['TurnoverRate'],
     currentmetricValue,
     (r) => parseFloat(r.TurnoverRate),
-    calculateRankDesc,
+    calculateRankAsc,
     cssr,
   );
   return { groupRankings, goodCqcRankings };
@@ -147,7 +147,7 @@ const getVacancyRanking = async function (establishmentId, mainService, cssr) {
     ['VacancyRate'],
     currentmetricValue,
     (r) => parseFloat(r.VacancyRate),
-    calculateRankDesc,
+    calculateRankAsc,
     cssr,
   );
 
@@ -158,7 +158,7 @@ const getVacancyRanking = async function (establishmentId, mainService, cssr) {
     ['VacancyRate'],
     currentmetricValue,
     (r) => parseFloat(r.VacancyRate),
-    calculateRankDesc,
+    calculateRankAsc,
     cssr,
   );
   return { groupRankings, goodCqcRankings };
