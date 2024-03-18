@@ -60,18 +60,10 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.subsidiaryUid = this.route.snapshot.params['subsidiaryUid'];
 
-    console.log('SubsidiaryUid: ', this.subsidiaryUid);
-
     // this.workplace = this.route.snapshot.data.subsidiaryWorkplaceResolver;
     this.workers = this.route.snapshot.data.workers?.workers;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
-
-    // log all these variables above
-    console.log('Training and Qualifications: ');
-    console.log('workers: ', this.workers);
-    console.log('workerCount: ', this.workerCount);
-    console.log('trainingCounts: ', this.trainingCounts);
 
     this.workplace = this.route.snapshot.data.establishment;
 
@@ -91,8 +83,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.getAllTrainingByCategory();
     this.trainingTotals();
 
-    console.log('Subsidiary Training and Qualifications: ', this.workplace);
-    console.log('Subsidiary Workers: ', this.workers);
     this.parentSubsidiaryViewService.canShowBanner = true;
   }
 

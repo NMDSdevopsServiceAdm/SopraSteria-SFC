@@ -39,7 +39,6 @@ export class ParentSubsidiaryViewService {
         this.establishmentService.setPrimaryWorkplace(workplace);
         this.establishmentService.setWorkplace(workplace);
         this.subsidiaryWorkplace.next(workplace);
-        console.log("parentSubsidiaryViewService Workplace: ", workplace);
       }
     });
   }
