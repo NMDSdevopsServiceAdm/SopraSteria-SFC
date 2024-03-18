@@ -92,7 +92,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
   public ngOnChanges(changes: SimpleChanges): void {
     if ('workers' in changes || 'trainingCounts' in changes) {
-      console.log('changes');
       this.trainingTotals();
     }
   }

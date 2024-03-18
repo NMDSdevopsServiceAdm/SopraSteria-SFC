@@ -49,7 +49,6 @@ export class ParentSubsidiaryViewService {
   }
 
   getTotalTrainingRecords(): BehaviorSubject<number> {
-    console.log(this._totalRecords$.value);
     return this.totalRecords;
   }
 
