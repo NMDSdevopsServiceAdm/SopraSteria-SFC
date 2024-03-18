@@ -65,6 +65,10 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
 
+    this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
+
+    this.parentSubsidiaryViewService.canShowBanner = true;
+
     this.workplace = this.route.snapshot.data.establishment;
 
     const alertMessage = history.state?.alertMessage;
@@ -128,6 +132,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.totalExpiringTraining = this.trainingCounts.totalExpiringTraining;
     this.missingMandatoryTraining = this.trainingCounts.missingMandatoryTraining;
     this.staffMissingMandatoryTraining = this.trainingCounts.staffMissingMandatoryTraining;
+    this.parentSubsidiaryViewService.setTotalTrainingRecords(this.trainingCounts.totalRecords);
   }
 
   public handleViewTrainingByCategory(visible: boolean): void {

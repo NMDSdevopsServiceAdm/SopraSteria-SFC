@@ -22,8 +22,10 @@
   <app-new-dashboard-header
     *ngIf="canShowBanner"
     [canAddWorker]="canAddWorker"
+    [canEditWorker]="canEditWorker"
     [updatedDate]="updatedDate"
-    [tab]="selectedTab">
+    [tab]="selectedTab"
+  >
   </app-new-dashboard-header>
 
   <div [class]="{ 'govuk-width-container': !dashboardView }">
