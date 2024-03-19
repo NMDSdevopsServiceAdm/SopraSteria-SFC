@@ -17,10 +17,10 @@ import { AllServicesResponse, ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
 
 import { ShareWithRequest } from '../model/data-sharing.model';
 import { PostServicesModel } from '../model/postServices.model';
-import { environment } from 'src/environments/environment';
 
 interface EstablishmentApiResponse {
   id: number;
@@ -80,7 +80,9 @@ export class EstablishmentService {
   private _inStaffRecruitmentFlow: boolean;
   private _standAloneAccount$: boolean;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    
+  }
 
   private _establishmentId: string = null;
 

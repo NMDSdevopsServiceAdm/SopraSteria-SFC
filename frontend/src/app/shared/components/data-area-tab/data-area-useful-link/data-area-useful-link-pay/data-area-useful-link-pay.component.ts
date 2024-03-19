@@ -6,11 +6,16 @@ import { ActivatedRoute } from '@angular/router';
   templateUrl: './data-area-useful-link-pay.component.html',
 })
 export class DataAreaUsefulLinkPayComponent implements OnInit {
-  public usefulLinkPay;
+  public usefulLinkPay = {
+    'title': '',
+    'content': '',
+  };
 
   constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.usefulLinkPay = this.route.snapshot.data.usefulLinksPay?.data;
+    if(this.route.snapshot.data.usefulLinksPay?.data) {
+      this.usefulLinkPay = this.route.snapshot.data.usefulLinksPay?.data;
+    }
   }
 }

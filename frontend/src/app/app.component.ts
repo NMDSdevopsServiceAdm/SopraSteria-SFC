@@ -11,6 +11,7 @@ import { TabsService } from '@core/services/tabs.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-root',
@@ -39,6 +40,7 @@ export class AppComponent implements OnInit {
     private featureFlagsService: FeatureFlagsService,
     private establishmentService: EstablishmentService,
     private tabsService: TabsService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {
     this.nestedRoutesService.routes$.subscribe((routes) => {
       if (routes) {

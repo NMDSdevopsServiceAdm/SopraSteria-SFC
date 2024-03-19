@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, Router } from '@angular/router';
+import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
@@ -270,6 +271,10 @@ const routes: Routes = [
         component: LinkToParentComponent,
         data: { title: 'Link to Parent' },
       },
+      {
+        path: 'subsidiary',
+        loadChildren: () => import('@features/subsidiary/subsidiary.module').then((m) => m.SubsidiaryModule),
+      },
     ],
   },
   {
@@ -287,5 +292,11 @@ const routes: Routes = [
     }),
   ],
   exports: [RouterModule],
+  providers: [
+    {
+      provide: Router,
+      useClass: SubsidiaryRouterService
+    }
+  ],
 })
 export class AppRoutingModule {}

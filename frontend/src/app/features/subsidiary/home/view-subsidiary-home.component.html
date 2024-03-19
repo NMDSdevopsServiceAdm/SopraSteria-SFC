@@ -1,0 +1,61 @@
+<div class="govuk-width-container govuk-!-margin-top-7">
+  <ng-container *ngIf="(newHomeDesignParentFlag && workplace) || newHomeDesignParentFlag">
+    <app-alert></app-alert>
+  </ng-container>
+  <app-summary-section
+    *ngIf="subsidiaryWorkplace"
+    [canViewListOfWorkers]="canViewListOfWorkers"
+    [workplace]="subsidiaryWorkplace"
+    [workerCount]="workerCount"
+    [workersCreatedDate]="workersCreatedDate"
+    [trainingCounts]="trainingCounts"
+    [workersNotCompleted]="workersNotCompleted"
+    [(navigateToTab)]="navigateToTab"
+    [canViewEstablishment]="canViewEstablishment"
+    [isParentSubsidiaryView]="isParentSubsidiaryView"
+  ></app-summary-section>
+</div>
+<div class="govuk-width-container govuk-!-margin-top-4">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="govuk-grid-row">
+        <div class="govuk-grid-column-one-half">
+          <app-card [image]="'/assets/images/benchmarks.svg'">
+            <a
+              (click)="navigateToTab($event, 'benchmarks')"
+              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+              href="#"
+            >
+              <ng-container *ngIf="bigThreeServices && hasBenchmarkComparisonData; else notBigThreeServices">
+                See how your pay, recruitment and retention compares against other workplaces</ng-container
+              >
+              <ng-template #notBigThreeServices> See how you compare against other workplaces</ng-template>
+            </a>
+            <p class="govuk-!-margin-top-5">
+              {{ benchmarksMessage }}
+            </p>
+          </app-card>
+        </div>
+
+        <div class="govuk-grid-column-one-half">
+          <app-card [image]="'/assets/images/benefits-bundle.svg'">
+            <a
+              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+              routerLink="/benefits-bundle"
+              href="#"
+              >View the ASC-WDS Benefits Bundle</a
+            >
+            <p class="govuk-!-margin-top-5">
+              Get discounts and special offers from endorsed training providers and across Skills for Care's product
+              range.
+            </p></app-card
+          >
+        </div>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <app-new-article-list data-testid="article-list"></app-new-article-list>
+      <app-other-links [canBulkUpload]="canBulkUpload" [canViewReports]="canViewReports"></app-other-links>
+    </div>
+  </div>
+</div>

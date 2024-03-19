@@ -41,7 +41,6 @@ describe('GetMissingCqcLocationsResolver', () => {
       locationId: '1-11111111',
       uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
       id: 0,
-
     });
   });
 });

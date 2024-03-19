@@ -9,6 +9,8 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceModule } from '../workplace.module';
 import { StartComponent } from './start.component';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 
 describe('StartComponent (workplace)', () => {
   async function setup(navigatedFromFragment = '') {
@@ -21,6 +23,10 @@ describe('StartComponent (workplace)', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: ParentSubsidiaryViewService,
+          useClass: MockParentSubsidiaryViewService,
         },
       ],
     });
@@ -43,6 +49,18 @@ describe('StartComponent (workplace)', () => {
     const continueButton = getByText('Continue');
 
     expect(continueButton.getAttribute('href')).toBe('/workplace/' + workplaceUid + '/other-services');
+  });
+
+  it('should have link to type of employer page on continue button if isViewingSubAsParent is true', async () => {
+    const { component, getByText, fixture } = await setup();
+
+    const workplaceUid = component.establishment.uid;
+    const continueButton = getByText('Continue');
+
+    component.isViewingSubAsParent = true;
+    fixture.detectChanges();
+
+    expect(continueButton.getAttribute('href')).toBe('/subsidiary/workplace/' + workplaceUid + '/other-services');
   });
 
   it('should call the updateSingleEstablishmentField when clicking the Continue button', async () => {

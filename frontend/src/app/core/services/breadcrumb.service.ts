@@ -27,7 +27,14 @@ import { bulkUploadHelpJourney, bulkUploadJourney } from '@core/breadcrumb/journ
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
+import {
+  becomeAParentJourney,
+  changeDataOwnerJourney,
+  linkToParentJourney,
+  removeLinkToParentJourney,
+} from '@core/breadcrumb/journey.parent-requests';
 import { publicJourney } from '@core/breadcrumb/journey.public';
+import { subsidiaryJourney } from '@core/breadcrumb/journey.subsidiary';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
@@ -37,12 +44,7 @@ import {
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
 } from '@core/breadcrumb/journey.workplaces';
-import {
-  becomeAParentJourney,
-  linkToParentJourney,
-  removeLinkToParentJourney,
-  changeDataOwnerJourney,
-} from '@core/breadcrumb/journey.parent-requests';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { parse } from 'url';
@@ -56,7 +58,10 @@ export class BreadcrumbService {
   private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
 
-  constructor(private router: Router, private location: Location) {
+  constructor(
+    private router: Router,
+    private location: Location,
+  ) {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -70,8 +75,16 @@ export class BreadcrumbService {
       });
   }
 
+  // Parent  , Home, Your other workplaces, Workplace, Staff record
+  // Sketch  , Home, Staff Records
+  // Sub view, Home, Users, User details, Permissions
   public show(journey: JourneyType, overrideMessage: string = null) {
-    const urlTree = this.router.parseUrl(this.location.path());
+    let path = this.location.path();
+    if(journey !== JourneyType.SUBSIDIARY) {
+      path = path.replace("/subsidiary", "");
+    }
+
+    const urlTree = this.router.parseUrl(path);
     const segmentGroup = urlTree.root.children[PRIMARY_OUTLET];
     const segments = segmentGroup ? segmentGroup.segments : null;
     const routes = this.getRoutes(this.getRoutesConfig(journey), segments);
@@ -305,6 +318,11 @@ export class BreadcrumbService {
 
       case JourneyType.CHANGE_DATA_OWNER: {
         routes = changeDataOwnerJourney;
+        break;
+      }
+
+      case JourneyType.SUBSIDIARY: {
+        routes = subsidiaryJourney;
         break;
       }
 
