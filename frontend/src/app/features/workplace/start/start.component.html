@@ -67,7 +67,7 @@
       <li><p class="govuk-!-margin-left-3 govuk-!-margin-bottom-0">whether we can share your data?</p></li>
     </ul>
     <a
-      [routerLink]="['/subsidiary/workplace', establishment.uid, 'other-services']"
+      [routerLink]="setContinueLink()"
       (click)="removeAddDetailsBanner($event)"
       role="button"
       draggable="false"

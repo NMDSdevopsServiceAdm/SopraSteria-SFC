@@ -17,7 +17,7 @@ import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -77,6 +77,10 @@ describe('NewBenchmarksTabComponent', () => {
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
       ],
       declarations: [NewComparisonGroupHeaderComponent],
       schemas: [NO_ERRORS_SCHEMA],

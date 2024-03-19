@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
@@ -19,16 +20,21 @@ export class StartComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private workplaceUid: string;
   private fragment: string;
+  public isViewingSubAsParent: boolean;
+  public continueUrl: Array<string>;
 
   constructor(
     public backService: BackService,
     private establishmentService: EstablishmentService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
-    if(this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-      this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe(subsidiaryWorkplace => {
+    this.isViewingSubAsParent = this.parentSubsidiaryViewService.getViewingSubAsParent();
+
+    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+      this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
         if (subsidiaryWorkplace) {
           this.establishment = subsidiaryWorkplace;
         }
@@ -66,6 +72,7 @@ export class StartComponent implements OnInit, OnDestroy {
 
     const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
     this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe();
+    this.setContinueLink();
   }
 
   public setRecuritmentBannerToTrue(): void {
@@ -73,5 +80,13 @@ export class StartComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe(),
     );
+  }
+
+  public setContinueLink(): any {
+    if (this.isViewingSubAsParent) {
+      return ['/subsidiary/workplace', this.establishment.uid, 'other-services'];
+    } else {
+      return ['/workplace', this.establishment.uid, 'other-services'];
+    }
   }
 }
