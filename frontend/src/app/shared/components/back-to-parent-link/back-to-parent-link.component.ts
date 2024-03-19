@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
@@ -9,8 +9,6 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 })
 export class BackToParentComponent implements OnInit {
   @Input() parentWorkplaceName: string;
-  @Input() parentUid: string;
-  @Output() backToParentLinkClicked = new EventEmitter();
 
   constructor(private router: Router, private parentSubsidiaryViewService: ParentSubsidiaryViewService) {}
 
