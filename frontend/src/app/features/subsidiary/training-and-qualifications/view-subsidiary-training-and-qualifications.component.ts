@@ -8,6 +8,7 @@ import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
@@ -39,8 +40,8 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   public viewTrainingByCategory = false;
   public staffSortByValue = 'trainingExpired';
   public trainingSortByValue = '0_expired';
-  public canEditWorker = true; // TODO
-  public canEditEstablishment = true; // TODO
+  public canEditWorker: boolean;
+  public canEditEstablishment: boolean;
 
   private subsidiaryUid: string;
 
@@ -53,6 +54,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private trainingCategoryService: TrainingCategoryService,
     private trainingService: TrainingService,
+    private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit(): void {
@@ -60,11 +62,10 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.subsidiaryUid = this.route.snapshot.params['subsidiaryUid'];
 
-    // this.workplace = this.route.snapshot.data.subsidiaryWorkplaceResolver;
     this.workers = this.route.snapshot.data.workers?.workers;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
-    this.tAndQsLastUpdated  = this.route.snapshot.data.workers?.tAndQsLastUpdated;
+    this.tAndQsLastUpdated = this.route.snapshot.data.workers?.tAndQsLastUpdated;
 
     this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
 
@@ -80,6 +81,8 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
         this.viewTrainingByCategory = true;
       }
     });
+
+    this.getParentPermissions();
 
     // if returning to this page from adding multiple training and using the back link
     // we need to remove any staff that were selected
@@ -103,6 +106,13 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
       type: 'success',
       message,
     });
+  }
+
+  public getParentPermissions(): void {
+    const parentUid = this.workplace.parentUid;
+
+    this.canEditWorker = this.permissionsService.can(parentUid, 'canEditWorker');
+    this.canEditEstablishment = this.permissionsService.can(parentUid, 'canEditEstablishment');
   }
 
   public navigateToMultipleTraining(): void {
