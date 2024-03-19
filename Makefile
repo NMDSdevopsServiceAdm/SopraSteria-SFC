@@ -4,6 +4,7 @@
 all: install run
 
 install:
+	export NODE_ENV=localhost
 	npm install --prefix frontend
 	npm install --prefix backend
 
