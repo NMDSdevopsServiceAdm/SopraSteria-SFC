@@ -27,7 +27,7 @@ describe('BulkUploadTopTipsService', () => {
 
     const http = TestBed.inject(HttpTestingController);
     const req = http.expectOne(
-      'https://sfccmstest.cloudapps.digital/items/bulk_upload_top_tips?fields=title,slug,link_title',
+      'https://asc-wds-cms.skillsforcare.org.uk/items/bulk_upload_top_tips?fields=title,slug,link_title',
     );
 
     expect(req.request.method).toBe('GET');
@@ -41,7 +41,7 @@ describe('BulkUploadTopTipsService', () => {
 
     const http = TestBed.inject(HttpTestingController);
     const req = http.expectOne(
-      `https://sfccmstest.cloudapps.digital/items/bulk_upload_top_tips?filter=${slugFilter}&limit=1&fields=${fields}`,
+      `https://asc-wds-cms.skillsforcare.org.uk/items/bulk_upload_top_tips?filter=${slugFilter}&limit=1&fields=${fields}`,
     );
 
     expect(req.request.method).toBe('GET');
