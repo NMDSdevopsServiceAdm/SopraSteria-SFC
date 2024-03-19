@@ -8,16 +8,17 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
+import {
+  WorkplaceNameAddressDirective,
+} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 
 @Component({
   selector: 'app-workplace-name-address',
-  templateUrl: '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html'
+  templateUrl:
+    '../../../shared/directives/create-workplace/workplace-name-address/workplace-name-address.component.html',
 })
-
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public workplace: Establishment;
-  public link: string = '/workplace';
 
   constructor(
     private workplaceService: WorkplaceService,

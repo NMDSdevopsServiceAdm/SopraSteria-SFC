@@ -1,35 +1,46 @@
-import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { HttpResponse } from '@angular/common/http';
+import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { DialogService } from '@core/services/dialog.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { isAdminRole } from '@core/utils/check-role-util';
-import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import {
+  BecomeAParentCancelDialogComponent,
+} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import {
+  CancelDataOwnerDialogComponent,
+} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import {
+  ChangeDataOwnerDialogComponent,
+} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import {
+  LinkToParentCancelDialogComponent,
+} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
-import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
-
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import {
+  SetDataPermissionDialogComponent,
+} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
-import { AlertService } from '@core/services/alert.service';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 declare global {
   interface Window {
@@ -224,9 +235,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.canViewReports =
       this.permissionsService.can(workplaceUid, 'canViewWdfReport') ||
       this.permissionsService.can(workplaceUid, 'canRunLocalAuthorityReport');
-    //this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
+    this.canViewEstablishment = this.permissionsService.can(workplaceUid, 'canViewEstablishment');
 
-    this.canViewEstablishment = true;
     if (this.canViewChangeDataOwner && this.workplace.dataOwnershipRequested) {
       this.isOwnershipRequested = true;
     }

@@ -37,8 +37,6 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
 
-  public link: string = '/workplace';  // TODO REMOVE! REVERT!
-
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
     private permissionsService: PermissionsService,
@@ -46,7 +44,6 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     private cqcStatusChangeService: CqcStatusChangeService,
     private tabsService: TabsService,
   ) {
-
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
       other: '# beds available',

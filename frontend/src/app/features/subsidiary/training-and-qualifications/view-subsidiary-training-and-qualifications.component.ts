@@ -43,8 +43,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   public canEditWorker: boolean;
   public canEditEstablishment: boolean;
 
-  private subsidiaryUid: string;
-
   constructor(
     private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
@@ -60,7 +58,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   ngOnInit(): void {
     this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
-    this.subsidiaryUid = this.route.snapshot.params['subsidiaryUid'];
 
     this.workers = this.route.snapshot.data.workers?.workers;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
@@ -132,7 +129,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
   public navigateToStaffRecords(event: Event): void {
     event.preventDefault();
-    // this.workerService.tabChanged.next(true);
     this.parentSubsidiaryViewService.showSelectedTab = 'staff-records';
     this.router.navigate(['/subsidiary/staff-records', this.workplace.uid]);
   }
