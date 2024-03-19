@@ -14,19 +14,26 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import {
-  BenchmarksSelectViewPanelComponent,
-} from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
+import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { ViewSubsidiaryBenchmarksComponent } from './view-subsidiary-benchmarks.component';
 
-
 describe('ViewSubsidiaryBenchmarksComponent', () => {
   const setup = async (newDashboard = true) => {
     const establishment = establishmentBuilder() as Establishment;
+    const tileData = {
+      meta: {
+        lastUpdated: new Date(),
+        workplaces: 10,
+        staff: 100,
+        localAuthority: 'Test LA',
+        workplacesGoodCqc: 19,
+        staffGoodCqc: 660,
+      },
+    };
     const { fixture, getByText, getByTestId, queryByTestId } = await render(ViewSubsidiaryBenchmarksComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -57,6 +64,7 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
       componentProperties: {
         workplace: establishment,
         newDashboard,
+        tilesData: tileData,
       },
     });
 
