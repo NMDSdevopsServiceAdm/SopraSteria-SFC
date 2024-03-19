@@ -18,7 +18,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   @Input() dashboardView: boolean;
   public canShowBanner = true;
   @Input() canAddWorker = false;
-  @Input() updatedDate: Date;
+  public updatedDate: string;
 
   private subscriptions: Subscription = new Subscription();
   public workplaceUid: string;
@@ -50,7 +50,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    const { uid, id, name, updated } = this.establishmentService.primaryWorkplace;
+    const { uid, id, name } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
     this.getPermissions();
@@ -73,8 +73,14 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
       }),
     );
 
+
+    this.parentSubsidiaryViewService
+
+    this.parentSubsidiaryViewService.getLastUpdatedDateObservable.subscribe((getLastUpdatedDate) => {
+      this.updatedDate = getLastUpdatedDate;
+    });
+
     this.parentSubsidiaryViewService;
-    this.updatedDate = updated;
   }
 
   ngOnChanges(): void {

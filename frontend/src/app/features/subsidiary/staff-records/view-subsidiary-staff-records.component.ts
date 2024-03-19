@@ -43,5 +43,7 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
 
     this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
     this.parentSubsidiaryViewService.canShowBanner = true;
+    const lastUpdatedDates = this.workers.map((worker) => new Date(worker.updated).getTime());
+    this.parentSubsidiaryViewService.getLastUpdatedDate = new Date(Math.max(...lastUpdatedDates)).toISOString();
   }
 }

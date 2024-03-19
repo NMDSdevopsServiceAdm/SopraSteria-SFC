@@ -27,7 +27,7 @@ describe('ExternalLinkComponent', () => {
 
     const link = component.getByText('Direct us test');
 
-    expect(link.getAttribute('href')).toBe('https://sfccmstest.cloudapps.digital/admin/login');
+    expect(link.getAttribute('href')).toBe('https://asc-wds-test.directus.app/admin/login');
   });
 
   it('should take us to the `Direct us live`page', async () => {
@@ -35,7 +35,7 @@ describe('ExternalLinkComponent', () => {
 
     const link = component.getByText('Direct us live');
 
-    expect(link.getAttribute('href')).toBe('https://sfccms.cloudapps.digital/admin/login');
+    expect(link.getAttribute('href')).toBe('https://asc-wds-cms.directus.app/admin/login');
   });
 
   it('should take us to the `CQC`page', async () => {

@@ -19,7 +19,9 @@ import { ApprovalOrRejectionDialogComponent } from '../../components/approval-or
 })
 export class RegistrationRequestComponent extends RegistrationRequestDirective {
   public workplaceIdForm: UntypedFormGroup;
+  public postcodeForm: UntypedFormGroup;
   public invalidWorkplaceIdEntered: boolean;
+  public invalidPostcodeEntered: boolean;
   public submitted: boolean;
   public userFullName: string;
   public checkBoxError: string;
@@ -47,12 +49,25 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
     return this.workplaceIdForm.get('nmdsId');
   }
 
+  get postcode(): AbstractControl {
+    return this.postcodeForm.get('postcode');
+  }
+
   private setupForm(): void {
     this.workplaceIdForm = new UntypedFormGroup({
       nmdsId: new UntypedFormControl(this.registration.establishment.nmdsId, [
         Validators.required,
         Validators.minLength(8),
         Validators.maxLength(8),
+      ]),
+    });
+
+    this.postcodeForm = new UntypedFormGroup({
+      postcode: new UntypedFormControl(this.registration.establishment.postcode , [
+        Validators.required,
+        Validators.minLength(6),
+        Validators.maxLength(8),
+        Validators.pattern(/^([A-Za-z][A-Ha-hJ-Yj-y]?[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}|[Gg][Ii][Rr] ?0[Aa]{2})$/)
       ]),
     });
   }
@@ -82,11 +97,51 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
     );
   }
 
+  public updatePostcode(): void {
+
+
+    if (this.postcode.invalid) {
+
+      this.invalidPostcodeEntered = true;
+      return;
+    }
+    const body = {
+      uid: this.registration.establishment.uid,
+      postcode: this.postcode.value,
+    };
+    this.registrationsService.updatePostcode(body).subscribe(
+      () => {
+        this.getUpdatedRegistration();
+        this.showPostcodeUpdatedAlert();
+      },
+      (err) => {
+        this.invalidPostcodeEntered = true;
+        if (err instanceof HttpErrorResponse) {
+          this.populateErrorPostcode(err);
+        }
+      },
+    );
+  }
+
   private populateErrorFromServer(err) {
     const validationErrors = err.error;
 
     Object.keys(validationErrors).forEach((prop) => {
       const formControl = this.workplaceIdForm.get(prop);
+      if (formControl) {
+        formControl.setErrors({
+          serverError: validationErrors[prop],
+        });
+      }
+    });
+  }
+
+  private populateErrorPostcode(err) {
+
+    const validationErrors = err.error;
+
+    Object.keys(validationErrors).forEach((prop) => {
+      const formControl = this.postcodeForm.get(prop);
       if (formControl) {
         formControl.setErrors({
           serverError: validationErrors[prop],
@@ -191,6 +246,12 @@ export class RegistrationRequestComponent extends RegistrationRequestDirective {
     });
   }
 
+  private showPostcodeUpdatedAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `The Postcode has been successfully updated to ${this.postcode.value}`,
+    });
+  }
   private showApprovalOrRejectionConfirmationAlert(isApproval: boolean): void {
     this.alertService.addAlert({
       type: 'success',
