@@ -61,7 +61,6 @@ export class BreadcrumbService {
   constructor(
     private router: Router,
     private location: Location,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService
   ) {
     this.router.events
       .pipe(

@@ -103,33 +103,14 @@ const routes: Routes = [
           title: 'Data Area',
         },
       },
-      // {
-      //   path: '',
-      //   canActivate: [CheckPermissionsGuard],
-      //   component: ViewWorkplaceComponent,
-      //   data: {
-      //     permissions: ['canViewEstablishment'],
-      //     title: 'View Workplace',
-      //     workerPagination: true,
-      //   },
-      //   resolve: {
-      //     users: AllUsersForEstablishmentResolver,
-      //     workers: WorkersResolver,
-      //     totalStaffRecords: TotalStaffRecordsResolver,
-      //     benchmarks: BenchmarksResolver,
-      //     rankings: RankingsResolver,
-      //     usefulLinksPay: UsefulLinkPayResolver,
-      //     usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
-      //   },
-      // },
       {
         path: '',
         component: ViewSubsidiaryWorkplaceComponent,
-        // resolve: {
-        //   users: AllUsersForEstablishmentResolver,
-        //   establishment: SubsidiaryResolver,
-        //   workers: WorkersResolver,
-        // },
+        resolve: {
+          users: AllUsersForEstablishmentResolver,
+          establishment: SubsidiaryResolver,
+          workers: WorkersResolver,
+        },
         data: { title: 'Workplace' },
       },
       {
