@@ -122,10 +122,10 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
       stateMessage: 'no-data',
       hasValue: false,
     };
-    component.tilesData.careWorkerPay.comparisonGroup = noCompData;
-    component.tilesData.seniorCareWorkerPay.comparisonGroup = noCompData;
-    component.tilesData.registeredNursePay.comparisonGroup = noCompData;
-    component.tilesData.registeredManagerPay.comparisonGroup = noCompData;
+    component.tilesData.careWorkerPay = { comparisonGroup: noCompData };
+    component.tilesData.seniorCareWorkerPay = { comparisonGroup: noCompData };
+    component.tilesData.registeredNursePay = { comparisonGroup: noCompData };
+    component.tilesData.registeredManagerPay = { comparisonGroup: noCompData };
 
     component.checkComparisonDataExists();
 
