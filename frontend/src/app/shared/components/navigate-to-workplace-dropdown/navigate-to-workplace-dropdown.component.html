@@ -1,6 +1,6 @@
 <div class="asc-navigate-to-workplace-dropdown-container">
   <div class="asc-navigate-to-workplace-dropdown govuk-width-container">
-    <select class="govuk-select govuk-!-margin-left-0" (change)="navigateToWorkplace($event.target.value)">
+    <select class="govuk-select govuk-!-width-one-half" (change)="navigateToWorkplace($event.target.value)">
       <option [value]="primaryWorkplace.uid">{{ primaryWorkplace.name }}</option>
       <option [value]="'anotherWorkplace'">Another workplace</option>
 

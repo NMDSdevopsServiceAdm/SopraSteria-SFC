@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
@@ -12,7 +12,6 @@ import { Subscription } from 'rxjs';
   styleUrls: ['./navigate-to-workplace-dropdown.component.scss'],
 })
 export class NavigateToWorkplaceDropdownComponent implements OnInit {
-  @Input() parentWorkplaceName: string;
   private subscriptions: Subscription = new Subscription();
   public primaryWorkplace: Establishment;
   public childWorkplaces: Workplace[];
