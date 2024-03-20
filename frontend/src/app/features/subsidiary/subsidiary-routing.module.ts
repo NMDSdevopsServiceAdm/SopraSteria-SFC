@@ -58,6 +58,7 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { DeleteWorkplaceComponent } from './delete-workplace/delete-workplace.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -497,7 +498,8 @@ const routes: Routes = [
       },
     ],
   },
-  { // ???
+  {
+    // ???
     path: 'staff-records/:establishmentuid',
     component: ViewSubsidiaryStaffRecordsComponent,
     data: { title: 'Staff Records' },
@@ -537,6 +539,11 @@ const routes: Routes = [
     resolve: {
       establishment: SubsidiaryResolver,
     },
+  },
+  {
+    path: 'delete-workplace/:establishmentuid',
+    component: DeleteWorkplaceComponent,
+    data: { title: 'Delete workplace' },
   },
 ];
 

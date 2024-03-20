@@ -10,14 +10,13 @@ import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
 
 import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
 import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
-import {
-  ViewSubsidiaryTrainingAndQualificationsComponent,
-} from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
+import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { DeleteWorkplaceComponent } from './delete-workplace/delete-workplace.component';
 
 @NgModule({
   imports: [
@@ -36,12 +35,9 @@ import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
     ViewSubsidiaryStaffRecordsComponent,
     ViewSubsidiaryTrainingAndQualificationsComponent,
     ViewSubsidiaryBenchmarksComponent,
-    ViewSubsidiaryWorkplaceUsersComponent
+    ViewSubsidiaryWorkplaceUsersComponent,
+    DeleteWorkplaceComponent,
   ],
-  providers: [
-    ExpiresSoonAlertDatesResolver,
-    SubsidiaryResolver,
-    UserAccountResolver,
-  ],
+  providers: [ExpiresSoonAlertDatesResolver, SubsidiaryResolver, UserAccountResolver],
 })
 export class SubsidiaryModule {}
