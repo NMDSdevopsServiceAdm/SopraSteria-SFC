@@ -1,7 +1,4 @@
 <div id="content">
-  <div *ngIf="isParentSubsidiaryView">
-    <app-navigate-to-workplace-dropdown></app-navigate-to-workplace-dropdown>
-  </div>
   <div class="asc-tabs-container">
     <div class="govuk-width-container">
       <app-new-tabs (selectedTabClick)="tabClickEvent($event)" [tabs]="tabs"> </app-new-tabs>
