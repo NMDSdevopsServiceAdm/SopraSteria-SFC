@@ -45,12 +45,21 @@ describe('BackToParentComponent', () => {
     expect(getByText(component.primaryWorkplace.name));
   });
 
-  it('should have route to main dashboard when selecting primary workplace', async () => {
+  it('should go to route of main dashboard when selecting primary workplace', async () => {
     const { component, getByText, routerSpy } = await setup();
 
     const selectObject = getByText(component.primaryWorkplace.name);
-    fireEvent.change(selectObject, { target: { value: component.primaryWorkplace.name } });
+    fireEvent.change(selectObject, { target: { value: component.primaryWorkplace.uid } });
 
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+  });
+
+  it('should go to route of selected sub when selecting sub workplace', async () => {
+    const { component, getByText, routerSpy } = await setup();
+    console.log(component.childWorkplaces);
+    const selectObject = getByText(component.primaryWorkplace.name);
+    fireEvent.change(selectObject, { target: { value: component.childWorkplaces[0].uid } });
+
+    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', 'home', component.childWorkplaces[0].uid]);
   });
 });
