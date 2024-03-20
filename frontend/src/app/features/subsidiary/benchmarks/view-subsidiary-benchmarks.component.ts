@@ -8,6 +8,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { DataAreaAboutTheDataComponent } from '@shared/components/data-area-tab/about-the-data/about-the-data.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
@@ -34,6 +35,10 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
   public newDashboard: boolean;
   private subsidiaryUid: string;
+  public canSeeNewDataArea: boolean;
+  public newDataAreaFlag: boolean;
+
+
 
   constructor(
     private permissionsService: PermissionsService,
@@ -42,16 +47,22 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     protected router: Router,
     private tabsService: TabsService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private featureFlagService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
+    this.newDataAreaFlag = this.featureFlagService.newBenchmarksDataArea;
+
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.newDashboard = true;
     this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
       if (subsidiaryWorkplace) {
         this.workplace = subsidiaryWorkplace;
+        this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
         this.subsidiaryUid = this.workplace?.uid;
-        this.tilesData = this.benchmarksService.benchmarksData.newBenchmarks;
+        this.tilesData = this.featureFlagService.newBenchmarksDataArea
+        ? this.benchmarksService.benchmarksData.oldBenchmarks
+        : this.benchmarksService.benchmarksData;
         this.rankingsData = this.benchmarksService.rankingsData;
         this.canViewFullBenchmarks = this.permissionsService.can(this.subsidiaryUid, 'canViewBenchmarks');
         this.setDownloadBenchmarksText();
@@ -61,6 +72,7 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     });
     this.parentSubsidiaryViewService.canShowBanner = true;
     this.parentSubsidiaryViewService.getLastUpdatedDate = this.tilesData?.meta.lastUpdated.toString()
+
   }
 
   public checkComparisonDataExists(): void {
