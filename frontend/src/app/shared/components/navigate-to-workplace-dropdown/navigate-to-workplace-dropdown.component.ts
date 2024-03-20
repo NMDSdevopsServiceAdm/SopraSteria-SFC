@@ -37,13 +37,13 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
     );
   }
 
-  navigateToWorkplace(selectedWorkplaceUid: string) {
+  public navigateToWorkplace(selectedWorkplaceUid: string) {
     if (selectedWorkplaceUid === this.primaryWorkplace.uid) {
       this.parentSubsidiaryViewService.clearViewingSubAsParent();
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/dashboard'], { fragment: 'home' });
     } else {
       this.parentSubsidiaryViewService.setViewingSubAsParent(selectedWorkplaceUid);
-      this.router.navigate(['/subsidiary', 'home', selectedWorkplaceUid]);
+      this.router.navigate(['/subsidiary', 'home', selectedWorkplaceUid], { fragment: 'home' });
     }
   }
 
