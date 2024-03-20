@@ -7,11 +7,11 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-back-to-parent-link',
-  templateUrl: './back-to-parent-link.component.html',
-  styleUrls: ['./back-to-parent-link.component.scss'],
+  selector: 'app-navigate-to-workplace-dropdown',
+  templateUrl: './navigate-to-workplace-dropdown.component.html',
+  styleUrls: ['./navigate-to-workplace-dropdown.component.scss'],
 })
-export class BackToParentComponent implements OnInit {
+export class NavigateToWorkplaceDropdownComponent implements OnInit {
   @Input() parentWorkplaceName: string;
   private subscriptions: Subscription = new Subscription();
   public primaryWorkplace: Establishment;

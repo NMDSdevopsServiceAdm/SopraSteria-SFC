@@ -6,11 +6,11 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { BackToParentComponent } from './back-to-parent-link.component';
+import { NavigateToWorkplaceDropdownComponent } from './navigate-to-workplace-dropdown.component';
 
-describe('BackToParentComponent', () => {
+fdescribe('NavigateToWorkplaceDropdownComponent', () => {
   const setup = async () => {
-    const { fixture, getByText, getByLabelText } = await render(BackToParentComponent, {
+    const { fixture, getByText, getByLabelText } = await render(NavigateToWorkplaceDropdownComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         {

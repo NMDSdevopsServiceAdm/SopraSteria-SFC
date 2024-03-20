@@ -1,6 +1,8 @@
 <div id="content">
   <div *ngIf="isParentSubsidiaryView">
-    <app-back-to-parent-link [parentWorkplaceName]="parentWorkplaceName"></app-back-to-parent-link>
+    <app-navigate-to-workplace-dropdown
+      [parentWorkplaceName]="parentWorkplaceName"
+    ></app-navigate-to-workplace-dropdown>
   </div>
   <div class="asc-tabs-container">
     <div class="govuk-width-container">
