@@ -19,4 +19,4 @@ test-be:
 
 db-migrate:
 	cd backend && export NODE_ENV=localhost & \
-	npm run db:migrate --prefix backend
+	cd backend && npm run db:migrate
