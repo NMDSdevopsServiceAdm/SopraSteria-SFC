@@ -8,7 +8,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { NavigateToWorkplaceDropdownComponent } from './navigate-to-workplace-dropdown.component';
 
-fdescribe('NavigateToWorkplaceDropdownComponent', () => {
+describe('NavigateToWorkplaceDropdownComponent', () => {
   const setup = async () => {
     const { fixture, getByText, getByLabelText } = await render(NavigateToWorkplaceDropdownComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
@@ -54,12 +54,21 @@ fdescribe('NavigateToWorkplaceDropdownComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
   });
 
-  it('should go to route of selected sub when selecting sub workplace', async () => {
+  it('should go to route of selected sub (first) when selecting sub workplace', async () => {
     const { component, getByText, routerSpy } = await setup();
-    console.log(component.childWorkplaces);
+
     const selectObject = getByText(component.primaryWorkplace.name);
     fireEvent.change(selectObject, { target: { value: component.childWorkplaces[0].uid } });
 
     expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', 'home', component.childWorkplaces[0].uid]);
+  });
+
+  it('should go to route of selected sub (second) when selecting sub workplace', async () => {
+    const { component, getByText, routerSpy } = await setup();
+
+    const selectObject = getByText(component.primaryWorkplace.name);
+    fireEvent.change(selectObject, { target: { value: component.childWorkplaces[1].uid } });
+
+    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', 'home', component.childWorkplaces[1].uid]);
   });
 });
