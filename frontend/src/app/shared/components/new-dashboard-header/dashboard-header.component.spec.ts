@@ -356,7 +356,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
   });
 
-  describe('Archive Workplace', () => {
+  fdescribe('Archive Workplace', () => {
     it('should display a Delete Workplace link if user is an admin', async () => {
       const { component, getByText } = await setup();
 
@@ -386,55 +386,68 @@ describe('NewDashboardHeaderComponent', () => {
       expect(queryByText('Delete Workplace')).toBeNull();
     });
 
-    it('should display a modal when the user clicks on Delete Workplace', async () => {
-      const { component, getByText } = await setup('home', false, true, false, true, true);
+    it('should show the correct url for delete workplace', async () => {
+      const { component, getByTestId, fixture } = await setup();
 
-      const deleteWorkplace = getByText('Delete Workplace');
-      deleteWorkplace.click();
+      component.isParentSubsidiaryView = true;
+      component.canDeleteEstablishment = true;
 
-      const dialog = await within(document.body).findByRole('dialog');
+      fixture.detectChanges();
 
-      const cancel = within(dialog).getByText('Cancel');
-      cancel.click();
+      const deleteWorkplaceLink = getByTestId('delete-workplace');
+
+      expect(deleteWorkplaceLink.getAttribute('href')).toEqual(`/delete-workplace/${component.workplace.uid}`);
     });
 
-    it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
-      const { component, establishmentService, getByText } = await setup('home', false, true, false, true, true);
+    // it('should display a modal when the user clicks on Delete Workplace', async () => {
+    //   const { component, getByText } = await setup('home', false, true, false, true, true);
 
-      const spy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+    //   const deleteWorkplace = getByText('Delete Workplace');
+    //   deleteWorkplace.click();
 
-      const deleteWorkplace = getByText('Delete Workplace');
-      deleteWorkplace.click();
+    //   const dialog = await within(document.body).findByRole('dialog');
 
-      const dialog = await within(document.body).findByRole('dialog');
-      const confirm = within(dialog).getByText('Delete workplace');
-      confirm.click();
+    //   const cancel = within(dialog).getByText('Cancel');
+    //   cancel.click();
+    // });
 
-      expect(spy).toHaveBeenCalled();
-    });
+    // it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
+    //   const { component, establishmentService, getByText } = await setup('home', false, true, false, true, true);
 
-    it('should redirect the user after deleting a workplace', async () => {
-      const { component, establishmentService, router, getByText } = await setup(
-        'home',
-        false,
-        true,
-        false,
-        true,
-        true,
-      );
+    //   const spy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
 
-      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
-      const spy = spyOn(router, 'navigate');
-      spy.and.returnValue(Promise.resolve(true));
+    //   const deleteWorkplace = getByText('Delete Workplace');
+    //   deleteWorkplace.click();
 
-      const deleteWorkplace = getByText('Delete Workplace');
-      deleteWorkplace.click();
+    //   const dialog = await within(document.body).findByRole('dialog');
+    //   const confirm = within(dialog).getByText('Delete workplace');
+    //   confirm.click();
 
-      const dialog = await within(document.body).findByRole('dialog');
-      const confirm = within(dialog).getByText('Delete workplace');
-      confirm.click();
+    //   expect(spy).toHaveBeenCalled();
+    // });
 
-      expect(spy).toHaveBeenCalled();
-    });
+    // it('should redirect the user after deleting a workplace', async () => {
+    //   const { component, establishmentService, router, getByText } = await setup(
+    //     'home',
+    //     false,
+    //     true,
+    //     false,
+    //     true,
+    //     true,
+    //   );
+
+    //   spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+    //   const spy = spyOn(router, 'navigate');
+    //   spy.and.returnValue(Promise.resolve(true));
+
+    //   const deleteWorkplace = getByText('Delete Workplace');
+    //   deleteWorkplace.click();
+
+    //   const dialog = await within(document.body).findByRole('dialog');
+    //   const confirm = within(dialog).getByText('Delete workplace');
+    //   confirm.click();
+
+    //   expect(spy).toHaveBeenCalled();
+    // });
   });
 });

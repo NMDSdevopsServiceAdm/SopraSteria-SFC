@@ -1,8 +1,9 @@
 <div>
-  <div class="govuk-grid-row govuk-!-padding-bottom-1">
+  <div class="govuk-grid-row govuk-!-padding-bottom-1 govuk-!-margin-top-6">
     <div class="govuk-grid-column-two-thirds">
+      <span class="govuk-caption-xl" data-testid="workplaceNameCaption">{{ this.subsidiaryWorkplace.name }}</span>
       <h1 class="govuk-heading-l">Delete workplace</h1>
-      <div style="width: 70%">
+      <!-- <div style="width: 70%">
         <h2 class="govuk-heading-s govuk-!-font-size-24">Are you sure you want to delete [sub]?</h2>
       </div>
 
@@ -11,6 +12,56 @@
           <span class="govuk-body govuk-!-font-weight-bold">This action cannot be undone.</span> It will permanently
           delete all the workplace details and staff records.
         </p>
+      </div> -->
+
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m" style="width: 80%">
+            <h2 class="govuk-fieldset__heading" data-testid="workplaceNameQuestion">
+              Are you sure you want to delete {{ this.subsidiaryWorkplace.name }}?
+            </h2>
+          </legend>
+          <div>
+            <p>
+              <span class="govuk-body govuk-!-font-weight-bold">This action cannot be undone.</span> It will permanently
+              delete all the workplace details and staff records.
+            </p>
+          </div>
+          <div class="govuk-radios" data-module="govuk-radios">
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="deleteWorkplace-1"
+                name="deleteWorkplace"
+                type="radio"
+                value="yes"
+              />
+              <label class="govuk-label govuk-radios__label" for="deleteWorkplace-1">
+                Yes, delete this workplace
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                id="deleteWorkplace-2"
+                name="deleteWorkplace"
+                type="radio"
+                value="no"
+              />
+              <label class="govuk-label govuk-radios__label" for="deleteWorkplace-2"> No, keep this workplace </label>
+            </div>
+          </div>
+        </fieldset>
+
+        <div class="govuk-grid-column-one-half govuk-!-margin-top-8 govuk-!-padding-0">
+          <button type="submit" class="govuk-button govuk-button--warning" data-module="govuk-button">Continue</button>
+          <a
+            class="govuk-link govuk-list--inline govuk-util__float-right govuk-!-margin-top-3"
+            href="#"
+            [routerLink]="['/home', this.subsidiaryWorkplace.uid]"
+            >Cancel</a
+          >
+        </div>
       </div>
     </div>
   </div>
