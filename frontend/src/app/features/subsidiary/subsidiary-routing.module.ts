@@ -544,6 +544,9 @@ const routes: Routes = [
     path: 'delete-workplace/:establishmentuid',
     component: DeleteWorkplaceComponent,
     data: { title: 'Delete workplace' },
+    resolve: {
+      establishment: SubsidiaryResolver,
+    },
   },
 ];
 
