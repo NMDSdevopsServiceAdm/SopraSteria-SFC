@@ -151,7 +151,7 @@ describe('getRegistrations', async () => {
     expect(res.statusCode).to.deep.equal(500);
   });
 
-  it.only('should return parentID as null in case where registration has parentID but is not retrieved by getNmdsIdUsingEstablishmentId', async () => {
+  it('should return parentID as null in case where registration has parentID but is not retrieved by getNmdsIdUsingEstablishmentId', async () => {
     models.establishment.getNmdsIdUsingEstablishmentId.restore();
 
     sinon.stub(models.establishment, 'getNmdsIdUsingEstablishmentId').returns(null);
