@@ -102,7 +102,10 @@
   </ng-container>
   <ng-template #benchmarksTab>
     <app-new-benchmarks-tab
-
+      class="asc-benchmarks-tab"
+      [workplace]="workplace"
+      data-testid="benchmarks-tab"
+      [hideBanner]="false"
     ></app-new-benchmarks-tab>
-  </ng-template>
+ </ng-template>
 </ng-container>

@@ -113,10 +113,10 @@
     <ng-template #showRankings>
       <div class="govuk-!-margin-top-7" data-testid="rankings">
         <app-data-area-ranking
-          [rankingTitle]="rankings.careWorkerPay.title"
-          [workplaceRankNumber]="rankings.careWorkerPay.workplacesRankNumber"
-          [workplacesNumber]="rankings.careWorkerPay.totalWorkplaces"
-          [noWorkplaceData]="rankings.careWorkerPay.noWorkplaceData"
+          [rankingTitle]="rankings?.careWorkerPay.title"
+          [workplaceRankNumber]="rankings?.careWorkerPay.workplacesRankNumber"
+          [workplacesNumber]="rankings?.careWorkerPay.totalWorkplaces"
+          [noWorkplaceData]="rankings?.careWorkerPay.noWorkplaceData"
           [isPay]="true"
         ></app-data-area-ranking>
         <app-data-area-ranking

@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
+  @Input() hideBanner = true
   private subscriptions: Subscription = new Subscription();
   public canViewFullBenchmarks: boolean;
   public payContent = MetricsContent.Pay;

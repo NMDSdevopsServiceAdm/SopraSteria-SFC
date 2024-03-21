@@ -38,8 +38,6 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
   public canSeeNewDataArea: boolean;
   public newDataAreaFlag: boolean;
 
-
-
   constructor(
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
@@ -55,6 +53,7 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
 
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.newDashboard = true;
+
     this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
       if (subsidiaryWorkplace) {
         this.workplace = subsidiaryWorkplace;
@@ -78,11 +77,11 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
   public checkComparisonDataExists(): void {
     const noComparisonData = 'no-data';
 
-    if (
-      this.tilesData?.careWorkerPay.comparisonGroup.stateMessage === noComparisonData &&
-      this.tilesData?.seniorCareWorkerPay.comparisonGroup.stateMessage === noComparisonData &&
-      this.tilesData?.registeredNursePay.comparisonGroup.stateMessage === noComparisonData &&
-      this.tilesData?.registeredManagerPay.comparisonGroup.stateMessage === noComparisonData
+     if (
+      this.tilesData?.careWorkerPay?.comparisonGroup.stateMessage === noComparisonData &&
+      this.tilesData?.seniorCareWorkerPay?.comparisonGroup.stateMessage === noComparisonData &&
+      this.tilesData?.registeredNursePay?.comparisonGroup.stateMessage === noComparisonData &&
+      this.tilesData?.registeredManagerPay?.comparisonGroup.stateMessage === noComparisonData
     ) {
       this.comparisonDataExists = false;
     } else this.comparisonDataExists = true;

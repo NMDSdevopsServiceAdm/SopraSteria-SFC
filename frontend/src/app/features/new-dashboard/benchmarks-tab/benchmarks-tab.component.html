@@ -1,4 +1,5 @@
 <app-new-dashboard-header
+  *ngIf="hideBanner"
   [tab]="'benchmarks'"
   [updatedDate]="tilesData?.meta.lastUpdated"
   data-html2canvas-ignore
