@@ -2120,7 +2120,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 0, pageIndex = 0, searchTerm = '') {
+  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 100, pageIndex = 0, searchTerm = '') {
     const offset = pageIndex * limit;
 
     const data = await this.findAndCountAll({
