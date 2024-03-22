@@ -8,6 +8,7 @@ enum Path {
   BENCHMARKS = '/subsidiary/benchmarks/:establishmentuid',
   WORKPLACE_USERS = '/subsidiary/workplace-users/:establishmentuid',
   ABOUT_DATA = '/subsidiary/workplace/:establishmentuid/data-area/about-the-data',
+  DELETE_WORKPLACE = '/subsidiary/delete-workplace/:establishmentuid',
 }
 
 export const subsidiaryJourney: JourneyRoute = {
@@ -46,6 +47,13 @@ export const subsidiaryJourney: JourneyRoute = {
       title: 'About the data',
       path: Path.ABOUT_DATA,
       fragment: 'benchmark',
+    },
+    {
+      title: 'Delete Workplace',
+      path: Path.DELETE_WORKPLACE,
+      referrer: {
+        path: Path.DASHBOARD,
+      },
     },
   ],
 };
