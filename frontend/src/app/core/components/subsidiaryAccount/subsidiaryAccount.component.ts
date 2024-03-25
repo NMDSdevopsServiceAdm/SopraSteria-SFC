@@ -1,6 +1,7 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -37,6 +38,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   public subsidiaryWorkplace: Establishment;
   public canEditWorker: boolean;
   public hasWorkers: boolean;
+  public thereAreOver30Subs: boolean;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -73,14 +75,15 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
       }),
     );
 
-
-    this.parentSubsidiaryViewService
-
     this.parentSubsidiaryViewService.getLastUpdatedDateObservable.subscribe((getLastUpdatedDate) => {
       this.updatedDate = getLastUpdatedDate;
     });
 
-    this.parentSubsidiaryViewService;
+    this.subscriptions.add(
+      this.establishmentService.getChildWorkplaces(this.workplaceUid).subscribe((data: GetChildWorkplacesResponse) => {
+        this.thereAreOver30Subs = data.count > 30;
+      }),
+    );
   }
 
   ngOnChanges(): void {
