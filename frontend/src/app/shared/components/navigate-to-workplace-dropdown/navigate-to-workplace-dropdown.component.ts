@@ -43,7 +43,7 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
       this.router.navigate(['/dashboard'], { fragment: 'home' });
     } else {
       this.parentSubsidiaryViewService.setViewingSubAsParent(selectedWorkplaceUid);
-      this.router.navigate(['/subsidiary', 'home', selectedWorkplaceUid], { fragment: 'home' });
+      this.router.navigate(['/subsidiary', 'home', selectedWorkplaceUid]);
     }
   }
 

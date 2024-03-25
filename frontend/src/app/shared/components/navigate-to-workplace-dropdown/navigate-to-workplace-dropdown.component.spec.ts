@@ -60,9 +60,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     const selectObject = getByText(component.primaryWorkplace.name);
     fireEvent.change(selectObject, { target: { value: component.childWorkplaces[0].uid } });
 
-    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', 'home', component.childWorkplaces[0].uid], {
-      fragment: 'home',
-    });
+    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', 'home', component.childWorkplaces[0].uid]);
   });
 
   it('should go to route of selected sub (second) when selecting sub workplace', async () => {
@@ -71,8 +69,6 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     const selectObject = getByText(component.primaryWorkplace.name);
     fireEvent.change(selectObject, { target: { value: component.childWorkplaces[1].uid } });
 
-    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', 'home', component.childWorkplaces[1].uid], {
-      fragment: 'home',
-    });
+    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', 'home', component.childWorkplaces[1].uid]);
   });
 });
