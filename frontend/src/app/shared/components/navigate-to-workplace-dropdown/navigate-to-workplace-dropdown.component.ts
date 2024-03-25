@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { TabsService } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
@@ -20,6 +21,7 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
     private router: Router,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private establishmentService: EstablishmentService,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit() {
@@ -43,7 +45,10 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
       this.router.navigate(['/dashboard'], { fragment: 'home' });
     } else {
       this.parentSubsidiaryViewService.setViewingSubAsParent(selectedWorkplaceUid);
-      this.router.navigate(['/subsidiary', 'home', selectedWorkplaceUid]);
+      const homeSlug = this.tabsService.homeTab.slug;
+      this.router.navigate(['/subsidiary', homeSlug, selectedWorkplaceUid]);
+      this.parentSubsidiaryViewService.showSelectedTab = homeSlug;
+      this.tabsService.selectedTab = homeSlug;
     }
   }
 
