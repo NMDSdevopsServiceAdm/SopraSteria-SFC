@@ -1,11 +1,15 @@
-import { render } from '@testing-library/angular';
+import { fireEvent, within, render } from '@testing-library/angular';
 import { DeleteWorkplaceComponent } from './delete-workplace.component';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { bool, build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { getTestBed } from '@angular/core/testing';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
 
 const establishmentBuilder = build('Workplace', {
   fields: {
@@ -27,9 +31,11 @@ fdescribe('DeleteWorkplaceComponent', async () => {
     const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
       DeleteWorkplaceComponent,
       {
-        imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
-        declarations: [],
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        declarations: [DeleteWorkplaceComponent],
         providers: [
+          ErrorSummaryService,
+          UntypedFormBuilder,
           {
             provide: BreadcrumbService,
             useClass: MockBreadcrumbService,
@@ -52,14 +58,21 @@ fdescribe('DeleteWorkplaceComponent', async () => {
 
     const component = fixture.componentInstance;
 
+    const injector = getTestBed();
+
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
+      fixture,
       getAllByText,
       getByRole,
       getByText,
       getByLabelText,
       getByTestId,
       queryByText,
+      routerSpy,
     };
   }
   it('should create', async () => {
@@ -119,5 +132,49 @@ fdescribe('DeleteWorkplaceComponent', async () => {
 
     expect(cancelLink).toBeTruthy();
     expect(cancelLink.getAttribute('href')).toEqual(`/home/${component.subsidiaryWorkplace.uid}`);
+  });
+
+  it('should show error message when nothing is submitted', async () => {
+    const { component, getByText, getAllByText, fixture } = await setup();
+
+    const deleteWorkplaceErrorMessage = 'Select yes if you want to delete this workplace';
+    const continueButton = getByText('Continue');
+    const form = component.form;
+
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(form.invalid).toBeTruthy();
+    expect(within(document.body).getAllByText(deleteWorkplaceErrorMessage).length).toEqual(2);
+  });
+
+  it('should go back to subsidiary home page when no is selected', async () => {
+    const { component, getByText, fixture, routerSpy } = await setup();
+
+    const noRadioButton = getByText('No, keep this workplace');
+    const continueButton = getByText('Continue');
+
+    fireEvent.click(noRadioButton);
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/home', component.subsidiaryWorkplace.uid]);
+  });
+
+  it('should navigate to the home tab', async () => {
+    const { component, getByText, fixture, routerSpy } = await setup();
+
+    const yesRadioButton = getByText('Yes, delete this workplace');
+    const continueButton = getByText('Continue');
+
+    fireEvent.click(yesRadioButton);
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces'], {
+      state: {
+        alertMessage: `You deleted ${component.subsidiaryWorkplace.name}`,
+      },
+    });
   });
 });
