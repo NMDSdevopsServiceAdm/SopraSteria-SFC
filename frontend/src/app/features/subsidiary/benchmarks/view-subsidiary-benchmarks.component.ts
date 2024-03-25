@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -42,7 +42,7 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
     protected benchmarksService: BenchmarksServiceBase,
-    protected router: Router,
+    public route: ActivatedRoute,
     private tabsService: TabsService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private featureFlagService: FeatureFlagsService,
@@ -57,15 +57,16 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
       if (subsidiaryWorkplace) {
         this.workplace = subsidiaryWorkplace;
+        console.log(this.workplace);
         this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
         this.subsidiaryUid = this.workplace?.uid;
-        this.tilesData = this.featureFlagService.newBenchmarksDataArea
-        ? this.benchmarksService.benchmarksData.oldBenchmarks
-        : this.benchmarksService.benchmarksData;
-        this.rankingsData = this.benchmarksService.rankingsData;
+        // this.tilesData = this.featureFlagService.newBenchmarksDataArea
+        // ? this.benchmarksService.benchmarksData.oldBenchmarks
+        // : this.benchmarksService.benchmarksData;
+        // this.rankingsData = this.benchmarksService.rankingsData;
         this.canViewFullBenchmarks = this.permissionsService.can(this.subsidiaryUid, 'canViewBenchmarks');
-        this.setDownloadBenchmarksText();
-        this.checkComparisonDataExists();
+        // this.setDownloadBenchmarksText();
+        // this.checkComparisonDataExists();
         this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;
       }
     });
@@ -74,38 +75,38 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
 
   }
 
-  public checkComparisonDataExists(): void {
-    const noComparisonData = 'no-data';
+  // public checkComparisonDataExists(): void {
+  //   const noComparisonData = 'no-data';
 
-     if (
-      this.tilesData?.careWorkerPay?.comparisonGroup.stateMessage === noComparisonData &&
-      this.tilesData?.seniorCareWorkerPay?.comparisonGroup.stateMessage === noComparisonData &&
-      this.tilesData?.registeredNursePay?.comparisonGroup.stateMessage === noComparisonData &&
-      this.tilesData?.registeredManagerPay?.comparisonGroup.stateMessage === noComparisonData
-    ) {
-      this.comparisonDataExists = false;
-    } else this.comparisonDataExists = true;
-  }
+  //    if (
+  //     this.tilesData?.careWorkerPay?.comparisonGroup.stateMessage === noComparisonData &&
+  //     this.tilesData?.seniorCareWorkerPay?.comparisonGroup.stateMessage === noComparisonData &&
+  //     this.tilesData?.registeredNursePay?.comparisonGroup.stateMessage === noComparisonData &&
+  //     this.tilesData?.registeredManagerPay?.comparisonGroup.stateMessage === noComparisonData
+  //   ) {
+  //     this.comparisonDataExists = false;
+  //   } else this.comparisonDataExists = true;
+  // }
 
-  public setDownloadBenchmarksText(): void {
-    const fileSize = this.viewBenchmarksByCategory ? '385KB' : '430KB';
-    const section = this.viewBenchmarksByCategory ? 'recruitment and retention' : 'pay';
+  // public setDownloadBenchmarksText(): void {
+  //   const fileSize = this.viewBenchmarksByCategory ? '385KB' : '430KB';
+  //   const section = this.viewBenchmarksByCategory ? 'recruitment and retention' : 'pay';
 
-    this.downloadRecruitmentBenchmarksText = `Download ${section} benchmarks (PDF, ${fileSize}, 2 pages)`;
-  }
+  //   this.downloadRecruitmentBenchmarksText = `Download ${section} benchmarks (PDF, ${fileSize}, 2 pages)`;
+  // }
 
-  public handleViewBenchmarksByCategory(visible: boolean): void {
-    this.viewBenchmarksByCategory = visible;
-    this.setDownloadBenchmarksText();
-  }
+  // public handleViewBenchmarksByCategory(visible: boolean): void {
+  //   this.viewBenchmarksByCategory = visible;
+  //   this.setDownloadBenchmarksText();
+  // }
 
-  public handleViewComparisonGroups(visible: boolean): void {
-    this.viewBenchmarksComparisonGroups = visible;
-  }
+  // public handleViewComparisonGroups(visible: boolean): void {
+  //   this.viewBenchmarksComparisonGroups = visible;
+  // }
 
-  public handleViewBenchmarkPosition(visible: boolean): void {
-    this.viewBenchmarksPosition = visible;
-  }
+  // public handleViewBenchmarkPosition(visible: boolean): void {
+  //   this.viewBenchmarksPosition = visible;
+  // }
 
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();

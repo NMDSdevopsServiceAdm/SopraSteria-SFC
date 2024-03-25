@@ -1,6 +1,7 @@
 <ng-container>
   <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
-    <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
+    <data-area-tab [workplace]="workplace" newDashboard="true"></data-area-tab>
+    <!-- <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
       <app-benchmarks-select-view-panel
         data-testid="selectCategoryLinks"
         [falseSelectionName]="'Pay'"
@@ -98,14 +99,14 @@
           </ng-template>
         </div>
       </div>
-    </div>
+    </div> -->
   </ng-container>
   <ng-template #benchmarksTab>
     <app-new-benchmarks-tab
       class="asc-benchmarks-tab"
       [workplace]="workplace"
       data-testid="benchmarks-tab"
-      [hideBanner]="false"
+      [hideBanner]="true"
     ></app-new-benchmarks-tab>
  </ng-template>
 </ng-container>

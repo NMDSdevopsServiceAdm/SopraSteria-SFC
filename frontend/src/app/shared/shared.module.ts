@@ -277,8 +277,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SummarySectionComponent,
     BackToParentComponent,
     OtherLinksComponent,
-    NewBenchmarksTabComponent,
-    NewComparisonGroupHeaderComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -394,8 +392,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SummarySectionComponent,
     BackToParentComponent,
     OtherLinksComponent,
-    NewBenchmarksTabComponent,
-    NewComparisonGroupHeaderComponent,
   ],
   providers: [
     DialogService,

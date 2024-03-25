@@ -109,6 +109,8 @@ import {
 } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-tab/benchmarks-tab.component';
+import { NewComparisonGroupHeaderComponent } from '@features/new-dashboard/benchmarks-tab/comparison-group-header/comparison-group-header.component';
 
 @NgModule({
   declarations: [
@@ -149,7 +151,9 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     NewWorkplaceTabComponent,
     NewStaffTabComponent,
     NewTrainingTabComponent,
+    NewBenchmarksTabComponent,
     NewTrainingLinkPanelComponent,
+    NewComparisonGroupHeaderComponent,
     StaffBasicRecord,
     BecomeAParentComponent,
     RemoveLinkToParentComponent,
