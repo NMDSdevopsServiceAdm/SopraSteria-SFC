@@ -12,6 +12,16 @@
   padding-top: 10px;
 }
 
+.govuk-standalone-tabs__list-item {
+  @extend .govuk-tabs__list-item;
+  padding: 12px 31px !important;
+}
+
+.govuk-subsidiary-tabs__list-item {
+  @extend .govuk-tabs__list-item;
+  padding: 12px 13px !important;
+}
+
 .govuk-tabs__tab--alert {
   @extend .govuk-tabs__tab--generic-alert;
   background-image: url('/assets/images/flag-orange.svg');
