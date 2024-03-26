@@ -8,7 +8,7 @@
       >
     </app-link-with-arrow>
 
-    <app-link-with-arrow *ngIf="canBulkUpload">
+    <app-link-with-arrow *ngIf="canBulkUpload && !isParentSubsidiaryView">
       <a class="govuk-link" [routerLink]="['/bulk-upload']">Bulk upload your data</a>
     </app-link-with-arrow>
 
