@@ -52,7 +52,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     const { uid, id, name } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
-    console.log(this.workplaceUid);
     this.workplaceId = id;
     this.getPermissions();
     this.setTabs();

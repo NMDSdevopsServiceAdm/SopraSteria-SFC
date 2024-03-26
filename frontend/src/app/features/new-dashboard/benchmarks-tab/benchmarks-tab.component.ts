@@ -38,13 +38,10 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    console.log(this.featureFlagService.newBenchmarksDataArea);
     this.canViewFullBenchmarks = this.permissionsService.can(this.workplace.uid, 'canViewBenchmarks');
     this.tilesData = this.featureFlagService.newBenchmarksDataArea
       ? this.benchmarksService.benchmarksData.oldBenchmarks
       : this.benchmarksService.benchmarksData;
-
-    console.log(this.tilesData);
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
   }
 
