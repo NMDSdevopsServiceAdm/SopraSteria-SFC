@@ -10,7 +10,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import {  render } from '@testing-library/angular';
 import { of, Subject } from 'rxjs';
 
 import { ArticleComponent } from './article.component';
@@ -19,7 +19,7 @@ describe('ArticleComponent', () => {
   const articles = MockArticlesService.articlesFactory();
 
   async function setup() {
-    const { fixture, getByText,getByTestId } = await render(ArticleComponent, {
+    const { fixture, getByText} = await render(ArticleComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: ArticlesService, useClass: MockArticlesService },
