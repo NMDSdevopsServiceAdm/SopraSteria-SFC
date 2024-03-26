@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { JourneyRoute } from '@core/breadcrumb/breadcrumb.model';
+import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { Establishment } from '@core/model/establishment.model';
 
 @Component({
   selector: 'app-breadcrumbs',
@@ -27,7 +26,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.primaryWorkplace$.subscribe((workplace) => {
         this.workplace = workplace;
-      })
+      }),
     );
 
     this.subscriptions.add(
@@ -36,7 +35,9 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
       }),
     );
     this.subscriptions.add(
-      this.breadcrumbService.overrideMessage$.subscribe(overrideMessage => this.overrideMessage = overrideMessage ? overrideMessage : undefined)
+      this.breadcrumbService.overrideMessage$.subscribe(
+        (overrideMessage) => (this.overrideMessage = overrideMessage ? overrideMessage : undefined),
+      ),
     );
   }
 

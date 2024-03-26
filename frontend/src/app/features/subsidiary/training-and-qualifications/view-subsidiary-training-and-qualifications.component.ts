@@ -9,6 +9,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
@@ -53,6 +54,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     private trainingCategoryService: TrainingCategoryService,
     private trainingService: TrainingService,
     private permissionsService: PermissionsService,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
@@ -129,7 +131,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
   public navigateToStaffRecords(event: Event): void {
     event.preventDefault();
-    this.parentSubsidiaryViewService.showSelectedTab = 'staff-records';
+    this.tabsService.selectedTab = 'staff-records';
     this.router.navigate(['/subsidiary/staff-records', this.workplace.uid]);
   }
 

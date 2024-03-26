@@ -76,7 +76,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       await this.router.navigate(route);
     }
 
-    this.parentSubsidiaryViewService.showSelectedTab = fragment;
+    this.tabsService.selectedTab = fragment;
 
     this.navigateToTab(event, fragment);
   }
