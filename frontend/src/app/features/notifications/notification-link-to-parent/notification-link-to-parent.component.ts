@@ -3,7 +3,6 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -42,7 +41,6 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private router: Router,
     private permissionsService: PermissionsService,
-    private alertService: AlertService,
     private notificationsService: NotificationsService,
     private dialogService: DialogService,
   ) {}
@@ -105,10 +103,6 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
                         this.establishmentService.setState(workplace);
                         this.establishmentService.setPrimaryWorkplace(workplace);
                         this.router.navigate(['/dashboard']);
-                        this.alertService.addAlert({
-                          type: 'success',
-                          message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
-                        });
                       }
                     });
                   }
@@ -172,10 +166,6 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
               this.notificationsService.notifications = notify.notifications;
             });
             this.router.navigate(['/dashboard']);
-            this.alertService.addAlert({
-              type: 'success',
-              message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
-            });
           }
         }),
     );
