@@ -48,7 +48,6 @@ describe('ArticleComponent', () => {
       component,
       fixture,
       getByText,
-      getByTestId
     };
   }
 
@@ -68,11 +67,10 @@ describe('ArticleComponent', () => {
   });
 
   it('should navigate back to home tab', async () => {
-    const { fixture, getByTestId } = await setup();
-    const button = getByTestId('returnButton');
-    fireEvent.click(button);
-    fixture.detectChanges();
+    const { getByText} = await setup();
 
-    expect(button.getAttribute('href')).toEqual('/dashboard');
+    const returnToHome = getByText('Return to home', { exact: false });
+
+    expect(returnToHome.getAttribute('href')).toBe('/dashboard');
   });
 });
