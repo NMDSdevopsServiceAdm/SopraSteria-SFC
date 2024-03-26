@@ -11,6 +11,7 @@ import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import {
@@ -561,6 +562,7 @@ const routes: Routes = [
       benchmarksResolver: BenchmarksResolver,
       rankingsResolver: RankingsResolver,
       usefulLinksPay: UsefulLinkPayResolver,
+      usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
     },
   },
   {
