@@ -281,7 +281,7 @@ describe('ParentHomeTabComponent', () => {
       const ascWdsNewsLink = getByText('ASC-WDS news');
 
       expect(ascWdsNewsLink).toBeTruthy();
-      expect(ascWdsNewsLink.getAttribute('href')).toBe('/articles/news-article-heartof');
+      expect(ascWdsNewsLink.getAttribute('href')).toBe('/articles/news-article-survey');
     });
   });
 
