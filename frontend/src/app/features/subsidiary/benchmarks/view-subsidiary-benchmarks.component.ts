@@ -45,11 +45,11 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     public route: ActivatedRoute,
     private tabsService: TabsService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
-    private featureFlagService: FeatureFlagsService,
+    private featureFlagsService: FeatureFlagsService,
   ) {}
 
   ngOnInit(): void {
-    this.newDataAreaFlag = this.featureFlagService.newBenchmarksDataArea;
+    this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
 
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.newDashboard = true;
@@ -57,12 +57,11 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
       if (subsidiaryWorkplace) {
         this.workplace = subsidiaryWorkplace;
-        console.log(this.workplace);
         this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
         this.subsidiaryUid = this.workplace?.uid;
-        this.tilesData = this.featureFlagService.newBenchmarksDataArea
-        ? this.benchmarksService.benchmarksData.oldBenchmarks
-        : this.benchmarksService.benchmarksData;
+        this.tilesData = this.featureFlagsService.newBenchmarksDataArea ?
+            this.benchmarksService.benchmarksData.newBenchmarks
+          : this.benchmarksService.benchmarksData.oldBenchmarks
         this.rankingsData = this.benchmarksService.rankingsData;
         this.canViewFullBenchmarks = this.permissionsService.can(this.subsidiaryUid, 'canViewBenchmarks');
         this.setDownloadBenchmarksText();
@@ -71,14 +70,13 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
       }
     });
     this.parentSubsidiaryViewService.canShowBanner = true;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.tilesData?.meta.lastUpdated.toString()
-
+    this.parentSubsidiaryViewService.getLastUpdatedDate = this.tilesData?.meta.lastUpdated.toString();
   }
 
   public checkComparisonDataExists(): void {
     const noComparisonData = 'no-data';
 
-     if (
+    if (
       this.tilesData?.careWorkerPay?.comparisonGroup.stateMessage === noComparisonData &&
       this.tilesData?.seniorCareWorkerPay?.comparisonGroup.stateMessage === noComparisonData &&
       this.tilesData?.registeredNursePay?.comparisonGroup.stateMessage === noComparisonData &&
