@@ -14,6 +14,7 @@ export class OtherLinksComponent implements OnInit {
   @Input() canRemoveParentAssociation: boolean;
   @Input() canViewDataPermissionsLink: boolean;
   @Input() canViewChangeDataOwner: boolean;
+  @Input() isParentSubsidiaryView: boolean;
 
   ngOnInit(): void {}
 }
