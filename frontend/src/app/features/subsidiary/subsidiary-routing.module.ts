@@ -120,15 +120,6 @@ const routes: Routes = [
     },
     children: [
       {
-        path: 'benchmarks',
-        loadChildren: () =>
-          import('@shared/components/benchmarks-tab/benchmarks.module').then((m) => m.BenchmarksModule),
-
-        data: {
-          title: 'Benchmarks',
-        },
-      },
-      {
         path: 'data-area',
         loadChildren: () =>
           import('@shared/components/data-area-tab/data-area-tab.module').then((m) => m.DataAreaTabModule),
