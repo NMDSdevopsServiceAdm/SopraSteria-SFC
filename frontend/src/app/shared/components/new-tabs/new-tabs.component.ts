@@ -20,6 +20,8 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   private focus: boolean;
   private clickEvent: boolean;
 
+  public isParentViewingSub: boolean = false;
+
   @ViewChild('tablist') tablist: ElementRef;
 
   constructor(
@@ -32,6 +34,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.selectedTabSubscription();
+    this.isParentViewingSub = this.parentSubsidiaryViewService.getViewingSubAsParent();
 
     const hash = this.route.snapshot.fragment;
     if (hash) {
