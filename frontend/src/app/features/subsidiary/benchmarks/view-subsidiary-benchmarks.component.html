@@ -1,7 +1,7 @@
 <ng-container>
   <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
     <data-area-tab [workplace]="workplace" newDashboard="true"></data-area-tab>
-    <!-- <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
+    <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">
       <app-benchmarks-select-view-panel
         data-testid="selectCategoryLinks"
         [falseSelectionName]="'Pay'"
@@ -57,7 +57,9 @@
                 Your selected comparison group is a maximum
                 <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.staffGoodCqc | number }}</span>
                 staff from
-                <span class="govuk-body govuk-!-font-weight-bold">{{ tilesData?.meta.workplacesGoodCqc | number }}</span>
+                <span class="govuk-body govuk-!-font-weight-bold">{{
+                  tilesData?.meta.workplacesGoodCqc | number
+                }}</span>
                 workplaces using ASC-WDS, rated as good or outstanding CQC providers and providing
                 <span class="govuk-body govuk-!-font-weight-bold">{{
                   workplace.mainService.name | serviceName | lowercase
@@ -99,14 +101,14 @@
           </ng-template>
         </div>
       </div>
-    </div> -->
+    </div>
   </ng-container>
   <ng-template #benchmarksTab>
     <app-new-benchmarks-tab
       class="asc-benchmarks-tab"
       [workplace]="workplace"
       data-testid="benchmarks-tab"
-      [hideBanner]="true"
+      [showBanner]="false"
     ></app-new-benchmarks-tab>
- </ng-template>
+  </ng-template>
 </ng-container>
