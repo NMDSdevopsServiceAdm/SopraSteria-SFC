@@ -99,7 +99,6 @@ describe('NewBenchmarksTabComponent', () => {
       queryByTestId,
       getByText,
       pdfService,
-      fixture,
     };
   };
 
