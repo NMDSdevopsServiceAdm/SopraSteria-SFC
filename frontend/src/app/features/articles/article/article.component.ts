@@ -14,6 +14,7 @@ import { filter, map } from 'rxjs/operators';
 export class ArticleComponent implements OnInit, OnDestroy {
   public subscriptions = new Subscription();
   public article: Article;
+
   constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService, private router: Router) {}
 
   ngOnInit(): void {
