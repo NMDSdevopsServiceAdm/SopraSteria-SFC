@@ -8,12 +8,21 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
+import {
+  TailoredSeminarsComponent,
+} from '@features/benefits-bundle/benefit-tailored-seminars/benefit-tailored-seminars.component';
+import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
+import { BenefitsELearningComponent } from '@features/benefits-bundle/benefits-elearning/benefits-elearning.component';
+import {
+  BenefitsTrainingDiscountsComponent,
+} from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import {
   AcceptPreviousCareCertificateComponent,
 } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
@@ -94,6 +103,40 @@ const routes: Routes = [
   {
     path: 'articles',
     loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
+  },
+  {
+    path: 'benefits-bundle',
+    children: [
+      {
+        path: '',
+        component: BenefitsBundleComponent,
+        data: { title: 'Benefits Bundle' },
+      },
+      {
+        path: 'training-discounts',
+        component: BenefitsTrainingDiscountsComponent,
+        data: { title: 'Endorsed Training Providers Discounts' },
+        resolve: {
+          pages: PageResolver,
+        },
+      },
+      {
+        path: 'elearning-discounts',
+        component: BenefitsELearningComponent,
+        data: { title: 'eLearning Modules' },
+        resolve: {
+          pages: PageResolver,
+        },
+      },
+      {
+        path: 'tailored-seminars',
+        component: TailoredSeminarsComponent,
+        data: { title: 'tailored Seminars' },
+        resolve: {
+          pages: PageResolver,
+        },
+      },
+    ],
   },
   {
     path: 'home/:establishmentuid',
