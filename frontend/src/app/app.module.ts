@@ -48,13 +48,6 @@ import { TrainingService } from '@core/services/training.service';
 import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import {
-  TailoredSeminarsComponent,
-} from '@features/benefits-bundle/benefit-tailored-seminars/benefit-tailored-seminars.component';
-import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
-import {
-  BenefitsTrainingDiscountsComponent,
-} from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
 import {
   ParentWorkplaceAccounts,
@@ -99,8 +92,6 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BenefitAccordionComponent } from './features/benefits-bundle/benefit-accordion/benefit-accordion.component';
-import { BenefitsELearningComponent } from './features/benefits-bundle/benefits-elearning/benefits-elearning.component';
 import {
   StaffMismatchBannerComponent,
 } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
@@ -136,11 +127,6 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     SatisfactionSurveyComponent,
     StaffMismatchBannerComponent,
     SelectMainServiceComponent,
-    BenefitsBundleComponent,
-    BenefitAccordionComponent,
-    BenefitsTrainingDiscountsComponent,
-    BenefitsELearningComponent,
-    TailoredSeminarsComponent,
     StandAloneAccountComponent,
     SubsidiaryAccountComponent,
     DashboardWrapperComponent,

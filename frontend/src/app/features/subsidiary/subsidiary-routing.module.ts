@@ -96,6 +96,10 @@ const routes: Routes = [
     loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
   },
   {
+    path: 'benefits-bundle',
+    loadChildren: () => import('@features/benefits-bundle/benefits-bundle.module').then((m) => m.BenefitsBundleModule),
+  },
+  {
     path: 'home/:establishmentuid',
     component: ViewSubsidiaryHomeComponent,
     resolve: {
