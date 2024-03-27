@@ -73,6 +73,24 @@ describe('DataAreaTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the new dashboard header when showBanner is true', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+    component.showBanner = true;
+    fixture.detectChanges();
+
+    expect(queryByTestId('newDashboardHeader')).toBeTruthy();
+  });
+
+  it('should render the new dashboard header when showBanner is false', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup(false);
+
+    component.showBanner = false;
+    fixture.detectChanges();
+
+    expect(queryByTestId('newDashboardHeader')).toBeFalsy();
+  })
+
   it('should render the pay area and the correct heading when viewBenchmarksByCategory is false', async () => {
     const { component, fixture, getByTestId, queryByTestId } = await setup();
 
