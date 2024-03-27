@@ -69,6 +69,7 @@ var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
 var registrationSurvey = require('./server/routes/registrationSurvey');
 var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 var longTermAbsence = require('./server/routes/longTermAbsence');
+var nhsBsaApi = require('./server/routes/nhsBsaApi');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -292,6 +293,7 @@ app.use('/api/wdf', [cacheMiddleware.nocache, WDFRoute]);
 app.use('/api/notification', [cacheMiddleware.nocache, notifications]);
 app.use('/api/admin', [cacheMiddleware.nocache, admin]);
 app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
+app.use('/api/nhsBsaApi', [cacheMiddleware.nocache, nhsBsaApi]);
 
 const establishmentsV2 = require('./server/routes/v2/establishments');
 app.use('/api/v2/establishment', [cacheMiddleware.nocache, establishmentsV2]);
