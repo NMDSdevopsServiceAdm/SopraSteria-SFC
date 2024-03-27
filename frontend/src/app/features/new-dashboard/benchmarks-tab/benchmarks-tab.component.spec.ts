@@ -39,7 +39,7 @@ const MockWindow = {
 };
 
 describe('NewBenchmarksTabComponent', () => {
-  const setup = async (isAdmin = true, subsidiaries = 0) => {
+  const setup = async (isAdmin = true, subsidiaries = 0, showBanner = true) => {
     const establishment = establishmentBuilder() as Establishment;
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const { fixture, getByText, queryByTestId } = await render(NewBenchmarksTabComponent, {
@@ -86,6 +86,7 @@ describe('NewBenchmarksTabComponent', () => {
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
         workplace: establishment,
+        showBanner: showBanner,
       },
     });
 
@@ -119,9 +120,7 @@ describe('NewBenchmarksTabComponent', () => {
   });
 
   it('should not render the banner when in subsidiary view of benchmark tab', async () => {
-    const { component, fixture, queryByTestId } = await setup();
-    component.showBanner = false
-    fixture.detectChanges();
+    const {queryByTestId } = await setup(true, 0, false);
     expect(queryByTestId("showBannerTestId")).toBeFalsy();
   });
 });
