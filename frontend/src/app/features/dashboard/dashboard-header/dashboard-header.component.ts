@@ -10,6 +10,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { UserService } from '@core/services/user.service';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { interval, Subscription } from 'rxjs';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { take } from 'rxjs/operators';
 
 @Component({
@@ -33,6 +34,7 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
     private notificationsService: NotificationsService,
     private dialogService: DialogService,
     private router: Router,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -76,6 +78,7 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
         () => {
           this.permissionsService.clearPermissions();
           this.authService.restorePreviousToken();
+          this.parentSubsidiaryViewService.clearViewingSubAsParent();
 
           if (this.authService.getPreviousToken().EstablishmentUID) {
             this.establishmentService
@@ -85,7 +88,7 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
                 this.establishmentService.setState(workplace);
                 this.establishmentService.setPrimaryWorkplace(workplace);
                 this.establishmentService.establishmentId = workplace.uid;
-                this.router.navigate(['/dashboard']).then(() => {
+                this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
                   this.alertService.addAlert({
                     type: 'success',
                     message: `${this.workplace.name} has been permanently deleted.`,
@@ -93,7 +96,7 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
                 });
               });
           } else {
-            this.router.navigate(['/dashboard']).then(() => {
+            this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
               this.alertService.addAlert({
                 type: 'success',
                 message: `${this.workplace.name} has been permanently deleted.`,

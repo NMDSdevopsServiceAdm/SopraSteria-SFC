@@ -150,7 +150,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
                 this.establishmentService.setState(workplace);
                 this.establishmentService.setPrimaryWorkplace(workplace);
                 this.establishmentService.establishmentId = workplace.uid;
-                this.router.navigate(['/dashboard']).then(() => {
+                this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
                   this.alertService.addAlert({
                     type: 'success',
                     message: `${this.workplace.name} has been permanently deleted.`,
@@ -158,7 +158,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
                 });
               });
           } else {
-            this.router.navigate(['/dashboard']).then(() => {
+            this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
               this.alertService.addAlert({
                 type: 'success',
                 message: `${this.workplace.name} has been permanently deleted.`,
