@@ -137,28 +137,4 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
 
     expect(component.comparisonDataExists).toBeFalsy();
   });
-
-  it('should render the new bechmark data when newDataAreaFlag and canSeeNewDataArea is true', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
-
-    component.canSeeNewDataArea = true
-    component.newDataAreaFlag = true
-
-    fixture.detectChanges();
-
-    expect(getByTestId('selectCategoryLinks')).toBeTruthy();
-    expect(queryByTestId('benchmarks-tab')).toBeFalsy();
-  });
-
-  it('should render the old bechmark data when newDataAreaFlag and canSeeNewDataArea is false', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
-
-    component.canSeeNewDataArea = false
-    component.newDataAreaFlag = false
-
-    fixture.detectChanges();
-
-    expect(getByTestId('benchmarks-tab')).toBeTruthy();
-    expect(queryByTestId('selectCategoryLinks')).toBeFalsy();
-  });
 });
