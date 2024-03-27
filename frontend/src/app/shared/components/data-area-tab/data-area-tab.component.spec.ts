@@ -22,7 +22,7 @@ import { DataAreaTabComponent } from './data-area-tab.component';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 describe('DataAreaTabComponent', () => {
-  const setup = async (newDashboard = true) => {
+  const setup = async (newDashboard = true, showBanner = true) => {
     const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -54,6 +54,7 @@ describe('DataAreaTabComponent', () => {
       componentProperties: {
         workplace: establishment,
         newDashboard,
+        showBanner,
       },
     });
 
@@ -74,22 +75,22 @@ describe('DataAreaTabComponent', () => {
   });
 
   it('should render the new dashboard header when showBanner is true', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
-
-    component.showBanner = true;
-    fixture.detectChanges();
+    const { component, fixture, getByTestId, queryByTestId } = await setup(true, true);
 
     expect(queryByTestId('newDashboardHeader')).toBeTruthy();
   });
 
   it('should not render the new dashboard header when showBanner is false', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup(false);
-
-    component.showBanner = false;
-    fixture.detectChanges();
+    const { component, fixture, getByTestId, queryByTestId } = await setup(true, false);
 
     expect(queryByTestId('newDashboardHeader')).toBeFalsy();
-  })
+  });
+
+  it('should not render the new dashboard header when newDashboard is false', async () => {
+    const { component, fixture, getByTestId, queryByTestId } = await setup(false, true);
+
+    expect(queryByTestId('newDashboardHeader')).toBeFalsy();
+  });
 
   it('should render the pay area and the correct heading when viewBenchmarksByCategory is false', async () => {
     const { component, fixture, getByTestId, queryByTestId } = await setup();
