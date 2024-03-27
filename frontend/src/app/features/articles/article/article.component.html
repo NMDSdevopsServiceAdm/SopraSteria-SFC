@@ -5,7 +5,7 @@
       <span [innerHTML]="article.title"></span>
     </h1>
     <div class="asc-cms-content" [innerHTML]="article.content"></div>
-    <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-4" [routerLink]="['/dashboard']">
+    <a role="button" draggable="false" class="govuk-button govuk-!-margin-top-4" (click)="returnToHome()">
       Return to home
     </a>
   </div>
