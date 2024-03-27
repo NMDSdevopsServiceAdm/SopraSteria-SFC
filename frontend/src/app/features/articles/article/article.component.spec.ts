@@ -10,7 +10,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import {  render } from '@testing-library/angular';
 import { of, Subject } from 'rxjs';
 
 import { ArticleComponent } from './article.component';
@@ -19,7 +19,7 @@ describe('ArticleComponent', () => {
   const articles = MockArticlesService.articlesFactory();
 
   async function setup() {
-    const { fixture, getByText } = await render(ArticleComponent, {
+    const { fixture, getByText} = await render(ArticleComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: ArticlesService, useClass: MockArticlesService },
@@ -42,8 +42,7 @@ describe('ArticleComponent', () => {
 
     const injector = getTestBed();
     const event = new NavigationEnd(42, '/', '/');
-    ((injector.inject(Router).events as unknown) as Subject<RouterEvent>).next(event);
-
+    (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
     const component = fixture.componentInstance;
     return {
       component,
@@ -65,5 +64,13 @@ describe('ArticleComponent', () => {
   it('should display content of article', async () => {
     const { getByText } = await setup();
     expect(getByText(articles.data[0].content)).toBeTruthy();
+  });
+
+  it('should navigate back to home tab', async () => {
+    const { getByText} = await setup();
+
+    const returnToHome = getByText('Return to home', { exact: false });
+
+    expect(returnToHome.getAttribute('href')).toBe('/dashboard');
   });
 });

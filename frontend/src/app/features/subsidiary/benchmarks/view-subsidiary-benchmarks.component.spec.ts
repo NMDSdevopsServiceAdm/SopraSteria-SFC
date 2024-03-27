@@ -14,7 +14,9 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
+import {
+  BenchmarksSelectViewPanelComponent,
+} from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -87,6 +89,8 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
   it('should render the pay area and the correct heading when viewBenchmarksByCategory is false', async () => {
     const { component, fixture, getByTestId, queryByTestId } = await setup();
 
+    component.canSeeNewDataArea = true
+    component.newDataAreaFlag = true
     component.viewBenchmarksByCategory = false;
     fixture.detectChanges();
 
@@ -101,6 +105,8 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
   it('should render the recruitment and retention area and the correct heading when viewBenchmarksByCategory is true', async () => {
     const { component, fixture, getByTestId, queryByTestId } = await setup();
 
+    component.canSeeNewDataArea = true
+    component.newDataAreaFlag = true
     component.viewBenchmarksByCategory = true;
     fixture.detectChanges();
 
