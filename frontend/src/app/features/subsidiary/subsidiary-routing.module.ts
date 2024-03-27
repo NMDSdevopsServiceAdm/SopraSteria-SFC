@@ -92,6 +92,10 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'articles',
+    loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
+  },
+  {
     path: 'home/:establishmentuid',
     component: ViewSubsidiaryHomeComponent,
     resolve: {
@@ -522,7 +526,7 @@ const routes: Routes = [
       },
     ],
   },
-  { // ???
+  {
     path: 'staff-records/:establishmentuid',
     component: ViewSubsidiaryStaffRecordsComponent,
     data: { title: 'Staff Records' },
