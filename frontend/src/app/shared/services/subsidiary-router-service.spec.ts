@@ -134,6 +134,17 @@ describe('SubsidiaryRouterService', () => {
         expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
       })
 
+      it('should reroute to the home tab equivalent page on dashboard when no fragments provided', async() => {
+        subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
+        subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');
+        const urlTree = service.createUrlTree(['/dashboard'], undefined);
+        const expectedUrlTree = service.createUrlTree(['subsidiary', 'home', '1234'], undefined);
+
+        service.navigateByUrl(urlTree);
+
+        expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
+      })
+
       it('should reroute to the sub equivalent pages on dashboard when a leading slash is present', async() => {
         subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
         subViewServiceSpy.getSubsidiaryUid.and.returnValue('1234');

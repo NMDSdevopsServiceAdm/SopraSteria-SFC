@@ -36,8 +36,8 @@ export class SubsidiaryRouterService extends Router {
   getNewRoute(commands: any[], extras?: any) {
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && !commands[0].includes('subsidiary')) {
       // If routing to the dashboard, override fragments
-      if (commands[0].toLowerCase().includes('dashboard') && extras?.fragment) {
-        commands = [extras.fragment, this.parentSubsidiaryViewService.getSubsidiaryUid()];
+      if (commands[0].toLowerCase().includes('dashboard')) {
+        commands = [extras.fragment ? extras.fragment : 'home', this.parentSubsidiaryViewService.getSubsidiaryUid()];
         extras = undefined;
 
         this.parentSubsidiaryViewService.canShowBanner = true;
