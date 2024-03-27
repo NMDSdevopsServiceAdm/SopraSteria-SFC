@@ -82,7 +82,7 @@ describe('DataAreaTabComponent', () => {
     expect(queryByTestId('newDashboardHeader')).toBeTruthy();
   });
 
-  it('should render the new dashboard header when showBanner is false', async () => {
+  it('should not render the new dashboard header when showBanner is false', async () => {
     const { component, fixture, getByTestId, queryByTestId } = await setup(false);
 
     component.showBanner = false;
