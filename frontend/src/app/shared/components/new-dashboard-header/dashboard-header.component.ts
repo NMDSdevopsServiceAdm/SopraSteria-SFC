@@ -58,8 +58,6 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    //subscribe to changes in the subsidiaryUid. Need to really subscribe to a parent workplace request change
-    // (Use the resolver)
     this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe((subsidiaryUid) => {
       this.setWorkplace(subsidiaryUid);
     });
@@ -142,6 +140,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
         () => {
           this.permissionsService.clearPermissions();
           this.authService.restorePreviousToken();
+          this.parentSubsidiaryViewService.clearViewingSubAsParent();
 
           if (this.authService.getPreviousToken().EstablishmentUID) {
             this.establishmentService
@@ -151,7 +150,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
                 this.establishmentService.setState(workplace);
                 this.establishmentService.setPrimaryWorkplace(workplace);
                 this.establishmentService.establishmentId = workplace.uid;
-                this.router.navigate(['/search-establishments']).then(() => {
+                this.router.navigate(['/dashboard']).then(() => {
                   this.alertService.addAlert({
                     type: 'success',
                     message: `${this.workplace.name} has been permanently deleted.`,
@@ -159,7 +158,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
                 });
               });
           } else {
-            this.router.navigate(['/search-establishments']).then(() => {
+            this.router.navigate(['/dashboard']).then(() => {
               this.alertService.addAlert({
                 type: 'success',
                 message: `${this.workplace.name} has been permanently deleted.`,

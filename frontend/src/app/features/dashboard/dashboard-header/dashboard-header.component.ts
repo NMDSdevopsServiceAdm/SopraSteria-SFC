@@ -85,7 +85,7 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
                 this.establishmentService.setState(workplace);
                 this.establishmentService.setPrimaryWorkplace(workplace);
                 this.establishmentService.establishmentId = workplace.uid;
-                this.router.navigate(['/search-establishments']).then(() => {
+                this.router.navigate(['/dashboard']).then(() => {
                   this.alertService.addAlert({
                     type: 'success',
                     message: `${this.workplace.name} has been permanently deleted.`,
@@ -93,7 +93,7 @@ export class DashboardHeaderComponent implements OnInit, OnDestroy {
                 });
               });
           } else {
-            this.router.navigate(['/search-establishments']).then(() => {
+            this.router.navigate(['/dashboard']).then(() => {
               this.alertService.addAlert({
                 type: 'success',
                 message: `${this.workplace.name} has been permanently deleted.`,

@@ -37,7 +37,7 @@ describe('DashboardHeaderComponent', () => {
       imports: [
         SharedModule,
         RouterModule,
-        RouterTestingModule.withRoutes([{ path: 'search-establishments', component: DashboardHeaderComponent }]),
+        RouterTestingModule.withRoutes([{ path: 'dashboard', component: DashboardHeaderComponent }]),
         HttpClientTestingModule,
       ],
       declarations: [HomeTabComponent],
