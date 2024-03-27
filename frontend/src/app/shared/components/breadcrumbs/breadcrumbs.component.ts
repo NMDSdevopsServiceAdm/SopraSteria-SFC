@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { JourneyRoute } from '@core/breadcrumb/breadcrumb.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { TabsService } from '@core/services/tabs.service';
-import { Subscription } from 'rxjs';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { Establishment } from '@core/model/establishment.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { TabsService } from '@core/services/tabs.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-breadcrumbs',
@@ -17,10 +17,12 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private workplace: Establishment;
 
+
   constructor(
     private breadcrumbService: BreadcrumbService,
     private tabsService: TabsService,
     private establishmentService: EstablishmentService,
+    public parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -74,6 +76,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
   public selectTab(event: Event, route: { path: string; fragment: string }): void {
     event.preventDefault();
     if (route.path === '/dashboard' && route.fragment === 'home') {
+      this.parentSubsidiaryViewService.showSelectedTab = 'home';
       this.tabsService.selectedTab = 'home';
     }
   }
