@@ -1,9 +1,11 @@
 import { Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
@@ -25,6 +27,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     protected router: Router,
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksServiceBase,
+    private breadcrumbService: BreadcrumbService,
     private permissionsService: PermissionsService,
   ) {}
 
@@ -38,6 +41,8 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     if (canViewBenchmarks) {
       this.meta = this.benchmarksService.benchmarksData.meta;
     }
+
+    this.breadcrumbService.show(JourneyType.OLD_BENCHMARKS_DATA_TAB);
   }
 
   public pluralizeWorkplaces(workplaces) {

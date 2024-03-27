@@ -1,5 +1,5 @@
 <app-new-dashboard-header
-  *ngIf="showBanner"
+  *ngIf="!isParentViewingSubsidiary"
   [tab]="'benchmarks'"
   [updatedDate]="tilesData?.meta.lastUpdated"
   data-html2canvas-ignore

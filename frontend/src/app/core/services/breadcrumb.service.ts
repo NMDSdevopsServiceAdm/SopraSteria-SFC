@@ -40,11 +40,11 @@ import {
   allWorkplacesJourney,
   brenchmarksTabJourney,
   myWorkplaceJourney,
+  oldBrenchmarksDataJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
 } from '@core/breadcrumb/journey.workplaces';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { parse } from 'url';
@@ -298,6 +298,10 @@ export class BreadcrumbService {
       }
       case JourneyType.BENCHMARKS_TAB: {
         routes = brenchmarksTabJourney;
+        break;
+      }
+      case JourneyType.OLD_BENCHMARKS_DATA_TAB: {
+        routes = oldBrenchmarksDataJourney;
         break;
       }
 
