@@ -61,9 +61,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public isOwnershipRequested = false;
   public canAddWorker: boolean;
   public ownershipChangeRequestId: any = [];
-  public successAlertMessage: string;
   public canViewEstablishment: boolean;
-  public alertMessage: string;
   public showMissingCqcMessage: boolean;
   public locationId: string;
   public workplacesCount: number;
@@ -107,7 +105,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
 
     this.bigThreeServices = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);
 
-    this.tilesData = this.benchmarksService.benchmarksData.newBenchmarks;
+    this.tilesData = this.benchmarksService.benchmarksData?.newBenchmarks;
 
     this.hasBenchmarkComparisonData = !!this.tilesData?.meta.staff && !!this.tilesData?.meta.workplaces;
     this.setBenchmarksCard();
