@@ -170,7 +170,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
 
   private setBenchmarksCard(): void {
     if (this.hasBenchmarkComparisonData) {
-      console.log('if');
       const serviceName = this.serviceNamePipe.transform(this.subsidiaryWorkplace.mainService.name);
       const localAuthority = this.tilesData?.meta.localAuthority.replace(/&/g, 'and');
       const noOfWorkplacesText =
