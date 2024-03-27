@@ -69,7 +69,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public workplacesCount: number;
   public isParentSubsidiaryView: boolean;
   public tilesData: BenchmarksResponse;
-  public canSeeNewDataArea: boolean;
 
   constructor(
     private userService: UserService,
@@ -106,7 +105,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.parentSubsidiaryViewService.canShowBanner = true;
     this.parentSubsidiaryViewService.getLastUpdatedDate = null;
 
-    this.canSeeNewDataArea = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);
     this.bigThreeServices = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);
 
     this.tilesData = this.benchmarksService.benchmarksData.newBenchmarks;
