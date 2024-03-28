@@ -157,6 +157,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         this.establishmentService.setEmployerTypeHasValue(false);
         this.router.navigate(['/workplace', this.workplace.uid, 'type-of-employer']);
       } else {
+        this.authService.setPreviousToken();
         this.parentSubsidiaryViewService.setViewingSubAsParent(this.workplace.uid);
         this.router.navigate(['/subsidiary/home/', this.workplace.uid]);
       }

@@ -21,7 +21,9 @@ export class ParentSubsidiaryViewService {
   private subsidiaryUid: string;
   private hasWorkers = false;
 
-  constructor(private establishmentService: EstablishmentService) {}
+  constructor(
+    private establishmentService: EstablishmentService,
+  ) {}
 
   public get showSelectedTab(): string {
     return this._showSelectedTab$.value;
