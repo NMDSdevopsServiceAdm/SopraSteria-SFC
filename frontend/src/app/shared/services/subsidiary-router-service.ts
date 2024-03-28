@@ -9,9 +9,6 @@ const exitSubsidiaryViewPages = [
   'notifications',
   'satisfaction-survey',
   'sfcadmin',
-  'asc-wds-certificate',
-  'wdf',
-  'about-ascwds',
   'first-login-wizard',
 ];
 
