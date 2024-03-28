@@ -122,4 +122,9 @@ describe('NewBenchmarksTabComponent', () => {
     const {queryByTestId } = await setup(true, 0, true);
     expect(queryByTestId("isParentViewingSubsidiaryTestId")).toBeFalsy();
   });
+
+  it('should render the banner when in parent view of benchmark tab', async () => {
+    const {queryByTestId } = await setup(true, 0, false);
+    expect(queryByTestId("isParentViewingSubsidiaryTestId")).toBeTruthy();
+  });
 });
