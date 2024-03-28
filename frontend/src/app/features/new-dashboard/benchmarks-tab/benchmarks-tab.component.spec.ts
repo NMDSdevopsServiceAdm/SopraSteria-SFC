@@ -120,11 +120,11 @@ describe('NewBenchmarksTabComponent', () => {
 
   it('should not render the banner when in subsidiary view of benchmark tab', async () => {
     const {queryByTestId } = await setup(true, 0, true);
-    expect(queryByTestId("isParentViewingSubsidiaryTestId")).toBeFalsy();
+    expect(queryByTestId("dashboardHeader")).toBeFalsy();
   });
 
   it('should render the banner when in parent view of benchmark tab', async () => {
     const {queryByTestId } = await setup(true, 0, false);
-    expect(queryByTestId("isParentViewingSubsidiaryTestId")).toBeTruthy();
+    expect(queryByTestId("dashboardHeader")).toBeTruthy();
   });
 });

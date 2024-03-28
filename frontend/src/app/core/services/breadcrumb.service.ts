@@ -38,9 +38,9 @@ import { subsidiaryJourney } from '@core/breadcrumb/journey.subsidiary';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
-  brenchmarksTabJourney,
+  benchmarksTabJourney,
   myWorkplaceJourney,
-  oldBrenchmarksDataJourney,
+  oldBenchmarksDataJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
@@ -297,11 +297,11 @@ export class BreadcrumbService {
         break;
       }
       case JourneyType.BENCHMARKS_TAB: {
-        routes = brenchmarksTabJourney;
+        routes = benchmarksTabJourney;
         break;
       }
       case JourneyType.OLD_BENCHMARKS_DATA_TAB: {
-        routes = oldBrenchmarksDataJourney;
+        routes = oldBenchmarksDataJourney;
         break;
       }
 
