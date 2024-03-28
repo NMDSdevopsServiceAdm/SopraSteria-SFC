@@ -1,9 +1,9 @@
 <app-new-dashboard-header
-  *ngIf="showBanner"
+  *ngIf="!isParentViewingSubsidiary"
   [tab]="'benchmarks'"
   [updatedDate]="tilesData?.meta.lastUpdated"
   data-html2canvas-ignore
-  data-testid="showBannerTestId"
+  data-testid="dashboardHeader"
 ></app-new-dashboard-header>
 
 <div class="govuk-width-container govuk-!-margin-top-7">

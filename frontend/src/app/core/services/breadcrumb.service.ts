@@ -38,13 +38,13 @@ import { subsidiaryJourney } from '@core/breadcrumb/journey.subsidiary';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
-  brenchmarksTabJourney,
+  benchmarksTabJourney,
   myWorkplaceJourney,
+  oldBenchmarksDataJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
 } from '@core/breadcrumb/journey.workplaces';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { parse } from 'url';
@@ -297,7 +297,11 @@ export class BreadcrumbService {
         break;
       }
       case JourneyType.BENCHMARKS_TAB: {
-        routes = brenchmarksTabJourney;
+        routes = benchmarksTabJourney;
+        break;
+      }
+      case JourneyType.OLD_BENCHMARKS_DATA_TAB: {
+        routes = oldBenchmarksDataJourney;
         break;
       }
 
