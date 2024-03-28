@@ -14,6 +14,8 @@ import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
+import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 @Component({
   selector: 'app-view-subsidiary-home',
@@ -59,13 +61,12 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public isOwnershipRequested = false;
   public canAddWorker: boolean;
   public ownershipChangeRequestId: any = [];
-  public successAlertMessage: string;
   public canViewEstablishment: boolean;
-  public alertMessage: string;
   public showMissingCqcMessage: boolean;
   public locationId: string;
   public workplacesCount: number;
   public isParentSubsidiaryView: boolean;
+  public tilesData: BenchmarksResponse;
 
   constructor(
     private userService: UserService,
@@ -76,6 +77,8 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     private router: Router,
     public parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private breadcrumbService: BreadcrumbService,
+    protected benchmarksService: BenchmarksServiceBase,
+    private serviceNamePipe: ServiceNamePipe,
   ) {}
 
   ngOnInit(): void {
@@ -99,9 +102,19 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
     this.parentSubsidiaryViewService.canShowBanner = true;
     this.parentSubsidiaryViewService.getLastUpdatedDate = null;
+
+    this.bigThreeServices = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);
+
+    this.tilesData = this.benchmarksService.benchmarksData?.newBenchmarks;
+
+    this.hasBenchmarkComparisonData = !!this.tilesData?.meta.staff && !!this.tilesData?.meta.workplaces;
+    this.setBenchmarksCard();
+    this.subscriptions.add();
   }
 
-  ngOnChanges(): void {}
+  ngOnChanges(): void {
+    this.setBenchmarksCard();
+  }
 
   public setPermissionLinks(): void {
     const workplaceUid: string = this.subsidiaryWorkplace ? this.subsidiaryWorkplace.uid : null;
@@ -149,5 +162,24 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     event.preventDefault();
     this.parentSubsidiaryViewService.showSelectedTab = selectedTab;
     this.tabsService.selectedTab = selectedTab;
+  }
+
+  private setBenchmarksCard(): void {
+    if (this.hasBenchmarkComparisonData) {
+      const serviceName = this.serviceNamePipe.transform(this.subsidiaryWorkplace.mainService.name);
+      const localAuthority = this.tilesData?.meta.localAuthority.replace(/&/g, 'and');
+      const noOfWorkplacesText =
+        this.tilesData.meta.workplaces === 1
+          ? `There is ${this.tilesData?.meta.workplaces} workplace`
+          : `There are ${this.tilesData?.meta.workplaces} workplaces`;
+      const serviceText = this.bigThreeServices ? `${serviceName.toLowerCase()}` : 'adult social care';
+      this.benchmarksMessage = `${noOfWorkplacesText} providing ${serviceText} in ${localAuthority}.`;
+    } else {
+      this.benchmarksMessage = `Benchmarks can show how you're doing when it comes to pay, recruitment and retention.`;
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
