@@ -33,6 +33,7 @@
     <main
       id="main-content"
       class="govuk-main-wrapper app-main-class govuk-util__no-focus govuk-!-padding-top-0"
+      [ngClass]="{ 'govuk-!-padding-top-0': canShowBanner }"
       #content
       role="main"
       tabindex="-1"
