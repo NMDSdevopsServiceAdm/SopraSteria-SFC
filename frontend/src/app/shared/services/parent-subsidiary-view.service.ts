@@ -9,8 +9,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class ParentSubsidiaryViewService {
   private subsidiaryUidSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private subsidiaryWorkplace: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-  private _showSelectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  public readonly showSelectedTab$: Observable<string> = this._showSelectedTab$.asObservable();
   private _canShowBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   private _getLastUpdatedDate$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private _totalRecords$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
@@ -22,14 +20,6 @@ export class ParentSubsidiaryViewService {
   private hasWorkers = false;
 
   constructor(private establishmentService: EstablishmentService) {}
-
-  public get showSelectedTab(): string {
-    return this._showSelectedTab$.value;
-  }
-
-  public set showSelectedTab(selectedTab: string) {
-    this._showSelectedTab$.next(selectedTab);
-  }
 
   setViewingSubAsParent(subsidiaryUid: string) {
     this.subsidiaryUid = subsidiaryUid;

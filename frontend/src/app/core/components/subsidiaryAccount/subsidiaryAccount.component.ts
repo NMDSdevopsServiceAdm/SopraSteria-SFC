@@ -68,19 +68,14 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     });
 
     this.subscriptions.add(
-      this.parentSubsidiaryViewService.showSelectedTab$.subscribe((selectedTab) => {
+      this.tabsService.selectedTab$.subscribe((selectedTab) => {
         this.selectedTab = selectedTab;
       }),
     );
 
-
-    this.parentSubsidiaryViewService
-
     this.parentSubsidiaryViewService.getLastUpdatedDateObservable.subscribe((getLastUpdatedDate) => {
       this.updatedDate = getLastUpdatedDate;
     });
-
-    this.parentSubsidiaryViewService;
   }
 
   ngOnChanges(): void {

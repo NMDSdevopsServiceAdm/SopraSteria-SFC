@@ -160,7 +160,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
 
   public navigateToTab(event: Event, selectedTab: string): void {
     event.preventDefault();
-    this.parentSubsidiaryViewService.showSelectedTab = selectedTab;
     this.tabsService.selectedTab = selectedTab;
   }
 
