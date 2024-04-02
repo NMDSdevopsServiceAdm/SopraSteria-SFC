@@ -33,7 +33,10 @@
         </div>
         <div *ngSwitchCase="'APPROVED'">
           <ng-container *ngIf="isWorkPlaceRequester; else nonWorkplaceRequester">
-            <p>You have approved a request from {{ notificationRequestedFrom }} to link to you.</p>
+            <p>
+              You approved a link request from {{ notificationRequestedFrom }}, {{ postCode }}, on
+              {{ notification.typeContent.updated | longDate }}.
+            </p>
           </ng-container>
           <ng-template #nonWorkplaceRequester>
             <p>Your request to link to {{ notificationRequestedTo }}, {{ postCode }}, has been approved.</p>
