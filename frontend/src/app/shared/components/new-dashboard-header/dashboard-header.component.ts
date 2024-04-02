@@ -140,19 +140,17 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
       this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
         () => {
           if (this.isParentSubsidiaryView) {
-            this.parentSubsidiaryViewService.clearViewingSubAsParent();
-            this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
-              this.alertService.addAlert({
-                type: 'success',
-                message: `${this.workplace.name} has been permanently deleted.`,
+            this.establishmentService.getEstablishment(this.workplace.parentUid).subscribe((workplace) => {
+              this.establishmentService.setPrimaryWorkplace(workplace);
+              this.parentSubsidiaryViewService.clearViewingSubAsParent();
+
+              this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
+                this.displaySuccessfullyDeletedAlert();
               });
             });
           } else {
             this.router.navigate(['sfcadmin', 'search', 'workplace']).then(() => {
-              this.alertService.addAlert({
-                type: 'success',
-                message: `${this.workplace.name} has been permanently deleted.`,
-              });
+              this.displaySuccessfullyDeletedAlert();
             });
           }
         },
@@ -164,6 +162,13 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
         },
       ),
     );
+  }
+
+  private displaySuccessfullyDeletedAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `${this.workplace.name} has been permanently deleted.`,
+    });
   }
 
   private getPermissions(): void {

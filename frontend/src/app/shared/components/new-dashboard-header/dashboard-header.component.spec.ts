@@ -41,6 +41,7 @@ describe('NewDashboardHeaderComponent', () => {
     isAdmin = true,
     subsidiaries = 0,
     viewingSubAsParent = false,
+    canDeleteEstablishment = true,
   ) => {
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const updatedDate = updateDate ? '01/02/2023' : null;
@@ -57,7 +58,7 @@ describe('NewDashboardHeaderComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canDeleteEstablishment'], isAdmin),
+          useFactory: MockPermissionsService.factory(canDeleteEstablishment ? ['canDeleteEstablishment'] : [], isAdmin),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -374,13 +375,13 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not display a Delete Workplace link if the workplace has subsidiaries', async () => {
-      const { component, queryByText } = await setup('home', false, true, false, true, false);
+      const { queryByText } = await setup('home', false, true, false, true, false, 2);
 
       expect(queryByText('Delete Workplace')).toBeNull();
     });
 
-    it('should not display a Delete Workplace link if user not an admin', async () => {
-      const { component, queryByText } = await setup('home', false, true, false, true, false);
+    it('should not display a Delete Workplace link if user not an admin and does not have canDeleteEstablishment permission', async () => {
+      const { component, queryByText } = await setup('home', false, true, false, true, false, 0, true, false);
 
       expect(queryByText('Delete Workplace')).toBeNull();
     });
@@ -414,7 +415,8 @@ describe('NewDashboardHeaderComponent', () => {
 
     it('should redirect a parent user to view-all-workplaces after deleting a workplace', async () => {
       const { establishmentService, router, getByText } = await setup('home', false, true, false, true, false, 0, true);
-      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
+      spyOn(establishmentService, 'getEstablishment').and.callFake(() => of({}));
       const spy = spyOn(router, 'navigate');
       spy.and.returnValue(Promise.resolve(true));
 
@@ -430,7 +432,8 @@ describe('NewDashboardHeaderComponent', () => {
 
     it('should redirect an admin user deleting a sub from parent view to view-all-workplaces of parent', async () => {
       const { establishmentService, router, getByText } = await setup('home', false, true, false, true, true, 0, true);
-      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
+      spyOn(establishmentService, 'getEstablishment').and.callFake(() => of({}));
       const spy = spyOn(router, 'navigate');
       spy.and.returnValue(Promise.resolve(true));
 
