@@ -6,6 +6,7 @@ import { Roles } from '@core/model/roles.enum';
 import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { getUserPermissionsTypes } from '@core/utils/users-util';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
@@ -30,12 +31,13 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
     private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace.updated.toString()
+    this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace.updated.toString();
     this.setUsers();
     this.setUserServiceReturnUrl();
   }
@@ -77,8 +79,7 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
 
   private setUserServiceReturnUrl(): void {
     this.userService.updateReturnUrl({
-      url: ['/workplace', this.workplace.uid],
-      fragment: 'workplace-users',
+      url: ['/workplace-users', this.workplace.uid],
     });
   }
 }

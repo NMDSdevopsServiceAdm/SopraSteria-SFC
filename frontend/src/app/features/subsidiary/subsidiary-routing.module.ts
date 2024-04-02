@@ -605,6 +605,7 @@ const routes: Routes = [
     data: { title: 'Workplace users' },
     resolve: {
       establishment: SubsidiaryResolver,
+      users: AllUsersForEstablishmentResolver,
     },
   },
 ];
