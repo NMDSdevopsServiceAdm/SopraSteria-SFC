@@ -1,18 +1,17 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { UserDetails } from '@core/model/userDetails.model';
+import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { Router, ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
-import { AlertService } from '@core/services/alert.service';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
+import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { UserDetails } from '@core/model/userDetails.model';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-dashboard-header',
@@ -140,26 +139,16 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.subscriptions.add(
       this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
         () => {
-          this.permissionsService.clearPermissions();
-          this.authService.restorePreviousToken();
-
-          if (this.authService.getPreviousToken().EstablishmentUID) {
-            this.establishmentService
-              .getEstablishment(this.authService.getPreviousToken().EstablishmentUID)
-              .pipe(take(1))
-              .subscribe((workplace) => {
-                this.establishmentService.setState(workplace);
-                this.establishmentService.setPrimaryWorkplace(workplace);
-                this.establishmentService.establishmentId = workplace.uid;
-                this.router.navigate(['/search-establishments']).then(() => {
-                  this.alertService.addAlert({
-                    type: 'success',
-                    message: `${this.workplace.name} has been permanently deleted.`,
-                  });
-                });
+          if (this.isParentSubsidiaryView) {
+            this.parentSubsidiaryViewService.clearViewingSubAsParent();
+            this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
+              this.alertService.addAlert({
+                type: 'success',
+                message: `${this.workplace.name} has been permanently deleted.`,
               });
+            });
           } else {
-            this.router.navigate(['/search-establishments']).then(() => {
+            this.router.navigate(['sfcadmin', 'search', 'workplace']).then(() => {
               this.alertService.addAlert({
                 type: 'success',
                 message: `${this.workplace.name} has been permanently deleted.`,
@@ -167,8 +156,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
             });
           }
         },
-        (e) => {
-          console.error(e);
+        () => {
           this.alertService.addAlert({
             type: 'warning',
             message: 'There was an error deleting the workplace.',

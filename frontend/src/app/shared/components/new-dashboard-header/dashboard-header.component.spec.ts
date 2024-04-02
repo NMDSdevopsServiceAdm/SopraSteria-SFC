@@ -1,27 +1,28 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockUserService } from '@core/test-utils/MockUserService';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { SharedModule } from '@shared/shared.module';
+import { render, within } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { HttpClient } from '@angular/common/http';
-import { MockUserService } from '@core/test-utils/MockUserService';
-import { Roles } from '@core/model/roles.enum';
-import { getTestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
+
 const MockWindow = {
   dataLayer: {
     push: () => {
@@ -39,6 +40,7 @@ describe('NewDashboardHeaderComponent', () => {
     hasWorkers = true,
     isAdmin = true,
     subsidiaries = 0,
+    viewingSubAsParent = false,
   ) => {
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const updatedDate = updateDate ? '01/02/2023' : null;
@@ -55,7 +57,7 @@ describe('NewDashboardHeaderComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory([], isAdmin),
+          useFactory: MockPermissionsService.factory(['canDeleteEstablishment'], isAdmin),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -69,7 +71,10 @@ describe('NewDashboardHeaderComponent', () => {
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
-        { provide: ParentSubsidiaryViewService, useClass: MockParentSubsidiaryViewService },
+        {
+          provide: ParentSubsidiaryViewService,
+          useFactory: MockParentSubsidiaryViewService.factory(viewingSubAsParent),
+        },
       ],
       componentProperties: {
         tab,
@@ -79,7 +84,6 @@ describe('NewDashboardHeaderComponent', () => {
         canEditWorker,
         hasWorkers,
         isParent: false,
-        isParentSubsidiaryView: false,
       },
     });
 
@@ -364,12 +368,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should display a Delete Workplace link if parent is viewing a subsidiary', async () => {
-      const { component, fixture, getByText } = await setup('home', false, true, false, false, false, 1);
-
-      component.isParentSubsidiaryView = true;
-      component.canDeleteEstablishment = true;
-
-      fixture.detectChanges();
+      const { component, fixture, getByText } = await setup('home', false, true, false, false, false, 1, true);
 
       getByText('Delete Workplace');
     });
@@ -387,7 +386,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should display a modal when the user clicks on Delete Workplace', async () => {
-      const { component, getByText } = await setup('home', false, true, false, true, true);
+      const { getByText } = await setup('home', false, true, false, true, true);
 
       const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
@@ -399,7 +398,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
-      const { component, establishmentService, getByText } = await setup('home', false, true, false, true, true);
+      const { establishmentService, getByText } = await setup('home', false, true, false, true, true);
 
       const spy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
 
@@ -413,7 +412,39 @@ describe('NewDashboardHeaderComponent', () => {
       expect(spy).toHaveBeenCalled();
     });
 
-    it('should redirect the user after deleting a workplace', async () => {
+    it('should redirect a parent user to view-all-workplaces after deleting a workplace', async () => {
+      const { establishmentService, router, getByText } = await setup('home', false, true, false, true, false, 0, true);
+      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      const spy = spyOn(router, 'navigate');
+      spy.and.returnValue(Promise.resolve(true));
+
+      const deleteWorkplace = getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(spy).toHaveBeenCalledWith(['workplace', 'view-all-workplaces']);
+    });
+
+    it('should redirect an admin user deleting a sub from parent view to view-all-workplaces of parent', async () => {
+      const { establishmentService, router, getByText } = await setup('home', false, true, false, true, true, 0, true);
+      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      const spy = spyOn(router, 'navigate');
+      spy.and.returnValue(Promise.resolve(true));
+
+      const deleteWorkplace = getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(spy).toHaveBeenCalledWith(['workplace', 'view-all-workplaces']);
+    });
+
+    it('should redirect an admin user deleting a standalone to workplace search page after deleting a workplace', async () => {
       const { component, establishmentService, router, getByText } = await setup(
         'home',
         false,
@@ -434,7 +465,7 @@ describe('NewDashboardHeaderComponent', () => {
       const confirm = within(dialog).getByText('Delete workplace');
       confirm.click();
 
-      expect(spy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(['sfcadmin', 'search', 'workplace']);
     });
   });
 });
