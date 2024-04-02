@@ -9,7 +9,6 @@ const exitSubsidiaryViewPages = [
   'notifications',
   'satisfaction-survey',
   'sfcadmin',
-  'first-login-wizard',
 ];
 
 @Injectable()
@@ -55,7 +54,7 @@ export class SubsidiaryRouterService extends Router {
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
     const { commands, navigationExtras } = this.getCommands(url);
 
-    if (exitSubsidiaryViewPages.some((command) => commands[0].includes(command))) {
+    if (exitSubsidiaryViewPages.includes(commands[0])) {
       this.parentSubsidiaryViewService.clearViewingSubAsParent();
     } else {
       const newRoute = this.getNewRoute(commands, navigationExtras);
