@@ -46,9 +46,7 @@ describe('ViewSubsidiaryWorkplaceUsersComponent', () => {
   };
 
   it('should render a View Subsidiary Workplace Users Component', async () => {
-    const { component, fixture } = await setup();
-    component.setUserServiceReturnUrl();
-    fixture.detectChanges();
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 });
