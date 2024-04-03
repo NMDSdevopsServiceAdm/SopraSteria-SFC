@@ -33,8 +33,8 @@ export class UserAccountsSummaryComponent implements OnInit {
 
   ngOnInit(): void {
     this.setUsers();
-    this.setReturnUrl() == null ? this.setUserServiceReturnUrl() : this.setReturnUrl();
-    this.showSecondUserBanner ? this.showSecondUserBanner  : this.setShowSecondUserBanner();
+    this.setReturnUrl === undefined ? this.setUserServiceReturnUrl() : this.setReturnUrl();
+    this.showSecondUserBanner === undefined ? this.setShowSecondUserBanner() : this.showSecondUserBanner;
   }
 
   public setUsers(): void {
