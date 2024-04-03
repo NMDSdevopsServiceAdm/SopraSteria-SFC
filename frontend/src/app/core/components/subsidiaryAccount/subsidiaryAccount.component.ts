@@ -1,8 +1,6 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -29,6 +27,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   public canViewBenchmarks: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
   public isParentSubsidiaryView: boolean;
+  public parentWorkplace: Establishment;
   public parentWorkplaceName: string;
   public subWorkplace: Establishment;
   public subId: string;
@@ -43,14 +42,12 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     private permissionsService: PermissionsService,
     private tabsService: TabsService,
     private benchmarksService: BenchmarksServiceBase,
-    private breadcrumbService: BreadcrumbService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
-    private route: ActivatedRoute,
-    private router: Router,
   ) {}
 
   ngOnInit(): void {
     const { uid, id, name } = this.establishmentService.primaryWorkplace;
+    this.parentWorkplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
     this.getPermissions();
