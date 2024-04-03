@@ -28,11 +28,9 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   public tabs: { title: string; slug: string; active: boolean }[];
   public isParentSubsidiaryView: boolean;
   public parentWorkplace: Establishment;
-  public parentWorkplaceName: string;
   public subWorkplace: Establishment;
   public subId: string;
   public selectedTab: string;
-  public parentUid: string;
   public subsidiaryWorkplace: Establishment;
   public canEditWorker: boolean;
   public hasWorkers: boolean;
@@ -46,7 +44,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    const { uid, id, name } = this.establishmentService.primaryWorkplace;
+    const { uid, id } = this.establishmentService.primaryWorkplace;
     this.parentWorkplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
@@ -57,8 +55,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid();
 
     this.setWorkplace();
-
-    this.parentWorkplaceName = name;
 
     this.parentSubsidiaryViewService.canShowBannerObservable.subscribe((canShowBanner) => {
       this.canShowBanner = canShowBanner;
@@ -85,8 +81,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
       this.establishmentService.getEstablishment(this.subId, true).subscribe((workplace) => {
         this.subWorkplace = workplace;
         this.establishmentService.setState(workplace);
-        this.parentWorkplaceName = this.subWorkplace?.parentName;
-        this.parentUid = this.subWorkplace?.parentUid;
       }),
     );
     this.selectedTab = 'home';
