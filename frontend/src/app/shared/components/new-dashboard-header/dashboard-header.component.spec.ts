@@ -90,8 +90,11 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     const component = fixture.componentInstance;
+    const mockEstablishment = establishmentBuilder() as Establishment;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const deleteWorkplaceSpy = spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
+    spyOn(establishmentService, 'getEstablishment').and.callFake(() => of(mockEstablishment));
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
@@ -106,6 +109,8 @@ describe('NewDashboardHeaderComponent', () => {
       router,
       fixture,
       routerSpy,
+      mockEstablishment,
+      deleteWorkplaceSpy,
     };
   };
 
@@ -402,9 +407,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
-      const { establishmentService, getByText } = await setup('home', false, true, false, true, true);
-
-      const deleteWorkplaceSpy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      const { deleteWorkplaceSpy, getByText } = await setup('home', false, true, false, true, true);
 
       const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
@@ -417,19 +420,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should redirect a parent user to view-all-workplaces after deleting a workplace', async () => {
-      const { establishmentService, routerSpy, getByText } = await setup(
-        'home',
-        false,
-        true,
-        false,
-        true,
-        false,
-        0,
-        true,
-      );
-      spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
-      spyOn(establishmentService, 'getEstablishment').and.callFake(() => of({}));
-
+      const { routerSpy, getByText } = await setup('home', false, true, false, true, false, 0, true);
       const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
 
@@ -441,10 +432,16 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should set parent workplace as primaryWorkplace and workplace after parent deletes a sub workplace', async () => {
-      const { establishmentService, getByText } = await setup('home', false, true, false, true, false, 0, true);
-      const mockEstablishment = establishmentBuilder() as Establishment;
-      spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
-      spyOn(establishmentService, 'getEstablishment').and.callFake(() => of(mockEstablishment));
+      const { establishmentService, getByText, mockEstablishment } = await setup(
+        'home',
+        false,
+        true,
+        false,
+        true,
+        false,
+        0,
+        true,
+      );
 
       const setPrimaryWorkplaceSpy = spyOn(establishmentService, 'setPrimaryWorkplace').and.callFake(() => of({}));
       const setWorkplaceSpy = spyOn(establishmentService, 'setWorkplace').and.callFake(() => of({}));
@@ -461,18 +458,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should redirect an admin user deleting a sub from parent view to view-all-workplaces of parent', async () => {
-      const { establishmentService, routerSpy, getByText } = await setup(
-        'home',
-        false,
-        true,
-        false,
-        true,
-        true,
-        0,
-        true,
-      );
-      spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
-      spyOn(establishmentService, 'getEstablishment').and.callFake(() => of({}));
+      const { routerSpy, getByText } = await setup('home', false, true, false, true, true, 0, true);
 
       const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
@@ -485,9 +471,7 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should redirect an admin user deleting a standalone to workplace search page after deleting a workplace', async () => {
-      const { establishmentService, getByText, routerSpy } = await setup('home', false, true, false, true, true);
-
-      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      const { getByText, routerSpy } = await setup('home', false, true, false, true, true);
 
       const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
