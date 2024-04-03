@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,7 +13,7 @@ import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -437,6 +438,26 @@ describe('NewDashboardHeaderComponent', () => {
       confirm.click();
 
       expect(routerSpy).toHaveBeenCalledWith(['workplace', 'view-all-workplaces']);
+    });
+
+    it('should set parent workplace as primaryWorkplace and workplace after parent deletes a sub workplace', async () => {
+      const { establishmentService, getByText } = await setup('home', false, true, false, true, false, 0, true);
+      const mockEstablishment = establishmentBuilder() as Establishment;
+      spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
+      spyOn(establishmentService, 'getEstablishment').and.callFake(() => of(mockEstablishment));
+
+      const setPrimaryWorkplaceSpy = spyOn(establishmentService, 'setPrimaryWorkplace').and.callFake(() => of({}));
+      const setWorkplaceSpy = spyOn(establishmentService, 'setWorkplace').and.callFake(() => of({}));
+
+      const deleteWorkplace = getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(setPrimaryWorkplaceSpy).toHaveBeenCalledWith(mockEstablishment);
+      expect(setWorkplaceSpy).toHaveBeenCalledWith(mockEstablishment);
     });
 
     it('should redirect an admin user deleting a sub from parent view to view-all-workplaces of parent', async () => {

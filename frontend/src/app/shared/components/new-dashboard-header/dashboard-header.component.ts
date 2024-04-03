@@ -1,9 +1,8 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
-import { AuthService } from '@core/services/auth.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -48,9 +47,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     private establishmentService: EstablishmentService,
     private dialogService: DialogService,
     private permissionsService: PermissionsService,
-    private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute,
     private alertService: AlertService,
     private userService: UserService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
@@ -142,6 +139,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
           if (this.isParentSubsidiaryView) {
             this.establishmentService.getEstablishment(this.workplace.parentUid).subscribe((workplace) => {
               this.establishmentService.setPrimaryWorkplace(workplace);
+              this.establishmentService.setWorkplace(workplace);
               this.parentSubsidiaryViewService.clearViewingSubAsParent();
 
               this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
