@@ -56,7 +56,11 @@ export class SubsidiaryRouterService extends Router {
 
     if (exitSubsidiaryViewPages.includes(commands[0])) {
       this.parentSubsidiaryViewService.clearViewingSubAsParent();
-    } else {
+    }
+    else if ((commands[0] === 'workplace' && commands[2] === 'users')){
+      this.parentSubsidiaryViewService.clearViewingSubAsParent();
+    }
+    else {
       const newRoute = this.getNewRoute(commands, navigationExtras);
       url = super.createUrlTree(newRoute.commands, newRoute.extras);
     }

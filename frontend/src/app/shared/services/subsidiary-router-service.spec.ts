@@ -1,8 +1,9 @@
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { SubsidiaryRouterService } from './subsidiary-router-service';
+import { TestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
-import { Router, UrlSegmentGroup, UrlTree } from '@angular/router';
+import { SubsidiaryRouterService } from './subsidiary-router-service';
 
 describe('SubsidiaryRouterService', () => {
   let service: SubsidiaryRouterService;
@@ -92,6 +93,17 @@ describe('SubsidiaryRouterService', () => {
       subViewServiceSpy.getViewingSubAsParent.and.returnValue(false);
       const urlTree = service.createUrlTree(['sfcadmin']);
       const expectedUrlTree = service.createUrlTree(['sfcadmin'], undefined);
+
+      service.navigateByUrl(urlTree);
+
+      expect(subViewServiceSpy.clearViewingSubAsParent).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
+    });
+
+    it('should clear the value for the view sub service at users page', async () => {
+      subViewServiceSpy.getViewingSubAsParent.and.returnValue(false);
+      const urlTree = service.createUrlTree(['workplace','123','users']);
+      const expectedUrlTree = service.createUrlTree(['workplace','123','users'], undefined);
 
       service.navigateByUrl(urlTree);
 

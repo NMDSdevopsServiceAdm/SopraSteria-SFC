@@ -73,7 +73,6 @@ import {
 } from '@features/workplace/user-account-edit-permissions/user-account-edit-permissions.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
-import { UsersComponent } from '@features/workplace/users/users.component';
 import { VacanciesComponent } from '@features/workplace/vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
@@ -180,16 +179,6 @@ const routes: Routes = [
           workers: WorkersResolver,
         },
         data: { title: 'Workplace' },
-      },
-      {
-        path: 'users',
-        component: UsersComponent,
-        data: {
-          title: 'Workplace Users',
-        },
-        resolve: {
-          users: AllUsersForEstablishmentResolver,
-        },
       },
       {
         path: 'start',
