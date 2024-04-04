@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { UserDetails, UserPermissionsType } from '@core/model/userDetails.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { UserService } from '@core/services/user.service';
 
@@ -12,10 +11,6 @@ import { UserService } from '@core/services/user.service';
 })
 export class UsersComponent implements OnInit {
   public workplace: Establishment;
-  public users: UserDetails[];
-  public canAddUser: boolean;
-  public canViewUser: boolean;
-  public userPermissionsTypes: UserPermissionsType[];
 
   constructor(
     private route: ActivatedRoute,

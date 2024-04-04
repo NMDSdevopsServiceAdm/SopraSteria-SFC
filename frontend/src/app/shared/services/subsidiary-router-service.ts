@@ -9,6 +9,7 @@ const exitSubsidiaryViewPages = [
   'notifications',
   'satisfaction-survey',
   'sfcadmin',
+  'workplace users'
 ];
 
 @Injectable()
@@ -54,10 +55,7 @@ export class SubsidiaryRouterService extends Router {
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
     const { commands, navigationExtras } = this.getCommands(url);
 
-    if (exitSubsidiaryViewPages.includes(commands[0])) {
-      this.parentSubsidiaryViewService.clearViewingSubAsParent();
-    }
-    else if ((commands[0] === 'workplace' && commands[2] === 'users')){
+    if (exitSubsidiaryViewPages.includes(commands[0]) || exitSubsidiaryViewPages.includes(commands[0] + " " + commands[2])) {
       this.parentSubsidiaryViewService.clearViewingSubAsParent();
     }
     else {
