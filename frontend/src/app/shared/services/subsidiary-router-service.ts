@@ -3,15 +3,6 @@ import { NavigationBehaviorOptions, Router, UrlTree } from '@angular/router';
 
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 
-const exitSubsidiaryViewPages = [
-  'account-management',
-  'login',
-  'notifications',
-  'satisfaction-survey',
-  'sfcadmin',
-  'workplace users'
-];
-
 @Injectable()
 export class SubsidiaryRouterService extends Router {
   constructor(private parentSubsidiaryViewService: ParentSubsidiaryViewService) {
@@ -55,9 +46,7 @@ export class SubsidiaryRouterService extends Router {
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
     const { commands, navigationExtras } = this.getCommands(url);
 
-    const pagesUrl  = this.returnPagesUrlCommands(commands)
-
-    if (exitSubsidiaryViewPages.includes(pagesUrl)) {
+    if (this.isNotSubsidiaryPage(commands)) {
       this.parentSubsidiaryViewService.clearViewingSubAsParent();
     }
     else {
@@ -68,13 +57,23 @@ export class SubsidiaryRouterService extends Router {
     return super.navigateByUrl(url, extras);
   }
 
-  returnPagesUrlCommands(commands: any[]){
-   if (commands.length === 1) {
-    return commands[0];
-   }
-   else if(commands.length < 4){
-    return commands[0] + " " + commands[2];
-   }
-   return commands[0];
+  isNotSubsidiaryPage(commands: any[]){
+    const exitSubsidiaryViewPages = [
+      'account-management',
+      'login',
+      'notifications',
+      'satisfaction-survey',
+      'sfcadmin',
+    ];
+
+    if (commands.length === 1) {
+      return exitSubsidiaryViewPages.includes(commands[0]);
+     }
+
+    if (commands.length === 3) {
+      return commands[0] === 'workplace' && commands[2] === 'users';
+    }
+
+    return false;
   }
 }
