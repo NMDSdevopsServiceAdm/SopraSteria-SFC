@@ -7,7 +7,6 @@ import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertD
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
@@ -47,7 +46,6 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
   providers: [
     DialogService,
     WorkplaceResolver,
-    SubsidiaryResolver,
     UserAccountResolver,
     ExpiresSoonAlertDatesResolver,
     JobsResolver,
