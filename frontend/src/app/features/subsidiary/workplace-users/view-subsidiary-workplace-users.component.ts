@@ -24,6 +24,7 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
     this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace.updated.toString();
+    this.parentSubsidiaryViewService.canShowBanner = true;
   }
 
   public setUserServiceReturnUrl(): void {
