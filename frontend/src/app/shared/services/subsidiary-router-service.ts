@@ -55,7 +55,9 @@ export class SubsidiaryRouterService extends Router {
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
     const { commands, navigationExtras } = this.getCommands(url);
 
-    if (exitSubsidiaryViewPages.includes(commands[0]) || exitSubsidiaryViewPages.includes(commands[0] + " " + commands[2])) {
+    const pagesUrl  = this.returnPagesUrlCommands(commands)
+
+    if (exitSubsidiaryViewPages.includes(pagesUrl)) {
       this.parentSubsidiaryViewService.clearViewingSubAsParent();
     }
     else {
@@ -64,5 +66,15 @@ export class SubsidiaryRouterService extends Router {
     }
 
     return super.navigateByUrl(url, extras);
+  }
+
+  returnPagesUrlCommands(commands: any[]){
+   if (commands.length === 1) {
+    return commands[0];
+   }
+   else if(commands.length < 4){
+    return commands[0] + " " + commands[2];
+   }
+   return commands[0];
   }
 }
