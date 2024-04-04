@@ -12,11 +12,11 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { UsersComponent } from './users.component';
+import { ViewSubsidiaryWorkplaceUsersComponent } from './view-subsidiary-workplace-users.component';
 
-describe('UsersComponent', () => {
+describe('ViewSubsidiaryWorkplaceUsersComponent', () => {
   const setup = async () => {
-    const { fixture } = await render(UsersComponent, {
+    const { fixture } = await render(ViewSubsidiaryWorkplaceUsersComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -27,7 +27,8 @@ describe('UsersComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
-        },{
+        },
+        {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
@@ -41,11 +42,13 @@ describe('UsersComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    return { component };
+    return { component, fixture };
   };
 
-  it('should render a User Account Summary Workplace Component', async () => {
+  it('should render a View Subsidiary Workplace Users Component', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 });
+
+
