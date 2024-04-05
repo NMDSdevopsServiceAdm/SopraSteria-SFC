@@ -6,6 +6,7 @@ import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import dayjs from 'dayjs';
 
 @Component({
@@ -25,6 +26,7 @@ export class StaffBasicRecord implements OnInit, OnDestroy {
     protected backLinkService: BackLinkService,
     private route: ActivatedRoute,
     private permissionsService: PermissionsService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -37,6 +39,8 @@ export class StaffBasicRecord implements OnInit, OnDestroy {
     this.workerNotCompleted = this.getWorkersNotCompleted(workersNotCompleted);
 
     this.setBackLink();
+
+    this.parentSubsidiaryViewService.canShowBanner = false;
   }
 
   getWorkersNotCompleted(workersNotCompleted: any) {

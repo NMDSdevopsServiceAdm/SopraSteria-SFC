@@ -68,13 +68,14 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     event.preventDefault();
 
     if (this.isParentSubsidiaryView) {
-      await this.router.navigate(['/subsidiary/', fragment, this.workplace.uid]);
-    }
-    if (route) {
+      this.tabsService.selectedTab = fragment;
       await this.router.navigate(route);
+    } else if (route) {
+      await this.router.navigate(route);
+      this.tabsService.selectedTab = fragment;
+    } else {
+      this.tabsService.selectedTab = fragment;
     }
-
-    this.tabsService.selectedTab = fragment;
   }
 
   public getWorkplaceSummaryMessage(): void {
@@ -118,7 +119,11 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[1].message = 'No staff records added in the last 12 months';
     } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
       this.sections[1].message = 'Some records only have mandatory data added';
-      this.sections[1].route = ['/staff-basic-records'];
+      if (this.isParentSubsidiaryView) {
+        this.sections[1].route = ['/staff-basic-records', this.workplace.uid];
+      } else {
+        this.sections[1].route = ['/staff-basic-records'];
+      }
     }
     this.showViewSummaryLinks(this.sections[1].linkText);
   }
