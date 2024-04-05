@@ -2322,7 +2322,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.nhsBsaApiData = async function (isParent,dataOwner) {
+  Establishment.nhsBsaApiData = async function (where) {
     return await this.findAll({
       attributes: [
         'id',
@@ -2335,12 +2335,13 @@ module.exports = function (sequelize, DataTypes) {
         'isParent',
         'dataOwner',
         'NumberOfStaffValue',
+        'parentId',
       ],
       as: 'establishment',
+
       where: {
         archived: false,
-        isParent: isParent,
-        dataOwner: dataOwner
+        ...where,
       },
 
       include: [
@@ -2354,75 +2355,6 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.nhsBsaApiChildData = async function (establishmentId) {
-    return await this.findAll({
-      attributes: [
-        'id',
-        'nmdsId',
-        'NameValue',
-        'address1',
-        'locationId',
-        'town',
-        'postcode',
-        'parentId',
-        'dataOwner',
-      ],
-      where: {
-        archived: false,
-        parentId: establishmentId,
-      },
-    });
-  };
 
   return Establishment;
 };
-
-// Establishment.getWorkersWithCareCertificateStatus = async function (establishmentId, isParent = false) {
-//   let subsidiaries = [];
-
-//   if (isParent) {
-//     subsidiaries = [
-//       {
-//         parentId: establishmentId,
-//         dataOwner: 'Parent',
-//       },
-//       {
-//         parentId: establishmentId,
-//         dataOwner: 'Workplace',
-//         dataPermissions: 'Workplace and Staff',
-//       },
-//     ];
-//   }
-
-//   return this.findAll({
-//     attributes: ['id', 'NameValue'],
-//     where: {
-//       [Op.or]: [
-//         {
-//           id: establishmentId,
-//         },
-//         ...subsidiaries,
-//       ],
-//     },
-//     include: [
-//       {
-//         model: sequelize.models.worker,
-//         as: 'workers',
-//         attributes: ['NameOrIdValue', 'CareCertificateValue'],
-//         where: {
-//           CareCertificateValue: { [Op.ne]: null },
-//           archived: false,
-//         },
-//         required: false,
-//         include: [
-//           {
-//             model: sequelize.models.job,
-//             as: 'mainJob',
-//             attributes: ['id', 'title'],
-//             required: false,
-//           },
-//         ],
-//       },
-//     ],
-//   });
-// };
