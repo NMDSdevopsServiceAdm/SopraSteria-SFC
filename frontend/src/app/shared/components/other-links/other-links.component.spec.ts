@@ -93,10 +93,11 @@ describe('OtherLinksComponent', () => {
   });
 
   describe('wdf', () => {
-    it('should show link if canViewReports is true', async () => {
+    it('should show link if canViewReports is true and isParentSubsidiaryView is false', async () => {
       const { component, getByText, fixture } = await setup();
 
       component.canViewReports = true;
+      component.isParentSubsidiaryView = false;
       fixture.detectChanges();
 
       const otherLinkText = getByText('Does your data meet WDF requirements?');
@@ -105,10 +106,35 @@ describe('OtherLinksComponent', () => {
       expect(otherLinkText.getAttribute('href')).toEqual('/wdf');
     });
 
-    it('should not show link if canViewReports is false', async () => {
+    it('should not show link if canViewReports is true and isParentSubsidiaryView is true', async () => {
+      const { component, queryByText, fixture } = await setup();
+
+      component.canViewReports = true;
+      component.isParentSubsidiaryView = true;
+      fixture.detectChanges();
+
+      const otherLinkText = queryByText('Does your data meet WDF requirements?');
+
+      expect(otherLinkText).toBeFalsy();
+    });
+
+    it('should not show link if canViewReports is false and isParentSubsidiaryView is true', async () => {
       const { component, queryByText, fixture } = await setup();
 
       component.canViewReports = false;
+      component.isParentSubsidiaryView = true;
+      fixture.detectChanges();
+
+      const otherLinkText = queryByText('Does your data meet WDF requirements?');
+
+      expect(otherLinkText).toBeFalsy();
+    });
+
+    it('should not show link if canViewReports is false and isParentSubsidiaryView is false', async () => {
+      const { component, queryByText, fixture } = await setup();
+
+      component.canViewReports = false;
+      component.isParentSubsidiaryView = false;
       fixture.detectChanges();
 
       const otherLinkText = queryByText('Does your data meet WDF requirements?');
