@@ -61,6 +61,7 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -538,6 +539,15 @@ const routes: Routes = [
       establishment: WorkplaceResolver,
       workers: WorkersResolver,
     },
+  },
+  {
+    path: 'staff-basic-records/:establishmentuid',
+    component: StaffBasicRecord,
+    resolve: {
+      establishment: WorkplaceResolver,
+      workers: WorkersResolver,
+    },
+    data: { title: 'Staff Basic Records' },
   },
   {
     path: 'training-and-qualifications/:establishmentuid',
