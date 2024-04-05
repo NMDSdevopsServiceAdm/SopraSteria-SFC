@@ -1,89 +1,104 @@
 const express = require('express');
 const router = express.Router();
 const models = require('../models');
+
 // WDF effective date
 const WdfCalculator = require('../models/classes/wdfCalculator').WdfCalculator;
 
 const nhsBsaApi = async (req, res) => {
+  const workplaceId = req.params.workplaceId;
+  const where = {
+    nmdsId: workplaceId,
+  };
   try {
-    const APiData = await models.establishment.nhsBsaApiData(true, 'Workplace');
+    const workplaceDetail = await models.establishment.nhsBsaApiData(where);
 
     const workplaceData = await Promise.all(
-      APiData.map(async (workplace) => {
-        const wdfEligible = await wdfData(workplace.id);
-        const child = await models.establishment.nhsBsaApiChildData(workplace.id);
+      workplaceDetail.map(async (workplace) => {
 
-        const x = await Promise.all(
-          child.map(async (y) => {
-            const wdfEligible = await wdfData(y.id);
-            //const x = Object.assign({}, y);
-            return {
-              workplaceID: y.nmdsId,
-              workplaceName: y.NameValue,
-              workplaceAdress: y.address1,
-              town: y.town,
-              postCode: y.postcode,
-              locationID: y.locationId,
-              dataOwner: y.dataOwner,
-              parentId: y.parentId,
+        const isParent = workplace.isParent;
+        const establishmentId = workplace.id;
+        const parentId = workplace.parentId;
 
-              ...wdfEligible,
-            };
-          }),
-        );
-
-        // console.log(x);
-
-        return {
-          establishmentId: workplace.id,
-          workplaceID: workplace.nmdsId,
-          workplaceName: workplace.NameValue,
-          workplaceAdress: workplace.address1,
-          town: workplace.town,
-          postCode: workplace.postcode,
-          dataOwner: workplace.dataOwner,
-          isParent: workplace.isParent,
-          locationID: workplace.locationId,
-          numberOfStaffValue: workplace.NumberOfStaffValue,
-          serviceName: workplace.mainService.name,
-          serviceCategory: workplace.mainService.category,
-          ...wdfEligible,
-          child: x,
-        };
+        if (isParent) {
+          return {
+            isParent: workplace.isParent,
+            workplaceDetails: await workplaceObject(workplace),
+            subsidiaries: await subsidiariesList(establishmentId),
+          };
+        } else if (parentId) {
+          return {
+            workplaceDetails: await workplaceObject(workplace),
+            parent: await parentList(parentId),
+          };
+        } else {
+          return {
+            workplaceDetails: await workplaceObject(workplace),
+          };
+        }
       }),
     );
-
-    const subsidiaries = await models.establishment.nhsBsaApiData(false, 'Workplace');
-    const result = await Promise.all(
-      subsidiaries.map(async (workplace) => {
-        const wdfEligible = await wdfData(workplace.id);
-        return {
-          workplaceID: workplace.nmdsId,
-          workplaceName: workplace.NameValue,
-          workplaceAdress: workplace.address1,
-          town: workplace.town,
-          postCode: workplace.postcode,
-          dataOwner: workplace.dataOwner,
-          isParent: workplace.isParent,
-          locationID: workplace.locationId,
-          numberOfStaffValue: workplace.NumberOfStaffValue,
-          serviceName: workplace.mainService.name,
-          serviceCategory: workplace.mainService.category,
-          ...wdfEligible,
-        };
-      }),
-    );
-    const finalResult = workplaceData.concat(result);
 
     res.status(200);
     return res.json({
-      finalResult,
+      workplaceData,
     });
   } catch (error) {
     console.error(error);
     return res.status(500).send();
   }
 };
+
+const workplaceObject = async (workplace) => {
+  const wdfEligible = await wdfData(workplace.id);
+
+  return {
+    workplaceId: workplace.nmdsId,
+    workplaceName: workplace.NameValue,
+    dataOwner: workplace.dataOwner,
+    workplaceAddress: {
+      firstLine: workplace.address1,
+      town: workplace.town,
+      postCode: workplace.postcode,
+    },
+    locationId: workplace.locationId,
+    numberOfWorkplaceStaff: workplace.NumberOfStaffValue,
+    serviceName: workplace.mainService.name,
+    serviceCategory: workplace.mainService.category,
+    ...wdfEligible,
+  };
+};
+
+const subsidiariesList = async (establishmentId) => {
+  const where = {
+    parentId: establishmentId,
+  };
+  const subs = await models.establishment.nhsBsaApiData(where);
+
+  const subsidiaries = await Promise.all(
+    subs.map(async (workplace) => {
+      return await workplaceObject(workplace);
+    }),
+  );
+  return subsidiaries;
+};
+
+
+
+const parentList = async (parentId) => {
+  const where = {
+    id: parentId,
+  };
+  const subs = await models.establishment.nhsBsaApiData(where);
+
+  const parentData = await Promise.all(
+    subs.map(async (workplace) => {
+       return await workplaceObject(workplace);
+    }),
+  );
+  return parentData;
+};
+
 
 const wdfData = async (workplaceId) => {
   const effectiveFrom = WdfCalculator.effectiveDate;
@@ -101,16 +116,18 @@ const wdfData = async (workplaceId) => {
       wdfMeeting.WorkerCount > 0 ? Math.floor((wdfMeeting.WorkerCompletedCount / wdfMeeting.WorkerCount) * 100) : 0;
 
     return {
-      Eligibalitypercentage: percentageEligibleWorkers,
-      EligibalityDate: wdfMeeting.OverallWdfEligibility,
+      eligibilityPercentage: percentageEligibleWorkers,
+      eligibilityDate: wdfMeeting.OverallWdfEligibility,
       isEligible:
         wdfMeeting.OverallWdfEligibility && wdfMeeting.OverallWdfEligibility.getTime() > WdfCalculator.effectiveTime
-          ? 'Yes'
-          : 'No',
+          ? 'true'
+          : 'false',
     };
   }
 };
 
-router.route('/').get(nhsBsaApi);
+router.route('/:workplaceId').get(nhsBsaApi);
 module.exports = router;
 module.exports.nhsBsaApi = nhsBsaApi;
+
+
