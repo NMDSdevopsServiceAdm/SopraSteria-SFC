@@ -127,8 +127,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
   public returnToHomeTab() {
     const isLoggedInWorkplace = this.establishmentService.establishmentId === this.workplace.uid;
-    const url = isLoggedInWorkplace ? ['/dashboard'] : ['/workplace', this.workplace.uid];
-    this.router.navigate(url, { fragment: 'staff-records', state: { showBanner: true } });
+    this.router.navigate(['/dashboard'], { fragment: 'staff-records', state: { showBanner: true } });
   }
 
   public setReturnTo(): void {
