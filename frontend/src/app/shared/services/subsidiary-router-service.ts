@@ -71,7 +71,7 @@ export class SubsidiaryRouterService extends Router {
      }
 
     if (commands.length === 3) {
-      return commands[0] !== 'workplace' && commands[2] !== 'users';
+      return !(commands[0] === 'workplace' && commands[2] === 'users');
     }
 
     return true;
