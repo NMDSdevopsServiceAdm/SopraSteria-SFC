@@ -75,9 +75,6 @@ import { ParentHomeTabComponent } from '@features/new-dashboard/parent-home-tab/
 import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { NewStaffTabComponent } from '@features/new-dashboard/staff-tab/staff-tab.component';
-import {
-  NewTrainingLinkPanelComponent,
-} from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
 import { NewTrainingTabComponent } from '@features/new-dashboard/training-tab/training-tab.component';
 import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/workplace-tab.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
@@ -135,7 +132,6 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     NewWorkplaceTabComponent,
     NewStaffTabComponent,
     NewTrainingTabComponent,
-    NewTrainingLinkPanelComponent,
     StaffBasicRecord,
     BecomeAParentComponent,
     RemoveLinkToParentComponent,
