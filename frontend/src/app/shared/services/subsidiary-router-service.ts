@@ -46,7 +46,7 @@ export class SubsidiaryRouterService extends Router {
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
     const { commands, navigationExtras } = this.getCommands(url);
 
-    if (this.isNotSubsidiaryPage(commands)) {
+    if (!this.isSubsidiaryPage(commands)) {
       this.parentSubsidiaryViewService.clearViewingSubAsParent();
     }
     else {
@@ -57,7 +57,7 @@ export class SubsidiaryRouterService extends Router {
     return super.navigateByUrl(url, extras);
   }
 
-  isNotSubsidiaryPage(commands: any[]){
+  isSubsidiaryPage(commands: any[]){
     const exitSubsidiaryViewPages = [
       'account-management',
       'login',
@@ -67,13 +67,13 @@ export class SubsidiaryRouterService extends Router {
     ];
 
     if (commands.length === 1) {
-      return exitSubsidiaryViewPages.includes(commands[0]);
+      return !exitSubsidiaryViewPages.includes(commands[0]);
      }
 
     if (commands.length === 3) {
-      return commands[0] === 'workplace' && commands[2] === 'users';
+      return commands[0] !== 'workplace' && commands[2] !== 'users';
     }
 
-    return false;
+    return true;
   }
 }
