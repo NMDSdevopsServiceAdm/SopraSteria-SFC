@@ -82,7 +82,6 @@ export class AppComponent implements OnInit {
         nav.url.includes('dashboard') ||
         nav.url === '/' ||
         this.subsidiaryDashboardUrls.find((subsidiaryDashboardUrl) => subsidiaryDashboardUrl === nav.url);
-      console.log(nav);
       if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
       this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
