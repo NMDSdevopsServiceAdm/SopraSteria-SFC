@@ -20,6 +20,7 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
   public createStaffResponse = null;
   public errors;
   public canAddWorker: boolean;
+  public staffLastUpdatedDate: string;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -43,7 +44,14 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
 
     this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
     this.parentSubsidiaryViewService.canShowBanner = true;
+    // const lastUpdatedDates = this.workers.map((worker) => new Date(worker.updated).getTime());
+    // this.parentSubsidiaryViewService.getLastUpdatedDate = new Date(Math.max(...lastUpdatedDates)).toISOString();
+
+    this.getStaffLastUpdatedDate();
+  }
+
+  private getStaffLastUpdatedDate(): void {
     const lastUpdatedDates = this.workers.map((worker) => new Date(worker.updated).getTime());
-    this.parentSubsidiaryViewService.getLastUpdatedDate = new Date(Math.max(...lastUpdatedDates)).toISOString();
+    this.staffLastUpdatedDate = new Date(Math.max(...lastUpdatedDates)).toISOString();
   }
 }

@@ -27,6 +27,8 @@ export class AppComponent implements OnInit {
   public newDataAreaFlag: boolean;
   public parentAccount: boolean;
   public subsAccount: boolean;
+  public viewedSubsidiaryUid: string;
+  public subsidiaryDashboardUrls = [];
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -61,9 +63,26 @@ export class AppComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.featureFlagsService.start();
+
+    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiary) => {
+      this.viewedSubsidiaryUid = subsidiary?.uid;
+      this.subsidiaryDashboardUrls = [
+        `/subsidiary/home/${this.viewedSubsidiaryUid}`,
+        `/subsidiary/workplace/${this.viewedSubsidiaryUid}`,
+        `/subsidiary/staff-records/${this.viewedSubsidiaryUid}`,
+        `/subsidiary/training-and-qualifications/${this.viewedSubsidiaryUid}`,
+        `/subsidiary/benchmarks/${this.viewedSubsidiaryUid}`,
+        `/subsidiary/workplace-users/${this.viewedSubsidiaryUid}`,
+      ];
+    });
+
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
-      this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
+      this.dashboardView =
+        nav.url.includes('dashboard') ||
+        nav.url === '/' ||
+        this.subsidiaryDashboardUrls.find((subsidiaryDashboardUrl) => subsidiaryDashboardUrl === nav.url);
+      console.log(nav);
       if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
       this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;

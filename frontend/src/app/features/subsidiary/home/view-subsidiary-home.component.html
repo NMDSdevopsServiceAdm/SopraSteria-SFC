@@ -1,3 +1,12 @@
+<app-new-dashboard-header
+  [workplace]="subsidiaryWorkplace"
+  [canAddWorker]="canAddWorker"
+  [canEditWorker]="canEditWorker"
+  [updatedDate]="updatedDate"
+  tab="home"
+>
+</app-new-dashboard-header>
+
 <div class="govuk-width-container govuk-!-margin-top-7">
   <ng-container *ngIf="(newHomeDesignParentFlag && workplace) || newHomeDesignParentFlag">
     <app-alert></app-alert>

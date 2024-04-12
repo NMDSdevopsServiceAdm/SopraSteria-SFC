@@ -80,7 +80,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
 
   ngOnChanges(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-    this.getPermissions();
+    //this.getPermissions();
   }
 
   private setWorkplace(): void {

@@ -1,6 +1,13 @@
+<app-new-dashboard-header tab="benchmarks" [workplace]="workplace"> </app-new-dashboard-header>
+
 <ng-container>
   <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
-    <app-data-area-tab [workplace]="workplace" [newDashboard]="true" [showBanner]="false" data-testid="data-area-tab"></app-data-area-tab>
+    <app-data-area-tab
+      [workplace]="workplace"
+      [newDashboard]="true"
+      [showBanner]="false"
+      data-testid="data-area-tab"
+    ></app-data-area-tab>
   </ng-container>
   <ng-template #benchmarksTab>
     <app-new-benchmarks-tab

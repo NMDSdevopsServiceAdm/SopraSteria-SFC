@@ -90,8 +90,8 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.getAllTrainingByCategory();
     this.trainingTotals();
 
-    this.parentSubsidiaryViewService.canShowBanner = true;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.tAndQsLastUpdated;
+    //this.parentSubsidiaryViewService.canShowBanner = true;
+    //this.parentSubsidiaryViewService.getLastUpdatedDate = this.tAndQsLastUpdated;
   }
 
   public ngOnChanges(changes: SimpleChanges): void {

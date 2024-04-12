@@ -34,7 +34,6 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
   public comparisonDataExists: boolean;
   public workplace: Establishment;
   public newDashboard: boolean;
-  private subsidiaryUid: string;
   public canSeeNewDataArea: boolean;
   public newDataAreaFlag: boolean;
 

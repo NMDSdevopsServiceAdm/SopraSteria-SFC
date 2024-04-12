@@ -26,8 +26,9 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   @Input() tAndQCount = 0;
   @Input() canEditWorker = false;
   @Input() hasWorkers = false;
+  @Input() workplace: Establishment;
 
-  public workplace: Establishment;
+  //public workplace: Establishment;
   public canDeleteEstablishment: boolean;
   public workplaceUid: string;
   public subsidiaryCount: number;
@@ -59,9 +60,9 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     //subscribe to changes in the subsidiaryUid. Need to really subscribe to a parent workplace request change
     // (Use the resolver)
-    this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe((subsidiaryUid) => {
-      this.setWorkplace(subsidiaryUid);
-    });
+    // this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe((subsidiaryUid) => {
+    //   this.setWorkplace(subsidiaryUid);
+    // });
 
     this.isParent = this.establishmentService.primaryWorkplace?.isParent;
 
@@ -74,16 +75,15 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.getPermissions();
 
     this.getHeader();
-    this.getValuesForHeader();
+    //this.getValuesForHeader();
   }
 
   ngOnChanges(): void {
     this.setIsParentSubsidiaryView();
     this.setSubsidiaryCount();
     this.getPermissions();
-
     this.getHeader();
-    this.getValuesForHeader();
+    //this.getValuesForHeader();
   }
 
   public setIsParentSubsidiaryView(): void {
@@ -105,15 +105,15 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     }
   }
 
-  public getValuesForHeader(): void {
-    if (this.isParentSubsidiaryView) {
-      this.hasWorkers = this.parentSubsidiaryViewService.getHasWorkers();
+  // public getValuesForHeader(): void {
+  //   if (this.isParentSubsidiaryView) {
+  //     this.hasWorkers = this.parentSubsidiaryViewService.getHasWorkers();
 
-      this.parentSubsidiaryViewService.totalTrainingRecords$.subscribe((totalTrainingRecords) => {
-        this.tAndQCount = totalTrainingRecords;
-      });
-    }
-  }
+  //     this.parentSubsidiaryViewService.totalTrainingRecords$.subscribe((totalTrainingRecords) => {
+  //       this.tAndQCount = totalTrainingRecords;
+  //     });
+  //   }
+  // }
 
   public onDeleteWorkplace(event: Event): void {
     event.preventDefault();
