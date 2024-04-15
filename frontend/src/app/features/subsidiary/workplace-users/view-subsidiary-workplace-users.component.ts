@@ -12,7 +12,8 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 })
 export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
   public workplace: Establishment;
-  
+  public lastUpdatedDate: string;
+
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
@@ -23,8 +24,7 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace.updated.toString();
-    this.parentSubsidiaryViewService.canShowBanner = true;
+    this.lastUpdatedDate = this.workplace.updated.toString();
   }
 
   public setUserServiceReturnUrl(): void {

@@ -68,8 +68,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
     this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
 
-    this.parentSubsidiaryViewService.canShowBanner = true;
-
     this.workplace = this.route.snapshot.data.establishment;
 
     const alertMessage = history.state?.alertMessage;
@@ -89,9 +87,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
     this.getAllTrainingByCategory();
     this.trainingTotals();
-
-    this.parentSubsidiaryViewService.canShowBanner = true;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.tAndQsLastUpdated;
   }
 
   public ngOnChanges(changes: SimpleChanges): void {

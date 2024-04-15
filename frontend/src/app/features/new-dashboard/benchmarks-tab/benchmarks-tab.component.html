@@ -1,6 +1,7 @@
 <app-new-dashboard-header
   *ngIf="!isParentViewingSubsidiary"
   [tab]="'benchmarks'"
+  [workplace]="workplace"
   [updatedDate]="tilesData?.meta.lastUpdated"
   data-html2canvas-ignore
   data-testid="dashboardHeader"
@@ -9,12 +10,12 @@
 <div class="govuk-width-container govuk-!-margin-top-7">
   <!-- <div id="benchmarks-tiles"> -->
 
-    <app-new-comparison-group-header
-      [canViewFullContent]="canViewFullBenchmarks"
-      [meta]="tilesData?.meta"
-      [workplaceID]="workplace.uid"
-      (downloadPDF)="downloadAsPDF()"
-    ></app-new-comparison-group-header>
+  <app-new-comparison-group-header
+    [canViewFullContent]="canViewFullBenchmarks"
+    [meta]="tilesData?.meta"
+    [workplaceID]="workplace.uid"
+    (downloadPDF)="downloadAsPDF()"
+  ></app-new-comparison-group-header>
 
   <div class="govuk-grid-row">
     <app-benchmark-tile
@@ -53,5 +54,3 @@
     ></app-benchmarks-about-the-data>
   </div>
 </div>
-
-

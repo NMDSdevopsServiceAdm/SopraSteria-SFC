@@ -61,9 +61,13 @@ export class AppComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.featureFlagsService.start();
+
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
-      this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
+      this.dashboardView =
+        nav.url.includes('dashboard') ||
+        nav.url === '/' ||
+        this.parentSubsidiaryViewService.getViewingSubAsParentDashboard(nav.url);
       if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
       this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;

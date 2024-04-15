@@ -12,10 +12,10 @@
   >
     <app-stand-alone-account
       *ngIf="!parentSubsidiaryViewService.getViewingSubAsParent()"
-      [dashboardView]="dashboardView">
+      [dashboardView]="dashboardView"
+    >
     </app-stand-alone-account>
-    <app-subsidiary-account
-      *ngIf="parentSubsidiaryViewService.getViewingSubAsParent()">
+    <app-subsidiary-account *ngIf="parentSubsidiaryViewService.getViewingSubAsParent()" [dashboardView]="dashboardView">
     </app-subsidiary-account>
   </ng-container>
   <ng-template #otherView>

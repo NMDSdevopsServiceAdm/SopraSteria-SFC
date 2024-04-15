@@ -39,8 +39,6 @@ export class StaffBasicRecord implements OnInit, OnDestroy {
     this.workerNotCompleted = this.getWorkersNotCompleted(workersNotCompleted);
 
     this.setBackLink();
-
-    this.parentSubsidiaryViewService.canShowBanner = false;
   }
 
   getWorkersNotCompleted(workersNotCompleted: any) {
