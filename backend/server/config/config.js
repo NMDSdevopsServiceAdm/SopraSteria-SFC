@@ -244,6 +244,22 @@ const config = convict({
         format: String,
         default: 'ADS-WDS-Internal-Admin-App',
       },
+
+    },
+    nhsBsaSecret: {
+      doc: 'The JWT secret for NHSBSA API',
+      format: '*',
+      default: 'nodeauthsecret',
+      env: 'NHSBSA_TOKEN_SECRET',
+    },
+  },
+
+  nhsBsaApi: {
+    apikey: {
+      doc: 'API key for NHSBSA ',
+      format: 'String',
+      default: 'apikey',
+      env: 'NHSBSA_API_KEY',
     },
   },
   slack: {
