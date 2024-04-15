@@ -58,13 +58,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    //subscribe to changes in the subsidiaryUid. Need to really subscribe to a parent workplace request change
-    // (Use the resolver)
-    // this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe((subsidiaryUid) => {
-    //   this.setWorkplace(subsidiaryUid);
-    // });
-
-    this.isParent = this.establishmentService.primaryWorkplace?.isParent;
+    this.isParent = this.workplace.isParent;
 
     this.setIsParentSubsidiaryView();
 
@@ -75,7 +69,6 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.getPermissions();
 
     this.getHeader();
-    //this.getValuesForHeader();
   }
 
   ngOnChanges(): void {
@@ -83,37 +76,11 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.setSubsidiaryCount();
     this.getPermissions();
     this.getHeader();
-    //this.getValuesForHeader();
   }
 
   public setIsParentSubsidiaryView(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
   }
-
-  private setWorkplace(subsidiaryUid: string) {
-    if (subsidiaryUid == '') {
-      this.workplace = this.establishmentService.primaryWorkplace;
-      this.workplaceUid = this.workplace ? this.workplace.uid : null;
-    } else {
-      this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
-        if (workplace) {
-          this.establishmentService.setWorkplace(workplace);
-          this.workplace = this.establishmentService.primaryWorkplace;
-          this.workplaceUid = this.workplace ? this.workplace.uid : null;
-        }
-      });
-    }
-  }
-
-  // public getValuesForHeader(): void {
-  //   if (this.isParentSubsidiaryView) {
-  //     this.hasWorkers = this.parentSubsidiaryViewService.getHasWorkers();
-
-  //     this.parentSubsidiaryViewService.totalTrainingRecords$.subscribe((totalTrainingRecords) => {
-  //       this.tAndQCount = totalTrainingRecords;
-  //     });
-  //   }
-  // }
 
   public onDeleteWorkplace(event: Event): void {
     event.preventDefault();
@@ -175,12 +142,12 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.user = this.userService.loggedInUser;
     if (isAdminRole(this.user?.role)) {
       this.canDeleteEstablishment = this.permissionsService.can(
-        this.establishmentService.primaryWorkplace.uid,
+        this.establishmentService.primaryWorkplace?.uid,
         'canDeleteAllEstablishments',
       );
     } else {
       this.canDeleteEstablishment = this.permissionsService.can(
-        this.establishmentService.primaryWorkplace.uid,
+        this.establishmentService.primaryWorkplace?.uid,
         'canDeleteEstablishment',
       );
     }

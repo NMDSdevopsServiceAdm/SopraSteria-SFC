@@ -104,7 +104,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-    this.parentSubsidiaryViewService.canShowBanner = true;
     this.parentSubsidiaryViewService.getLastUpdatedDate = null;
 
     this.bigThreeServices = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);

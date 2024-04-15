@@ -28,7 +28,7 @@ export class SubsidiaryRouterService extends Router {
         commands = [extras.fragment ? extras.fragment : 'home', this.parentSubsidiaryViewService.getSubsidiaryUid()];
         extras = undefined;
 
-        this.parentSubsidiaryViewService.canShowBanner = true;
+        // this.parentSubsidiaryViewService.canShowBanner = true;
       } else {
         // Remove forward slashes from the route
         for (let i = 0; i < commands.length; i++) {
@@ -36,7 +36,7 @@ export class SubsidiaryRouterService extends Router {
           Array.prototype.splice.apply(commands, [i, 1].concat(splitString));
         }
 
-        this.parentSubsidiaryViewService.canShowBanner = false;
+        // this.parentSubsidiaryViewService.canShowBanner = false;
       }
       commands.unshift('subsidiary');
     }
@@ -48,8 +48,7 @@ export class SubsidiaryRouterService extends Router {
 
     if (this.isNotSubsidiaryPage(commands)) {
       this.parentSubsidiaryViewService.clearViewingSubAsParent();
-    }
-    else {
+    } else {
       const newRoute = this.getNewRoute(commands, navigationExtras);
       url = super.createUrlTree(newRoute.commands, newRoute.extras);
     }
@@ -57,18 +56,12 @@ export class SubsidiaryRouterService extends Router {
     return super.navigateByUrl(url, extras);
   }
 
-  isNotSubsidiaryPage(commands: any[]){
-    const exitSubsidiaryViewPages = [
-      'account-management',
-      'login',
-      'notifications',
-      'satisfaction-survey',
-      'sfcadmin',
-    ];
+  isNotSubsidiaryPage(commands: any[]) {
+    const exitSubsidiaryViewPages = ['account-management', 'login', 'notifications', 'satisfaction-survey', 'sfcadmin'];
 
     if (commands.length === 1) {
       return exitSubsidiaryViewPages.includes(commands[0]);
-     }
+    }
 
     if (commands.length === 3) {
       return commands[0] === 'workplace' && commands[2] === 'users';

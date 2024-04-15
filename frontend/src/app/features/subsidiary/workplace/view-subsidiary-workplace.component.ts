@@ -40,8 +40,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
-    this.parentSubsidiaryViewService.canShowBanner = true;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace?.updated.toString()
+    // this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace?.updated.toString();
   }
 
   ngOnDestroy(): void {

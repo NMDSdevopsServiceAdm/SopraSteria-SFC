@@ -13,12 +13,24 @@ import { render } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './view-subsidiary-workplace-users.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { NewDashboardHeaderComponent } from '@shared/components/new-dashboard-header/dashboard-header.component';
+import { AuthService } from '@core/services/auth.service';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { AlertService } from '@core/services/alert.service';
+import { WindowRef } from '@core/services/window.ref';
+import { DialogService } from '@core/services/dialog.service';
 
 describe('ViewSubsidiaryWorkplaceUsersComponent', () => {
-  const setup = async () => {
+  const setup = async (isAdmin = true, establishment = Establishment) => {
     const { fixture } = await render(ViewSubsidiaryWorkplaceUsersComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
+        AlertService,
+        WindowRef,
+        DialogService,
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(['canAddUser', 'canViewUser']),
@@ -29,16 +41,26 @@ describe('ViewSubsidiaryWorkplaceUsersComponent', () => {
           useClass: MockBreadcrumbService,
         },
         {
+          provide: FeatureFlagsService,
+          useClass: MockFeatureFlagsService,
+        },
+        {
+          provide: AuthService,
+          useFactory: MockAuthService.factory(true, isAdmin),
+          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
+        },
+        {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
               data: {
-                establishment: establishmentBuilder() as Establishment,
+                establishment: establishment,
               },
             },
           },
         },
       ],
+      declarations: [NewDashboardHeaderComponent],
     });
     const component = fixture.componentInstance;
 
@@ -47,8 +69,7 @@ describe('ViewSubsidiaryWorkplaceUsersComponent', () => {
 
   it('should render a View Subsidiary Workplace Users Component', async () => {
     const { component } = await setup();
+
     expect(component).toBeTruthy();
   });
 });
-
-
