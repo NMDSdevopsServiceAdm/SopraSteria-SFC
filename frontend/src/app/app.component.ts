@@ -64,24 +64,12 @@ export class AppComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.featureFlagsService.start();
 
-    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiary) => {
-      this.viewedSubsidiaryUid = subsidiary?.uid;
-      this.subsidiaryDashboardUrls = [
-        `/subsidiary/home/${this.viewedSubsidiaryUid}`,
-        `/subsidiary/workplace/${this.viewedSubsidiaryUid}`,
-        `/subsidiary/staff-records/${this.viewedSubsidiaryUid}`,
-        `/subsidiary/training-and-qualifications/${this.viewedSubsidiaryUid}`,
-        `/subsidiary/benchmarks/${this.viewedSubsidiaryUid}`,
-        `/subsidiary/workplace-users/${this.viewedSubsidiaryUid}`,
-      ];
-    });
-
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
       this.dashboardView =
         nav.url.includes('dashboard') ||
         nav.url === '/' ||
-        this.subsidiaryDashboardUrls.find((subsidiaryDashboardUrl) => subsidiaryDashboardUrl === nav.url);
+        this.parentSubsidiaryViewService.getViewingSubAsParentDashboard(nav.url);
       if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
       this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;

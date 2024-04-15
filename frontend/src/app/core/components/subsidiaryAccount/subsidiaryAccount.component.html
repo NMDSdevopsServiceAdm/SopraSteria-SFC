@@ -16,15 +16,6 @@
     </div>
   </div>
 
-  <!-- <app-new-dashboard-header
-    *ngIf="canShowBanner"
-    [canAddWorker]="canAddWorker"
-    [canEditWorker]="canEditWorker"
-    [updatedDate]="updatedDate"
-    [tab]="selectedTab"
-  >
-  </app-new-dashboard-header> -->
-
   <div [class]="{ 'govuk-width-container': !dashboardView }">
     <ng-container *ngIf="!dashboardView">
       <app-alert></app-alert>

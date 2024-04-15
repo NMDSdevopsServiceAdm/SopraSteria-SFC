@@ -54,6 +54,18 @@ export class ParentSubsidiaryViewService {
     this.subsidiaryWorkplace.next(null);
   }
 
+  getViewingSubAsParentDashboard(navUrl): boolean {
+    const subsidiaryDashboardUrls = [
+      `/subsidiary/home/${this.subsidiaryUid}`,
+      `/subsidiary/workplace/${this.subsidiaryUid}`,
+      `/subsidiary/staff-records/${this.subsidiaryUid}`,
+      `/subsidiary/training-and-qualifications/${this.subsidiaryUid}`,
+      `/subsidiary/benchmarks/${this.subsidiaryUid}`,
+      `/subsidiary/workplace-users/${this.subsidiaryUid}`,
+    ];
+    return subsidiaryDashboardUrls.includes(navUrl);
+  }
+
   getHasWorkers() {
     return this.hasWorkers;
   }
