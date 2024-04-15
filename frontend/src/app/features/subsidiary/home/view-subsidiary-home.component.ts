@@ -66,7 +66,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public workplacesCount: number;
   public isParentSubsidiaryView: boolean;
   public tilesData: BenchmarksResponse;
-  public selectedTab: string;
 
   constructor(
     private userService: UserService,
@@ -157,7 +156,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public navigateToTab(event: Event, selectedTab: string): void {
     event.preventDefault();
     this.tabsService.selectedTab = selectedTab;
-    this.selectedTab = selectedTab;
   }
 
   private setBenchmarksCard(): void {
