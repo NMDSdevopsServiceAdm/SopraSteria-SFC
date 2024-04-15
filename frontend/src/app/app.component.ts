@@ -27,8 +27,6 @@ export class AppComponent implements OnInit {
   public newDataAreaFlag: boolean;
   public parentAccount: boolean;
   public subsAccount: boolean;
-  public viewedSubsidiaryUid: string;
-  public subsidiaryDashboardUrls = [];
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 

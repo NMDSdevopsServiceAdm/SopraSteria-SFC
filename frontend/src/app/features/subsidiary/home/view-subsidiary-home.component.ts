@@ -1,11 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { Worker } from '@core/model/worker.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
@@ -67,9 +66,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public workplacesCount: number;
   public isParentSubsidiaryView: boolean;
   public tilesData: BenchmarksResponse;
-  public canEditWorker: boolean;
-  public updatedDate: string;
-  public canShowBanner = true;
   public selectedTab: string;
 
   constructor(
@@ -78,9 +74,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     private tabsService: TabsService,
     public route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
-    private router: Router,
     public parentSubsidiaryViewService: ParentSubsidiaryViewService,
-    private breadcrumbService: BreadcrumbService,
     protected benchmarksService: BenchmarksServiceBase,
     private serviceNamePipe: ServiceNamePipe,
   ) {}
@@ -104,7 +98,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-    this.parentSubsidiaryViewService.getLastUpdatedDate = null;
 
     this.bigThreeServices = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);
 

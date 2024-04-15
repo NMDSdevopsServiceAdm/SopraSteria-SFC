@@ -16,4 +16,23 @@ describe('ParentSubsidiaryViewService', () => {
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
+
+  it('returns the uid set', async () => {
+    const subUid = 'some-uid';
+    service.setViewingSubAsParent(subUid);
+
+    expect(service.getSubsidiaryUid()).toEqual(subUid);
+  });
+
+  describe('getViewingSubAsParentDashboard', () => {
+    it('should return true if url is included', async () => {
+      const subUid = 'some-uid';
+      service.setViewingSubAsParent(subUid);
+
+      expect(service.getViewingSubAsParentDashboard(`/subsidiary/home/${subUid}`)).toBeTruthy();
+    });
+    it('should return false if url is not included', async () => {
+      expect(service.getViewingSubAsParentDashboard('/home')).toBeFalsy();
+    });
+  });
 });

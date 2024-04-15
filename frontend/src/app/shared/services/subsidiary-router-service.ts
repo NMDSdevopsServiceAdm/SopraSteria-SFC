@@ -27,16 +27,12 @@ export class SubsidiaryRouterService extends Router {
       if (commands[0].toLowerCase().includes('dashboard')) {
         commands = [extras.fragment ? extras.fragment : 'home', this.parentSubsidiaryViewService.getSubsidiaryUid()];
         extras = undefined;
-
-        // this.parentSubsidiaryViewService.canShowBanner = true;
       } else {
         // Remove forward slashes from the route
         for (let i = 0; i < commands.length; i++) {
           const splitString = commands[i].split('/').filter((command) => command.length > 0);
           Array.prototype.splice.apply(commands, [i, 1].concat(splitString));
         }
-
-        // this.parentSubsidiaryViewService.canShowBanner = false;
       }
       commands.unshift('subsidiary');
     }

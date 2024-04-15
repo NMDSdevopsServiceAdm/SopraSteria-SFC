@@ -28,7 +28,6 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   @Input() hasWorkers = false;
   @Input() workplace: Establishment;
 
-  //public workplace: Establishment;
   public canDeleteEstablishment: boolean;
   public workplaceUid: string;
   public subsidiaryCount: number;

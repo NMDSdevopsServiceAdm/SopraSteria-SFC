@@ -6,7 +6,6 @@ import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
@@ -27,7 +26,6 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private tabsService: TabsService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private route: ActivatedRoute,
   ) {}
@@ -40,7 +38,6 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
-    // this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace?.updated.toString();
   }
 
   ngOnDestroy(): void {
