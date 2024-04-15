@@ -1,21 +1,21 @@
 const express = require('express');
 const router = express.Router();
-const models = require('../models');
-
+const models = require('../../models');
+const Authorization = require('../../utils/middleware/isNHSBSAAuthenticated');
 // WDF effective date
-const WdfCalculator = require('../models/classes/wdfCalculator').WdfCalculator;
+const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculator;
 
 const nhsBsaApi = async (req, res) => {
   const workplaceId = req.params.workplaceId;
   const where = {
-    nmdsId: workplaceId,
-  };
+    nmdsId: workplaceId ?  {nmdsId: workplaceId} :{ locationId: locationID},
+  }
+
   try {
     const workplaceDetail = await models.establishment.nhsBsaApiData(where);
 
     const workplaceData = await Promise.all(
       workplaceDetail.map(async (workplace) => {
-
         const isParent = workplace.isParent;
         const establishmentId = workplace.id;
         const parentId = workplace.parentId;
@@ -83,8 +83,6 @@ const subsidiariesList = async (establishmentId) => {
   return subsidiaries;
 };
 
-
-
 const parentList = async (parentId) => {
   const where = {
     id: parentId,
@@ -93,12 +91,11 @@ const parentList = async (parentId) => {
 
   const parentData = await Promise.all(
     subs.map(async (workplace) => {
-       return await workplaceObject(workplace);
+      return await workplaceObject(workplace);
     }),
   );
   return parentData;
 };
-
 
 const wdfData = async (workplaceId) => {
   const effectiveFrom = WdfCalculator.effectiveDate;
@@ -126,8 +123,6 @@ const wdfData = async (workplaceId) => {
   }
 };
 
-router.route('/:workplaceId').get(nhsBsaApi);
+router.route('/:workplaceId').get(Authorization.isAuthorised, nhsBsaApi);
 module.exports = router;
 module.exports.nhsBsaApi = nhsBsaApi;
-
-
