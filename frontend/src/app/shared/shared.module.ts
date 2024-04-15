@@ -10,10 +10,9 @@ import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
-import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-tab/benchmarks-tab.component';
 import {
-  NewComparisonGroupHeaderComponent,
-} from '@features/new-dashboard/benchmarks-tab/comparison-group-header/comparison-group-header.component';
+  NewTrainingLinkPanelComponent,
+} from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
 import {
   MissingMandatoryTrainingComponent,
 } from '@features/training-and-qualifications/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
@@ -277,6 +276,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SummarySectionComponent,
     BackToParentComponent,
     OtherLinksComponent,
+    NewTrainingLinkPanelComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -392,6 +392,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SummarySectionComponent,
     BackToParentComponent,
     OtherLinksComponent,
+    NewTrainingLinkPanelComponent,
   ],
   providers: [
     DialogService,

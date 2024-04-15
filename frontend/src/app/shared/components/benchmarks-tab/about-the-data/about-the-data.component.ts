@@ -15,6 +15,7 @@ import { Subscription } from 'rxjs';
 })
 export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
+  @Input() isParentViewingSubsidiary: boolean;
   @ViewChild('aboutData') public aboutData: ElementRef;
 
   protected subscriptions: Subscription = new Subscription();
@@ -42,7 +43,9 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
       this.meta = this.benchmarksService.benchmarksData.meta;
     }
 
-    this.breadcrumbService.show(JourneyType.OLD_BENCHMARKS_DATA_TAB);
+    if(!this.isParentViewingSubsidiary){
+      this.breadcrumbService.show(JourneyType.OLD_BENCHMARKS_DATA_TAB);
+    }
   }
 
   public pluralizeWorkplaces(workplaces) {
