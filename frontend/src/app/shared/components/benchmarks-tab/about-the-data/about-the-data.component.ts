@@ -43,13 +43,17 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
       this.meta = this.benchmarksService.benchmarksData.meta;
     }
 
-    if(!this.isParentViewingSubsidiary){
+    if (!this.isParentViewingSubsidiary) {
       this.breadcrumbService.show(JourneyType.OLD_BENCHMARKS_DATA_TAB);
     }
   }
 
   public pluralizeWorkplaces(workplaces) {
     return workplaces > 1 ? 'workplaces' : 'workplace';
+  }
+
+  public returnToBenchmarks(): void {
+    this.router.navigate(['/dashboard'], { fragment: this.fragment });
   }
 
   ngOnDestroy() {
