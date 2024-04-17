@@ -20,9 +20,6 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
 
   protected subscriptions: Subscription = new Subscription();
   public meta: Meta;
-  public returnTo: URLStructure;
-  public url: any[];
-  public fragment: string;
 
   constructor(
     protected router: Router,
@@ -33,8 +30,6 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.url = this.benchmarksService.returnTo?.url;
-    this.fragment = this.benchmarksService.returnTo?.fragment;
     const workplaceUid = this.workplace ? this.workplace.uid : this.route.snapshot.params.establishmentuid;
 
     const canViewBenchmarks = this.permissionsService.can(workplaceUid, 'canViewBenchmarks');
@@ -53,7 +48,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   }
 
   public returnToBenchmarks(): void {
-    this.router.navigate(['/dashboard'], { fragment: this.fragment });
+    this.router.navigate(['/dashboard'], { fragment: 'benchmarks' });
   }
 
   ngOnDestroy() {
