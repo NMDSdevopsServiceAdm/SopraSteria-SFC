@@ -121,7 +121,7 @@ export class BreadcrumbService {
         routes.push({
           title,
           path: this.getPath(path, segments),
-          fragment: (referrer ? '' : child.fragment),
+          fragment: child.fragment,
           ...(referrer && { referrer: this.getReferrer(referrer, segments) }),
         });
       }
