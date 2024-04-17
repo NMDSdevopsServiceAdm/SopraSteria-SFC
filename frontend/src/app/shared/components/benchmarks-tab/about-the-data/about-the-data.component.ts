@@ -47,7 +47,7 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
     return workplaces > 1 ? 'workplaces' : 'workplace';
   }
 
-  public returnToBenchmarks(): void {
+  public viewBenchmarks(): void {
     this.router.navigate(['/dashboard'], { fragment: 'benchmarks' });
   }
 
