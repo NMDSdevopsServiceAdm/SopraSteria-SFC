@@ -40,7 +40,6 @@ import {
   allWorkplacesJourney,
   benchmarksTabJourney,
   myWorkplaceJourney,
-  oldBenchmarksDataJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
@@ -122,7 +121,7 @@ export class BreadcrumbService {
         routes.push({
           title,
           path: this.getPath(path, segments),
-          fragment: child.fragment,
+          fragment: (referrer ? '' : child.fragment),
           ...(referrer && { referrer: this.getReferrer(referrer, segments) }),
         });
       }
@@ -298,11 +297,11 @@ export class BreadcrumbService {
         break;
       }
       case JourneyType.BENCHMARKS_TAB: {
-        routes = benchmarksTabJourney;
+        routes = benchmarksTabJourney();
         break;
       }
       case JourneyType.OLD_BENCHMARKS_DATA_TAB: {
-        routes = oldBenchmarksDataJourney;
+        routes = benchmarksTabJourney(true);
         break;
       }
 
