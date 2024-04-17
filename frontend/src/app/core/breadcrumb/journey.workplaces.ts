@@ -76,46 +76,21 @@ export const trainingAndQualificationsTabJourney: JourneyRoute = {
   ],
 };
 
-export const benchmarksTabJourney: JourneyRoute = {
-  children: [
-    {
-      title: 'Benchmarks',
-      path: Path.DASHBOARD,
-      fragment: 'benchmarks',
-      children: [
-        {
-          title: 'About the data',
-          path: Path.ABOUT_DATA,
-          referrer: {
-            path: Path.DASHBOARD,
-            fragment: 'benchmarks',
-          },
-        },
-      ],
-    },
-  ],
-};
 
-export const oldBenchmarksDataJourney: JourneyRoute = {
-  children: [
-    {
-      title: 'Benchmarks',
-      path: Path.DASHBOARD,
-      fragment: 'benchmarks',
-      children: [
-        {
-          title: 'About the data',
-          path: Path.BENCHMARKS_ABOUT_DATA,
-          referrer: {
-            path: Path.DASHBOARD,
-            fragment: 'benchmarks',
-          },
-        },
-      ],
-    },
-  ],
-};
 
+export function benchmarksTabJourney(isOldTab: boolean = false): JourneyRoute {
+  return {children: [ {
+    title: 'Benchmarks',
+    path: Path.DASHBOARD,
+    fragment: 'benchmarks',
+    children: [
+      {
+        title: 'About the data',
+        path: isOldTab ?  Path.BENCHMARKS_ABOUT_DATA : Path.ABOUT_DATA,
+      },
+    ],
+  },]}
+};
 
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
