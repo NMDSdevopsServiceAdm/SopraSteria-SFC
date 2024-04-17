@@ -97,7 +97,7 @@ describe('BenchmarksAboutTheDataComponent', () => {
     expect(lineItemCount).toBe(2);
   });
 
-  it('should navigate to the benchmarks page', async () => {
+  it('should navigate to the benchmarks page when you click View your benchmarks button', async () => {
     const { getByText, routerSpy, fixture } = await setup();
 
     const viewBenchmarksButton = getByText('View your benchmarks');
