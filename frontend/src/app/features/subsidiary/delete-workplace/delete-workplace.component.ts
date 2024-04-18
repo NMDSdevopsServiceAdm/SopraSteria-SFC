@@ -52,12 +52,9 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.setupForm();
     this.setupFormErrorsMap();
-    //this.handlePageRefresh();
   }
 
-  ngOnChanges(): void {
-    //this.handlePageRefresh();
-  }
+  ngOnChanges(): void {}
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
@@ -101,50 +98,10 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
     if (formValue === 'no') {
       this.router.navigate(['/home', this.subsidiaryWorkplace.uid]);
     } else if (formValue === 'yes') {
-      // this.subscriptions.add(
-      //   this.establishmentService.deleteWorkplace(this.subsidiaryWorkplace.uid).subscribe(
-      //     () => {
-      //       this.parentSubsidiaryViewService.clearViewingSubAsParent();
-      //       this.router.navigate(['/dashboard'], {
-      //         state: { alertMessage: `You deleted ${this.subsidiaryWorkplace.name}` },
-      //       });
-      //     },
-      //     (e) => {
-      //       console.error(e);
-      //       this.alertService.addAlert({
-      //         type: 'warning',
-      //         message: 'There was an error deleting the workplace.',
-      //       });
-      //     },
-      //   ),
-      // );
-
-      this.establishmentService.getEstablishment(this.parentUid).subscribe((workplace) => {
-        if (workplace) {
-          this.establishmentService.setPrimaryWorkplace(workplace);
-          // this.establishmentService.setWorkplace(workplace);
-        }
-      });
       this.parentSubsidiaryViewService.clearViewingSubAsParent();
       this.router.navigate(['/workplace', 'view-all-workplaces'], {
         state: { alertMessage: `You deleted ${this.subsidiaryWorkplace.name}` },
       });
-
-      //this.router.navigate(
-      // ['/workplace', 'view-all-workplaces'],
-      //   { relativeTo: null },
-      // {
-      //   state: { alertMessage: `You deleted ${this.subsidiaryWorkplace.name}` },
-      // },
-      //);
-      // });
-    }
-  }
-
-  public handlePageRefresh(): void {
-    if (!this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-      this.parentSubsidiaryViewService.setViewingSubAsParent(this.route.snapshot.params.establishmentuid);
-      this.router.navigate(['/delete-workplace/', this.subsidiaryWorkplace.uid]);
     }
   }
 

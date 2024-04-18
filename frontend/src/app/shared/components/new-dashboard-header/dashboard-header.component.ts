@@ -168,6 +168,11 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     }
   }
 
+  public navigateToDeleteWorkplace(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/delete-workplace', this.workplace.uid]);
+  }
+
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
