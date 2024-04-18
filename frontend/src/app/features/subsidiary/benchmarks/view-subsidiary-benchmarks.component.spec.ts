@@ -14,7 +14,9 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
+import {
+  BenchmarksSelectViewPanelComponent,
+} from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -84,51 +86,30 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the pay area and the correct heading when viewBenchmarksByCategory is false', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-    component.viewBenchmarksByCategory = false;
-    fixture.detectChanges();
+  describe('can see new data area', () => {
+    it('should render the new data area tab component', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-    const categoryHeading = getByTestId('benchmarksCategoryHeading');
+      component.canSeeNewDataArea = true
+      component.newDataAreaFlag = true
+      fixture.detectChanges();
 
-    expect(getByTestId('payArea')).toBeTruthy();
-    expect(within(categoryHeading).getByText('Pay')).toBeTruthy();
-    expect(queryByTestId('recruitmentAndRetentionArea')).toBeFalsy();
-    expect(within(categoryHeading).queryByText('Recruitment and retention')).toBeFalsy();
-  });
+      expect(queryByTestId('data-area-tab')).toBeTruthy();
+    });
+  })
 
-  it('should render the recruitment and retention area and the correct heading when viewBenchmarksByCategory is true', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
+  describe('can not see new data area', () => {
+    it('should render the old benchmarks tab', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-    component.viewBenchmarksByCategory = true;
-    fixture.detectChanges();
+      component.canSeeNewDataArea = false
+      component.newDataAreaFlag = true
+      component.viewBenchmarksByCategory = true;
+      fixture.detectChanges();
 
-    const selectCategoryLinks = getByTestId('selectCategoryLinks');
+      expect(queryByTestId('old-benchmarks-tab')).toBeTruthy();
+    });
+  })
 
-    fireEvent.click(within(selectCategoryLinks).getByText('Recruitment and retention'));
-    const categoryHeading = getByTestId('benchmarksCategoryHeading');
-
-    expect(getByTestId('recruitmentAndRetentionArea')).toBeTruthy();
-    expect(within(categoryHeading).getByText('Recruitment and retention')).toBeTruthy();
-    expect(queryByTestId('payArea')).toBeFalsy();
-    expect(within(categoryHeading).queryByText('Pay')).toBeFalsy();
-  });
-
-  it('should check the pay benchmarks data to see if there is comparison data', async () => {
-    const { component } = await setup();
-    const noCompData = {
-      value: 0,
-      stateMessage: 'no-data',
-      hasValue: false,
-    };
-    component.tilesData.careWorkerPay = { comparisonGroup: noCompData };
-    component.tilesData.seniorCareWorkerPay = { comparisonGroup: noCompData };
-    component.tilesData.registeredNursePay = { comparisonGroup: noCompData };
-    component.tilesData.registeredManagerPay = { comparisonGroup: noCompData };
-
-    component.checkComparisonDataExists();
-
-    expect(component.comparisonDataExists).toBeFalsy();
-  });
 });

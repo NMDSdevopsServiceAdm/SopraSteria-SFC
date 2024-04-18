@@ -9,10 +9,15 @@ import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
-import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
-import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
+import { WorkersResolver } from '@core/resolvers/workers.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
+import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
+import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { AcceptPreviousCareCertificateComponent } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { CheckAnswersComponent } from '@features/workplace/check-answers/check-answers.component';
@@ -47,7 +52,6 @@ import { UserAccountEditDetailsComponent } from '@features/workplace/user-accoun
 import { UserAccountEditPermissionsComponent } from '@features/workplace/user-account-edit-permissions/user-account-edit-permissions.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
-import { UsersComponent } from '@features/workplace/users/users.component';
 import { VacanciesComponent } from '@features/workplace/vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
@@ -68,11 +72,42 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'articles',
+    loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
+  },
+  {
+    path: '',
+    loadChildren: () => import('@features/pages/pages.module').then((m) => m.PagesModule),
+  },
+  {
+    path: 'wdf',
+    loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
+    data: { title: 'Workforce Development Fund Data' },
+  },
+
+  {
+    path: 'asc-wds-certificate',
+    component: AscWdsCertificateComponent,
+    data: { title: 'Certificate' },
+  },
+  {
+    path: 'first-login-wizard',
+    component: FirstLoginPageComponent,
+    resolve: {
+      wizard: WizardResolver,
+    },
+    data: { title: 'First Login Wizard' },
+  },
+  {
+    path: 'benefits-bundle',
+    loadChildren: () => import('@features/benefits-bundle/benefits-bundle.module').then((m) => m.BenefitsBundleModule),
+  },
+  {
     path: 'home/:establishmentuid',
     component: ViewSubsidiaryHomeComponent,
     resolve: {
       users: AllUsersForEstablishmentResolver,
-      establishment: SubsidiaryResolver,
+      establishment: WorkplaceResolver,
       workers: WorkersResolver,
       totalStaffRecords: TotalStaffRecordsResolver,
       articleList: ArticleListResolver,
@@ -90,11 +125,20 @@ const routes: Routes = [
     data: { title: 'Workplace' },
     resolve: {
       users: AllUsersForEstablishmentResolver,
-      establishment: SubsidiaryResolver,
+      establishment: WorkplaceResolver,
       workers: WorkersResolver,
       totalStaffRecords: TotalStaffRecordsResolver,
     },
     children: [
+      {
+        path: 'benchmarks',
+        loadChildren: () =>
+          import('@shared/components/benchmarks-tab/benchmarks.module').then((m) => m.BenchmarksModule),
+
+        data: {
+          title: 'Benchmarks',
+        },
+      },
       {
         path: 'data-area',
         loadChildren: () =>
@@ -105,24 +149,26 @@ const routes: Routes = [
         },
       },
       {
+        path: 'add-and-manage-mandatory-training',
+        loadChildren: () =>
+          import('@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module').then(
+            (m) => m.AddMandatoryTrainingModule,
+          ),
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Add Mandatory Training',
+        },
+      },
+      {
         path: '',
         component: ViewSubsidiaryWorkplaceComponent,
         resolve: {
           users: AllUsersForEstablishmentResolver,
-          establishment: SubsidiaryResolver,
+          establishment: WorkplaceResolver,
           workers: WorkersResolver,
         },
         data: { title: 'Workplace' },
-      },
-      {
-        path: 'users',
-        component: UsersComponent,
-        data: {
-          title: 'Workplace Users',
-        },
-        resolve: {
-          users: AllUsersForEstablishmentResolver,
-        },
       },
       {
         path: 'start',
@@ -499,14 +545,22 @@ const routes: Routes = [
     ],
   },
   {
-    // ???
     path: 'staff-records/:establishmentuid',
     component: ViewSubsidiaryStaffRecordsComponent,
     data: { title: 'Staff Records' },
     resolve: {
-      establishment: SubsidiaryResolver,
+      establishment: WorkplaceResolver,
       workers: WorkersResolver,
     },
+  },
+  {
+    path: 'staff-basic-records/:establishmentuid',
+    component: StaffBasicRecord,
+    resolve: {
+      establishment: WorkplaceResolver,
+      workers: WorkersResolver,
+    },
+    data: { title: 'Staff Basic Records' },
   },
   {
     path: 'training-and-qualifications/:establishmentuid',
@@ -514,7 +568,7 @@ const routes: Routes = [
     data: { title: 'Training and qualifications' },
     resolve: {
       // users: AllUsersForEstablishmentResolver,
-      establishment: SubsidiaryResolver,
+      establishment: WorkplaceResolver,
       workers: WorkersResolver,
     },
     // child: [
@@ -526,10 +580,11 @@ const routes: Routes = [
     component: ViewSubsidiaryBenchmarksComponent,
     data: { title: 'Benchmarks' },
     resolve: {
-      establishment: SubsidiaryResolver,
+      establishment: WorkplaceResolver,
       benchmarksResolver: BenchmarksResolver,
       rankingsResolver: RankingsResolver,
       usefulLinksPay: UsefulLinkPayResolver,
+      usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
     },
   },
   {
@@ -537,7 +592,8 @@ const routes: Routes = [
     component: ViewSubsidiaryWorkplaceUsersComponent,
     data: { title: 'Workplace users' },
     resolve: {
-      establishment: SubsidiaryResolver,
+      establishment: WorkplaceResolver,
+      users: AllUsersForEstablishmentResolver,
     },
   },
   {
@@ -545,7 +601,7 @@ const routes: Routes = [
     component: DeleteWorkplaceComponent,
     data: { title: 'Delete workplace' },
     resolve: {
-      establishment: SubsidiaryResolver,
+      establishment: WorkplaceResolver,
     },
   },
 ];

@@ -9,9 +9,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class ParentSubsidiaryViewService {
   private subsidiaryUidSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private subsidiaryWorkplace: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-  private _showSelectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  public readonly showSelectedTab$: Observable<string> = this._showSelectedTab$.asObservable();
-  private _canShowBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(true);
   private _getLastUpdatedDate$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private _totalRecords$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public readonly totalTrainingRecords$: Observable<any> = this._totalRecords$.asObservable();
@@ -22,14 +19,6 @@ export class ParentSubsidiaryViewService {
   private hasWorkers = false;
 
   constructor(private establishmentService: EstablishmentService) {}
-
-  public get showSelectedTab(): string {
-    return this._showSelectedTab$.value;
-  }
-
-  public set showSelectedTab(selectedTab: string) {
-    this._showSelectedTab$.next(selectedTab);
-  }
 
   setViewingSubAsParent(subsidiaryUid: string) {
     this.subsidiaryUid = subsidiaryUid;
@@ -64,6 +53,18 @@ export class ParentSubsidiaryViewService {
     this.subsidiaryWorkplace.next(null);
   }
 
+  getViewingSubAsParentDashboard(navUrl): boolean {
+    const subsidiaryDashboardUrls = [
+      `/subsidiary/home/${this.subsidiaryUid}`,
+      `/subsidiary/workplace/${this.subsidiaryUid}`,
+      `/subsidiary/staff-records/${this.subsidiaryUid}`,
+      `/subsidiary/training-and-qualifications/${this.subsidiaryUid}`,
+      `/subsidiary/benchmarks/${this.subsidiaryUid}`,
+      `/subsidiary/workplace-users/${this.subsidiaryUid}`,
+    ];
+    return subsidiaryDashboardUrls.includes(navUrl);
+  }
+
   getHasWorkers() {
     return this.hasWorkers;
   }
@@ -84,14 +85,6 @@ export class ParentSubsidiaryViewService {
   // Method to get the current subsidiary as an observable
   getObservableSubsidiary(): Observable<Establishment> {
     return this.subsidiaryWorkplace.asObservable();
-  }
-
-  public get canShowBannerObservable(): Observable<boolean> {
-    return this._canShowBanner$.asObservable();
-  }
-
-  public set canShowBanner(canShowBanner: boolean) {
-    this._canShowBanner$.next(canShowBanner);
   }
 
   public get getLastUpdatedDateObservable(): Observable<string> {

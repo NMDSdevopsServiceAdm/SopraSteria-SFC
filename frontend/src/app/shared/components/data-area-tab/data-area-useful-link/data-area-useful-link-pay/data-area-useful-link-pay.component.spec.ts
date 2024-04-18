@@ -7,11 +7,12 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { MockUsefulLinksService } from '@core/test-utils/MockUsefulLinksService';
 import { DataAreaUsefulLinkPayComponent } from './data-area-useful-link-pay.component';
+
 describe('DataAreaUsefulLinkPayComponent', () => {
   const usefulLinksPay = MockUsefulLinksService.usefulLinkFactory();
 
-  async function setup() {
-    const { fixture, getByText } = await render(DataAreaUsefulLinkPayComponent, {
+  async function setup(returnData = true) {
+    const { fixture, getByText, queryByTestId } = await render(DataAreaUsefulLinkPayComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -19,7 +20,7 @@ describe('DataAreaUsefulLinkPayComponent', () => {
           useValue: new MockActivatedRoute({
             snapshot: {
               data: {
-                usefulLinksPay,
+                usefulLinksPay: returnData ? usefulLinksPay : null,
               },
             },
           }),
@@ -32,21 +33,27 @@ describe('DataAreaUsefulLinkPayComponent', () => {
       component,
       fixture,
       getByText,
+      queryByTestId,
     };
   }
   it('should create', async () => {
+
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
-  it('should display title of the useful lonks pay page', async () => {
+  it('should display title of the useful links pay page', async () => {
     const { getByText } = await setup();
-
     expect(getByText(usefulLinksPay.data.title)).toBeTruthy();
   });
 
   it('should display content of the Data useful links pay page', async () => {
     const { getByText } = await setup();
     expect(getByText(usefulLinksPay.data.content)).toBeTruthy();
+  });
+
+  it('should not render when no data', async () => {
+    const { queryByTestId } = await setup(false);
+    expect(queryByTestId("usefulLinkPayTestId")).toBeFalsy();
   });
 });

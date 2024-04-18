@@ -1,3 +1,12 @@
+<app-new-dashboard-header
+  [workplace]="workplace"
+  [tab]="'training-and-qualifications'"
+  [canEditWorker]="canEditWorker"
+  [updatedDate]="tAndQsLastUpdated"
+  [tAndQCount]="totalRecords"
+  [hasWorkers]="workers?.length > 0"
+></app-new-dashboard-header>
+
 <div class="govuk-width-container govuk-!-padding-top-2">
   <div class="govuk-!-margin-top-6">
     <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
@@ -53,7 +62,6 @@
       ></app-training-and-qualifications-categories>
     </ng-container>
     <ng-template #noStaffRecords>
-      NO WORKERS
       <div data-testid="no-staff-records">
         <app-inset-text color="warning" [removeTopMargin]="true"
           >You need to <a href="#" (click)="navigateToStaffRecords($event)">add some staff records</a> before you can

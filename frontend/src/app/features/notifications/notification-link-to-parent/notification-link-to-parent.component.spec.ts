@@ -32,6 +32,7 @@ describe('NotificationLinkToParentComponent', () => {
         subEstablishmentName: 'Test sub',
         subEstablishmentUid: 'subUid',
         requestedOwnerType: 'Workplace',
+        updated: new Date('2023-12-14 17:23'),
       },
     };
     const { fixture, getByText, getByTestId, queryByText, getAllByText, findByText } = await render(
@@ -97,14 +98,126 @@ describe('NotificationLinkToParentComponent', () => {
     expect(permissionsTableHeading).toBeTruthy();
   });
 
-  it('should show the parent and postcode', async () => {
-    const { component, getByText } = await setup();
+  describe('link to parent is requested', () => {
+    it('should show the sub name and postcode', async () => {
+      const { component, getByText } = await setup('REQUESTED');
 
-    const parentName = component.notification.typeContent.parentEstablishmentName;
-    const parentPostCode = component.notification.typeContent.postCode;
+      const subName = component.notification.typeContent.subEstablishmentName;
+      const subPostCode = component.notification.typeContent.postCode;
 
-    const parentNameAndPostCodeText = `Your request to link to ${parentName}, ${parentPostCode}, has been approved.`;
+      const linkToParentRequestText = getByText(`${subName}, ${subPostCode} want to link to you.`);
 
-    expect(getByText(parentNameAndPostCodeText)).toBeTruthy();
+      expect(linkToParentRequestText).toBeTruthy();
+    });
+  });
+
+  describe('link to parent request is cancelled', () => {
+    it('should show the cancelled message', async () => {
+      const { component, getByText } = await setup('CANCELLED');
+
+      const subName = component.notification.typeContent.subEstablishmentName;
+
+      const linkToParentRequestText = getByText(`You have a request from ${subName} to link to you.`);
+
+      expect(linkToParentRequestText).toBeTruthy();
+    });
+  });
+
+  describe('link to parent request is denied', () => {
+    describe('parent notifications', () => {
+      it('shows the rejected text and reason', async () => {
+        const { component, getByText, fixture } = await setup('DENIED');
+
+        component.isWorkPlaceRequester = true;
+        component.notification.typeContent.rejectionReason = 'Not one of our subsidiaries';
+        fixture.detectChanges();
+
+        const subName = component.notification.typeContent.subEstablishmentName;
+
+        const rejectedText = getByText(`You have rejected a request from ${subName} to link to you.`);
+        const rejectedReasonText = getByText(component.notification.typeContent.rejectionReason);
+
+        expect(rejectedText).toBeTruthy();
+        expect(rejectedReasonText).toBeTruthy();
+      });
+
+      it('shows the rejected text and no reason', async () => {
+        const { component, getByText, fixture } = await setup('DENIED');
+
+        component.isWorkPlaceRequester = true;
+        fixture.detectChanges();
+
+        const subName = component.notification.typeContent.subEstablishmentName;
+
+        const rejectedText = getByText(`You have rejected a request from ${subName} to link to you.`);
+        const rejectedReasonText = getByText('No reason provided.');
+
+        expect(rejectedText).toBeTruthy();
+        expect(rejectedReasonText).toBeTruthy();
+      });
+    });
+
+    describe('sub notifications', () => {
+      it('shows the rejected text and reason', async () => {
+        const { component, getByText, fixture } = await setup('DENIED');
+
+        component.isWorkPlaceRequester = false;
+        component.notification.typeContent.rejectionReason = 'Not one of our subsidiaries';
+        fixture.detectChanges();
+
+        const parentName = component.notification.typeContent.parentEstablishmentName;
+        const parentPostCode = component.notification.typeContent.postCode;
+
+        const rejectedText = getByText(`${parentName}, ${parentPostCode} has rejected your request to link to them.`);
+        const rejectedReasonText = getByText(component.notification.typeContent.rejectionReason);
+
+        expect(rejectedText).toBeTruthy();
+        expect(rejectedReasonText).toBeTruthy();
+      });
+
+      it('shows the rejected text and no reason', async () => {
+        const { component, getByText, fixture } = await setup('DENIED');
+
+        component.isWorkPlaceRequester = false;
+        fixture.detectChanges();
+
+        const parentName = component.notification.typeContent.parentEstablishmentName;
+        const parentPostCode = component.notification.typeContent.postCode;
+
+        const rejectedText = getByText(`${parentName}, ${parentPostCode} has rejected your request to link to them.`);
+        const rejectedReasonText = getByText('No reason provided.');
+
+        expect(rejectedText).toBeTruthy();
+        expect(rejectedReasonText).toBeTruthy();
+      });
+    });
+  });
+
+  describe('link to parent is approved', () => {
+    it('should show the parent name and postcode in the sub notification', async () => {
+      const { component, getByText } = await setup();
+
+      const parentName = component.notification.typeContent.parentEstablishmentName;
+      const parentPostCode = component.notification.typeContent.postCode;
+
+      const parentNameAndPostCodeText = `Your request to link to ${parentName}, ${parentPostCode}, has been approved.`;
+
+      expect(getByText(parentNameAndPostCodeText)).toBeTruthy();
+    });
+
+    it('should show the sub name and postcode in the parent notification', async () => {
+      const { component, fixture } = await setup();
+
+      const subName = component.notification.typeContent.subEstablishmentName;
+      const subPostCode = component.notification.typeContent.postCode;
+      const approvalDate = '14 December 2023 at 5:23pm';
+
+      component.isWorkPlaceRequester = true;
+      fixture.detectChanges();
+
+      const parentApprovedRequestLinkText = `You approved a link request from ${subName}, ${subPostCode}, on ${approvalDate}.`;
+
+      expect(parentApprovedRequestLinkText).toBeTruthy();
+    });
   });
 });

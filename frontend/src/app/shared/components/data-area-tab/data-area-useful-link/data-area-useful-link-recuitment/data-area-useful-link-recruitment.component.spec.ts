@@ -11,8 +11,8 @@ import { DataAreaUsefulLinkRecruitmentComponent } from './data-area-useful-link-
 describe('DataAreaUsefulLinkRecruitmentComponent', () => {
   const usefulLinkRecruitment = MockUsefulLinksService.usefulLinkFactory();
 
-  async function setup() {
-    const { fixture, getByText } = await render(DataAreaUsefulLinkRecruitmentComponent, {
+  async function setup(returnData = true) {
+    const { fixture, getByText, queryByTestId } = await render(DataAreaUsefulLinkRecruitmentComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
@@ -20,7 +20,7 @@ describe('DataAreaUsefulLinkRecruitmentComponent', () => {
           useValue: new MockActivatedRoute({
             snapshot: {
               data: {
-                usefulLinkRecruitment,
+                usefulLinkRecruitment: returnData ? usefulLinkRecruitment : null,
               },
             },
           }),
@@ -33,6 +33,7 @@ describe('DataAreaUsefulLinkRecruitmentComponent', () => {
       component,
       fixture,
       getByText,
+      queryByTestId,
     };
   }
   it('should create', async () => {
@@ -42,12 +43,16 @@ describe('DataAreaUsefulLinkRecruitmentComponent', () => {
 
   it('should display title of the useful lonks recruitment page', async () => {
     const { getByText } = await setup();
-
     expect(getByText(usefulLinkRecruitment.data.title)).toBeTruthy();
   });
 
   it('should display content of the Data useful links recruitment page', async () => {
     const { getByText } = await setup();
     expect(getByText(usefulLinkRecruitment.data.content)).toBeTruthy();
+  });
+
+  it('should not render when no data', async () => {
+    const { queryByTestId } = await setup(false);
+    expect(queryByTestId("usefulLinkRecruitmentTestId")).toBeFalsy();
   });
 });

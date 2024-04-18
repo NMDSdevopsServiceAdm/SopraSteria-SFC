@@ -2,20 +2,27 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { DialogService } from '@core/services/dialog.service';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { SharedModule } from '@shared/shared.module';
-import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
 
 import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
 import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
-import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
-import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
+import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
+import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
-import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
-import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
+import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { DeleteWorkplaceComponent } from './delete-workplace/delete-workplace.component';
 
 @NgModule({
@@ -38,6 +45,17 @@ import { DeleteWorkplaceComponent } from './delete-workplace/delete-workplace.co
     ViewSubsidiaryWorkplaceUsersComponent,
     DeleteWorkplaceComponent,
   ],
-  providers: [ExpiresSoonAlertDatesResolver, SubsidiaryResolver, UserAccountResolver],
+  providers: [
+    DialogService,
+    WorkplaceResolver,
+    UserAccountResolver,
+    ExpiresSoonAlertDatesResolver,
+    JobsResolver,
+    BenchmarksResolver,
+    RankingsResolver,
+    UsefulLinkPayResolver,
+    UsefulLinkRecruitmentResolver,
+    GetMissingCqcLocationsResolver,
+  ],
 })
 export class SubsidiaryModule {}

@@ -1,4 +1,4 @@
-<app-new-dashboard-header tab="home"></app-new-dashboard-header>
+<app-new-dashboard-header tab="home" [workplace]="workplace"></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
   <ng-container *ngIf="newHomeDesignParentFlag || newHomeDesignParentFlag">
     <app-alert></app-alert>
@@ -14,7 +14,7 @@
     [canViewEstablishment]="canViewEstablishment"
   ></app-summary-section>
 </div>
-<div class="govuk-width-container govuk-!-margin-top-4">
+<div class="govuk-width-container govuk-!-margin-top-7">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-grid-row">

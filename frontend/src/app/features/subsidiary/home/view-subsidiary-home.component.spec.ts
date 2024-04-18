@@ -1,13 +1,11 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { TestBed } from '@angular/core/testing';
+import { TestBed, getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
-import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -22,13 +20,16 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, queryByText, render } from '@testing-library/angular';
 import { of } from 'rxjs';
-
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
-import { ParentHomeTabComponent } from './parent-home-tab.component';
+import { ViewSubsidiaryHomeComponent } from './view-subsidiary-home.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
+import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 
 const MockWindow = {
   dataLayer: {
@@ -38,15 +39,15 @@ const MockWindow = {
   },
 };
 
-describe('ParentHomeTabComponent', () => {
+describe('ViewSubsidiaryHomeComponent', () => {
   const setup = async (
     checkCqcDetails = false,
     establishment = Establishment,
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
   ) => {
-    const { fixture, queryAllByText, getByText, queryByText, getByTestId, queryByTestId } = await render(
-      ParentHomeTabComponent,
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId, getByRole, getByLabelText } = await render(
+      ViewSubsidiaryHomeComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
         providers: [
@@ -57,7 +58,7 @@ describe('ParentHomeTabComponent', () => {
           },
           {
             provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(),
+            useFactory: MockPermissionsService.factory(['canViewEstablishment', 'canViewListOfWorkers']),
             deps: [HttpClient, Router, UserService],
           },
           {
@@ -66,10 +67,24 @@ describe('ParentHomeTabComponent', () => {
             deps: [HttpClient],
           },
           {
+            provide: BenchmarksServiceBase,
+            useValue: {
+              benchmarksData: {
+                newBenchmarks: {
+                  meta: comparisonDataAvailable
+                    ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
+                    : { workplaces: 0, staff: 0, localAuthority: 'Test LA' },
+                } as BenchmarksResponse,
+              },
+            },
+          },
+          { provide: ParentSubsidiaryViewService, useClass: MockParentSubsidiaryViewService },
+          {
             provide: ActivatedRoute,
             useValue: {
               snapshot: {
                 data: {
+                  establishment: establishment,
                   workers: {
                     workersCreatedDate: [],
                     workerCount: 0,
@@ -91,11 +106,9 @@ describe('ParentHomeTabComponent', () => {
         ],
         declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
         componentProperties: {
-          workplace: establishment,
-          meta: comparisonDataAvailable
-            ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
-            : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
-          canRunLocalAuthorityReport: false,
+          subsidiaryWorkplace: establishment,
+          canViewListOfWorkers: true,
+          canViewEstablishment: true,
         },
         schemas: [NO_ERRORS_SCHEMA],
       },
@@ -103,31 +116,104 @@ describe('ParentHomeTabComponent', () => {
 
     const component = fixture.componentInstance;
 
-    const alertService = TestBed.inject(AlertService);
-    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
-
     const parentsRequestService = TestBed.inject(ParentRequestsService);
 
     const tabsService = TestBed.inject(TabsService);
     const tabsServiceSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
       fixture,
-      queryAllByText,
       getByText,
       queryByText,
       getByTestId,
       queryByTestId,
-      alertServiceSpy,
       parentsRequestService,
       tabsServiceSpy,
+      getByRole,
+      getByLabelText,
+      routerSpy,
     };
   };
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should show articles list', async () => {
+    const { getByTestId } = await setup();
+    expect(getByTestId('article-list')).toBeTruthy();
+  });
+
+  describe('Other links', () => {
+    describe('Get your ASC-WDS certificate link', () => {
+      it('should render the link with the correct href', async () => {
+        const { getByText } = await setup();
+        const link = getByText('Get your ASC-WDS certificate');
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual('/asc-wds-certificate');
+      });
+    });
+
+    describe('Bulk upload your data', () => {
+      it('should not render the link when can bulk upload is false', async () => {
+        const { queryByText, component, fixture } = await setup();
+
+        component.canBulkUpload = false;
+        component.isParentSubsidiaryView = true;
+        fixture.detectChanges();
+
+        expect(queryByText('Bulk upload your data')).toBeFalsy();
+      });
+    });
+
+    describe('Does your data meet WDF requirements link', () => {
+      it('should render the link with the correct href', async () => {
+        const { getByText, component, fixture } = await setup();
+        component.canViewReports = true;
+        fixture.detectChanges();
+        const link = getByText('Does your data meet WDF requirements?');
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual('/wdf');
+      });
+
+      it('should not render the link with the correct href when view reports is false', async () => {
+        const { queryByText, component, fixture } = await setup();
+        component.canViewReports = false;
+        fixture.detectChanges();
+        expect(queryByText('Does your data meet WDF requirements?')).toBeFalsy();
+      });
+    });
+
+    describe('About ASC-WDS link', () => {
+      it('should render the link with the correct href', async () => {
+        const { getByText } = await setup();
+        const link = getByText('About ASC-WDS');
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual('/about-ascwds');
+      });
+    });
+
+    describe('Help to get you started link', () => {
+      it('should render the link with the correct href', async () => {
+        const { getByText } = await setup();
+        const link = getByText('Help to get you started');
+        expect(link).toBeTruthy();
+        expect(link.getAttribute('href')).toEqual('/first-login-wizard');
+      });
+    });
+
+    it('should link to the first login wizard page when clicking "Help to get you started"', async () => {
+      const { getByText } = await setup();
+
+      const firstLoginWizardLink = getByText('Help to get you started');
+      expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
+    });
   });
 
   describe('cards', () => {
@@ -247,102 +333,42 @@ describe('ParentHomeTabComponent', () => {
       expect(benefitsBundleLink).toBeTruthy();
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
     });
-
-    it('should show a card with a link that takes you to the bulk upload page', async () => {
-      const { getByText } = await setup();
-
-      const bulkUploadLink = getByText('Bulk upload your data');
-
-      expect(bulkUploadLink).toBeTruthy();
-      expect(bulkUploadLink.getAttribute('href')).toBe('/bulk-upload');
-    });
-
-    it('should show a card with a link that takes you to the wdf page', async () => {
-      const { getByText } = await setup();
-
-      const wdfLink = getByText('Does your data meet WDF requirements?');
-
-      expect(wdfLink).toBeTruthy();
-      expect(wdfLink.getAttribute('href')).toBe('/wdf');
-    });
-
-    it('should show a card with a link that takes you to the ASC-WDS certificate page', async () => {
-      const { getByText } = await setup();
-
-      const ascWdsCertificateLink = getByText('Get your ASC-WDS certificate');
-
-      expect(ascWdsCertificateLink).toBeTruthy();
-      expect(ascWdsCertificateLink.getAttribute('href')).toBe('/asc-wds-certificate');
-    });
-
-    it('should show a card with a link that takes you to the ASC-WDS news page', async () => {
-      const { getByText } = await setup();
-
-      const ascWdsNewsLink = getByText('ASC-WDS news');
-
-      expect(ascWdsNewsLink).toBeTruthy();
-      expect(ascWdsNewsLink.getAttribute('href')).toBe('/articles/news-article-survey');
-    });
   });
 
   describe('summary', () => {
     it('should show summary box', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.canViewListOfWorkers = true;
-      fixture.detectChanges();
+      const { getByTestId } = await setup();
 
       const summaryBox = getByTestId('summaryBox');
 
       expect(summaryBox).toBeTruthy();
     });
 
-    it('should not show the summary section if the user does not have the correct permissions', async () => {
-      const { component, fixture, queryByTestId } = await setup();
-
-      component.canViewListOfWorkers = false;
-      fixture.detectChanges();
-
-      const summaryBox = queryByTestId('summaryBox');
-      expect(summaryBox).toBeFalsy();
-    });
-
     describe('workplace summary section', () => {
       it('should take you to the workplace tab when clicking the workplace link', async () => {
-        const { component, fixture, getByText, tabsServiceSpy } = await setup();
-
-        component.canViewListOfWorkers = true;
-        component.canViewEstablishment = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup();
 
         const workplaceLink = getByText('Workplace');
-        fireEvent.click(workplaceLink);
 
+        fireEvent.click(workplaceLink);
         expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
       });
 
       it('should show a warning link which should navigate to the workplace tab', async () => {
         const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-        const { component, fixture, getByText, tabsServiceSpy } = await setup(true, establishment);
-
-        component.canViewListOfWorkers = true;
-        component.canViewEstablishment = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup(true, establishment);
 
         const link = getByText('Add more details to your workplace');
-        fireEvent.click(link);
 
         expect(link).toBeTruthy();
+        fireEvent.click(link);
         expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
       });
     });
 
     describe('staff records summary section', () => {
       it('should show staff records link and take you to the staff records tab', async () => {
-        const { component, fixture, getByText, tabsServiceSpy } = await setup();
-
-        component.canViewListOfWorkers = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup();
 
         const staffRecordsLink = getByText('Staff records');
         fireEvent.click(staffRecordsLink);
@@ -353,95 +379,13 @@ describe('ParentHomeTabComponent', () => {
 
     describe('training and qualifications summary section', () => {
       it('should show training and qualifications link that take you the training and qualifications tab', async () => {
-        const { component, fixture, getByText, tabsServiceSpy } = await setup();
-
-        component.canViewListOfWorkers = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup();
 
         const trainingAndQualificationsLink = getByText('Training and qualifications');
         fireEvent.click(trainingAndQualificationsLink);
 
         expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
       });
-    });
-  });
-
-  describe('Local authority progress link', () => {
-    it('should not show link when not a local authority', async () => {
-      const { queryByText } = await setup();
-
-      expect(queryByText('Download local authority progress report (XLS)')).toBeFalsy();
-    });
-
-    it('should show the Local authority progress link when it is a local authority', async () => {
-      const { component, fixture, queryAllByText } = await setup();
-
-      component.canRunLocalAuthorityReport = true;
-
-      fixture.detectChanges();
-
-      expect(queryAllByText('Download local authority progress report (XLS)').length).toBe(1);
-    });
-  });
-
-  describe('parent request approved banner', () => {
-    it('should send alert after request to become a parent is approved', async () => {
-      const { component, fixture, alertServiceSpy, getByText } = await setup();
-
-      component.workplace.isParentApprovedBannerViewed = false;
-      component.isParent = true;
-      component.newHomeDesignParentFlag = true;
-
-      const message = `Your request to become a parent has been approved`;
-
-      fixture.detectChanges();
-      component.ngOnInit();
-
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: message,
-      });
-    });
-
-    it(`should not show if isParentApprovedBannerViewed has not been set`, async () => {
-      const { component, fixture, queryByTestId } = await setup();
-
-      component.isParentApprovedBannerViewed = null;
-      component.isParent = true;
-      component.newHomeDesignParentFlag = true;
-
-      fixture.detectChanges();
-
-      const alertBanner = queryByTestId('parentApprovedBanner');
-
-      expect(alertBanner).toBeFalsy();
-    });
-
-    it('should show an alert when they become a parent', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.isParentApprovedBannerViewed = false;
-      component.isParent = true;
-      component.newHomeDesignParentFlag = true;
-
-      fixture.detectChanges();
-      const alertBanner = getByTestId('parentApprovedBanner');
-
-      expect(alertBanner).toBeTruthy();
-    });
-
-    it(`should be removed after it's been viewed`, async () => {
-      const { component, fixture, queryByTestId } = await setup();
-
-      component.isParentApprovedBannerViewed = true;
-      component.isParent = true;
-      component.newHomeDesignParentFlag = true;
-
-      fixture.detectChanges();
-
-      const alertBanner = queryByTestId('parentApprovedBanner');
-
-      expect(alertBanner).toBeFalsy();
     });
   });
 });

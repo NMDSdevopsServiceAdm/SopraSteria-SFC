@@ -16,9 +16,7 @@ import { Subscription } from 'rxjs';
 })
 export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   @Input() dashboardView: boolean;
-  public canShowBanner = true;
   @Input() canAddWorker = false;
-  public updatedDate: string;
 
   private subscriptions: Subscription = new Subscription();
   public workplaceUid: string;
@@ -43,10 +41,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     private permissionsService: PermissionsService,
     private tabsService: TabsService,
     private benchmarksService: BenchmarksServiceBase,
-    private breadcrumbService: BreadcrumbService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
-    private route: ActivatedRoute,
-    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -63,29 +58,15 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
 
     this.parentWorkplaceName = name;
 
-    this.parentSubsidiaryViewService.canShowBannerObservable.subscribe((canShowBanner) => {
-      this.canShowBanner = canShowBanner;
-    });
-
     this.subscriptions.add(
-      this.parentSubsidiaryViewService.showSelectedTab$.subscribe((selectedTab) => {
+      this.tabsService.selectedTab$.subscribe((selectedTab) => {
         this.selectedTab = selectedTab;
       }),
     );
-
-
-    this.parentSubsidiaryViewService
-
-    this.parentSubsidiaryViewService.getLastUpdatedDateObservable.subscribe((getLastUpdatedDate) => {
-      this.updatedDate = getLastUpdatedDate;
-    });
-
-    this.parentSubsidiaryViewService;
   }
 
   ngOnChanges(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-    this.getPermissions();
   }
 
   private setWorkplace(): void {

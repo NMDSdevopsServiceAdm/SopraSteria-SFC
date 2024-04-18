@@ -274,21 +274,6 @@ describe('StaffRecordComponent', () => {
       });
     });
 
-    it('should redirect back to the child workplace when the worker is confirmed if a parent is in a child workplace', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup();
-
-      component.canEditWorker = true;
-      component.worker.completed = false;
-      fixture.detectChanges();
-
-      const button = getByText('Confirm record details');
-      fireEvent.click(button);
-
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
-        fragment: 'staff-records',
-        state: { showBanner: true },
-      });
-    });
   });
 
   describe('transfer staff record link', () => {

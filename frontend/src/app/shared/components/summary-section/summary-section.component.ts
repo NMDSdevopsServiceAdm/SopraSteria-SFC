@@ -5,7 +5,6 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import dayjs from 'dayjs';
 
 @Component({
@@ -52,7 +51,6 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     private tabsService: TabsService,
     private establishmentService: EstablishmentService,
     private router: Router,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -68,17 +66,15 @@ export class SummarySectionComponent implements OnInit, OnChanges {
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();
-
-    if (this.isParentSubsidiaryView) {
-      await this.router.navigate(['/subsidiary/', fragment, this.workplace.uid]);
-    }
-    if (route) {
+    if (this.isParentSubsidiaryView && route) {
+      this.tabsService.selectedTab = fragment;
       await this.router.navigate(route);
+    } else if (route) {
+      await this.router.navigate(route);
+      this.tabsService.selectedTab = fragment;
+    } else {
+      this.tabsService.selectedTab = fragment;
     }
-
-    this.parentSubsidiaryViewService.showSelectedTab = fragment;
-
-    this.navigateToTab(event, fragment);
   }
 
   public getWorkplaceSummaryMessage(): void {
@@ -122,7 +118,11 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[1].message = 'No staff records added in the last 12 months';
     } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
       this.sections[1].message = 'Some records only have mandatory data added';
-      this.sections[1].route = ['/staff-basic-records'];
+      if (this.isParentSubsidiaryView) {
+        this.sections[1].route = ['/staff-basic-records', this.workplace.uid];
+      } else {
+        this.sections[1].route = ['/staff-basic-records'];
+      }
     }
     this.showViewSummaryLinks(this.sections[1].linkText);
   }
