@@ -9,8 +9,8 @@ const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculato
 const nhsBsaApi = async (req, res) => {
   const workplaceId = req.params.workplaceId;
   const where = {
-    nmdsId: workplaceId
-  }
+    nmdsId: workplaceId,
+  };
 
   try {
     const workplaceDetail = await models.establishment.nhsBsaApiData(where);
@@ -30,7 +30,7 @@ const nhsBsaApi = async (req, res) => {
         } else if (parentId) {
           return {
             workplaceDetails: await workplaceObject(workplace),
-            parent: await parentList(parentId),
+            parentWorkplace: await parentList(parentId),
           };
         } else {
           return {
@@ -88,14 +88,14 @@ const parentList = async (parentId) => {
   const where = {
     id: parentId,
   };
-  const subs = await models.establishment.nhsBsaApiData(where);
+  const parentWorkplace = await models.establishment.nhsBsaApiData(where);
 
   const parentData = await Promise.all(
-    subs.map(async (workplace) => {
+    parentWorkplace.map(async (workplace) => {
       return await workplaceObject(workplace);
     }),
   );
-  return parentData;
+  return parentData.find((e) => !!e);
 };
 
 const wdfData = async (workplaceId) => {
@@ -124,6 +124,6 @@ const wdfData = async (workplaceId) => {
   }
 };
 
-router.route('/:workplaceId').get(rateLimiter,authorization.isAuthorised,nhsBsaApi);
+router.route('/:workplaceId').get(rateLimiter, authorization.isAuthorised, nhsBsaApi);
 module.exports = router;
 module.exports.nhsBsaApi = nhsBsaApi;
