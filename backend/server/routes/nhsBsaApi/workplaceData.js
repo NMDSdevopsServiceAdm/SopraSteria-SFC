@@ -95,7 +95,7 @@ const parentList = async (parentId) => {
       return await workplaceObject(workplace);
     }),
   );
-  return parentData.find((e) => !!e);
+   if (parentData) return parentData[0]
 };
 
 const wdfData = async (workplaceId) => {
