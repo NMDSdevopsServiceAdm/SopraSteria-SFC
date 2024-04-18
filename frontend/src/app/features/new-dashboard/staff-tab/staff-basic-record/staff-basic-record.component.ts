@@ -6,7 +6,6 @@ import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import dayjs from 'dayjs';
 
 @Component({
@@ -26,11 +25,10 @@ export class StaffBasicRecord implements OnInit, OnDestroy {
     protected backLinkService: BackLinkService,
     private route: ActivatedRoute,
     private permissionsService: PermissionsService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
-    this.workplace = this.route.snapshot.data.primaryWorkplace;
+    this.workplace = this.route.snapshot.data.establishment;
     const { workersNotCompleted } = this.route.snapshot.data.workers;
     this.workerCount = workersNotCompleted?.length;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
