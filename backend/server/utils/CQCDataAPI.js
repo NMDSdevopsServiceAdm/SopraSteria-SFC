@@ -1,8 +1,8 @@
 const axios = require('axios');
 const config = require('../config/config');
 
-const cqcEndpoint = config.get('cqcApi.url');
-const cqcSubscriptionKey = config.get('cqcApi.subscriptionKey');
+const cqcEndpoint = String(config.get('cqcApi.url'));
+const cqcSubscriptionKey = String(config.get('cqcApi.subscriptionKey'));
 
 module.exports = {
   getWorkplaceCQCData: async function (locationID) {
