@@ -70,7 +70,7 @@ var registrationSurvey = require('./server/routes/registrationSurvey');
 var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 var longTermAbsence = require('./server/routes/longTermAbsence');
 var nhsBsaApi = require('./server/routes/nhsBsaApi/workplaceData');
-var nhsBsaApiAuth = require('./server/routes/nhsBsaApi/index.js');
+var nhsBsaApiAuth = require('./server/routes/nhsBsaApi/index');
 
 // admin route
 var admin = require('./server/routes/admin');
