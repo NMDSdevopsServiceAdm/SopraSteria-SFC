@@ -270,6 +270,19 @@ const config = convict({
       env: 'GET_ADDRESS_API_KEY',
     },
   },
+  cqcApi: {
+    url: {
+      doc: 'The API endpoint for CQC',
+      format: 'url',
+      default: 'https://api.service.cqc.org.uk/public/v1',
+    },
+    subscriptionKey: {
+      doc: 'Subscription key for CQC API',
+      format: 'String',
+      default: '',
+      env: 'CQC_SUBSCRIPTION_KEY',
+    },
+  },
   aws: {
     region: {
       doc: 'AWS region',
