@@ -6,7 +6,7 @@ const { nhsBsaApi } = require('../../../../routes/nhsBsaApi/workplaceData');
 const models = require('../../../../models');
 
 describe('server/routes/nhsBsaApi/workplaceData.js', () => {
-  const workplaceId = 'F1005083';
+  const workplaceId = 'J1001845';
   let result;
   result = {
     id: 949,
@@ -32,7 +32,7 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
       url: `/api/v1/workplaces/${workplaceId}`,
 
       params: {
-        nmdsId: workplaceId,
+        workplaceId: workplaceId,
       },
     };
 
@@ -46,14 +46,14 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
 
   describe('nhsBsaApiData', () => {
     it('should return 200 when successfully retrieving a workplace data ', async () => {
-      sinon.stub(models.establishment, 'nhsBsaApiData').returns([result]);
+      sinon.stub(models.establishment, 'getNhsBsaApiDataByWorkplaceId').returns(result);
 
       await nhsBsaApi(req, res);
       const response = res._getJSONData();
 
       expect(res.statusCode).to.equal(200);
 
-      expect(response.workplaceData).to.deep.equal([
+      expect(response.workplaceData).to.deep.equal(
         {
           workplaceDetails: {
             workplaceId: 'J1001845',
@@ -73,11 +73,13 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
             isEligible: 'false',
           },
         },
-      ]);
+      );
     });
 
+
+
     it('should return 500 when an error is thrown', async () => {
-      sinon.stub(models.establishment, 'nhsBsaApiData').throws();
+      sinon.stub(models.establishment, 'getNhsBsaApiDataByWorkplaceId').throws();
       await nhsBsaApi(req, res);
 
       expect(res.statusCode).to.deep.equal(500);

@@ -2322,28 +2322,30 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.nhsBsaApiData = async function (where) {
-    return await this.findAll({
-      attributes: [
-        'id',
-        'nmdsId',
-        'NameValue',
-        'address1',
-        'locationId',
-        'town',
-        'postcode',
-        'isParent',
-        'dataOwner',
-        'NumberOfStaffValue',
-        'parentId',
-      ],
+
+  const attributes = [
+    'id',
+    'nmdsId',
+    'NameValue',
+    'address1',
+    'locationId',
+    'town',
+    'postcode',
+    'isParent',
+    'dataOwner',
+    'NumberOfStaffValue',
+    'parentId',
+  ];
+
+  Establishment.getNhsBsaApiDataByWorkplaceId = async function (where) {
+    return await this.findOne({
+      attributes,
       as: 'establishment',
 
       where: {
         archived: false,
-        ...where,
+       ...where
       },
-
       include: [
         {
           model: sequelize.models.services,
@@ -2355,6 +2357,39 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+
+  Establishment.getNhsBsaApiDataForSubs= async function (establishmentId) {
+    return await this.findAll({
+      attributes,
+      as: 'establishment',
+
+      where: {
+        archived: false,
+        parentId: establishmentId,
+      },
+
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name', 'category'],
+          required: true,
+        },
+      ],
+    });
+
+  };
+
+  Establishment.getWorkplaceId= async function (workplaceId) {
+    return await this.findOne({
+      attributes: ['nmdsId'],
+
+      where: {
+        archived: false,
+        nmdsId: workplaceId,
+      },
+    });
+  };
 
   return Establishment;
 };

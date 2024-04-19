@@ -8,37 +8,39 @@ const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculato
 
 const nhsBsaApi = async (req, res) => {
   const workplaceId = req.params.workplaceId;
+
+  const workplaceID = await models.establishment.getWorkplaceId(workplaceId);
+  if (!workplaceID) return res.status(404).json({ error: 'Can not find this Id.' });
+
   const where = {
     nmdsId: workplaceId,
   };
 
   try {
-    const workplaceDetail = await models.establishment.nhsBsaApiData(where);
+    const workplaceDetail = await models.establishment.getNhsBsaApiDataByWorkplaceId(where);
 
-    const workplaceData = await Promise.all(
-      workplaceDetail.map(async (workplace) => {
-        const isParent = workplace.isParent;
-        const establishmentId = workplace.id;
-        const parentId = workplace.parentId;
+    const isParent = workplaceDetail.isParent;
+    const establishmentId = workplaceDetail.id;
+    const parentId = workplaceDetail.parentId;
 
-        if (isParent) {
-          return {
-            isParent: workplace.isParent,
-            workplaceDetails: await workplaceObject(workplace),
-            subsidiaries: await subsidiariesList(establishmentId),
-          };
-        } else if (parentId) {
-          return {
-            workplaceDetails: await workplaceObject(workplace),
-            parentWorkplace: await parentList(parentId),
-          };
-        } else {
-          return {
-            workplaceDetails: await workplaceObject(workplace),
-          };
-        }
-      }),
-    );
+    let workplaceData = null;
+
+    if (isParent) {
+      workplaceData = {
+        isParent: workplaceDetail.isParent,
+        workplaceDetails: await workplaceObject(workplaceDetail),
+        subsidiaries: await subsidiariesList(establishmentId),
+      };
+    } else if (parentId) {
+      workplaceData = {
+        workplaceDetails: await workplaceObject(workplaceDetail),
+        parentWorkplace: await parentWorkplace(parentId),
+      };
+    } else {
+      workplaceData = {
+        workplaceDetails: await workplaceObject(workplaceDetail),
+      };
+    }
 
     res.status(200);
     return res.json({
@@ -71,10 +73,7 @@ const workplaceObject = async (workplace) => {
 };
 
 const subsidiariesList = async (establishmentId) => {
-  const where = {
-    parentId: establishmentId,
-  };
-  const subs = await models.establishment.nhsBsaApiData(where);
+  const subs = await models.establishment.getNhsBsaApiDataForSubs(establishmentId);
 
   const subsidiaries = await Promise.all(
     subs.map(async (workplace) => {
@@ -84,18 +83,13 @@ const subsidiariesList = async (establishmentId) => {
   return subsidiaries;
 };
 
-const parentList = async (parentId) => {
+const parentWorkplace = async (parentId) => {
   const where = {
     id: parentId,
   };
-  const parentWorkplace = await models.establishment.nhsBsaApiData(where);
+  const parentWorkplace = await models.establishment.getNhsBsaApiDataByWorkplaceId(where);
 
-  const parentData = await Promise.all(
-    parentWorkplace.map(async (workplace) => {
-      return await workplaceObject(workplace);
-    }),
-  );
-   if (parentData) return parentData[0]
+  return await workplaceObject(parentWorkplace);
 };
 
 const wdfData = async (workplaceId) => {
@@ -127,3 +121,5 @@ const wdfData = async (workplaceId) => {
 router.route('/:workplaceId').get(rateLimiter, authorization.isAuthorised, nhsBsaApi);
 module.exports = router;
 module.exports.nhsBsaApi = nhsBsaApi;
+
+
