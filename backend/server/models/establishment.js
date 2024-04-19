@@ -2380,16 +2380,6 @@ module.exports = function (sequelize, DataTypes) {
 
   };
 
-  Establishment.getWorkplaceId= async function (workplaceId) {
-    return await this.findOne({
-      attributes: ['nmdsId'],
-
-      where: {
-        archived: false,
-        nmdsId: workplaceId,
-      },
-    });
-  };
 
   return Establishment;
 };
