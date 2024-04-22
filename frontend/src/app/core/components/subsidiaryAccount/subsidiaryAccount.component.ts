@@ -1,8 +1,6 @@
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Component, Input, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -14,7 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './subsidiaryAccount.component.html',
   styleUrls: ['./subsidiaryAccount.component.scss'],
 })
-export class SubsidiaryAccountComponent implements OnInit, OnChanges {
+export class SubsidiaryAccountComponent implements OnInit {
   @Input() dashboardView: boolean;
   @Input() canAddWorker = false;
 
@@ -26,7 +24,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
-  public isParentSubsidiaryView: boolean;
   public parentWorkplaceName: string;
   public subWorkplace: Establishment;
   public subId: string;
@@ -50,8 +47,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
     this.workplaceId = id;
     this.getPermissions();
     this.setTabs();
-    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-
     this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid();
 
     this.setWorkplace();
@@ -63,10 +58,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnChanges {
         this.selectedTab = selectedTab;
       }),
     );
-  }
-
-  ngOnChanges(): void {
-    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
   }
 
   private setWorkplace(): void {
