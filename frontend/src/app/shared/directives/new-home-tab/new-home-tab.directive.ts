@@ -130,6 +130,12 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
 
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
+    this.subscriptions.add(
+      this.route.url.subscribe(() => {
+        this.article = this.route.snapshot.data.articleList?.data[0];
+      }),
+    );
+
     if (this.workplace) {
       this.subscriptions.add(
         this.parentRequestsService.parentStatusRequested(this.workplace.id).subscribe((parentStatusRequested) => {
@@ -186,15 +192,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.updateParentStatusRequested();
     this.updateCancelLinkToParentRequest();
     this.updateOnRemoveLinkToParentSuccess();
-    this.setArticle()
-  }
-
-  private setArticle(): void {
-    this.subscriptions.add(
-      this.route.url.subscribe(() => {
-        this.article = this.route.snapshot.data.articleList?.data[0];
-      }),
-    );
   }
 
   private setBenchmarksCard(): void {
