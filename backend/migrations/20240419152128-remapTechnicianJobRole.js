@@ -73,8 +73,44 @@ module.exports = {
         }
       }
 
+      async function updateMandatoryTrainingJobs() {
+        const trainingWithOldJob = await models.MandatoryTraining.count({
+          where: {
+            jobFK: 29
+          }
+        });
+
+        const trainingWithNewJobPreUpdate = await models.MandatoryTraining.count({
+          where: {
+            jobFK: 21
+          }
+        });
+
+        await models.MandatoryTraining.update(
+          { jobFK: 21 },
+          {
+            where: {
+              jobFK: 29
+            }
+          },
+          { transaction }
+        );
+
+        const trainingWithNewJobPostUpdate = await models.MandatoryTraining.count({
+          where: {
+            jobFK: 21
+          }
+        });
+
+        if(trainingWithNewJobPostUpdate !== trainingWithOldJob + trainingWithNewJobPreUpdate) {
+          throw new Error(`ManadatoryTraining: Expected ${trainingWithOldJob} rows to be updated, but found ${trainingWithNewJobPostUpdate - trainingWithNewJobPreUpdate} instead`);
+        }
+      }
+
+
       await updateWorker();
       await updateWorkerJobs();
+      await updateMandatoryTrainingJobs();
     });
   },
 

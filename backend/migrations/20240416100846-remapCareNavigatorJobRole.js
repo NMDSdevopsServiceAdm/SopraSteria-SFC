@@ -42,21 +42,21 @@ module.exports = {
       async function updateWorkerJobs() {
         const workersWithOldJob = await models.workerJobs.count({
           where: {
-            jobFk: 29
+            jobFk: 9
           }
         });
 
         const workersWithNewJobPreUpdate = await models.workerJobs.count({
           where: {
-            jobFk: 21
+            jobFk: 8
           }
         });
 
         await models.workerJobs.update(
-          { jobFk: 21 },
+          { jobFk: 8 },
           {
             where: {
-              jobFk: 29
+              jobFk: 9
             }
           },
           { transaction }
@@ -64,7 +64,7 @@ module.exports = {
 
         const workersWithNewJobPostUpdate = await models.workerJobs.count({
           where: {
-            jobFk: 21
+            jobFk: 8
           }
         });
 
@@ -73,8 +73,43 @@ module.exports = {
         }
       }
 
+      async function updateMandatoryTrainingJobs() {
+        const trainingWithOldJob = await models.MandatoryTraining.count({
+          where: {
+            jobFK: 9
+          }
+        });
+
+        const trainingWithNewJobPreUpdate = await models.MandatoryTraining.count({
+          where: {
+            jobFK: 8
+          }
+        });
+
+        await models.MandatoryTraining.update(
+          { jobFK: 8 },
+          {
+            where: {
+              jobFK: 9
+            }
+          },
+          { transaction }
+        );
+
+        const trainingWithNewJobPostUpdate = await models.MandatoryTraining.count({
+          where: {
+            jobFK: 8
+          }
+        });
+
+        if(trainingWithNewJobPostUpdate !== trainingWithOldJob + trainingWithNewJobPreUpdate) {
+          throw new Error(`ManadatoryTraining: Expected ${trainingWithOldJob} rows to be updated, but found ${trainingWithNewJobPostUpdate - trainingWithNewJobPreUpdate} instead`);
+        }
+      }
+
       await updateWorker();
       await updateWorkerJobs();
+      await updateMandatoryTrainingJobs();
     });
   },
 
