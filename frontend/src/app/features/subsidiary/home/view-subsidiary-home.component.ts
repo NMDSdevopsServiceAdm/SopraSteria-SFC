@@ -85,8 +85,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
 
-    this.parentSubsidiaryViewService.setTotalTrainingRecords(this.trainingCounts.totalRecords);
-
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();

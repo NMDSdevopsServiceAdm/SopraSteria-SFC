@@ -134,7 +134,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.totalExpiringTraining = this.trainingCounts.totalExpiringTraining;
     this.missingMandatoryTraining = this.trainingCounts.missingMandatoryTraining;
     this.staffMissingMandatoryTraining = this.trainingCounts.staffMissingMandatoryTraining;
-    this.parentSubsidiaryViewService.setTotalTrainingRecords(this.trainingCounts.totalRecords);
   }
 
   public handleViewTrainingByCategory(visible: boolean): void {

@@ -12,8 +12,6 @@ export class ParentSubsidiaryViewService {
   private _getLastUpdatedDate$: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private _totalRecords$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
   public readonly totalTrainingRecords$: Observable<any> = this._totalRecords$.asObservable();
-  private totalRecords: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-
   private viewingSubAsParent = false;
   private subsidiaryUid: string;
 
@@ -31,14 +29,6 @@ export class ParentSubsidiaryViewService {
         this.subsidiaryWorkplace.next(workplace);
       }
     });
-  }
-
-  getTotalTrainingRecords(): BehaviorSubject<number> {
-    return this.totalRecords;
-  }
-
-  setTotalTrainingRecords(totalRecords: number) {
-    this._totalRecords$.next(totalRecords);
   }
 
   clearViewingSubAsParent() {
