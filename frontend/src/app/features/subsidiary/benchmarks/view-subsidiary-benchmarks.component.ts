@@ -5,11 +5,8 @@ import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/m
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
 import { DataAreaAboutTheDataComponent } from '@shared/components/data-area-tab/about-the-data/about-the-data.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-view-subsidiary-benchmarks',
@@ -36,15 +33,12 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
   public newDashboard: boolean;
   public canSeeNewDataArea: boolean;
   public newDataAreaFlag: boolean;
-  public lastUpdatedDate: string
+  public lastUpdatedDate: string;
 
   constructor(
-    private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
     protected benchmarksService: BenchmarksServiceBase,
     public route: ActivatedRoute,
-    private tabsService: TabsService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private featureFlagsService: FeatureFlagsService,
   ) {}
 
@@ -53,12 +47,9 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
 
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 
-    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
-      if (subsidiaryWorkplace) {
-        this.workplace = subsidiaryWorkplace;
-        this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
-      }
-    });
+    this.workplace = this.route.snapshot.data.establishment;
+    this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+
     this.lastUpdatedDate = this.tilesData?.meta.lastUpdated.toString();
   }
 
