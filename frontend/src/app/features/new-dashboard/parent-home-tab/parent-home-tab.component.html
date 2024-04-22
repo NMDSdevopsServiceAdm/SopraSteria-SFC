@@ -106,7 +106,7 @@
         <app-card [image]="'/assets/images/news.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-            routerLink="/articles/news-article-survey"
+            [routerLink]="['/articles', article.slug]"
             href="#"
             >ASC-WDS news</a
           >
