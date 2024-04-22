@@ -1,6 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Article } from '@core/model/article.model';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -96,6 +97,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public locationId: string;
   public workplacesCount: number;
   public isParentSubsidiaryView: boolean;
+  public article: Article;
 
   constructor(
     private userService: UserService,
@@ -184,6 +186,15 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.updateParentStatusRequested();
     this.updateCancelLinkToParentRequest();
     this.updateOnRemoveLinkToParentSuccess();
+    this.setArticle()
+  }
+
+  private setArticle(): void {
+    this.subscriptions.add(
+      this.route.url.subscribe(() => {
+        this.article = this.route.snapshot.data.articleList?.data[0];
+      }),
+    );
   }
 
   private setBenchmarksCard(): void {
