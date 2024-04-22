@@ -16,7 +16,6 @@ export class ParentSubsidiaryViewService {
 
   private viewingSubAsParent = false;
   private subsidiaryUid: string;
-  private hasWorkers = false;
 
   constructor(private establishmentService: EstablishmentService) {}
 
@@ -32,10 +31,6 @@ export class ParentSubsidiaryViewService {
         this.subsidiaryWorkplace.next(workplace);
       }
     });
-  }
-
-  setHasWorkers(workersCount: number) {
-    return (this.hasWorkers = workersCount > 0);
   }
 
   getTotalTrainingRecords(): BehaviorSubject<number> {
@@ -63,10 +58,6 @@ export class ParentSubsidiaryViewService {
       `/subsidiary/workplace-users/${this.subsidiaryUid}`,
     ];
     return subsidiaryDashboardUrls.includes(navUrl);
-  }
-
-  getHasWorkers() {
-    return this.hasWorkers;
   }
 
   getViewingSubAsParent() {

@@ -65,9 +65,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.tAndQsLastUpdated = this.route.snapshot.data.workers?.tAndQsLastUpdated;
-
-    this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
-
     this.workplace = this.route.snapshot.data.establishment;
 
     const alertMessage = history.state?.alertMessage;
