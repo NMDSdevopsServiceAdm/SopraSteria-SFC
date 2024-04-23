@@ -1,16 +1,16 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
-import { RouterModule } from '@angular/router';
+import { getTestBed, TestBed } from '@angular/core/testing';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceModule } from '../workplace.module';
 import { StartComponent } from './start.component';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 
 describe('StartComponent (workplace)', () => {
   async function setup(navigatedFromFragment = '') {
@@ -32,8 +32,12 @@ describe('StartComponent (workplace)', () => {
     });
 
     const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
 
-    return { component, fixture, getByText };
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    return { component, fixture, getByText, routerSpy };
   }
 
   it('should render a StartComponent', async () => {
@@ -42,25 +46,15 @@ describe('StartComponent (workplace)', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have link to type of employer page on continue button', async () => {
-    const { component, getByText } = await setup();
+  it('should navigate to type of employer page after clicking continue button', async () => {
+    const { component, getByText, routerSpy } = await setup();
 
     const workplaceUid = component.establishment.uid;
     const continueButton = getByText('Continue');
 
-    expect(continueButton.getAttribute('href')).toBe('/workplace/' + workplaceUid + '/other-services');
-  });
+    fireEvent.click(continueButton);
 
-  it('should have link to type of employer page on continue button if isViewingSubAsParent is true', async () => {
-    const { component, getByText, fixture } = await setup();
-
-    const workplaceUid = component.establishment.uid;
-    const continueButton = getByText('Continue');
-
-    component.isViewingSubAsParent = true;
-    fixture.detectChanges();
-
-    expect(continueButton.getAttribute('href')).toBe('/subsidiary/workplace/' + workplaceUid + '/other-services');
+    expect(routerSpy).toHaveBeenCalledWith(['workplace', workplaceUid, 'other-services']);
   });
 
   it('should call the updateSingleEstablishmentField when clicking the Continue button', async () => {
