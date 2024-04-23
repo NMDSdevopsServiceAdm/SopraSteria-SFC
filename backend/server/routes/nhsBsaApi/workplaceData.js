@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../models');
 const authorization = require('../../utils/middleware/isNHSBSAAuthenticated');
-const {authLimiter} = require('../../utils/middleware/rateLimitingNHSBSAAPI');
+const { authLimiter } = require('../../utils/middleware/rateLimitingNHSBSAAPI');
 // WDF effective date
 const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculator;
 
@@ -120,3 +120,4 @@ router.route('/:workplaceId').get(authLimiter, authorization.isAuthorised, nhsBs
 module.exports = router;
 module.exports.nhsBsaApi = nhsBsaApi;
 module.exports.subsidiariesList = subsidiariesList;
+module.exports.wdfData = wdfData;
