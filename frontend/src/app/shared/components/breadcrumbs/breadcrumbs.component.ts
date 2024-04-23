@@ -24,7 +24,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.establishmentService.primaryWorkplace$.subscribe((workplace) => {
+      this.establishmentService.establishment$.subscribe((workplace) => {
         this.workplace = workplace;
       }),
     );
