@@ -2323,7 +2323,7 @@ module.exports = function (sequelize, DataTypes) {
   };
 
 
-  const attributes = [
+  const nhsBsaAttributes = [
     'id',
     'nmdsId',
     'NameValue',
@@ -2339,7 +2339,7 @@ module.exports = function (sequelize, DataTypes) {
 
   Establishment.getNhsBsaApiDataByWorkplaceId = async function (where) {
     return await this.findOne({
-      attributes,
+      nhsBsaAttributes,
       as: 'establishment',
 
       where: {
@@ -2360,7 +2360,7 @@ module.exports = function (sequelize, DataTypes) {
 
   Establishment.getNhsBsaApiDataForSubs= async function (establishmentId) {
     return await this.findAll({
-      attributes,
+      nhsBsaAttributes,
       as: 'establishment',
 
       where: {
