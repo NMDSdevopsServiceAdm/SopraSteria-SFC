@@ -9,9 +9,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 export class ParentSubsidiaryViewService {
   private subsidiaryUidSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private subsidiaryWorkplace: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-  private _getLastUpdatedDate$: BehaviorSubject<string> = new BehaviorSubject<string>('');
-  private _totalRecords$: BehaviorSubject<number> = new BehaviorSubject<number>(0);
-  public readonly totalTrainingRecords$: Observable<any> = this._totalRecords$.asObservable();
   private viewingSubAsParent = false;
   private subsidiaryUid: string;
 
@@ -66,13 +63,5 @@ export class ParentSubsidiaryViewService {
   // Method to get the current subsidiary as an observable
   getObservableSubsidiary(): Observable<Establishment> {
     return this.subsidiaryWorkplace.asObservable();
-  }
-
-  public get getLastUpdatedDateObservable(): Observable<string> {
-    return this._getLastUpdatedDate$.asObservable();
-  }
-
-  public set getLastUpdatedDate(lastUpdatedDate: string) {
-    this._getLastUpdatedDate$.next(lastUpdatedDate);
   }
 }
