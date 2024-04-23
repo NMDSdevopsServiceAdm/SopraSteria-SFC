@@ -17,13 +17,11 @@ import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, queryByText, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -79,7 +77,6 @@ describe('ViewSubsidiaryHomeComponent', () => {
               },
             },
           },
-          { provide: ParentSubsidiaryViewService, useClass: MockParentSubsidiaryViewService },
           {
             provide: ActivatedRoute,
             useValue: {

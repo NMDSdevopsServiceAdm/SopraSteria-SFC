@@ -5,8 +5,6 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkplaceModule } from '../workplace.module';
@@ -23,10 +21,6 @@ describe('StartComponent (workplace)', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
-        },
-        {
-          provide: ParentSubsidiaryViewService,
-          useClass: MockParentSubsidiaryViewService,
         },
       ],
     });
