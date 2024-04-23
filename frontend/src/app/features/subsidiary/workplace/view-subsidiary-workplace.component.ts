@@ -6,7 +6,6 @@ import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-view-subsidiary-workplace',
@@ -17,7 +16,6 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
   public canEditEstablishment: boolean;
   public addWorkplaceDetailsBanner: boolean;
   public showCqcDetailsBanner: boolean;
-  public isParentViewingSubsidiary: boolean;
 
   public workplace: Establishment;
   public workerCount: number;
@@ -26,12 +24,10 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
-    this.isParentViewingSubsidiary = true; // TODO use original component and use this to differentiate
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
