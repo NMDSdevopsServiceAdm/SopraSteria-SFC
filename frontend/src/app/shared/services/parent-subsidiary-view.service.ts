@@ -7,7 +7,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ParentSubsidiaryViewService {
-  private subsidiaryUidSubject: BehaviorSubject<string> = new BehaviorSubject<string>('');
   private subsidiaryWorkplace: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private viewingSubAsParent = false;
   private subsidiaryUid: string;
@@ -17,7 +16,6 @@ export class ParentSubsidiaryViewService {
   setViewingSubAsParent(subsidiaryUid: string) {
     this.subsidiaryUid = subsidiaryUid;
     this.viewingSubAsParent = true;
-    this.subsidiaryUidSubject.next(subsidiaryUid);
 
     this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
       if (workplace) {
@@ -31,7 +29,6 @@ export class ParentSubsidiaryViewService {
   clearViewingSubAsParent() {
     this.subsidiaryUid = null;
     this.viewingSubAsParent = false;
-    this.subsidiaryUidSubject.next('');
     this.subsidiaryWorkplace.next(null);
   }
 
@@ -53,11 +50,6 @@ export class ParentSubsidiaryViewService {
 
   getSubsidiaryUid() {
     return this.subsidiaryUid;
-  }
-
-  // Method to get the current UID as an observable
-  getObservableSubsidiaryUid(): Observable<string> {
-    return this.subsidiaryUidSubject.asObservable();
   }
 
   // Method to get the current subsidiary as an observable
