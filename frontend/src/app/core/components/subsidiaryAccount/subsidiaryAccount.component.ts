@@ -17,18 +17,15 @@ export class SubsidiaryAccountComponent implements OnInit {
   @Input() canAddWorker = false;
 
   private subscriptions: Subscription = new Subscription();
-  public workplaceUid: string;
-  public workplaceId: number;
   public canViewEstablishment: boolean;
   public canViewListOfUsers: boolean;
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
   public parentWorkplaceName: string;
-  public subWorkplace: Establishment;
-  public subId: string;
+  public subId: number;
+  public subUid: string;
   public selectedTab: string;
-  public parentUid: string;
   public subsidiaryWorkplace: Establishment;
   public canEditWorker: boolean;
   public hasWorkers: boolean;
@@ -42,16 +39,11 @@ export class SubsidiaryAccountComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const { uid, id, name } = this.establishmentService.primaryWorkplace;
-    this.workplaceUid = uid;
-    this.workplaceId = id;
-    this.getPermissions();
-    this.setTabs();
-    this.subId = this.parentSubsidiaryViewService.getSubsidiaryUid();
-
+    this.subUid = this.parentSubsidiaryViewService.getSubsidiaryUid();
     this.setWorkplace();
 
-    this.parentWorkplaceName = name;
+    this.getPermissions();
+    this.setTabs();
 
     this.subscriptions.add(
       this.tabsService.selectedTab$.subscribe((selectedTab) => {
@@ -62,11 +54,10 @@ export class SubsidiaryAccountComponent implements OnInit {
 
   private setWorkplace(): void {
     this.subscriptions.add(
-      this.establishmentService.getEstablishment(this.subId, true).subscribe((workplace) => {
-        this.subWorkplace = workplace;
+      this.establishmentService.getEstablishment(this.subUid, true).subscribe((workplace) => {
         this.establishmentService.setState(workplace);
-        this.parentWorkplaceName = this.subWorkplace?.parentName;
-        this.parentUid = this.subWorkplace?.parentUid;
+        this.subId = workplace.id;
+        this.parentWorkplaceName = workplace.parentName;
       }),
     );
     this.selectedTab = 'home';
@@ -76,17 +67,17 @@ export class SubsidiaryAccountComponent implements OnInit {
     this.selectedTab = properties.tabSlug;
 
     if (properties.tabSlug === 'benchmarks') {
-      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.workplaceId).subscribe());
+      this.subscriptions.add(this.benchmarksService.postBenchmarkTabUsage(this.subId).subscribe());
     }
   }
 
   private getPermissions(): void {
-    this.canViewBenchmarks = this.permissionsService.can(this.workplaceUid, 'canViewBenchmarks') || true;
-    this.canViewListOfUsers = this.permissionsService.can(this.workplaceUid, 'canViewListOfUsers');
-    this.canViewListOfWorkers = this.permissionsService.can(this.workplaceUid, 'canViewListOfWorkers');
-    this.canViewEstablishment = this.permissionsService.can(this.workplaceUid, 'canViewEstablishment');
-    this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
-    this.canAddWorker = this.permissionsService.can(this.workplaceUid, 'canAddWorker');
+    this.canViewBenchmarks = this.permissionsService.can(this.subUid, 'canViewBenchmarks') || true;
+    this.canViewListOfUsers = this.permissionsService.can(this.subUid, 'canViewListOfUsers');
+    this.canViewListOfWorkers = this.permissionsService.can(this.subUid, 'canViewListOfWorkers');
+    this.canViewEstablishment = this.permissionsService.can(this.subUid, 'canViewEstablishment');
+    this.canEditWorker = this.permissionsService.can(this.subUid, 'canEditWorker');
+    this.canAddWorker = this.permissionsService.can(this.subUid, 'canAddWorker');
   }
 
   private setTabs(): void {
