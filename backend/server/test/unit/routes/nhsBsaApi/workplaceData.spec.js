@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
-const { nhsBsaApi } = require('../../../../routes/nhsBsaApi/workplaceData');
+const { nhsBsaApi, subsidiariesList,wdfData } = require('../../../../routes/nhsBsaApi/workplaceData');
 const models = require('../../../../models');
 
 describe('server/routes/nhsBsaApi/workplaceData.js', () => {
@@ -44,7 +44,7 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
     sinon.restore();
   });
 
-  describe('nhsBsaApiData', () => {
+  describe('nhsBsaApi', () => {
     it('should return 200 when successfully retrieving a workplace data ', async () => {
       sinon.stub(models.establishment, 'getNhsBsaApiDataByWorkplaceId').returns(result);
 
@@ -74,6 +74,45 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
       });
     });
 
+    it('should return successfully a list of subsidiaries', async () => {
+      sinon.stub(models.establishment, 'getNhsBsaApiDataForSubs').returns([result]);
+
+      const establishmentId = result.id;
+
+      const subs = await subsidiariesList(establishmentId);
+
+      expect(subs).to.deep.equal([
+        {
+          workplaceId: 'J1001845',
+          workplaceName: 'SKILLS FOR CARE',
+          dataOwner: 'Workplace',
+          workplaceAddress: { firstLine: 'WEST GATE', town: 'LEEDS', postCode: 'LS1 2RP' },
+          locationId: null,
+          numberOfWorkplaceStaff: 2,
+          serviceName: 'Domiciliary care services',
+          serviceCategory: 'Adult domiciliary',
+          eligibilityPercentage: 0,
+          eligibilityDate: new Date('2021-05-13T09:27:34.471Z'),
+          isEligible: 'false'
+        }
+      ]);
+    });
+
+
+    it('should return WDF eligibility of a workplace', async () => {
+      const establishmentId = result.id;
+
+      const wdf = await wdfData(establishmentId);
+
+      expect(wdf).to.deep.equal(
+        {
+          eligibilityPercentage: 0,
+          eligibilityDate: new Date('2021-05-13T09:27:34.471Z'),
+          isEligible: 'false'
+        }
+      );
+    });
+
     it('should return 404 when workplace is not found', async () => {
       sinon.stub(models.establishment, 'getNhsBsaApiDataByWorkplaceId').returns(null);
       await nhsBsaApi(req, res);
@@ -82,13 +121,11 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
       expect(res._getJSONData()).to.deep.equal({ error: 'Can not find this Id.' });
     });
 
-
     it('should return 500 when an error is thrown', async () => {
       sinon.stub(models.establishment, 'getNhsBsaApiDataByWorkplaceId').throws();
       await nhsBsaApi(req, res);
 
       expect(res.statusCode).to.deep.equal(500);
     });
-
   });
 });
