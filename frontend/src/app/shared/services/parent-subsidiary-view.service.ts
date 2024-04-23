@@ -1,13 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ParentSubsidiaryViewService {
-  private subsidiaryWorkplace: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private viewingSubAsParent = false;
   private subsidiaryUid: string;
 
@@ -19,9 +16,7 @@ export class ParentSubsidiaryViewService {
 
     this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
       if (workplace) {
-        this.establishmentService.setPrimaryWorkplace(workplace);
         this.establishmentService.setWorkplace(workplace);
-        this.subsidiaryWorkplace.next(workplace);
       }
     });
   }
@@ -29,7 +24,6 @@ export class ParentSubsidiaryViewService {
   clearViewingSubAsParent() {
     this.subsidiaryUid = null;
     this.viewingSubAsParent = false;
-    this.subsidiaryWorkplace.next(null);
   }
 
   getViewingSubAsParentDashboard(navUrl): boolean {
@@ -50,10 +44,5 @@ export class ParentSubsidiaryViewService {
 
   getSubsidiaryUid() {
     return this.subsidiaryUid;
-  }
-
-  // Method to get the current subsidiary as an observable
-  getObservableSubsidiary(): Observable<Establishment> {
-    return this.subsidiaryWorkplace.asObservable();
   }
 }
