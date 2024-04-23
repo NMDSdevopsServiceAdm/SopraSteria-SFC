@@ -2,13 +2,12 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../models');
 const authorization = require('../../utils/middleware/isNHSBSAAuthenticated');
-const rateLimiter = require('../../utils/middleware/rateLimitingNHSBSAAPI');
+const {authLimiter} = require('../../utils/middleware/rateLimitingNHSBSAAPI');
 // WDF effective date
 const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculator;
 
 const nhsBsaApi = async (req, res) => {
   const workplaceId = req.params.workplaceId;
-
 
   const where = {
     nmdsId: workplaceId,
@@ -117,8 +116,7 @@ const wdfData = async (workplaceId) => {
   }
 };
 
-router.route('/:workplaceId').get(rateLimiter, authorization.isAuthorised, nhsBsaApi);
+router.route('/:workplaceId').get(authLimiter, authorization.isAuthorised, nhsBsaApi);
 module.exports = router;
 module.exports.nhsBsaApi = nhsBsaApi;
-
-
+module.exports.subsidiariesList = subsidiariesList;
