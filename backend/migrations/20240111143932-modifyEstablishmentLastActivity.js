@@ -2,9 +2,14 @@
 
 module.exports = {
   up: async (queryInterface) => {
-    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivity"');
+    return queryInterface.sequelize.transaction(async (transaction) => {
+      await Promise.all([
+        queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivity"', {
+          transaction,
+        }),
 
-    await queryInterface.sequelize.query(`
+        queryInterface.sequelize.query(
+          `
       CREATE MATERIALIZED VIEW cqc."EstablishmentLastActivity" AS (
         SELECT e."EstablishmentID",
           e."NameValue",
@@ -52,27 +57,39 @@ module.exports = {
           FROM cqc."Establishment" e
           WHERE e."Archived" = false
       );
-    `);
+    `,
+          {
+            transaction,
+          },
+        ),
 
-    await queryInterface.addIndex(
-      {
-        tableName: 'EstablishmentLastActivity',
-        schema: 'cqc',
-      },
-      {
-        fields: ['IsParent', 'PrimaryUserEmail', 'LastLogin', 'LastUpdated', 'DataOwner'],
-      },
-    );
+        queryInterface.addIndex(
+          {
+            tableName: 'EstablishmentLastActivity',
+            schema: 'cqc',
+          },
+          {
+            fields: ['IsParent', 'PrimaryUserEmail', 'LastLogin', 'LastUpdated', 'DataOwner'],
+          },
+          {
+            transaction,
+          },
+        ),
 
-    await queryInterface.addIndex(
-      {
-        tableName: 'EstablishmentLastActivity',
-        schema: 'cqc',
-      },
-      {
-        fields: ['IsParent', 'PrimaryUserEmail'],
-      },
-    );
+        queryInterface.addIndex(
+          {
+            tableName: 'EstablishmentLastActivity',
+            schema: 'cqc',
+          },
+          {
+            fields: ['IsParent', 'PrimaryUserEmail'],
+          },
+          {
+            transaction,
+          },
+        ),
+      ]);
+    });
   },
 
   down: async (queryInterface) => {
