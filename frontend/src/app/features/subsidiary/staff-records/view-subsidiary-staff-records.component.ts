@@ -33,6 +33,7 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
+    this.tabsService.selectedTab = 'staff-records';
     this.workerService.setAddStaffRecordInProgress(false);
     this.createStaffResponse = this.workerService.getCreateStaffResponse();
 
