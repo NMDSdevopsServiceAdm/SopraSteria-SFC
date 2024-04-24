@@ -2322,5 +2322,64 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+
+  const nhsBsaAttributes = [
+    'id',
+    'nmdsId',
+    'NameValue',
+    'address1',
+    'locationId',
+    'town',
+    'postcode',
+    'isParent',
+    'dataOwner',
+    'NumberOfStaffValue',
+    'parentId',
+  ];
+
+  Establishment.getNhsBsaApiDataByWorkplaceId = async function (where) {
+    return await this.findOne({
+      nhsBsaAttributes,
+      as: 'establishment',
+
+      where: {
+        archived: false,
+       ...where
+      },
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name', 'category'],
+          required: true,
+        },
+      ],
+    });
+  };
+
+
+  Establishment.getNhsBsaApiDataForSubs= async function (establishmentId) {
+    return await this.findAll({
+      nhsBsaAttributes,
+      as: 'establishment',
+
+      where: {
+        archived: false,
+        parentId: establishmentId,
+      },
+
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name', 'category'],
+          required: true,
+        },
+      ],
+    });
+
+  };
+
+
   return Establishment;
 };

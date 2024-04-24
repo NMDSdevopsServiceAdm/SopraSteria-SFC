@@ -27,7 +27,7 @@ const getRegistrations = async (req, res) => {
 
 const getParentEstablishmentId = async (parentId) => {
   const parentEstablishmentData = await models.establishment.getNmdsIdUsingEstablishmentId(parentId);
-
+  if (!parentEstablishmentData) return null;
   return parentEstablishmentData.get('NmdsID');
 };
 
