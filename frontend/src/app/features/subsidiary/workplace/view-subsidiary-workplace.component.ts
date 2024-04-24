@@ -6,6 +6,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
@@ -28,10 +29,12 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     private permissionsService: PermissionsService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private route: ActivatedRoute,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
     this.isParentViewingSubsidiary = true; // TODO use original component and use this to differentiate
+    this.tabsService.selectedTab = 'workplace'
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
