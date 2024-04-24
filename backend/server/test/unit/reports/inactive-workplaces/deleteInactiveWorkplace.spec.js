@@ -35,7 +35,7 @@ describe('reports/inactive-workplaces/parents.js', () => {
         dataOwner: 'Workplace',
         address: '1 paddington Avenue Westminster London W2 1HB',
         parentNmdsId: 'J1003212',
-        cQC: 'Yes',
+        cqcRegulated: 'Yes',
       },
     ]);
   });

@@ -9,7 +9,7 @@ const buildRow = (workplace) => {
     dataOwner: workplace.dataOwner,
     address: workplace.address,
     parentNmdsId: workplace.parentNmdsId,
-    cQC: workplace.locationId ? 'Yes' : 'No',
+    cqcRegulated: workplace.locationId ? 'Yes' : 'No',
   };
 };
 
@@ -27,7 +27,7 @@ const addWorksheet = (workbook) => {
     { header: 'Data owner', key: 'dataOwner' },
     { header: 'Workplace Address', key: 'address' },
     { header: 'Parent Workplace NmdsId', key: 'parentNmdsId' },
-    { header: 'CQC Regulated', key: 'cQC' },
+    { header: 'CQC Regulated', key: 'cqcRegulated' },
   ];
 
   const headerRow = worksheet.getRow(1);
