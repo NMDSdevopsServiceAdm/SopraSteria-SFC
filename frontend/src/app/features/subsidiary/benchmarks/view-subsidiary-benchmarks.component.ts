@@ -46,6 +46,7 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
 
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
+    this.tabsService.selectedTab = 'benchmarks'
 
     this.workplace = this.route.snapshot.data.establishment;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
