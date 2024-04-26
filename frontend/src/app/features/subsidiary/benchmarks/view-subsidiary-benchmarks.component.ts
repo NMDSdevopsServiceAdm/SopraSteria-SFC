@@ -5,6 +5,7 @@ import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/m
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { TabsService } from '@core/services/tabs.service';
 import { DataAreaAboutTheDataComponent } from '@shared/components/data-area-tab/about-the-data/about-the-data.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
@@ -40,13 +41,14 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     protected benchmarksService: BenchmarksServiceBase,
     public route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
 
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
-    this.tabsService.selectedTab = 'benchmarks'
+    this.tabsService.selectedTab = 'benchmarks';
 
     this.workplace = this.route.snapshot.data.establishment;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
