@@ -7,6 +7,7 @@ import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
@@ -24,6 +25,9 @@ import {
 import {
   BenefitsStatutorySickPayComponent,
 } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
+import {
+  ChangeExpiresSoonAlertsComponent,
+} from '@features/workplace/change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from '@features/workplace/check-answers/check-answers.component';
 import {
   ConfirmStaffRecruitmentAndBenefitsComponent,
@@ -568,6 +572,15 @@ const routes: Routes = [
             (m) => m.AddMultipleTrainingModule,
           ),
         data: { title: 'Add Multiple Training' },
+      },
+      {
+        path: 'change-expires-soon-alerts',
+        component: ChangeExpiresSoonAlertsComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: {
+          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
+        },
+        data: { permissions: ['canEditEstablishment'], title: 'Change expires soon alerts' },
       },
     ],
   },
