@@ -28,6 +28,7 @@ import { ConfirmStaffRecruitmentAndBenefitsComponent } from '@features/workplace
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from '@features/workplace/delete-user-account/delete-user-account.component';
+import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-workplace.component';
 import { LeaversComponent } from '@features/workplace/leavers/leavers.component';
 import { NumberOfInterviewsComponent } from '@features/workplace/number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
@@ -127,7 +128,7 @@ const routes: Routes = [
   },
   {
     path: 'workplace/:establishmentuid',
-    component: ViewSubsidiaryWorkplaceComponent,
+    component: EditWorkplaceComponent,
     data: { title: 'Workplace' },
     canActivate: [HasPermissionsGuard],
     resolve: {
@@ -135,7 +136,6 @@ const routes: Routes = [
       establishment: WorkplaceResolver,
       workers: WorkersResolver,
       totalStaffRecords: TotalStaffRecordsResolver,
-      subsidiary: SubsidiaryResolver,
     },
     children: [
       {
@@ -167,6 +167,17 @@ const routes: Routes = [
           permissions: ['canEditWorker'],
           title: 'Add Mandatory Training',
         },
+      },
+      {
+        path: '',
+        component: ViewSubsidiaryWorkplaceComponent,
+        resolve: {
+          users: AllUsersForEstablishmentResolver,
+          establishment: WorkplaceResolver,
+          workers: WorkersResolver,
+          subsidiary: SubsidiaryResolver,
+        },
+        data: { title: 'Workplace' },
       },
       {
         path: 'start',
