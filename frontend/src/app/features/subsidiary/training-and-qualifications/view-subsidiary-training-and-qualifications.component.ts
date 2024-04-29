@@ -58,6 +58,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   ngOnInit(): void {
     this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
+    this.tabsService.selectedTab = 'training-and-qualifications'
 
     this.workers = this.route.snapshot.data.workers?.workers;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;

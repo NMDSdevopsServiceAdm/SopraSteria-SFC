@@ -73,6 +73,10 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: '',
+    loadChildren: () => import('@features/public/public.module').then((m) => m.PublicModule),
+  },
+  {
     path: 'articles',
     loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
   },

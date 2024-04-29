@@ -14,11 +14,12 @@ export class ParentSubsidiaryViewService {
     this.subsidiaryUid = subsidiaryUid;
     this.viewingSubAsParent = true;
 
-    // this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
-    //   if (workplace) {
-    //     this.establishmentService.setWorkplace(workplace);
-    //   }
-    // });
+    this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
+      if (workplace) {
+        this.establishmentService.setPrimaryWorkplace(workplace);
+        this.establishmentService.setWorkplace(workplace);
+      }
+    });
   }
 
   clearViewingSubAsParent() {
