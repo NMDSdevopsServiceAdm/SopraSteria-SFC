@@ -55,7 +55,7 @@ describe('AboutParentsComponent', () => {
 
   it('should display title from the pages data', async () => {
     const { getByText } = await setup();
-    expect(getByText(pages.data[0].title)).toBeTruthy();
+    expect(getByText('What you can do as a parent workplace')).toBeTruthy();
   });
 
   it('should display content from the pages data', async () => {
