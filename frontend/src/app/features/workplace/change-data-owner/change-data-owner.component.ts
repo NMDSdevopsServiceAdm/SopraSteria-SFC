@@ -190,13 +190,13 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
             if (data) {
               if (this.isParent) {
                 this.router.navigate(['/workplace/view-all-workplaces'], {
-                  state: this.alertMessage,
+                  state: {changeDataOwnerStatus: true},
                 });
+                this.alertService.addAlert({ type: 'success', message: "You've sent a change data owner request"});
               } else {
                 this.router.navigate(['/dashboard'], {
                   state: {changeDataOwnerStatus: true},
                 });
-
                 this.alertService.addAlert({ type: 'success', message: "You've sent a change data owner request"});
               }
             }

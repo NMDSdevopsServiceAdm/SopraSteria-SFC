@@ -278,7 +278,13 @@ describe('ViewMyWorkplacesComponent', () => {
 
     const message = "You've sent a change data owner request";
 
-    window.history.pushState({ alertMessage: message }, '', '');
+    const alertService = TestBed.inject(AlertService);
+    type AlertType = 'success' | 'warning' | 'pending';
+    const type = 'success' as AlertType
+
+    const alert = {type: type, message: message}
+
+    spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert));
 
     component.ngOnInit();
     fixture.detectChanges();

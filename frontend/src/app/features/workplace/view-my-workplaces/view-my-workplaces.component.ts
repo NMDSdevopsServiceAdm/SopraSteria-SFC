@@ -5,13 +5,13 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-view-my-workplaces',
@@ -59,7 +59,9 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.setupServerErrorsMap();
     this.setSearchIfPrevious();
 
-    this.alertMessage = history.state?.alertMessage;
+    this.alertService.alert$.subscribe((alert) => {
+      this.alertMessage = alert.message;
+    }),
 
     this.sendAlert();
 

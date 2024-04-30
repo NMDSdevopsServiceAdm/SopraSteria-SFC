@@ -352,6 +352,14 @@ describe('ChangeDataOwnerComponent', async () => {
       component.primaryWorkplace = MockEstablishment;
     });
 
+    const message = "You've sent a change data owner request"
+
+    type AlertType = 'success' | 'warning' | 'pending';
+    const type = 'success' as AlertType
+
+    const alert = {type: type, message: message}
+
+
     it('should submit the change data owner request', async () => {
       const establishmentService = TestBed.inject(EstablishmentService);
       const establishmentServiceSpy = spyOn(establishmentService, 'changeOwnership').and.callThrough();
@@ -377,17 +385,12 @@ describe('ChangeDataOwnerComponent', async () => {
 
       const router = injector.inject(Router) as Router;
 
-      const message = "You've sent a change data owner request"
+      const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
       const alertService = TestBed.inject(AlertService);
-      type AlertType = 'success' | 'warning' | 'pending';
-      const type = 'success' as AlertType
-
-      const alert = {type: type, message: message}
       const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
       spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert));
 
-      const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
       component.ngOnInit();
       fixture.detectChanges();
 
@@ -420,6 +423,10 @@ describe('ChangeDataOwnerComponent', async () => {
 
       const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+      const alertService = TestBed.inject(AlertService);
+      const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
+      spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert));
+
       component.primaryWorkplace.dataOwner = WorkplaceDataOwner.Workplace;
       component.primaryWorkplace.isParent = true;
       component.primaryWorkplace.postcode = mockParent.parentPostcode;
@@ -438,9 +445,15 @@ describe('ChangeDataOwnerComponent', async () => {
       const sendChangeRequestbutton = within(document.body).getByText('Send change request');
       fireEvent.click(sendChangeRequestbutton);
 
+
+
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: message,
+      });
+
       expect(routerSpy).toHaveBeenCalledWith(['/workplace/view-all-workplaces'], {
         state: {
-          alertMessage: "You've sent a change data owner request",
           changeDataOwnerStatus: true,
         },
       });
