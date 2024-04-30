@@ -74,6 +74,12 @@ const routes: Routes = [
     data: { title: 'View My Workplaces' },
   },
   {
+    path: 'change-data-owner',
+    component: ChangeDataOwnerComponent,
+    resolve: { childWorkplaces: ChildWorkplacesResolver },
+    data: { title: 'Change Data Owner' },
+  },
+  {
     path: 'about-parents',
     component: AboutParentsComponent,
     data: {
