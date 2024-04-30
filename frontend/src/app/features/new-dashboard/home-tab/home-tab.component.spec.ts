@@ -43,6 +43,9 @@ const MockWindow = {
 };
 
 describe('NewHomeTabComponent', () => {
+  type AlertType = 'success' | 'warning' | 'pending';
+  const type = 'success' as AlertType
+
   const setup = async (
     checkCqcDetails = false,
     establishment = Establishment,
@@ -103,7 +106,6 @@ describe('NewHomeTabComponent', () => {
           OwnershipChangeMessageDialogComponent,
         ],
         componentProperties: {
-          alertMessage: message,
           workplace: establishment,
           meta: comparisonDataAvailable
             ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
@@ -114,6 +116,9 @@ describe('NewHomeTabComponent', () => {
     );
 
     const component = fixture.componentInstance;
+    const alert = (message) => {
+      return {type: type, message: message}
+    }
 
     const alertService = TestBed.inject(AlertService);
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -140,8 +145,12 @@ describe('NewHomeTabComponent', () => {
       getByRole,
       getByLabelText,
       routerSpy,
+      alertService,
+      alert,
     };
   };
+
+
 
   it('should create', async () => {
     const { component } = await setup();
@@ -388,8 +397,9 @@ describe('NewHomeTabComponent', () => {
         it('should show an alert banner after requesting to link to a parent', async () => {
           const message = `You've sent a link request`;
 
-          const { component, fixture, alertServiceSpy } = await setup(false, Establishment, true, 9, message);
+          const { component, fixture, alertServiceSpy, alertService, alert } = await setup();
 
+          spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert(message)));
           component.workplace.isParent = false;
           component.canLinkToParent = true;
           component.linkToParentRequestedStatus = true;
@@ -407,13 +417,15 @@ describe('NewHomeTabComponent', () => {
         it('should update when cancel to link to parent is successful', async () => {
           const message = `You've cancelled your request to link to parent`;
 
-          const { component, fixture, alertServiceSpy } = await setup(false, Establishment, true, 9, message);
+          const { component, fixture, alertServiceSpy, alertService, alert } = await setup();
 
           component.workplace.isParent = false;
           component.canLinkToParent = true;
           component.linkToParentRequestedStatus = true;
           component.newHomeDesignParentFlag = true;
           component.canBecomeAParent = false;
+
+          spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert(message)));
 
           window.history.pushState({ cancelRequestToParentForLinkSuccess: true }, '', '');
 
@@ -637,7 +649,9 @@ describe('NewHomeTabComponent', () => {
       it('should show a banner after requesting to become a parent', async () => {
         const message = `You’ve sent a request to become a parent workplace`;
 
-        const { component, fixture, alertServiceSpy } = await setup(false, Establishment, true, 9, message);
+        const { component, fixture, alertServiceSpy, alertService, alert } = await setup();
+
+        spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert(message)));
 
         component.workplace.isParent = false;
         component.canLinkToParent = true;
@@ -1011,7 +1025,9 @@ describe('NewHomeTabComponent', () => {
   it('should show the banner message if there is an alert message', async () => {
     const message = 'You have unlinked from Parent';
 
-    const { component, fixture, alertServiceSpy } = await setup(false, Establishment, true, 9, message);
+    const { component, fixture, alertServiceSpy, alertService, alert } = await setup();
+
+    spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert(message)));
 
     component.isParentApprovedBannerViewed = null;
     component.newHomeDesignParentFlag = true;
