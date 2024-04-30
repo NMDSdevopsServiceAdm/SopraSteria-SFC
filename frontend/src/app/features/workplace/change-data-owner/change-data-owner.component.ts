@@ -1,15 +1,15 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { DataPermissions } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 @Component({
   selector: 'app-change-data-owner',
@@ -47,6 +47,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     private router: Router,
     public route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
+    private alertService: AlertService,
   ) {}
 
   ngAfterViewInit() {
@@ -193,8 +194,10 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
                 });
               } else {
                 this.router.navigate(['/dashboard'], {
-                  state: this.alertMessage,
+                  state: {changeDataOwnerStatus: true},
                 });
+
+                this.alertService.addAlert({ type: 'success', message: "You've sent a change data owner request"});
               }
             }
           },
