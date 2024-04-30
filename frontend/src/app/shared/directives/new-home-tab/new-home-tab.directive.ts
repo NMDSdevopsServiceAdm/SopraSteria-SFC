@@ -176,7 +176,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.subscriptions.add();
 
     this.alertService.alert$.subscribe((alert) => {
-      this.alertMessage = history.state?.alertMessage === undefined ? alert.message : history.state?.alertMessage;
+      this.alertMessage = alert.message;
     }),
 
     this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;

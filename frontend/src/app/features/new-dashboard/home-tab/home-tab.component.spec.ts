@@ -1,13 +1,14 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { TestBed, getTestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
+import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -20,16 +21,18 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
+import {
+  OwnershipChangeMessageDialogComponent,
+} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
-import { DialogService } from '@core/services/dialog.service';
+
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
-import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
-import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 
 const MockWindow = {
   dataLayer: {
@@ -45,6 +48,7 @@ describe('NewHomeTabComponent', () => {
     establishment = Establishment,
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
+    message = ''
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId, getByRole, getByLabelText } = await render(
       NewHomeTabComponent,
@@ -99,6 +103,7 @@ describe('NewHomeTabComponent', () => {
           OwnershipChangeMessageDialogComponent,
         ],
         componentProperties: {
+          alertMessage: message,
           workplace: establishment,
           meta: comparisonDataAvailable
             ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
@@ -381,16 +386,14 @@ describe('NewHomeTabComponent', () => {
         });
 
         it('should show an alert banner after requesting to link to a parent', async () => {
-          const { component, fixture, alertServiceSpy } = await setup();
+          const message = `You've sent a link request`;
+
+          const { component, fixture, alertServiceSpy } = await setup(false, Establishment, true, 9, message);
 
           component.workplace.isParent = false;
           component.canLinkToParent = true;
           component.linkToParentRequestedStatus = true;
           component.newHomeDesignParentFlag = true;
-
-          const message = `You've sent a link request`;
-
-          window.history.pushState({ alertMessage: message }, '', '');
 
           fixture.detectChanges();
           component.ngOnInit();
@@ -402,7 +405,9 @@ describe('NewHomeTabComponent', () => {
         });
 
         it('should update when cancel to link to parent is successful', async () => {
-          const { component, fixture } = await setup();
+          const message = `You've cancelled your request to link to parent`;
+
+          const { component, fixture, alertServiceSpy } = await setup(false, Establishment, true, 9, message);
 
           component.workplace.isParent = false;
           component.canLinkToParent = true;
@@ -410,15 +415,18 @@ describe('NewHomeTabComponent', () => {
           component.newHomeDesignParentFlag = true;
           component.canBecomeAParent = false;
 
-          const message = `You've cancelled request to link to parent`;
-
-          window.history.pushState({ alertMessage: message, cancelRequestToParentForLinkSuccess: true }, '', '');
+          window.history.pushState({ cancelRequestToParentForLinkSuccess: true }, '', '');
 
           fixture.detectChanges();
           component.ngOnInit();
 
           expect(component.linkToParentRequestedStatus).toEqual(false);
           expect(component.canBecomeAParent).toEqual(true);
+
+          expect(alertServiceSpy).toHaveBeenCalledWith({
+            type: 'success',
+            message: message,
+          });
         });
       });
     });
@@ -627,17 +635,15 @@ describe('NewHomeTabComponent', () => {
       });
 
       it('should show a banner after requesting to become a parent', async () => {
-        const { component, fixture, alertServiceSpy } = await setup();
+        const message = `You’ve sent a request to become a parent workplace`;
+
+        const { component, fixture, alertServiceSpy } = await setup(false, Establishment, true, 9, message);
 
         component.workplace.isParent = false;
         component.canLinkToParent = true;
 
         component.parentStatusRequested = true;
         component.newHomeDesignParentFlag = true;
-
-        const message = `You’ve sent a request to become a parent workplace`;
-
-        window.history.pushState({ alertMessage: message }, '', '');
 
         fixture.detectChanges();
         component.ngOnInit();
@@ -1003,14 +1009,12 @@ describe('NewHomeTabComponent', () => {
   });
 
   it('should show the banner message if there is an alert message', async () => {
-    const { component, fixture, alertServiceSpy } = await setup();
+    const message = 'You have unlinked from Parent';
+
+    const { component, fixture, alertServiceSpy } = await setup(false, Establishment, true, 9, message);
 
     component.isParentApprovedBannerViewed = null;
     component.newHomeDesignParentFlag = true;
-
-    const message = 'You have unlinked from Parent';
-
-    window.history.pushState({ alertMessage: message }, '', '');
 
     fixture.detectChanges();
     component.ngOnInit();

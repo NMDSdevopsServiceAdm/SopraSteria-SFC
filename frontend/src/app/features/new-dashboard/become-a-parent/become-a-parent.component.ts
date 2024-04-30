@@ -1,12 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ParentRequestsService } from '@core/services/parent-requests.service';
-import { Establishment } from '@core/model/establishment.model';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
@@ -32,6 +33,7 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private errorSummaryService: ErrorSummaryService,
     private permissionsService: PermissionsService,
+    private alertService: AlertService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
@@ -74,10 +76,10 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
         if (data) {
           this.router.navigate(['/dashboard'], {
             state: {
-              alertMessage: 'You’ve sent a request to become a parent workplace',
               parentStatusRequested: true,
             },
           });
+          this.alertService.addAlert({ type: 'success', message: 'You’ve sent a request to become a parent workplace'});
         }
       }),
     );
@@ -90,10 +92,10 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
         () => {
           this.router.navigate(['/dashboard'], {
             state: {
-              alertMessage: "You've cancelled your request to become a parent workplace",
               parentStatusRequested: false,
             },
           });
+          this.alertService.addAlert({ type: 'success', message: "You've cancelled your request to become a parent workplace"});
         },
         (error) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
