@@ -2,8 +2,9 @@
   "name": "ng-sfc-v2",
   "version": "0.0.1",
   "scripts": {
-    "new-start": "npm run api:server",
-    "start": "npm run cf:migrate && node --max-old-space-size=4096 server.js",
+    "dev-start": "npm run api:server",
+    "new-start": "npm run db:migrate:pipeline && npm run api:server",
+    "start": "npm run db:migrate:pipeline && node --max-old-space-size=4096 server.js",
     "build": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --no-progress",
     "build:clean": "rimraf dist",
     "build:watch": "ng serve --proxy-config proxy.conf.json",
@@ -32,7 +33,7 @@
     "db:migration:generate": "sequelize migration:generate",
     "db:migrate": "sequelize db:migrate",
     "db:migrate:undo": "sequelize db:migrate:undo",
-    "cf:migrate": "node ./bin/cf-migrate.js",
+    "db:migrate:pipeline": "node ./bin/run-db-migrations.js",
     "test:server": "npm run server"
   },
   "private": true,
