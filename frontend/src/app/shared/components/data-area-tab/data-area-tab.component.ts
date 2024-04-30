@@ -16,6 +16,7 @@ import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 export class DataAreaTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() newDashboard: boolean;
+  @Input() showBanner: boolean = true;
   @ViewChild('aboutData') private aboutData: DataAreaAboutTheDataComponent;
 
   public canViewFullBenchmarks: boolean;

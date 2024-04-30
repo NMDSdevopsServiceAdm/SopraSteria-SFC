@@ -27,22 +27,23 @@ import { bulkUploadHelpJourney, bulkUploadJourney } from '@core/breadcrumb/journ
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
+import {
+  becomeAParentJourney,
+  changeDataOwnerJourney,
+  linkToParentJourney,
+  removeLinkToParentJourney,
+} from '@core/breadcrumb/journey.parent-requests';
 import { publicJourney } from '@core/breadcrumb/journey.public';
+import { subsidiaryJourney } from '@core/breadcrumb/journey.subsidiary';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
-  brenchmarksTabJourney,
+  benchmarksTabJourney,
   myWorkplaceJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
   workplaceTabJourney,
 } from '@core/breadcrumb/journey.workplaces';
-import {
-  becomeAParentJourney,
-  linkToParentJourney,
-  removeLinkToParentJourney,
-  changeDataOwnerJourney,
-} from '@core/breadcrumb/journey.parent-requests';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 import { parse } from 'url';
@@ -70,8 +71,16 @@ export class BreadcrumbService {
       });
   }
 
+  // Parent  , Home, Your other workplaces, Workplace, Staff record
+  // Sketch  , Home, Staff Records
+  // Sub view, Home, Users, User details, Permissions
   public show(journey: JourneyType, overrideMessage: string = null) {
-    const urlTree = this.router.parseUrl(this.location.path());
+    let path = this.location.path();
+    if (journey !== JourneyType.SUBSIDIARY) {
+      path = path.replace('/subsidiary', '');
+    }
+
+    const urlTree = this.router.parseUrl(path);
     const segmentGroup = urlTree.root.children[PRIMARY_OUTLET];
     const segments = segmentGroup ? segmentGroup.segments : null;
     const routes = this.getRoutes(this.getRoutesConfig(journey), segments);
@@ -109,6 +118,7 @@ export class BreadcrumbService {
         routes.push({
           title,
           path: this.getPath(path, segments),
+          fragment: child.fragment,
           ...(referrer && { referrer: this.getReferrer(referrer, segments) }),
         });
       }
@@ -284,7 +294,11 @@ export class BreadcrumbService {
         break;
       }
       case JourneyType.BENCHMARKS_TAB: {
-        routes = brenchmarksTabJourney;
+        routes = benchmarksTabJourney();
+        break;
+      }
+      case JourneyType.OLD_BENCHMARKS_DATA_TAB: {
+        routes = benchmarksTabJourney(true);
         break;
       }
 
@@ -310,6 +324,11 @@ export class BreadcrumbService {
 
       case JourneyType.ABOUT_PARENTS: {
         routes = workplaceTabJourney;
+        break;
+      }
+
+      case JourneyType.SUBSIDIARY: {
+        routes = subsidiaryJourney;
         break;
       }
 

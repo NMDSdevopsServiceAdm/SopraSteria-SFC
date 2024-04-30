@@ -167,12 +167,11 @@
             </fieldset>
           </div>
 
-          <div class="linkToParentRequestButtonContainer govuk-!-margin-top-5">
-            <button type="submit" (click)="sendRequestToParent()" class="govuk-button">Send link request</button>
-            <a
-              href="#"
-              [routerLink]="['/dashboard']"
-              class="govuk-list govuk-list--inline govuk-util__float-right govuk-!-margin-top-3"
+          <div class="govuk-!-margin-top-5 govuk-button-group">
+            <button type="submit" (click)="sendRequestToParent()" class="govuk-button govuk-!-margin-right-9">
+              Send link request
+            </button>
+            <a href="#" [routerLink]="['/dashboard']" class="govuk-button govuk-button--link govuk-!-margin-left-9"
               >Cancel</a
             >
           </div>

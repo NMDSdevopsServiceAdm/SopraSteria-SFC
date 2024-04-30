@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -12,7 +12,7 @@ import dayjs from 'dayjs';
   templateUrl: './summary-section.component.html',
   styleUrls: ['./summary-section.component.scss'],
 })
-export class SummarySectionComponent implements OnInit {
+export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() workplace: Establishment;
   @Input() workerCount: number;
   @Input() workersCreatedDate;
@@ -21,6 +21,9 @@ export class SummarySectionComponent implements OnInit {
   @Input() workersNotCompleted: Worker[];
   @Input() canViewListOfWorkers: boolean;
   @Input() canViewEstablishment: boolean;
+  @Input() showMissingCqcMessage: boolean;
+  @Input() workplacesCount: number;
+  @Input() isParentSubsidiaryView: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -35,8 +38,14 @@ export class SummarySectionComponent implements OnInit {
     },
   ];
 
+  public otherWorkplacesSection = {
+    linkText: 'Your other workplaces',
+    message: '',
+    orangeFlag: false,
+    link: true,
+  };
+
   public isParent: boolean;
-  public workplacesSummaryMessage: string;
 
   constructor(
     private tabsService: TabsService,
@@ -50,20 +59,26 @@ export class SummarySectionComponent implements OnInit {
     this.getStaffSummaryMessage();
     this.getTrainingAndQualsSummary();
     this.isParent = this.workplace?.isParent;
-    this.getWorkplacesSummaryMessage();
+    this.getOtherWorkplacesSummaryMessage();
   }
+
+  ngOnChanges(): void {}
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();
-    if (route) {
+    if (this.isParentSubsidiaryView && route) {
+      this.tabsService.selectedTab = fragment;
       await this.router.navigate(route);
+    } else if (route) {
+      await this.router.navigate(route);
+      this.tabsService.selectedTab = fragment;
+    } else {
+      this.tabsService.selectedTab = fragment;
     }
-    this.navigateToTab(event, fragment);
   }
 
   public getWorkplaceSummaryMessage(): void {
     const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;
-
     this.sections[0].redFlag = false;
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
@@ -103,7 +118,11 @@ export class SummarySectionComponent implements OnInit {
       this.sections[1].message = 'No staff records added in the last 12 months';
     } else if (this.workersNotCompleted?.length > 0 && this.getStaffCreatedDate()) {
       this.sections[1].message = 'Some records only have mandatory data added';
-      this.sections[1].route = ['/staff-basic-records'];
+      if (this.isParentSubsidiaryView) {
+        this.sections[1].route = ['/staff-basic-records', this.workplace.uid];
+      } else {
+        this.sections[1].route = ['/staff-basic-records'];
+      }
     }
     this.showViewSummaryLinks(this.sections[1].linkText);
   }
@@ -158,8 +177,20 @@ export class SummarySectionComponent implements OnInit {
     return afterWorkerCreated;
   }
 
-  getWorkplacesSummaryMessage(): void {
-    this.workplacesSummaryMessage = `You've not added any other workplaces yet `;
+  public getOtherWorkplacesSummaryMessage(): void {
+    if (this.workplacesCount === 0) {
+      this.otherWorkplacesSection.message = "You've not added any other workplaces yet";
+      this.otherWorkplacesSection.link = false;
+      this.otherWorkplacesSection.orangeFlag = false;
+    } else if (this.showMissingCqcMessage) {
+      this.otherWorkplacesSection.message = 'Have you added all of your workplaces?';
+      this.otherWorkplacesSection.link = true;
+      this.otherWorkplacesSection.orangeFlag = true;
+    } else {
+      this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
+      this.otherWorkplacesSection.link = false;
+      this.otherWorkplacesSection.orangeFlag = false;
+    }
   }
 
   public showViewSummaryLinks(linkText: string): void {

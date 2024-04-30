@@ -1,5 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -11,10 +13,8 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
-import { Establishment } from '../../../../../mockdata/establishment';
+import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 
 describe('Summary section', () => {
   const setup = async (
@@ -52,6 +52,8 @@ describe('Summary section', () => {
         isParent: false,
         canViewListOfWorkers: canViewListOfWorkers,
         canViewEstablishment: canViewEstablishment,
+        showMissingCqcMessage: false,
+        workplacesCount: 0,
       },
     });
 
@@ -569,23 +571,72 @@ describe('Summary section', () => {
   });
 
   describe('your other workplaces summary section', () => {
+    it('should show the row', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.isParent = true;
+      fixture.detectChanges();
+
+      const workplacesRow = getByTestId('workplaces-row');
+      expect(workplacesRow).toBeTruthy();
+    });
+
     it('should show you other workplaces link', async () => {
       const { component, getByText } = await setup();
 
       component.isParent = true;
+      const yourOtherWorkplacesText = getByText('Your other workplaces');
 
-      expect(getByText('Your other workplaces')).toBeTruthy();
+      expect(yourOtherWorkplacesText).toBeTruthy();
+      expect(yourOtherWorkplacesText.getAttribute('href')).toBeTruthy();
     });
 
-    it('should show the no workplace message when there is no workplaces added', async () => {
-      const { component, getByTestId } = await setup();
+    it('should show message if there are no workplaces added', async () => {
+      const { component, getByText, queryByTestId } = await setup();
 
       component.isParent = true;
 
-      const workplacesRow = getByTestId('workplaces-row');
+      const yourOtherWorkplacesSummaryText = getByText("You've not added any other workplaces yet");
 
-      expect(workplacesRow).toBeTruthy();
-      expect(within(workplacesRow).getByText(`You've not added any other workplaces yet`)).toBeTruthy();
+      expect(yourOtherWorkplacesSummaryText).toBeTruthy();
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBeFalsy();
+      expect(queryByTestId('workplaces-orange-flag')).toBeFalsy();
+    });
+
+    it('should show message if showMissingCqcMessage is true and there are workplaces', async () => {
+      const { component, fixture, getByText, getByTestId } = await setup();
+
+      component.workplacesCount = 1;
+      component.showMissingCqcMessage = true;
+      component.otherWorkplacesSection.orangeFlag = true;
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      component.isParent = true;
+
+      const yourOtherWorkplacesSummaryText = getByText('Have you added all of your workplaces?');
+
+      expect(yourOtherWorkplacesSummaryText).toBeTruthy();
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBe('/workplace/view-all-workplaces');
+      expect(getByTestId('workplaces-orange-flag')).toBeTruthy();
+    });
+
+    it('should show the no workplace message when showMissingCqcMessage is false and there are workplaces', async () => {
+      const { component, getByText, fixture, queryByTestId } = await setup();
+
+      component.workplacesCount = 1;
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      component.isParent = true;
+
+      const yourOtherWorkplacesSummaryText = getByText('Check and update your other workplaces often');
+
+      expect(yourOtherWorkplacesSummaryText).toBeTruthy();
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBeFalsy();
+      expect(queryByTestId('workplaces-orange-flag')).toBeFalsy();
     });
   });
 });

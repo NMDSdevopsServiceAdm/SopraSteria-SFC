@@ -62,13 +62,14 @@ import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { AboutParentsComponent } from '@features/pages/about-parents/about-parents.component';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
   {
     path: 'view-all-workplaces',
     component: ViewMyWorkplacesComponent,
-    resolve: { childWorkplaces: ChildWorkplacesResolver },
+    resolve: { childWorkplaces: ChildWorkplacesResolver, cqcLocations: GetMissingCqcLocationsResolver },
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
   },
@@ -76,8 +77,9 @@ const routes: Routes = [
     path: 'about-parents',
     component: AboutParentsComponent,
     data: {
-      title: 'What you can do as a parent workplace'
-    }, resolve: {
+      title: 'What you can do as a parent workplace',
+    },
+    resolve: {
       pages: PageResolver,
     },
   },

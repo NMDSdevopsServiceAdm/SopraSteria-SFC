@@ -276,6 +276,18 @@ export class MockEstablishmentService extends EstablishmentService {
     } as Establishment);
   }
 
+  public getMissingCqcLocations({ locationid: locationId, uid: uid, id: id }): Observable<any> {
+    return of({
+      showMissingCqcMessage: false,
+      missingCqcLocations: {
+        count: 0,
+        missingCqcLocationIds: [],
+      },
+      weeksSinceParentApproval: 0,
+      childWorkplacesCount: 0,
+    });
+  }
+
   public getCapacity(establishmentId: any, all: boolean): Observable<any> {
     return of({
       allServiceCapacities: [

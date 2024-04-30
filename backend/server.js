@@ -69,6 +69,8 @@ var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
 var registrationSurvey = require('./server/routes/registrationSurvey');
 var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 var longTermAbsence = require('./server/routes/longTermAbsence');
+var nhsBsaApi = require('./server/routes/nhsBsaApi/workplaceData');
+var nhsBsaApiAuth = require('./server/routes/nhsBsaApi/index');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -89,6 +91,10 @@ const AWSsns = require('./server/aws/sns');
 AWSsns.initialise(config.get('aws.region'));
 
 var app = express();
+
+//NHSBSA API
+app.use('/api/v1/workplaces', nhsBsaApi);
+app.use('/api/v1/workplaces/auth/token', nhsBsaApiAuth);
 
 const corsOptions = {
   origin: '*',
@@ -230,7 +236,6 @@ app.use(unless('/api', 'test', xssClean()));
 app.set('views', path.join(__dirname, '/server/views'));
 app.set('view engine', 'pug');
 
-
 app.use(
   morgan('short', {
     stream: {
@@ -296,6 +301,9 @@ app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 const establishmentsV2 = require('./server/routes/v2/establishments');
 app.use('/api/v2/establishment', [cacheMiddleware.nocache, establishmentsV2]);
 
+const missingCqcProviderLocations = require('./server/routes/missingCqcProviderLocations');
+app.use('/api/missingCqcProviderLocations', [cacheMiddleware.nocache], missingCqcProviderLocations);
+
 app.use('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', authLimiter);
 app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
   res.sendFile(path.join(__dirname, 'loaderio-63e80cd3c669177f22e9ec997ea2594d.txt'));
@@ -303,7 +311,7 @@ app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
 
 app.use('*', authLimiter);
 // app.get('*', function (req, res) {
-  // return res.sendFile(path.join(__dirname, 'dist/index.html'));
+// return res.sendFile(path.join(__dirname, 'dist/index.html'));
 // });
 
 app.all('*', function (req, res) {

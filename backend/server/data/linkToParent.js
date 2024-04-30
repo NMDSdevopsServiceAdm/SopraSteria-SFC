@@ -131,7 +131,7 @@ exports.updateLinkToParent = async (params) =>
 
 const getNotificationDetailsQuery = `
   select "ApprovalStatus" as "approvalStatus", "PermissionRequest" as "permissionRequest",
-  parent."NameValue" as "parentEstablishmentName", parent."PostCode" as "postCode"
+  parent."NameValue" as "parentEstablishmentName", parent."PostCode" as "postCode", sub."Updated" as updated
   from cqc."LinkToParent" as sub
   JOIN cqc."Establishment" as parent on sub."ParentEstablishmentID" =  parent."EstablishmentID"
   where "LinkToParentUID" = :uid `;

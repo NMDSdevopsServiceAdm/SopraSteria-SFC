@@ -28,7 +28,7 @@ import { DialogService } from '@core/services/dialog.service';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { NewHomeTabComponent } from './home-tab.component';
-import { SummarySectionComponent } from './summary-section/summary-section.component';
+import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 
 const MockWindow = {

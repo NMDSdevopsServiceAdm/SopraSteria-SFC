@@ -49,7 +49,7 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
-    this.tilesData = this.benchmarksService.benchmarksData;
+    this.tilesData = this.benchmarksService.benchmarksData.newBenchmarks;
 
     this.isParent = this.workplace?.isParent;
 

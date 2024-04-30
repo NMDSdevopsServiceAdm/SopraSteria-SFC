@@ -10,7 +10,13 @@
       else otherView
     "
   >
-    <app-stand-alone-account [dashboardView]="dashboardView"></app-stand-alone-account>
+    <app-stand-alone-account
+      *ngIf="!parentSubsidiaryViewService.getViewingSubAsParent()"
+      [dashboardView]="dashboardView"
+    >
+    </app-stand-alone-account>
+    <app-subsidiary-account *ngIf="parentSubsidiaryViewService.getViewingSubAsParent()" [dashboardView]="dashboardView">
+    </app-subsidiary-account>
   </ng-container>
   <ng-template #otherView>
     <div

@@ -34,6 +34,10 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public alertMessage: string;
   private isParent: boolean;
 
+  public locationId: string;
+  public showMissingCqcMessage: boolean;
+  public missingCqcLocations: any;
+
   constructor(
     private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
@@ -63,6 +67,10 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.alertMessage = history.state?.alertMessage;
 
     this.sendAlert();
+
+    this.locationId = this.primaryWorkplace.locationId;
+
+    this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
   }
 
   private setSearchIfPrevious(): void {

@@ -7,13 +7,20 @@
           data-testid="column-one"
         >
           <ng-container *ngIf="tab === 'home'; else otherTab">
-            <ng-container *ngIf="isParent">
+            <ng-container *ngIf="isParent && !isParentSubsidiaryView">
               <span class="govuk-caption-xl" data-testid="parentLabel">Parent</span>
             </ng-container>
 
-            <span *ngIf="workplace?.parentName" class="govuk-caption-xl" data-testid="parentNameLabel">{{
-              workplace?.parentName
-            }}</span>
+            <span
+              *ngIf="workplace?.parentName && !isParentSubsidiaryView"
+              class="govuk-caption-xl"
+              data-testid="parentNameLabel"
+              >{{ workplace?.parentName }}</span
+            >
+
+            <span *ngIf="isParentSubsidiaryView" class="govuk-caption-xl" data-testid="selectedWorkplaceLabel"
+              >Selected workplace</span
+            >
 
             <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
               {{ workplace?.name }}
@@ -42,15 +49,18 @@
             <ng-container *ngSwitchCase="'home'">
               <div class="govuk-util__float-right" *ngIf="tab === 'home'" data-testid="contact-info">
                 <div
-                  *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'"
+                  *ngIf="
+                    (workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING') ||
+                    (canDeleteEstablishment && isParentSubsidiaryView)
+                  "
                 >
                   <button
-                    class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0"
+                    class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0 govuk-!-margin-bottom-2"
                     (click)="onDeleteWorkplace($event)"
                   >
                     <img src="/assets/images/bin.svg" alt="" />
                     <span class="govuk-!-margin-left-1">
-                      Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
+                      Delete <span class="govuk-visually-hidden">{{ workplace?.name }}</span> Workplace
                     </span>
                   </button>
                 </div>

@@ -1,7 +1,9 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { Router, RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import {
+  ProblemWithTheServiceComponent,
+} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
@@ -11,38 +13,36 @@ import { RoleGuard } from '@core/guards/role/role.guard';
 import { Roles } from '@core/model/roles.enum';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
-import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
-import { TailoredSeminarsComponent } from '@features/benefits-bundle/benefit-tailored-seminars/benefit-tailored-seminars.component';
-import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
-import { BenefitsELearningComponent } from '@features/benefits-bundle/benefits-elearning/benefits-elearning.component';
-import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import {
+  MigratedUserTermsConditionsComponent,
+} from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
+import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
+import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
-import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
-import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
-import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
-import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
+import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 
 const routes: Routes = [
   {
@@ -149,6 +149,7 @@ const routes: Routes = [
           establishment: PrimaryWorkplaceResolver,
           totalStaffRecords: TotalStaffRecordsResolver,
           cqcStatusCheck: CqcStatusCheckResolver,
+          cqcLocations: GetMissingCqcLocationsResolver,
           benchmarks: BenchmarksResolver,
           rankings: RankingsResolver,
           usefulLinksPay: UsefulLinkPayResolver,
@@ -174,6 +175,7 @@ const routes: Routes = [
         component: StaffBasicRecord,
         resolve: {
           workers: WorkersResolver,
+          establishment: WorkplaceResolver,
         },
         data: { title: 'Staff Basic Records' },
       },
@@ -221,37 +223,8 @@ const routes: Routes = [
       },
       {
         path: 'benefits-bundle',
-        children: [
-          {
-            path: '',
-            component: BenefitsBundleComponent,
-            data: { title: 'Benefits Bundle' },
-          },
-          {
-            path: 'training-discounts',
-            component: BenefitsTrainingDiscountsComponent,
-            data: { title: 'Endorsed Training Providers Discounts' },
-            resolve: {
-              pages: PageResolver,
-            },
-          },
-          {
-            path: 'elearning-discounts',
-            component: BenefitsELearningComponent,
-            data: { title: 'eLearning Modules' },
-            resolve: {
-              pages: PageResolver,
-            },
-          },
-          {
-            path: 'tailored-seminars',
-            component: TailoredSeminarsComponent,
-            data: { title: 'tailored Seminars' },
-            resolve: {
-              pages: PageResolver,
-            },
-          },
-        ],
+        loadChildren: () =>
+          import('@features/benefits-bundle/benefits-bundle.module').then((m) => m.BenefitsBundleModule),
       },
       {
         path: 'become-a-parent',
@@ -268,6 +241,10 @@ const routes: Routes = [
         component: LinkToParentComponent,
         data: { title: 'Link to Parent' },
       },
+      {
+        path: 'subsidiary',
+        loadChildren: () => import('@features/subsidiary/subsidiary.module').then((m) => m.SubsidiaryModule),
+      },
     ],
   },
   {
@@ -282,8 +259,15 @@ const routes: Routes = [
       anchorScrolling: 'enabled',
       onSameUrlNavigation: 'reload',
       paramsInheritanceStrategy: 'always',
+      scrollPositionRestoration: 'top',
     }),
   ],
   exports: [RouterModule],
+  providers: [
+    {
+      provide: Router,
+      useClass: SubsidiaryRouterService,
+    },
+  ],
 })
 export class AppRoutingModule {}

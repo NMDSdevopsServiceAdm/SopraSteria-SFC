@@ -13,6 +13,7 @@ enum Path {
   TRAINING_AND_QUALIFICATIONS_RECORD = '/workplace/:workplaceUid/training-and-qualifications-record/:workerUid/training',
   MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
   ABOUT_DATA = '/workplace/:workplaceUid/data-area/about-the-data',
+  BENCHMARKS_ABOUT_DATA = '/workplace/:workplaceUid/benchmarks/about-the-data',
   OTHER_WORKPLACES = '/workplace/other-workplaces',
   ABOUT_PARENTS = '/workplace/about-parents',
   CHANGE_DATA_OWNER = '/workplace/change-data-owner',
@@ -86,24 +87,20 @@ export const trainingAndQualificationsTabJourney: JourneyRoute = {
   ],
 };
 
-export const brenchmarksTabJourney: JourneyRoute = {
-  children: [
-    {
-      title: 'Benchmarks',
-      path: Path.DASHBOARD,
-      fragment: 'benchmarks',
-      children: [
-        {
-          title: 'About the data',
-          path: Path.ABOUT_DATA,
-          referrer: {
-            path: Path.DASHBOARD,
-            fragment: 'benchmarks',
-          },
-        },
-      ],
-    },
-  ],
+
+
+export function benchmarksTabJourney(isOldTab: boolean = false): JourneyRoute {
+  return {children: [ {
+    title: 'Benchmarks',
+    path: Path.DASHBOARD,
+    fragment: 'benchmarks',
+    children: [
+      {
+        title: 'About the data',
+        path: isOldTab ?  Path.BENCHMARKS_ABOUT_DATA : Path.ABOUT_DATA,
+      },
+    ],
+  },]}
 };
 
 export const myWorkplaceJourney: JourneyRoute = {
