@@ -6,7 +6,7 @@ const WorkplaceCSVValidator =
   require('../../../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 const Establishment = require('../../../../../models/classes/establishment').Establishment;
 const WorkerCsvValidator =
-  require('../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
+  require('../../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
 const mappings = require('../../../../../models/BulkImport/BUDI').mappings;
 
 const models = require('../../../../../models');

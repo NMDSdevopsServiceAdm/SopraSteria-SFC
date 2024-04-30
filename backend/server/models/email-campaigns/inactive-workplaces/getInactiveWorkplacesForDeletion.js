@@ -23,7 +23,9 @@ const getInactiveWorkplacesForDeletion = async () => {
     "Address1",
     "Town",
     "County",
-    "PostCode"
+    "PostCode",
+    "LocationID",
+    "ParentNmdsID"
   FROM
   	cqc."EstablishmentLastActivity" e
 

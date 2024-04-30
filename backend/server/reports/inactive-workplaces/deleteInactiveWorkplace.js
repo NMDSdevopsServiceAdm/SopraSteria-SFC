@@ -8,6 +8,8 @@ const buildRow = (workplace) => {
     lastUpdated: workplace.lastUpdated,
     dataOwner: workplace.dataOwner,
     address: workplace.address,
+    parentNmdsId: workplace.parentNmdsId,
+    cqcRegulated: workplace.locationId ? 'Yes' : 'No',
   };
 };
 
@@ -24,6 +26,8 @@ const addWorksheet = (workbook) => {
     { header: 'Date last updated', key: 'lastUpdated' },
     { header: 'Data owner', key: 'dataOwner' },
     { header: 'Workplace Address', key: 'address' },
+    { header: 'Parent Workplace NmdsId', key: 'parentNmdsId' },
+    { header: 'CQC Regulated', key: 'cqcRegulated' },
   ];
 
   const headerRow = worksheet.getRow(1);
