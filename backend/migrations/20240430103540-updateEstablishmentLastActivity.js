@@ -2,10 +2,8 @@
 
 module.exports = {
   up: async (queryInterface) => {
-    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivity"');
-
     await queryInterface.sequelize.query(`
-      CREATE MATERIALIZED VIEW cqc."EstablishmentLastActivity" AS (
+      CREATE MATERIALIZED VIEW cqc."EstablishmentLastActivityTemp" AS (
         SELECT e."EstablishmentID",
           e."NameValue",
           e."ParentID",
@@ -54,6 +52,12 @@ module.exports = {
       );
     `);
 
+    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivity"');
+
+    await queryInterface.sequelize.query(
+      'ALTER MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivityTemp" RENAME TO "EstablishmentLastActivity";',
+    );
+
     await queryInterface.addIndex(
       {
         tableName: 'EstablishmentLastActivity',
@@ -76,10 +80,8 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivity"');
-
     await queryInterface.sequelize.query(`
-      CREATE MATERIALIZED VIEW cqc."EstablishmentLastActivity" AS (
+      CREATE MATERIALIZED VIEW cqc."EstablishmentLastActivityTemp" AS (
         SELECT e."EstablishmentID",
           e."NameValue",
           e."ParentID",
@@ -121,6 +123,12 @@ module.exports = {
           WHERE e."Archived" = false
       );
     `);
+
+    await queryInterface.sequelize.query('DROP MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivity"');
+
+    await queryInterface.sequelize.query(
+      'ALTER MATERIALIZED VIEW IF EXISTS cqc."EstablishmentLastActivityTemp" RENAME TO "EstablishmentLastActivity"',
+    );
 
     await queryInterface.addIndex(
       {
