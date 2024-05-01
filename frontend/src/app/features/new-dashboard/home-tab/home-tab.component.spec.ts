@@ -150,8 +150,6 @@ describe('NewHomeTabComponent', () => {
     };
   };
 
-
-
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
