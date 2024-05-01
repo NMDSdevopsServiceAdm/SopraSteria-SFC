@@ -36,7 +36,6 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
   public ownershipFromUid: string;
   public ownershipFromPostCode: string;
   public journeyType: any;
-  public alertMessage: any;
   public isParent: boolean;
   public subWorkplace: Establishment;
 
@@ -64,10 +63,6 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
 
     this.setWorkplaces();
     this.breadcrumbService.show(this.showJourneyType(), this.primaryWorkplace.name);
-    this.alertMessage = {
-      alertMessage: "You've sent a change data owner request",
-      changeDataOwnerStatus: true,
-    };
   }
 
   public setSubWorkplace(): void {

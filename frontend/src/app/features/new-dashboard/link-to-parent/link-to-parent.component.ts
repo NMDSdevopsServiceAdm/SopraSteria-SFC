@@ -184,9 +184,8 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
               this.router.navigate(['/dashboard'], {
                 state: {
                   linkToParentRequestedStatus: true,
-                  message: `You've sent a link request to ${this.form.value.parentNameOrPostCode}`
                 }}).then(()=>{
-                this.alertService.addAlert({ type: 'success', message: `You've sent a link request to ${this.form.value.parentNameOrPostCode}` });
+                this.alertService.addAlert({ type: 'success', message: `You've sent a link request to ${this.form.value.parentNameOrPostCode}`});
               });
             }
           },
@@ -274,7 +273,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
                 state: {
                   cancelRequestToParentForLinkSuccess: true,
                 }}).then(()=>{
-                this.alertService.addAlert({ type: 'success', message: `You've cancelled your request to link to ${parentName}, ${this.parentPostcode}` });
+                this.alertService.addAlert({ type: 'success', message: `You've cancelled your request to link to ${parentName}, ${this.parentPostcode}`});
               });
             }
           },
