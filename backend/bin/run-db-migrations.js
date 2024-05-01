@@ -1,8 +1,6 @@
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
-const instance_index = process.env.CF_INSTANCE_INDEX;
-
 async function runMigrations() {
   try {
     const command = 'npm run db:migrate';
@@ -21,6 +19,4 @@ async function runMigrations() {
   }
 }
 
-if (instance_index === '0') {
-  runMigrations();
-}
+runMigrations();

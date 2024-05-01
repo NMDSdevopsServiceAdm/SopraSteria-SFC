@@ -12,7 +12,10 @@ const {
 const getAllTraining = async function (_req, res) {
   try {
     const results = await models.workerTrainingCategories.findAll({
-      order: [['seq', 'ASC']],
+      order: [
+        ['seq', 'ASC'],
+        ['category', 'ASC'],
+      ],
     });
 
     res.send({
