@@ -30,8 +30,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public itemsPerPage = 12;
   public currentPageIndex = 0;
   private searchTerm = '';
-  public alertMessage: string;
-
   public locationId: string;
   public showMissingCqcMessage: boolean;
   public missingCqcLocations: any;
@@ -58,12 +56,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
     this.setupServerErrorsMap();
     this.setSearchIfPrevious();
-
-    this.alertService.alert$.subscribe((alert) => {
-      this.alertMessage = alert.message;
-    }),
-
-    this.sendAlert();
 
     this.locationId = this.primaryWorkplace.locationId;
 
@@ -130,15 +122,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     });
     this.searchTerm = searchTerm;
     this.handlePageUpdate(0);
-  }
-
-  public sendAlert(): void {
-    if (this.alertMessage) {
-      this.alertService.addAlert({
-        type: 'success',
-        message: this.alertMessage,
-      });
-    }
   }
 
   ngOnDestroy(): void {

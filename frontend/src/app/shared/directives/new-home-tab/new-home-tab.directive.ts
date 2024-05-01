@@ -92,7 +92,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public ownershipChangeRequestId: any = [];
   public successAlertMessage: string;
   public canViewEstablishment: boolean;
-  public alertMessage: string;
   public showMissingCqcMessage: boolean;
   public locationId: string;
   public workplacesCount: number;
@@ -174,10 +173,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.hasBenchmarkComparisonData = !!this.meta?.staff && !!this.meta?.workplaces;
     this.setBenchmarksCard();
     this.subscriptions.add();
-
-    this.alertService.alert$.subscribe((alert) => {
-      this.alertMessage = alert.message;
-    }),
 
     this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;
     this.locationId = this.workplace.locationId;
@@ -337,11 +332,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
       this.alertService.addAlert({
         type: 'success',
         message: `Your request to become a parent has been approved`,
-      });
-    } else if (this.alertMessage) {
-      this.alertService.addAlert({
-        type: 'success',
-        message: this.alertMessage,
       });
     }
   }

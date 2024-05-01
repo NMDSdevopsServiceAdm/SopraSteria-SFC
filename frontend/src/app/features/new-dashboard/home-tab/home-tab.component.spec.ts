@@ -43,15 +43,11 @@ const MockWindow = {
 };
 
 describe('NewHomeTabComponent', () => {
-  type AlertType = 'success' | 'warning' | 'pending';
-  const type = 'success' as AlertType
-
   const setup = async (
     checkCqcDetails = false,
     establishment = Establishment,
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
-    message = ''
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId, getByRole, getByLabelText } = await render(
       NewHomeTabComponent,
@@ -116,9 +112,6 @@ describe('NewHomeTabComponent', () => {
     );
 
     const component = fixture.componentInstance;
-    const alert = (message) => {
-      return {type: type, message: message}
-    }
 
     const alertService = TestBed.inject(AlertService);
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -145,8 +138,6 @@ describe('NewHomeTabComponent', () => {
       getByRole,
       getByLabelText,
       routerSpy,
-      alertService,
-      alert,
     };
   };
 
@@ -391,53 +382,6 @@ describe('NewHomeTabComponent', () => {
           expect(queryByText('Link to a parent workplace')).toBeFalsy();
           expect(queryByText(`Become a parent and manage other workplaces' data`)).toBeFalsy();
         });
-
-        it('should show an alert banner after requesting to link to a parent', async () => {
-          const message = `You've sent a link request`;
-
-          const { component, fixture, alertServiceSpy, alertService, alert } = await setup();
-
-          spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert(message)));
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.linkToParentRequestedStatus = true;
-          component.newHomeDesignParentFlag = true;
-
-          fixture.detectChanges();
-          component.ngOnInit();
-
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: message,
-          });
-        });
-
-        it('should update when cancel to link to parent is successful', async () => {
-          const message = `You've cancelled your request to link to parent`;
-
-          const { component, fixture, alertServiceSpy, alertService, alert } = await setup();
-
-          component.workplace.isParent = false;
-          component.canLinkToParent = true;
-          component.linkToParentRequestedStatus = true;
-          component.newHomeDesignParentFlag = true;
-          component.canBecomeAParent = false;
-
-          spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert(message)));
-
-          window.history.pushState({ cancelRequestToParentForLinkSuccess: true }, '', '');
-
-          fixture.detectChanges();
-          component.ngOnInit();
-
-          expect(component.linkToParentRequestedStatus).toEqual(false);
-          expect(component.canBecomeAParent).toEqual(true);
-
-          expect(alertServiceSpy).toHaveBeenCalledWith({
-            type: 'success',
-            message: message,
-          });
-        });
       });
     });
 
@@ -641,28 +585,6 @@ describe('NewHomeTabComponent', () => {
           expect(becomeAParentPendinglink).toBeTruthy();
           expect(queryByText('Link to my parent organisation')).toBeFalsy();
           expect(becomeAParentPendinglink.getAttribute('href')).toEqual('/become-a-parent');
-        });
-      });
-
-      it('should show a banner after requesting to become a parent', async () => {
-        const message = `You’ve sent a request to become a parent workplace`;
-
-        const { component, fixture, alertServiceSpy, alertService, alert } = await setup();
-
-        spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert(message)));
-
-        component.workplace.isParent = false;
-        component.canLinkToParent = true;
-
-        component.parentStatusRequested = true;
-        component.newHomeDesignParentFlag = true;
-
-        fixture.detectChanges();
-        component.ngOnInit();
-
-        expect(alertServiceSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: message,
         });
       });
     });
@@ -1017,26 +939,6 @@ describe('NewHomeTabComponent', () => {
 
         expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
       });
-    });
-  });
-
-  it('should show the banner message if there is an alert message', async () => {
-    const message = 'You have unlinked from Parent';
-
-    const { component, fixture, alertServiceSpy, alertService, alert } = await setup();
-
-    spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert(message)));
-
-    component.isParentApprovedBannerViewed = null;
-    component.newHomeDesignParentFlag = true;
-
-    fixture.detectChanges();
-    component.ngOnInit();
-
-    expect(component.alertMessage).toEqual(message);
-    expect(alertServiceSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: message,
     });
   });
 });
