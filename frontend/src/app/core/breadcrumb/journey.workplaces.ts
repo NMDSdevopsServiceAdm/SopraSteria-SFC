@@ -87,21 +87,23 @@ export const trainingAndQualificationsTabJourney: JourneyRoute = {
   ],
 };
 
-
-
 export function benchmarksTabJourney(isOldTab: boolean = false): JourneyRoute {
-  return {children: [ {
-    title: 'Benchmarks',
-    path: Path.DASHBOARD,
-    fragment: 'benchmarks',
+  return {
     children: [
       {
-        title: 'About the data',
-        path: isOldTab ?  Path.BENCHMARKS_ABOUT_DATA : Path.ABOUT_DATA,
+        title: 'Benchmarks',
+        path: Path.DASHBOARD,
+        fragment: 'benchmarks',
+        children: [
+          {
+            title: 'About the data',
+            path: isOldTab ? Path.BENCHMARKS_ABOUT_DATA : Path.ABOUT_DATA,
+          },
+        ],
       },
     ],
-  },]}
-};
+  };
+}
 
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
@@ -160,7 +162,7 @@ export const allWorkplacesJourney: JourneyRoute = {
       fragment: 'workplaces',
       children: [
         {
-          title: 'About Parents',
+          title: 'What you can do as a parent workplace',
           path: Path.ABOUT_PARENTS,
           referrer: {
             path: Path.WORKPLACE,

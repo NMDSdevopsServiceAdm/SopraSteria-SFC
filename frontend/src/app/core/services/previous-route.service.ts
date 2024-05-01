@@ -6,7 +6,7 @@ import { filter } from 'rxjs/operators';
   providedIn: 'root',
 })
 export class PreviousRouteService {
-  private previousUrl: string;
+  public previousUrl: string;
   private currentUrl: string;
 
   constructor(private router: Router) {

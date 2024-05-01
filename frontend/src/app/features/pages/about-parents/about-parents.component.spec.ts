@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -9,16 +9,18 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPagesService } from '@core/test-utils/MockPagesService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { getByText, render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { AboutParentsComponent } from './about-parents.component';
+import { PreviousRouteService } from '@core/services/previous-route.service';
+import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 
 describe('AboutParentsComponent', () => {
   const pages = MockPagesService.pagesFactory();
   const articleList = MockArticlesService.articleListFactory();
 
-  async function setup() {
+  const setup = async (previousUrl = '') => {
     const { fixture, getByText } = await render(AboutParentsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -37,6 +39,11 @@ describe('AboutParentsComponent', () => {
             },
           }),
         },
+        {
+          provide: PreviousRouteService,
+          useFactory: MockPreviousRouteService.factory(previousUrl),
+          deps: [Router],
+        },
       ],
     });
 
@@ -46,7 +53,7 @@ describe('AboutParentsComponent', () => {
       fixture,
       getByText,
     };
-  }
+  };
 
   it('should create', async () => {
     const { component } = await setup();
@@ -61,5 +68,20 @@ describe('AboutParentsComponent', () => {
   it('should display content from the pages data', async () => {
     const { getByText } = await setup();
     expect(getByText(pages.data[0].content)).toBeTruthy();
+  });
+
+  it('should display the correct button text if the previous page was home', async () => {
+    const { getByText } = await setup('/dashboard#home');
+    expect(getByText('Return to home')).toBeTruthy();
+  });
+
+  it('should display the correct button text if the previous page was your other workplaces', async () => {
+    const { getByText } = await setup('/workplace/view-all-workplaces');
+    expect(getByText('Return to your other workplaces')).toBeTruthy();
+  });
+
+  it('should display the correct button text if there is no previous page', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Return to previous page')).toBeTruthy();
   });
 });
