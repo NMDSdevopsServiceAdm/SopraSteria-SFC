@@ -77,9 +77,9 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
           this.router.navigate(['/dashboard'], {
             state: {
               parentStatusRequested: true,
-            },
-          });
-          this.alertService.addAlert({ type: 'success', message: 'You’ve sent a request to become a parent workplace'});
+            }}).then(()=>{
+            this.alertService.addAlert({ type: 'success', message: 'You’ve sent a request to become a parent workplace'});
+        });
         }
       }),
     );
@@ -93,9 +93,9 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
           this.router.navigate(['/dashboard'], {
             state: {
               parentStatusRequested: false,
-            },
+            }}).then(()=>{
+            this.alertService.addAlert({ type: 'success', message: "You've cancelled your request to become a parent workplace"});
           });
-          this.alertService.addAlert({ type: 'success', message: "You've cancelled your request to become a parent workplace"});
         },
         (error) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

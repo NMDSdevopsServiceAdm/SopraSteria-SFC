@@ -89,9 +89,9 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
               state: {
                 removeLinkToParentSuccess: true,
               },
+            }).then(()=>{
+              this.alertService.addAlert({ type: 'success', message: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`});
             });
-
-            this.alertService.addAlert({ type: 'success', message: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`});
           },
           (error) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
