@@ -66,8 +66,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();
-
-    if (this.isParentSubsidiaryView) {
+    if (this.isParentSubsidiaryView && route) {
       this.tabsService.selectedTab = fragment;
       await this.router.navigate(route);
     } else if (route) {

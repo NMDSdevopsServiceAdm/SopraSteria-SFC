@@ -25,6 +25,7 @@ import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver'
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
@@ -174,6 +175,7 @@ const routes: Routes = [
         component: StaffBasicRecord,
         resolve: {
           workers: WorkersResolver,
+          establishment: WorkplaceResolver,
         },
         data: { title: 'Staff Basic Records' },
       },
@@ -221,7 +223,8 @@ const routes: Routes = [
       },
       {
         path: 'benefits-bundle',
-        loadChildren: () => import('@features/benefits-bundle/benefits-bundle.module').then((m) => m.BenefitsBundleModule),
+        loadChildren: () =>
+          import('@features/benefits-bundle/benefits-bundle.module').then((m) => m.BenefitsBundleModule),
       },
       {
         path: 'become-a-parent',
@@ -256,14 +259,15 @@ const routes: Routes = [
       anchorScrolling: 'enabled',
       onSameUrlNavigation: 'reload',
       paramsInheritanceStrategy: 'always',
+      scrollPositionRestoration: 'top',
     }),
   ],
   exports: [RouterModule],
   providers: [
     {
       provide: Router,
-      useClass: SubsidiaryRouterService
-    }
+      useClass: SubsidiaryRouterService,
+    },
   ],
 })
 export class AppRoutingModule {}

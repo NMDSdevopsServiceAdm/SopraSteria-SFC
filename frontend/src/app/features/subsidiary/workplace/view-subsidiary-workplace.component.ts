@@ -27,21 +27,20 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private tabsService: TabsService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private route: ActivatedRoute,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
     this.isParentViewingSubsidiary = true; // TODO use original component and use this to differentiate
+    this.tabsService.selectedTab = 'workplace'
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
-    this.parentSubsidiaryViewService.canShowBanner = true;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace?.updated.toString()
   }
 
   ngOnDestroy(): void {

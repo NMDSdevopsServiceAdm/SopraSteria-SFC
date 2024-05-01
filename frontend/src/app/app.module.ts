@@ -4,9 +4,7 @@ import { ErrorHandler, NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouterModule } from '@angular/router';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { ServiceUnavailableComponent } from '@core/components/error/service-unavailable/service-unavailable.component';
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
@@ -49,12 +47,8 @@ import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
-import {
-  ParentWorkplaceAccounts,
-} from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
-import {
-  SelectMainServiceComponent,
-} from '@features/create-account/workplace/select-main-service/select-main-service.component';
+import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
+import { SelectMainServiceComponent } from '@features/create-account/workplace/select-main-service/select-main-service.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
@@ -89,14 +83,11 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import {
-  StaffMismatchBannerComponent,
-} from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
-import {
-  MigratedUserTermsConditionsComponent,
-} from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 
 @NgModule({
   declarations: [
@@ -206,6 +197,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
+    WorkplaceResolver,
   ],
   bootstrap: [AppComponent],
 })

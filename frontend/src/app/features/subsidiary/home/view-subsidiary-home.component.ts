@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
+import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { Worker } from '@core/model/worker.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
@@ -14,8 +15,6 @@ import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
-import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 @Component({
   selector: 'app-view-subsidiary-home',
@@ -74,9 +73,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     private tabsService: TabsService,
     public route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
-    private router: Router,
     public parentSubsidiaryViewService: ParentSubsidiaryViewService,
-    private breadcrumbService: BreadcrumbService,
     protected benchmarksService: BenchmarksServiceBase,
     private serviceNamePipe: ServiceNamePipe,
   ) {}
@@ -87,7 +84,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
-
+    this.tabsService.selectedTab = 'home';
     this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
     this.parentSubsidiaryViewService.setTotalTrainingRecords(this.trainingCounts.totalRecords);
 
@@ -100,8 +97,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
 
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-    this.parentSubsidiaryViewService.canShowBanner = true;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = null;
 
     this.bigThreeServices = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);
 

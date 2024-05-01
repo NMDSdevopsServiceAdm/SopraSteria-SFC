@@ -34,9 +34,9 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
   public comparisonDataExists: boolean;
   public workplace: Establishment;
   public newDashboard: boolean;
-  private subsidiaryUid: string;
   public canSeeNewDataArea: boolean;
   public newDataAreaFlag: boolean;
+  public lastUpdatedDate: string
 
   constructor(
     private permissionsService: PermissionsService,
@@ -52,6 +52,7 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
 
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
+    this.tabsService.selectedTab = 'benchmarks'
 
     this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
       if (subsidiaryWorkplace) {
@@ -59,8 +60,7 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
         this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
       }
     });
-    this.parentSubsidiaryViewService.canShowBanner = true;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.tilesData?.meta.lastUpdated.toString();
+    this.lastUpdatedDate = this.tilesData?.meta.lastUpdated.toString();
   }
 
   ngOnDestroy(): void {

@@ -36,7 +36,7 @@ describe('StaffBasicRecord', () => {
           useValue: {
             snapshot: {
               data: {
-                primaryWorkplace: establishment,
+                establishment: establishment,
                 workers: { workersNotCompleted: workers },
               },
             },

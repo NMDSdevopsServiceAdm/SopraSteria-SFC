@@ -60,6 +60,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   ngOnInit(): void {
     this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
+    this.tabsService.selectedTab = 'training-and-qualifications'
 
     this.workers = this.route.snapshot.data.workers?.workers;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
@@ -67,8 +68,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.tAndQsLastUpdated = this.route.snapshot.data.workers?.tAndQsLastUpdated;
 
     this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
-
-    this.parentSubsidiaryViewService.canShowBanner = true;
 
     this.workplace = this.route.snapshot.data.establishment;
 
@@ -89,9 +88,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
 
     this.getAllTrainingByCategory();
     this.trainingTotals();
-
-    this.parentSubsidiaryViewService.canShowBanner = true;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.tAndQsLastUpdated;
   }
 
   public ngOnChanges(changes: SimpleChanges): void {

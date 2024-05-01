@@ -12,7 +12,7 @@ import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentService, establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -22,6 +22,7 @@ import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
+import { Establishment } from '@core/model/establishment.model';
 
 const MockWindow = {
   dataLayer: {
@@ -32,6 +33,7 @@ const MockWindow = {
 };
 
 describe('NewDashboardHeaderComponent', () => {
+  const establishment = establishmentBuilder() as Establishment;
   const setup = async (
     tab = 'home',
     updateDate = false,
@@ -42,6 +44,7 @@ describe('NewDashboardHeaderComponent', () => {
     subsidiaries = 0,
     viewingSubAsParent = false,
     canDeleteEstablishment = true,
+    workplace = establishment,
   ) => {
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const updatedDate = updateDate ? '01/02/2023' : null;
@@ -85,6 +88,7 @@ describe('NewDashboardHeaderComponent', () => {
         canEditWorker,
         hasWorkers,
         isParent: false,
+        workplace,
       },
     });
 

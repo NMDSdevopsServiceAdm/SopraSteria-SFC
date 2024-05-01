@@ -20,9 +20,6 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
 
   protected subscriptions: Subscription = new Subscription();
   public meta: Meta;
-  public returnTo: URLStructure;
-  public url: any[];
-  public fragment: string;
 
   constructor(
     protected router: Router,
@@ -33,8 +30,6 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.url = this.benchmarksService.returnTo?.url;
-    this.fragment = this.benchmarksService.returnTo?.fragment;
     const workplaceUid = this.workplace ? this.workplace.uid : this.route.snapshot.params.establishmentuid;
 
     const canViewBenchmarks = this.permissionsService.can(workplaceUid, 'canViewBenchmarks');
@@ -43,13 +38,17 @@ export class BenchmarksAboutTheDataComponent implements OnInit, OnDestroy {
       this.meta = this.benchmarksService.benchmarksData.meta;
     }
 
-    if(!this.isParentViewingSubsidiary){
+    if (!this.isParentViewingSubsidiary) {
       this.breadcrumbService.show(JourneyType.OLD_BENCHMARKS_DATA_TAB);
     }
   }
 
   public pluralizeWorkplaces(workplaces) {
     return workplaces > 1 ? 'workplaces' : 'workplace';
+  }
+
+  public viewBenchmarks(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'benchmarks' });
   }
 
   ngOnDestroy() {

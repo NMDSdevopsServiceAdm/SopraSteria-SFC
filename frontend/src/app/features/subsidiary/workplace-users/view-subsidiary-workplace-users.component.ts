@@ -3,8 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-view-subsidiary-workplace-users',
@@ -12,19 +12,20 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 })
 export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
   public workplace: Establishment;
-  
+  public lastUpdatedDate: string;
+
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
     private breadcrumbService: BreadcrumbService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
+    this.tabsService.selectedTab = 'workplace-users';
     this.workplace = this.route.snapshot.data.establishment;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.workplace.updated.toString();
-    this.parentSubsidiaryViewService.canShowBanner = true;
+    this.lastUpdatedDate = this.workplace.updated.toString();
   }
 
   public setUserServiceReturnUrl(): void {
