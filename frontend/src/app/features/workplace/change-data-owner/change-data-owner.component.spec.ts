@@ -21,7 +21,6 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, within } from '@testing-library/angular';
-import { of } from 'rxjs';
 
 import { Establishment as MockEstablishment } from '../../../../mockdata/establishment';
 import { ChangeDataOwnerComponent } from './change-data-owner.component';
@@ -352,14 +351,6 @@ describe('ChangeDataOwnerComponent', async () => {
       component.primaryWorkplace = MockEstablishment;
     });
 
-    const message = "You've sent a change data owner request"
-
-    type AlertType = 'success' | 'warning' | 'pending';
-    const type = 'success' as AlertType
-
-    const alert = {type: type, message: message}
-
-
     it('should submit the change data owner request', async () => {
       const establishmentService = TestBed.inject(EstablishmentService);
       const establishmentServiceSpy = spyOn(establishmentService, 'changeOwnership').and.callThrough();
@@ -385,11 +376,10 @@ describe('ChangeDataOwnerComponent', async () => {
 
       const router = injector.inject(Router) as Router;
 
-      const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
       const alertService = TestBed.inject(AlertService);
       const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
-      spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert));
+
+      const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
       component.ngOnInit();
       fixture.detectChanges();
@@ -401,15 +391,17 @@ describe('ChangeDataOwnerComponent', async () => {
       fireEvent.click(sendChangeRequestbutton);
       fixture.detectChanges();
 
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: message,
-      });
-
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
         state: {
           changeDataOwnerStatus: true,
         },
+      });
+
+      fixture.whenStable().then(() => {
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: "You've sent a change data owner request",
+        });
       });
     });
 
@@ -425,7 +417,6 @@ describe('ChangeDataOwnerComponent', async () => {
 
       const alertService = TestBed.inject(AlertService);
       const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
-      spyOnProperty(alertService, 'alert$', 'get').and.returnValue(of(alert));
 
       component.primaryWorkplace.dataOwner = WorkplaceDataOwner.Workplace;
       component.primaryWorkplace.isParent = true;
@@ -445,17 +436,17 @@ describe('ChangeDataOwnerComponent', async () => {
       const sendChangeRequestbutton = within(document.body).getByText('Send change request');
       fireEvent.click(sendChangeRequestbutton);
 
-
-
-      expect(alertServiceSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: message,
-      });
-
       expect(routerSpy).toHaveBeenCalledWith(['/workplace/view-all-workplaces'], {
         state: {
           changeDataOwnerStatus: true,
         },
+      });
+
+      fixture.whenStable().then(() => {
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: "You've sent a change data owner request",
+        });
       });
     });
   });
