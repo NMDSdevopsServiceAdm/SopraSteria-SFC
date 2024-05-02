@@ -1,23 +1,25 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { fireEvent, render } from '@testing-library/angular';
-import { RemoveLinkToParentComponent } from './remove-link-to-parent.component';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { getTestBed } from '@angular/core/testing';
-import { AlertService } from '@core/services/alert.service';
-import { WindowRef } from '@core/services/window.ref';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
+
+import { Establishment } from '../../../../mockdata/establishment';
+import { RemoveLinkToParentComponent } from './remove-link-to-parent.component';
 
 describe('RemoveLinkToParentComponent', () => {
   async function setup() {
@@ -57,6 +59,9 @@ describe('RemoveLinkToParentComponent', () => {
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const alertService = TestBed.inject(AlertService);
+    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
       getByRole,
       getByText,
@@ -68,6 +73,7 @@ describe('RemoveLinkToParentComponent', () => {
       establishmentService,
       routerSpy,
       getAllByText,
+      alertServiceSpy,
     };
   }
 
@@ -175,5 +181,48 @@ describe('RemoveLinkToParentComponent', () => {
 
     expect(cancelLink).toBeTruthy();
     expect(cancelLink.getAttribute('href')).toEqual('/dashboard');
+  });
+
+  it('should navigate to the home tab after parent association has been removed', async () => {
+    const { getByText, fixture, establishmentService, component, routerSpy, alertServiceSpy } = await setup();
+
+    spyOn(establishmentService, 'getAllParentWithPostCode').and.returnValue(
+      of(mockparentsWithPostCode),
+    );
+    component.ngOnInit();
+
+    const workplaceUid = component.workplace.uid;
+    const parentUid = 'test-id-1';
+
+    component.workplace.parentUid = parentUid;
+    component.workplace.parentName = mockparentsWithPostCode[0].parentName;
+    component.workplace.postcode = mockparentsWithPostCode[0].postcode
+    fixture.detectChanges();
+
+    component.getParentPostcode(mockparentsWithPostCode);
+
+    const removeParentAssociationSpy = spyOn(establishmentService, 'removeParentAssociation').and.returnValue(
+      of(mockparentsWithPostCode) as Establishment,
+    );
+
+    const removeTheLinkButton = getByText('Remove the link');
+    fireEvent.click(removeTheLinkButton);
+
+    expect(removeParentAssociationSpy).toHaveBeenCalledWith(workplaceUid, {
+      parentWorkplaceUId: parentUid,
+    });
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
+      state: {
+        removeLinkToParentSuccess: true,
+      },
+    });
+
+    fixture.whenStable().then(() => {
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `You've removed your link to ${mockparentsWithPostCode[0].parentName}, ${mockparentsWithPostCode[0].postcode}`,
+      });
+    });
   });
 });
