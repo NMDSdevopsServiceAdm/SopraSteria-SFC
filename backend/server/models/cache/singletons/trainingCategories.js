@@ -8,7 +8,10 @@ class TrainingCategoriesCache {
 
   static async initialize() {
     const trainingCategories = await models.workerTrainingCategories.findAll({
-      order: [['seq', 'ASC']],
+      order: [
+        ['seq', 'ASC'],
+        ['category', 'ASC'],
+      ],
     });
 
     ALL_TRAINING_CATEGORIES = trainingCategories;
