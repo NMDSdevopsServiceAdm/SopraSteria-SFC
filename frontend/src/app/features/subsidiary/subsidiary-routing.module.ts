@@ -71,11 +71,6 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
 // eslint-disable-next-line max-len
 const routes: Routes = [
   {
-    path: ':establishmentuid',
-    redirectTo: 'dashboard/:establishmentuid',
-    pathMatch: 'full',
-  },
-  {
     path: '',
     loadChildren: () => import('@features/public/public.module').then((m) => m.PublicModule),
   },

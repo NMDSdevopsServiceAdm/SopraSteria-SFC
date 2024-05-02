@@ -60,7 +60,6 @@ export class SubsidiaryAccountComponent implements OnInit {
         this.parentWorkplaceName = workplace.parentName;
       }),
     );
-    this.selectedTab = 'home';
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
