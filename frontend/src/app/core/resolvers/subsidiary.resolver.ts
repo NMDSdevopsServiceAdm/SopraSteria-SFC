@@ -15,7 +15,6 @@ export class SubsidiaryResolver implements Resolve<any> {
   ) {}
 
   resolve(route: ActivatedRouteSnapshot) {
-    console.log('hit the resolver');
     const subsidiaryUid = route.paramMap.get('establishmentuid');
 
     if (subsidiaryUid) {

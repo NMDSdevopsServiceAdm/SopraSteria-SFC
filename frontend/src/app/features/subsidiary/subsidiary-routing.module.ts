@@ -110,21 +110,27 @@ const routes: Routes = [
   },
   {
     path: 'home/:establishmentuid',
-    component: ViewSubsidiaryHomeComponent,
-    resolve: {
-      users: AllUsersForEstablishmentResolver,
-      establishment: WorkplaceResolver,
-      workers: WorkersResolver,
-      totalStaffRecords: TotalStaffRecordsResolver,
-      articleList: ArticleListResolver,
-      subsidiary: SubsidiaryResolver,
-    },
-    canActivate: [CheckPermissionsGuard, HasPermissionsGuard],
-    data: {
-      permissions: ['canViewEstablishment'],
-      title: 'Dashboard',
-      workerPagination: true,
-    },
+    canActivate: [HasPermissionsGuard],
+    children: [
+      {
+        path: '',
+        component: ViewSubsidiaryHomeComponent,
+        resolve: {
+          users: AllUsersForEstablishmentResolver,
+          establishment: WorkplaceResolver,
+          workers: WorkersResolver,
+          totalStaffRecords: TotalStaffRecordsResolver,
+          articleList: ArticleListResolver,
+          subsidiary: SubsidiaryResolver,
+        },
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canViewEstablishment'],
+          title: 'Dashboard',
+          workerPagination: true,
+        },
+      },
+    ],
   },
   {
     path: 'workplace/:establishmentuid',
@@ -136,6 +142,7 @@ const routes: Routes = [
       establishment: WorkplaceResolver,
       workers: WorkersResolver,
       totalStaffRecords: TotalStaffRecordsResolver,
+      subsidiary: SubsidiaryResolver,
     },
     children: [
       {
