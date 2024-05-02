@@ -15,6 +15,7 @@ enum Path {
   ABOUT_DATA = '/workplace/:workplaceUid/data-area/about-the-data',
   BENCHMARKS_ABOUT_DATA = '/workplace/:workplaceUid/benchmarks/about-the-data',
   OTHER_WORKPLACES = '/workplace/other-workplaces',
+  ABOUT_PARENTS = '/workplace/about-parents',
   CHANGE_DATA_OWNER = '/workplace/change-data-owner',
 }
 
@@ -24,6 +25,16 @@ export const workplaceTabJourney: JourneyRoute = {
       title: 'Workplace',
       path: Path.DASHBOARD,
       fragment: 'workplace',
+      children: [
+        {
+          title: 'What you can do as a parent workplace',
+          path: Path.ABOUT_PARENTS,
+          referrer: {
+            path: Path.WORKPLACE,
+            fragment: 'about-parents',
+          },
+        },
+      ],
     },
   ],
 };
@@ -76,21 +87,23 @@ export const trainingAndQualificationsTabJourney: JourneyRoute = {
   ],
 };
 
-
-
 export function benchmarksTabJourney(isOldTab: boolean = false): JourneyRoute {
-  return {children: [ {
-    title: 'Benchmarks',
-    path: Path.DASHBOARD,
-    fragment: 'benchmarks',
+  return {
     children: [
       {
-        title: 'About the data',
-        path: isOldTab ?  Path.BENCHMARKS_ABOUT_DATA : Path.ABOUT_DATA,
+        title: 'Benchmarks',
+        path: Path.DASHBOARD,
+        fragment: 'benchmarks',
+        children: [
+          {
+            title: 'About the data',
+            path: isOldTab ? Path.BENCHMARKS_ABOUT_DATA : Path.ABOUT_DATA,
+          },
+        ],
       },
     ],
-  },]}
-};
+  };
+}
 
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
@@ -146,7 +159,16 @@ export const allWorkplacesJourney: JourneyRoute = {
     {
       title: 'Your other workplaces',
       path: Path.ALL_WORKPLACES,
+      fragment: 'workplaces',
       children: [
+        {
+          title: 'What you can do as a parent workplace',
+          path: Path.ABOUT_PARENTS,
+          referrer: {
+            path: Path.WORKPLACE,
+            fragment: 'about-parents',
+          },
+        },
         {
           title: 'Change data owner',
           path: Path.CHANGE_DATA_OWNER,
