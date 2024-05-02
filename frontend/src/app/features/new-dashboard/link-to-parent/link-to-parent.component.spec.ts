@@ -154,9 +154,7 @@ describe('LinkToParentComponent', () => {
 
   describe('linkToParentRequested is false', () => {
     it('should show the link parent request button', async () => {
-      const { getByText, component, fixture } = await setup();
-      component.linkToParentRequested = false;
-      fixture.detectChanges();
+      const { getByText } = await setup();
 
       const linkToParentRequestButton = getByText('Send link request');
 
@@ -306,7 +304,7 @@ describe('LinkToParentComponent', () => {
       expect(cancelRequestToParentForLinkSpy).toHaveBeenCalled();
     });
 
-    it('should navigate back to homepage and cancel the link request', async () => {
+    it('should navigate to homepage after the link request has been cancelled', async () => {
       const { component, fixture, getByText, establishmentService, routerSpy, alertServiceSpy } = await setup();
 
       component.linkToParentRequested = true;
@@ -347,7 +345,7 @@ describe('LinkToParentComponent', () => {
       });
     });
 
-    it('should navigate back to the home page after sent link request', async () => {
+    it('should navigate to the home page after the link request has been sent', async () => {
       const { fixture, establishmentService, routerSpy, getByText, getByLabelText, alertServiceSpy } = await setup();
 
       const sendRequestToParentForLinkSpy = spyOn(

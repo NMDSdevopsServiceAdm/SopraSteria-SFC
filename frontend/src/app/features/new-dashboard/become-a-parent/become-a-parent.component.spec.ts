@@ -22,7 +22,7 @@ import { of } from 'rxjs';
 import { BecomeAParentComponent } from './become-a-parent.component';
 
 describe('BecomeAParentComponent', () => {
-  async function setup() {
+  async function setup(isBecomeParentRequestPending = false) {
     const { getByRole, getByText, getByLabelText, getByTestId, fixture } = await render(BecomeAParentComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -57,7 +57,7 @@ describe('BecomeAParentComponent', () => {
         },
       ],
       componentProperties: {
-        isBecomeParentRequestPending: false,
+        isBecomeParentRequestPending,
       },
     });
     const component = fixture.componentInstance;
@@ -138,11 +138,7 @@ describe('BecomeAParentComponent', () => {
   });
 
   it('should navigate to home page after parent request sent', async () => {
-    const { component, getByText, fixture, parentRequestsService, routerSpy, alertServiceSpy } = await setup();
-
-    component.isBecomeParentRequestPending = false;
-
-    fixture.detectChanges();
+    const { getByText, fixture, parentRequestsService, routerSpy, alertServiceSpy } = await setup();
 
     const becomeParentSpy = spyOn(parentRequestsService, 'becomeParent').and.returnValue(of([]));
 
@@ -167,11 +163,7 @@ describe('BecomeAParentComponent', () => {
   });
 
   it('should call becomeParent to request becoming a parent', async () => {
-    const { component, getByText, fixture, parentRequestsService } = await setup();
-
-    component.isBecomeParentRequestPending = false;
-
-    fixture.detectChanges();
+    const { getByText, parentRequestsService } = await setup();
 
     const becomeParentSpy = spyOn(parentRequestsService, 'becomeParent').and.callThrough();
 
@@ -193,11 +185,7 @@ describe('BecomeAParentComponent', () => {
 
   describe('pending become a parent request', () => {
     it('should show return to home button with the correct href back to the home tab', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.isBecomeParentRequestPending = true;
-
-      fixture.detectChanges();
+      const { getByText } = await setup(true);
 
       const returnToHomeButton = getByText('Return to home');
 
@@ -205,11 +193,7 @@ describe('BecomeAParentComponent', () => {
     });
 
     it('should navigate to the home tab', async () => {
-      const { component, getByText, routerSpy, fixture } = await setup();
-
-      component.isBecomeParentRequestPending = true;
-
-      fixture.detectChanges();
+      const { getByText, routerSpy, fixture } = await setup(true);
 
       const returnToHomeButton = getByText('Return to home');
 
@@ -220,21 +204,14 @@ describe('BecomeAParentComponent', () => {
     });
 
     it('should show the parent pending request banner', async () => {
-      const { component, getByTestId, fixture, getByText } = await setup();
+      const { getByTestId, fixture, getByText } = await setup(true);
 
-      component.isBecomeParentRequestPending = true;
-
-      fixture.detectChanges();
       expect(getByTestId('parentPendingRequestBanner')).toBeTruthy();
       expect(getByText('Cancel parent request')).toBeTruthy();
     });
 
     it('should call cancelBecomeAParent to cancel the parent request', async () => {
-      const { component, getByText, fixture, parentRequestsService } = await setup();
-
-      component.isBecomeParentRequestPending = true;
-
-      fixture.detectChanges();
+      const { getByText, parentRequestsService } = await setup(true);
 
       const cancelBecomeAParentSpy = spyOn(parentRequestsService, 'cancelBecomeAParent').and.callThrough();
 
@@ -245,18 +222,15 @@ describe('BecomeAParentComponent', () => {
       expect(cancelBecomeAParentSpy).toHaveBeenCalled();
     });
 
-    it('should navigate to home page after the parent request had been cancelled', async () => {
-      const { component, getByText, fixture, parentRequestsService, routerSpy, alertServiceSpy } = await setup();
+    it('should navigate to home page after the parent request has been cancelled', async () => {
+      const { getByText, fixture, parentRequestsService, routerSpy, alertServiceSpy } = await setup(true);
 
-      component.isBecomeParentRequestPending = true;
-      fixture.detectChanges();
       const cancelBecomeAParentSpy = spyOn(parentRequestsService, 'cancelBecomeAParent').and.returnValue(of([]));
 
       const cancelParentRequestLink = getByText('Cancel parent request');
       fireEvent.click(cancelParentRequestLink);
 
       expect(cancelBecomeAParentSpy).toHaveBeenCalled();
-
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
         state: {
