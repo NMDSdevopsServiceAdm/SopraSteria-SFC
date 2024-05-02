@@ -31,21 +31,21 @@ export class AboutParentsComponent implements OnInit {
   ngOnInit(): void {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.pages = this.route.snapshot.data.pages?.data[0];
-    this.setPreviousPageText();
+    this.setPreviousPageButtonText();
     this.breadcrumbService.show(this.showJourneyType(), this.workplace?.name);
   }
 
-  private setPreviousPageText() {
-    let previousPage = this.previousRouteService.getPreviousPage();
+  private setPreviousPageButtonText() {
+    if (this.previousRouteService.getPreviousPage() !== 'about-parents') {
+      this.previousPageButtonText = this.previousRouteService.getPreviousPage();
 
-    if (previousPage === 'view-all-workplaces') {
-      this.previousPageButtonText = 'your other workplaces';
-      this.journeyType = JourneyType.ALL_WORKPLACES;
-    } else if (previousPage === 'workplace') {
-      this.previousPageButtonText = 'your workplace';
-      this.journeyType = JourneyType.WORKPLACE_TAB;
-    } else if (previousPage === 'home') {
-      this.previousPageButtonText = previousPage;
+      if (this.previousPageButtonText === 'view-all-workplaces') {
+        this.previousPageButtonText = 'your other workplaces';
+        this.journeyType = JourneyType.ALL_WORKPLACES;
+      } else if (this.previousPageButtonText === 'workplace') {
+        this.previousPageButtonText = 'your workplace';
+        this.journeyType = JourneyType.WORKPLACE_TAB;
+      }
     }
   }
 
