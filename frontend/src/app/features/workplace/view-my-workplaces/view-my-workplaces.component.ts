@@ -12,7 +12,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 import { AlertService } from '@core/services/alert.service';
-import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
   selector: 'app-view-my-workplaces',
@@ -32,7 +31,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public currentPageIndex = 0;
   private searchTerm = '';
   public alertMessage: string;
-  private isParent: boolean;
 
   public locationId: string;
   public showMissingCqcMessage: boolean;
@@ -46,10 +44,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute,
     private router: Router,
     private alertService: AlertService,
-    private previousRouteService: PreviousRouteService,
-  ) {
-    this.isParent = establishmentService.primaryWorkplace.isParent;
-  }
+  ) {}
 
   ngOnInit(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;

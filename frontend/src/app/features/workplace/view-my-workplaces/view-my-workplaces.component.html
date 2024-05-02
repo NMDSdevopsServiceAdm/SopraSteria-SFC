@@ -6,6 +6,7 @@
       <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
       Your other workplaces ({{ activeWorkplaceCount }})
     </h1>
+
     <a
       *ngIf="canAddEstablishment"
       class="govuk-button govuk-!-margin-bottom-0"
@@ -15,6 +16,13 @@
     >
       Add a workplace
     </a>
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-bottom-2">
+  <div class="govuk-grid-column-full govuk__flex">
+    <p>
+      <a [routerLink]="['/workplace/about-parents']">What you can do as a parent workplace</a>
+    </p>
   </div>
 </div>
 
@@ -90,16 +98,16 @@
 
 <ng-template #noWorkplaces>
   <div data-testid="noWorkplacesMessage">
-    <p *ngIf="isParent"
-      class="govuk-!-margin-bottom-5"
-    ><a [routerLink]="['/workplace/about-parents']">What you can do as a parent workplace</a></p>
-      <p>You've not added any workplaces yet.</p>
-      <p>To add a workplace, you'll need to know:</p>
-      <ul class="govuk-list govuk-list--bullet">
-        <li>their main service and whether it's regulated by the Care Quality Commission (CQC)</li>
-        <li>the name and address of the workplace</li>
-        <li>what type of employer they are (for example, local authority, private)</li>
-        <li>how many members of staff they have</li>
-      </ul>
+    <p class="govuk-!-margin-bottom-5">
+      <a [routerLink]="['/workplace/about-parents']">What you can do as a parent workplace</a>
+    </p>
+    <p>You've not added any workplaces yet.</p>
+    <p>To add a workplace, you'll need to know:</p>
+    <ul class="govuk-list govuk-list--bullet">
+      <li>their main service and whether it's regulated by the Care Quality Commission (CQC)</li>
+      <li>the name and address of the workplace</li>
+      <li>what type of employer they are (for example, local authority, private)</li>
+      <li>how many members of staff they have</li>
+    </ul>
   </div>
 </ng-template>
