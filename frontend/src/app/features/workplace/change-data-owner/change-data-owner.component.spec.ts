@@ -70,7 +70,6 @@ describe('ChangeDataOwnerComponent', async () => {
             provide: ActivatedRoute,
             useValue: {
               snapshot: {
-                queryParams: { changeDataOwnerFrom: 'workplace-id-1' },
                 data: {
                   childWorkplaces: {
                     childWorkplaces: [
@@ -178,6 +177,8 @@ describe('ChangeDataOwnerComponent', async () => {
           component.primaryWorkplace.parentUid = null;
           component.primaryWorkplace.parentPostcode = null;
 
+          window.history.pushState({ changeDataOwnerFrom: 'workplace-id-1'}, '', '');
+
           component.ngOnInit();
           fixture.detectChanges();
 
@@ -194,6 +195,8 @@ describe('ChangeDataOwnerComponent', async () => {
           component.primaryWorkplace.parentName = null;
           component.primaryWorkplace.parentUid = null;
           component.primaryWorkplace.parentPostcode = null;
+
+          window.history.pushState({ changeDataOwnerFrom: 'workplace-id-1'}, '', '');
 
           component.ngOnInit();
           fixture.detectChanges();
@@ -308,7 +311,6 @@ describe('ChangeDataOwnerComponent', async () => {
             provide: ActivatedRoute,
             useValue: {
               snapshot: {
-                queryParams: { changeDataOwnerFrom: 'workplace-id-1' },
                 data: {
                   childWorkplaces: {
                     childWorkplaces: [
