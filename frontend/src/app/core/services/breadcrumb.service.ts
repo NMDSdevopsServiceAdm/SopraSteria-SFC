@@ -57,10 +57,7 @@ export class BreadcrumbService {
   private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
 
-  constructor(
-    private router: Router,
-    private location: Location,
-  ) {
+  constructor(private router: Router, private location: Location) {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -79,8 +76,8 @@ export class BreadcrumbService {
   // Sub view, Home, Users, User details, Permissions
   public show(journey: JourneyType, overrideMessage: string = null) {
     let path = this.location.path();
-    if(journey !== JourneyType.SUBSIDIARY) {
-      path = path.replace("/subsidiary", "");
+    if (journey !== JourneyType.SUBSIDIARY) {
+      path = path.replace('/subsidiary', '');
     }
 
     const urlTree = this.router.parseUrl(path);
@@ -322,6 +319,11 @@ export class BreadcrumbService {
 
       case JourneyType.CHANGE_DATA_OWNER: {
         routes = changeDataOwnerJourney;
+        break;
+      }
+
+      case JourneyType.ABOUT_PARENTS: {
+        routes = workplaceTabJourney;
         break;
       }
 

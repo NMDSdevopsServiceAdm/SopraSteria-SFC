@@ -337,7 +337,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   }
 
   public goToAboutParentsLink(): void {
-    this.router.navigate(['/about-parents']);
+    this.router.navigate(['/workplace/about-parents']);
   }
 
   public updateLinkToParentRequestedStatus(): void {

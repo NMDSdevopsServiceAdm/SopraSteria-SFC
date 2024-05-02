@@ -290,4 +290,13 @@ describe('ViewMyWorkplacesComponent', () => {
       expect(missingCqcWorkplacesMessage.textContent).toContain(component.primaryWorkplace.name);
     });
   });
+
+  it('should show `What you can do as a parent workplace` link', async () => {
+    const { getByText } = await setup();
+
+    const linkText = getByText('What you can do as a parent workplace');
+
+    expect(linkText).toBeTruthy();
+    expect(linkText.getAttribute('href')).toEqual('/workplace/about-parents');
+  });
 });

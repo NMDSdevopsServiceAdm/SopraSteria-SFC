@@ -87,6 +87,7 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 
 @NgModule({
@@ -171,6 +172,7 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
     TrainingService,
     WindowRef,
     WorkerService,
+    PreviousRouteService,
     { provide: WindowToken, useFactory: windowProvider },
     {
       provide: HTTP_INTERCEPTORS,
