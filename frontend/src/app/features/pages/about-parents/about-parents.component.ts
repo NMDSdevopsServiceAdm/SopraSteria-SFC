@@ -17,7 +17,7 @@ export class AboutParentsComponent implements OnInit {
   public returnToHomeButton: boolean;
   public routeData: string;
   public pages: Page;
-  public previousPageText: string;
+  public previousPageButtonText: string;
   public journeyType = JourneyType.WORKPLACE_TAB;
 
   constructor(
@@ -25,7 +25,7 @@ export class AboutParentsComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private route: ActivatedRoute,
     private _location: Location,
-    private previousRouteService: PreviousRouteService
+    private previousRouteService: PreviousRouteService,
   ) {}
 
   ngOnInit(): void {
@@ -36,16 +36,16 @@ export class AboutParentsComponent implements OnInit {
   }
 
   private setPreviousPageText() {
-    if(this.previousRouteService.getPreviousPage() != "about parents") {
-      this.previousPageText = this.previousRouteService.getPreviousPage();
+    let previousPage = this.previousRouteService.getPreviousPage();
 
-      if(this.previousPageText == "view all workplaces") {
-        this.previousPageText = "your other workplaces";
-        this.journeyType = JourneyType.ALL_WORKPLACES;
-      } else if(this.previousPageText == "workplace") {
-        this.previousPageText = "your workplace";
-        this.journeyType = JourneyType.WORKPLACE_TAB;
-      }
+    if (previousPage === 'view-all-workplaces') {
+      this.previousPageButtonText = 'your other workplaces';
+      this.journeyType = JourneyType.ALL_WORKPLACES;
+    } else if (previousPage === 'workplace') {
+      this.previousPageButtonText = 'your workplace';
+      this.journeyType = JourneyType.WORKPLACE_TAB;
+    } else if (previousPage === 'home') {
+      this.previousPageButtonText = previousPage;
     }
   }
 

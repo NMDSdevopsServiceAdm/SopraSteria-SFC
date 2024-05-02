@@ -30,13 +30,13 @@ export class PreviousRouteService {
   }
 
   public getPreviousPage() {
-    let previousPage = this.previousUrl;
-    if (previousPage) {
+    let previousPage = null;
+    if (this.previousUrl) {
       const regexSplit = /\/|\#/;
-      //split the url by slashes or hashes
-      let previousPages = previousPage.split(regexSplit);
-      // take the end of the url and remove dashes from the name
-      previousPage = previousPages[previousPages.length - 1].split('-').join(' ');
+
+      let previousPages = this.previousUrl.split(regexSplit);
+
+      previousPage = previousPages[previousPages.length - 1];
     }
     return previousPage;
   }
