@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
@@ -14,12 +14,10 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import {
-  BenchmarksSelectViewPanelComponent,
-} from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
+import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { ViewSubsidiaryBenchmarksComponent } from './view-subsidiary-benchmarks.component';
 
@@ -60,11 +58,18 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { establishment },
+            },
+          },
+        },
       ],
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
-        workplace: establishment,
         newDashboard,
         tilesData: tileData,
       },
@@ -86,30 +91,28 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
     expect(component).toBeTruthy();
   });
 
-
   describe('can see new data area', () => {
     it('should render the new data area tab component', async () => {
       const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-      component.canSeeNewDataArea = true
-      component.newDataAreaFlag = true
+      component.canSeeNewDataArea = true;
+      component.newDataAreaFlag = true;
       fixture.detectChanges();
 
       expect(queryByTestId('data-area-tab')).toBeTruthy();
     });
-  })
+  });
 
   describe('can not see new data area', () => {
     it('should render the old benchmarks tab', async () => {
       const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-      component.canSeeNewDataArea = false
-      component.newDataAreaFlag = true
+      component.canSeeNewDataArea = false;
+      component.newDataAreaFlag = true;
       component.viewBenchmarksByCategory = true;
       fixture.detectChanges();
 
       expect(queryByTestId('old-benchmarks-tab')).toBeTruthy();
     });
-  })
-
+  });
 });

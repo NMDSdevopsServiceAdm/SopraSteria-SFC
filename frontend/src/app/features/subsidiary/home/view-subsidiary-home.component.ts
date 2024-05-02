@@ -13,7 +13,6 @@ import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -64,7 +63,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public showMissingCqcMessage: boolean;
   public locationId: string;
   public workplacesCount: number;
-  public isParentSubsidiaryView: boolean;
   public tilesData: BenchmarksResponse;
 
   constructor(
@@ -73,7 +71,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     private tabsService: TabsService,
     public route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
-    public parentSubsidiaryViewService: ParentSubsidiaryViewService,
     protected benchmarksService: BenchmarksServiceBase,
     private serviceNamePipe: ServiceNamePipe,
   ) {}
@@ -85,8 +82,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
     this.tabsService.selectedTab = 'home';
-    this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
-    this.parentSubsidiaryViewService.setTotalTrainingRecords(this.trainingCounts.totalRecords);
 
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
@@ -95,8 +90,6 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.subId = this.route.snapshot.data.establishment.uid;
 
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
-
-    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
 
     this.bigThreeServices = [1, 2, 8].includes(this.subsidiaryWorkplace.mainService.reportingID);
 

@@ -7,7 +7,6 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { WorkerService } from '@core/services/worker.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-view-subsidiary-staff-records',
@@ -28,7 +27,6 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
     private workerService: WorkerService,
     private route: ActivatedRoute,
     private tabsService: TabsService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -42,8 +40,6 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
 
     this.workplace = this.route.snapshot.data.establishment;
     this.canAddWorker = this.permissionsService.can(this.workplace.uid, 'canAddWorker');
-
-    this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
 
     this.staffLastUpdatedDate = this.getStaffLastUpdatedDate();
   }
