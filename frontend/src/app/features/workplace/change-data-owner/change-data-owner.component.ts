@@ -1,15 +1,15 @@
-import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { DataPermissions } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 @Component({
   selector: 'app-change-data-owner',
@@ -36,7 +36,6 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
   public ownershipFromUid: string;
   public ownershipFromPostCode: string;
   public journeyType: any;
-  public alertMessage: any;
   public isParent: boolean;
   public subWorkplace: Establishment;
 
@@ -47,6 +46,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     private router: Router,
     public route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
+    private alertService: AlertService,
   ) {}
 
   ngAfterViewInit() {
@@ -63,10 +63,6 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
 
     this.setWorkplaces();
     this.breadcrumbService.show(this.showJourneyType(), this.primaryWorkplace.name);
-    this.alertMessage = {
-      alertMessage: "You've sent a change data owner request",
-      changeDataOwnerStatus: true,
-    };
   }
 
   public setSubWorkplace(): void {
@@ -189,12 +185,17 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
             if (data) {
               if (this.isParent) {
                 this.router.navigate(['/workplace/view-all-workplaces'], {
-                  state: this.alertMessage,
-                });
+                  state: {changeDataOwnerStatus: true},
+                }).then(()=>{
+                  this.alertService.addAlert({ type: 'success', message: "You've sent a change data owner request"});
+              });
+
               } else {
                 this.router.navigate(['/dashboard'], {
-                  state: this.alertMessage,
-                });
+                  state: {changeDataOwnerStatus: true},
+                }).then(()=>{
+                  this.alertService.addAlert({ type: 'success', message: "You've sent a change data owner request"});
+              });
               }
             }
           },

@@ -104,9 +104,6 @@ describe('ViewMyWorkplacesComponent', () => {
 
     const getChildWorkplacesSpy = spyOn(establishmentService, 'getChildWorkplaces').and.callThrough();
 
-    const alertService = TestBed.inject(AlertService);
-    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
-
     return {
       router,
       component,
@@ -120,7 +117,6 @@ describe('ViewMyWorkplacesComponent', () => {
       queryByTestId,
       getChildWorkplacesSpy,
       establishmentService,
-      alertServiceSpy,
     };
   }
 
@@ -270,23 +266,6 @@ describe('ViewMyWorkplacesComponent', () => {
       fixture.autoDetectChanges();
 
       expect((getByLabelText('Search child workplace records') as HTMLInputElement).value).toBe('mysupersearch');
-    });
-  });
-
-  it('should show the banner message if there is an alert message', async () => {
-    const { component, fixture, alertServiceSpy } = await setup();
-
-    const message = "You've sent a change data owner request";
-
-    window.history.pushState({ alertMessage: message }, '', '');
-
-    component.ngOnInit();
-    fixture.detectChanges();
-
-    expect(component.alertMessage).toEqual(message);
-    expect(alertServiceSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: message,
     });
   });
 
