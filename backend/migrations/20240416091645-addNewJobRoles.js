@@ -14,7 +14,7 @@ module.exports = {
         queryInterface.sequelize.query('insert into cqc."Job" ("JobID", "JobName") values (35, \'IT and digital support\')', {
           transaction,
         }),
-        queryInterface.sequelize.query('insert into cqc."Job" ("JobID", "JobName") values (36, \'IT Manager\')', {
+        queryInterface.sequelize.query('insert into cqc."Job" ("JobID", "JobName") values (36, \'IT manager\')', {
           transaction,
         }),
         queryInterface.sequelize.query('insert into cqc."Job" ("JobID", "JobName") values (37, \'IT service desk manager\')', {
