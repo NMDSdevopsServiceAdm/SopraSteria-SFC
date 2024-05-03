@@ -10,19 +10,18 @@ export class ParentSubsidiaryViewService {
 
   constructor(private establishmentService: EstablishmentService) {}
 
-  setViewingSubAsParent(subsidiaryUid: string) {
+  setViewingSubAsParent(subsidiaryUid: string): void {
     this.subsidiaryUid = subsidiaryUid;
     this.viewingSubAsParent = true;
 
     this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
       if (workplace) {
-        this.establishmentService.setPrimaryWorkplace(workplace);
         this.establishmentService.setWorkplace(workplace);
       }
     });
   }
 
-  clearViewingSubAsParent() {
+  clearViewingSubAsParent(): void {
     this.subsidiaryUid = null;
     this.viewingSubAsParent = false;
   }
