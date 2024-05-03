@@ -58,7 +58,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
         if (tabIndex > -1) {
           const tab = this.tabs[tabIndex];
           tab.active = true;
-          if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+          if (this.clickEvent && this.parentSubsidiaryViewService.getViewingSubAsParent()) {
             let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
             this.router.navigate([`/subsidiary/${tab.slug}/${subsidiaryUid}`]);
           } else if (this.dashboardView) {

@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TabsService } from '@core/services/tabs.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -43,6 +44,8 @@ describe('NewTabsComponent', () => {
     const location = injector.inject(Location);
     const locationSpy = spyOn(location, 'replaceState');
 
+    const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService);
+
     return {
       component,
       fixture,
@@ -53,6 +56,7 @@ describe('NewTabsComponent', () => {
       tabsService,
       routerSpy,
       locationSpy,
+      parentSubsidiaryViewService,
     };
   };
 
@@ -130,6 +134,19 @@ describe('NewTabsComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
       expect(locationSpy).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to the sub tab url when tab clicked in sub view', async () => {
+      const { getByTestId, parentSubsidiaryViewService, routerSpy } = await setup();
+      const subId = 'abcde123';
+
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+      spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subId);
+
+      const tAndQTab = getByTestId('tab_training-and-qualifications');
+      fireEvent.click(tAndQTab);
+
+      expect(routerSpy).toHaveBeenCalledWith([`/subsidiary/training-and-qualifications/${subId}`]);
     });
   });
 
