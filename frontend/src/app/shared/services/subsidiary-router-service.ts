@@ -53,7 +53,14 @@ export class SubsidiaryRouterService extends Router {
   }
 
   isSubsidiaryPage(commands: any[]) {
-    const exitSubsidiaryViewPages = ['account-management', 'login', 'notifications', 'satisfaction-survey', 'sfcadmin'];
+    const exitSubsidiaryViewPages = [
+      'account-management',
+      'login',
+      'notifications',
+      'satisfaction-survey',
+      'sfcadmin',
+      'logged-out',
+    ];
 
     if (commands.length === 1) {
       return !exitSubsidiaryViewPages.includes(commands[0]);
