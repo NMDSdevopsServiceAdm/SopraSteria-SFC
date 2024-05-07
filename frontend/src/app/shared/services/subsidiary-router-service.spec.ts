@@ -134,6 +134,16 @@ describe('SubsidiaryRouterService', () => {
       expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
     })
 
+    it('should include query params in the route if provided', async() => {
+      subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
+      const urlTree = service.createUrlTree(['expected', 'test', 'route'], { queryParams: { test: 'test-queryParams'}});
+      const expectedUrlTree = service.createUrlTree(['subsidiary', 'expected', 'test', 'route'], { queryParams: { test: 'test-queryParams'}});
+
+      service.navigateByUrl(urlTree);
+
+      expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
+    })
+
     describe('fragments', () => {
       it('should reroute to the sub equivalent pages on dashboard', async() => {
         subViewServiceSpy.getViewingSubAsParent.and.returnValue(true);
