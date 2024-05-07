@@ -16,6 +16,7 @@ export class SubsidiaryRouterService extends Router {
     }
     const navigationExtras = {
       fragment: urlTree.fragment,
+      queryParams: urlTree.queryParams,
     };
 
     return { commands, navigationExtras };
