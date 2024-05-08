@@ -11,11 +11,10 @@ module.exports = {
         tableName: 'Job',
         schema: 'cqc',
       },
-      'IsDeleted',
+      'DeletedAt',
       {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
-        allowNull: false,
+        type: DataTypes.DATE,
+        allowNull: true,
       }
     );
   },
@@ -26,7 +25,7 @@ module.exports = {
         tableName: 'Job',
         schema: 'cqc'
       },
-      'IsDeleted'
+      'DeletedAt'
     );
   }
 };

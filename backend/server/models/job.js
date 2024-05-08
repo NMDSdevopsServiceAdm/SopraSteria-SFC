@@ -1,5 +1,7 @@
 /* jshint indent: 2 */
 
+const { timeStamp } = require("console");
+
 module.exports = function (sequelize, DataTypes) {
   const Job = sequelize.define(
     'job',
@@ -20,12 +22,20 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"Other"',
       },
+      deletedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"DeletedAt"',
+      }
     },
     {
       tableName: '"Job"',
       schema: 'cqc',
       createdAt: false,
       updatedAt: false,
+      paranoid: true,
+      deletedAt: 'DeletedAt',
+      timestamps: true,
     },
   );
 
