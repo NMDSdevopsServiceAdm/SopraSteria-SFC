@@ -8,6 +8,7 @@
 ></app-new-dashboard-header>
 
 <div class="govuk-width-container govuk-!-padding-top-2">
+  <app-alert></app-alert>
   <div class="govuk-!-margin-top-6">
     <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
       <app-new-training-link-panel

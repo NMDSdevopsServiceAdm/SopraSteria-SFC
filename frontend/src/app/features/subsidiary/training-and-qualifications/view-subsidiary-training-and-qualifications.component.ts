@@ -145,6 +145,8 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   }
 
   ngOnDestroy(): void {
+    this.alertService.removeAlert()
     this.subscriptions.unsubscribe();
+    this.breadcrumbService.removeRoutes();
   }
 }
