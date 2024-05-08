@@ -59,7 +59,10 @@ export class StartComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
-    this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe();
+    this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe((response) => {
+      this.establishment.showAddWorkplaceDetailsBanner = response.data.showAddWorkplaceDetailsBanner;
+      this.establishmentService.setState(this.establishment);
+    });
     this.router.navigate(['workplace', this.establishment.uid, 'other-services']);
   }
 

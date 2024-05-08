@@ -10,7 +10,7 @@ export class ParentSubsidiaryViewService {
 
   constructor(private establishmentService: EstablishmentService) {}
 
-  setViewingSubAsParent(subsidiaryUid: string) {
+  setViewingSubAsParent(subsidiaryUid: string): void {
     this.subsidiaryUid = subsidiaryUid;
     this.viewingSubAsParent = true;
 
@@ -22,7 +22,7 @@ export class ParentSubsidiaryViewService {
     });
   }
 
-  clearViewingSubAsParent() {
+  clearViewingSubAsParent(): void {
     this.subsidiaryUid = null;
     this.viewingSubAsParent = false;
   }

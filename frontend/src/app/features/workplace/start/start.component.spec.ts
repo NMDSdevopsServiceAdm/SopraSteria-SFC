@@ -6,6 +6,7 @@ import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { fireEvent, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { WorkplaceModule } from '../workplace.module';
 import { StartComponent } from './start.component';
@@ -28,10 +29,11 @@ describe('StartComponent (workplace)', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByText, routerSpy };
+    return { component, fixture, getByText, routerSpy, establishmentService };
   }
 
   it('should render a StartComponent', async () => {
@@ -52,9 +54,8 @@ describe('StartComponent (workplace)', () => {
   });
 
   it('should call the updateSingleEstablishmentField when clicking the Continue button', async () => {
-    const { component, fixture, getByText } = await setup();
+    const { component, fixture, getByText, establishmentService } = await setup();
 
-    const establishmentService = TestBed.inject(EstablishmentService) as EstablishmentService;
     const updateSingleEstablishmentFieldSpy = spyOn(
       establishmentService,
       'updateSingleEstablishmentField',
@@ -67,6 +68,21 @@ describe('StartComponent (workplace)', () => {
 
     const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
     expect(updateSingleEstablishmentFieldSpy).toHaveBeenCalledWith(workplaceUid, data);
+  });
+
+  it('should set establishment in service with showBanner field set to data returned from update (false) after clicking Continue button', async () => {
+    const { component, getByText, establishmentService } = await setup();
+
+    spyOn(establishmentService, 'updateSingleEstablishmentField').and.returnValue(
+      of({ data: { showAddWorkplaceDetailsBanner: false } }),
+    );
+
+    const setStateSpy = spyOn(establishmentService, 'setState').and.callThrough();
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+    expect(component.establishment.showAddWorkplaceDetailsBanner).toBe(false);
+    expect(setStateSpy).toHaveBeenCalledWith(component.establishment);
   });
 
   it('should set the back link to the dashboard home fragment when no navigatedFromFragment state is passed', async () => {
