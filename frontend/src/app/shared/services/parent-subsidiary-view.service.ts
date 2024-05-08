@@ -16,6 +16,7 @@ export class ParentSubsidiaryViewService {
 
     this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
       if (workplace) {
+        this.establishmentService.setPrimaryWorkplace(workplace);
         this.establishmentService.setWorkplace(workplace);
       }
     });
