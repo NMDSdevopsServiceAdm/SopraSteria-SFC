@@ -79,6 +79,9 @@ describe('StaffRecordComponent', () => {
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
 
+    const alert = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
+
     return {
       component,
       fixture,
@@ -91,6 +94,7 @@ describe('StaffRecordComponent', () => {
       queryByText,
       workplaceUid,
       workerUid,
+      alertSpy,
     };
   }
 
@@ -271,6 +275,25 @@ describe('StaffRecordComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
         fragment: 'staff-records',
         state: { showBanner: true },
+      });
+    });
+
+    it('should display a confirmation alert when the confirm record details button has been clicked', async () => {
+      const { getByText, alertSpy, fixture, component } = await setup();
+
+      component.canEditWorker = true;
+      component.workplace.uid = 'mock-uid';
+      component.worker.completed = false;
+      fixture.detectChanges();
+
+      const button = getByText('Confirm record details');
+      fireEvent.click(button);
+
+      fixture.whenStable().then(() => {
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Staff record saved',
+        });
       });
     });
 
