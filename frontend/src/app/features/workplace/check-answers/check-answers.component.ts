@@ -41,15 +41,17 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
     this.backService.setBackLink({ url: ['/workplace', this.establishment.uid, 'sharing-data'] });
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  public showConfirmWorkplaceDetailsAlert(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'workplace' })
+    .then(()=>{
+      this.alertService.addAlert({
+        type: 'success',
+        message: `You've confirmed the workplace details that you added`,
+      });})
   }
 
-  public showConfirmWorkplaceDetailsAlert(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'workplace' });
-    this.alertService.addAlert({
-      type: 'success',
-      message: `You've confirmed the workplace details that you added`,
-    });
+  ngOnDestroy(): void {
+    this.alertService.removeAlert();
+    this.subscriptions.unsubscribe();
   }
 }
