@@ -1,14 +1,13 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { DataAreaAboutTheDataComponent } from '@shared/components/data-area-tab/about-the-data/about-the-data.component';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-view-subsidiary-benchmarks',
@@ -33,67 +32,28 @@ export class ViewSubsidiaryBenchmarksComponent implements OnInit, OnDestroy {
   public comparisonDataExists: boolean;
   public workplace: Establishment;
   public newDashboard: boolean;
-  private subsidiaryUid: string;
+  public canSeeNewDataArea: boolean;
+  public newDataAreaFlag: boolean;
+  public lastUpdatedDate: string;
 
   constructor(
-    private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
     protected benchmarksService: BenchmarksServiceBase,
-    protected router: Router,
+    public route: ActivatedRoute,
+    private featureFlagsService: FeatureFlagsService,
     private tabsService: TabsService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
+    this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
+
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
-    this.newDashboard = true;
-    this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
-      if (subsidiaryWorkplace) {
-        this.workplace = subsidiaryWorkplace;
-        this.subsidiaryUid = this.workplace?.uid;
-        this.tilesData = this.benchmarksService.benchmarksData.newBenchmarks;
-        this.rankingsData = this.benchmarksService.rankingsData;
-        this.canViewFullBenchmarks = this.permissionsService.can(this.subsidiaryUid, 'canViewBenchmarks');
-        this.setDownloadBenchmarksText();
-        this.checkComparisonDataExists();
-        this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;
-      }
-    });
-    this.parentSubsidiaryViewService.canShowBanner = true;
-    this.parentSubsidiaryViewService.getLastUpdatedDate = this.tilesData?.meta.lastUpdated.toString()
-  }
+    this.tabsService.selectedTab = 'benchmarks';
 
-  public checkComparisonDataExists(): void {
-    const noComparisonData = 'no-data';
+    this.workplace = this.route.snapshot.data.establishment;
+    this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
 
-    if (
-      this.tilesData?.careWorkerPay.comparisonGroup.stateMessage === noComparisonData &&
-      this.tilesData?.seniorCareWorkerPay.comparisonGroup.stateMessage === noComparisonData &&
-      this.tilesData?.registeredNursePay.comparisonGroup.stateMessage === noComparisonData &&
-      this.tilesData?.registeredManagerPay.comparisonGroup.stateMessage === noComparisonData
-    ) {
-      this.comparisonDataExists = false;
-    } else this.comparisonDataExists = true;
-  }
-
-  public setDownloadBenchmarksText(): void {
-    const fileSize = this.viewBenchmarksByCategory ? '385KB' : '430KB';
-    const section = this.viewBenchmarksByCategory ? 'recruitment and retention' : 'pay';
-
-    this.downloadRecruitmentBenchmarksText = `Download ${section} benchmarks (PDF, ${fileSize}, 2 pages)`;
-  }
-
-  public handleViewBenchmarksByCategory(visible: boolean): void {
-    this.viewBenchmarksByCategory = visible;
-    this.setDownloadBenchmarksText();
-  }
-
-  public handleViewComparisonGroups(visible: boolean): void {
-    this.viewBenchmarksComparisonGroups = visible;
-  }
-
-  public handleViewBenchmarkPosition(visible: boolean): void {
-    this.viewBenchmarksPosition = visible;
+    this.lastUpdatedDate = this.tilesData?.meta.lastUpdated.toString();
   }
 
   ngOnDestroy(): void {

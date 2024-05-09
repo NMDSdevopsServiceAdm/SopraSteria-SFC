@@ -12,7 +12,6 @@ import { isAdminRole } from '@core/utils/check-role-util';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-dashboard-header',
@@ -27,8 +26,8 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   @Input() tAndQCount = 0;
   @Input() canEditWorker = false;
   @Input() hasWorkers = false;
+  @Input() workplace: Establishment;
 
-  public workplace: Establishment;
   public canDeleteEstablishment: boolean;
   public workplaceUid: string;
   public subsidiaryCount: number;
@@ -58,13 +57,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   ) {}
 
   ngOnInit(): void {
-    //subscribe to changes in the subsidiaryUid. Need to really subscribe to a parent workplace request change
-    // (Use the resolver)
-    this.parentSubsidiaryViewService.getObservableSubsidiaryUid().subscribe((subsidiaryUid) => {
-      this.setWorkplace(subsidiaryUid);
-    });
-
-    this.isParent = this.establishmentService.primaryWorkplace?.isParent;
+    this.isParent = this.workplace.isParent;
 
     this.setIsParentSubsidiaryView();
 
@@ -75,45 +68,17 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.getPermissions();
 
     this.getHeader();
-    this.getValuesForHeader();
   }
 
   ngOnChanges(): void {
     this.setIsParentSubsidiaryView();
     this.setSubsidiaryCount();
     this.getPermissions();
-
     this.getHeader();
-    this.getValuesForHeader();
   }
 
   public setIsParentSubsidiaryView(): void {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
-  }
-
-  private setWorkplace(subsidiaryUid: string) {
-    if (subsidiaryUid == '') {
-      this.workplace = this.establishmentService.primaryWorkplace;
-      this.workplaceUid = this.workplace ? this.workplace.uid : null;
-    } else {
-      this.establishmentService.getEstablishment(subsidiaryUid).subscribe((workplace) => {
-        if (workplace) {
-          this.establishmentService.setWorkplace(workplace);
-          this.workplace = workplace;
-          this.workplaceUid = this.workplace ? this.workplace.uid : null;
-        }
-      });
-    }
-  }
-
-  public getValuesForHeader(): void {
-    if (this.isParentSubsidiaryView) {
-      this.hasWorkers = this.parentSubsidiaryViewService.getHasWorkers();
-
-      this.parentSubsidiaryViewService.totalTrainingRecords$.subscribe((totalTrainingRecords) => {
-        this.tAndQCount = totalTrainingRecords;
-      });
-    }
   }
 
   public onDeleteWorkplace(event: Event): void {
@@ -140,35 +105,22 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.subscriptions.add(
       this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
         () => {
-          this.permissionsService.clearPermissions();
-          this.authService.restorePreviousToken();
+          if (this.isParentSubsidiaryView) {
+            this.establishmentService.getEstablishment(this.workplace.parentUid).subscribe((workplace) => {
+              this.establishmentService.setPrimaryWorkplace(workplace);
+              this.parentSubsidiaryViewService.clearViewingSubAsParent();
 
-          if (this.authService.getPreviousToken().EstablishmentUID) {
-            this.establishmentService
-              .getEstablishment(this.authService.getPreviousToken().EstablishmentUID)
-              .pipe(take(1))
-              .subscribe((workplace) => {
-                this.establishmentService.setState(workplace);
-                this.establishmentService.setPrimaryWorkplace(workplace);
-                this.establishmentService.establishmentId = workplace.uid;
-                this.router.navigate(['/search-establishments']).then(() => {
-                  this.alertService.addAlert({
-                    type: 'success',
-                    message: `${this.workplace.name} has been permanently deleted.`,
-                  });
-                });
+              this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
+                this.displaySuccessfullyDeletedAlert();
               });
+            });
           } else {
-            this.router.navigate(['/search-establishments']).then(() => {
-              this.alertService.addAlert({
-                type: 'success',
-                message: `${this.workplace.name} has been permanently deleted.`,
-              });
+            this.router.navigate(['sfcadmin', 'search', 'workplace']).then(() => {
+              this.displaySuccessfullyDeletedAlert();
             });
           }
         },
-        (e) => {
-          console.error(e);
+        () => {
           this.alertService.addAlert({
             type: 'warning',
             message: 'There was an error deleting the workplace.',
@@ -178,16 +130,23 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     );
   }
 
+  private displaySuccessfullyDeletedAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `${this.workplace.name} has been permanently deleted.`,
+    });
+  }
+
   private getPermissions(): void {
     this.user = this.userService.loggedInUser;
     if (isAdminRole(this.user?.role)) {
       this.canDeleteEstablishment = this.permissionsService.can(
-        this.establishmentService.primaryWorkplace.uid,
+        this.establishmentService.primaryWorkplace?.uid,
         'canDeleteAllEstablishments',
       );
     } else {
       this.canDeleteEstablishment = this.permissionsService.can(
-        this.establishmentService.primaryWorkplace.uid,
+        this.establishmentService.primaryWorkplace?.uid,
         'canDeleteEstablishment',
       );
     }

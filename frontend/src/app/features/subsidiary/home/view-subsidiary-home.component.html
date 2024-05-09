@@ -1,3 +1,6 @@
+<app-new-dashboard-header [workplace]="subsidiaryWorkplace" [canAddWorker]="canAddWorker" tab="home">
+</app-new-dashboard-header>
+
 <div class="govuk-width-container govuk-!-margin-top-7">
   <ng-container *ngIf="(newHomeDesignParentFlag && workplace) || newHomeDesignParentFlag">
     <app-alert></app-alert>
@@ -12,10 +15,10 @@
     [workersNotCompleted]="workersNotCompleted"
     [(navigateToTab)]="navigateToTab"
     [canViewEstablishment]="canViewEstablishment"
-    [isParentSubsidiaryView]="isParentSubsidiaryView"
+    [isParentSubsidiaryView]="true"
   ></app-summary-section>
 </div>
-<div class="govuk-width-container govuk-!-margin-top-4">
+<div class="govuk-width-container govuk-!-margin-top-7">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-grid-row">
@@ -55,7 +58,11 @@
     </div>
     <div class="govuk-grid-column-one-third">
       <app-new-article-list data-testid="article-list"></app-new-article-list>
-      <app-other-links [canBulkUpload]="canBulkUpload" [canViewReports]="canViewReports"></app-other-links>
+      <app-other-links
+        [canBulkUpload]="canBulkUpload"
+        [canViewReports]="canViewReports"
+        [isParentSubsidiaryView]="true"
+      ></app-other-links>
     </div>
   </div>
 </div>

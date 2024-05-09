@@ -7,7 +7,6 @@
   font-size: 19px;
   color: $govuk-text-colour;
   padding: 15px;
-  margin-top: 5px;
   margin-bottom: 40px;
 
   @media only screen and (max-width: 680px) {
@@ -15,6 +14,6 @@
   }
 }
 
-.asc-card {
-  padding: 5px;
+.asc-card-padding {
+  padding: 0px 5px 10px 5px;
 }

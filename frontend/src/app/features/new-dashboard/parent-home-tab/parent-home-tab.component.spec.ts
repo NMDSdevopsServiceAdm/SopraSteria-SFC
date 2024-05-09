@@ -8,6 +8,7 @@ import { Meta } from '@core/model/benchmarks.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
+import { ArticlesService } from '@core/services/articles.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -15,11 +16,13 @@ import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
+import { MockArticlesService } from '@core/test-utils/MockArticlesService';
 import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
+import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -28,7 +31,6 @@ import { of } from 'rxjs';
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { ParentHomeTabComponent } from './parent-home-tab.component';
-import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 
 const MockWindow = {
   dataLayer: {
@@ -39,6 +41,9 @@ const MockWindow = {
 };
 
 describe('ParentHomeTabComponent', () => {
+  const articleList = MockArticlesService.articleListFactory();
+  const articles = MockArticlesService.articlesFactory();
+
   const setup = async (
     checkCqcDetails = false,
     establishment = Establishment,
@@ -70,6 +75,8 @@ describe('ParentHomeTabComponent', () => {
             useValue: {
               snapshot: {
                 data: {
+                  articleList,
+                  articles,
                   workers: {
                     workersCreatedDate: [],
                     workerCount: 0,
@@ -87,6 +94,7 @@ describe('ParentHomeTabComponent', () => {
             useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
             deps: [HttpClient],
           },
+          { provide: ArticlesService, useClass: MockArticlesService },
           { provide: WindowToken, useValue: MockWindow },
         ],
         declarations: [NewDashboardHeaderComponent, NewArticleListComponent, SummarySectionComponent],
@@ -96,6 +104,7 @@ describe('ParentHomeTabComponent', () => {
             ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
             : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
           canRunLocalAuthorityReport: false,
+          article: {slug: ''}
         },
         schemas: [NO_ERRORS_SCHEMA],
       },
@@ -281,7 +290,7 @@ describe('ParentHomeTabComponent', () => {
       const ascWdsNewsLink = getByText('ASC-WDS news');
 
       expect(ascWdsNewsLink).toBeTruthy();
-      expect(ascWdsNewsLink.getAttribute('href')).toBe('/articles/news-article-heartof');
+      expect(ascWdsNewsLink.getAttribute('href')).toContain(articleList.data[0].slug);
     });
   });
 

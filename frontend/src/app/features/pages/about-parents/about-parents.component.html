@@ -1,0 +1,16 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-xl govuk-!-margin-bottom-2">{{ workplace?.name }}</span>
+    <h4 class="govuk-heading-l govuk-!-margin-bottom-7">What you can do as a parent workplace</h4>
+    <div class="asc-cms-content" [innerHTML]="pages.content"></div>
+    <a
+      role="button"
+      draggable="false"
+      class="govuk-button govuk-link--no-underline govuk-!-margin-top-3"
+      data-module="govuk-button"
+      (click)="returnToPreviousPage()"
+    >
+      Return to {{ previousPageButtonText ? previousPageButtonText : 'previous page' }}
+    </a>
+  </div>
+</div>

@@ -79,6 +79,9 @@ describe('StaffRecordComponent', () => {
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
 
+    const alert = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
+
     return {
       component,
       fixture,
@@ -91,6 +94,7 @@ describe('StaffRecordComponent', () => {
       queryByText,
       workplaceUid,
       workerUid,
+      alertSpy,
     };
   }
 
@@ -274,21 +278,25 @@ describe('StaffRecordComponent', () => {
       });
     });
 
-    it('should redirect back to the child workplace when the worker is confirmed if a parent is in a child workplace', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup();
+    it('should display a confirmation alert when the confirm record details button has been clicked', async () => {
+      const { getByText, alertSpy, fixture, component } = await setup();
 
       component.canEditWorker = true;
+      component.workplace.uid = 'mock-uid';
       component.worker.completed = false;
       fixture.detectChanges();
 
       const button = getByText('Confirm record details');
       fireEvent.click(button);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
-        fragment: 'staff-records',
-        state: { showBanner: true },
+      fixture.whenStable().then(() => {
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Staff record saved',
+        });
       });
     });
+
   });
 
   describe('transfer staff record link', () => {

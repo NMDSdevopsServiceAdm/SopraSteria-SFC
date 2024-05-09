@@ -20,6 +20,8 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   private focus: boolean;
   private clickEvent: boolean;
 
+  public isParentViewingSub: boolean = false;
+
   @ViewChild('tablist') tablist: ElementRef;
 
   constructor(
@@ -32,6 +34,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.selectedTabSubscription();
+    this.isParentViewingSub = this.parentSubsidiaryViewService.getViewingSubAsParent();
 
     const hash = this.route.snapshot.fragment;
     if (hash) {
@@ -55,7 +58,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
         if (tabIndex > -1) {
           const tab = this.tabs[tabIndex];
           tab.active = true;
-          if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+          if (this.clickEvent && this.parentSubsidiaryViewService.getViewingSubAsParent()) {
             let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
             this.router.navigate([`/subsidiary/${tab.slug}/${subsidiaryUid}`]);
           } else if (this.dashboardView) {

@@ -76,10 +76,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
   deleteWorker(event: Event): void {
     event.preventDefault();
     this.dialogService.open(DeleteWorkerDialogComponent, {
@@ -126,9 +122,12 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   }
 
   public returnToHomeTab() {
-    const isLoggedInWorkplace = this.establishmentService.establishmentId === this.workplace.uid;
-    const url = isLoggedInWorkplace ? ['/dashboard'] : ['/workplace', this.workplace.uid];
-    this.router.navigate(url, { fragment: 'staff-records', state: { showBanner: true } });
+    this.router.navigate(['/dashboard'], { fragment: 'staff-records', state: { showBanner: true } }).then(()=>{
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Staff record saved',
+      });
+    });
   }
 
   public setReturnTo(): void {
@@ -137,5 +136,12 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       fragment: 'staff-record',
     };
     this.workerService.setReturnTo(this.returnToRecord);
+  }
+
+
+  ngOnDestroy(): void {
+    this.breadcrumbService.removeRoutes();
+    this.alertService.removeAlert();
+    this.subscriptions.unsubscribe();
   }
 }

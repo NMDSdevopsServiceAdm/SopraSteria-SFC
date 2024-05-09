@@ -17,6 +17,6 @@ export class BackToParentComponent implements OnInit {
   public backToParentLinkClick(event: Event) {
     event.preventDefault();
     this.parentSubsidiaryViewService.clearViewingSubAsParent();
-    this.router.navigate(['/dashboard']);
+    this.router.navigate(['/dashboard', { fragment: 'home' }]);
   }
 }

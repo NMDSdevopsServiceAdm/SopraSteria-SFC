@@ -47,7 +47,6 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
       this.parentSubsidiaryViewService.setViewingSubAsParent(selectedWorkplaceUid);
       const homeSlug = this.tabsService.homeTab.slug;
       this.router.navigate(['/subsidiary', homeSlug, selectedWorkplaceUid]);
-      this.parentSubsidiaryViewService.showSelectedTab = homeSlug;
       this.tabsService.selectedTab = homeSlug;
     }
   }

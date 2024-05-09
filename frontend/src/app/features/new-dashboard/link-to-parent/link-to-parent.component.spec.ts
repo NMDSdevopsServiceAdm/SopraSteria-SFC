@@ -1,29 +1,29 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { ParentRequestsService } from '@core/services/parent-requests.service';
+import { AlertService } from '@core/services/alert.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { fireEvent, render } from '@testing-library/angular';
-import { LinkToParentComponent } from './link-to-parent.component';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { Establishment } from '../../../../mockdata/establishment';
 import { SharedModule } from '@shared/shared.module';
-import { getTestBed } from '@angular/core/testing';
-import { AlertService } from '@core/services/alert.service';
-import { WindowRef } from '@core/services/window.ref';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
+
+import { Establishment } from '../../../../mockdata/establishment';
+import { LinkToParentComponent } from './link-to-parent.component';
 
 describe('LinkToParentComponent', () => {
   async function setup() {
@@ -81,6 +81,9 @@ describe('LinkToParentComponent', () => {
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    const alertService = TestBed.inject(AlertService);
+    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
     return {
       getAllByText,
       getByRole,
@@ -93,6 +96,7 @@ describe('LinkToParentComponent', () => {
       routerSpy,
       parentRequestsService,
       establishmentService,
+      alertServiceSpy,
     };
   }
 
@@ -150,9 +154,7 @@ describe('LinkToParentComponent', () => {
 
   describe('linkToParentRequested is false', () => {
     it('should show the link parent request button', async () => {
-      const { getByText, component, fixture } = await setup();
-      component.linkToParentRequested = false;
-      fixture.detectChanges();
+      const { getByText } = await setup();
 
       const linkToParentRequestButton = getByText('Send link request');
 
@@ -302,6 +304,79 @@ describe('LinkToParentComponent', () => {
       expect(cancelRequestToParentForLinkSpy).toHaveBeenCalled();
     });
 
+    it('should navigate to homepage after the link request has been cancelled', async () => {
+      const { component, fixture, getByText, establishmentService, routerSpy, alertServiceSpy } = await setup();
+
+      component.linkToParentRequested = true;
+      fixture.detectChanges();
+
+      spyOn(establishmentService, 'getRequestedLinkToParent').and.returnValue(
+        of(requestedLinkToParent) as Establishment,
+      );
+
+      component.getRequestedParent();
+
+      const returnedEstablishment = {
+        requstedParentName: 'Parent name',
+      };
+
+      const cancelRequestToParentForLinkSpy = spyOn(
+        establishmentService,
+        'cancelRequestToParentForLink',
+      ).and.returnValue(of([returnedEstablishment]) as Establishment);
+
+      const cancelLinkRequest = getByText('Cancel link request');
+      fireEvent.click(cancelLinkRequest);
+      fixture.detectChanges();
+
+      expect(cancelRequestToParentForLinkSpy).toHaveBeenCalled();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
+        state: {
+          cancelRequestToParentForLinkSuccess: true,
+        },
+      });
+
+      fixture.whenStable().then(() => {
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: `You've cancelled your request to link to ${returnedEstablishment.requstedParentName}, ${requestedLinkToParent.parentEstablishment.postcode}`,
+        });
+      });
+    });
+
+    it('should navigate to the home page after the link request has been sent', async () => {
+      const { fixture, establishmentService, routerSpy, getByText, getByLabelText, alertServiceSpy } = await setup();
+
+      const sendRequestToParentForLinkSpy = spyOn(
+        establishmentService,
+        'setRequestToParentForLink',
+      ).and.returnValue(of([requestedLinkToParent]) as Establishment);
+
+      const linkToParentRequestButton = getByText('Send link request');
+      const parentNameOrPostCodeInput = getByLabelText("Start to type the parent workplace's name or postcode");
+      const noneRadioButton = fixture.nativeElement.querySelector(`input[ng-reflect-value="None"]`);
+
+      userEvent.type(parentNameOrPostCodeInput, 'Test, TW1 452');
+      fireEvent.click(noneRadioButton);
+      fireEvent.click(linkToParentRequestButton);
+
+      expect(sendRequestToParentForLinkSpy).toHaveBeenCalled();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
+          state: {
+            linkToParentRequestedStatus: true,
+          },
+        });
+
+      fixture.whenStable().then(() => {
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: `You've sent a link request to Test, TW1 452`,
+        });
+      });
+    });
+
     it('should call getRequestedLinkToParent', async () => {
       const { component, fixture, establishmentService } = await setup();
 
@@ -309,7 +384,7 @@ describe('LinkToParentComponent', () => {
       fixture.detectChanges();
 
       const getRequestedLinkToParentSpy = spyOn(establishmentService, 'getRequestedLinkToParent').and.returnValue(
-        of([requestedLinkToParent]) as Establishment,
+        of(requestedLinkToParent) as Establishment,
       );
 
       component.getRequestedParent();

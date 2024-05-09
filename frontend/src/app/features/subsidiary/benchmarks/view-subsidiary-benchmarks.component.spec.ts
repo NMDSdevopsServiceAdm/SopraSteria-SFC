@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
@@ -17,7 +17,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { BenchmarksSelectViewPanelComponent } from '@shared/components/benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 
 import { ViewSubsidiaryBenchmarksComponent } from './view-subsidiary-benchmarks.component';
 
@@ -58,11 +58,18 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { establishment },
+            },
+          },
+        },
       ],
       declarations: [BenchmarksSelectViewPanelComponent],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
-        workplace: establishment,
         newDashboard,
         tilesData: tileData,
       },
@@ -84,51 +91,28 @@ describe('ViewSubsidiaryBenchmarksComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render the pay area and the correct heading when viewBenchmarksByCategory is false', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
+  describe('can see new data area', () => {
+    it('should render the new data area tab component', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-    component.viewBenchmarksByCategory = false;
-    fixture.detectChanges();
+      component.canSeeNewDataArea = true;
+      component.newDataAreaFlag = true;
+      fixture.detectChanges();
 
-    const categoryHeading = getByTestId('benchmarksCategoryHeading');
-
-    expect(getByTestId('payArea')).toBeTruthy();
-    expect(within(categoryHeading).getByText('Pay')).toBeTruthy();
-    expect(queryByTestId('recruitmentAndRetentionArea')).toBeFalsy();
-    expect(within(categoryHeading).queryByText('Recruitment and retention')).toBeFalsy();
+      expect(queryByTestId('data-area-tab')).toBeTruthy();
+    });
   });
 
-  it('should render the recruitment and retention area and the correct heading when viewBenchmarksByCategory is true', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
+  describe('can not see new data area', () => {
+    it('should render the old benchmarks tab', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
 
-    component.viewBenchmarksByCategory = true;
-    fixture.detectChanges();
+      component.canSeeNewDataArea = false;
+      component.newDataAreaFlag = true;
+      component.viewBenchmarksByCategory = true;
+      fixture.detectChanges();
 
-    const selectCategoryLinks = getByTestId('selectCategoryLinks');
-
-    fireEvent.click(within(selectCategoryLinks).getByText('Recruitment and retention'));
-    const categoryHeading = getByTestId('benchmarksCategoryHeading');
-
-    expect(getByTestId('recruitmentAndRetentionArea')).toBeTruthy();
-    expect(within(categoryHeading).getByText('Recruitment and retention')).toBeTruthy();
-    expect(queryByTestId('payArea')).toBeFalsy();
-    expect(within(categoryHeading).queryByText('Pay')).toBeFalsy();
-  });
-
-  it('should check the pay benchmarks data to see if there is comparison data', async () => {
-    const { component } = await setup();
-    const noCompData = {
-      value: 0,
-      stateMessage: 'no-data',
-      hasValue: false,
-    };
-    component.tilesData.careWorkerPay = { comparisonGroup: noCompData };
-    component.tilesData.seniorCareWorkerPay = { comparisonGroup: noCompData };
-    component.tilesData.registeredNursePay = { comparisonGroup: noCompData };
-    component.tilesData.registeredManagerPay = { comparisonGroup: noCompData };
-
-    component.checkComparisonDataExists();
-
-    expect(component.comparisonDataExists).toBeFalsy();
+      expect(queryByTestId('old-benchmarks-tab')).toBeTruthy();
+    });
   });
 });

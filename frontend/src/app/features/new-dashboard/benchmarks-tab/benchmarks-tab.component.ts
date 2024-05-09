@@ -18,6 +18,7 @@ import { Subscription } from 'rxjs';
 export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
+  @Input() isParentViewingSubsidiary = false
   private subscriptions: Subscription = new Subscription();
   public canViewFullBenchmarks: boolean;
   public payContent = MetricsContent.Pay;
@@ -41,7 +42,10 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
     this.tilesData = this.featureFlagService.newBenchmarksDataArea
       ? this.benchmarksService.benchmarksData.oldBenchmarks
       : this.benchmarksService.benchmarksData;
-    this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
+
+    if(!this.isParentViewingSubsidiary){
+      this.breadcrumbService.show(JourneyType.OLD_BENCHMARKS_DATA_TAB);
+    }
   }
 
   public async downloadAsPDF() {

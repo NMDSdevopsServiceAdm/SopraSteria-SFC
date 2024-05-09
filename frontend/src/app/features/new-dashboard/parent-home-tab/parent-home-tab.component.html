@@ -1,4 +1,4 @@
-<app-new-dashboard-header tab="home"></app-new-dashboard-header>
+<app-new-dashboard-header tab="home" [workplace]="workplace"></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
   <ng-container *ngIf="newHomeDesignParentFlag && isParentApprovedBannerViewed === false">
     <app-alert
@@ -22,10 +22,10 @@
   [showMissingCqcMessage]="showMissingCqcMessage"
   [workplacesCount]="workplacesCount"
 ></app-summary-section>
-<div class="govuk-width-container govuk-!-margin-top-4">
+<div class="govuk-width-container govuk-!-margin-top-7">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-padding-left-2 govuk-!-padding-right-2">
-      <div class="govuk-grid-column-one-third asc-card">
+      <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/bulk-upload.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
@@ -39,7 +39,7 @@
         >
       </div>
 
-      <div class="govuk-grid-column-one-third asc-card">
+      <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/wdf.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
@@ -53,7 +53,7 @@
         >
       </div>
 
-      <div class="govuk-grid-column-one-third asc-card">
+      <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/benchmarks.svg'">
           <a
             (click)="navigateToTab($event, 'benchmarks')"
@@ -74,21 +74,7 @@
   </div>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-padding-left-2 govuk-!-padding-right-2">
-      <div class="govuk-grid-column-one-third asc-card">
-        <app-card [image]="'/assets/images/certificate.svg'">
-          <a
-            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-            routerLink="/asc-wds-certificate"
-            href="#"
-            >Get your ASC-WDS certificate</a
-          >
-          <p class="govuk-!-margin-top-5">
-            Get a certificate, email signature or logo to show that you provide information to help the adult social
-            care sector.
-          </p></app-card
-        >
-      </div>
-      <div class="govuk-grid-column-one-third asc-card">
+      <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/benefits-bundle.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
@@ -102,11 +88,25 @@
           </p></app-card
         >
       </div>
-      <div class="govuk-grid-column-one-third asc-card">
+      <div class="govuk-grid-column-one-third asc-card-padding">
+        <app-card [image]="'/assets/images/certificate.svg'">
+          <a
+            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+            routerLink="/asc-wds-certificate"
+            href="#"
+            >Get your ASC-WDS certificate</a
+          >
+          <p class="govuk-!-margin-top-5">
+            Get a certificate, email signature or logo to show that you provide information to help the adult social
+            care sector.
+          </p></app-card
+        >
+      </div>
+      <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/news.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-            routerLink="/articles/news-article-heartof"
+            [routerLink]="['/articles', article.slug]"
             href="#"
             >ASC-WDS news</a
           >
