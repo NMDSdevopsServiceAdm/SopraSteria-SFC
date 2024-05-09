@@ -141,7 +141,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();
-    this.alertService.removeAlert();
     this.subscriptions.unsubscribe();
   }
 }
