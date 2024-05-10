@@ -24,6 +24,7 @@ export class ParentSubsidiaryViewService {
   clearViewingSubAsParent(): void {
     this.subsidiaryUid = null;
     this.viewingSubAsParent = false;
+    this.establishmentService.setWorkplace(this.establishmentService.primaryWorkplace);
   }
 
   getViewingSubAsParentDashboard(navUrl): boolean {
