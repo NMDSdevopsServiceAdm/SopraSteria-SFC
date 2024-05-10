@@ -121,6 +121,19 @@ module.exports = {
            AND ej."JobID" = ${newJobId};`, { transaction }
          );
 
+        await queryInterface.sequelize.query(
+          `UPDATE cqc."EstablishmentJobs" AS ej
+          SET "JobID" = ${newJobId}
+          WHERE ej."JobID" = ${oldJobId}
+          AND NOT EXISTS (
+            SELECT "JobID"
+            FROM cqc."EstablishmentJobs" AS ej2
+            WHERE ej2."EstablishmentID" = ej."EstablishmentID"
+              AND ej2."JobType" = ej."JobType"
+            AND ej2."JobID" = ${newJobId}
+          );`, { transaction }
+        );
+
         await models.establishmentJobs.destroy({
           where: {
             jobId: oldJobId
