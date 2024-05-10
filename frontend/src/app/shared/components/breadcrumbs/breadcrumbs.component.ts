@@ -14,7 +14,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
   public breadcrumbs: JourneyRoute[];
   public overrideMessage: string;
   private subscriptions: Subscription = new Subscription();
-  private workplace: Establishment;
+  public workplace: Establishment;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -24,7 +24,7 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.subscriptions.add(
-      this.establishmentService.primaryWorkplace$.subscribe((workplace) => {
+      this.establishmentService.establishment$.subscribe((workplace) => {
         this.workplace = workplace;
       }),
     );
