@@ -29,6 +29,7 @@ describe('server/routes/nhsBsaApi/apiDocs.js', () => {
 
   it('should return contents of yaml file when no errors', () => {
     nhsBsaApiDocumentation(req, res);
+
     expect(res._getData()).to.include('openapi: 3.1.0');
     expect(res._getData()).to.include('title: ASC-WDS API for NHSBSA');
   });
