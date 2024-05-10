@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -73,6 +73,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     private featureFlagsService: FeatureFlagsService,
     protected benchmarksService: BenchmarksServiceBase,
     private serviceNamePipe: ServiceNamePipe,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -149,6 +150,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public navigateToTab(event: Event, selectedTab: string): void {
     event.preventDefault();
     this.tabsService.selectedTab = selectedTab;
+    this.router.navigate(['dashboard'], { fragment: selectedTab });
   }
 
   private setBenchmarksCard(): void {
