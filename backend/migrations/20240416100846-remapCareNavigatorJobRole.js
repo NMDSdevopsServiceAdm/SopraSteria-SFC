@@ -4,25 +4,28 @@ const models = require('../server/models/index');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface) {
+    const oldJobId = 9;
+    const newJobId = 8;
+
     return queryInterface.sequelize.transaction(async (transaction) => {
       async function updateWorker() {
         const workersWithOldJob = await models.worker.count({
           where: {
-            MainJobFkValue: 9
+            MainJobFkValue: oldJobId
           }
         });
 
         const workersWithNewJobPreUpdate = await models.worker.count({
           where: {
-            MainJobFkValue: 8
+            MainJobFkValue: newJobId
           }
         });
 
         await models.worker.update(
-          { MainJobFkValue: 8 },
+          { MainJobFkValue: newJobId },
           {
             where: {
-              MainJobFkValue: 9
+              MainJobFkValue: oldJobId
             }
           },
           { transaction }
@@ -30,7 +33,7 @@ module.exports = {
 
         const workersWithNewJobPostUpdate = await models.worker.count({
           where: {
-            MainJobFkValue: 8
+            MainJobFkValue: newJobId
           }
         });
 
@@ -42,21 +45,21 @@ module.exports = {
       async function updateWorkerJobs() {
         const workersWithOldJob = await models.workerJobs.count({
           where: {
-            jobFk: 9
+            jobFk: oldJobId
           }
         });
 
         const workersWithNewJobPreUpdate = await models.workerJobs.count({
           where: {
-            jobFk: 8
+            jobFk: newJobId
           }
         });
 
         await models.workerJobs.update(
-          { jobFk: 8 },
+          { jobFk: newJobId },
           {
             where: {
-              jobFk: 9
+              jobFk: oldJobId
             }
           },
           { transaction }
@@ -64,7 +67,7 @@ module.exports = {
 
         const workersWithNewJobPostUpdate = await models.workerJobs.count({
           where: {
-            jobFk: 8
+            jobFk: newJobId
           }
         });
 
@@ -76,21 +79,21 @@ module.exports = {
       async function updateMandatoryTrainingJobs() {
         const trainingWithOldJob = await models.MandatoryTraining.count({
           where: {
-            jobFK: 9
+            jobFK: oldJobId
           }
         });
 
         const trainingWithNewJobPreUpdate = await models.MandatoryTraining.count({
           where: {
-            jobFK: 8
+            jobFK: newJobId
           }
         });
 
         await models.MandatoryTraining.update(
-          { jobFK: 8 },
+          { jobFK: newJobId },
           {
             where: {
-              jobFK: 9
+              jobFK: oldJobId
             }
           },
           { transaction }
@@ -98,7 +101,7 @@ module.exports = {
 
         const trainingWithNewJobPostUpdate = await models.MandatoryTraining.count({
           where: {
-            jobFK: 8
+            jobFK: newJobId
           }
         });
 
@@ -107,9 +110,29 @@ module.exports = {
         }
       }
 
+      async function updateEstablishmentJobs() {
+        await queryInterface.sequelize.query(
+          `UPDATE cqc."EstablishmentJobs" AS ej
+           SET "Total" = (ej."Total" + ej2."Total")
+           FROM cqc."EstablishmentJobs" AS ej2
+           WHERE ej2."EstablishmentID" = ej."EstablishmentID"
+           AND ej2."JobType" = ej."JobType"
+           AND ej2."JobID" = ${oldJobId}
+           AND ej."JobID" = ${newJobId};`, { transaction }
+         );
+
+        await models.establishmentJobs.destroy({
+          where: {
+            jobId: oldJobId
+          }
+         }, { transaction }
+        );
+      }
+
       await updateWorker();
       await updateWorkerJobs();
       await updateMandatoryTrainingJobs();
+      await updateEstablishmentJobs();
     });
   },
 

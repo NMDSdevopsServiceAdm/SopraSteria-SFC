@@ -4,25 +4,28 @@ const models = require('../server/models/index');
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up (queryInterface) {
+    const oldJobId = 29;
+    const newJobId = 21;
+
     return queryInterface.sequelize.transaction(async (transaction) => {
       async function updateWorker() {
         const workersWithOldJob = await models.worker.count({
           where: {
-            MainJobFkValue: 29
+            MainJobFkValue: oldJobId
           }
         });
 
         const workersWithNewJobPreUpdate = await models.worker.count({
           where: {
-            MainJobFkValue: 21
+            MainJobFkValue: newJobId
           }
         });
 
         await models.worker.update(
-          { MainJobFkValue: 21 },
+          { MainJobFkValue: newJobId },
           {
             where: {
-              MainJobFkValue: 29
+              MainJobFkValue: oldJobId
             }
           },
           { transaction }
@@ -30,33 +33,33 @@ module.exports = {
 
         const workersWithNewJobPostUpdate = await models.worker.count({
           where: {
-            MainJobFkValue: 21
+            MainJobFkValue: newJobId
           }
         });
 
         if(workersWithNewJobPostUpdate !== workersWithOldJob + workersWithNewJobPreUpdate) {
-          throw new Error(`Worker: Expected ${workersWithOldJob} rows to be updated, but found ${workersWithNewJobPostUpdate - workersWithNewJobPreUpdate} instead`);
+          throw new Error(`Expected ${workersWithOldJob} rows to be updated, but found ${workersWithNewJobPostUpdate - workersWithNewJobPreUpdate} instead`);
         }
       }
 
       async function updateWorkerJobs() {
         const workersWithOldJob = await models.workerJobs.count({
           where: {
-            jobFk: 29
+            jobFk: oldJobId
           }
         });
 
         const workersWithNewJobPreUpdate = await models.workerJobs.count({
           where: {
-            jobFk: 21
+            jobFk: newJobId
           }
         });
 
         await models.workerJobs.update(
-          { jobFk: 21 },
+          { jobFk: newJobId },
           {
             where: {
-              jobFk: 29
+              jobFk: oldJobId
             }
           },
           { transaction }
@@ -64,7 +67,7 @@ module.exports = {
 
         const workersWithNewJobPostUpdate = await models.workerJobs.count({
           where: {
-            jobFk: 21
+            jobFk: newJobId
           }
         });
 
@@ -76,21 +79,21 @@ module.exports = {
       async function updateMandatoryTrainingJobs() {
         const trainingWithOldJob = await models.MandatoryTraining.count({
           where: {
-            jobFK: 29
+            jobFK: oldJobId
           }
         });
 
         const trainingWithNewJobPreUpdate = await models.MandatoryTraining.count({
           where: {
-            jobFK: 21
+            jobFK: newJobId
           }
         });
 
         await models.MandatoryTraining.update(
-          { jobFK: 21 },
+          { jobFK: newJobId },
           {
             where: {
-              jobFK: 29
+              jobFK: oldJobId
             }
           },
           { transaction }
@@ -98,7 +101,7 @@ module.exports = {
 
         const trainingWithNewJobPostUpdate = await models.MandatoryTraining.count({
           where: {
-            jobFK: 21
+            jobFK: newJobId
           }
         });
 
@@ -107,10 +110,29 @@ module.exports = {
         }
       }
 
+      async function updateEstablishmentJobs() {
+        await queryInterface.sequelize.query(
+          `UPDATE cqc."EstablishmentJobs" AS ej
+           SET "Total" = (ej."Total" + ej2."Total")
+           FROM cqc."EstablishmentJobs" AS ej2
+           WHERE ej2."EstablishmentID" = ej."EstablishmentID"
+           AND ej2."JobType" = ej."JobType"
+           AND ej2."JobID" = ${oldJobId}
+           AND ej."JobID" = ${newJobId};`, { transaction }
+         );
+
+        await models.establishmentJobs.destroy({
+          where: {
+            jobId: oldJobId
+          }
+         }, { transaction }
+        );
+      }
 
       await updateWorker();
       await updateWorkerJobs();
       await updateMandatoryTrainingJobs();
+      await updateEstablishmentJobs();
     });
   },
 
