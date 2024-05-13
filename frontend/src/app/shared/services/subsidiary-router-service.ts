@@ -41,6 +41,10 @@ export class SubsidiaryRouterService extends Router {
   }
 
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
+    if (!url.root?.children?.primary?.segments) {
+      return super.navigateByUrl(url, extras);
+    }
+
     const { commands, navigationExtras } = this.getCommands(url);
 
     if (!this.isSubsidiaryPage(commands)) {
