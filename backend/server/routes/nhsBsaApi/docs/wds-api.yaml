@@ -50,20 +50,20 @@ paths:
                   - $ref: '#/components/schemas/subsidiaryWorkplaceData'
               examples:
                 parentWorkplace:
-                  summary: An example of a workplace with subsidiaries if any
+                  summary: An example of a workplace with subsidiaries
                   value:
                     workplaceData: {
                       isParent: true,
                       workplaceDetails: {
                         workplaceId: J0000000,
-                        workplaceName: Full Reg Test,
+                        workplaceName: Example Parent Workplace,
                         workplaceAddress: {
-                          firstLine: 2 Buckden Court,
-                          town: Silsden,
-                          postCode: BD20 9LY
+                          firstLine: 1 Parent Lane,
+                          town: Example Town Name,
+                          postCode: ET1 5NA
                         },
                         dataOwner: Workplace,
-                        locationId: 1-9120294163,
+                        locationId: 1-0123456789,
                         numberOfWorkplaceStaff: 5,
                         serviceName: Carers support,
                         serviceCategory: Healthcare,
@@ -74,11 +74,11 @@ paths:
                       subsidiaries: [
                         {
                           workplaceId: F0000000,
-                          workplaceName: Norton Lodge,
+                          workplaceName: Example Subsidiary Workplace,
                           workplaceAddress: {
-                            firstLine: 18 Norton Village,
-                            town: Runcorn,
-                            postCode: WA7 6QA
+                            firstLine: 18 Subsidiary Lane,
+                            town: Example Town Name,
+                            postCode: ET1 3AB
                           },
                           dataOwner: Parent,
                           parentWorkplaceId: J0000000,
@@ -92,11 +92,11 @@ paths:
                         },
                         {
                           workplaceId: F00000001,
-                          workplaceName: Norton Lodge,
+                          workplaceName: Example Subsidiary Workplace 2,
                           workplaceAddress: {
-                            firstLine: 18 Norton Village,
-                            town: Runcorn,
-                            postCode: WA7 6QA
+                            firstLine: 29 Subsidiary Avenue,
+                            town: Other Example Town,
+                            postCode: OE12 3TO
                           },
                           dataOwner: Parent,
                           parentWorkplaceId: J0000000,
@@ -117,14 +117,14 @@ paths:
                       isParent: false,
                       workplaceDetails: {
                         workplaceId: J0000000,
-                        workplaceName: Full Reg Test,
+                        workplaceName: Example Standalone Workplace,
                         workplaceAddress: {
-                          firstLine: 2 Buckden Court,
-                          town: Silsden,
-                          postCode: BD20 9LY
+                          firstLine: 11 Lonely Lane,
+                          town: Lonetown,
+                          postCode: LT20 9AB
                         },
                         dataOwner: Workplace,
-                        locationId: 1-9120294163,
+                        locationId: 1-0246813579,
                         numberOfWorkplaceStaff: 5,
                         serviceName: Carers support,
                         serviceCategory: Healthcare,
@@ -139,14 +139,14 @@ paths:
                     workplaceData: {
                       workplaceDetails: {
                         workplaceId: F0000000,
-                        workplaceName: Full Reg Test,
+                        workplaceName: Example Subsidiary With Parent,
                         workplaceAddress: {
-                          firstLine: 2 Buckden Court,
-                          town: Silsden,
-                          postCode: BD20 9LY
+                          firstLine: 1 Sub Street,
+                          town: Suburbia,
+                          postCode: SU1 3IA
                         },
                         dataOwner: Parent,
-                        locationId: 1-9120294163,
+                        locationId: 1-0123456789,
                         numberOfWorkplaceStaff: 5,
                         serviceName: Carers support,
                         serviceCategory: Healthcare,
@@ -158,14 +158,14 @@ paths:
                         isParent: true,
                         workplaceDetails: {
                           workplaceId: J0000000,
-                          workplaceName: Full Reg Test,
+                          workplaceName: Parent of Sub Example,
                           workplaceAddress: {
-                            firstLine: 2 Buckden Court,
-                            town: Silsden,
-                            postCode: BD20 9LY
+                            firstLine: 1 Parent Parade,
+                            town: Example Town,
+                            postCode: ET1 9WN
                           },
                           dataOwner: Workplace,
-                          locationId: 1-9120294163,
+                          locationId: 1-0987654321,
                           numberOfWorkplaceStaff: 5,
                           serviceName: Carers support,
                           serviceCategory: Healthcare,
