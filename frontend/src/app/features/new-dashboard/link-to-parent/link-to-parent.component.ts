@@ -54,7 +54,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.breadcrumbService.show(JourneyType.LINK_TO_PARENT, this.workplace.name);
+    this.breadcrumbService.show(JourneyType.LINK_TO_PARENT);
     this.getAvailableParentWorkPlaces();
     this.setDataPermissions();
     this.setupFormErrorsMap();
@@ -181,12 +181,18 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
           (data) => {
             if (data) {
-              this.router.navigate(['/dashboard'], {
-                state: {
-                  linkToParentRequestedStatus: true,
-                }}).then(()=>{
-                this.alertService.addAlert({ type: 'success', message: `You've sent a link request to ${this.form.value.parentNameOrPostCode}`});
-              });
+              this.router
+                .navigate(['/dashboard'], {
+                  state: {
+                    linkToParentRequestedStatus: true,
+                  },
+                })
+                .then(() => {
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `You've sent a link request to ${this.form.value.parentNameOrPostCode}`,
+                  });
+                });
             }
           },
           (error) => {
@@ -269,12 +275,18 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
           (data) => {
             if (data) {
               const parentName = data[0].requstedParentName;
-              this.router.navigate(['/dashboard'], {
-                state: {
-                  cancelRequestToParentForLinkSuccess: true,
-                }}).then(()=>{
-                this.alertService.addAlert({ type: 'success', message: `You've cancelled your request to link to ${parentName}, ${this.parentPostcode}`});
-              });
+              this.router
+                .navigate(['/dashboard'], {
+                  state: {
+                    cancelRequestToParentForLinkSuccess: true,
+                  },
+                })
+                .then(() => {
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `You've cancelled your request to link to ${parentName}, ${this.parentPostcode}`,
+                  });
+                });
             }
           },
           (error) => {

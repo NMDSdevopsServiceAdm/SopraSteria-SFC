@@ -38,7 +38,7 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.breadcrumbService.show(JourneyType.BECOME_A_PARENT, this.workplace.name);
+    this.breadcrumbService.show(JourneyType.BECOME_A_PARENT);
 
     if (this.workplace) {
       this.subscriptions.add(
@@ -74,12 +74,18 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.parentRequestsService.becomeParent().subscribe((data) => {
         if (data) {
-          this.router.navigate(['/dashboard'], {
-            state: {
-              parentStatusRequested: true,
-            }}).then(()=>{
-            this.alertService.addAlert({ type: 'success', message: 'You’ve sent a request to become a parent workplace'});
-        });
+          this.router
+            .navigate(['/dashboard'], {
+              state: {
+                parentStatusRequested: true,
+              },
+            })
+            .then(() => {
+              this.alertService.addAlert({
+                type: 'success',
+                message: 'You’ve sent a request to become a parent workplace',
+              });
+            });
         }
       }),
     );
@@ -90,12 +96,18 @@ export class BecomeAParentComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.parentRequestsService.cancelBecomeAParent().subscribe(
         () => {
-          this.router.navigate(['/dashboard'], {
-            state: {
-              parentStatusRequested: false,
-            }}).then(()=>{
-            this.alertService.addAlert({ type: 'success', message: "You've cancelled your request to become a parent workplace"});
-          });
+          this.router
+            .navigate(['/dashboard'], {
+              state: {
+                parentStatusRequested: false,
+              },
+            })
+            .then(() => {
+              this.alertService.addAlert({
+                type: 'success',
+                message: "You've cancelled your request to become a parent workplace",
+              });
+            });
         },
         (error) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
