@@ -17,4 +17,8 @@ export class MockParentSubsidiaryViewService extends ParentSubsidiaryViewService
   public getViewingSubAsParent() {
     return this.mockViewingSubAsParent;
   }
+
+  public clearViewingSubAsParent() {
+    this.mockViewingSubAsParent = false;
+  }
 }
