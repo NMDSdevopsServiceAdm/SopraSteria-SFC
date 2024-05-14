@@ -29,6 +29,7 @@ export class SubsidiaryAccountComponent implements OnInit {
   public subsidiaryWorkplace: Establishment;
   public canEditWorker: boolean;
   public hasWorkers: boolean;
+  public workplaceName: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -57,6 +58,7 @@ export class SubsidiaryAccountComponent implements OnInit {
       this.establishmentService.getEstablishment(this.subUid, true).subscribe((workplace) => {
         this.establishmentService.setState(workplace);
         this.subId = workplace.id;
+        this.workplaceName = workplace.name;
         this.parentWorkplaceName = workplace.parentName;
       }),
     );
