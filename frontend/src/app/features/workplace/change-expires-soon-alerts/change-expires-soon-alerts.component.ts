@@ -17,7 +17,6 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   public expiresSoonDate: string;
   public workplaceUid: string;
   public returnUrl: URLStructure;
-  public isPrimary: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -32,7 +31,6 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   public ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.data.establishment.uid;
     this.expiresSoonDate = this.route.snapshot.data.expiresSoonAlertDate.expiresSoonAlertDate;
-    this.isPrimary = this.establishmentService.primaryWorkplace.uid === this.workplaceUid;
     this.setupForm();
     this.setReturnUrl();
     this.setBackLink();
@@ -45,8 +43,7 @@ export class ChangeExpiresSoonAlertsComponent implements OnInit {
   }
 
   private setReturnUrl(): void {
-    const url = this.isPrimary ? ['/dashboard'] : ['/workplace', this.workplaceUid];
-    this.returnUrl = { url, fragment: 'training-and-qualifications' };
+    this.returnUrl = { url: ['/dashboard'], fragment: 'training-and-qualifications' };
   }
 
   public setBackLink(): void {

@@ -14,7 +14,7 @@ import { WorkplaceModule } from '../workplace.module';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts.component';
 
 describe('ChangeExpiresSoonAlertsComponent', () => {
-  async function setup(isPrimary = true) {
+  async function setup() {
     const { fixture, getByText, getAllByText } = await render(ChangeExpiresSoonAlertsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkplaceModule],
       providers: [
@@ -28,7 +28,7 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
                   expiresSoonAlertDate: '90',
                 },
                 establishment: {
-                  uid: isPrimary ? '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' : '1446-uid-54638',
+                  uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
                 },
               },
             },
@@ -91,6 +91,14 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
     expect(component.form.value.expiresSoonAlerts).toBe('90');
   });
 
+  it('should have url for the training and quals tab on Cancel button', async () => {
+    const { getByText } = await setup();
+
+    const cancelButton = getByText('Cancel');
+
+    expect(cancelButton.getAttribute('href')).toEqual('/dashboard#training-and-qualifications');
+  });
+
   describe('onSubmit', () => {
     it('should update the expires soon dates on submit', async () => {
       const { component, establishmentSpy, getByText } = await setup();
@@ -105,7 +113,7 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
       expect(establishmentSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de', '60');
     });
 
-    it('should navigate to the training and quals tab on submit if user is primary user', async () => {
+    it('should navigate to the training and quals tab on submit', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const saveAndReturnButton = getByText('Save and return');
@@ -113,18 +121,6 @@ describe('ChangeExpiresSoonAlertsComponent', () => {
 
       expect(component.form.valid).toBeTruthy();
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
-    });
-
-    it(`should navigate to the sub's training and quals tab on submit if user is not primary user`, async () => {
-      const { component, routerSpy, getByText } = await setup(false);
-
-      const saveAndReturnButton = getByText('Save and return');
-      fireEvent.click(saveAndReturnButton);
-
-      expect(component.form.valid).toBeTruthy();
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplaceUid], {
-        fragment: 'training-and-qualifications',
-      });
     });
 
     it('should display an alert when the "Save and return" button is clicked', async () => {
