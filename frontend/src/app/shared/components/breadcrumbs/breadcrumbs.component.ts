@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { JourneyRoute } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
