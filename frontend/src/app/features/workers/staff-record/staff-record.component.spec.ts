@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -16,6 +17,7 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -23,7 +25,7 @@ import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
 
 describe('StaffRecordComponent', () => {
-  async function setup(isParent = true) {
+  async function setup(isParent = true, ownWorkplace = true) {
     const workplace = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
@@ -39,7 +41,7 @@ describe('StaffRecordComponent', () => {
                 data: {
                   establishment: workplace,
                 },
-                url: [{ path: '' }],
+                url: [{ path: ownWorkplace ? 'staff-record-summary' : '' }],
               },
             },
             snapshot: {},
@@ -53,7 +55,7 @@ describe('StaffRecordComponent', () => {
           provide: EstablishmentService,
           useValue: {
             establishmentId: 'mock-uid',
-            isOwnWorkplace: () => true,
+            isOwnWorkplace: () => ownWorkplace,
             primaryWorkplace: {
               isParent,
             },
@@ -82,6 +84,8 @@ describe('StaffRecordComponent', () => {
     const alert = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
 
+    const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService) as ParentSubsidiaryViewService;
+
     return {
       component,
       fixture,
@@ -95,6 +99,7 @@ describe('StaffRecordComponent', () => {
       workplaceUid,
       workerUid,
       alertSpy,
+      parentSubsidiaryViewService,
     };
   }
 
@@ -296,7 +301,6 @@ describe('StaffRecordComponent', () => {
         });
       });
     });
-
   });
 
   describe('transfer staff record link', () => {
@@ -338,6 +342,26 @@ describe('StaffRecordComponent', () => {
       fixture.detectChanges();
 
       expect(queryByText('Transfer staff record')).toBeFalsy();
+    });
+  });
+
+  describe('Breadcrumbs', async () => {
+    it('getBreadcrumbsJourney should return my workplace journey when viewing sub as parent', async () => {
+      const { component, parentSubsidiaryViewService } = await setup(false, false);
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MY_WORKPLACE);
+    });
+
+    it('getBreadcrumbsJourney should return main workplace journey when is own workplace', async () => {
+      const { component } = await setup();
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MY_WORKPLACE);
+    });
+
+    it('getBreadcrumbsJourney should return all workplaces journey when is not own workplace and not in parent sub view', async () => {
+      const { component } = await setup(false, false);
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
     });
   });
 });
