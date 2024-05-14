@@ -7,6 +7,8 @@ enum Path {
   TRAINING_AND_QUALIFICATIONS = '/subsidiary/training-and-qualifications/:establishmentuid',
   BENCHMARKS = '/subsidiary/benchmarks/:establishmentuid',
   WORKPLACE_USERS = '/subsidiary/workplace-users/:establishmentuid',
+  USER_DETAILS = 'subsidiary/workplace/:establishmentuid/user/:useruid',
+  PERMISSIONS = 'subsidiary/workplace/:establishmentuid/user/:useruid/permissions',
 }
 
 export const subsidiaryJourney: JourneyRoute = {
@@ -40,6 +42,18 @@ export const subsidiaryJourney: JourneyRoute = {
       title: 'Workplace users',
       path: Path.WORKPLACE_USERS,
       fragment: 'workplace-users',
+      children: [
+        {
+          title: 'User details',
+          path: Path.USER_DETAILS,
+          children: [
+            {
+              title: 'Permissions',
+              path: Path.PERMISSIONS,
+            },
+          ],
+        },
+      ],
     },
   ],
 };
