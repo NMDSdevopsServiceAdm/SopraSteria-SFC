@@ -13,14 +13,24 @@ import userEvent from '@testing-library/user-event';
 import { NewTabsComponent } from './new-tabs.component';
 
 describe('NewTabsComponent', () => {
-  const setup = async (dashboardView = true, snapshot = {}) => {
+  const setup = async (dashboardView = true, urlSegments = []) => {
     const { fixture, getByTestId } = await render(NewTabsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         TabsService,
         {
           provide: ActivatedRoute,
-          useValue: { snapshot },
+          useValue: {
+            snapshot: {
+              _urlSegment: {
+                children: {
+                  primary: {
+                    segments: urlSegments,
+                  },
+                },
+              },
+            },
+          },
         },
       ],
       declarations: [],
@@ -210,65 +220,38 @@ describe('NewTabsComponent', () => {
 
   describe('getTabSlugInSubView', () => {
     it('should return null when fewer than 3 segments in url path', async () => {
-      const snapshot = {
-        _urlSegment: {
-          children: {
-            primary: {
-              segments: [{ path: 'dashboard' }],
-            },
-          },
-        },
-      };
+      const urlSegments = [{ path: 'dashboard' }];
 
-      const { component } = await setup(true, snapshot);
+      const { component } = await setup(true, urlSegments);
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual(null);
     });
 
     it('should return null when more than 3 segments in url path', async () => {
-      const snapshot = {
-        _urlSegment: {
-          children: {
-            primary: {
-              segments: [{ path: 'subsidiary' }, { path: 'workplace' }, { path: 'testuid' }, { path: 'staff-record' }],
-            },
-          },
-        },
-      };
+      const urlSegments = [
+        { path: 'subsidiary' },
+        { path: 'workplace' },
+        { path: 'testuid' },
+        { path: 'staff-record' },
+      ];
 
-      const { component } = await setup(true, snapshot);
+      const { component } = await setup(true, urlSegments);
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual(null);
     });
 
     it('should return null when 3 segments but second segment does not match tab slug name', async () => {
-      const snapshot = {
-        _urlSegment: {
-          children: {
-            primary: {
-              segments: [{ path: 'subsidiary' }, { path: 'articles' }, { path: 'news-article' }],
-            },
-          },
-        },
-      };
+      const urlSegments = [{ path: 'subsidiary' }, { path: 'articles' }, { path: 'news-article' }];
 
-      const { component } = await setup(true, snapshot);
+      const { component } = await setup(true, urlSegments);
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual(null);
     });
 
     it('should return tab slug when 3 segments and second segment matches tab slug', async () => {
-      const snapshot = {
-        _urlSegment: {
-          children: {
-            primary: {
-              segments: [{ path: 'subsidiary' }, { path: 'training-and-qualifications' }, { path: 'testuid' }],
-            },
-          },
-        },
-      };
+      const urlSegments = [{ path: 'subsidiary' }, { path: 'training-and-qualifications' }, { path: 'testuid' }];
 
-      const { component } = await setup(true, snapshot);
+      const { component } = await setup(true, urlSegments);
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual('training-and-qualifications');
     });
