@@ -7,7 +7,6 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
 
 @Component({
   selector: 'app-view-subsidiary-workplace',
@@ -28,11 +27,9 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
-    this.tabsService.selectedTab = 'workplace';
     this.establishmentService.setInStaffRecruitmentFlow(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
@@ -44,7 +41,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
   ngOnDestroy(): void {
     // need to manually remove breadcrumbs on tabs, because a
     // navigation event isn't called when going from one tab to another
-    this.alertService.removeAlert()
+    this.alertService.removeAlert();
     this.breadcrumbService.removeRoutes();
   }
 }
