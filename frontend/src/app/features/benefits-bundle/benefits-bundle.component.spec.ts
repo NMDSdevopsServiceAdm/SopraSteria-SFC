@@ -13,6 +13,7 @@ import { BenefitAccordionComponent } from './benefit-accordion/benefit-accordion
 import { BenefitsBundleComponent } from './benefits-bundle.component';
 
 describe('BenefitsBundleComponent', () => {
+  const workplaceName = 'Test Workplace Name';
   async function setup() {
     const { fixture, getByText, getByTestId, getAllByText, queryByText } = await render(BenefitsBundleComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
@@ -20,7 +21,7 @@ describe('BenefitsBundleComponent', () => {
       providers: [
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useFactory: MockEstablishmentService.factory(null, true, { name: workplaceName }),
         },
         {
           provide: BreadcrumbService,
@@ -59,9 +60,8 @@ describe('BenefitsBundleComponent', () => {
 
   it('should display the workplace name', async () => {
     const { getByText } = await setup();
-
-    const workplaceName = getByText('Test Workplace');
-    expect(workplaceName).toBeTruthy();
+    const workplaceNameOnPage = getByText(workplaceName);
+    expect(workplaceNameOnPage).toBeTruthy();
   });
 
   it(`should display the "What's the ASC-WDS Benefits Bundle?" reveal and its contents`, async () => {

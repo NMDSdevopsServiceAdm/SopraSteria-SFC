@@ -36,7 +36,8 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     this.selectedTabSubscription();
     this.isParentViewingSub = this.parentSubsidiaryViewService.getViewingSubAsParent();
 
-    const hash = this.route.snapshot.fragment;
+    const hash = this.isParentViewingSub ? this.getTabSlugInSubView() : this.route.snapshot.fragment;
+
     if (hash) {
       const activeTab = this.tabs.findIndex((tab) => tab.slug === hash);
       if (activeTab) {
@@ -122,6 +123,16 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   private unselectTabs() {
     this.tabs.forEach((t) => (t.active = false));
+  }
+
+  public getTabSlugInSubView(): string {
+    const urlSegmentGroup = this.route.snapshot['_urlSegment'];
+    const urlSegments = urlSegmentGroup.children?.primary?.segments;
+    if (urlSegments?.length == 3) {
+      const tabSlug = urlSegments[1].path;
+      return this.tabs.find((tab) => tab.slug === tabSlug) ? tabSlug : null;
+    }
+    return null;
   }
 
   ngOnDestroy(): void {

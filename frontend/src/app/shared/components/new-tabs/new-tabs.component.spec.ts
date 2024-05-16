@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TabsService } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
@@ -13,10 +13,26 @@ import userEvent from '@testing-library/user-event';
 import { NewTabsComponent } from './new-tabs.component';
 
 describe('NewTabsComponent', () => {
-  const setup = async (dashboardView = true) => {
+  const setup = async (dashboardView = true, urlSegments = []) => {
     const { fixture, getByTestId } = await render(NewTabsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [TabsService],
+      providers: [
+        TabsService,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              _urlSegment: {
+                children: {
+                  primary: {
+                    segments: urlSegments,
+                  },
+                },
+              },
+            },
+          },
+        },
+      ],
       declarations: [],
       componentProperties: {
         tabs: [
@@ -199,6 +215,45 @@ describe('NewTabsComponent', () => {
 
       expect(keyDownSpy).toHaveBeenCalled();
       expect(selectTabSpy).toHaveBeenCalledWith(new KeyboardEvent('End'), 4);
+    });
+  });
+
+  describe('getTabSlugInSubView', () => {
+    it('should return null when fewer than 3 segments in url path', async () => {
+      const urlSegments = [{ path: 'dashboard' }];
+
+      const { component } = await setup(true, urlSegments);
+      const returned = component.getTabSlugInSubView();
+      expect(returned).toEqual(null);
+    });
+
+    it('should return null when more than 3 segments in url path', async () => {
+      const urlSegments = [
+        { path: 'subsidiary' },
+        { path: 'workplace' },
+        { path: 'testuid' },
+        { path: 'staff-record' },
+      ];
+
+      const { component } = await setup(true, urlSegments);
+      const returned = component.getTabSlugInSubView();
+      expect(returned).toEqual(null);
+    });
+
+    it('should return null when 3 segments but second segment does not match tab slug name', async () => {
+      const urlSegments = [{ path: 'subsidiary' }, { path: 'articles' }, { path: 'news-article' }];
+
+      const { component } = await setup(true, urlSegments);
+      const returned = component.getTabSlugInSubView();
+      expect(returned).toEqual(null);
+    });
+
+    it('should return tab slug when 3 segments and second segment matches tab slug', async () => {
+      const urlSegments = [{ path: 'subsidiary' }, { path: 'training-and-qualifications' }, { path: 'testuid' }];
+
+      const { component } = await setup(true, urlSegments);
+      const returned = component.getTabSlugInSubView();
+      expect(returned).toEqual('training-and-qualifications');
     });
   });
 });

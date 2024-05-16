@@ -114,7 +114,7 @@ export class BreadcrumbService {
 
       const isCurrentRoute = this.isCurrentRoute(path, segments);
 
-      if (isCurrentRoute || index === children.length - 1) {
+      if (isCurrentRoute || index === children?.length - 1) {
         routes.push({
           title,
           path: this.getPath(path, segments),

@@ -61,6 +61,7 @@ export const workerBuilder = build('Worker', {
     countryOfBirth: {
       value: 'United Kingdom',
     },
+    updated: '2024-05-01T06:50:45.882Z',
   },
 });
 
