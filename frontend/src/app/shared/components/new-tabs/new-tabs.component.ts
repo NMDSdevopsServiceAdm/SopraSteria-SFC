@@ -19,7 +19,6 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private focus: boolean;
   private clickEvent: boolean;
-  private tabIndex: number;
 
   public isParentViewingSub: boolean = false;
 
@@ -56,14 +55,21 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.tabsService.selectedTab$.subscribe((selectedTab) => {
         this.unselectTabs();
-        this.tabIndex = this.tabs.findIndex((tab) => tab.slug === selectedTab);
-        if (this.tabIndex > -1) {
-          const tab = this.tabs[this.tabIndex];
+        const tabIndex = this.tabs.findIndex((tab) => tab.slug === selectedTab);
+        if (tabIndex > -1) {
+          const tab = this.tabs[tabIndex];
           tab.active = true;
-
+          if (this.clickEvent && this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+            let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
+            this.router.navigate([`/subsidiary/${subsidiaryUid}/${tab.slug}`]);
+          } else if (this.dashboardView) {
+            this.location.replaceState(`/dashboard#${tab.slug}`);
+          } else if (this.clickEvent) {
+            this.router.navigate(['/dashboard'], { fragment: tab.slug });
+          }
           if (this.focus) {
             setTimeout(() => {
-              this.tablist.nativeElement.querySelector(`#tab_${selectedTab}`).focus();
+              this.tablist.nativeElement.querySelector('.asc-tab--active').focus();
             });
           }
         }
@@ -105,6 +111,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   public selectTab(event: Event, index: number, focus: boolean = true, clicked = true): void {
     event?.preventDefault();
+
     this.clickEvent = clicked;
     this.focus = focus;
     const tab = this.tabs[index];
@@ -112,17 +119,6 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
     this.selectedTabClick.emit({ tabSlug: tab.slug });
     this.tabsService.selectedTab = tab.slug;
-
-    if (this.tabIndex > -1) {
-      if (this.clickEvent && this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-        let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
-        this.router.navigate([`/subsidiary/${subsidiaryUid}/${tab.slug}`]);
-      } else if (this.dashboardView) {
-        this.location.replaceState(`/dashboard#${tab.slug}`);
-      } else if (this.clickEvent) {
-        this.router.navigate(['/dashboard'], { fragment: tab.slug });
-      }
-    }
   }
 
   private unselectTabs() {
