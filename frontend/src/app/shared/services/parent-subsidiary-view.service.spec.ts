@@ -1,5 +1,6 @@
-import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
+
 import { ParentSubsidiaryViewService } from './parent-subsidiary-view.service';
 
 describe('ParentSubsidiaryViewService', () => {
@@ -30,39 +31,39 @@ describe('ParentSubsidiaryViewService', () => {
         const subUid = 'some-uid';
         service.setViewingSubAsParent(subUid);
 
-        expect(service.getViewingSubAsParentDashboard(`/subsidiary/home/${subUid}`)).toBeTruthy();
+        expect(service.getViewingSubAsParentDashboard(`/subsidiary/${subUid}/home`)).toBeTruthy();
       });
       it('should return true if url is included for workplace page', async () => {
         const subUid = 'some-uid';
         service.setViewingSubAsParent(subUid);
 
-        expect(service.getViewingSubAsParentDashboard(`/subsidiary/workplace/${subUid}`)).toBeTruthy();
+        expect(service.getViewingSubAsParentDashboard(`/subsidiary/${subUid}/workplace`)).toBeTruthy();
       });
       it('should return true if url is included for staff-records page', async () => {
         const subUid = 'some-uid';
         service.setViewingSubAsParent(subUid);
 
-        expect(service.getViewingSubAsParentDashboard(`/subsidiary/staff-records/${subUid}`)).toBeTruthy();
+        expect(service.getViewingSubAsParentDashboard(`/subsidiary/${subUid}/staff-records`)).toBeTruthy();
       });
       it('should return true if url is included for training-and-qualifications page', async () => {
         const subUid = 'some-uid';
         service.setViewingSubAsParent(subUid);
 
         expect(
-          service.getViewingSubAsParentDashboard(`/subsidiary/training-and-qualifications/${subUid}`),
+          service.getViewingSubAsParentDashboard(`/subsidiary/${subUid}/training-and-qualifications`),
         ).toBeTruthy();
       });
       it('should return true if url is included for benchmarks page', async () => {
         const subUid = 'some-uid';
         service.setViewingSubAsParent(subUid);
 
-        expect(service.getViewingSubAsParentDashboard(`/subsidiary/benchmarks/${subUid}`)).toBeTruthy();
+        expect(service.getViewingSubAsParentDashboard(`/subsidiary/${subUid}/benchmarks`)).toBeTruthy();
       });
       it('should return true if url is included for workplace-users page', async () => {
         const subUid = 'some-uid';
         service.setViewingSubAsParent(subUid);
 
-        expect(service.getViewingSubAsParentDashboard(`/subsidiary/workplace-users/${subUid}`)).toBeTruthy();
+        expect(service.getViewingSubAsParentDashboard(`/subsidiary/${subUid}/workplace-users`)).toBeTruthy();
       });
     });
 
@@ -70,11 +71,12 @@ describe('ParentSubsidiaryViewService', () => {
       it('should return false if url has partial match to url in checked list', async () => {
         expect(service.getViewingSubAsParentDashboard('/subsidiary/home')).toBeFalsy();
       });
+
       it('should return false if url has additional characters after url in checked list', async () => {
         const subUid = 'some-uid';
         service.setViewingSubAsParent(subUid);
 
-        expect(service.getViewingSubAsParentDashboard(`/subsidiary/home/${subUid}/benchmarks`)).toBeFalsy();
+        expect(service.getViewingSubAsParentDashboard(`/subsidiary/workplace/${subUid}/benchmarks`)).toBeFalsy();
       });
     });
   });

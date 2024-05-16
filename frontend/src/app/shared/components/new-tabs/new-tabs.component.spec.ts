@@ -162,7 +162,7 @@ describe('NewTabsComponent', () => {
       const tAndQTab = getByTestId('tab_training-and-qualifications');
       fireEvent.click(tAndQTab);
 
-      expect(routerSpy).toHaveBeenCalledWith([`/subsidiary/training-and-qualifications/${subId}`]);
+      expect(routerSpy).toHaveBeenCalledWith([`/subsidiary/${subId}/training-and-qualifications`]);
     });
   });
 
@@ -249,7 +249,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should return tab slug when 3 segments and second segment matches tab slug', async () => {
-      const urlSegments = [{ path: 'subsidiary' }, { path: 'training-and-qualifications' }, { path: 'testuid' }];
+      const urlSegments = [{ path: 'subsidiary' }, { path: 'testuid' }, { path: 'training-and-qualifications' }];
 
       const { component } = await setup(true, urlSegments);
       const returned = component.getTabSlugInSubView();
