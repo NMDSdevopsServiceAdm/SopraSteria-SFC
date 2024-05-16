@@ -73,7 +73,12 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   }
 
   public getBreadcrumbsJourney(): JourneyType {
+    console.log(
+      'this.parentSubsidiaryViewService.getViewingSubAsParent(): ',
+      this.parentSubsidiaryViewService.getViewingSubAsParent(),
+    );
     if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+      console.log('returned sub');
       return JourneyType.SUBSIDIARY;
     } else if (this.return.fragment == null) {
       return JourneyType.MY_WORKPLACE;

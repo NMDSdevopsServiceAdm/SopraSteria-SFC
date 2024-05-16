@@ -4,7 +4,6 @@ import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -36,7 +35,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private tabsService: TabsService,
     private benchmarksService: BenchmarksServiceBase,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
