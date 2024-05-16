@@ -544,32 +544,14 @@ describe('SelectStaffComponent', () => {
   });
 
   describe('onCancel()', () => {
-    it('should reset selected staff in training service and navigate to dashboard if primary user', async () => {
-      const { component, fixture, getByText, spy, trainingSpy } = await setup();
-
-      component.primaryWorkplaceUid = '1234-5678';
-      component.setReturnLink();
-      fixture.detectChanges();
+    it('should reset selected staff in training service and navigate to dashboard after clicking Cancel', async () => {
+      const { getByText, spy, trainingSpy } = await setup();
 
       const cancelButton = getByText('Cancel');
       fireEvent.click(cancelButton);
 
       expect(trainingSpy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
-    });
-
-    it(`should reset selected staff in training service and navigate to subsidiary's dashboard if not primary user`, async () => {
-      const { component, fixture, getByText, spy, trainingSpy } = await setup();
-
-      component.primaryWorkplaceUid = '5678-9001';
-      component.setReturnLink();
-      fixture.detectChanges();
-
-      const cancelButton = getByText('Cancel');
-      fireEvent.click(cancelButton);
-
-      expect(trainingSpy).toHaveBeenCalled();
-      expect(spy).toHaveBeenCalledWith(['/workplace', '1234-5678'], { fragment: 'training-and-qualifications' });
     });
 
     it('should navigate to the confirm training page when page has been accessed from that page and pressing Cancel', async () => {
@@ -581,28 +563,6 @@ describe('SelectStaffComponent', () => {
 
       expect(trainingSpy).not.toHaveBeenCalled();
       expect(spy.calls.mostRecent().args[0]).toEqual(['../']);
-    });
-  });
-
-  describe('setReturnLink', () => {
-    it('should set returnLink to the dashboard if the establishment uid is the same as the primary uid', async () => {
-      const { component, fixture } = await setup();
-
-      component.primaryWorkplaceUid = '1234-5678';
-      component.setReturnLink();
-      fixture.detectChanges();
-
-      expect(component.returnLink).toEqual(['/dashboard']);
-    });
-
-    it(`should set returnLink to the subsidiary's dashboard if the establishment uid is not the same as the primary uid`, async () => {
-      const { component, fixture } = await setup();
-
-      component.primaryWorkplaceUid = '5678-9001';
-      component.setReturnLink();
-      fixture.detectChanges();
-
-      expect(component.returnLink).toEqual(['/workplace', '1234-5678']);
     });
   });
 });
