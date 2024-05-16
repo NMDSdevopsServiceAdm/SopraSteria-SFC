@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,7 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './subsidiaryAccount.component.html',
   styleUrls: ['./subsidiaryAccount.component.scss'],
 })
-export class SubsidiaryAccountComponent implements OnInit {
+export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
   @Input() dashboardView: boolean;
   @Input() canAddWorker = false;
 
@@ -40,26 +40,22 @@ export class SubsidiaryAccountComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.subUid = this.parentSubsidiaryViewService.getSubsidiaryUid();
-    this.setWorkplace();
+    this.subscriptions.add(
+      this.establishmentService.establishment$.subscribe((establishment) => {
+        const { uid, id, name, parentName } = establishment;
+        this.subUid = uid;
+        this.subId = id;
+        this.workplaceName = name;
+        this.parentWorkplaceName = parentName;
 
-    this.getPermissions();
-    this.setTabs();
+        this.getPermissions();
+        this.setTabs();
+      }),
+    );
 
     this.subscriptions.add(
       this.tabsService.selectedTab$.subscribe((selectedTab) => {
         this.selectedTab = selectedTab;
-      }),
-    );
-  }
-
-  private setWorkplace(): void {
-    this.subscriptions.add(
-      this.establishmentService.getEstablishment(this.subUid, true).subscribe((workplace) => {
-        this.establishmentService.setState(workplace);
-        this.subId = workplace.id;
-        this.workplaceName = workplace.name;
-        this.parentWorkplaceName = workplace.parentName;
       }),
     );
   }
@@ -88,5 +84,9 @@ export class SubsidiaryAccountComponent implements OnInit {
     tabs.push(this.tabsService.benchmarksTab, this.tabsService.workplaceUsers);
 
     this.tabs = tabs;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
