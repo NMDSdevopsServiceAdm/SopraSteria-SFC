@@ -121,7 +121,6 @@ module.exports = {
            AND ej."JobID" = ${newJobId};`, { transaction }
          );
 
-
         await queryInterface.sequelize.query(
           `UPDATE cqc."EstablishmentJobs" AS ej
           SET "JobID" = ${newJobId}
@@ -135,12 +134,14 @@ module.exports = {
           );`, { transaction }
         );
 
-        await models.establishmentJobs.destroy({
-          where: {
-            jobId: oldJobId
-          }
-         }, { transaction }
-        );
+        transaction.afterCommit(() => {
+          models.establishmentJobs.destroy({
+            where: {
+              jobId: oldJobId
+            }
+           }
+          );
+        })
       }
 
       await updateWorker();
