@@ -2,7 +2,7 @@ import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TabsService } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
@@ -254,6 +254,42 @@ describe('NewTabsComponent', () => {
       const { component } = await setup(true, urlSegments);
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual('training-and-qualifications');
+    });
+  });
+
+  describe('getTabSlugFromNavigationEvent', async () => {
+    it(`should return correct tab when third section of url is the tab slug`, async () => {
+      const { component } = await setup(true, []);
+      component.tabs.forEach((tab) => {
+        const url = `/subsidiary/test-uid/${tab.slug}`;
+        const result = component.getTabSlugFromNavigationEvent(new NavigationEnd(0, url, url));
+
+        expect(result).toEqual(tab);
+      });
+    });
+
+    it('should return nothing when no tab slug in the navigation event url', async () => {
+      const { component } = await setup(true, []);
+
+      const result = component.getTabSlugFromNavigationEvent(new NavigationEnd(0, 'test-url.com', 'test-url.com'));
+
+      expect(result).toBeFalsy();
+    });
+
+    it('should return nothing when workplace in url but in wrong section', async () => {
+      const { component } = await setup(true, []);
+      const url = '/subsidiary/workplace/test-uid/main-service-cqc';
+      const result = component.getTabSlugFromNavigationEvent(new NavigationEnd(0, url, url));
+
+      expect(result).toBeFalsy();
+    });
+
+    it('should return nothing when url has fewer than 3 sections', async () => {
+      const { component } = await setup(true, []);
+      const url = '/subsidiary/benefits-bundle';
+      const result = component.getTabSlugFromNavigationEvent(new NavigationEnd(0, url, url));
+
+      expect(result).toBeFalsy();
     });
   });
 });

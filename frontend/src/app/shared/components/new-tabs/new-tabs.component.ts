@@ -1,9 +1,10 @@
 import { Location } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TabsService } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-tabs',
@@ -20,23 +21,45 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   private focus: boolean;
   private clickEvent: boolean;
 
-  public isParentViewingSub: boolean = false;
-
   @ViewChild('tablist') tablist: ElementRef;
 
   constructor(
     private location: Location,
     private route: ActivatedRoute,
-    private tabsService: TabsService,
+    public tabsService: TabsService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private router: Router,
   ) {}
 
   ngOnInit(): void {
     this.selectedTabSubscription();
-    this.isParentViewingSub = this.parentSubsidiaryViewService.getViewingSubAsParent();
+    this.setTabOnInit();
+    this.trackRouterEventsToSetTabInSubView();
+  }
 
-    const hash = this.isParentViewingSub ? this.getTabSlugInSubView() : this.route.snapshot.fragment;
+  private trackRouterEventsToSetTabInSubView(): void {
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((route: NavigationEnd) => {
+      if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+        const tabInUrl = this.getTabSlugFromNavigationEvent(route);
+
+        if (tabInUrl) {
+          this.tabsService.selectedTab = tabInUrl.slug;
+        }
+      }
+    });
+  }
+
+  public getTabSlugFromNavigationEvent(route: NavigationEnd) {
+    const urlArray = route.urlAfterRedirects.split('/').filter((section) => section.length > 0);
+    if (urlArray.length > 2) {
+      return this.tabs.find((tab) => urlArray[2] === tab.slug);
+    }
+  }
+
+  private setTabOnInit(): void {
+    const hash = this.parentSubsidiaryViewService.getViewingSubAsParent()
+      ? this.getTabSlugInSubView()
+      : this.route.snapshot.fragment;
 
     if (hash) {
       const activeTab = this.tabs.findIndex((tab) => tab.slug === hash);
@@ -59,13 +82,14 @@ export class NewTabsComponent implements OnInit, OnDestroy {
         if (tabIndex > -1) {
           const tab = this.tabs[tabIndex];
           tab.active = true;
-          if (this.clickEvent && this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-            let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
-            this.router.navigate([`/subsidiary/${subsidiaryUid}/${tab.slug}`]);
-          } else if (this.dashboardView) {
-            this.location.replaceState(`/dashboard#${tab.slug}`);
-          } else if (this.clickEvent) {
-            this.router.navigate(['/dashboard'], { fragment: tab.slug });
+          this.currentTab = tabIndex;
+
+          if (!this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+            if (this.dashboardView) {
+              this.location.replaceState(`/dashboard#${tab.slug}`);
+            } else if (this.clickEvent) {
+              this.router.navigate(['/dashboard'], { fragment: tab.slug });
+            }
           }
           if (this.focus) {
             setTimeout(() => {
@@ -115,10 +139,14 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     this.clickEvent = clicked;
     this.focus = focus;
     const tab = this.tabs[index];
-    this.currentTab = index;
 
     this.selectedTabClick.emit({ tabSlug: tab.slug });
     this.tabsService.selectedTab = tab.slug;
+
+    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+      let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
+      this.router.navigate([`/subsidiary/${subsidiaryUid}/${tab.slug}`]);
+    }
   }
 
   private unselectTabs() {
