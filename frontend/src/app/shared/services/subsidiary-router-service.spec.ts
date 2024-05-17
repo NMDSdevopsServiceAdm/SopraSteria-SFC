@@ -81,7 +81,7 @@ describe('SubsidiaryRouterService', () => {
       expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
     });
 
-    it('should clear the value for the view sub service at notifications page', async () => {
+    it('should clear the value for the view sub service when navigating to satisfaction survey page', async () => {
       const urlTree = service.createUrlTree(['satisfaction-survey']);
       const expectedUrlTree = service.createUrlTree(['satisfaction-survey'], undefined);
 
@@ -101,7 +101,7 @@ describe('SubsidiaryRouterService', () => {
       expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
     });
 
-    it('should clear the value for the view sub service at account-management page', async () => {
+    it('should clear the value for the view sub service when navigating to the admin page', async () => {
       const urlTree = service.createUrlTree(['sfcadmin']);
       const expectedUrlTree = service.createUrlTree(['sfcadmin'], undefined);
 
@@ -162,7 +162,7 @@ describe('SubsidiaryRouterService', () => {
     describe('fragments', () => {
       it('should reroute to the sub equivalent pages on dashboard', async () => {
         const urlTree = service.createUrlTree(['dashboard', 'test', 'route'], { fragment: 'test-fragment' });
-        const expectedUrlTree = service.createUrlTree(['subsidiary', 'test-fragment', '1234'], undefined);
+        const expectedUrlTree = service.createUrlTree(['subsidiary', '1234', 'test-fragment'], undefined);
 
         service.navigateByUrl(urlTree);
 
@@ -171,7 +171,7 @@ describe('SubsidiaryRouterService', () => {
 
       it('should reroute to the home tab equivalent page on dashboard when no fragments provided', async () => {
         const urlTree = service.createUrlTree(['/dashboard'], undefined);
-        const expectedUrlTree = service.createUrlTree(['subsidiary', 'home', '1234'], undefined);
+        const expectedUrlTree = service.createUrlTree(['subsidiary', '1234', 'home'], undefined);
 
         service.navigateByUrl(urlTree);
 
@@ -180,7 +180,7 @@ describe('SubsidiaryRouterService', () => {
 
       it('should reroute to the sub equivalent pages on dashboard when a leading slash is present', async () => {
         const urlTree = service.createUrlTree(['/dashboard', 'test', 'route'], { fragment: 'test-fragment' });
-        const expectedUrlTree = service.createUrlTree(['subsidiary', 'test-fragment', '1234'], undefined);
+        const expectedUrlTree = service.createUrlTree(['subsidiary', '1234', 'test-fragment'], undefined);
 
         service.navigateByUrl(urlTree);
 

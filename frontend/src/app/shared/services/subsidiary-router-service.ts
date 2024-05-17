@@ -26,7 +26,7 @@ export class SubsidiaryRouterService extends Router {
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && !commands[0].includes('subsidiary')) {
       // If routing to the dashboard, override fragments
       if (commands[0].toLowerCase().includes('dashboard')) {
-        commands = [extras.fragment ? extras.fragment : 'home', this.parentSubsidiaryViewService.getSubsidiaryUid()];
+        commands = [this.parentSubsidiaryViewService.getSubsidiaryUid(), extras.fragment ? extras.fragment : 'home'];
         extras = undefined;
       } else {
         // Remove forward slashes from the route

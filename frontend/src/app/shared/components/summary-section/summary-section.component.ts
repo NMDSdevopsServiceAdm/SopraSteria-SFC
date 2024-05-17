@@ -78,7 +78,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
 
   private navigateInSubView = async (fragment: string, route: string[]) => {
     this.tabsService.selectedTab = fragment;
-    await this.router.navigate(route ? route : ['subsidiary', fragment, this.workplace.uid]);
+    await this.router.navigate(route ? route : ['subsidiary', this.workplace.uid, fragment]);
   };
 
   public getWorkplaceSummaryMessage(): void {
