@@ -20,6 +20,7 @@ import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-
 import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
 import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
+import { SubsidiaryTabsComponent } from './subsidiary-tabs/subsidiary-tabs.component';
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
@@ -42,6 +43,7 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
     ViewSubsidiaryTrainingAndQualificationsComponent,
     ViewSubsidiaryBenchmarksComponent,
     ViewSubsidiaryWorkplaceUsersComponent,
+    SubsidiaryTabsComponent,
   ],
   providers: [
     DialogService,
@@ -55,5 +57,6 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
   ],
+  exports: [SubsidiaryTabsComponent],
 })
 export class SubsidiaryModule {}

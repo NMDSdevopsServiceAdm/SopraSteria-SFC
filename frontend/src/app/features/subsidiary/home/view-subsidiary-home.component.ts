@@ -8,7 +8,7 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { Worker } from '@core/model/worker.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
+import { SubsidiaryTabsService } from '@core/services/tabs-interface.service';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
@@ -68,7 +68,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   constructor(
     private userService: UserService,
     private permissionsService: PermissionsService,
-    private tabsService: TabsService,
+    private tabsService: SubsidiaryTabsService,
     public route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
     protected benchmarksService: BenchmarksServiceBase,
@@ -77,6 +77,8 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+    this.tabsService.selectedTab = 'home';
+
     this.subsidiaryWorkplace = this.route.snapshot.data.establishment;
     this.workersCreatedDate = this.route.snapshot.data.workers?.workersCreatedDate;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;

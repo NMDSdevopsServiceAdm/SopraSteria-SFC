@@ -11,7 +11,7 @@ import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
+import { SubsidiaryTabsService } from '@core/services/tabs-interface.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
@@ -116,7 +116,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
 
     const parentsRequestService = TestBed.inject(ParentRequestsService);
 
-    const tabsService = TestBed.inject(TabsService);
+    const tabsService = TestBed.inject(SubsidiaryTabsService);
     const tabsServiceSpy = spyOnProperty(tabsService, 'selectedTab', 'set');
 
     const injector = getTestBed();

@@ -3,8 +3,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { SubsidiaryTabsService } from '@core/services/tabs-interface.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -34,9 +33,8 @@ export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
   constructor(
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
-    private tabsService: TabsService,
+    private tabsService: SubsidiaryTabsService,
     private benchmarksService: BenchmarksServiceBase,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {

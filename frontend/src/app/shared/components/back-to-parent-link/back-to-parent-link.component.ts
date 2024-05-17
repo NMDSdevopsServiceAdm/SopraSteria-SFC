@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { TabsService } from '@core/services/tabs.service';
+import { SubsidiaryTabsService } from '@core/services/tabs-interface.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
@@ -14,7 +14,7 @@ export class BackToParentComponent implements OnInit {
   constructor(
     private router: Router,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
-    private tabsService: TabsService,
+    private tabsService: SubsidiaryTabsService,
   ) {}
 
   ngOnInit() {}
@@ -23,7 +23,9 @@ export class BackToParentComponent implements OnInit {
     event.preventDefault();
 
     this.parentSubsidiaryViewService.clearViewingSubAsParent();
-    this.tabsService.selectedTab = 'home';
-    this.router.navigate(['/dashboard', { fragment: 'home' }]);
+
+    this.router.navigate(['/dashboard', { fragment: 'home' }]).then(() => {
+      this.tabsService.selectedTab = 'home';
+    });
   }
 }

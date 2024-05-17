@@ -5,6 +5,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { SubsidiaryTabsService } from '@core/services/tabs-interface.service';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
@@ -23,9 +24,11 @@ export class ViewSubsidiaryStaffRecordsComponent implements OnInit {
     private permissionsService: PermissionsService,
     private workerService: WorkerService,
     private route: ActivatedRoute,
+    private tabsService: SubsidiaryTabsService,
   ) {}
 
   ngOnInit(): void {
+    this.tabsService.selectedTab = 'staff-records';
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workerService.setAddStaffRecordInProgress(false);
 

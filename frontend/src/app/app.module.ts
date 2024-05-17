@@ -26,6 +26,7 @@ import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver'
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
@@ -39,6 +40,7 @@ import { JobService } from '@core/services/job.service';
 import { LocationService } from '@core/services/location.service';
 import { MessageService } from '@core/services/message.service';
 import { NationalityService } from '@core/services/nationality.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { RecruitmentService } from '@core/services/recruitment.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -74,6 +76,7 @@ import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
+import { SubsidiaryModule } from '@features/subsidiary/subsidiary.module';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -87,8 +90,6 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { PreviousRouteService } from '@core/services/previous-route.service';
-import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 
 @NgModule({
   declarations: [
@@ -146,6 +147,7 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
     RouterModule,
     BenchmarksModule,
     DataAreaTabModule,
+    SubsidiaryModule,
   ],
   providers: [
     AuthGuard,

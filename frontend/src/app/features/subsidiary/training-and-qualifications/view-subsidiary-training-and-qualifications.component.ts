@@ -9,7 +9,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
+import { SubsidiaryTabsService } from '@core/services/tabs-interface.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
@@ -52,10 +52,11 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     private trainingCategoryService: TrainingCategoryService,
     private trainingService: TrainingService,
     private permissionsService: PermissionsService,
-    private tabsService: TabsService,
+    private tabsService: SubsidiaryTabsService,
   ) {}
 
   ngOnInit(): void {
+    this.tabsService.selectedTab = 'training-and-qualifications';
     this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 
