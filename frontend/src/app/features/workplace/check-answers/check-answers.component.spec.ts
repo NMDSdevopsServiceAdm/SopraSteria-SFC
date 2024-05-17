@@ -93,10 +93,12 @@ describe('CheckAnswersComponent', () => {
     fireEvent.click(confirmDetailButton);
     fixture.detectChanges();
 
-    expect(alertSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: `You've confirmed the workplace details that you added`,
-    } as Alert);
+    fixture.whenStable().then(() => {
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `You've confirmed the workplace details that you added`,
+      } as Alert);
+    });
   });
 
   describe('setBackLink', () => {

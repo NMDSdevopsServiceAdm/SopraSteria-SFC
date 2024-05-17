@@ -12,7 +12,6 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TabsService } from '@core/services/tabs.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -50,7 +49,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     private establishmentService: EstablishmentService,
     private router: Router,
     private route: ActivatedRoute,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private trainingCategoryService: TrainingCategoryService,
     private trainingService: TrainingService,
     private permissionsService: PermissionsService,
@@ -65,9 +63,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.tAndQsLastUpdated = this.route.snapshot.data.workers?.tAndQsLastUpdated;
-
-    this.parentSubsidiaryViewService.setHasWorkers(this.workerCount);
-
     this.workplace = this.route.snapshot.data.establishment;
 
     const alertMessage = history.state?.alertMessage;
@@ -127,7 +122,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   public navigateToStaffRecords(event: Event): void {
     event.preventDefault();
     this.tabsService.selectedTab = 'staff-records';
-    this.router.navigate(['/subsidiary/staff-records', this.workplace.uid]);
+    this.router.navigate(['/subsidiary', this.workplace.uid, 'staff-records']);
   }
 
   private trainingTotals(): void {
@@ -137,7 +132,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.totalExpiringTraining = this.trainingCounts.totalExpiringTraining;
     this.missingMandatoryTraining = this.trainingCounts.missingMandatoryTraining;
     this.staffMissingMandatoryTraining = this.trainingCounts.staffMissingMandatoryTraining;
-    this.parentSubsidiaryViewService.setTotalTrainingRecords(this.trainingCounts.totalRecords);
   }
 
   public handleViewTrainingByCategory(visible: boolean): void {
@@ -150,6 +144,8 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   }
 
   ngOnDestroy(): void {
+    this.alertService.removeAlert();
     this.subscriptions.unsubscribe();
+    this.breadcrumbService.removeRoutes();
   }
 }

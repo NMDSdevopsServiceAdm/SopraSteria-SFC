@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { PreviousRouteService } from './previous-route.service';
 
 interface Tab {
   title: string;
@@ -18,6 +19,8 @@ export class TabsService {
   public benchmarksTab: Tab = { title: 'Benchmarks', slug: 'benchmarks', active: false };
   public workplaceUsers: Tab = { title: 'Workplace users', slug: 'workplace-users', active: false };
 
+  constructor(private previousRouteService: PreviousRouteService) {}
+
   private _selectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
   public get selectedTab$(): Observable<string> {
@@ -29,6 +32,7 @@ export class TabsService {
   }
 
   public set selectedTab(tab: string) {
+    this.previousRouteService.setLastSelectedTab(tab);
     this._selectedTab$.next(tab);
   }
 }

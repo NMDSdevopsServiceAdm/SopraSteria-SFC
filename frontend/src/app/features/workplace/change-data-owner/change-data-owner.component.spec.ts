@@ -1,29 +1,28 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, getTestBed, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Establishment } from '@core/model/establishment.model';
+import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
+import { AlertService } from '@core/services/alert.service';
 import { BenchmarksService } from '@core/services/benchmarks.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { within, fireEvent } from '@testing-library/angular';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { Establishment as MockEstablishment } from '../../../../mockdata/establishment';
-import { Establishment } from '@core/model/establishment.model';
 import { SharedModule } from '@shared/shared.module';
-import { getTestBed } from '@angular/core/testing';
-import { AlertService } from '@core/services/alert.service';
-import { WindowRef } from '@core/services/window.ref';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
+import { fireEvent, within } from '@testing-library/angular';
 
+import { Establishment as MockEstablishment } from '../../../../mockdata/establishment';
 import { ChangeDataOwnerComponent } from './change-data-owner.component';
 
 describe('ChangeDataOwnerComponent', async () => {
@@ -377,7 +376,11 @@ describe('ChangeDataOwnerComponent', async () => {
 
       const router = injector.inject(Router) as Router;
 
+      const alertService = TestBed.inject(AlertService);
+      const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
       const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
       component.ngOnInit();
       fixture.detectChanges();
 
@@ -390,9 +393,15 @@ describe('ChangeDataOwnerComponent', async () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
         state: {
-          alertMessage: "You've sent a change data owner request",
           changeDataOwnerStatus: true,
         },
+      });
+
+      fixture.whenStable().then(() => {
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: "You've sent a change data owner request",
+        });
       });
     });
 
@@ -405,6 +414,9 @@ describe('ChangeDataOwnerComponent', async () => {
       const router = injector.inject(Router) as Router;
 
       const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+      const alertService = TestBed.inject(AlertService);
+      const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
       component.primaryWorkplace.dataOwner = WorkplaceDataOwner.Workplace;
       component.primaryWorkplace.isParent = true;
@@ -426,9 +438,15 @@ describe('ChangeDataOwnerComponent', async () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace/view-all-workplaces'], {
         state: {
-          alertMessage: "You've sent a change data owner request",
           changeDataOwnerStatus: true,
         },
+      });
+
+      fixture.whenStable().then(() => {
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: "You've sent a change data owner request",
+        });
       });
     });
   });

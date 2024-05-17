@@ -1,11 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
@@ -14,10 +16,10 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockWorkerService';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
-import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
@@ -41,6 +43,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     noQualifications = false,
     fragment = 'all-records',
     addAlert = false,
+    isOwnWorkplace = true,
   ) {
     if (addAlert) {
       window.history.pushState({ alertMessage: 'Updated record' }, '');
@@ -303,6 +306,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     const routerSpy = spyOn(router, 'navigate');
     routerSpy.and.returnValue(Promise.resolve(true));
 
+    const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService) as ParentSubsidiaryViewService;
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    spyOn(establishmentService, 'isOwnWorkplace').and.returnValue(isOwnWorkplace);
+
     const workerService = injector.inject(WorkerService) as WorkerService;
     const workerSpy = spyOn(workerService, 'setReturnTo');
     workerSpy.and.callThrough();
@@ -330,6 +337,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       workerUid,
       alertSpy,
       pdfTrainingAndQualsService,
+      parentSubsidiaryViewService,
     };
   }
 
@@ -749,6 +757,26 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       expect(downloadFunctionSpy).toHaveBeenCalled();
       expect(pdfTrainingAndQualsServiceSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('getBreadcrumbsJourney', () => {
+    it('should return mandatory training journey when viewing sub as parent', async () => {
+      const { component, parentSubsidiaryViewService } = await setup();
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MY_WORKPLACE);
+    });
+
+    it('should return mandatory training journey when is own workplace', async () => {
+      const { component } = await setup();
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MY_WORKPLACE);
+    });
+
+    it('should return all workplaces journey when is not own workplace and not in parent sub view', async () => {
+      const { component } = await setup(false, true, [], [], false, 'all-records', false, false);
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
     });
   });
 });

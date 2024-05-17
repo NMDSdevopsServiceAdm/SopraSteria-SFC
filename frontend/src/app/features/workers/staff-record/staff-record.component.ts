@@ -11,6 +11,7 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -41,6 +42,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     protected backLinkService: BackLinkService,
     public breadcrumbService: BreadcrumbService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -56,10 +58,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     );
 
     if (!this.insideFlow) {
-      const journey = this.establishmentService.isOwnWorkplace()
-        ? JourneyType.MY_WORKPLACE
-        : JourneyType.ALL_WORKPLACES;
-      this.breadcrumbService.show(journey);
+      this.breadcrumbService.show(this.getBreadcrumbsJourney());
     } else {
       this.backLinkService.showBackLink();
     }
@@ -74,10 +73,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 
   deleteWorker(event: Event): void {
@@ -126,8 +121,12 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   }
 
   public returnToHomeTab() {
-    const isLoggedInWorkplace = this.establishmentService.establishmentId === this.workplace.uid;
-    this.router.navigate(['/dashboard'], { fragment: 'staff-records', state: { showBanner: true } });
+    this.router.navigate(['/dashboard'], { fragment: 'staff-records', state: { showBanner: true } }).then(() => {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Staff record saved',
+      });
+    });
   }
 
   public setReturnTo(): void {
@@ -136,5 +135,16 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       fragment: 'staff-record',
     };
     this.workerService.setReturnTo(this.returnToRecord);
+  }
+
+  public getBreadcrumbsJourney(): JourneyType {
+    return this.parentSubsidiaryViewService.getViewingSubAsParent() || this.establishmentService.isOwnWorkplace()
+      ? JourneyType.MY_WORKPLACE
+      : JourneyType.ALL_WORKPLACES;
+  }
+
+  ngOnDestroy(): void {
+    this.breadcrumbService.removeRoutes();
+    this.subscriptions.unsubscribe();
   }
 }

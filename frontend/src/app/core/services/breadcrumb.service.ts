@@ -57,10 +57,7 @@ export class BreadcrumbService {
   private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
   public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
 
-  constructor(
-    private router: Router,
-    private location: Location,
-  ) {
+  constructor(private router: Router, private location: Location) {
     this.router.events
       .pipe(
         filter((event) => event instanceof NavigationEnd),
@@ -79,8 +76,8 @@ export class BreadcrumbService {
   // Sub view, Home, Users, User details, Permissions
   public show(journey: JourneyType, overrideMessage: string = null) {
     let path = this.location.path();
-    if(journey !== JourneyType.SUBSIDIARY) {
-      path = path.replace("/subsidiary", "");
+    if (journey !== JourneyType.SUBSIDIARY) {
+      path = path.replace('/subsidiary', '');
     }
 
     const urlTree = this.router.parseUrl(path);
@@ -117,7 +114,7 @@ export class BreadcrumbService {
 
       const isCurrentRoute = this.isCurrentRoute(path, segments);
 
-      if (isCurrentRoute || index === children.length - 1) {
+      if (isCurrentRoute || index === children?.length - 1) {
         routes.push({
           title,
           path: this.getPath(path, segments),
@@ -137,9 +134,12 @@ export class BreadcrumbService {
     return routes;
   }
 
-  private getPath(url: string, segments: UrlSegment[]) {
+  public getPath(url: string, segments: UrlSegment[]) {
     const path = this.getParts(url).map((part, index) => {
       if (this.isParameter(part)) {
+        if (part === ':establishmentuid' && segments[index].path === 'workplace') {
+          return segments[index + 1].path;
+        }
         return segments[index] ? segments[index].path : part;
       }
       return part;
@@ -322,6 +322,11 @@ export class BreadcrumbService {
 
       case JourneyType.CHANGE_DATA_OWNER: {
         routes = changeDataOwnerJourney;
+        break;
+      }
+
+      case JourneyType.ABOUT_PARENTS: {
+        routes = workplaceTabJourney;
         break;
       }
 

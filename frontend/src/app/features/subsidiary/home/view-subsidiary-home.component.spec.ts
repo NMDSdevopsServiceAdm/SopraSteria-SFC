@@ -1,11 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { TestBed, getTestBed } from '@angular/core/testing';
+import { getTestBed, TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 import { Roles } from '@core/model/roles.enum';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -18,18 +20,15 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
+import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, queryByText, render } from '@testing-library/angular';
 import { of } from 'rxjs';
+
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
 import { ViewSubsidiaryHomeComponent } from './view-subsidiary-home.component';
-import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
-import { BenchmarksResponse } from '@core/model/benchmarks-v2.model';
 
 const MockWindow = {
   dataLayer: {
@@ -78,7 +77,6 @@ describe('ViewSubsidiaryHomeComponent', () => {
               },
             },
           },
-          { provide: ParentSubsidiaryViewService, useClass: MockParentSubsidiaryViewService },
           {
             provide: ActivatedRoute,
             useValue: {
@@ -165,7 +163,6 @@ describe('ViewSubsidiaryHomeComponent', () => {
         const { queryByText, component, fixture } = await setup();
 
         component.canBulkUpload = false;
-        component.isParentSubsidiaryView = true;
         fixture.detectChanges();
 
         expect(queryByText('Bulk upload your data')).toBeFalsy();
@@ -173,18 +170,15 @@ describe('ViewSubsidiaryHomeComponent', () => {
     });
 
     describe('Does your data meet WDF requirements link', () => {
-      it('should render the link with the correct href', async () => {
-        const { getByText, component, fixture } = await setup();
-        component.canViewReports = true;
-        fixture.detectChanges();
-        const link = getByText('Does your data meet WDF requirements?');
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual('/wdf');
+      it('should not render the link as WDF not shown in sub pages', async () => {
+        const { queryByText, component, fixture } = await setup();
+
+        expect(queryByText('Does your data meet WDF requirements?')).toBeFalsy();
       });
 
-      it('should not render the link with the correct href when view reports is false', async () => {
+      it('should still not render the link when view reports is true', async () => {
         const { queryByText, component, fixture } = await setup();
-        component.canViewReports = false;
+        component.canViewReports = true;
         fixture.detectChanges();
         expect(queryByText('Does your data meet WDF requirements?')).toBeFalsy();
       });

@@ -12,6 +12,8 @@ import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
+import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
@@ -59,6 +61,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { AboutParentsComponent } from '@features/pages/about-parents/about-parents.component';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 
 // eslint-disable-next-line max-len
@@ -75,6 +78,16 @@ const routes: Routes = [
     component: ChangeDataOwnerComponent,
     resolve: { childWorkplaces: ChildWorkplacesResolver },
     data: { title: 'Change Data Owner' },
+  },
+  {
+    path: 'about-parents',
+    component: AboutParentsComponent,
+    data: {
+      title: 'What you can do as a parent workplace',
+    },
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: ':establishmentuid',

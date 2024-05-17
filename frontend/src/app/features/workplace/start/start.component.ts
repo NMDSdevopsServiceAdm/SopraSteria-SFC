@@ -4,7 +4,6 @@ import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -26,26 +25,15 @@ export class StartComponent implements OnInit, OnDestroy {
   constructor(
     public backService: BackService,
     private establishmentService: EstablishmentService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.isViewingSubAsParent = this.parentSubsidiaryViewService.getViewingSubAsParent();
-
-    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
-      this.parentSubsidiaryViewService.getObservableSubsidiary().subscribe((subsidiaryWorkplace) => {
-        if (subsidiaryWorkplace) {
-          this.establishment = subsidiaryWorkplace;
-        }
-      });
-    } else {
-      this.subscriptions.add(
-        this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
-          this.establishment = establishment;
-        }),
-      );
-    }
+    this.subscriptions.add(
+      this.establishmentService.establishment$.pipe(take(1)).subscribe((establishment) => {
+        this.establishment = establishment;
+      }),
+    );
 
     this.fragment = history.state?.navigatedFromFragment;
     this.setReturnLink();
@@ -71,8 +59,11 @@ export class StartComponent implements OnInit, OnDestroy {
     event.preventDefault();
 
     const data = { property: 'showAddWorkplaceDetailsBanner', value: false };
-    this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe();
-    this.setContinueLink();
+    this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe((response) => {
+      this.establishment.showAddWorkplaceDetailsBanner = response.data.showAddWorkplaceDetailsBanner;
+      this.establishmentService.setState(this.establishment);
+    });
+    this.router.navigate(['workplace', this.establishment.uid, 'other-services']);
   }
 
   public setRecuritmentBannerToTrue(): void {
@@ -80,13 +71,5 @@ export class StartComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe(),
     );
-  }
-
-  public setContinueLink(): any {
-    if (this.isViewingSubAsParent) {
-      return ['/subsidiary/workplace', this.establishment.uid, 'other-services'];
-    } else {
-      return ['/workplace', this.establishment.uid, 'other-services'];
-    }
   }
 }

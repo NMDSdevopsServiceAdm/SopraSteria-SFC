@@ -104,9 +104,6 @@ describe('ViewMyWorkplacesComponent', () => {
 
     const getChildWorkplacesSpy = spyOn(establishmentService, 'getChildWorkplaces').and.callThrough();
 
-    const alertService = TestBed.inject(AlertService);
-    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
-
     return {
       router,
       component,
@@ -120,7 +117,6 @@ describe('ViewMyWorkplacesComponent', () => {
       queryByTestId,
       getChildWorkplacesSpy,
       establishmentService,
-      alertServiceSpy,
     };
   }
 
@@ -273,23 +269,6 @@ describe('ViewMyWorkplacesComponent', () => {
     });
   });
 
-  it('should show the banner message if there is an alert message', async () => {
-    const { component, fixture, alertServiceSpy } = await setup();
-
-    const message = "You've sent a change data owner request";
-
-    window.history.pushState({ alertMessage: message }, '', '');
-
-    component.ngOnInit();
-    fixture.detectChanges();
-
-    expect(component.alertMessage).toEqual(message);
-    expect(alertServiceSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: message,
-    });
-  });
-
   describe('missing cqc workplaces message', () => {
     it('should not show if missingCqcWorkplaces is false ', async () => {
       const { queryByTestId } = await setup(false);
@@ -310,5 +289,14 @@ describe('ViewMyWorkplacesComponent', () => {
 
       expect(missingCqcWorkplacesMessage.textContent).toContain(component.primaryWorkplace.name);
     });
+  });
+
+  it('should show `What you can do as a parent workplace` link', async () => {
+    const { getByText } = await setup();
+
+    const linkText = getByText('What you can do as a parent workplace');
+
+    expect(linkText).toBeTruthy();
+    expect(linkText.getAttribute('href')).toEqual('/workplace/about-parents');
   });
 });

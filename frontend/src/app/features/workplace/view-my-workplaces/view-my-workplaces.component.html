@@ -6,6 +6,7 @@
       <span *ngIf="primaryWorkplace.name" class="govuk-caption-xl">{{ primaryWorkplace.name }}</span>
       Your other workplaces ({{ activeWorkplaceCount }})
     </h1>
+
     <a
       *ngIf="canAddEstablishment"
       class="govuk-button govuk-!-margin-bottom-0"
@@ -15,6 +16,13 @@
     >
       Add a workplace
     </a>
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-bottom-2">
+  <div class="govuk-grid-column-full govuk__flex">
+    <p>
+      <a [routerLink]="['/workplace/about-parents']">What you can do as a parent workplace</a>
+    </p>
   </div>
 </div>
 
@@ -90,8 +98,6 @@
 
 <ng-template #noWorkplaces>
   <div data-testid="noWorkplacesMessage">
-    <p><a [routerLink]="['/']">What you can do as a parent workplace</a></p>
-    <br />
     <p>You've not added any workplaces yet.</p>
     <p>To add a workplace, you'll need to know:</p>
     <ul class="govuk-list govuk-list--bullet">

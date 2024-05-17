@@ -1,6 +1,7 @@
 import { HttpResponse } from '@angular/common/http';
 import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Article } from '@core/model/article.model';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
@@ -16,29 +17,16 @@ import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { isAdminRole } from '@core/utils/check-role-util';
-import {
-  BecomeAParentCancelDialogComponent,
-} from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
+import { BecomeAParentCancelDialogComponent } from '@shared/components/become-a-parent-cancel/become-a-parent-cancel-dialog.component';
 import { BecomeAParentDialogComponent } from '@shared/components/become-a-parent/become-a-parent-dialog.component';
-import {
-  CancelDataOwnerDialogComponent,
-} from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
-import {
-  ChangeDataOwnerDialogComponent,
-} from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
-import {
-  LinkToParentCancelDialogComponent,
-} from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
+import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
+import { LinkToParentCancelDialogComponent } from '@shared/components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentDialogComponent } from '@shared/components/link-to-parent/link-to-parent-dialog.component';
-import {
-  OwnershipChangeMessageDialogComponent,
-} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
-import {
-  SetDataPermissionDialogComponent,
-} from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
 
@@ -91,11 +79,11 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public ownershipChangeRequestId: any = [];
   public successAlertMessage: string;
   public canViewEstablishment: boolean;
-  public alertMessage: string;
   public showMissingCqcMessage: boolean;
   public locationId: string;
   public workplacesCount: number;
   public isParentSubsidiaryView: boolean;
+  public article: Article;
 
   constructor(
     private userService: UserService,
@@ -111,7 +99,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     private alertService: AlertService,
     private router: Router,
     public establishmentService: EstablishmentService,
-    public parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -127,6 +114,8 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.isParent = this.workplace?.isParent;
 
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
+
+    this.article = this.route.snapshot.data.articleList?.data[0];
 
     if (this.workplace) {
       this.subscriptions.add(
@@ -170,8 +159,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.hasBenchmarkComparisonData = !!this.meta?.staff && !!this.meta?.workplaces;
     this.setBenchmarksCard();
     this.subscriptions.add();
-
-    this.alertMessage = history.state?.alertMessage;
 
     this.isParentApprovedBannerViewed = this.workplace.isParentApprovedBannerViewed;
     this.locationId = this.workplace.locationId;
@@ -332,11 +319,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
         type: 'success',
         message: `Your request to become a parent has been approved`,
       });
-    } else if (this.alertMessage) {
-      this.alertService.addAlert({
-        type: 'success',
-        message: this.alertMessage,
-      });
     }
   }
 
@@ -355,7 +337,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   }
 
   public goToAboutParentsLink(): void {
-    this.router.navigate(['/about-parents']);
+    this.router.navigate(['/workplace/about-parents']);
   }
 
   public updateLinkToParentRequestedStatus(): void {

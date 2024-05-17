@@ -66,9 +66,8 @@ export class SummarySectionComponent implements OnInit, OnChanges {
 
   public async onClick(event: Event, fragment: string, route: string[]): Promise<void> {
     event.preventDefault();
-    if (this.isParentSubsidiaryView && route) {
-      this.tabsService.selectedTab = fragment;
-      await this.router.navigate(route);
+    if (this.isParentSubsidiaryView) {
+      await this.navigateInSubView(fragment, route);
     } else if (route) {
       await this.router.navigate(route);
       this.tabsService.selectedTab = fragment;
@@ -76,6 +75,11 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.tabsService.selectedTab = fragment;
     }
   }
+
+  private navigateInSubView = async (fragment: string, route: string[]) => {
+    this.tabsService.selectedTab = fragment;
+    await this.router.navigate(route ? route : ['subsidiary', this.workplace.uid, fragment]);
+  };
 
   public getWorkplaceSummaryMessage(): void {
     const { showAddWorkplaceDetailsBanner, numberOfStaff, vacancies, starters, leavers } = this.workplace;

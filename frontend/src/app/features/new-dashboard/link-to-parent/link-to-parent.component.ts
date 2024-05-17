@@ -1,15 +1,15 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { DataPermissions } from '@core/model/my-workplaces.model';
 import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 
 @Component({
   selector: 'app-link-to-parent',
@@ -54,7 +54,7 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.breadcrumbService.show(JourneyType.LINK_TO_PARENT, this.workplace.name);
+    this.breadcrumbService.show(JourneyType.LINK_TO_PARENT);
     this.getAvailableParentWorkPlaces();
     this.setDataPermissions();
     this.setupFormErrorsMap();
@@ -181,12 +181,18 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
         this.establishmentService.setRequestToParentForLink(this.workplace.uid, setLinkAndPermission).subscribe(
           (data) => {
             if (data) {
-              this.router.navigate(['/dashboard'], {
-                state: {
-                  alertMessage: `You've sent a link request to ${this.form.value.parentNameOrPostCode}`,
-                  linkToParentRequestedStatus: true,
-                },
-              });
+              this.router
+                .navigate(['/dashboard'], {
+                  state: {
+                    linkToParentRequestedStatus: true,
+                  },
+                })
+                .then(() => {
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `You've sent a link request to ${this.form.value.parentNameOrPostCode}`,
+                  });
+                });
             }
           },
           (error) => {
@@ -269,12 +275,18 @@ export class LinkToParentComponent implements OnInit, OnDestroy, AfterViewInit {
           (data) => {
             if (data) {
               const parentName = data[0].requstedParentName;
-              this.router.navigate(['/dashboard'], {
-                state: {
-                  alertMessage: `You've cancelled your request to link to ${parentName}, ${this.parentPostcode}`,
-                  cancelRequestToParentForLinkSuccess: true,
-                },
-              });
+              this.router
+                .navigate(['/dashboard'], {
+                  state: {
+                    cancelRequestToParentForLinkSuccess: true,
+                  },
+                })
+                .then(() => {
+                  this.alertService.addAlert({
+                    type: 'success',
+                    message: `You've cancelled your request to link to ${parentName}, ${this.parentPostcode}`,
+                  });
+                });
             }
           },
           (error) => {

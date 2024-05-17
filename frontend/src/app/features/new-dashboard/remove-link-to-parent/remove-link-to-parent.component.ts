@@ -1,9 +1,10 @@
-import { ChangeDetectorRef, Component, Inject, OnDestroy, OnInit } from '@angular/core';
-import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Establishment } from '@core/model/establishment.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
@@ -25,11 +26,12 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
     private errorSummaryService: ErrorSummaryService,
     private router: Router,
     private breadcrumbService: BreadcrumbService,
+    private alertService: AlertService,
   ) {}
 
   public async ngOnInit(): Promise<void> {
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.breadcrumbService.show(JourneyType.REMOVE_LINK_TO_PARENT, this.workplace.name);
+    this.breadcrumbService.show(JourneyType.REMOVE_LINK_TO_PARENT);
     this.setupServerErrorsMap();
     this.getAllParents();
   }
@@ -83,12 +85,18 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
         .removeParentAssociation(this.workplace.uid, { parentWorkplaceUId: this.workplace.parentUid })
         .subscribe(
           () => {
-            this.router.navigate(['/dashboard'], {
-              state: {
-                alertMessage: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`,
-                removeLinkToParentSuccess: true,
-              },
-            });
+            this.router
+              .navigate(['/dashboard'], {
+                state: {
+                  removeLinkToParentSuccess: true,
+                },
+              })
+              .then(() => {
+                this.alertService.addAlert({
+                  type: 'success',
+                  message: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`,
+                });
+              });
           },
           (error) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

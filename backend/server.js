@@ -69,6 +69,9 @@ var satisfactionSurvey = require('./server/routes/satisfactionSurvey');
 var registrationSurvey = require('./server/routes/registrationSurvey');
 var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 var longTermAbsence = require('./server/routes/longTermAbsence');
+var nhsBsaApi = require('./server/routes/nhsBsaApi/workplaceData');
+var nhsBsaApiAuth = require('./server/routes/nhsBsaApi/index');
+var nhsBsaApiDocumentation = require('./server/routes/nhsBsaApi/apiDocs');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -89,6 +92,11 @@ const AWSsns = require('./server/aws/sns');
 AWSsns.initialise(config.get('aws.region'));
 
 var app = express();
+
+//NHSBSA API
+app.use('/api/v1/workplaces', nhsBsaApi);
+app.use('/api/v1/workplaces/auth/token', nhsBsaApiAuth);
+app.use('/api/v1/api-docs', nhsBsaApiDocumentation);
 
 const corsOptions = {
   origin: '*',

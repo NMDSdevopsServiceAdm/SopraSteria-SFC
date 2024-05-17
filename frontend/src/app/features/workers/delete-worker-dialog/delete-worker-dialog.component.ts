@@ -93,14 +93,12 @@ export class DeleteWorkerDialogComponent extends DialogComponent implements OnIn
   }
 
   private onSuccess(): void {
-    const url =
-      this.data.workplace.uid === this.data.primaryWorkplaceUid
-        ? ['/dashboard']
-        : ['/workplace', this.data.workplace.uid];
-    this.router.navigate(url, {
+    this.router.navigate(['/dashboard'], {
       fragment: 'staff-records',
-      state: { alertMessage: `${this.data.worker.nameOrId} has been deleted` },
-    });
+    }).then(()=>this.alertService.addAlert({
+      type: 'success',
+      message: `${this.data.worker.nameOrId} has been deleted`,
+    }));
     this.close(event);
   }
 

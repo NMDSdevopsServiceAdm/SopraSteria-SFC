@@ -1,5 +1,5 @@
 <div id="content">
-  <div *ngIf="isParentSubsidiaryView">
+  <div>
     <app-back-to-parent-link [parentWorkplaceName]="parentWorkplaceName"></app-back-to-parent-link>
   </div>
   <div class="asc-tabs-container">
@@ -12,7 +12,7 @@
     <div class="govuk-width-container">
       <app-back-link></app-back-link>
       <app-new-back-link></app-new-back-link>
-      <app-breadcrumbs></app-breadcrumbs>
+      <app-breadcrumbs [workplaceName]="workplaceName"></app-breadcrumbs>
     </div>
   </div>
 

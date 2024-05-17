@@ -1,3 +1,5 @@
+import 'core-js';
+
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edit-user-permissions.guard';
@@ -7,8 +9,10 @@ import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
@@ -20,6 +24,7 @@ import { FirstLoginPageComponent } from '@features/first-login-page/first-login-
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { AcceptPreviousCareCertificateComponent } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
+import { ChangeExpiresSoonAlertsComponent } from '@features/workplace/change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from '@features/workplace/check-answers/check-answers.component';
 import { ConfirmStaffRecruitmentAndBenefitsComponent } from '@features/workplace/confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
@@ -67,9 +72,8 @@ import { DeleteWorkplaceComponent } from './delete-workplace/delete-workplace.co
 // eslint-disable-next-line max-len
 const routes: Routes = [
   {
-    path: ':establishmentuid',
-    redirectTo: 'dashboard/:establishmentuid',
-    pathMatch: 'full',
+    path: '',
+    loadChildren: () => import('@features/public/public.module').then((m) => m.PublicModule),
   },
   {
     path: 'articles',
@@ -103,31 +107,79 @@ const routes: Routes = [
     loadChildren: () => import('@features/benefits-bundle/benefits-bundle.module').then((m) => m.BenefitsBundleModule),
   },
   {
-    path: 'home/:establishmentuid',
-    component: ViewSubsidiaryHomeComponent,
+    path: ':establishmentuid',
+    canActivate: [HasPermissionsGuard],
     resolve: {
       users: AllUsersForEstablishmentResolver,
       establishment: WorkplaceResolver,
       workers: WorkersResolver,
       totalStaffRecords: TotalStaffRecordsResolver,
       articleList: ArticleListResolver,
+      subsidiary: SubsidiaryResolver,
+      benchmarksResolver: BenchmarksResolver,
+      rankingsResolver: RankingsResolver,
+      usefulLinksPay: UsefulLinkPayResolver,
+      usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
     },
-    canActivate: [CheckPermissionsGuard, HasPermissionsGuard],
-    data: {
-      permissions: ['canViewEstablishment'],
-      title: 'Dashboard',
-      workerPagination: true,
-    },
+    children: [
+      {
+        path: 'home',
+        canActivate: [HasPermissionsGuard],
+        children: [
+          {
+            path: '',
+            component: ViewSubsidiaryHomeComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              permissions: ['canViewEstablishment'],
+              title: 'Dashboard',
+              workerPagination: true,
+            },
+          },
+        ],
+      },
+      {
+        path: 'staff-records',
+        component: ViewSubsidiaryStaffRecordsComponent,
+        data: { title: 'Staff Records' },
+      },
+      {
+        path: 'training-and-qualifications',
+        component: ViewSubsidiaryTrainingAndQualificationsComponent,
+        data: { title: 'Training and qualifications' },
+      },
+      {
+        path: 'benchmarks',
+        component: ViewSubsidiaryBenchmarksComponent,
+        data: { title: 'Benchmarks' },
+      },
+      {
+        path: 'workplace-users',
+        component: ViewSubsidiaryWorkplaceUsersComponent,
+        data: { title: 'Workplace users' },
+      },
+      {
+        path: 'workplace',
+        component: ViewSubsidiaryWorkplaceComponent,
+        data: { title: 'Workplace' },
+      },
+      {
+        path: 'delete-workplace',
+        component: DeleteWorkplaceComponent,
+        data: { title: 'Delete workplace' },
+      },
+    ],
   },
   {
     path: 'workplace/:establishmentuid',
     component: EditWorkplaceComponent,
-    data: { title: 'Workplace' },
+    canActivate: [HasPermissionsGuard],
     resolve: {
       users: AllUsersForEstablishmentResolver,
       establishment: WorkplaceResolver,
       workers: WorkersResolver,
       totalStaffRecords: TotalStaffRecordsResolver,
+      subsidiary: SubsidiaryResolver,
     },
     children: [
       {
@@ -159,16 +211,6 @@ const routes: Routes = [
           permissions: ['canEditWorker'],
           title: 'Add Mandatory Training',
         },
-      },
-      {
-        path: '',
-        component: ViewSubsidiaryWorkplaceComponent,
-        resolve: {
-          users: AllUsersForEstablishmentResolver,
-          establishment: WorkplaceResolver,
-          workers: WorkersResolver,
-        },
-        data: { title: 'Workplace' },
       },
       {
         path: 'start',
@@ -542,16 +584,16 @@ const routes: Routes = [
           ),
         data: { title: 'Add Multiple Training' },
       },
+      {
+        path: 'change-expires-soon-alerts',
+        component: ChangeExpiresSoonAlertsComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: {
+          expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
+        },
+        data: { permissions: ['canEditEstablishment'], title: 'Change expires soon alerts' },
+      },
     ],
-  },
-  {
-    path: 'staff-records/:establishmentuid',
-    component: ViewSubsidiaryStaffRecordsComponent,
-    data: { title: 'Staff Records' },
-    resolve: {
-      establishment: WorkplaceResolver,
-      workers: WorkersResolver,
-    },
   },
   {
     path: 'staff-basic-records/:establishmentuid',
@@ -561,48 +603,6 @@ const routes: Routes = [
       workers: WorkersResolver,
     },
     data: { title: 'Staff Basic Records' },
-  },
-  {
-    path: 'training-and-qualifications/:establishmentuid',
-    component: ViewSubsidiaryTrainingAndQualificationsComponent,
-    data: { title: 'Training and qualifications' },
-    resolve: {
-      // users: AllUsersForEstablishmentResolver,
-      establishment: WorkplaceResolver,
-      workers: WorkersResolver,
-    },
-    // child: [
-    //   // TODO /training
-    // ]
-  },
-  {
-    path: 'benchmarks/:establishmentuid',
-    component: ViewSubsidiaryBenchmarksComponent,
-    data: { title: 'Benchmarks' },
-    resolve: {
-      establishment: WorkplaceResolver,
-      benchmarksResolver: BenchmarksResolver,
-      rankingsResolver: RankingsResolver,
-      usefulLinksPay: UsefulLinkPayResolver,
-      usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
-    },
-  },
-  {
-    path: 'workplace-users/:establishmentuid',
-    component: ViewSubsidiaryWorkplaceUsersComponent,
-    data: { title: 'Workplace users' },
-    resolve: {
-      establishment: WorkplaceResolver,
-      users: AllUsersForEstablishmentResolver,
-    },
-  },
-  {
-    path: 'delete-workplace/:establishmentuid',
-    component: DeleteWorkplaceComponent,
-    data: { title: 'Delete workplace' },
-    resolve: {
-      establishment: WorkplaceResolver,
-    },
   },
 ];
 

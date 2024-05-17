@@ -2,6 +2,7 @@
 </app-new-dashboard-header>
 
 <div class="govuk-width-container govuk-!-padding-top-2" *ngIf="workplace">
+  <app-alert></app-alert>
   <ng-container *ngIf="canEditEstablishment && addWorkplaceDetailsBanner">
     <app-inset-text [color]="'todo'">
       <div class="govuk-grid-row">

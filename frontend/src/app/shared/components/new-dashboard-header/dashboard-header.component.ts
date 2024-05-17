@@ -1,9 +1,8 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
-import { AuthService } from '@core/services/auth.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -48,9 +47,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     private establishmentService: EstablishmentService,
     private dialogService: DialogService,
     private permissionsService: PermissionsService,
-    private authService: AuthService,
     private router: Router,
-    private route: ActivatedRoute,
     private alertService: AlertService,
     private userService: UserService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
@@ -106,13 +103,10 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
       this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
         () => {
           if (this.isParentSubsidiaryView) {
-            this.establishmentService.getEstablishment(this.workplace.parentUid).subscribe((workplace) => {
-              this.establishmentService.setPrimaryWorkplace(workplace);
-              this.parentSubsidiaryViewService.clearViewingSubAsParent();
+            this.parentSubsidiaryViewService.clearViewingSubAsParent();
 
-              this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
-                this.displaySuccessfullyDeletedAlert();
-              });
+            this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
+              this.displaySuccessfullyDeletedAlert();
             });
           } else {
             this.router.navigate(['sfcadmin', 'search', 'workplace']).then(() => {
@@ -140,15 +134,9 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   private getPermissions(): void {
     this.user = this.userService.loggedInUser;
     if (isAdminRole(this.user?.role)) {
-      this.canDeleteEstablishment = this.permissionsService.can(
-        this.establishmentService.primaryWorkplace?.uid,
-        'canDeleteAllEstablishments',
-      );
+      this.canDeleteEstablishment = this.permissionsService.can(this.workplace?.uid, 'canDeleteAllEstablishments');
     } else {
-      this.canDeleteEstablishment = this.permissionsService.can(
-        this.establishmentService.primaryWorkplace?.uid,
-        'canDeleteEstablishment',
-      );
+      this.canDeleteEstablishment = this.permissionsService.can(this.workplace?.uid, 'canDeleteEstablishment');
     }
   }
 

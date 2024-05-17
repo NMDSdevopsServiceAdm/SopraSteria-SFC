@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,17 +13,16 @@ import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { MockEstablishmentService, establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
-import { Establishment } from '@core/model/establishment.model';
 
 const MockWindow = {
   dataLayer: {
@@ -392,105 +392,92 @@ describe('NewDashboardHeaderComponent', () => {
       expect(queryByText('Delete Workplace')).toBeNull();
     });
 
-    // it('should display a modal when the user clicks on Delete Workplace', async () => {
-    //   const { getByText } = await setup('home', false, true, false, true, true);
-
-    //   const deleteWorkplace = getByText('Delete Workplace');
-    //   deleteWorkplace.click();
-
-    //   const dialog = await within(document.body).findByRole('dialog');
-
-    //   const cancel = within(dialog).getByText('Cancel');
-    //   cancel.click();
-    // });
-
-    // it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
-    //   const { establishmentService, getByText } = await setup('home', false, true, false, true, true);
-
-    //   const deleteWorkplaceSpy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
-
-    //   const deleteWorkplace = getByText('Delete Workplace');
-    //   deleteWorkplace.click();
-
-    //   const dialog = await within(document.body).findByRole('dialog');
-    //   const confirm = within(dialog).getByText('Delete workplace');
-    //   confirm.click();
-
-    //   expect(deleteWorkplaceSpy).toHaveBeenCalled();
-    // });
-
-    // it('should redirect a parent user to view-all-workplaces after deleting a workplace', async () => {
-    //   const { establishmentService, routerSpy, getByText } = await setup(
-    //     'home',
-    //     false,
-    //     true,
-    //     false,
-    //     true,
-    //     false,
-    //     0,
-    //     true,
-    //   );
-    //   spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
-    //   spyOn(establishmentService, 'getEstablishment').and.callFake(() => of({}));
-
-    //   const deleteWorkplace = getByText('Delete Workplace');
-    //   deleteWorkplace.click();
-
-    //   const dialog = await within(document.body).findByRole('dialog');
-    //   const confirm = within(dialog).getByText('Delete workplace');
-    //   confirm.click();
-
-    //   expect(routerSpy).toHaveBeenCalledWith(['workplace', 'view-all-workplaces']);
-    // });
-
-    // it('should redirect an admin user deleting a sub from parent view to view-all-workplaces of parent', async () => {
-    //   const { establishmentService, routerSpy, getByText } = await setup(
-    //     'home',
-    //     false,
-    //     true,
-    //     false,
-    //     true,
-    //     true,
-    //     0,
-    //     true,
-    //   );
-    //   spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
-    //   spyOn(establishmentService, 'getEstablishment').and.callFake(() => of({}));
-
-    //   const deleteWorkplace = getByText('Delete Workplace');
-    //   deleteWorkplace.click();
-
-    //   const dialog = await within(document.body).findByRole('dialog');
-    //   const confirm = within(dialog).getByText('Delete workplace');
-    //   confirm.click();
-
-    //   expect(routerSpy).toHaveBeenCalledWith(['workplace', 'view-all-workplaces']);
-    // });
-
-    // it('should redirect an admin user deleting a standalone to workplace search page after deleting a workplace', async () => {
-    //   const { establishmentService, getByText, routerSpy } = await setup('home', false, true, false, true, true);
-
-    //   spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
-
-    //   const deleteWorkplace = getByText('Delete Workplace');
-    //   deleteWorkplace.click();
-
-    //   const dialog = await within(document.body).findByRole('dialog');
-    //   const confirm = within(dialog).getByText('Delete workplace');
-    //   confirm.click();
-
-    //   expect(routerSpy).toHaveBeenCalledWith(['sfcadmin', 'search', 'workplace']);
-    // });
-
-    it('should show the link to the delete page', async () => {
-      const { component, getByText, routerSpy, fixture } = await setup('home', false, true, false, true, true);
+    it('should display a modal when the user clicks on Delete Workplace', async () => {
+      const { getByText } = await setup('home', false, true, false, true, true);
 
       const deleteWorkplace = getByText('Delete Workplace');
+      deleteWorkplace.click();
 
-      fireEvent.click(deleteWorkplace);
-      fixture.detectChanges();
+      const dialog = await within(document.body).findByRole('dialog');
 
-      expect(routerSpy).toHaveBeenCalledWith(['/delete-workplace', component.workplace.uid]);
+      const cancel = within(dialog).getByText('Cancel');
+      cancel.click();
+    });
+
+    it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
+      const { establishmentService, getByText } = await setup('home', false, true, false, true, true);
+
+      const deleteWorkplaceSpy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+
+      const deleteWorkplace = getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(deleteWorkplaceSpy).toHaveBeenCalled();
+    });
+
+    it('should redirect a parent user to view-all-workplaces after deleting a workplace', async () => {
+      const { establishmentService, routerSpy, getByText } = await setup(
+        'home',
+        false,
+        true,
+        false,
+        true,
+        false,
+        0,
+        true,
+      );
+      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+
+      const deleteWorkplace = getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', 'view-all-workplaces']);
+    });
+
+    it('should redirect an admin user deleting a sub from parent view to view-all-workplaces of parent', async () => {
+      const { establishmentService, routerSpy, getByText } = await setup(
+        'home',
+        false,
+        true,
+        false,
+        true,
+        true,
+        0,
+        true,
+      );
+      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+
+      const deleteWorkplace = getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', 'view-all-workplaces']);
+    });
+
+    it('should redirect an admin user deleting a standalone to workplace search page after deleting a workplace', async () => {
+      const { establishmentService, getByText, routerSpy } = await setup('home', false, true, false, true, true);
+
+      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+
+      const deleteWorkplace = getByText('Delete Workplace');
+      deleteWorkplace.click();
+
+      const dialog = await within(document.body).findByRole('dialog');
+      const confirm = within(dialog).getByText('Delete workplace');
+      confirm.click();
+
+      expect(routerSpy).toHaveBeenCalledWith(['sfcadmin', 'search', 'workplace']);
     });
   });
 });

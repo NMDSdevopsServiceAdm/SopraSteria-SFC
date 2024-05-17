@@ -5,13 +5,13 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
-import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-view-my-workplaces',
@@ -30,8 +30,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public itemsPerPage = 12;
   public currentPageIndex = 0;
   private searchTerm = '';
-  public alertMessage: string;
-
   public locationId: string;
   public showMissingCqcMessage: boolean;
   public missingCqcLocations: any;
@@ -48,7 +46,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES, this.primaryWorkplace.name);
+    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
 
     const childWorkplaces = this.route.snapshot.data.childWorkplaces;
@@ -58,10 +56,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
     this.setupServerErrorsMap();
     this.setSearchIfPrevious();
-
-    this.alertMessage = history.state?.alertMessage;
-
-    this.sendAlert();
 
     this.locationId = this.primaryWorkplace.locationId;
 
@@ -128,15 +122,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     });
     this.searchTerm = searchTerm;
     this.handlePageUpdate(0);
-  }
-
-  public sendAlert(): void {
-    if (this.alertMessage) {
-      this.alertService.addAlert({
-        type: 'success',
-        message: this.alertMessage,
-      });
-    }
   }
 
   ngOnDestroy(): void {
