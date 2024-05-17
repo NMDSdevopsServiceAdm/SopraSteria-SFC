@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { SubsidiaryTabsService } from '@core/services/tabs/tabs-interface.service';
+import { SubsidiaryTabsService } from '@core/services/tabs/subsidiary-tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({

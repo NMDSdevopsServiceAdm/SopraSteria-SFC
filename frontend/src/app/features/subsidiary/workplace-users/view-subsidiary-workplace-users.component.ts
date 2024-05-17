@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { SubsidiaryTabsService } from '@core/services/tabs/tabs-interface.service';
+import { SubsidiaryTabsService } from '@core/services/tabs/subsidiary-tabs.service';
 import { UserService } from '@core/services/user.service';
 
 @Component({

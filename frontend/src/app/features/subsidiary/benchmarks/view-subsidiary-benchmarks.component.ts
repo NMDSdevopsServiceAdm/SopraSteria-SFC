@@ -5,7 +5,7 @@ import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/m
 import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { SubsidiaryTabsService } from '@core/services/tabs/tabs-interface.service';
+import { SubsidiaryTabsService } from '@core/services/tabs/subsidiary-tabs.service';
 import { DataAreaAboutTheDataComponent } from '@shared/components/data-area-tab/about-the-data/about-the-data.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 

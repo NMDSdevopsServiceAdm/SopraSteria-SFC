@@ -12,7 +12,7 @@ interface Tab {
 @Injectable({
   providedIn: 'root',
 })
-export class SubsidiaryTabsService {
+export class TabsInterfaceService {
   public homeTab: Tab = { title: 'Home', slug: 'home', active: false };
   public workplaceTab: Tab = { title: 'Workplace', slug: 'workplace', active: false };
   public staffRecordsTab: Tab = { title: 'Staff records', slug: 'staff-records', active: false };

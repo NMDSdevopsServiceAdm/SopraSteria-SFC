@@ -8,7 +8,7 @@ import { UserDetails } from '@core/model/userDetails.model';
 import { Worker } from '@core/model/worker.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { SubsidiaryTabsService } from '@core/services/tabs/tabs-interface.service';
+import { SubsidiaryTabsService } from '@core/services/tabs/subsidiary-tabs.service';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
 import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
