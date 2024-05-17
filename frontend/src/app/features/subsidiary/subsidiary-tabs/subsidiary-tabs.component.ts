@@ -81,7 +81,7 @@ export class SubsidiaryTabsComponent implements OnInit {
     this.currentTab = index;
 
     let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
-    this.router.navigate([`/subsidiary/${tab.slug}/${subsidiaryUid}`]);
+    this.router.navigate([`/subsidiary/${subsidiaryUid}/${tab.slug}`]);
     this.tabsService.selectedTab = tab.slug;
 
     setTimeout(() => {

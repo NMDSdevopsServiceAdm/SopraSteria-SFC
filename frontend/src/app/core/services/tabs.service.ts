@@ -19,9 +19,7 @@ export class TabsService {
   public benchmarksTab: Tab = { title: 'Benchmarks', slug: 'benchmarks', active: false };
   public workplaceUsers: Tab = { title: 'Workplace users', slug: 'workplace-users', active: false };
 
-  constructor(
-    private previousRouteService: PreviousRouteService,
-  ) {}
+  constructor(private previousRouteService: PreviousRouteService) {}
 
   private _selectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
 
@@ -34,7 +32,7 @@ export class TabsService {
   }
 
   public set selectedTab(tab: string) {
-    this.previousRouteService.setPreviousTab(this.selectedTab);
+    this.previousRouteService.setLastSelectedTab(tab);
     this._selectedTab$.next(tab);
   }
 }

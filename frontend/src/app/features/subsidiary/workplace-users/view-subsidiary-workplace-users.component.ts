@@ -30,7 +30,7 @@ export class ViewSubsidiaryWorkplaceUsersComponent implements OnInit {
 
   public setUserServiceReturnUrl(): void {
     this.userService.updateReturnUrl({
-      url: ['/workplace-users', this.workplace.uid],
+      url: [`/${this.workplace.uid}`, 'workplace-users'],
     });
   }
 }

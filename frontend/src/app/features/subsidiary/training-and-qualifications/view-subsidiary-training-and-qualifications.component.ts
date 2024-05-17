@@ -123,7 +123,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   public navigateToStaffRecords(event: Event): void {
     event.preventDefault();
     this.tabsService.selectedTab = 'staff-records';
-    this.router.navigate(['/subsidiary/staff-records', this.workplace.uid]);
+    this.router.navigate(['/subsidiary', this.workplace.uid, 'staff-records']);
   }
 
   private trainingTotals(): void {

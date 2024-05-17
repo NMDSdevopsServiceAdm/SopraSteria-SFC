@@ -33,7 +33,7 @@ export class SubsidiaryTabsService {
   }
 
   public set selectedTab(tab: string) {
-    this.previousRouteService.setPreviousTab(this.selectedTab);
+    this.previousRouteService.setLastSelectedTab(tab);
     this._selectedTab$.next(tab);
   }
 }
