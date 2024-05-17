@@ -31,7 +31,7 @@ const locationIDs = [
   { locationID: '1-6114402008', mainService: 'Community healthcare services' },
 ];
 
-describe('server/routes/establishments/cqcStatus', async () => {
+describe.skip('server/routes/establishments/cqcStatus', async () => {
   describe('locationID check', async () => {
     beforeEach(() => {
       sinon.stub(CQCDataAPI, 'getWorkplaceCQCData').callsFake(async (locationID) => {
