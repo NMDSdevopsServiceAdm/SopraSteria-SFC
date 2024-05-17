@@ -4,7 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { TabsService } from '@core/services/tabs.service';
+import { TabsService } from '@core/services/tabs/tabs.service';
 import dayjs from 'dayjs';
 
 @Component({

@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
+import { TabsService } from '@core/services/tabs/tabs.service';
 import { Subscription } from 'rxjs';
 
 @Component({

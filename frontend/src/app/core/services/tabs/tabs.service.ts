@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { PreviousRouteService } from './previous-route.service';
+
+import { PreviousRouteService } from '../previous-route.service';
 
 interface Tab {
   title: string;

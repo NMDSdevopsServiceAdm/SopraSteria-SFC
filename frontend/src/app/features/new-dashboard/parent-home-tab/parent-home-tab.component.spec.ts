@@ -12,7 +12,7 @@ import { ArticlesService } from '@core/services/articles.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ParentRequestsService } from '@core/services/parent-requests.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
+import { TabsService } from '@core/services/tabs/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
@@ -104,7 +104,7 @@ describe('ParentHomeTabComponent', () => {
             ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
             : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
           canRunLocalAuthorityReport: false,
-          article: {slug: ''}
+          article: { slug: '' },
         },
         schemas: [NO_ERRORS_SCHEMA],
       },

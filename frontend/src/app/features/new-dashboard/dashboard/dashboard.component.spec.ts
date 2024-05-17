@@ -5,10 +5,12 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
+import { TabsService } from '@core/services/tabs/tabs.service';
 import { UserService } from '@core/services/user.service';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
@@ -18,8 +20,6 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { NewDashboardComponent } from './dashboard.component';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 
 describe('NewDashboardComponent', () => {
   const setup = async (tab = 'home', permissions = []) => {

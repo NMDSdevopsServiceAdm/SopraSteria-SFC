@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { TabsService } from '@core/services/tabs.service';
 import { PreviousRouteService } from '@core/services/previous-route.service';
+import { TabsService } from '@core/services/tabs/tabs.service';
 import { Observable, of } from 'rxjs';
 
 @Injectable()

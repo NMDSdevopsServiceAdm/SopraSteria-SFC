@@ -1,14 +1,14 @@
-import { render } from '@testing-library/angular';
-import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { WindowRef } from '@core/services/window.ref';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { TabsService } from '@core/services/tabs.service';
-import { MockTabsService } from '@core/test-utils/MockTabsService';
-import { SharedModule } from '@shared/shared.module';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { TabsService } from '@core/services/tabs/tabs.service';
+import { WindowRef } from '@core/services/window.ref';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockTabsService } from '@core/test-utils/MockTabsService';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { BreadcrumbsComponent } from './breadcrumbs.component';
 
