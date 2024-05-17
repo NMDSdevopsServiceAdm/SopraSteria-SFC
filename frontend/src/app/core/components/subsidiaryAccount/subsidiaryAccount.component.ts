@@ -3,7 +3,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { SubsidiaryTabsService } from '@core/services/tabs-interface.service';
+import { SubsidiaryTabsService } from '@core/services/tabs/tabs-interface.service';
 import { Subscription } from 'rxjs';
 
 @Component({

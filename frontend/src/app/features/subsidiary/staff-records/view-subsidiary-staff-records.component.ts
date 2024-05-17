@@ -5,7 +5,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { SubsidiaryTabsService } from '@core/services/tabs-interface.service';
+import { SubsidiaryTabsService } from '@core/services/tabs/tabs-interface.service';
 import { WorkerService } from '@core/services/worker.service';
 
 @Component({
