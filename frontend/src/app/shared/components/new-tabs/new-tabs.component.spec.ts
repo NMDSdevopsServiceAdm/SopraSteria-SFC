@@ -154,15 +154,15 @@ describe('NewTabsComponent', () => {
 
     it('should navigate to the sub tab url when tab clicked in sub view', async () => {
       const { getByTestId, parentSubsidiaryViewService, routerSpy } = await setup();
-      const subId = 'abcde123';
+      const subUid = 'abcde123';
 
       spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
-      spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subId);
+      spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
 
       const tAndQTab = getByTestId('tab_training-and-qualifications');
       fireEvent.click(tAndQTab);
 
-      expect(routerSpy).toHaveBeenCalledWith([`/subsidiary/${subId}/training-and-qualifications`]);
+      expect(routerSpy).toHaveBeenCalledWith([`/subsidiary/${subUid}/training-and-qualifications`]);
     });
   });
 
@@ -290,6 +290,47 @@ describe('NewTabsComponent', () => {
       const result = component.getTabSlugFromNavigationEvent(new NavigationEnd(0, url, url));
 
       expect(result).toBeFalsy();
+    });
+  });
+
+  describe('selectTab', () => {
+    it('should navigate when in sub view and isOnPageLoad is passed in as false', async () => {
+      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, []);
+
+      const index = 1;
+      const subUid = 'abcde123';
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+      spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
+
+      component.selectTab(new Event(null), index, true, true, false);
+
+      expect(routerSpy).toHaveBeenCalledWith([`/subsidiary/${subUid}/${component.tabs[index].slug}`]);
+    });
+
+    it('should not navigate when isOnPageLoad is passed in as true in sub view', async () => {
+      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, []);
+
+      const index = 1;
+      const subUid = 'abcde123';
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+      spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
+
+      component.selectTab(new Event(null), index, true, true, true);
+
+      expect(routerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should not navigate when isOnPageLoad is passed in as false but not in sub view', async () => {
+      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, []);
+
+      const index = 1;
+      const subUid = 'abcde123';
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(false);
+      spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
+
+      component.selectTab(new Event(null), index, true, true, false);
+
+      expect(routerSpy).not.toHaveBeenCalled();
     });
   });
 });
