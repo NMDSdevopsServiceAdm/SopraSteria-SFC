@@ -243,23 +243,13 @@ describe('ViewTrainingComponent', () => {
   });
 
   it(`should navigate back to training-and-qualification page`, async () => {
-    const { component, fixture, routerSpy, getByText } = await setup();
+    const { fixture, routerSpy, getByText } = await setup();
 
-    component.primaryWorkplaceUid = 'mocked-uid';
     const returnToHome = getByText('Return to home');
     userEvent.click(returnToHome);
     fixture.detectChanges();
 
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
-  });
-
-  it(`should navigate back to sub workplace page when clicking the return home button when accessing a sub account from a parent`, async () => {
-    const { routerSpy, getByText } = await setup();
-
-    const returnToHome = getByText('Return to home');
-    userEvent.click(returnToHome);
-
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid'], { fragment: 'training-and-qualifications' });
   });
 
   describe('sort', () => {

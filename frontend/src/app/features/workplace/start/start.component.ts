@@ -13,11 +13,9 @@ import { take } from 'rxjs/operators';
 })
 export class StartComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
-  public primaryWorkplaceUid: string;
   public returnLink: Array<string>;
   public returnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
-  private workplaceUid: string;
   private fragment: string;
   public isViewingSubAsParent: boolean;
   public continueUrl: Array<string>;
@@ -36,7 +34,6 @@ export class StartComponent implements OnInit, OnDestroy {
     );
 
     this.fragment = history.state?.navigatedFromFragment;
-    this.setReturnLink();
     this.setBackLink();
     this.setRecuritmentBannerToTrue();
   }
@@ -45,14 +42,9 @@ export class StartComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public setReturnLink(): void {
-    this.returnLink =
-      this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
-  }
-
   public setBackLink(): void {
     const returnTo = this.fragment ? this.fragment : 'home';
-    this.backService.setBackLink({ url: this.returnLink, fragment: returnTo });
+    this.backService.setBackLink({ url: ['/dashboard'], fragment: returnTo });
   }
 
   public removeAddDetailsBanner(event: Event): void {
