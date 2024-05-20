@@ -54,8 +54,11 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
     } else {
       this.parentSubsidiaryViewService.setViewingSubAsParent(selectedWorkplaceUid);
       const homeSlug = this.tabsService.homeTab.slug;
-      this.router.navigate(['/subsidiary', selectedWorkplaceUid, homeSlug]);
-      this.tabsService.selectedTab = homeSlug;
+
+      // navigating twice to force reload when on subsidiary home page
+      this.router.navigateByUrl(`/subsidiary`, { skipLocationChange: true }).then(() => {
+        this.router.navigate(['/subsidiary', selectedWorkplaceUid, homeSlug]);
+      });
     }
   }
 

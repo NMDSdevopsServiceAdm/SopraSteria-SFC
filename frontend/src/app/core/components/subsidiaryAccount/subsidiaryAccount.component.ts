@@ -68,10 +68,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
     );
   }
 
-  ngOnChanges(): void {
-    this.getPermissions();
-  }
-
   public tabClickEvent(properties: { tabSlug: string }): void {
     this.selectedTab = properties.tabSlug;
 
