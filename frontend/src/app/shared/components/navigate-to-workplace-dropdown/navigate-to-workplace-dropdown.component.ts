@@ -47,19 +47,27 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
     );
   }
 
-  public navigateToWorkplace(selectedWorkplaceUid: string) {
+  public navigateToWorkplace(selectedWorkplaceUid: string): void {
     if (selectedWorkplaceUid === this.primaryWorkplace.uid) {
-      this.parentSubsidiaryViewService.clearViewingSubAsParent();
-      this.router.navigate(['/dashboard'], { fragment: 'home' });
+      this.navigateToParentWorkplace();
     } else {
-      this.parentSubsidiaryViewService.setViewingSubAsParent(selectedWorkplaceUid);
-      const homeSlug = this.tabsService.homeTab.slug;
-
-      // navigating twice to force reload when on subsidiary home page
-      this.router.navigateByUrl(`/subsidiary`, { skipLocationChange: true }).then(() => {
-        this.router.navigate(['/subsidiary', selectedWorkplaceUid, homeSlug]);
-      });
+      this.navigateToSubsidiaryWorkplace(selectedWorkplaceUid);
     }
+  }
+
+  private navigateToParentWorkplace(): void {
+    this.parentSubsidiaryViewService.clearViewingSubAsParent();
+    this.router.navigate(['/dashboard'], { fragment: 'home' });
+  }
+
+  private navigateToSubsidiaryWorkplace(selectedWorkplaceUid: string): void {
+    this.parentSubsidiaryViewService.setViewingSubAsParent(selectedWorkplaceUid);
+    const homeSlug = this.tabsService.homeTab.slug;
+
+    // navigating twice to force reload when on subsidiary home page
+    this.router.navigateByUrl(`/subsidiary`, { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/subsidiary', selectedWorkplaceUid, homeSlug]);
+    });
   }
 
   ngOnDestroy(): void {
