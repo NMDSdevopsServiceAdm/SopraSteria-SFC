@@ -21,6 +21,7 @@ export class StandAloneAccountComponent implements OnInit {
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
+  public workplaceName: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -30,9 +31,10 @@ export class StandAloneAccountComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const { uid, id } = this.establishmentService.primaryWorkplace;
+    const { uid, id, name } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
+    this.workplaceName = name;
     this.getPermissions();
     this.setTabs();
   }

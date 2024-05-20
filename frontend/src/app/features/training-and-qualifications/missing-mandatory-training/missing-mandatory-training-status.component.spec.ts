@@ -44,7 +44,6 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     addPermissions = true,
     fixTrainingCount = false,
     qsParamGetMock = sinon.fake(),
-    addAlert = false,
   ) {
     let workerObj = {
       workers,
@@ -53,9 +52,6 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     const permissions = addPermissions ? ['canEditWorker'] : [];
     if (fixTrainingCount) workerObj = { workers: [workers[0]], workerCount: 1 };
 
-    if (addAlert) {
-      window.history.pushState({ alertMessage: 'Record added' }, '');
-    }
     const { fixture, getByText, getByTestId, queryByTestId, getByLabelText, queryByLabelText } = await render(
       MissingMandatoryTrainingStatusComponent,
       {
@@ -126,17 +122,6 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
   it('should render a MissingMandatoryTrainingStatusComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
-  });
-
-  it('should render an alert banner if there is an alert message in state', async () => {
-    const { component, fixture, alertSpy } = await setup(true, false, sinon.fake(), true);
-
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(alertSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'Record added',
-    });
   });
 
   it('should render the table with a list of workers and their missing training', async () => {

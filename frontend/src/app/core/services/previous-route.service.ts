@@ -8,6 +8,7 @@ import { filter } from 'rxjs/operators';
 export class PreviousRouteService {
   public previousUrl: string;
   private currentUrl: string;
+  private lastSelectedTab: string;
 
   constructor(private router: Router) {
     this.currentUrl = this.router.url;
@@ -17,12 +18,17 @@ export class PreviousRouteService {
       .pipe(filter((event: RouterEvent) => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.previousUrl = this.currentUrl;
+
+        if (this.previousUrl.includes('dashboard')) {
+          this.previousUrl = this.lastSelectedTab;
+        }
+
         this.currentUrl = event.urlAfterRedirects;
       });
   }
 
-  public setPreviousTab(url: string) {
-    this.previousUrl = url;
+  public setLastSelectedTab(tab: string) {
+    this.lastSelectedTab = tab;
   }
 
   public getPreviousUrl() {

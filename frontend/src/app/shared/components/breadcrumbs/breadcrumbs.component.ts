@@ -1,8 +1,6 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { JourneyRoute } from '@core/breadcrumb/breadcrumb.model';
-import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
 
@@ -11,33 +9,18 @@ import { Subscription } from 'rxjs';
   templateUrl: './breadcrumbs.component.html',
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
+  @Input() workplaceName: string;
   public breadcrumbs: JourneyRoute[];
   public overrideMessage: string;
   private subscriptions: Subscription = new Subscription();
-  public workplace: Establishment;
 
-  constructor(
-    private breadcrumbService: BreadcrumbService,
-    private tabsService: TabsService,
-    private establishmentService: EstablishmentService,
-  ) {}
+  constructor(private breadcrumbService: BreadcrumbService, private tabsService: TabsService) {}
 
   ngOnInit(): void {
-    this.subscriptions.add(
-      this.establishmentService.establishment$.subscribe((workplace) => {
-        this.workplace = workplace;
-      }),
-    );
-
     this.subscriptions.add(
       this.breadcrumbService.routes$.subscribe((routes) => {
         this.breadcrumbs = routes ? this.getBreadcrumbs(routes) : null;
       }),
-    );
-    this.subscriptions.add(
-      this.breadcrumbService.overrideMessage$.subscribe(
-        (overrideMessage) => (this.overrideMessage = overrideMessage ? overrideMessage : undefined),
-      ),
     );
   }
 

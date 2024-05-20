@@ -49,9 +49,6 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
   ) {}
 
   ngOnInit(): void {
-    const alertMessage = history.state?.alertMessage;
-    alertMessage && this.showAlert(alertMessage);
-
     this.route.queryParams.subscribe((params) => {
       if (params.view === 'categories') {
         this.viewTrainingByCategory = true;
@@ -70,13 +67,6 @@ export class TrainingAndQualificationsTabComponent implements OnDestroy, OnChang
     if ('workers' in changes || 'trainingCounts' in changes) {
       this.trainingTotals();
     }
-  }
-
-  private showAlert(message: string): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
   }
 
   public navigateToMultipleTraining(): void {

@@ -58,16 +58,12 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   ngOnInit(): void {
     this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
-    this.tabsService.selectedTab = 'training-and-qualifications'
 
     this.workers = this.route.snapshot.data.workers?.workers;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.tAndQsLastUpdated = this.route.snapshot.data.workers?.tAndQsLastUpdated;
     this.workplace = this.route.snapshot.data.establishment;
-
-    const alertMessage = history.state?.alertMessage;
-    alertMessage && this.showAlert(alertMessage);
 
     this.route.queryParams.subscribe((params) => {
       if (params.view === 'categories') {
@@ -90,14 +86,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
       this.trainingTotals();
     }
   }
-
-  private showAlert(message: string): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
-  }
-
+  
   public getParentPermissions(): void {
     const parentUid = this.workplace.parentUid;
 
@@ -123,7 +112,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   public navigateToStaffRecords(event: Event): void {
     event.preventDefault();
     this.tabsService.selectedTab = 'staff-records';
-    this.router.navigate(['/subsidiary/staff-records', this.workplace.uid]);
+    this.router.navigate(['/subsidiary', this.workplace.uid, 'staff-records']);
   }
 
   private trainingTotals(): void {
@@ -145,7 +134,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   }
 
   ngOnDestroy(): void {
-    this.alertService.removeAlert()
+    this.alertService.removeAlert();
     this.subscriptions.unsubscribe();
     this.breadcrumbService.removeRoutes();
   }

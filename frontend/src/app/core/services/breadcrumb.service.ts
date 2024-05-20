@@ -114,7 +114,7 @@ export class BreadcrumbService {
 
       const isCurrentRoute = this.isCurrentRoute(path, segments);
 
-      if (isCurrentRoute || index === children.length - 1) {
+      if (isCurrentRoute || index === children?.length - 1) {
         routes.push({
           title,
           path: this.getPath(path, segments),
@@ -134,9 +134,12 @@ export class BreadcrumbService {
     return routes;
   }
 
-  private getPath(url: string, segments: UrlSegment[]) {
+  public getPath(url: string, segments: UrlSegment[]) {
     const path = this.getParts(url).map((part, index) => {
       if (this.isParameter(part)) {
+        if (part === ':establishmentuid' && segments[index]?.path === 'workplace') {
+          return segments[index + 1]?.path;
+        }
         return segments[index] ? segments[index].path : part;
       }
       return part;

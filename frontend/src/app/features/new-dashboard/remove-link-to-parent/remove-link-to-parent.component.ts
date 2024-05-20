@@ -31,7 +31,7 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     this.workplace = this.establishmentService.primaryWorkplace;
-    this.breadcrumbService.show(JourneyType.REMOVE_LINK_TO_PARENT, this.workplace.name);
+    this.breadcrumbService.show(JourneyType.REMOVE_LINK_TO_PARENT);
     this.setupServerErrorsMap();
     this.getAllParents();
   }
@@ -85,13 +85,18 @@ export class RemoveLinkToParentComponent implements OnInit, OnDestroy {
         .removeParentAssociation(this.workplace.uid, { parentWorkplaceUId: this.workplace.parentUid })
         .subscribe(
           () => {
-            this.router.navigate(['/dashboard'], {
-              state: {
-                removeLinkToParentSuccess: true,
-              },
-            }).then(()=>{
-              this.alertService.addAlert({ type: 'success', message: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`});
-            });
+            this.router
+              .navigate(['/dashboard'], {
+                state: {
+                  removeLinkToParentSuccess: true,
+                },
+              })
+              .then(() => {
+                this.alertService.addAlert({
+                  type: 'success',
+                  message: `You've removed your link to ${this.workplace.parentName}, ${this.parentPostcode}`,
+                });
+              });
           },
           (error) => {
             this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

@@ -26,7 +26,7 @@ export class SubsidiaryRouterService extends Router {
     if (this.parentSubsidiaryViewService.getViewingSubAsParent() && !commands[0].includes('subsidiary')) {
       // If routing to the dashboard, override fragments
       if (commands[0].toLowerCase().includes('dashboard')) {
-        commands = [extras.fragment ? extras.fragment : 'home', this.parentSubsidiaryViewService.getSubsidiaryUid()];
+        commands = [this.parentSubsidiaryViewService.getSubsidiaryUid(), extras.fragment ? extras.fragment : 'home'];
         extras = undefined;
       } else {
         // Remove forward slashes from the route
@@ -41,6 +41,10 @@ export class SubsidiaryRouterService extends Router {
   }
 
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
+    if (!url.root?.children?.primary?.segments) {
+      return super.navigateByUrl(url, extras);
+    }
+
     const { commands, navigationExtras } = this.getCommands(url);
 
     if (!this.isSubsidiaryPage(commands)) {

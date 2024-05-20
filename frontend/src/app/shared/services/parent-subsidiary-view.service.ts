@@ -29,12 +29,12 @@ export class ParentSubsidiaryViewService {
 
   getViewingSubAsParentDashboard(navUrl): boolean {
     const subsidiaryDashboardUrls = [
-      `/subsidiary/home/${this.subsidiaryUid}`,
-      `/subsidiary/workplace/${this.subsidiaryUid}`,
-      `/subsidiary/staff-records/${this.subsidiaryUid}`,
-      `/subsidiary/training-and-qualifications/${this.subsidiaryUid}`,
-      `/subsidiary/benchmarks/${this.subsidiaryUid}`,
-      `/subsidiary/workplace-users/${this.subsidiaryUid}`,
+      `/subsidiary/${this.subsidiaryUid}/home`,
+      `/subsidiary/${this.subsidiaryUid}/workplace`,
+      `/subsidiary/${this.subsidiaryUid}/staff-records`,
+      `/subsidiary/${this.subsidiaryUid}/training-and-qualifications`,
+      `/subsidiary/${this.subsidiaryUid}/benchmarks`,
+      `/subsidiary/${this.subsidiaryUid}/workplace-users`,
     ];
     return subsidiaryDashboardUrls.includes(navUrl);
   }

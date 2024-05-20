@@ -51,7 +51,6 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.alertService.removeAlert();
     this.subscriptions.unsubscribe();
   }
 }

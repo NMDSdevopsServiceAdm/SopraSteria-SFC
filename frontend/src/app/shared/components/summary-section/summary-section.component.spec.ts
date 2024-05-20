@@ -147,7 +147,7 @@ describe('Summary section', () => {
       const workplaceDetailsMessage = getByText('Add more details to your workplace');
       fireEvent.click(workplaceDetailsMessage);
 
-      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'workplace', Establishment.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'workplace']);
     });
 
     it('should show the check cqc details message if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
@@ -291,7 +291,7 @@ describe('Summary section', () => {
       const staffRecordMessage = getByText('You can start to add your staff records now');
       fireEvent.click(staffRecordMessage);
 
-      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', 'staff-records', Establishment.uid]);
+      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'staff-records']);
     });
 
     it('should show staff record does not match message when the number of staff is more than the staff record', async () => {

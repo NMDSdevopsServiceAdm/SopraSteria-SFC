@@ -106,33 +106,67 @@ const routes: Routes = [
     loadChildren: () => import('@features/benefits-bundle/benefits-bundle.module').then((m) => m.BenefitsBundleModule),
   },
   {
-    path: 'home/:establishmentuid',
+    path: ':establishmentuid',
     canActivate: [HasPermissionsGuard],
+    resolve: {
+      users: AllUsersForEstablishmentResolver,
+      establishment: WorkplaceResolver,
+      workers: WorkersResolver,
+      totalStaffRecords: TotalStaffRecordsResolver,
+      articleList: ArticleListResolver,
+      subsidiary: SubsidiaryResolver,
+      benchmarksResolver: BenchmarksResolver,
+      rankingsResolver: RankingsResolver,
+      usefulLinksPay: UsefulLinkPayResolver,
+      usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+    },
     children: [
       {
-        path: '',
-        component: ViewSubsidiaryHomeComponent,
-        resolve: {
-          users: AllUsersForEstablishmentResolver,
-          establishment: WorkplaceResolver,
-          workers: WorkersResolver,
-          totalStaffRecords: TotalStaffRecordsResolver,
-          articleList: ArticleListResolver,
-          subsidiary: SubsidiaryResolver,
-        },
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canViewEstablishment'],
-          title: 'Dashboard',
-          workerPagination: true,
-        },
+        path: 'home',
+        canActivate: [HasPermissionsGuard],
+        children: [
+          {
+            path: '',
+            component: ViewSubsidiaryHomeComponent,
+            canActivate: [CheckPermissionsGuard],
+            data: {
+              permissions: ['canViewEstablishment'],
+              title: 'Dashboard',
+              workerPagination: true,
+            },
+          },
+        ],
+      },
+      {
+        path: 'staff-records',
+        component: ViewSubsidiaryStaffRecordsComponent,
+        data: { title: 'Staff Records' },
+      },
+      {
+        path: 'training-and-qualifications',
+        component: ViewSubsidiaryTrainingAndQualificationsComponent,
+        data: { title: 'Training and qualifications' },
+      },
+      {
+        path: 'benchmarks',
+        component: ViewSubsidiaryBenchmarksComponent,
+        data: { title: 'Benchmarks' },
+      },
+      {
+        path: 'workplace-users',
+        component: ViewSubsidiaryWorkplaceUsersComponent,
+        data: { title: 'Workplace users' },
+      },
+      {
+        path: 'workplace',
+        component: ViewSubsidiaryWorkplaceComponent,
+        data: { title: 'Workplace' },
       },
     ],
   },
   {
     path: 'workplace/:establishmentuid',
     component: EditWorkplaceComponent,
-    data: { title: 'Workplace' },
     canActivate: [HasPermissionsGuard],
     resolve: {
       users: AllUsersForEstablishmentResolver,
@@ -171,17 +205,6 @@ const routes: Routes = [
           permissions: ['canEditWorker'],
           title: 'Add Mandatory Training',
         },
-      },
-      {
-        path: '',
-        component: ViewSubsidiaryWorkplaceComponent,
-        resolve: {
-          users: AllUsersForEstablishmentResolver,
-          establishment: WorkplaceResolver,
-          workers: WorkersResolver,
-          subsidiary: SubsidiaryResolver,
-        },
-        data: { title: 'Workplace' },
       },
       {
         path: 'start',
@@ -567,17 +590,6 @@ const routes: Routes = [
     ],
   },
   {
-    path: 'staff-records/:establishmentuid',
-    component: ViewSubsidiaryStaffRecordsComponent,
-    data: { title: 'Staff Records' },
-    canActivate: [HasPermissionsGuard],
-    resolve: {
-      establishment: WorkplaceResolver,
-      workers: WorkersResolver,
-      subsidiary: SubsidiaryResolver,
-    },
-  },
-  {
     path: 'staff-basic-records/:establishmentuid',
     component: StaffBasicRecord,
     resolve: {
@@ -585,42 +597,6 @@ const routes: Routes = [
       workers: WorkersResolver,
     },
     data: { title: 'Staff Basic Records' },
-  },
-  {
-    path: 'training-and-qualifications/:establishmentuid',
-    component: ViewSubsidiaryTrainingAndQualificationsComponent,
-    data: { title: 'Training and qualifications' },
-    canActivate: [HasPermissionsGuard],
-    resolve: {
-      establishment: WorkplaceResolver,
-      workers: WorkersResolver,
-      subsidiary: SubsidiaryResolver,
-    },
-  },
-  {
-    path: 'benchmarks/:establishmentuid',
-    component: ViewSubsidiaryBenchmarksComponent,
-    data: { title: 'Benchmarks' },
-    canActivate: [HasPermissionsGuard],
-    resolve: {
-      establishment: WorkplaceResolver,
-      benchmarksResolver: BenchmarksResolver,
-      rankingsResolver: RankingsResolver,
-      usefulLinksPay: UsefulLinkPayResolver,
-      usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
-      subsidiary: SubsidiaryResolver,
-    },
-  },
-  {
-    path: 'workplace-users/:establishmentuid',
-    component: ViewSubsidiaryWorkplaceUsersComponent,
-    canActivate: [HasPermissionsGuard],
-    data: { title: 'Workplace users' },
-    resolve: {
-      establishment: WorkplaceResolver,
-      users: AllUsersForEstablishmentResolver,
-      subsidiary: SubsidiaryResolver,
-    },
   },
 ];
 

@@ -1,11 +1,10 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -13,7 +12,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './subsidiaryAccount.component.html',
   styleUrls: ['./subsidiaryAccount.component.scss'],
 })
-export class SubsidiaryAccountComponent implements OnInit {
+export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
   @Input() dashboardView: boolean;
   @Input() canAddWorker = false;
 
@@ -31,21 +30,28 @@ export class SubsidiaryAccountComponent implements OnInit {
   public canEditWorker: boolean;
   public hasWorkers: boolean;
   public thereAreOver30Subs: boolean;
+  public workplaceName: string;
 
   constructor(
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private tabsService: TabsService,
     private benchmarksService: BenchmarksServiceBase,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
-    this.subUid = this.parentSubsidiaryViewService.getSubsidiaryUid();
-    this.setWorkplace();
+    this.subscriptions.add(
+      this.establishmentService.establishment$.subscribe((establishment) => {
+        const { uid, id, name, parentName } = establishment;
+        this.subUid = uid;
+        this.subId = id;
+        this.workplaceName = name;
+        this.parentWorkplaceName = parentName;
 
-    this.getPermissions();
-    this.setTabs();
+        this.getPermissions();
+        this.setTabs();
+      }),
+    );
 
     this.subscriptions.add(
       this.tabsService.selectedTab$.subscribe((selectedTab) => {
@@ -64,16 +70,6 @@ export class SubsidiaryAccountComponent implements OnInit {
 
   ngOnChanges(): void {
     this.getPermissions();
-  }
-
-  private setWorkplace(): void {
-    this.subscriptions.add(
-      this.establishmentService.getEstablishment(this.subUid, true).subscribe((workplace) => {
-        this.establishmentService.setState(workplace);
-        this.subId = workplace.id;
-        this.parentWorkplaceName = workplace.parentName;
-      }),
-    );
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
@@ -100,5 +96,9 @@ export class SubsidiaryAccountComponent implements OnInit {
     tabs.push(this.tabsService.benchmarksTab, this.tabsService.workplaceUsers);
 
     this.tabs = tabs;
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

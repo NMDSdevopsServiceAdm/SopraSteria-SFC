@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,7 +13,7 @@ import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
-import { MockEstablishmentService, establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -22,7 +23,6 @@ import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
-import { Establishment } from '@core/model/establishment.model';
 
 const MockWindow = {
   dataLayer: {
@@ -430,8 +430,7 @@ describe('NewDashboardHeaderComponent', () => {
         0,
         true,
       );
-      spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
-      spyOn(establishmentService, 'getEstablishment').and.callFake(() => of({}));
+      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
 
       const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
@@ -454,8 +453,7 @@ describe('NewDashboardHeaderComponent', () => {
         0,
         true,
       );
-      spyOn(establishmentService, 'deleteWorkplace').and.callFake(() => of({}));
-      spyOn(establishmentService, 'getEstablishment').and.callFake(() => of({}));
+      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
 
       const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();

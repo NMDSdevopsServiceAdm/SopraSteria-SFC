@@ -13,6 +13,7 @@ import { PermissionsService } from '@core/services/permissions/permissions.servi
 import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -55,16 +56,14 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private alertService: AlertService,
     public viewContainerRef: ViewContainerRef,
     private pdfTrainingAndQualificationService: PdfTrainingAndQualificationService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {
     pdfTrainingAndQualificationService.setViewContainer = viewContainerRef;
   }
 
   public ngOnInit(): void {
-    const alertMessage = history.state?.alertMessage;
-    alertMessage && this.showAlert(alertMessage);
-
     this.setPageData();
-    this.setBreadcrumbs();
+    this.breadcrumbService.show(this.getBreadcrumbsJourney());
     this.setUpTabSubscription();
     this.updateTrainingExpiresSoonDate();
     this.setTraining();
@@ -73,12 +72,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getPdfCount();
   }
 
-  private showAlert(message: string): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
-  }
   public async downloadAsPDF(save: boolean = true) {
     try {
       return await this.pdfTrainingAndQualificationService.BuildTrainingAndQualsPdf(
@@ -116,9 +109,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.filteredToJobRoleMandatoryTraining = this.getMandatoryTrainingForStaffJobRole();
   }
 
-  private setBreadcrumbs(): void {
-    const journey = this.establishmentService.isOwnWorkplace() ? JourneyType.MY_WORKPLACE : JourneyType.ALL_WORKPLACES;
-    this.breadcrumbService.show(journey);
+  public getBreadcrumbsJourney(): JourneyType {
+    return this.establishmentService.isOwnWorkplace() || this.parentSubsidiaryViewService.getViewingSubAsParent()
+      ? JourneyType.MY_WORKPLACE
+      : JourneyType.ALL_WORKPLACES;
   }
 
   private setUpTabSubscription(): void {
