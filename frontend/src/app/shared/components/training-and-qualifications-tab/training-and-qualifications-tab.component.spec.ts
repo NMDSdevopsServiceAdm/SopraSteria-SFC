@@ -29,11 +29,7 @@ const establishmentBuilder = build('Establishment', {
 });
 
 describe('TrainingAndQualificationsTabComponent', () => {
-  async function setup(withWorkers = true, totalRecords = 4, addAlert = false) {
-    if (addAlert) {
-      window.history.pushState({ alertMessage: 'Updated record' }, '');
-    }
-
+  async function setup(withWorkers = true, totalRecords = 4) {
     const workers = withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(
       TrainingAndQualificationsTabComponent,
@@ -81,16 +77,6 @@ describe('TrainingAndQualificationsTabComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
-  });
-
-  it('should render an alert banner if there is an alert message in state', async () => {
-    const { component, fixture, alertSpy } = await setup(true, 4, true);
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(alertSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'Updated record',
-    });
   });
 
   it('renders the training link panel', async () => {

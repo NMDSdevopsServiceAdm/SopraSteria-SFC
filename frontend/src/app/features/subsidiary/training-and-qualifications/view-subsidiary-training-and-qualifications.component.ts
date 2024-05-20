@@ -65,9 +65,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     this.tAndQsLastUpdated = this.route.snapshot.data.workers?.tAndQsLastUpdated;
     this.workplace = this.route.snapshot.data.establishment;
 
-    const alertMessage = history.state?.alertMessage;
-    alertMessage && this.showAlert(alertMessage);
-
     this.route.queryParams.subscribe((params) => {
       if (params.view === 'categories') {
         this.viewTrainingByCategory = true;
@@ -89,14 +86,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
       this.trainingTotals();
     }
   }
-
-  private showAlert(message: string): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
-  }
-
+  
   public getParentPermissions(): void {
     const parentUid = this.workplace.parentUid;
 

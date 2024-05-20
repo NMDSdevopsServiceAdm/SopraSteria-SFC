@@ -9,6 +9,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TabsService } from '@core/services/tabs.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -20,14 +21,11 @@ import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { EstablishmentService } from '@core/services/establishment.service';
 
 import { NewTrainingTabComponent } from './training-tab.component';
 
 describe('NewTrainingTabComponent', () => {
-  const setup = async (withWorkers = true, totalRecords = 4, addAlert = false) => {
-    if (addAlert) window.history.pushState({ alertMessage: 'Updated record' }, '');
-
+  const setup = async (withWorkers = true, totalRecords = 4) => {
     const workers = withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const establishment = establishmentBuilder() as Establishment;
 
@@ -85,16 +83,6 @@ describe('NewTrainingTabComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
-  });
-
-  it('should render an alert banner if there is an alert message in state', async () => {
-    const { component, fixture, alertSpy } = await setup(true, 4, true);
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(alertSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'Updated record',
-    });
   });
 
   it('renders the training link panel', async () => {

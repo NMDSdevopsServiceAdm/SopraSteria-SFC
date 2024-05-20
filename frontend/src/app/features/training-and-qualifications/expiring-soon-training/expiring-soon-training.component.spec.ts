@@ -71,7 +71,6 @@ describe('ExpiringSoonTrainingComponent', () => {
     addPermissions = true,
     fixTrainingCount = false,
     qsParamGetMock = sinon.fake(),
-    addAlert = false,
   ) {
     let workerObj = {
       workers,
@@ -79,10 +78,6 @@ describe('ExpiringSoonTrainingComponent', () => {
     };
     if (fixTrainingCount) workerObj = { workers: [workers[0]], workerCount: 1 };
     const permissions = addPermissions ? ['canEditWorker'] : [];
-
-    if (addAlert) {
-      window.history.pushState({ alertMessage: 'Updated record' }, '');
-    }
 
     const { fixture, getByText, getByTestId, queryByTestId, getByLabelText, queryByLabelText } = await render(
       ExpiringSoonTrainingComponent,
@@ -150,17 +145,6 @@ describe('ExpiringSoonTrainingComponent', () => {
   it('should render a ExpiredTrainingComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
-  });
-
-  it('should render an alert banner if there is an alert message in state', async () => {
-    const { component, fixture, alertSpy } = await setup(true, false, sinon.fake(), true);
-
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(alertSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'Updated record',
-    });
   });
 
   it('should render a row for each expiring soon training for a worker, with the worker name shown in top row', async () => {
