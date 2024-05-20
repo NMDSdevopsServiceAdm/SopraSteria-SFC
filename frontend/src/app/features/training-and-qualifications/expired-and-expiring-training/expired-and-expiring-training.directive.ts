@@ -41,8 +41,6 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const alertMessage = history.state?.alertMessage;
-    alertMessage && this.showAlert(alertMessage);
     this.setTrainingAndCount();
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
     this.init();
@@ -53,13 +51,6 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   }
 
   protected init(): void {}
-
-  private showAlert(message: string): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
-  }
 
   private setSearchIfPrevious(): void {
     const search = this.route.snapshot.queryParamMap.get('search');

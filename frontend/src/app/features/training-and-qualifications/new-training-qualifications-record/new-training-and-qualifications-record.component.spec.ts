@@ -42,12 +42,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     jobRoleMandatoryTraining = [],
     noQualifications = false,
     fragment = 'all-records',
-    addAlert = false,
     isOwnWorkplace = true,
   ) {
-    if (addAlert) {
-      window.history.pushState({ alertMessage: 'Updated record' }, '');
-    }
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -407,15 +403,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(getByText('Not answered', { exact: false })).toBeTruthy();
     });
 
-    it('should render an alert banner if there is an alert message in state', async () => {
-      const { component, fixture, alertSpy } = await setup(false, true, [], [], false, 'all-records', true);
-      component.ngOnInit();
-      fixture.detectChanges();
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Updated record',
-      });
-    });
   });
 
   describe('Long-Term Absence', async () => {
@@ -774,7 +761,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should return all workplaces journey when is not own workplace and not in parent sub view', async () => {
-      const { component } = await setup(false, true, [], [], false, 'all-records', false, false);
+      const { component } = await setup(false, true, [], [], false, 'all-records', false);
 
       expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
     });
