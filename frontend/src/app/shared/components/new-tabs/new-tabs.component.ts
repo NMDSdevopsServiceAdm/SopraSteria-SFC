@@ -64,13 +64,13 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     if (hash) {
       const activeTab = this.tabs.findIndex((tab) => tab.slug === hash);
       if (activeTab) {
-        this.selectTab(null, activeTab, false, false);
+        this.selectTab(null, activeTab, false, false, true);
       }
     }
     const activeTabs = this.tabs.filter((tab) => tab.active);
 
     if (activeTabs.length === 0) {
-      this.selectTab(null, 0, false, false);
+      this.selectTab(null, 0, false, false, true);
     }
   }
 
@@ -133,7 +133,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public selectTab(event: Event, index: number, focus: boolean = true, clicked = true): void {
+  public selectTab(event: Event, index: number, focus: boolean = true, clicked = true, isOnPageLoad = false): void {
     event?.preventDefault();
 
     this.clickEvent = clicked;
@@ -143,7 +143,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     this.selectedTabClick.emit({ tabSlug: tab.slug });
     this.tabsService.selectedTab = tab.slug;
 
-    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+    if (!isOnPageLoad && this.parentSubsidiaryViewService.getViewingSubAsParent()) {
       let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
       this.router.navigate([`/subsidiary/${subsidiaryUid}/${tab.slug}`]);
     }
