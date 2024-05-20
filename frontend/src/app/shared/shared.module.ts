@@ -1,7 +1,7 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
@@ -122,7 +122,7 @@ import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,

@@ -1,6 +1,10 @@
 <div class="asc-navigate-to-workplace-dropdown-container">
   <div class="asc-navigate-to-workplace-dropdown govuk-width-container">
-    <select class="govuk-select govuk-!-width-one-half" (change)="navigateToWorkplace($event.target.value)">
+    <select
+      [(ngModel)]="currentWorkplace"
+      class="govuk-select govuk-!-width-one-half"
+      (change)="navigateToWorkplace($event.target.value)"
+    >
       <option [value]="primaryWorkplace.uid">{{ primaryWorkplace.name }}</option>
       <option *ngFor="let childWorkplace of childWorkplaces" [value]="childWorkplace.uid">
         {{ childWorkplace.name }}

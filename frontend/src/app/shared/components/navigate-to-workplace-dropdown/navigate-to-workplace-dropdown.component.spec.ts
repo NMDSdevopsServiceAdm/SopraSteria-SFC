@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -60,7 +61,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     const selectObject = getByText(component.primaryWorkplace.name);
     fireEvent.change(selectObject, { target: { value: component.childWorkplaces[0].uid } });
 
-    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', 'home', component.childWorkplaces[0].uid]);
+    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.childWorkplaces[0].uid, 'home']);
   });
 
   it('should go to route of selected sub (second) when selecting sub workplace', async () => {
@@ -69,6 +70,27 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     const selectObject = getByText(component.primaryWorkplace.name);
     fireEvent.change(selectObject, { target: { value: component.childWorkplaces[1].uid } });
 
-    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', 'home', component.childWorkplaces[1].uid]);
+    expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.childWorkplaces[1].uid, 'home']);
+  });
+
+  describe('Value of select (current workplace)', () => {
+    it('should set the parent workplace as value of select on init', async () => {
+      const { fixture, component } = await setup();
+
+      const select = fixture.debugElement.query(By.css('select')).nativeElement;
+
+      expect(select.value).toEqual(component.primaryWorkplace.uid);
+    });
+
+    it('should set the selected workplace as value of select after clicking option', async () => {
+      const { fixture, component, getByText } = await setup();
+
+      const selectObject = getByText(component.primaryWorkplace.name);
+      fireEvent.change(selectObject, { target: { value: component.childWorkplaces[2].uid } });
+
+      const select = fixture.debugElement.query(By.css('select')).nativeElement;
+
+      expect(select.value).toEqual(component.childWorkplaces[2].uid);
+    });
   });
 });

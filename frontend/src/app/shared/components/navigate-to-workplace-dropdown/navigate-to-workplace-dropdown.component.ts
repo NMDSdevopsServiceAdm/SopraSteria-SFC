@@ -16,6 +16,7 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public primaryWorkplace: Establishment;
   public childWorkplaces: Workplace[];
+  public currentWorkplace: string;
 
   constructor(
     private router: Router,
@@ -26,7 +27,14 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
 
   ngOnInit() {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.currentWorkplace = this.primaryWorkplace.uid;
     this.getChildWorkplaces();
+
+    this.subscriptions.add(
+      this.establishmentService.establishment$.subscribe((establishment) => {
+        this.currentWorkplace = establishment.uid;
+      }),
+    );
   }
 
   private getChildWorkplaces(): void {
@@ -46,7 +54,7 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
     } else {
       this.parentSubsidiaryViewService.setViewingSubAsParent(selectedWorkplaceUid);
       const homeSlug = this.tabsService.homeTab.slug;
-      this.router.navigate(['/subsidiary', homeSlug, selectedWorkplaceUid]);
+      this.router.navigate(['/subsidiary', selectedWorkplaceUid, homeSlug]);
       this.tabsService.selectedTab = homeSlug;
     }
   }
