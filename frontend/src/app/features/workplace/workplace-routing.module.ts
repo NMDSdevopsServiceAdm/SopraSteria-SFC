@@ -63,6 +63,7 @@ import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver'
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { AboutParentsComponent } from '@features/pages/about-parents/about-parents.component';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { DeleteWorkplaceComponent } from '@features/workplace/delete-workplace/delete-workplace.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -150,7 +151,11 @@ const routes: Routes = [
           title: 'Regulated by CQC',
         },
       },
-
+      {
+        path: 'delete-workplace',
+        component: DeleteWorkplaceComponent,
+        data: { title: 'Delete workplace' },
+      },
       {
         path: 'select-workplace',
         component: SelectWorkplaceComponent,

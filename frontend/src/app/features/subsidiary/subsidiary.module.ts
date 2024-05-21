@@ -23,7 +23,6 @@ import { SubsidiaryRoutingModule } from './subsidiary-routing.module';
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
-import { DeleteWorkplaceComponent } from './delete-workplace/delete-workplace.component';
 
 @NgModule({
   imports: [
@@ -43,7 +42,6 @@ import { DeleteWorkplaceComponent } from './delete-workplace/delete-workplace.co
     ViewSubsidiaryTrainingAndQualificationsComponent,
     ViewSubsidiaryBenchmarksComponent,
     ViewSubsidiaryWorkplaceUsersComponent,
-    DeleteWorkplaceComponent,
   ],
   providers: [
     DialogService,

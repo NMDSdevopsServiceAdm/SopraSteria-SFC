@@ -12,7 +12,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-delete-workplace',
@@ -31,6 +30,7 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
   public serverErrorsMap: Array<ErrorDefinition>;
   public submitted = false;
   public serverError: string;
+  public isParentSubsidiaryView: boolean;
 
   constructor(
     private router: Router,
@@ -39,6 +39,7 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
     private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: UntypedFormBuilder,
+    private alertService: AlertService,
     private establishmentService: EstablishmentService, // private permissionsService: PermissionsService, // private authService: AuthService,
   ) {}
 
@@ -49,9 +50,10 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
   ngOnInit(): void {
     this.subsidiaryWorkplace = this.route.snapshot.data.establishment;
     this.parentUid = this.route.snapshot.data.establishment.parentUid;
-    this.breadcrumbService.show(JourneyType.SUBSIDIARY);
+    this.breadcrumbService.show(JourneyType.DELETE_WORKPLACE);
     this.setupForm();
     this.setupFormErrorsMap();
+    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
   }
 
   ngOnChanges(): void {}
@@ -89,20 +91,42 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
       this.errorSummaryService.scrollToErrorSummary();
       return;
     } else {
-      this.deleteWorkplace();
+      const formValue = this.form.controls.deleteWorkplace.value;
+      if (formValue === 'no') {
+        this.router.navigate(['/dashboard']);
+      } else if (formValue === 'yes') {
+        this.deleteWorkplace();
+      }
     }
   }
 
   public async deleteWorkplace(): Promise<void> {
-    const formValue = this.form.controls.deleteWorkplace.value;
-    if (formValue === 'no') {
-      this.router.navigate(['/home', this.subsidiaryWorkplace.uid]);
-    } else if (formValue === 'yes') {
-      this.parentSubsidiaryViewService.clearViewingSubAsParent();
-      this.router.navigate(['/workplace', 'view-all-workplaces'], {
-        state: { alertMessage: `You deleted ${this.subsidiaryWorkplace.name}` },
-      });
-    }
+    this.establishmentService.deleteWorkplace(this.subsidiaryWorkplace.uid).subscribe(
+      () => {
+        if (this.isParentSubsidiaryView) {
+          this.parentSubsidiaryViewService.clearViewingSubAsParent();
+
+          this.router.navigate(['/workplace', 'view-all-workplaces']);
+          this.displaySuccessfullyDeletedAlert();
+        } else {
+          this.router.navigate(['sfcadmin', 'search', 'workplace']);
+          this.displaySuccessfullyDeletedAlert();
+        }
+      },
+      () => {
+        this.alertService.addAlert({
+          type: 'warning',
+          message: `There was an error deleting ${this.subsidiaryWorkplace.name}`,
+        });
+      },
+    );
+  }
+
+  private displaySuccessfullyDeletedAlert(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `Workplace deleted: ${this.subsidiaryWorkplace.name}`,
+    });
   }
 
   ngOnDestroy(): void {

@@ -65,6 +65,7 @@ import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { DeleteWorkplaceComponent } from '@features/workplace/delete-workplace/delete-workplace.component';
 
 @NgModule({
   imports: [
@@ -124,6 +125,7 @@ import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLoc
     BenefitsStatutorySickPayComponent,
     PensionsComponent,
     ChangeDataOwnerComponent,
+    DeleteWorkplaceComponent,
   ],
   providers: [
     DialogService,
