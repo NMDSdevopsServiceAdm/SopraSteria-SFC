@@ -27,6 +27,19 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    this.initialiseComponent();
+
+    this.subscriptions.add(
+      this.establishmentService.workplaceDeleted$.subscribe((workplaceHasBeenDeleted) => {
+        if (workplaceHasBeenDeleted) {
+          this.initialiseComponent();
+          this.establishmentService.setWorkplaceDeleted(false);
+        }
+      }),
+    );
+  }
+
+  private initialiseComponent(): void {
     this.parentWorkplace = this.establishmentService.primaryWorkplace;
     this.currentWorkplace = this.parentWorkplace.uid;
 

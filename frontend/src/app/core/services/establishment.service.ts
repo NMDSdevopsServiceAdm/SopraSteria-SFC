@@ -79,10 +79,9 @@ export class EstablishmentService {
   private _employerTypeHasValue: boolean = null;
   private _inStaffRecruitmentFlow: boolean;
   private _standAloneAccount$: boolean;
+  private _workplaceDeleted$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient) {
-    
-  }
+  constructor(private http: HttpClient) {}
 
   private _establishmentId: string = null;
 
@@ -104,6 +103,14 @@ export class EstablishmentService {
 
   public set standAloneAccount(value: boolean) {
     this._standAloneAccount$ = value;
+  }
+
+  public get workplaceDeleted$(): Observable<boolean> {
+    return this._workplaceDeleted$.asObservable();
+  }
+
+  public setWorkplaceDeleted(value: boolean) {
+    this._workplaceDeleted$.next(value);
   }
 
   public setEmployerTypeHasValue(hasValue: boolean) {
