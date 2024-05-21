@@ -9,6 +9,7 @@
       [(ngModel)]="currentWorkplace"
       class="govuk-select govuk-!-width-one-half"
       (change)="navigateToWorkplace($event.target.value)"
+      aria-label="Navigate to a different workplace"
     >
       <option [value]="parentWorkplace.uid">{{ parentWorkplace.name }}</option>
       <option *ngFor="let childWorkplace of childWorkplaces" [value]="childWorkplace.uid">
@@ -23,6 +24,7 @@
         id="backToParentLink"
         (click)="backToParentLinkClick($event)"
         class="govuk-!-font-size-19 govuk-!-font-weight-bold"
+        aria-label="Go back to your parent workplace"
         >Back to {{ parentWorkplace?.name || 'parent' }}
       </a>
     </ng-template>
