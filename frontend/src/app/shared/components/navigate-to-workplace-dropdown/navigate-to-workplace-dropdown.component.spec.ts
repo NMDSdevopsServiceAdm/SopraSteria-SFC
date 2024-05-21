@@ -21,7 +21,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
         },
       ],
       componentProperties: {
-        maxNoOfChildWorkplacesToShowDropdown,
+        maxChildWorkplacesForDropdown: maxNoOfChildWorkplacesToShowDropdown,
       },
     });
 

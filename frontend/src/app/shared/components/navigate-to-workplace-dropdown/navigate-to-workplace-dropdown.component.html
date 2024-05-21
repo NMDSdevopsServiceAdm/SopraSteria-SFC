@@ -1,13 +1,11 @@
 <div
-  *ngIf="
-    parentSubsidiaryViewService.getViewingSubAsParent() || childWorkplaces.length < maxNoOfChildWorkplacesToShowDropdown
-  "
+  *ngIf="parentSubsidiaryViewService.getViewingSubAsParent() || childWorkplaces?.length < maxChildWorkplacesForDropdown"
   class="asc-navigate-to-workplace-dropdown-container"
   id="navigateToWorkplaceContainer"
 >
   <div class="asc-navigate-to-workplace-dropdown govuk-width-container">
     <select
-      *ngIf="childWorkplaces?.length < maxNoOfChildWorkplacesToShowDropdown; else backToParentLink"
+      *ngIf="childWorkplaces?.length < maxChildWorkplacesForDropdown; else backToParentLink"
       [(ngModel)]="currentWorkplace"
       class="govuk-select govuk-!-width-one-half"
       (change)="navigateToWorkplace($event.target.value)"
