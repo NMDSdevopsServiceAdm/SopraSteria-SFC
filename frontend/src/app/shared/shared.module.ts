@@ -24,7 +24,6 @@ import { SanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
 import { AddNoteComponent } from './components/add-note/add-note.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
-import { BackToParentComponent } from './components/back-to-parent-link/back-to-parent-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
@@ -200,7 +199,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageNotFoundComponent,
     ArticleListComponent,
     PageComponent,
-    BackToParentComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
     AddNoteComponent,
@@ -240,7 +238,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SummarySectionComponent,
     NavigateToWorkplaceDropdownComponent,
     OtherLinksComponent,
-    BackToParentComponent,
     NewTrainingLinkPanelComponent,
   ],
   exports: [
@@ -355,7 +352,6 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     AboutTheDataLinkComponent,
     CardComponent,
     SummarySectionComponent,
-    BackToParentComponent,
     NavigateToWorkplaceDropdownComponent,
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
