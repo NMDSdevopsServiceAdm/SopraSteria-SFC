@@ -101,6 +101,10 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   public async deleteWorkplace(): Promise<void> {
+    // if (!this.canDeleteEstablishment) {
+    //   return;
+    // }
+
     this.establishmentService.deleteWorkplace(this.subsidiaryWorkplace.uid).subscribe(
       () => {
         if (this.isParentSubsidiaryView) {

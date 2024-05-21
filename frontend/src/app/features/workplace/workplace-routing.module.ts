@@ -154,7 +154,11 @@ const routes: Routes = [
       {
         path: 'delete-workplace',
         component: DeleteWorkplaceComponent,
-        data: { title: 'Delete workplace' },
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canDeleteEstablishment'],
+          title: 'Delete workplace',
+        },
       },
       {
         path: 'select-workplace',
