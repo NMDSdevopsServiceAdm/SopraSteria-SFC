@@ -2120,8 +2120,28 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 100, pageIndex = 0, searchTerm = '') {
+  Establishment.getChildWorkplaces = async function (
+    establishmentUid,
+    limit = 0,
+    pageIndex = 0,
+    searchTerm = '',
+    getPendingWorkplaces,
+  ) {
     const offset = pageIndex * limit;
+    let ustatus;
+
+    if (getPendingWorkplaces) {
+      ustatus = {
+        [Op.or]: {
+          [Op.ne]: 'REJECTED',
+          [Op.is]: null,
+        },
+      };
+    } else {
+      ustatus = {
+        [Op.is]: null,
+      };
+    }
 
     const data = await this.findAndCountAll({
       attributes: [
@@ -2144,19 +2164,14 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         ParentUID: establishmentUid,
-        ustatus: {
-          [Op.or]: {
-            [Op.ne]: 'REJECTED',
-            [Op.is]: null,
-          },
-        },
+        ustatus,
         ...(searchTerm ? { NameValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
       },
       order: [
         [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
         ['NameValue', 'ASC'],
       ],
-      limit,
+      ...(limit ? limit : {}),
       offset,
     });
 
@@ -2337,7 +2352,6 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-
   const nhsBsaAttributes = [
     'id',
     'nmdsId',
@@ -2359,7 +2373,7 @@ module.exports = function (sequelize, DataTypes) {
 
       where: {
         archived: false,
-       ...where
+        ...where,
       },
       include: [
         {
@@ -2372,8 +2386,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-
-  Establishment.getNhsBsaApiDataForSubs= async function (establishmentId) {
+  Establishment.getNhsBsaApiDataForSubs = async function (establishmentId) {
     return await this.findAll({
       nhsBsaAttributes,
       as: 'establishment',
@@ -2392,9 +2405,7 @@ module.exports = function (sequelize, DataTypes) {
         },
       ],
     });
-
   };
-
 
   return Establishment;
 };

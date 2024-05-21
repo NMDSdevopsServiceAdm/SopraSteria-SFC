@@ -84,6 +84,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
       .getChildWorkplaces(this.primaryWorkplace.uid, {
         pageIndex: this.currentPageIndex,
         itemsPerPage: this.itemsPerPage,
+        getPendingWorkplaces: true,
         ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
       })
       .pipe(take(1))

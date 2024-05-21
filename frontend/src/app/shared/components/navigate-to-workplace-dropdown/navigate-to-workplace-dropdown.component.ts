@@ -42,7 +42,7 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
   private getChildWorkplaces(): void {
     this.subscriptions.add(
       this.establishmentService
-        .getChildWorkplaces(this.parentWorkplace.uid)
+        .getChildWorkplaces(this.parentWorkplace.uid, { getPendingWorkplaces: false })
         .subscribe((data: GetChildWorkplacesResponse) => {
           this.childWorkplaces = data.childWorkplaces;
         }),
