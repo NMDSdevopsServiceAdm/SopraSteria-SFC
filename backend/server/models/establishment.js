@@ -2171,7 +2171,7 @@ module.exports = function (sequelize, DataTypes) {
         [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
         ['NameValue', 'ASC'],
       ],
-      ...(limit ? limit : {}),
+      ...(limit ? { limit } : {}),
       offset,
     });
 
