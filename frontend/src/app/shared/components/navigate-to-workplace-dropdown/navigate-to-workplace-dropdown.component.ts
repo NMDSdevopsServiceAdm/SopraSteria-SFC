@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
@@ -15,19 +15,23 @@ import { Subscription } from 'rxjs';
 export class NavigateToWorkplaceDropdownComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public primaryWorkplace: Establishment;
+  public parentWorkplaceName: string;
   public childWorkplaces: Workplace[];
   public currentWorkplace: string;
+  @Input() maxNoOfChildWorkplacesToShowDropdown: Number;
 
   constructor(
     private router: Router,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    public parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private establishmentService: EstablishmentService,
     private tabsService: TabsService,
   ) {}
 
   ngOnInit() {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.parentWorkplaceName = this.primaryWorkplace.name;
     this.currentWorkplace = this.primaryWorkplace.uid;
+
     this.getChildWorkplaces();
 
     this.subscriptions.add(
@@ -57,7 +61,9 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
 
   private navigateToParentWorkplace(): void {
     this.parentSubsidiaryViewService.clearViewingSubAsParent();
-    this.router.navigate(['/dashboard'], { fragment: 'home' });
+    this.router.navigateByUrl(`/subsidiary`, { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/dashboard'], { fragment: 'home' });
+    });
   }
 
   private navigateToSubsidiaryWorkplace(selectedWorkplaceUid: string): void {
@@ -68,6 +74,11 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
     this.router.navigateByUrl(`/subsidiary`, { skipLocationChange: true }).then(() => {
       this.router.navigate(['/subsidiary', selectedWorkplaceUid, homeSlug]);
     });
+  }
+
+  public backToParentLinkClick(event: Event) {
+    event.preventDefault();
+    this.navigateToParentWorkplace();
   }
 
   ngOnDestroy(): void {

@@ -1,6 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { Establishment } from '@core/model/establishment.model';
-import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -29,7 +28,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
   public subsidiaryWorkplace: Establishment;
   public canEditWorker: boolean;
   public hasWorkers: boolean;
-  public thereAreOver30Subs: boolean;
   public workplaceName: string;
 
   constructor(
@@ -57,14 +55,6 @@ export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
       this.tabsService.selectedTab$.subscribe((selectedTab) => {
         this.selectedTab = selectedTab;
       }),
-    );
-
-    this.subscriptions.add(
-      this.establishmentService
-        .getChildWorkplaces(this.establishmentService.primaryWorkplace.uid)
-        .subscribe((data: GetChildWorkplacesResponse) => {
-          this.thereAreOver30Subs = data.count > 30;
-        }),
     );
   }
 

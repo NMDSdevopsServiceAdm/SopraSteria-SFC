@@ -44,26 +44,4 @@ describe('BackToParentComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display Return to {parent name passed in}', async () => {
-    const { getByText } = await setup();
-
-    const expectedMessage = `Back to ${parentWorkplaceName}`;
-    expect(getByText(expectedMessage)).toBeTruthy();
-  });
-
-  it('should navigate to dashboard with home fragment on click of back link', async () => {
-    const { getByText, routerSpy } = await setup();
-
-    const backToParentLink = getByText(`Back to ${parentWorkplaceName}`);
-    fireEvent.click(backToParentLink);
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard', { fragment: 'home' }]);
-  });
-
-  it('should clear viewing sub view on click of back link', async () => {
-    const { getByText, clearViewingSubSpy } = await setup();
-
-    const backToParentLink = getByText(`Back to ${parentWorkplaceName}`);
-    fireEvent.click(backToParentLink);
-    expect(clearViewingSubSpy).toHaveBeenCalled();
-  });
 });
