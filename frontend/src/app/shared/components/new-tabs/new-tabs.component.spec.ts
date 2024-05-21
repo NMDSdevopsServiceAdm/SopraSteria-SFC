@@ -334,4 +334,26 @@ describe('NewTabsComponent', () => {
       expect(routerSpy).not.toHaveBeenCalled();
     });
   });
+
+  describe('Styling of tabs', () => {
+    it('should only add govuk-standalone-tabs__list-item class to tabs when in not in sub view', async () => {
+      const { fixture } = await setup();
+
+      const listElementsWithSubClass = fixture.nativeElement.querySelector('.govuk-subsidiary-tabs__list-item');
+      expect(listElementsWithSubClass).toBeFalsy();
+
+      const listElementsWithStandaloneClass = fixture.nativeElement.querySelector('.govuk-standalone-tabs__list-item');
+      expect(listElementsWithStandaloneClass).toBeTruthy();
+    });
+
+    it('should only add govuk-subsidiary-tabs__list-item class to tabs when in sub view', async () => {
+      const { fixture } = await setup(true, [], true);
+
+      const listElementsWithStandaloneClass = fixture.nativeElement.querySelector('.govuk-standalone-tabs__list-item');
+      expect(listElementsWithStandaloneClass).toBeFalsy();
+
+      const listElementsWithSubClass = fixture.nativeElement.querySelector('.govuk-subsidiary-tabs__list-item');
+      expect(listElementsWithSubClass).toBeTruthy();
+    });
+  });
 });
