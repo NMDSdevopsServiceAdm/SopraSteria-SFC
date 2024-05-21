@@ -47,11 +47,7 @@ const formatChildWorkplaces = (childWorkplaces) => {
 };
 
 const convertToBoolean = (getPendingWorkplaces) => {
-  if (typeof getPendingWorkplaces === 'string') {
-    if (getPendingWorkplaces === 'true') return true;
-    if (getPendingWorkplaces === 'false') return false;
-  }
-  return true;
+  return getPendingWorkplaces === 'false' ? false : true;
 };
 
 router.route('/').get(Authorization.isAuthorised, getChildWorkplaces);
