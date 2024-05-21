@@ -47,7 +47,9 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
 
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe((establishment) => {
-        this.currentWorkplace = establishment.uid;
+        if (establishment) {
+          this.currentWorkplace = establishment.uid;
+        }
       }),
     );
   }
