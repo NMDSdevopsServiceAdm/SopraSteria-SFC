@@ -11,7 +11,7 @@ import { fireEvent, render } from '@testing-library/angular';
 import { NavigateToWorkplaceDropdownComponent } from './navigate-to-workplace-dropdown.component';
 
 describe('NavigateToWorkplaceDropdownComponent', () => {
-  const setup = async (maxNoOfChildWorkplacesToShowDropdown = 5, inSubView = true) => {
+  const setup = async (maxChildWorkplacesForDropdown = 5, inSubView = true) => {
     const { fixture, getByText, getByLabelText } = await render(NavigateToWorkplaceDropdownComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -21,7 +21,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
         },
       ],
       componentProperties: {
-        maxChildWorkplacesForDropdown: maxNoOfChildWorkplacesToShowDropdown,
+        maxChildWorkplacesForDropdown,
       },
     });
 
@@ -52,7 +52,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should not display anything when more child workplaces than maxNoOfChildWorkplacesToShowDropdown but not in sub view', async () => {
+  it('should not display anything when more child workplaces than maxChildWorkplacesForDropdown but not in sub view', async () => {
     const { fixture } = await setup(3, false);
     fixture.detectChanges();
     const navigateToWorkplaceContainer = fixture.nativeElement.querySelector('#navigateToWorkplaceContainer');
@@ -61,7 +61,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
   });
 
   describe('Displaying dropdown', () => {
-    it('should display dropdown when fewer child workplaces than maxNoOfChildWorkplacesToShowDropdown and in sub view', async () => {
+    it('should display dropdown when fewer child workplaces than maxChildWorkplacesForDropdown and in sub view', async () => {
       const { fixture } = await setup();
       fixture.detectChanges();
       const dropdown = fixture.nativeElement.querySelector('.asc-navigate-to-workplace-dropdown');
@@ -69,7 +69,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       expect(dropdown).toBeTruthy();
     });
 
-    it('should display dropdown when fewer child workplaces than maxNoOfChildWorkplacesToShowDropdown and not in sub view', async () => {
+    it('should display dropdown when fewer child workplaces than maxChildWorkplacesForDropdown and not in sub view', async () => {
       const { fixture } = await setup(5, false);
       fixture.detectChanges();
       const dropdown = fixture.nativeElement.querySelector('.asc-navigate-to-workplace-dropdown');
@@ -138,7 +138,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
   });
 
   describe('Back to parent link', () => {
-    it('should display when more child workplaces than maxNoOfChildWorkplacesToShowDropdown and in sub view', async () => {
+    it('should display when more child workplaces than maxChildWorkplacesForDropdown and in sub view', async () => {
       const { fixture } = await setup(3);
       fixture.detectChanges();
       const backToParentLink = fixture.nativeElement.querySelector('#backToParentLink');
