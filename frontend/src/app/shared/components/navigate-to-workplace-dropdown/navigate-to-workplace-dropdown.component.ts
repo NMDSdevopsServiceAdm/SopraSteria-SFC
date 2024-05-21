@@ -14,8 +14,7 @@ import { Subscription } from 'rxjs';
 })
 export class NavigateToWorkplaceDropdownComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
-  public primaryWorkplace: Establishment;
-  public parentWorkplaceName: string;
+  public parentWorkplace: Establishment;
   public childWorkplaces: Workplace[];
   public currentWorkplace: string;
   @Input() maxNoOfChildWorkplacesToShowDropdown: Number;
@@ -28,9 +27,8 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.parentWorkplaceName = this.primaryWorkplace.name;
-    this.currentWorkplace = this.primaryWorkplace.uid;
+    this.parentWorkplace = this.establishmentService.primaryWorkplace;
+    this.currentWorkplace = this.parentWorkplace.uid;
 
     this.getChildWorkplaces();
 
@@ -44,7 +42,7 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
   private getChildWorkplaces(): void {
     this.subscriptions.add(
       this.establishmentService
-        .getChildWorkplaces(this.primaryWorkplace.uid)
+        .getChildWorkplaces(this.parentWorkplace.uid)
         .subscribe((data: GetChildWorkplacesResponse) => {
           this.childWorkplaces = data.childWorkplaces;
         }),
@@ -52,7 +50,7 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
   }
 
   public navigateToWorkplace(selectedWorkplaceUid: string): void {
-    if (selectedWorkplaceUid === this.primaryWorkplace.uid) {
+    if (selectedWorkplaceUid === this.parentWorkplace.uid) {
       this.navigateToParentWorkplace();
     } else {
       this.navigateToSubsidiaryWorkplace(selectedWorkplaceUid);

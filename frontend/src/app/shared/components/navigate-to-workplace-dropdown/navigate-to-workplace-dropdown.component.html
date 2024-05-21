@@ -12,7 +12,7 @@
       class="govuk-select govuk-!-width-one-half"
       (change)="navigateToWorkplace($event.target.value)"
     >
-      <option [value]="primaryWorkplace.uid">{{ primaryWorkplace.name }}</option>
+      <option [value]="parentWorkplace.uid">{{ parentWorkplace.name }}</option>
       <option *ngFor="let childWorkplace of childWorkplaces" [value]="childWorkplace.uid">
         {{ childWorkplace.name }}
       </option>
@@ -25,7 +25,7 @@
         id="backToParentLink"
         (click)="backToParentLinkClick($event)"
         class="govuk-!-font-size-19 govuk-!-font-weight-bold"
-        >Back to {{ parentWorkplaceName }}
+        >Back to {{ parentWorkplace?.name || 'parent' }}
       </a>
     </ng-template>
   </div>

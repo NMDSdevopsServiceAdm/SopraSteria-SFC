@@ -26,7 +26,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     });
 
     const component = fixture.componentInstance;
-    const parentWorkplaceName = component.primaryWorkplace.name;
+    const parentWorkplaceName = component.parentWorkplace.name;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -79,14 +79,14 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
 
     it('should display primary workplace name', async () => {
       const { component, getByText } = await setup();
-      expect(getByText(component.primaryWorkplace.name));
+      expect(getByText(component.parentWorkplace.name));
     });
 
     it('should go to route of main dashboard when selecting primary workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
-      const selectObject = getByText(component.primaryWorkplace.name);
-      fireEvent.change(selectObject, { target: { value: component.primaryWorkplace.uid } });
+      const selectObject = getByText(component.parentWorkplace.name);
+      fireEvent.change(selectObject, { target: { value: component.parentWorkplace.uid } });
 
       fixture.whenStable().then(() => {
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
@@ -96,7 +96,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     it('should go to route of selected sub (first) when selecting sub workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
-      const selectObject = getByText(component.primaryWorkplace.name);
+      const selectObject = getByText(component.parentWorkplace.name);
       fireEvent.change(selectObject, { target: { value: component.childWorkplaces[0].uid } });
 
       fixture.whenStable().then(() => {
@@ -107,7 +107,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     it('should go to route of selected sub (second) when selecting sub workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
-      const selectObject = getByText(component.primaryWorkplace.name);
+      const selectObject = getByText(component.parentWorkplace.name);
       fireEvent.change(selectObject, { target: { value: component.childWorkplaces[1].uid } });
 
       fixture.whenStable().then(() => {
@@ -121,13 +121,13 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
 
         const select = fixture.debugElement.query(By.css('select')).nativeElement;
 
-        expect(select.value).toEqual(component.primaryWorkplace.uid);
+        expect(select.value).toEqual(component.parentWorkplace.uid);
       });
 
       it('should set the selected workplace as value of select after clicking option', async () => {
         const { fixture, component, getByText } = await setup();
 
-        const selectObject = getByText(component.primaryWorkplace.name);
+        const selectObject = getByText(component.parentWorkplace.name);
         fireEvent.change(selectObject, { target: { value: component.childWorkplaces[2].uid } });
 
         const select = fixture.debugElement.query(By.css('select')).nativeElement;
@@ -145,11 +145,21 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
 
       expect(backToParentLink).toBeTruthy();
     });
+
     it('should display Return to {parent name passed in}', async () => {
       const { fixture, getByText, parentWorkplaceName } = await setup(3);
       fixture.detectChanges();
 
       const expectedMessage = `Back to ${parentWorkplaceName}`;
+      expect(getByText(expectedMessage)).toBeTruthy();
+    });
+
+    it('should display "Return to parent" when cannot retrieve parent workplace', async () => {
+      const { component, fixture, getByText } = await setup(3);
+      component.parentWorkplace = null;
+      fixture.detectChanges();
+
+      const expectedMessage = 'Back to parent';
       expect(getByText(expectedMessage)).toBeTruthy();
     });
 
