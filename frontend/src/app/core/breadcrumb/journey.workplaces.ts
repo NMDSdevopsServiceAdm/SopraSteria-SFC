@@ -17,6 +17,7 @@ enum Path {
   OTHER_WORKPLACES = '/workplace/other-workplaces',
   ABOUT_PARENTS = '/workplace/about-parents',
   CHANGE_DATA_OWNER = '/workplace/change-data-owner',
+  DELETE_WORKPLACE = 'workplace/:workplaceUid/delete-workplace',
 }
 
 export const workplaceTabJourney: JourneyRoute = {
@@ -238,6 +239,18 @@ export const allWorkplacesJourney: JourneyRoute = {
           ],
         },
       ],
+    },
+  ],
+};
+
+export const deleteWorkplaceJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Delete workplace',
+      path: Path.DELETE_WORKPLACE,
+      referrer: {
+        path: Path.DASHBOARD,
+      },
     },
   ],
 };
