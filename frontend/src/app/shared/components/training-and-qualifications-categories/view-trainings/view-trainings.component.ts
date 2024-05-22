@@ -24,7 +24,6 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
   readonly OK = 'OK';
 
   public workplace: Establishment;
-  public primaryWorkplaceUid: string;
   public category: string;
   public canEditWorker = false;
   public trainingCategoryId: number;
@@ -50,7 +49,6 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.establishment;
-    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.trainingCategoryId = this.route.snapshot.params.categoryId;
     this.setWorkersAndCount();
@@ -135,9 +133,7 @@ export class ViewTrainingComponent implements OnInit, OnDestroy {
   }
 
   public returnToHome(): void {
-    const returnLink =
-      this.workplace.uid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
-    this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });
+    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
 
   ngOnDestroy(): void {

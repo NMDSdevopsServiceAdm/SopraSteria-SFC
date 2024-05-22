@@ -43,8 +43,6 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const alertMessage = history.state?.alertMessage;
-    alertMessage && this.showAlert(alertMessage);
     this.setMissingTrainingAndCount();
     this.workplace = this.establishmentService.primaryWorkplace;
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
@@ -53,13 +51,6 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
     this.setBackLink();
     this.setSearchIfPrevious();
     localStorage.setItem('previousUrl', this.router.url);
-  }
-
-  private showAlert(message: string): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
   }
 
   private setSearchIfPrevious(): void {

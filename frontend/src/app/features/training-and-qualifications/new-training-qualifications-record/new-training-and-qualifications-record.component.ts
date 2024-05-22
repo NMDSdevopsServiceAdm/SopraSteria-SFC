@@ -62,9 +62,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   public ngOnInit(): void {
-    const alertMessage = history.state?.alertMessage;
-    alertMessage && this.showAlert(alertMessage);
-
     this.setPageData();
     this.breadcrumbService.show(this.getBreadcrumbsJourney());
     this.setUpTabSubscription();
@@ -75,12 +72,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getPdfCount();
   }
 
-  private showAlert(message: string): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
-  }
   public async downloadAsPDF(save: boolean = true) {
     try {
       return await this.pdfTrainingAndQualificationService.BuildTrainingAndQualsPdf(
