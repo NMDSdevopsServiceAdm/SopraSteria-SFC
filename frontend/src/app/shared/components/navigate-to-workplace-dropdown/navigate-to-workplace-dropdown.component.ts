@@ -49,9 +49,23 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
       this.establishmentService.establishment$.subscribe((establishment) => {
         if (establishment) {
           this.currentWorkplace = establishment.uid;
+          const updatedWorkplace = this.getUpdatedWorkplace(establishment);
+
+          if (updatedWorkplace) {
+            updatedWorkplace.name = establishment.name;
+          }
         }
       }),
     );
+  }
+
+  public getUpdatedWorkplace(establishment) {
+    if (this.parentWorkplace.uid === establishment.uid) {
+      return this.parentWorkplace;
+    }
+    return this.childWorkplaces?.find((childWorkplace) => {
+      return childWorkplace.uid === establishment.uid;
+    });
   }
 
   private getChildWorkplaces(): void {

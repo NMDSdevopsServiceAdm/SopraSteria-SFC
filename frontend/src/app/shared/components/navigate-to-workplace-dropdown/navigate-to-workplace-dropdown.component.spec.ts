@@ -4,7 +4,7 @@ import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -182,6 +182,41 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       const backToParentLink = getByText(`Back to ${parentWorkplaceName}`);
       fireEvent.click(backToParentLink);
       expect(clearViewingSubSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('getUpdatedWorkplace', () => {
+    it('should return parentWorkplace when workplace with parent workplace uid is passed in', async () => {
+      const { component } = await setup();
+
+      const updatedWorkplace = establishmentBuilder();
+      updatedWorkplace.uid = component.parentWorkplace.uid;
+
+      const result = component.getUpdatedWorkplace(updatedWorkplace);
+
+      expect(result).toEqual(component.parentWorkplace);
+    });
+
+    it('should return the child workplace with matching uid when workplace with child workplace uid is passed in', async () => {
+      const { component } = await setup();
+
+      const updatedWorkplace = establishmentBuilder();
+      updatedWorkplace.uid = component.childWorkplaces[1].uid;
+
+      const result = component.getUpdatedWorkplace(updatedWorkplace);
+
+      expect(result).toEqual(component.childWorkplaces[1]);
+    });
+
+    it('should not return when no matching workplace found', async () => {
+      const { component } = await setup();
+
+      const updatedWorkplace = establishmentBuilder();
+      updatedWorkplace.uid = 'unexpected-uid';
+
+      const result = component.getUpdatedWorkplace(updatedWorkplace);
+
+      expect(result).toBeFalsy();
     });
   });
 });
