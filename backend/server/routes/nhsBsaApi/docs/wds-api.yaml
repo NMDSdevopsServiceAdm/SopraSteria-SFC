@@ -9,7 +9,7 @@ info:
 servers:
   - url: '' # to be shared later
 paths:
-  /api/v1/auth/token:
+  /api/v1/workplaces/auth/token:
     get:
       tags:
         - WorkplaceData
