@@ -431,6 +431,7 @@ describe('NewDashboardHeaderComponent', () => {
         true,
       );
       spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      const setWorkplaceDeletedSpy = spyOn(establishmentService, 'setWorkplaceDeleted').and.callThrough();
 
       const deleteWorkplace = getByText('Delete Workplace');
       deleteWorkplace.click();
@@ -440,6 +441,7 @@ describe('NewDashboardHeaderComponent', () => {
       confirm.click();
 
       expect(routerSpy).toHaveBeenCalledWith(['workplace', 'view-all-workplaces']);
+      expect(setWorkplaceDeletedSpy).toHaveBeenCalledWith(true);
     });
 
     it('should redirect an admin user deleting a sub from parent view to view-all-workplaces of parent', async () => {

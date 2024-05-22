@@ -104,7 +104,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
         () => {
           if (this.isParentSubsidiaryView) {
             this.parentSubsidiaryViewService.clearViewingSubAsParent();
-
+            this.establishmentService.setWorkplaceDeleted(true);
             this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
               this.displaySuccessfullyDeletedAlert();
             });

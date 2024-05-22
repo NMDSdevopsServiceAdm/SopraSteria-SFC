@@ -1,0 +1,32 @@
+<div
+  *ngIf="parentSubsidiaryViewService.getViewingSubAsParent() || childWorkplaces?.length < maxChildWorkplacesForDropdown"
+  class="asc-navigate-to-workplace-dropdown-container govuk-!-padding-bottom-1"
+  id="navigateToWorkplaceContainer"
+>
+  <div class="asc-navigate-to-workplace-dropdown govuk-width-container">
+    <select
+      *ngIf="childWorkplaces?.length < maxChildWorkplacesForDropdown; else backToParentLink"
+      [(ngModel)]="currentWorkplace"
+      class="govuk-select govuk-!-width-one-half"
+      (change)="navigateToWorkplace($event.target.value)"
+      aria-label="Navigate to a different workplace"
+    >
+      <option [value]="parentWorkplace.uid">{{ parentWorkplace.name }}</option>
+      <option *ngFor="let childWorkplace of childWorkplaces" [value]="childWorkplace.uid">
+        {{ childWorkplace.name }}
+      </option>
+    </select>
+
+    <ng-template #backToParentLink>
+      <span class="govuk-!-padding-right-1"><img src="/assets/images/white-arrow-left.svg" alt="" /></span>
+      <a
+        href="#"
+        id="backToParentLink"
+        (click)="backToParentLinkClick($event)"
+        class="govuk-!-font-size-19 govuk-!-font-weight-bold"
+        aria-label="Go back to your parent workplace"
+        >Back to {{ parentWorkplace?.name || 'parent' }}
+      </a>
+    </ng-template>
+  </div>
+</div>

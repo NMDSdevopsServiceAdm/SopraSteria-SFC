@@ -10,6 +10,9 @@
       else otherView
     "
   >
+    <div *ngIf="parentAccount || parentSubsidiaryViewService.getViewingSubAsParent()">
+      <app-navigate-to-workplace-dropdown [maxChildWorkplacesForDropdown]="31"></app-navigate-to-workplace-dropdown>
+    </div>
     <app-stand-alone-account
       *ngIf="!parentSubsidiaryViewService.getViewingSubAsParent()"
       [dashboardView]="dashboardView"

@@ -176,6 +176,7 @@ describe('ViewMyWorkplacesComponent', () => {
         pageIndex: 0,
         itemsPerPage: 12,
         searchTerm: 'search term here',
+        getPendingWorkplaces: true,
       };
 
       expect(getChildWorkplacesSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
