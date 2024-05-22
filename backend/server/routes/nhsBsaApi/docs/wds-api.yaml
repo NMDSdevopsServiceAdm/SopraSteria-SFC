@@ -5,7 +5,7 @@ info:
     This is an OpenAPI 3.0 Specification
     ---
     Using this API you can retrieve the eligibility of a workplace and its subsidiaries if any
-  version: 1.0.0
+  version: 1.0.1
 servers:
   - url: '' # to be shared later
 paths:
