@@ -1,15 +1,17 @@
-import { AfterViewInit, Component, ElementRef, OnChanges, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
-import { AuthService } from '@core/services/auth.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
+import { isAdminRole } from '@core/utils/check-role-util';
+import { UserDetails } from '@core/model/userDetails.model';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
@@ -17,7 +19,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-delete-workplace',
   templateUrl: '/delete-workplace.component.html',
 })
-export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewInit, OnDestroy {
+export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
 
   private subscriptions: Subscription = new Subscription();
@@ -31,6 +33,7 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
   public submitted = false;
   public serverError: string;
   public isParentSubsidiaryView: boolean;
+  public user: UserDetails;
 
   constructor(
     private router: Router,
@@ -40,7 +43,9 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
     private errorSummaryService: ErrorSummaryService,
     private formBuilder: UntypedFormBuilder,
     private alertService: AlertService,
-    private establishmentService: EstablishmentService, // private permissionsService: PermissionsService, // private authService: AuthService,
+    private establishmentService: EstablishmentService,
+    private permissionsService: PermissionsService,
+    private userService: UserService,
   ) {}
 
   ngAfterViewInit() {
@@ -53,10 +58,24 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
     this.breadcrumbService.show(JourneyType.DELETE_WORKPLACE);
     this.setupForm();
     this.setupFormErrorsMap();
+    this.getPermissions();
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
   }
 
-  ngOnChanges(): void {}
+  private getPermissions(): void {
+    this.user = this.userService.loggedInUser;
+    if (isAdminRole(this.user?.role)) {
+      this.canDeleteEstablishment = this.permissionsService.can(
+        this.subsidiaryWorkplace?.uid,
+        'canDeleteAllEstablishments',
+      );
+    } else {
+      this.canDeleteEstablishment = this.permissionsService.can(
+        this.subsidiaryWorkplace?.uid,
+        'canDeleteEstablishment',
+      );
+    }
+  }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
@@ -101,14 +120,15 @@ export class DeleteWorkplaceComponent implements OnInit, OnChanges, AfterViewIni
   }
 
   public async deleteWorkplace(): Promise<void> {
-    // if (!this.canDeleteEstablishment) {
-    //   return;
-    // }
+    if (!this.canDeleteEstablishment) {
+      return;
+    }
 
     this.establishmentService.deleteWorkplace(this.subsidiaryWorkplace.uid).subscribe(
       () => {
         if (this.isParentSubsidiaryView) {
           this.parentSubsidiaryViewService.clearViewingSubAsParent();
+          this.establishmentService.setWorkplaceDeleted(true);
 
           this.router.navigate(['/workplace', 'view-all-workplaces']);
           this.displaySuccessfullyDeletedAlert();
