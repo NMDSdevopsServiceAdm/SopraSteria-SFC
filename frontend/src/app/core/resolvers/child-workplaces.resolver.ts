@@ -12,11 +12,13 @@ export class ChildWorkplacesResolver implements Resolve<any> {
   resolve(): Observable<GetChildWorkplacesResponse | null> {
     const primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
 
-    return this.establishmentService.getChildWorkplaces(primaryWorkplaceUid, { pageIndex: 0, itemsPerPage: 12 }).pipe(
-      catchError(() => {
-        this.router.navigate(['/problem-with-the-service']);
-        return of(null);
-      }),
-    );
+    return this.establishmentService
+      .getChildWorkplaces(primaryWorkplaceUid, { pageIndex: 0, itemsPerPage: 12, getPendingWorkplaces: true })
+      .pipe(
+        catchError(() => {
+          this.router.navigate(['/problem-with-the-service']);
+          return of(null);
+        }),
+      );
   }
 }
