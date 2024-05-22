@@ -20,6 +20,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private focus: boolean;
   private clickEvent: boolean;
+  public isParentViewingSub: boolean;
 
   @ViewChild('tablist') tablist: ElementRef;
 
@@ -32,6 +33,8 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
+    this.isParentViewingSub = this.parentSubsidiaryViewService.getViewingSubAsParent();
+
     this.selectedTabSubscription();
     this.setTabOnInit();
     this.trackRouterEventsToSetTabInSubView();
@@ -39,7 +42,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   private trackRouterEventsToSetTabInSubView(): void {
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((route: NavigationEnd) => {
-      if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+      if (this.isParentViewingSub) {
         const tabInUrl = this.getTabSlugFromNavigationEvent(route);
 
         if (tabInUrl) {
@@ -57,9 +60,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   }
 
   private setTabOnInit(): void {
-    const hash = this.parentSubsidiaryViewService.getViewingSubAsParent()
-      ? this.getTabSlugInSubView()
-      : this.route.snapshot.fragment;
+    const hash = this.isParentViewingSub ? this.getTabSlugInSubView() : this.route.snapshot.fragment;
 
     if (hash) {
       const activeTab = this.tabs.findIndex((tab) => tab.slug === hash);
@@ -84,7 +85,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
           tab.active = true;
           this.currentTab = tabIndex;
 
-          if (!this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+          if (!this.isParentViewingSub) {
             if (this.dashboardView) {
               this.location.replaceState(`/dashboard#${tab.slug}`);
             } else if (this.clickEvent) {
@@ -143,7 +144,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     this.selectedTabClick.emit({ tabSlug: tab.slug });
     this.tabsService.selectedTab = tab.slug;
 
-    if (!isOnPageLoad && this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+    if (!isOnPageLoad && this.isParentViewingSub) {
       let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
       this.router.navigate([`/subsidiary/${subsidiaryUid}/${tab.slug}`]);
     }

@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TabsService } from '@core/services/tabs.service';
+import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -13,11 +14,15 @@ import userEvent from '@testing-library/user-event';
 import { NewTabsComponent } from './new-tabs.component';
 
 describe('NewTabsComponent', () => {
-  const setup = async (dashboardView = true, urlSegments = []) => {
+  const setup = async (dashboardView = true, urlSegments = [], viewingSubAsParent = false) => {
     const { fixture, getByTestId } = await render(NewTabsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         TabsService,
+        {
+          provide: ParentSubsidiaryViewService,
+          useFactory: MockParentSubsidiaryViewService.factory(viewingSubAsParent),
+        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -153,10 +158,9 @@ describe('NewTabsComponent', () => {
     });
 
     it('should navigate to the sub tab url when tab clicked in sub view', async () => {
-      const { getByTestId, parentSubsidiaryViewService, routerSpy } = await setup();
+      const { getByTestId, parentSubsidiaryViewService, routerSpy } = await setup(true, [], true);
       const subUid = 'abcde123';
 
-      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
       spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
 
       const tAndQTab = getByTestId('tab_training-and-qualifications');
@@ -295,11 +299,10 @@ describe('NewTabsComponent', () => {
 
   describe('selectTab', () => {
     it('should navigate when in sub view and isOnPageLoad is passed in as false', async () => {
-      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, []);
+      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, [], true);
 
       const index = 1;
       const subUid = 'abcde123';
-      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
       spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
 
       component.selectTab(new Event(null), index, true, true, false);
@@ -308,11 +311,10 @@ describe('NewTabsComponent', () => {
     });
 
     it('should not navigate when isOnPageLoad is passed in as true in sub view', async () => {
-      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, []);
+      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, [], true);
 
       const index = 1;
       const subUid = 'abcde123';
-      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
       spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
 
       component.selectTab(new Event(null), index, true, true, true);
@@ -325,12 +327,33 @@ describe('NewTabsComponent', () => {
 
       const index = 1;
       const subUid = 'abcde123';
-      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(false);
       spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
 
       component.selectTab(new Event(null), index, true, true, false);
 
       expect(routerSpy).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Styling of tabs', () => {
+    it('should only add govuk-standalone-tabs__list-item class to tabs when in not in sub view', async () => {
+      const { fixture } = await setup();
+
+      const listElementsWithSubClass = fixture.nativeElement.querySelector('.govuk-subsidiary-tabs__list-item');
+      expect(listElementsWithSubClass).toBeFalsy();
+
+      const listElementsWithStandaloneClass = fixture.nativeElement.querySelector('.govuk-standalone-tabs__list-item');
+      expect(listElementsWithStandaloneClass).toBeTruthy();
+    });
+
+    it('should only add govuk-subsidiary-tabs__list-item class to tabs when in sub view', async () => {
+      const { fixture } = await setup(true, [], true);
+
+      const listElementsWithStandaloneClass = fixture.nativeElement.querySelector('.govuk-standalone-tabs__list-item');
+      expect(listElementsWithStandaloneClass).toBeFalsy();
+
+      const listElementsWithSubClass = fixture.nativeElement.querySelector('.govuk-subsidiary-tabs__list-item');
+      expect(listElementsWithSubClass).toBeTruthy();
     });
   });
 });
