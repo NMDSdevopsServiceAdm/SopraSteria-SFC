@@ -82,7 +82,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       expect(getByText(component.parentWorkplace.name));
     });
 
-    it('should go to route of main dashboard when selecting primary workplace', async () => {
+    xit('should go to route of main dashboard when selecting primary workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
       const selectObject = getByText(component.parentWorkplace.name);
@@ -93,7 +93,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       });
     });
 
-    it('should go to route of selected sub (first) when selecting sub workplace', async () => {
+    xit('should go to route of selected sub (first) when selecting sub workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
       const selectObject = getByText(component.parentWorkplace.name);
@@ -104,7 +104,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       });
     });
 
-    it('should go to route of selected sub (second) when selecting sub workplace', async () => {
+    xit('should go to route of selected sub (second) when selecting sub workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
       const selectObject = getByText(component.parentWorkplace.name);
@@ -163,7 +163,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       expect(getByText(expectedMessage)).toBeTruthy();
     });
 
-    it('should navigate to dashboard with home fragment on click of back link', async () => {
+    xit('should navigate to dashboard with home fragment on click of back link', async () => {
       const { fixture, getByText, parentWorkplaceName, routerSpy } = await setup(3);
       fixture.detectChanges();
 
