@@ -7,13 +7,10 @@
       [ngClass]="{ 'govuk-!-font-weight-bold': article.slug === currentArticleSlug }"
       *ngFor="let article of articleList"
     >
-
     <app-link-with-arrow>
       <a [routerLink]="['/articles', article.slug]">{{ article.title }}</a>
     </app-link-with-arrow>
-
     <hr class="govuk-section-break--m govuk-section-break--visible" />
-
     </li>
   </ul>
 </ng-container>
