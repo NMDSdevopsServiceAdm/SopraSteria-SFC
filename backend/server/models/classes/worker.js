@@ -1307,7 +1307,6 @@ class Worker extends EntityValidator {
         null,
         wdf ? WdfCalculator.effectiveDate : null,
       );
-      console.log('myJSON: ', myJSON);
 
       // add worker default properties
       const myDefaultJSON = {
