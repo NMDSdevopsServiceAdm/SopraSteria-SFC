@@ -98,7 +98,11 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
 
   public navigateToDeleteWorkplace(event: Event): void {
     event.preventDefault();
-    this.router.navigate(['/workplace', this.workplace.uid, 'delete-workplace']);
+    if (this.isParentSubsidiaryView) {
+      this.router.navigate([this.workplace.uid, 'delete-workplace']);
+    } else {
+      this.router.navigate(['workplace', this.workplace.uid, 'delete-workplace']);
+    }
   }
 
   ngOnDestroy(): void {

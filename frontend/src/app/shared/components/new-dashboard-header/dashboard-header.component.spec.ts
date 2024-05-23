@@ -368,37 +368,46 @@ describe('NewDashboardHeaderComponent', () => {
   });
 
   describe('Archive Workplace', () => {
-    it('should display a Delete Workplace link if user is an admin', async () => {
+    it('should display a Delete workplace link if user is an admin', async () => {
       const { getByText } = await setup();
 
-      expect(getByText('Delete Workplace')).toBeTruthy();
+      expect(getByText('Delete workplace')).toBeTruthy();
     });
 
-    it('should display a Delete Workplace link if parent is viewing a subsidiary', async () => {
+    it('should display a Delete workplace link if parent is viewing a subsidiary', async () => {
       const { getByText } = await setup('home', false, true, false, false, false, 1, true);
 
-      expect(getByText('Delete Workplace')).toBeTruthy();
+      expect(getByText('Delete workplace')).toBeTruthy();
     });
 
-    it('should not display a Delete Workplace link if the workplace has subsidiaries', async () => {
+    it('should not display a Delete workplace link if the workplace has subsidiaries', async () => {
       const { queryByText } = await setup('home', false, true, false, true, false, 2);
 
-      expect(queryByText('Delete Workplace')).toBeNull();
+      expect(queryByText('Delete workplace')).toBeNull();
     });
 
-    it('should not display a Delete Workplace link if user not an admin and does not have canDeleteEstablishment permission', async () => {
+    it('should not display a Delete workplace link if user not an admin and does not have canDeleteEstablishment permission', async () => {
       const { queryByText } = await setup('home', false, true, false, true, false, 0, true, false);
 
-      expect(queryByText('Delete Workplace')).toBeNull();
+      expect(queryByText('Delete workplace')).toBeNull();
     });
 
-    it('should navigate to the delete-workplace page', async () => {
-      const { getByText, routerSpy } = await setup('home', false, true, false, false, false, 1, true);
+    it('should navigate to the subsidiary delete-workplace page when parent is viewing a subsidiary', async () => {
+      const { getByText, routerSpy, component } = await setup('home', false, true, false, false, false, 1, true);
 
-      const deletWorplaceLink = getByText('Delete Workplace');
+      const deletWorplaceLink = getByText('Delete workplace');
       deletWorplaceLink.click();
 
-      expect(routerSpy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith([component.workplace.uid, 'delete-workplace']);
+    });
+
+    it('should navigate to the standalone delete-workplace page when logged in as admin', async () => {
+      const { getByText, routerSpy, component } = await setup('home', false, true, false, false, true, 0, false);
+
+      const deletWorplaceLink = getByText('Delete workplace');
+      deletWorplaceLink.click();
+
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', component.workplace.uid, 'delete-workplace']);
     });
   });
 });
