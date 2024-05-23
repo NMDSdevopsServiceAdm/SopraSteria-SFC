@@ -742,6 +742,32 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareCertificateChangedBy"',
       },
+      HealthAndCareVisaValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"HealthAndCareVisaValue"',
+      },
+      HealthAndCareVisaSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"HealthAndCareVisaSavedAt"',
+      },
+      HealthAndCareVisaChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"HealthAndCareVisaChangedAt"',
+      },
+      HealthAndCareVisaSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"HealthAndCareVisaSavedBy"',
+      },
+      HealthAndCareVisaChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"HealthAndCareVisaChangedBy"',
+      },
       ApprenticeshipTrainingValue: {
         type: DataTypes.ENUM,
         allowNull: true,
