@@ -3,12 +3,17 @@
   <hr class="govuk-section-break--m govuk-section-break--visible" />
   <ul class="govuk-list govuk-!-margin-bottom-6">
     <li
-      class="asc-news-link govuk-!-margin-bottom-3"
+      class="govuk-!-margin-bottom-3"
       [ngClass]="{ 'govuk-!-font-weight-bold': article.slug === currentArticleSlug }"
       *ngFor="let article of articleList"
     >
+
+    <app-link-with-arrow>
       <a [routerLink]="['/articles', article.slug]">{{ article.title }}</a>
-      <hr class="govuk-section-break--m govuk-section-break--visible" />
+    </app-link-with-arrow>
+
+    <hr class="govuk-section-break--m govuk-section-break--visible" />
+
     </li>
   </ul>
 </ng-container>
