@@ -101,6 +101,7 @@ export interface Worker {
   missingMandatoryTrainingCount: number;
   qualificationCount: number;
   longTermAbsence: string;
+  healthAndCareVisa: string;
 }
 
 export interface WorkerPay {

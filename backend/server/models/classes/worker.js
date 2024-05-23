@@ -325,6 +325,10 @@ class Worker extends EntityValidator {
     return this._properties.get('NurseSpecialisms') ? this._properties.get('NurseSpecialisms').property : null;
   }
 
+  get healthAndCareVisa() {
+    return this._properties.get('HealthAndCareVisa') ? this._properties.get('HealthAndCareVisa').property : null;
+  }
+
   // takes the given JSON document and creates a Worker's set of extendable properties
   // Returns true if the resulting Worker is valid; otherwise false
   async load(document, associatedEntities = false, bulkUploadCompletion = false) {
@@ -1303,6 +1307,7 @@ class Worker extends EntityValidator {
         null,
         wdf ? WdfCalculator.effectiveDate : null,
       );
+      console.log('myJSON: ', myJSON);
 
       // add worker default properties
       const myDefaultJSON = {
