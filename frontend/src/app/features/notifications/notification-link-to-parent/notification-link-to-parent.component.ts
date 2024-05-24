@@ -102,7 +102,7 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
                         this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
                         this.establishmentService.setState(workplace);
                         this.establishmentService.setPrimaryWorkplace(workplace);
-                        this.establishmentService.setChildWorkplacesChanged(true);
+                        this.establishmentService.setCheckForChildWorkplaceChanges(true);
                         this.router.navigate(['/dashboard']);
                       }
                     });

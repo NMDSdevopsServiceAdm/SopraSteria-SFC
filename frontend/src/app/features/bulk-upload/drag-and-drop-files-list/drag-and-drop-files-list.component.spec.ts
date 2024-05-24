@@ -200,9 +200,10 @@ describe('DragAndDropFilesListComponent', () => {
     const getEstablishmentSpy = spyOn(establishmentService, 'getEstablishment').and.callFake(() => of(workplace));
     const setWorkplaceSpy = spyOn(establishmentService, 'setWorkplace').and.callFake(() => {});
     const setPrimaryWorkplaceSpy = spyOn(establishmentService, 'setPrimaryWorkplace').and.callFake(() => {});
-    const setChildWorkplacesChangedSpy = spyOn(establishmentService, 'setChildWorkplacesChanged').and.callFake(
-      () => {},
-    );
+    const setCheckForChildWorkplaceChangesSpy = spyOn(
+      establishmentService,
+      'setCheckForChildWorkplaceChanges',
+    ).and.callFake(() => {});
 
     const dummyFiles = [WorkerFile, TrainingFile, EstablishmentFile];
     component.uploadedFiles = dummyFiles as ValidatedFile[];
@@ -215,7 +216,7 @@ describe('DragAndDropFilesListComponent', () => {
     expect(getEstablishmentSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de');
     expect(setWorkplaceSpy).toHaveBeenCalledWith(workplace);
     expect(setPrimaryWorkplaceSpy).toHaveBeenCalledWith(workplace);
-    expect(setChildWorkplacesChangedSpy).toHaveBeenCalledWith(true);
+    expect(setCheckForChildWorkplaceChangesSpy).toHaveBeenCalledWith(true);
   });
 
   describe('DownloadContent', () => {

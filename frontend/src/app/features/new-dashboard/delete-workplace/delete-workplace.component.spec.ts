@@ -251,7 +251,10 @@ describe('DeleteWorkplaceComponent', async () => {
 
     spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
     spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
-    const setChildWorkplacesChangedSpy = spyOn(establishmentService, 'setChildWorkplacesChanged').and.callThrough();
+    const setCheckForChildWorkplaceChangesSpy = spyOn(
+      establishmentService,
+      'setCheckForChildWorkplaceChanges',
+    ).and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
 
@@ -261,7 +264,7 @@ describe('DeleteWorkplaceComponent', async () => {
     fireEvent.click(yesRadioButton);
     fireEvent.click(continueButton);
 
-    expect(setChildWorkplacesChangedSpy).toHaveBeenCalledWith(true);
+    expect(setCheckForChildWorkplaceChangesSpy).toHaveBeenCalledWith(true);
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
   });
 

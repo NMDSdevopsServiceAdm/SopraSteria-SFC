@@ -121,7 +121,7 @@ export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestro
         () => {
           if (this.isParentSubsidiaryView) {
             this.parentSubsidiaryViewService.clearViewingSubAsParent();
-            this.establishmentService.setChildWorkplacesChanged(true);
+            this.establishmentService.setCheckForChildWorkplaceChanges(true);
 
             this.router.navigate(['/workplace', 'view-all-workplaces']);
             this.displaySuccessfullyDeletedAlert();

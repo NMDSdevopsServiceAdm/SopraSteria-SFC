@@ -30,10 +30,10 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
     this.initialiseComponent();
 
     this.subscriptions.add(
-      this.establishmentService.childWorkplacesChanged$.subscribe((workplaceHasBeenDeleted) => {
+      this.establishmentService.checkForChildWorkplaceChanges$.subscribe((workplaceHasBeenDeleted) => {
         if (workplaceHasBeenDeleted) {
           this.initialiseComponent();
-          this.establishmentService.setChildWorkplacesChanged(false);
+          this.establishmentService.setCheckForChildWorkplaceChanges(false);
         }
       }),
     );
