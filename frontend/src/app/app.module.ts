@@ -89,6 +89,7 @@ import { SatisfactionSurveyComponent } from './features/satisfaction-survey/sati
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { PreviousRouteService } from '@core/services/previous-route.service';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 
 @NgModule({
   declarations: [
@@ -129,6 +130,7 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
     RemoveLinkToParentComponent,
     LinkToParentComponent,
     ParentWorkplaceAccounts,
+    DeleteWorkplaceComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
