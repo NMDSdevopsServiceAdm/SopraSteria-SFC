@@ -1,7 +1,5 @@
 import { fireEvent, within, render } from '@testing-library/angular';
-import { DeleteWorkplaceComponent } from './delete-workplace.component';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { bool, build, fake, sequence } from '@jackfranklin/test-data-bot';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -21,26 +19,13 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { AuthService } from '@core/services/auth.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
-const establishmentBuilder = build('Workplace', {
-  fields: {
-    id: sequence(),
-    uid: fake((f) => f.datatype.uuid()),
-    name: fake((f) => f.lorem.sentence()),
-    dataOwner: 'Workplace',
-    dataPermissions: '',
-    dataOwnerPermissions: '',
-    isParent: bool(),
-    localIdentifier: null,
-  },
-});
-
-const establishment = establishmentBuilder();
+import { DeleteWorkplaceComponent } from './delete-workplace.component';
 
 describe('DeleteWorkplaceComponent', async () => {
-  async function setup(isAdmin = false, subsidiaries = 0) {
+  async function setup(isAdmin = false, canDeleteEstablishment = true, subsidiaries = 0) {
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const { getAllByText, getByRole, getByText, getByLabelText, getByTestId, fixture, queryByText } = await render(
       DeleteWorkplaceComponent,
@@ -55,27 +40,19 @@ describe('DeleteWorkplaceComponent', async () => {
             provide: BreadcrumbService,
             useClass: MockBreadcrumbService,
           },
-          // { provide: PermissionsService, useFactory: MockPermissionsService.factory() },
           {
             provide: UserService,
             useFactory: MockUserService.factory(subsidiaries, role),
             deps: [HttpClient],
           },
           {
+            provide: EstablishmentService,
+            useClass: MockEstablishmentService,
+          },
+          {
             provide: AuthService,
             useFactory: MockAuthService.factory(true, isAdmin),
             deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                params: { establishmentuid: establishment.uid },
-                data: {
-                  establishment: establishment,
-                },
-              },
-            },
           },
         ],
         componentProperties: {},
@@ -94,6 +71,9 @@ describe('DeleteWorkplaceComponent', async () => {
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService) as ParentSubsidiaryViewService;
+
+    const permissionsService = injector.inject(PermissionsService) as PermissionsService;
+    spyOn(permissionsService, 'can').and.returnValue(canDeleteEstablishment);
 
     return {
       component,
@@ -126,10 +106,10 @@ describe('DeleteWorkplaceComponent', async () => {
   });
 
   it('should show the name of the subsdiary in caption', async () => {
-    const { component, getByTestId, getByText } = await setup();
+    const { component, getByTestId } = await setup();
 
     const workplaceNameCaption = getByTestId('workplaceNameCaption');
-    const workplaceName = component.subsidiaryWorkplace.name;
+    const workplaceName = component.workplace.name;
 
     expect(workplaceNameCaption).toBeTruthy();
     expect(workplaceNameCaption.textContent).toContain(workplaceName);
@@ -139,7 +119,7 @@ describe('DeleteWorkplaceComponent', async () => {
     const { component, getByTestId } = await setup();
 
     const workplaceNameQuestion = getByTestId('workplaceNameQuestion');
-    const workplaceName = component.subsidiaryWorkplace.name;
+    const workplaceName = component.workplace.name;
 
     expect(workplaceName).toBeTruthy();
     expect(workplaceNameQuestion.textContent).toContain(workplaceName);
@@ -214,14 +194,17 @@ describe('DeleteWorkplaceComponent', async () => {
 
     expect(alertSpy).toHaveBeenCalledWith({
       type: 'success',
-      message: `Workplace deleted: ${component.subsidiaryWorkplace.name}`,
+      message: `Workplace deleted: ${component.workplace.name}`,
     });
   });
 
   it('should delete the workplace', async () => {
-    const { getByText, fixture, establishmentService } = await setup();
+    const { component, getByText, fixture, establishmentService, parentSubsidiaryViewService } = await setup();
 
     const establishmentServiceSpy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+    spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+    component.ngOnInit();
+    fixture.detectChanges();
 
     const yesRadioButton = getByText('Yes, delete this workplace');
     const continueButton = getByText('Continue');
@@ -234,7 +217,9 @@ describe('DeleteWorkplaceComponent', async () => {
   });
 
   it('should show a warning banner if there is an error when deleting the workplace', async () => {
-    const { component, getByText, fixture, alertSpy, establishmentService } = await setup();
+    const { component, getByText, fixture, alertSpy, establishmentService, parentSubsidiaryViewService } = await setup(
+      false,
+    );
 
     const errorResponse = new HttpErrorResponse({
       error: { code: '404', message: 'Not Found' },
@@ -242,10 +227,13 @@ describe('DeleteWorkplaceComponent', async () => {
       statusText: 'Not found',
     });
 
-    spyOn(establishmentService, 'deleteWorkplace').and.returnValue(throwError(errorResponse));
-
     const yesRadioButton = getByText('Yes, delete this workplace');
     const continueButton = getByText('Continue');
+
+    spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+    spyOn(establishmentService, 'deleteWorkplace').and.returnValue(throwError(errorResponse));
+    component.ngOnInit();
+    fixture.detectChanges();
 
     fireEvent.click(yesRadioButton);
     fireEvent.click(continueButton);
@@ -253,7 +241,7 @@ describe('DeleteWorkplaceComponent', async () => {
 
     expect(alertSpy).toHaveBeenCalledWith({
       type: 'warning',
-      message: `There was an error deleting ${component.subsidiaryWorkplace.name}`,
+      message: `There was an error deleting ${component.workplace.name}`,
     });
   });
 
@@ -263,6 +251,7 @@ describe('DeleteWorkplaceComponent', async () => {
 
     spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
     spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+    const setWorkplaceDeletedSpy = spyOn(establishmentService, 'setWorkplaceDeleted').and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
 
@@ -272,6 +261,7 @@ describe('DeleteWorkplaceComponent', async () => {
     fireEvent.click(yesRadioButton);
     fireEvent.click(continueButton);
 
+    expect(setWorkplaceDeletedSpy).toHaveBeenCalledWith(true);
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
   });
 
@@ -313,5 +303,26 @@ describe('DeleteWorkplaceComponent', async () => {
     fixture.detectChanges();
 
     expect(routerSpy).toHaveBeenCalledWith(['sfcadmin', 'search', 'workplace']);
+  });
+
+  it('should not delete if canDeleteEstablishment  is false', async () => {
+    const { component, getByText, fixture, routerSpy, establishmentService, parentSubsidiaryViewService } = await setup(
+      false,
+      false,
+    );
+
+    const establishmentServiceSpy = spyOn(establishmentService, 'deleteWorkplace').and.callThrough();
+    spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(false);
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    const yesRadioButton = getByText('Yes, delete this workplace');
+    const continueButton = getByText('Continue');
+
+    fireEvent.click(yesRadioButton);
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(establishmentServiceSpy).not.toHaveBeenCalled();
   });
 });

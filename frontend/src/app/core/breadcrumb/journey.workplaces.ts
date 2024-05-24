@@ -17,7 +17,7 @@ enum Path {
   OTHER_WORKPLACES = '/workplace/other-workplaces',
   ABOUT_PARENTS = '/workplace/about-parents',
   CHANGE_DATA_OWNER = '/workplace/change-data-owner',
-  DELETE_WORKPLACE = '/workplace/:workplaceUid/delete-workplace',
+  DELETE_WORKPLACE = '/delete-workplace',
 }
 
 export const workplaceTabJourney: JourneyRoute = {

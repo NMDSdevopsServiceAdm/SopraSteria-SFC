@@ -1,6 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -23,9 +23,7 @@ export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestro
   @ViewChild('formEl') formEl: ElementRef;
 
   private subscriptions: Subscription = new Subscription();
-  public subsidiaryWorkplace: Establishment;
-  public parentWorkplace: Establishment;
-  public parentUid: string;
+  public workplace: Establishment;
   public canDeleteEstablishment: boolean;
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
@@ -37,7 +35,6 @@ export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestro
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute,
     public parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
@@ -53,27 +50,22 @@ export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestro
   }
 
   ngOnInit(): void {
-    this.subsidiaryWorkplace = this.route.snapshot.data.establishment;
-    this.parentUid = this.route.snapshot.data.establishment.parentUid;
+    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
+
+    this.workplace = this.establishmentService.establishment;
+
     this.breadcrumbService.show(JourneyType.DELETE_WORKPLACE);
     this.setupForm();
     this.setupFormErrorsMap();
     this.getPermissions();
-    this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
   }
 
   private getPermissions(): void {
     this.user = this.userService.loggedInUser;
     if (isAdminRole(this.user?.role)) {
-      this.canDeleteEstablishment = this.permissionsService.can(
-        this.subsidiaryWorkplace?.uid,
-        'canDeleteAllEstablishments',
-      );
+      this.canDeleteEstablishment = this.permissionsService.can(this.workplace?.uid, 'canDeleteAllEstablishments');
     } else {
-      this.canDeleteEstablishment = this.permissionsService.can(
-        this.subsidiaryWorkplace?.uid,
-        'canDeleteEstablishment',
-      );
+      this.canDeleteEstablishment = this.permissionsService.can(this.workplace?.uid, 'canDeleteEstablishment');
     }
   }
 
@@ -124,32 +116,34 @@ export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestro
       return;
     }
 
-    this.establishmentService.deleteWorkplace(this.subsidiaryWorkplace.uid).subscribe(
-      () => {
-        if (this.isParentSubsidiaryView) {
-          this.parentSubsidiaryViewService.clearViewingSubAsParent();
-          this.establishmentService.setWorkplaceDeleted(true);
+    this.subscriptions.add(
+      this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
+        () => {
+          if (this.isParentSubsidiaryView) {
+            this.parentSubsidiaryViewService.clearViewingSubAsParent();
+            this.establishmentService.setWorkplaceDeleted(true);
 
-          this.router.navigate(['/workplace', 'view-all-workplaces']);
-          this.displaySuccessfullyDeletedAlert();
-        } else {
-          this.router.navigate(['sfcadmin', 'search', 'workplace']);
-          this.displaySuccessfullyDeletedAlert();
-        }
-      },
-      () => {
-        this.alertService.addAlert({
-          type: 'warning',
-          message: `There was an error deleting ${this.subsidiaryWorkplace.name}`,
-        });
-      },
+            this.router.navigate(['/workplace', 'view-all-workplaces']);
+            this.displaySuccessfullyDeletedAlert();
+          } else {
+            this.router.navigate(['sfcadmin', 'search', 'workplace']);
+            this.displaySuccessfullyDeletedAlert();
+          }
+        },
+        () => {
+          this.alertService.addAlert({
+            type: 'warning',
+            message: `There was an error deleting ${this.workplace.name}`,
+          });
+        },
+      ),
     );
   }
 
   private displaySuccessfullyDeletedAlert(): void {
     this.alertService.addAlert({
       type: 'success',
-      message: `Workplace deleted: ${this.subsidiaryWorkplace.name}`,
+      message: `Workplace deleted: ${this.workplace.name}`,
     });
   }
 

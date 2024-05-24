@@ -1,9 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Router, RouterModule, Routes } from '@angular/router';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
-import {
-  ProblemWithTheServiceComponent,
-} from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
+import { ProblemWithTheServiceComponent } from '@core/components/error/problem-with-the-service/problem-with-the-service.component';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
 import { LoggedOutGuard } from '@core/guards/logged-out/logged-out.guard';
 import { MigratedUserGuard } from '@core/guards/migrated-user/migrated-user.guard';
@@ -32,9 +30,7 @@ import { FirstLoginPageComponent } from '@features/first-login-page/first-login-
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import {
-  MigratedUserTermsConditionsComponent,
-} from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
@@ -42,6 +38,7 @@ import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
+import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 
 const routes: Routes = [
@@ -240,6 +237,15 @@ const routes: Routes = [
         path: 'link-to-parent',
         component: LinkToParentComponent,
         data: { title: 'Link to Parent' },
+      },
+      {
+        path: 'delete-workplace',
+        component: DeleteWorkplaceComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canDeleteEstablishment'],
+          title: 'Delete workplace',
+        },
       },
       {
         path: 'subsidiary',

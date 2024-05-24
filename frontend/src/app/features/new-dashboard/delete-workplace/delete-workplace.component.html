@@ -9,7 +9,7 @@
 
 <div class="govuk-grid-row govuk-!-padding-bottom-1 govuk-!-margin-top-1">
   <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-xl" data-testid="workplaceNameCaption">{{ this.subsidiaryWorkplace.name }}</span>
+    <span class="govuk-caption-xl" data-testid="workplaceNameCaption">{{ this.workplace.name }}</span>
     <h1 class="govuk-heading-l">Delete workplace</h1>
     <div style="width: 84%">
       <form #formEl novalidate (ngSubmit)="onSubmit($event)" [formGroup]="form" autocomplete="off" aria-label="form">
@@ -20,7 +20,7 @@
           <fieldset class="govuk-fieldset">
             <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
               <h2 class="govuk-fieldset__heading govuk-!-margin-top-1" data-testid="workplaceNameQuestion">
-                Are you sure you want to delete this workplace ({{ this.subsidiaryWorkplace.name }})?
+                Are you sure you want to delete this workplace ({{ this.workplace.name }})?
               </h2>
             </legend>
 

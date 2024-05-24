@@ -402,12 +402,12 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should navigate to the standalone delete-workplace page when logged in as admin', async () => {
-      const { getByText, routerSpy, component } = await setup('home', false, true, false, false, true, 0, false);
+      const { getByText, routerSpy } = await setup('home', false, true, false, false, true, 0, false);
 
       const deletWorplaceLink = getByText('Delete workplace');
       deletWorplaceLink.click();
 
-      expect(routerSpy).toHaveBeenCalledWith(['workplace', component.workplace.uid, 'delete-workplace']);
+      expect(routerSpy).toHaveBeenCalledWith(['/delete-workplace']);
     });
   });
 });

@@ -101,7 +101,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     if (this.isParentSubsidiaryView) {
       this.router.navigate([this.workplace.uid, 'delete-workplace']);
     } else {
-      this.router.navigate(['workplace', this.workplace.uid, 'delete-workplace']);
+      this.router.navigate(['/delete-workplace']);
     }
   }
 
