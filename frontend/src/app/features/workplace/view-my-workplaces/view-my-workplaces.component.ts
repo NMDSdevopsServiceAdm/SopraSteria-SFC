@@ -49,6 +49,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
 
+    this.establishmentService.setChildWorkplacesChanged(true);
     const childWorkplaces = this.route.snapshot.data.childWorkplaces;
     this.totalWorkplaceCount = childWorkplaces.count;
     this.activeWorkplaceCount = childWorkplaces.activeWorkplaceCount;
