@@ -1,26 +1,26 @@
-import { fireEvent, within, render } from '@testing-library/angular';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { getTestBed } from '@angular/core/testing';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { SharedModule } from '@shared/shared.module';
-import { WindowRef } from '@core/services/window.ref';
-import { AlertService } from '@core/services/alert.service';
-import { of, throwError } from 'rxjs';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Roles } from '@core/model/roles.enum';
-import { UserService } from '@core/services/user.service';
-import { MockUserService } from '@core/test-utils/MockUserService';
+import { AlertService } from '@core/services/alert.service';
 import { AuthService } from '@core/services/auth.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { UserService } from '@core/services/user.service';
+import { WindowRef } from '@core/services/window.ref';
+import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockUserService } from '@core/test-utils/MockUserService';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
+import { of, throwError } from 'rxjs';
 
 import { DeleteWorkplaceComponent } from './delete-workplace.component';
 
@@ -251,7 +251,7 @@ describe('DeleteWorkplaceComponent', async () => {
 
     spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
     spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
-    const setWorkplaceDeletedSpy = spyOn(establishmentService, 'setWorkplaceDeleted').and.callThrough();
+    const setChildWorkplacesChangedSpy = spyOn(establishmentService, 'setChildWorkplacesChanged').and.callThrough();
     component.ngOnInit();
     fixture.detectChanges();
 
@@ -261,7 +261,7 @@ describe('DeleteWorkplaceComponent', async () => {
     fireEvent.click(yesRadioButton);
     fireEvent.click(continueButton);
 
-    expect(setWorkplaceDeletedSpy).toHaveBeenCalledWith(true);
+    expect(setChildWorkplacesChangedSpy).toHaveBeenCalledWith(true);
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'view-all-workplaces']);
   });
 
