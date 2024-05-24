@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
@@ -102,7 +102,7 @@ describe('CountryOfBirthComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should call submit data and navigate with the correct url when  'United Kingdom' radio button is selected and 'Save and continue' is clicked`, async () => {
+    it(`should call submit data and navigate to health-and-care-visa page when 'United Kingdom' radio button is selected and 'Save and continue' is clicked`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup();
 
       fireEvent.click(getByLabelText('United Kingdom'));
@@ -121,7 +121,7 @@ describe('CountryOfBirthComponent', () => {
         component.workplace.uid,
         'staff-record',
         component.worker.uid,
-        'main-job-start-date',
+        'health-and-care-visa',
       ]);
     });
 

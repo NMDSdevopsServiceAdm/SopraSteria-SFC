@@ -100,7 +100,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
     const nextRoute = this.determineBaseRoute();
     const { countryOfBirthKnown } = this.form.value;
     if (countryOfBirthKnown === 'United Kingdom' && this.insideFlow) {
-      nextRoute.push('main-job-start-date');
+      nextRoute.push('health-and-care-visa');
     } else if (countryOfBirthKnown !== 'United Kingdom') {
       nextRoute.push('year-arrived-uk');
     }

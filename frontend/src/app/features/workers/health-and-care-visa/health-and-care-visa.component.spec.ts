@@ -1,23 +1,52 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { WorkerService } from '@core/services/worker.service';
+import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 
 import { HealthAndCareVisaComponent } from './health-and-care-visa.component';
 
 describe('HealthAndCareVisaComponent', () => {
-  let component: HealthAndCareVisaComponent;
-  let fixture: ComponentFixture<HealthAndCareVisaComponent>;
+  async function setup(insideFlow = true) {
+    const { fixture } = await render(HealthAndCareVisaComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: WorkerService,
+          useClass: MockWorkerServiceWithUpdateWorker,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
+              snapshot: {
+                data: {
+                  establishment: { uid: 'mocked-uid' },
+                },
+                url: [{ path: insideFlow ? 'staff-uid' : 'staff-record-summary' }],
+              },
+            },
+            snapshot: {
+              params: {},
+            },
+          },
+        },
+      ],
+    });
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      declarations: [ HealthAndCareVisaComponent ]
-    })
-    .compileComponents();
+    const component = fixture.componentInstance;
 
-    fixture = TestBed.createComponent(HealthAndCareVisaComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
-  });
+    return {
+      component,
+    };
+  }
 
-  it('should create', () => {
+  it('should render the CountryOfBirthComponent', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 });

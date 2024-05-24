@@ -30,7 +30,7 @@ export class HealthAndCareVisaComponent extends QuestionComponent {
   }
 
   init() {
-    if (this.worker.gender) {
+    if (this.worker.healthAndCareVisa) {
       this.form.patchValue({
         healthAndCareVisa: this.worker.healthAndCareVisa,
       });

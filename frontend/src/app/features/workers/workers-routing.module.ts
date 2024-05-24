@@ -29,6 +29,7 @@ import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
+import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
@@ -191,6 +192,11 @@ const routes: Routes = [
             path: 'recruited-from',
             component: RecruitedFromComponent,
             data: { title: 'Recruited From' },
+          },
+          {
+            path: 'health-and-care-visa',
+            component: HealthAndCareVisaComponent,
+            data: { title: 'Health and Care Visa' },
           },
           {
             path: 'adult-social-care-started',
@@ -425,6 +431,11 @@ const routes: Routes = [
         path: 'recruited-from',
         component: RecruitedFromComponent,
         data: { title: 'Recruited From' },
+      },
+      {
+        path: 'health-and-care-visa',
+        component: HealthAndCareVisaComponent,
+        data: { title: 'Health and Care Visa' },
       },
       {
         path: 'adult-social-care-started',
