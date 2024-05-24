@@ -9,6 +9,7 @@ enum Path {
   WORKPLACE_USERS = '/subsidiary/:establishmentuid/workplace-users',
   USER_DETAILS = 'subsidiary/workplace/:establishmentuid/user/:useruid',
   PERMISSIONS = 'subsidiary/workplace/:establishmentuid/user/:useruid/permissions',
+  DELETE_WORKPLACE = '/subsidiary/:establishmentuid/delete-workplace',
 }
 
 export const subsidiaryJourney: JourneyRoute = {
@@ -32,6 +33,10 @@ export const subsidiaryJourney: JourneyRoute = {
     {
       title: 'Benchmarks',
       path: Path.BENCHMARKS,
+    },
+    {
+      title: 'Delete workplace',
+      path: Path.DELETE_WORKPLACE,
     },
     {
       title: 'Workplace users',

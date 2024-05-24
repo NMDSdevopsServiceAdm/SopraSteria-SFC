@@ -150,7 +150,6 @@ const routes: Routes = [
           title: 'Regulated by CQC',
         },
       },
-
       {
         path: 'select-workplace',
         component: SelectWorkplaceComponent,
