@@ -177,7 +177,9 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
       .pipe(
         tap((workplace) => {
           return (
-            this.establishmentService.setWorkplace(workplace), this.establishmentService.setPrimaryWorkplace(workplace)
+            this.establishmentService.setWorkplace(workplace),
+            this.establishmentService.setPrimaryWorkplace(workplace),
+            this.establishmentService.setChildWorkplacesChanged(true)
           );
         }),
       )
