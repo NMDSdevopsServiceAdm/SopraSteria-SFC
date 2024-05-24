@@ -17,7 +17,7 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
   public parentWorkplace: Establishment;
   public childWorkplaces: Workplace[];
   public currentWorkplace: string;
-  @Input() maxChildWorkplacesForDropdown: Number;
+  @Input() maxChildWorkplacesForDropdown: number;
 
   constructor(
     private router: Router,
