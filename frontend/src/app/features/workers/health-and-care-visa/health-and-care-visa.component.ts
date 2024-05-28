@@ -13,6 +13,12 @@ import { QuestionComponent } from '../question/question.component';
   templateUrl: './health-and-care-visa.component.html',
 })
 export class HealthAndCareVisaComponent extends QuestionComponent {
+  public answersAvailable = [
+    { tag: 'Yes', value: 'Yes' },
+    { tag: 'No', value: 'No' },
+    { tag: 'I do not know', value: `Don't know` },
+  ];
+
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
@@ -36,6 +42,18 @@ export class HealthAndCareVisaComponent extends QuestionComponent {
       });
     }
 
-    this.next = this.getRoutePath('main-job-role');
+    this.next = this.getRoutePath('main-job-start-date');
+  }
+
+  generateUpdateProps(): unknown {
+    const { healthAndCareVisa } = this.form.value;
+
+    if (!healthAndCareVisa) {
+      return null;
+    }
+
+    return {
+      healthAndCareVisa,
+    };
   }
 }

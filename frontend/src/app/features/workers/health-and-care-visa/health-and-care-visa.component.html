@@ -1,1 +1,49 @@
-<p>health-and-care-visa works!</p>
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="submitted && form.get('healthAndCareVisa').invalid"
+      >
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l">Employment details</span>
+            <h1 class="govuk-fieldset__heading">Are they on a Health and Care Worker (Skilled Worker) visa?</h1>
+          </legend>
+          <div class="govuk-radios">
+            <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'healthAndCareVisa'"
+                id="healthAndCareVisa-{{ idx }}"
+                name="healthAndCareVisa"
+                type="radio"
+                [value]="answer.value"
+              />
+              <label class="govuk-label govuk-radios__label" for="healthAndCareVisa-{{ idx }}">
+                {{ answer.tag }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="'Employment details'"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+
+  <app-submit-button
+    [summaryContinue]="true"
+    [return]="!insideFlow"
+    (clicked)="setSubmitAction($event)"
+  ></app-submit-button>
+</form>
