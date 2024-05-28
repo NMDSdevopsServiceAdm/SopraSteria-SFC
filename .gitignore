@@ -11,6 +11,7 @@ dist
 */node_modules
 
 frontend/.angular/cache
+.angular
 
 # IDEs and editors
 .idea
