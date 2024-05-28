@@ -67,6 +67,18 @@ describe('HealthAndCareVisaComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      'DHSC use the anonymised data to help them identify which roles workers with Health and Care Worker visas have. The data is also used to look at employment trends and inform recruitment plans.',
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
   describe('Progress bar', () => {
     it('should render the staff record progress bar when in add staff record flow', async () => {
       const { getByTestId } = await setup();

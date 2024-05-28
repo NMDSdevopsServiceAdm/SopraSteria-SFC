@@ -12,6 +12,16 @@
             <span class="govuk-caption-l">Employment details</span>
             <h1 class="govuk-fieldset__heading">Are they on a Health and Care Worker (Skilled Worker) visa?</h1>
           </legend>
+          <p class="govuk-!-padding-top-4 govuk-!-padding-bottom-6">
+            We only want to know about Health and Care Worker visas and your workplace does not need to be the worker’s
+            actual sponsor.
+          </p>
+          <app-details [title]="'Why we ask for this information'">
+            <p>
+              DHSC use the anonymised data to help them identify which roles workers with Health and Care Worker visas
+              have. The data is also used to look at employment trends and inform recruitment plans.
+            </p>
+          </app-details>
           <div class="govuk-radios">
             <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
               <input
