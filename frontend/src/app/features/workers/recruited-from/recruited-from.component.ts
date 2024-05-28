@@ -15,6 +15,8 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class RecruitedFromComponent extends QuestionComponent {
   public availableRecruitments: RecruitmentResponse[];
+  public doNotKnowValue = 'I do not know';
+  public doNotKnowId: Number;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -29,68 +31,41 @@ export class RecruitedFromComponent extends QuestionComponent {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
-      recruitmentKnown: null,
       recruitedFromId: null,
     });
   }
 
   init() {
     this.subscriptions.add(
-      this.form.get('recruitmentKnown').valueChanges.subscribe((val) => {
-        this.form.get('recruitedFromId').clearValidators();
-        if (val === 'Yes') {
-          this.form.get('recruitedFromId').setValidators(Validators.required);
-        }
-
-        this.form.get('recruitedFromId').updateValueAndValidity();
-      }),
-    );
-
-    this.subscriptions.add(
       this.form.get('recruitedFromId').valueChanges.subscribe(() => {
         this.submitted = false;
       }),
     );
 
-    this.subscriptions.add(
-      this.recruitmentService.getRecruitedFrom().subscribe((res) => (this.availableRecruitments = res)),
-    );
+    this.getAndSetRecruitedFromData();
 
     if (this.worker.recruitedFrom) {
       const { value, from } = this.worker.recruitedFrom;
+      console.log(value);
+      console.log(from);
       this.form.patchValue({
-        recruitmentKnown: value,
-        recruitedFromId: from ? from.recruitedFromId : null,
+        recruitedFromId: from.recruitedFromId,
       });
     }
 
     this.next = this.getRoutePath('adult-social-care-started');
   }
 
-  setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'recruitedFromId',
-        type: [
-          {
-            name: 'required',
-            message: 'Select where they were recruited from',
-          },
-        ],
-      },
-    ];
-  }
-
   generateUpdateProps() {
-    const { recruitedFromId, recruitmentKnown } = this.form.value;
+    const { recruitedFromId } = this.form.value;
 
-    if (!recruitmentKnown) {
-      return null;
-    }
+    // if (!recruitedFromId) {
+    //   return null;
+    // }
 
     return {
       recruitedFrom: {
-        value: recruitmentKnown,
+        value: this.setRecruitmentKnownValue(recruitedFromId),
         ...(recruitedFromId && {
           from: {
             recruitedFromId: parseInt(recruitedFromId, 10),
@@ -98,5 +73,22 @@ export class RecruitedFromComponent extends QuestionComponent {
         }),
       },
     };
+  }
+
+  public setRecruitmentKnownValue(value) {
+    if (value === this.doNotKnowId) {
+      return 'No';
+    } else {
+      return 'Yes';
+    }
+  }
+
+  public getAndSetRecruitedFromData(): void {
+    this.subscriptions.add(
+      this.recruitmentService.getRecruitedFrom().subscribe((res) => {
+        this.availableRecruitments = res.concat([{ from: this.doNotKnowValue, id: res.length + 1 }]);
+        this.doNotKnowId = this.availableRecruitments.length;
+      }),
+    );
   }
 }
