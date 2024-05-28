@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { HealthAndCareVisaComponent } from './health-and-care-visa.component';
 
@@ -107,6 +107,232 @@ describe('HealthAndCareVisaComponent', () => {
 
       expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
+    });
+  });
+
+  describe('Navigation', () => {
+    describe('Inside flow', () => {
+      it(`should navigate to inside-or-outside-of-uk page when 'Yes' is selected`, async () => {
+        const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
+
+        const radioButtonYes = getByLabelText('Yes');
+        fireEvent.click(radioButtonYes);
+
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save and continue');
+        fireEvent.click(saveButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'inside-or-outside-of-uk',
+        ]);
+      });
+
+      it(`should navigate to main-job-start-date page when 'No' is selected`, async () => {
+        const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
+
+        const radioButtonNo = getByLabelText('No');
+        fireEvent.click(radioButtonNo);
+
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save and continue');
+        fireEvent.click(saveButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'main-job-start-date',
+        ]);
+      });
+
+      it(`should navigate to main-job-start-date page when submitting from flow and 'I do not know' is selected`, async () => {
+        const { component, fixture, routerSpy, getByText, getByLabelText } = await setup();
+
+        const radioButtonUnknown = getByLabelText('I do not know');
+        fireEvent.click(radioButtonUnknown);
+
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save and continue');
+        fireEvent.click(saveButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'main-job-start-date',
+        ]);
+      });
+
+      it('should navigate to main-job-start-date page when you skip the question', async () => {
+        const { component, routerSpy, getByText } = await setup();
+
+        const skipButton = getByText('Skip this question');
+        fireEvent.click(skipButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'main-job-start-date',
+        ]);
+      });
+    });
+
+    describe('Outside flow', () => {
+      it('should navigate to staff-summary-page page when pressing save and No is entered', async () => {
+        const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+
+        const radioButtonNo = getByLabelText('No');
+        fireEvent.click(radioButtonNo);
+
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'staff-record-summary',
+        ]);
+      });
+
+      it('should navigate to staff-summary-page page when pressing save and I do not know is entered', async () => {
+        const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+
+        const radioButtonNo = getByLabelText('I do not know');
+        fireEvent.click(radioButtonNo);
+
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'staff-record-summary',
+        ]);
+      });
+
+      it('should navigate to inside-or-outside-of-uk page when pressing save and Yes is entered', async () => {
+        const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
+
+        const radioButtonNo = getByLabelText('Yes');
+        fireEvent.click(radioButtonNo);
+
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'staff-record-summary',
+          'inside-or-outside-of-uk',
+        ]);
+      });
+
+      it('should navigate to staff-summary-page page when pressing cancel', async () => {
+        const { component, routerSpy, getByText } = await setup(false);
+
+        const cancelButton = getByText('Cancel');
+        fireEvent.click(cancelButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'staff-record-summary',
+        ]);
+      });
+    });
+
+    describe('Wdf view', () => {
+      const setupForWdfView = async () => {
+        const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
+
+        spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+        component.returnUrl = undefined;
+        component.ngOnInit();
+        fixture.detectChanges();
+        const workerId = component.worker.uid;
+
+        return { component, fixture, routerSpy, getByText, getByLabelText, router, workerId };
+      };
+
+      it('should navigate to wdf staff-summary-page page when pressing save and no is entered', async () => {
+        const { fixture, routerSpy, getByText, getByLabelText, workerId } = await setupForWdfView();
+
+        const radioButtonNo = getByLabelText('No');
+        fireEvent.click(radioButtonNo);
+
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      });
+
+      it('should navigate to wdf staff-summary-page page when pressing save and I do not know is entered', async () => {
+        const { fixture, routerSpy, getByText, getByLabelText, workerId } = await setupForWdfView();
+
+        const radioButtonDontKnow = getByLabelText('I do not know');
+        fireEvent.click(radioButtonDontKnow);
+
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+
+        expect(getByText('Save')).toBeTruthy();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      });
+
+      it('should navigate to wdf inside-or-outside-of-uk page when pressing save and Yes is entered', async () => {
+        const { fixture, routerSpy, getByText, getByLabelText, workerId } = await setupForWdfView();
+
+        const radioButtonNo = getByLabelText('Yes');
+        fireEvent.click(radioButtonNo);
+
+        fixture.detectChanges();
+
+        const saveButton = getByText('Save');
+        fireEvent.click(saveButton);
+
+        expect(getByText('Save')).toBeTruthy();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'inside-or-outside-of-uk']);
+      });
+
+      it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+        const { routerSpy, getByText, workerId } = await setupForWdfView();
+
+        const cancelButton = getByText('Cancel');
+        fireEvent.click(cancelButton);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      });
     });
   });
 });

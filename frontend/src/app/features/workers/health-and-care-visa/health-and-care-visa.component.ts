@@ -56,4 +56,20 @@ export class HealthAndCareVisaComponent extends QuestionComponent {
       healthAndCareVisa,
     };
   }
+
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
+    const { healthAndCareVisa } = this.form.value;
+
+    if (healthAndCareVisa === 'Yes') {
+      nextRoute.push('inside-or-outside-of-uk');
+    } else if (this.insideFlow) {
+      nextRoute.push('main-job-start-date');
+    }
+    return nextRoute;
+  }
+
+  onSuccess(): void {
+    this.next = this.determineConditionalRouting();
+  }
 }
