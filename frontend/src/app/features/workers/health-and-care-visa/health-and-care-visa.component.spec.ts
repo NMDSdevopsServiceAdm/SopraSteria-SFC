@@ -72,7 +72,7 @@ describe('HealthAndCareVisaComponent', () => {
 
     const reveal = getByText('Why we ask for this information');
     const revealText = getByText(
-      'DHSC use the anonymised data to help them identify which roles workers with Health and Care Worker visas have. The data is also used to look at employment trends and inform recruitment plans.',
+      'DHSC use the anonymised data to help them identify which roles workers with Health and Care Worker visas have. The data is also used to look at employment trends and inform recruitment policies.',
     );
 
     expect(reveal).toBeTruthy();
