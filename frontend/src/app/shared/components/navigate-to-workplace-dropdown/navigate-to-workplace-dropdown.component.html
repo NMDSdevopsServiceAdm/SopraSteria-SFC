@@ -1,5 +1,8 @@
 <div
-  *ngIf="parentSubsidiaryViewService.getViewingSubAsParent() || childWorkplaces?.length < maxChildWorkplacesForDropdown"
+  *ngIf="
+    parentSubsidiaryViewService.getViewingSubAsParent() ||
+    (childWorkplaces?.length > 0 && childWorkplaces?.length < maxChildWorkplacesForDropdown)
+  "
   class="asc-navigate-to-workplace-dropdown-container govuk-!-padding-bottom-1"
   id="navigateToWorkplaceContainer"
 >

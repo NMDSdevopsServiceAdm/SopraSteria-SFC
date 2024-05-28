@@ -11,13 +11,13 @@ import { fireEvent, render } from '@testing-library/angular';
 import { NavigateToWorkplaceDropdownComponent } from './navigate-to-workplace-dropdown.component';
 
 describe('NavigateToWorkplaceDropdownComponent', () => {
-  const setup = async (maxChildWorkplacesForDropdown = 5, inSubView = true) => {
+  const setup = async (maxChildWorkplacesForDropdown = 5, inSubView = true, childWorkplaces = null) => {
     const { fixture, getByText, getByLabelText } = await render(NavigateToWorkplaceDropdownComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       providers: [
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useFactory: MockEstablishmentService.factory(null, true, null, childWorkplaces),
         },
       ],
       componentProperties: {
@@ -54,6 +54,14 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
 
   it('should not display anything when more child workplaces than maxChildWorkplacesForDropdown but not in sub view', async () => {
     const { fixture } = await setup(3, false);
+    fixture.detectChanges();
+    const navigateToWorkplaceContainer = fixture.nativeElement.querySelector('#navigateToWorkplaceContainer');
+
+    expect(navigateToWorkplaceContainer).toBeFalsy();
+  });
+
+  it('should not display anything when no child workplaces', async () => {
+    const { fixture } = await setup(31, false, []);
     fixture.detectChanges();
     const navigateToWorkplaceContainer = fixture.nativeElement.querySelector('#navigateToWorkplaceContainer');
 

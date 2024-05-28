@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
+import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -11,7 +12,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
-import { UserDetails } from '@core/model/userDetails.model';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
@@ -121,7 +121,7 @@ export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestro
         () => {
           if (this.isParentSubsidiaryView) {
             this.parentSubsidiaryViewService.clearViewingSubAsParent();
-            this.establishmentService.setWorkplaceDeleted(true);
+            this.establishmentService.setCheckForChildWorkplaceChanges(true);
 
             this.router.navigate(['/workplace', 'view-all-workplaces']);
             this.displaySuccessfullyDeletedAlert();

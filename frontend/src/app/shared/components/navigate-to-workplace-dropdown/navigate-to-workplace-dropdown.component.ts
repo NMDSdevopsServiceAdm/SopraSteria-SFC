@@ -17,7 +17,7 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
   public parentWorkplace: Establishment;
   public childWorkplaces: Workplace[];
   public currentWorkplace: string;
-  @Input() maxChildWorkplacesForDropdown: Number;
+  @Input() maxChildWorkplacesForDropdown: number;
 
   constructor(
     private router: Router,
@@ -30,10 +30,10 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
     this.initialiseComponent();
 
     this.subscriptions.add(
-      this.establishmentService.workplaceDeleted$.subscribe((workplaceHasBeenDeleted) => {
+      this.establishmentService.checkForChildWorkplaceChanges$.subscribe((workplaceHasBeenDeleted) => {
         if (workplaceHasBeenDeleted) {
           this.initialiseComponent();
-          this.establishmentService.setWorkplaceDeleted(false);
+          this.establishmentService.setCheckForChildWorkplaceChanges(false);
         }
       }),
     );
