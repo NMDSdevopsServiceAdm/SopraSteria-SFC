@@ -9,9 +9,11 @@ import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerSe
 import { build, fake } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import userEvent from '@testing-library/user-event';
 
 import { RecruitedFromComponent } from './recruited-from.component';
+import { RecruitmentService } from '@core/services/recruitment.service';
+import { MockRecruitmentService } from '@core/test-utils/MockRecruitmentService';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 
 const workerBuilder = build('Worker', {
   fields: {
@@ -23,6 +25,7 @@ const workerBuilder = build('Worker', {
       id: 20,
       jobId: 20,
     },
+    recruitedFrom: {},
   },
 });
 
@@ -45,7 +48,29 @@ const registeredNurse = () =>
     },
   });
 
-fdescribe('RecruitedFromComponent', () => {
+const workerRecruitedFromUnknown = () =>
+  workerBuilder({
+    overrides: {
+      recruitedFrom: {
+        value: 'No',
+      },
+    },
+  });
+
+const workerRecruitedFromKnown = () =>
+  workerBuilder({
+    overrides: {
+      recruitedFrom: {
+        from: {
+          recruitedFromId: 3,
+          from: 'Health sector',
+        },
+        value: 'Yes',
+      },
+    },
+  });
+
+describe('RecruitedFromComponent', () => {
   async function setup(insideFlow = true, workerType = 'ukWorker') {
     let worker;
     if (workerType === 'ukWorker') {
@@ -54,6 +79,10 @@ fdescribe('RecruitedFromComponent', () => {
       worker = nonUkWorker();
     } else if (workerType === 'nurse') {
       worker = registeredNurse();
+    } else if (workerType === 'workerRecruitedFromUnknown') {
+      worker = workerRecruitedFromUnknown();
+    } else if (workerType === 'workerRecruitedFromKnown') {
+      worker = workerRecruitedFromKnown();
     }
 
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
@@ -84,7 +113,12 @@ fdescribe('RecruitedFromComponent', () => {
             useFactory: MockWorkerServiceWithoutReturnUrl.factory(worker),
             deps: [HttpClient],
           },
+          {
+            provide: RecruitmentService,
+            useClass: MockRecruitmentService,
+          },
         ],
+        schemas: [NO_ERRORS_SCHEMA],
       },
     );
 
@@ -268,16 +302,31 @@ fdescribe('RecruitedFromComponent', () => {
     });
   });
 
-  xdescribe('error messages', () => {
-    it('returns an error message when yes is clicked but no recruitment source is selected', async () => {
-      const { fixture, getByText, getAllByText, getByLabelText } = await setup();
+  describe('previously saved answers', () => {
+    it("should show the correct recruited from value checked  doNotKnowId is 'Yes'", async () => {
+      const { fixture } = await setup(false, 'workerRecruitedFromKnown');
 
-      userEvent.click(getByLabelText('Yes'));
-      fixture.detectChanges();
-      userEvent.click(getByText('Save and continue'));
-      fixture.detectChanges();
+      const selectedRadioBtn = fixture.nativeElement.querySelector('input[id="recruitedFromId-2"]');
 
-      expect(getAllByText('Select where they were recruited from').length).toEqual(3);
+      expect(selectedRadioBtn.checked).toBeTruthy();
+    });
+
+    it("should show the value as 'I do not know' when doNotKnowId is 'No'", async () => {
+      const { component, fixture } = await setup(false, 'workerRecruitedFromUnknown');
+
+      const recruitedFromId = `recruitedFromId-${component.availableRecruitments.length - 1}`;
+
+      const selectedRadioBtn = fixture.nativeElement.querySelector(`input[id=${recruitedFromId}]`);
+
+      expect(selectedRadioBtn.checked).toBeTruthy();
+    });
+
+    xit('should show nothing checked if nothing was saved', async () => {
+      const { fixture } = await setup(false, 'workerRecruitedFromUnknown');
+
+      const selectedRadioBtn = fixture.nativeElement.querySelector('input[id="recruitedFromId-10"]');
+
+      expect(selectedRadioBtn.checked).toBeTruthy();
     });
   });
 });

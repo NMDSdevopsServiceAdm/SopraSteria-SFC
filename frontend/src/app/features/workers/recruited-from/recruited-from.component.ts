@@ -8,6 +8,8 @@ import { RecruitmentResponse, RecruitmentService } from '@core/services/recruitm
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
+import { take } from 'rxjs/operators';
+import { filter } from 'lodash';
 
 @Component({
   selector: 'app-recruited-from',
@@ -16,7 +18,7 @@ import { QuestionComponent } from '../question/question.component';
 export class RecruitedFromComponent extends QuestionComponent {
   public availableRecruitments: RecruitmentResponse[];
   public doNotKnowValue = 'I do not know';
-  public doNotKnowId: Number;
+  public doNotKnowId = 99;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -36,32 +38,27 @@ export class RecruitedFromComponent extends QuestionComponent {
   }
 
   init() {
+    this.getAndSetRecruitedFromData();
+
     this.subscriptions.add(
       this.form.get('recruitedFromId').valueChanges.subscribe(() => {
         this.submitted = false;
       }),
     );
 
-    this.getAndSetRecruitedFromData();
-
     if (this.worker.recruitedFrom) {
       const { value, from } = this.worker.recruitedFrom;
-      console.log(value);
-      console.log(from);
-      this.form.patchValue({
-        recruitedFromId: from.recruitedFromId,
-      });
+      this.patchFormValue(value, from);
     }
-
     this.next = this.getRoutePath('adult-social-care-started');
   }
 
   generateUpdateProps() {
     const { recruitedFromId } = this.form.value;
 
-    // if (!recruitedFromId) {
-    //   return null;
-    // }
+    if (!recruitedFromId) {
+      return null;
+    }
 
     return {
       recruitedFrom: {
@@ -75,7 +72,7 @@ export class RecruitedFromComponent extends QuestionComponent {
     };
   }
 
-  public setRecruitmentKnownValue(value) {
+  public setRecruitmentKnownValue(value): string {
     if (value === this.doNotKnowId) {
       return 'No';
     } else {
@@ -83,11 +80,22 @@ export class RecruitedFromComponent extends QuestionComponent {
     }
   }
 
-  public getAndSetRecruitedFromData(): void {
+  public patchFormValue(value, from): void {
+    if (value === 'No') {
+      this.form.patchValue({
+        recruitedFromId: this.doNotKnowId,
+      });
+    } else if (value === 'Yes') {
+      this.form.patchValue({
+        recruitedFromId: from.recruitedFromId,
+      });
+    }
+  }
+
+  public async getAndSetRecruitedFromData(): Promise<void> {
     this.subscriptions.add(
       this.recruitmentService.getRecruitedFrom().subscribe((res) => {
-        this.availableRecruitments = res.concat([{ from: this.doNotKnowValue, id: res.length + 1 }]);
-        this.doNotKnowId = this.availableRecruitments.length;
+        this.availableRecruitments = res.concat([{ from: this.doNotKnowValue, id: this.doNotKnowId }]);
       }),
     );
   }
