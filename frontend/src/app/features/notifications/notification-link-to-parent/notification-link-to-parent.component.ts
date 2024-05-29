@@ -32,7 +32,8 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
   public notificationRequestedFrom: string;
   public notificationRequestedTo: string;
   public requestorName: string;
-  public postCode: string;
+  public subPostcode: string;
+  public parentPostcode: string;
   public notificationRequestedFromUid: string;
 
   constructor(
@@ -54,7 +55,8 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     this.notificationRequestedFrom = this.notification.typeContent.subEstablishmentName;
     this.notificationRequestedFromUid = this.notification.typeContent.subEstablishmentUid;
     this.requestorName = this.notification.typeContent.requestorName;
-    this.postCode = this.notification.typeContent.postCode;
+    this.parentPostcode = this.notification.typeContent.parentPostCode;
+    this.subPostcode = this.notification.typeContent.subPostCode;
     this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
   }
 

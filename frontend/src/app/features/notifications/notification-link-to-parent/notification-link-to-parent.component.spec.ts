@@ -1,18 +1,17 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { NotificationTypePipe } from '@shared/pipes/notification-type.pipe';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable } from 'rxjs';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 
 import { NotificationLinkToParentComponent } from './notification-link-to-parent.component';
 
@@ -25,7 +24,8 @@ describe('NotificationLinkToParentComponent', () => {
         parentEstablishmentId: 137,
         parentEstablishmentName: 'Test Parent',
         permissionRequest: permissionRequest,
-        postCode: 'postalcode',
+        parentPostCode: 'postalcode',
+        subPostCode: 'ABC123',
         rejectionReason: rejectionReason,
         requestorName: 'Test sub',
         subEstablishmentId: 312,
@@ -103,7 +103,7 @@ describe('NotificationLinkToParentComponent', () => {
       const { component, getByText } = await setup('REQUESTED');
 
       const subName = component.notification.typeContent.subEstablishmentName;
-      const subPostCode = component.notification.typeContent.postCode;
+      const subPostCode = component.notification.typeContent.subPostCode;
 
       const linkToParentRequestText = getByText(`${subName}, ${subPostCode} want to link to you.`);
 
@@ -166,7 +166,7 @@ describe('NotificationLinkToParentComponent', () => {
         fixture.detectChanges();
 
         const parentName = component.notification.typeContent.parentEstablishmentName;
-        const parentPostCode = component.notification.typeContent.postCode;
+        const parentPostCode = component.notification.typeContent.parentPostCode;
 
         const rejectedText = getByText(`${parentName}, ${parentPostCode} has rejected your request to link to them.`);
         const rejectedReasonText = getByText(component.notification.typeContent.rejectionReason);
@@ -182,7 +182,7 @@ describe('NotificationLinkToParentComponent', () => {
         fixture.detectChanges();
 
         const parentName = component.notification.typeContent.parentEstablishmentName;
-        const parentPostCode = component.notification.typeContent.postCode;
+        const parentPostCode = component.notification.typeContent.parentPostCode;
 
         const rejectedText = getByText(`${parentName}, ${parentPostCode} has rejected your request to link to them.`);
         const rejectedReasonText = getByText('No reason provided.');
@@ -198,7 +198,7 @@ describe('NotificationLinkToParentComponent', () => {
       const { component, getByText } = await setup();
 
       const parentName = component.notification.typeContent.parentEstablishmentName;
-      const parentPostCode = component.notification.typeContent.postCode;
+      const parentPostCode = component.notification.typeContent.parentPostCode;
 
       const parentNameAndPostCodeText = `Your request to link to ${parentName}, ${parentPostCode}, has been approved.`;
 
@@ -206,16 +206,18 @@ describe('NotificationLinkToParentComponent', () => {
     });
 
     it('should show the sub name and postcode in the parent notification', async () => {
-      const { component, fixture } = await setup();
+      const { component, fixture, getByText } = await setup();
 
       const subName = component.notification.typeContent.subEstablishmentName;
-      const subPostCode = component.notification.typeContent.postCode;
+      const subPostCode = component.notification.typeContent.subPostCode;
       const approvalDate = '14 December 2023 at 5:23pm';
 
       component.isWorkPlaceRequester = true;
       fixture.detectChanges();
 
-      const parentApprovedRequestLinkText = `You approved a link request from ${subName}, ${subPostCode}, on ${approvalDate}.`;
+      const parentApprovedRequestLinkText = getByText(
+        `You approved a link request from ${subName}, ${subPostCode}, on ${approvalDate}.`,
+      );
 
       expect(parentApprovedRequestLinkText).toBeTruthy();
     });
