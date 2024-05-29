@@ -320,13 +320,5 @@ describe('RecruitedFromComponent', () => {
 
       expect(selectedRadioBtn.checked).toBeTruthy();
     });
-
-    xit('should show nothing checked if nothing was saved', async () => {
-      const { fixture } = await setup(false, 'workerRecruitedFromUnknown');
-
-      const selectedRadioBtn = fixture.nativeElement.querySelector('input[id="recruitedFromId-10"]');
-
-      expect(selectedRadioBtn.checked).toBeTruthy();
-    });
   });
 });

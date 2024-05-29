@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -8,8 +8,6 @@ import { RecruitmentResponse, RecruitmentService } from '@core/services/recruitm
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
-import { take } from 'rxjs/operators';
-import { filter } from 'lodash';
 
 @Component({
   selector: 'app-recruited-from',
@@ -62,7 +60,7 @@ export class RecruitedFromComponent extends QuestionComponent {
 
     return {
       recruitedFrom: {
-        value: this.setRecruitmentKnownValue(recruitedFromId),
+        value: this.getRecruitmentKnownValue(recruitedFromId),
         ...(recruitedFromId && {
           from: {
             recruitedFromId: parseInt(recruitedFromId, 10),
@@ -72,12 +70,8 @@ export class RecruitedFromComponent extends QuestionComponent {
     };
   }
 
-  public setRecruitmentKnownValue(value): string {
-    if (value === this.doNotKnowId) {
-      return 'No';
-    } else {
-      return 'Yes';
-    }
+  public getRecruitmentKnownValue(value): string {
+    return value === this.doNotKnowId ? 'No' : 'Yes';
   }
 
   public patchFormValue(value, from): void {
@@ -98,5 +92,9 @@ export class RecruitedFromComponent extends QuestionComponent {
         this.availableRecruitments = res.concat([{ from: this.doNotKnowValue, id: this.doNotKnowId }]);
       }),
     );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
