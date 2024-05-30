@@ -40,7 +40,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
   }
 
   init() {
-    this.next = this.getRoutePath('main-job-start-date');
+    this.next = this.getRoutePath('health-and-care-visa');
 
     this.setupFormValidation();
     if (this.worker.yearArrived) {

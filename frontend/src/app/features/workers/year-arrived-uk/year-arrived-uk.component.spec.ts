@@ -1,6 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WorkerService } from '@core/services/worker.service';
@@ -102,7 +102,7 @@ describe('YearArrivedUkComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to main-job-start-date page when submitting from flow', async () => {
+    it('should navigate to health-and-care-visa page when submitting from flow', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -118,11 +118,11 @@ describe('YearArrivedUkComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'main-job-start-date',
+        'health-and-care-visa',
       ]);
     });
 
-    it('should navigate to main-job-start-date page when skipping the question in the flow', async () => {
+    it('should navigate to health-and-care-visa page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -136,7 +136,7 @@ describe('YearArrivedUkComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'main-job-start-date',
+        'health-and-care-visa',
       ]);
     });
 
