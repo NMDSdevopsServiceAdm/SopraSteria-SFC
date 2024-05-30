@@ -9,9 +9,9 @@ import { IdleService } from '@core/services/idle.service';
 import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { TabsService } from '@core/services/tabs.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 @Component({
   selector: 'app-root',
@@ -27,6 +27,7 @@ export class AppComponent implements OnInit {
   public newDataAreaFlag: boolean;
   public parentAccount: boolean;
   public subsAccount: boolean;
+  public viewingSubsidiaryWorkplace: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -68,10 +69,12 @@ export class AppComponent implements OnInit {
         nav.url.includes('dashboard') ||
         nav.url === '/' ||
         this.parentSubsidiaryViewService.getViewingSubAsParentDashboard(nav.url);
+
       if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
       this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
       this.subsAccount = this.establishmentService.primaryWorkplace?.parentName ? true : false;
+      this.viewingSubsidiaryWorkplace = nav.url.includes('subsidiary');
 
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {
