@@ -35,9 +35,9 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
   public ownershipToUid: string;
   public ownershipFromUid: string;
   public ownershipFromPostCode: string;
-  public journeyType: any;
   public isParent: boolean;
-  public subWorkplace: Establishment;
+  public workplace: Establishment;
+  public changeDataOwnerFromSubsidiaryUid: string;
 
   constructor(
     private errorSummaryService: ErrorSummaryService,
@@ -58,49 +58,53 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     this.setupForm();
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
-    this.primaryWorkplace = this.establishmentService.primaryWorkplace;
-    this.isParent = this.primaryWorkplace?.isParent;
 
-    this.setWorkplaces();
-    this.breadcrumbService.show(this.showJourneyType(), this.primaryWorkplace.name);
+    this.primaryWorkplace = this.route.snapshot.data.establishment;
+    this.isParent = this.primaryWorkplace?.isParent;
+    this.changeDataOwnerFromSubsidiaryUid = this.route.snapshot.queryParams?.changeDataOwnerFrom;
+
+    this.getSubsidiaryWorkplace();
+
+    this.breadcrumbService.show(this.showJourneyType());
   }
 
-  public setSubWorkplace(): void {
-    const changeDataOwnerFromUid = this.route.snapshot.queryParams?.changeDataOwnerFrom;
-    if (this.isParent && changeDataOwnerFromUid) {
-      const childWorkplaces = this.route.snapshot.data.childWorkplaces.childWorkplaces;
-      this.subWorkplace = childWorkplaces.find((sub) => sub.uid === changeDataOwnerFromUid);
+  public getSubsidiaryWorkplace() {
+    if (this.changeDataOwnerFromSubsidiaryUid) {
+      this.subscriptions.add(
+        this.establishmentService.getEstablishment(this.changeDataOwnerFromSubsidiaryUid).subscribe((workplace) => {
+          if (workplace) {
+            this.setWorkplaces(workplace);
+          }
+        }),
+      );
     } else {
-      this.subWorkplace = this.primaryWorkplace;
+      this.setWorkplaces(this.primaryWorkplace);
     }
   }
 
   public showJourneyType(): any {
-    this.journeyType = this.isParent ? JourneyType.ALL_WORKPLACES : JourneyType.CHANGE_DATA_OWNER;
-    return this.journeyType;
+    return this.isParent ? JourneyType.ALL_WORKPLACES : JourneyType.CHANGE_DATA_OWNER;
   }
 
-  private setWorkplaces(): void {
-    this.setSubWorkplace();
+  public setWorkplaces(workplace): void {
+    this.workplace = workplace;
     this.dataPermissionsRequester = this.primaryWorkplace;
-    this.isSubWorkplace =
-      !this.subWorkplace.isParent && this.subWorkplace.uid === this.primaryWorkplace.uid ? true : false;
 
-    if (this.subWorkplace.dataOwner === 'Workplace') {
-      this.ownershipToName = this.isSubWorkplace ? this.subWorkplace.parentName : this.dataPermissionsRequester.name;
-      this.ownershipToUid = this.isSubWorkplace ? this.subWorkplace.uid : this.dataPermissionsRequester.uid;
-      this.ownershipFromName = this.subWorkplace.name;
-      this.ownershipFromUid = this.subWorkplace.uid;
-      this.ownershipFromPostCode = this.subWorkplace.postcode;
+    this.isSubWorkplace = !this.workplace.isParent && this.workplace.uid === this.primaryWorkplace.uid ? true : false;
+
+    if (this.workplace.dataOwner === 'Workplace') {
+      this.ownershipToName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
+      this.ownershipToUid = this.isSubWorkplace ? this.workplace.uid : this.dataPermissionsRequester.uid;
+      this.ownershipFromName = this.workplace.name;
+      this.ownershipFromUid = this.workplace.uid;
+      this.ownershipFromPostCode = this.workplace.postcode;
     } else {
-      this.ownershipToName = this.subWorkplace.name;
-      this.ownershipToUid = this.subWorkplace.uid;
-      this.ownershipFromName = this.isSubWorkplace ? this.subWorkplace.parentName : this.dataPermissionsRequester.name;
-      this.ownershipFromUid = this.isSubWorkplace
-        ? this.subWorkplace.parentUid
-        : this.dataPermissionsRequester.parentUid;
+      this.ownershipToName = this.workplace.name;
+      this.ownershipToUid = this.workplace.uid;
+      this.ownershipFromName = this.isSubWorkplace ? this.workplace.parentName : this.dataPermissionsRequester.name;
+      this.ownershipFromUid = this.isSubWorkplace ? this.workplace.parentUid : this.dataPermissionsRequester.parentUid;
       this.ownershipFromPostCode = this.isSubWorkplace
-        ? this.subWorkplace.parentPostcode
+        ? this.workplace.parentPostcode
         : this.dataPermissionsRequester.parentPostcode;
     }
   }
@@ -155,6 +159,10 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     ];
   }
 
+  public sendAlert(): void {
+    this.alertService.addAlert({ type: 'success', message: "You've sent a change data owner request" });
+  }
+
   public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -180,22 +188,25 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
       };
 
       this.subscriptions.add(
-        this.establishmentService.changeOwnership(this.subWorkplace.uid, requestedPermission).subscribe(
+        this.establishmentService.changeOwnership(this.workplace.uid, requestedPermission).subscribe(
           (data) => {
             if (data) {
               if (this.isParent) {
-                this.router.navigate(['/workplace/view-all-workplaces'], {
-                  state: {changeDataOwnerStatus: true},
-                }).then(()=>{
-                  this.alertService.addAlert({ type: 'success', message: "You've sent a change data owner request"});
-              });
-
+                this.router
+                  .navigate(['/workplace/view-all-workplaces'], {
+                    state: { changeDataOwnerStatus: true },
+                  })
+                  .then(() => {
+                    this.sendAlert();
+                  });
               } else {
-                this.router.navigate(['/dashboard'], {
-                  state: {changeDataOwnerStatus: true},
-                }).then(()=>{
-                  this.alertService.addAlert({ type: 'success', message: "You've sent a change data owner request"});
-              });
+                this.router
+                  .navigate(['/dashboard'], {
+                    state: { changeDataOwnerStatus: true },
+                  })
+                  .then(() => {
+                    this.sendAlert();
+                  });
               }
             }
           },
