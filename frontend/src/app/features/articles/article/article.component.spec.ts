@@ -4,13 +4,15 @@ import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from
 import { RouterTestingModule } from '@angular/router/testing';
 import { ArticlesService } from '@core/services/articles.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockArticlesService } from '@core/test-utils/MockArticlesService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import {  render } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import { of, Subject } from 'rxjs';
 
 import { ArticleComponent } from './article.component';
@@ -25,6 +27,7 @@ describe('ArticleComponent', () => {
         { provide: ArticlesService, useClass: MockArticlesService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
@@ -59,6 +62,13 @@ describe('ArticleComponent', () => {
   it('should display title of article', async () => {
     const { getByText } = await setup();
     expect(getByText(articles.data[0].title)).toBeTruthy();
+  });
+
+  it('should display name of the workplace', async () => {
+    const { getByText, component } = await setup();
+    const workplaceName = component.workplace.name;
+
+    expect(getByText(workplaceName)).toBeTruthy();
   });
 
   it('should display content of article', async () => {
