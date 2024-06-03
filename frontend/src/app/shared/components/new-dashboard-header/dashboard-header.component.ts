@@ -2,13 +2,9 @@ import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { UserDetails } from '@core/model/userDetails.model';
-import { AlertService } from '@core/services/alert.service';
-import { DialogService } from '@core/services/dialog.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
-import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
@@ -44,11 +40,8 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   public user: UserDetails;
 
   constructor(
-    private establishmentService: EstablishmentService,
-    private dialogService: DialogService,
     private permissionsService: PermissionsService,
     private router: Router,
-    private alertService: AlertService,
     private userService: UserService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
@@ -78,59 +71,6 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     this.isParentSubsidiaryView = this.parentSubsidiaryViewService.getViewingSubAsParent();
   }
 
-  public onDeleteWorkplace(event: Event): void {
-    event.preventDefault();
-
-    if (!this.canDeleteEstablishment) {
-      return;
-    }
-
-    this.dialogService
-      .open(DeleteWorkplaceDialogComponent, { workplaceName: this.workplace.name })
-      .afterClosed.subscribe((deleteConfirmed) => {
-        if (deleteConfirmed) {
-          this.deleteWorkplace();
-        }
-      });
-  }
-
-  private deleteWorkplace(): void {
-    if (!this.canDeleteEstablishment) {
-      return;
-    }
-
-    this.subscriptions.add(
-      this.establishmentService.deleteWorkplace(this.workplace.uid).subscribe(
-        () => {
-          if (this.isParentSubsidiaryView) {
-            this.parentSubsidiaryViewService.clearViewingSubAsParent();
-
-            this.router.navigate(['workplace', 'view-all-workplaces']).then(() => {
-              this.displaySuccessfullyDeletedAlert();
-            });
-          } else {
-            this.router.navigate(['sfcadmin', 'search', 'workplace']).then(() => {
-              this.displaySuccessfullyDeletedAlert();
-            });
-          }
-        },
-        () => {
-          this.alertService.addAlert({
-            type: 'warning',
-            message: 'There was an error deleting the workplace.',
-          });
-        },
-      ),
-    );
-  }
-
-  private displaySuccessfullyDeletedAlert(): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message: `${this.workplace.name} has been permanently deleted.`,
-    });
-  }
-
   private getPermissions(): void {
     this.user = this.userService.loggedInUser;
     if (isAdminRole(this.user?.role)) {
@@ -153,6 +93,15 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
       this.header = `${this.tabsMap[this.tab]} (${this.tAndQCount})`;
     } else {
       this.header = this.tabsMap[this.tab];
+    }
+  }
+
+  public navigateToDeleteWorkplace(event: Event): void {
+    event.preventDefault();
+    if (this.isParentSubsidiaryView) {
+      this.router.navigate([this.workplace.uid, 'delete-workplace']);
+    } else {
+      this.router.navigate(['/delete-workplace']);
     }
   }
 

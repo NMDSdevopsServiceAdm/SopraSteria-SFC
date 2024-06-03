@@ -67,6 +67,7 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -162,6 +163,15 @@ const routes: Routes = [
         component: ViewSubsidiaryWorkplaceComponent,
         data: { title: 'Workplace' },
       },
+      {
+        path: 'delete-workplace',
+        component: DeleteWorkplaceComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canDeleteEstablishment'],
+          title: 'Delete workplace',
+        },
+      },
     ],
   },
   {
@@ -231,7 +241,6 @@ const routes: Routes = [
           title: 'Regulated by CQC',
         },
       },
-
       {
         path: 'select-workplace',
         component: SelectWorkplaceComponent,

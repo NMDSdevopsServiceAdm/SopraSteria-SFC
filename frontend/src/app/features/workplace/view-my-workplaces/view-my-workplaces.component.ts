@@ -49,6 +49,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
 
+    this.establishmentService.setCheckForChildWorkplaceChanges(true);
     const childWorkplaces = this.route.snapshot.data.childWorkplaces;
     this.totalWorkplaceCount = childWorkplaces.count;
     this.activeWorkplaceCount = childWorkplaces.activeWorkplaceCount;
@@ -84,6 +85,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
       .getChildWorkplaces(this.primaryWorkplace.uid, {
         pageIndex: this.currentPageIndex,
         itemsPerPage: this.itemsPerPage,
+        getPendingWorkplaces: true,
         ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
       })
       .pipe(take(1))

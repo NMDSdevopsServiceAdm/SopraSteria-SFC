@@ -39,6 +39,7 @@ import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
   benchmarksTabJourney,
+  deleteWorkplaceJourney,
   myWorkplaceJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
@@ -332,6 +333,11 @@ export class BreadcrumbService {
 
       case JourneyType.SUBSIDIARY: {
         routes = subsidiaryJourney;
+        break;
+      }
+
+      case JourneyType.DELETE_WORKPLACE: {
+        routes = deleteWorkplaceJourney;
         break;
       }
 

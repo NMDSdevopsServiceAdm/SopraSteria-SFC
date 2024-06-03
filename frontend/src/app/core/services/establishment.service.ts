@@ -79,10 +79,9 @@ export class EstablishmentService {
   private _employerTypeHasValue: boolean = null;
   private _inStaffRecruitmentFlow: boolean;
   private _standAloneAccount$: boolean;
+  private _checkForChildWorkplaceChanges$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
-  constructor(private http: HttpClient) {
-    
-  }
+  constructor(private http: HttpClient) {}
 
   private _establishmentId: string = null;
 
@@ -104,6 +103,14 @@ export class EstablishmentService {
 
   public set standAloneAccount(value: boolean) {
     this._standAloneAccount$ = value;
+  }
+
+  public get checkForChildWorkplaceChanges$(): Observable<boolean> {
+    return this._checkForChildWorkplaceChanges$.asObservable();
+  }
+
+  public setCheckForChildWorkplaceChanges(value: boolean) {
+    this._checkForChildWorkplaceChanges$.next(value);
   }
 
   public setEmployerTypeHasValue(hasValue: boolean) {

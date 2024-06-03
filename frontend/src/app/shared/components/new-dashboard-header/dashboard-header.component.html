@@ -54,15 +54,17 @@
                     (canDeleteEstablishment && isParentSubsidiaryView)
                   "
                 >
-                  <button
+                  <a
+                    data-testid="delete-workplace"
+                    href="#"
                     class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0 govuk-!-margin-bottom-2"
-                    (click)="onDeleteWorkplace($event)"
+                    (click)="navigateToDeleteWorkplace($event)"
                   >
                     <img src="/assets/images/bin.svg" alt="" />
                     <span class="govuk-!-margin-left-1">
-                      Delete <span class="govuk-visually-hidden">{{ workplace?.name }}</span> Workplace
+                      Delete <span class="govuk-visually-hidden">{{ workplace?.name }}</span> workplace
                     </span>
-                  </button>
+                  </a>
                 </div>
 
                 <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Contact Skills for Care</h2>

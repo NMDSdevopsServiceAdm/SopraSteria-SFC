@@ -167,8 +167,19 @@ describe('permissions', () => {
         expect(returnedPermissions).not.to.include('canDeleteEstablishment');
       });
 
-      it('should return canDeleteEstablishment permission when isSubsidiary', async () => {
+      it('should not return canDeleteEstablishment permission when subsidiary logged in', async () => {
         req.establishment.isSubsidiary = true;
+        req.isParent = false;
+
+        const returnedPermissions = await getPermissions(req);
+
+        expect(returnedPermissions).not.to.include('canDeleteEstablishment');
+      });
+
+      it('should return canDeleteEstablishment permission when parent owner viewing subsidiary establishment', async () => {
+        req.establishment.isSubsidiary = true;
+        req.isParent = true;
+        req.parentIsOwner = true;
 
         const returnedPermissions = await getPermissions(req);
 

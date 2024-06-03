@@ -40,14 +40,16 @@ export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions.add(
       this.establishmentService.establishment$.subscribe((establishment) => {
-        const { uid, id, name, parentName } = establishment;
-        this.subUid = uid;
-        this.subId = id;
-        this.workplaceName = name;
-        this.parentWorkplaceName = parentName;
+        if (establishment) {
+          const { uid, id, name, parentName } = establishment;
+          this.subUid = uid;
+          this.subId = id;
+          this.workplaceName = name;
+          this.parentWorkplaceName = parentName;
 
-        this.getPermissions();
-        this.setTabs();
+          this.getPermissions();
+          this.setTabs();
+        }
       }),
     );
 
