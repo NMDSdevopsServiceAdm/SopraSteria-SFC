@@ -165,7 +165,9 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.workplacesCount = this.route.snapshot.data.cqcLocations?.childWorkplacesCount;
     this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
 
-    this.sendAlert();
+    if (this.isParentApprovedBannerViewed === false) {
+      this.showParentApprovedBanner();
+    }
 
     this.updateLinkToParentRequestedStatus();
     this.updateParentStatusRequested();
@@ -313,27 +315,24 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     saveAs(blob, filename);
   }
 
-  public sendAlert(): void {
-    if (this.isParentApprovedBannerViewed === false) {
-      this.alertService.addAlert({
-        type: 'success',
-        message: `Your request to become a parent has been approved`,
-      });
-    }
+  public showParentApprovedBanner(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `Your request to become a parent has been approved`,
+    });
+    this.updateIsParentApprovedBannerViewed();
   }
 
   public updateIsParentApprovedBannerViewed(): void {
-    if (this.isParentApprovedBannerViewed === false) {
-      this.workplace.isParentApprovedBannerViewed = true;
-      const data = {
-        property: 'isParentApprovedBannerViewed',
-        value: true,
-      };
+    this.workplace.isParentApprovedBannerViewed = true;
+    const data = {
+      property: 'isParentApprovedBannerViewed',
+      value: true,
+    };
 
-      this.subscriptions.add(
-        this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, data).subscribe(),
-      );
-    }
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, data).subscribe(),
+    );
   }
 
   public goToAboutParentsLink(): void {
@@ -470,7 +469,6 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   }
 
   ngOnDestroy(): void {
-    this.updateIsParentApprovedBannerViewed();
     this.subscriptions.unsubscribe();
     this.alertService.removeAlert();
   }
