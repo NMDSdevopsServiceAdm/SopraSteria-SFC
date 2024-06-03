@@ -1,6 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
-import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit, HostListener } from '@angular/core';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { Article } from '@core/model/article.model';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -29,6 +29,7 @@ import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 declare global {
   interface Window {
@@ -469,8 +470,20 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  ngOnDestroy(): void {
-    this.updateIsParentApprovedBannerViewed();
+  public removeParentApprovedBannerAfterViewed(): void {
+    if (this.isParentApprovedBannerViewed === false) {
+      this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
+        if (!nav.url.includes('#home') && this.isParentApprovedBannerViewed === false) {
+          this.updateIsParentApprovedBannerViewed();
+        }
+      });
+      this.updateIsParentApprovedBannerViewed();
+    }
+  }
+
+  @HostListener('window:beforeunload')
+  async ngOnDestroy(): Promise<void> {
+    this.removeParentApprovedBannerAfterViewed();
     this.subscriptions.unsubscribe();
     this.alertService.removeAlert();
   }
