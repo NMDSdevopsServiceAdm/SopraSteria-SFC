@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http';
-import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit, HostListener } from '@angular/core';
+import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Article } from '@core/model/article.model';
 import { Meta } from '@core/model/benchmarks.model';
