@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -27,6 +27,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -36,6 +37,11 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
+  }
+
+  public navigateToTab(event: Event, selectedTab: string): void {
+    event.preventDefault();
+    this.router.navigate(['dashboard'], { fragment: selectedTab });
   }
 
   ngOnDestroy(): void {
