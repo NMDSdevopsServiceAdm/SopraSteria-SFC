@@ -1,6 +1,6 @@
 import { HttpResponse } from '@angular/common/http';
 import { Directive, Inject, Input, OnChanges, OnDestroy, OnInit, HostListener } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Article } from '@core/model/article.model';
 import { Meta } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -29,7 +29,6 @@ import { ServiceNamePipe } from '@shared/pipes/service-name.pipe';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import saveAs from 'file-saver';
 import { Subscription } from 'rxjs';
-import { filter } from 'rxjs/operators';
 
 declare global {
   interface Window {
@@ -166,7 +165,9 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.workplacesCount = this.route.snapshot.data.cqcLocations?.childWorkplacesCount;
     this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
 
-    this.sendAlert();
+    if (this.isParentApprovedBannerViewed === false) {
+      this.showParentApprovedBanner();
+    }
 
     this.updateLinkToParentRequestedStatus();
     this.updateParentStatusRequested();
@@ -314,27 +315,24 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     saveAs(blob, filename);
   }
 
-  public sendAlert(): void {
-    if (this.isParentApprovedBannerViewed === false) {
-      this.alertService.addAlert({
-        type: 'success',
-        message: `Your request to become a parent has been approved`,
-      });
-    }
+  public showParentApprovedBanner(): void {
+    this.alertService.addAlert({
+      type: 'success',
+      message: `Your request to become a parent has been approved`,
+    });
+    this.updateIsParentApprovedBannerViewed();
   }
 
   public updateIsParentApprovedBannerViewed(): void {
-    if (this.isParentApprovedBannerViewed === false) {
-      this.workplace.isParentApprovedBannerViewed = true;
-      const data = {
-        property: 'isParentApprovedBannerViewed',
-        value: true,
-      };
+    this.workplace.isParentApprovedBannerViewed = true;
+    const data = {
+      property: 'isParentApprovedBannerViewed',
+      value: true,
+    };
 
-      this.subscriptions.add(
-        this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, data).subscribe(),
-      );
-    }
+    this.subscriptions.add(
+      this.establishmentService.updateSingleEstablishmentField(this.workplace.uid, data).subscribe(),
+    );
   }
 
   public goToAboutParentsLink(): void {
@@ -470,20 +468,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     }
   }
 
-  public removeParentApprovedBannerAfterViewed(): void {
-    if (this.isParentApprovedBannerViewed === false) {
-      this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
-        if (!nav.url.includes('#home') && this.isParentApprovedBannerViewed === false) {
-          this.updateIsParentApprovedBannerViewed();
-        }
-      });
-      this.updateIsParentApprovedBannerViewed();
-    }
-  }
-
-  @HostListener('window:beforeunload')
-  async ngOnDestroy(): Promise<void> {
-    this.removeParentApprovedBannerAfterViewed();
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
     this.alertService.removeAlert();
   }
