@@ -108,7 +108,7 @@ describe('ChangeDataOwnerComponent', async () => {
               snapshot: {
                 queryParams: establishment.isParent ? { changeDataOwnerFrom: subValues.uid } : null,
                 data: {
-                  primaryWorkplace: establishment,
+                  establishment: establishment,
                 },
               },
             },
