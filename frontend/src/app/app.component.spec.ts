@@ -1,4 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
 import { Title } from '@angular/platform-browser';
 import { NavigationEnd, Router, RouterEvent, RouterModule } from '@angular/router';
@@ -16,17 +17,17 @@ import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubs
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
 
-fdescribe('AppComponent', () => {
+describe('AppComponent', () => {
   async function setup(navigationUrl = '/') {
-    const { fixture, getByText, getByTestId } = await render(AppComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+    const { fixture, getByText, queryByTestId } = await render(AppComponent, {
+      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      schemas: [NO_ERRORS_SCHEMA],
       providers: [
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
@@ -75,7 +76,7 @@ fdescribe('AppComponent', () => {
       component,
       fixture,
       getByText,
-      getByTestId,
+      queryByTestId,
     };
   }
 
@@ -84,20 +85,25 @@ fdescribe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render subsidiary-account ', async () => {
-    const { fixture, getByTestId } = await setup('/subsidiary/subUid/home');
+  it('should render subsidiary-account view when subsidiary page is navigated to', async () => {
+    const { fixture, queryByTestId } = await setup('/subsidiary/subUid/home');
     fixture.detectChanges();
-    const subsidiaryAccountRendered = getByTestId('subsidiary-account');
+
+    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
+    const standAloneAccountRendered = queryByTestId('stand-alone-account');
 
     expect(subsidiaryAccountRendered).toBeTruthy();
+    expect(standAloneAccountRendered).toBeFalsy();
   });
 
-  it('should set standalone', async () => {
-    const { fixture, getByTestId } = await setup('/');
+  it('should render standalone view when subsidiary not in url', async () => {
+    const { fixture, queryByTestId } = await setup('/');
     fixture.detectChanges();
 
-    const standAloneAccountRendered = getByTestId('stand-alone-account');
+    const standAloneAccountRendered = queryByTestId('stand-alone-account');
+    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
 
     expect(standAloneAccountRendered).toBeTruthy();
+    expect(subsidiaryAccountRendered).toBeFalsy();
   });
 });
