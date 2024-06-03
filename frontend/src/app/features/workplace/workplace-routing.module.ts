@@ -76,7 +76,7 @@ const routes: Routes = [
   {
     path: 'change-data-owner',
     component: ChangeDataOwnerComponent,
-    resolve: { childWorkplaces: ChildWorkplacesResolver },
+    resolve: { establishment: WorkplaceResolver },
     data: { title: 'Change Data Owner' },
   },
   {

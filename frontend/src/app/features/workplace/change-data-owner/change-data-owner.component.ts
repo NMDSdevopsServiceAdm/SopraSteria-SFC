@@ -59,7 +59,7 @@ export class ChangeDataOwnerComponent implements OnInit, AfterViewInit {
     this.setupFormErrorsMap();
     this.setupServerErrorsMap();
 
-    this.primaryWorkplace = this.route.snapshot.data.primaryWorkplace;
+    this.primaryWorkplace = this.route.snapshot.data.establishment;
     this.isParent = this.primaryWorkplace?.isParent;
     this.changeDataOwnerFromSubsidiaryUid = this.route.snapshot.queryParams?.changeDataOwnerFrom;
 
