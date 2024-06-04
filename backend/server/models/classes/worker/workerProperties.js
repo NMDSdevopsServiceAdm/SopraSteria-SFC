@@ -1,5 +1,6 @@
 // encapsulates all properties of a worker, by returning a PropertyManager
 const Manager = require('../properties/manager');
+const { EmployedFromInsideUkProperty } = require('./properties/employedFromInsideUk');
 
 // individual properties
 const contractProperty = require('./properties/contractProperty').WorkerContractProperty;
@@ -47,6 +48,7 @@ const localIdentifierProperty = require('./properties/localIdentifierProperty').
 const establishmentFkProperty = require('./properties/establishmentFkProperty').EstablishmentFkProperty;
 const longTermAbsenceProperty = require('./properties/longTermAbsenceProperty').LongTermAbsenceProperty;
 const healthAndCareVisaProperty = require('./properties/healthAndCareVisa').HealthAndCareVisaProperty;
+const employedFromInsideUkProperty = require('./properties/employedFromInsideUk').EmployedFromInsideUkProperty;
 
 class WorkerPropertyManager {
   constructor() {
@@ -89,6 +91,7 @@ class WorkerPropertyManager {
     this._thisManager.registerProperty(establishmentFkProperty);
     this._thisManager.registerProperty(longTermAbsenceProperty);
     this._thisManager.registerProperty(healthAndCareVisaProperty);
+    this._thisManager.registerProperty(employedFromInsideUkProperty)
   }
 
   get manager() {

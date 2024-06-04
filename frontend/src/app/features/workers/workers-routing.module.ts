@@ -51,6 +51,7 @@ import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { EmployedFromInsideUkComponent } from './employed-from-inside-uk/employed-from-inside-uk.component';
 
 const routes: Routes = [
   {
@@ -197,6 +198,11 @@ const routes: Routes = [
             path: 'health-and-care-visa',
             component: HealthAndCareVisaComponent,
             data: { title: 'Health and Care Visa' },
+          },
+          {
+            path: 'inside-or-outside-uk',
+            component: EmployedFromInsideUkComponent,
+            data: { title: 'Inside or Outside UK'}
           },
           {
             path: 'adult-social-care-started',
@@ -436,6 +442,11 @@ const routes: Routes = [
         path: 'health-and-care-visa',
         component: HealthAndCareVisaComponent,
         data: { title: 'Health and Care Visa' },
+      },
+      {
+        path: 'inside-or-outside-uk',
+        component: EmployedFromInsideUkComponent,
+        data: { title: 'Inside or Outside UK'}
       },
       {
         path: 'adult-social-care-started',

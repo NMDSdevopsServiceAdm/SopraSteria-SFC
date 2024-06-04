@@ -102,6 +102,7 @@ export interface Worker {
   qualificationCount: number;
   longTermAbsence: string;
   healthAndCareVisa?: string;
+  employedFromInsideUk?: string;
 }
 
 export interface WorkerPay {
