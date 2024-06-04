@@ -200,7 +200,7 @@ const routes: Routes = [
             data: { title: 'Health and Care Visa' },
           },
           {
-            path: 'inside-or-outside-uk',
+            path: 'inside-or-outside-of-uk',
             component: EmployedFromInsideUkComponent,
             data: { title: 'Inside or Outside UK'}
           },
@@ -444,7 +444,7 @@ const routes: Routes = [
         data: { title: 'Health and Care Visa' },
       },
       {
-        path: 'inside-or-outside-uk',
+        path: 'inside-or-outside-of-uk',
         component: EmployedFromInsideUkComponent,
         data: { title: 'Inside or Outside UK'}
       },
