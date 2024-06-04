@@ -1,6 +1,5 @@
 // encapsulates all properties of a worker, by returning a PropertyManager
 const Manager = require('../properties/manager');
-const { EmployedFromInsideUkProperty } = require('./properties/employedFromInsideUk');
 
 // individual properties
 const contractProperty = require('./properties/contractProperty').WorkerContractProperty;
