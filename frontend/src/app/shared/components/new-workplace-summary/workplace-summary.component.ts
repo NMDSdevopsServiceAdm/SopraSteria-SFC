@@ -7,6 +7,7 @@ import { URLStructure } from '@core/model/url.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 import { WorkplaceUtil } from '@core/utils/workplace-util';
 import { sortBy } from 'lodash';
 import { Subscription } from 'rxjs';
@@ -45,6 +46,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private cqcStatusChangeService: CqcStatusChangeService,
     private router: Router,
+    private tabsService: TabsService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
       '=1': '# bed available',
