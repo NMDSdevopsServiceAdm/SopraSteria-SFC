@@ -10,7 +10,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SummaryRecordChangeComponent } from '@shared/components/summary-record-change/summary-record-change.component';
 import { SharedModule } from '@shared/shared.module';
-import { queryByTestId, render, within } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { EmploymentComponent } from './employment.component';
 
@@ -132,8 +132,8 @@ describe('EmploymentComponent', () => {
       expect(employedInsideTheUKSection).toBeFalsy();
     });
 
-    xdescribe('health and care visa question is answered Yes', () => {
-      it('should display the Add link when the question is not answered', async () => {
+    describe('health and care visa question is answered Yes', () => {
+      xit('should display the Add link when the question is not answered', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.worker.healthAndCareVisa = 'Yes';
@@ -150,7 +150,7 @@ describe('EmploymentComponent', () => {
         );
       });
 
-      it('should display From outside the UK when the questioned is answered as Outside the UK', async () => {
+      xit('should display From outside the UK when the questioned is answered as Outside the UK', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.worker.healthAndCareVisa = 'Yes';
@@ -167,7 +167,7 @@ describe('EmploymentComponent', () => {
         );
       });
 
-      it('should display From inside the UK when the questioned is answered as inside the UK', async () => {
+      xit('should display From inside the UK when the questioned is answered as inside the UK', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.worker.healthAndCareVisa = 'Yes';
@@ -184,7 +184,7 @@ describe('EmploymentComponent', () => {
         );
       });
 
-      it('should display Not known when the questioned is answered as I do not know', async () => {
+      xit('should display Not known when the questioned is answered as I do not know', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.worker.healthAndCareVisa = 'Yes';
@@ -201,13 +201,5 @@ describe('EmploymentComponent', () => {
         );
       });
     });
-
-    //h&s yes and employed is outside - From outside the UK & change link
-    //h&s yes and employed is inside - From inside the UK & change link
-    //h&s yes and employed is unknown - Not known & change link
-    //h&s yes and employed is skipped & change link
-    //shouldn't show row if h&s is no
-    //shouldn't show row if h&s is skipped
-    //shouldn't show row if h&s is not known
   });
 });
