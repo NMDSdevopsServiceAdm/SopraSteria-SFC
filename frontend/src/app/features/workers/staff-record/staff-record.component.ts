@@ -74,6 +74,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
 
     this.canDeleteWorker = this.permissionsService.can(this.workplace.uid, 'canDeleteWorker');
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
+    console.log(this.worker);
   }
 
   ngOnDestroy(): void {

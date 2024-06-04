@@ -14,9 +14,9 @@ exports.EmployedFromInsideUkProperty = class EmployedFromInsideUkProperty extend
 
   // concrete implementations
   async restoreFromJson(document) {
-    if (document.EmployedFromInsideUk) {
-      if (EMPLOYED_FROM_INSIDE_UK_TYPE.includes(document.EmployedFromInsideUk)) {
-        this.property = document.EmployedFromInsideUk;
+    if (document.employedFromInsideUk) {
+      if (EMPLOYED_FROM_INSIDE_UK_TYPE.includes(document.employedFromInsideUk)) {
+        this.property = document.employedFromInsideUk;
       } else {
         this.property = null;
       }
@@ -42,12 +42,12 @@ exports.EmployedFromInsideUkProperty = class EmployedFromInsideUkProperty extend
     if (!withHistory) {
       // simple form
       return {
-        EmployedFromInsideUk: this.property,
+        employedFromInsideUk: this.property,
       };
     }
 
     return {
-      EmployedFromInsideUk: {
+      employedFromInsideUk: {
         currentValue: this.property,
         ...this.changePropsToJSON(showPropertyHistoryOnly),
       },
