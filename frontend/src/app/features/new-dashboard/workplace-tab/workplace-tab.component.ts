@@ -6,6 +6,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 
 @Component({
   selector: 'app-new-workplace-tab',
@@ -25,6 +26,7 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private alertService: AlertService,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
@@ -33,6 +35,11 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
     this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
+  }
+
+  public navigateToTab(event: Event, selectedTab: string): void {
+    event.preventDefault();
+    this.tabsService.selectedTab = selectedTab;
   }
 
   ngOnDestroy(): void {
