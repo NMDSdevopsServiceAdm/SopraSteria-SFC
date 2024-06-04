@@ -61,4 +61,8 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   get mainStartDate() {
     return dayjs(this.worker.mainJobStartDate).format('D MMMM YYYY');
   }
+
+  get displayEmployedFromOutSideOrInsideUk() {
+    return this.worker.healthAndCareVisa === 'Yes';
+  }
 }
