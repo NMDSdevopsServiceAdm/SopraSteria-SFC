@@ -22,7 +22,7 @@ const _maptoCSVregisteredNurse = (registeredNurse) => {
 // takes the given Worker entity and writes it out to CSV string (one line)
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
-  //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
+  //     "CARECERT","RECSOURCE","HANDCVISA","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
   //     "NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
   const columns = [];
 
@@ -178,6 +178,25 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
       break;
   }
   columns.push(recruitmentSource);
+
+  // "HANDCVISA"
+  let healthAndCareVisa = '';
+
+  switch (entity.HealthAndCareVisaValue) {
+    case 'Yes':
+      healthAndCareVisa = 1;
+      break;
+
+    case 'No':
+      healthAndCareVisa = 2;
+      break;
+
+    case "Don't know":
+      healthAndCareVisa = 999;
+      break;
+  }
+
+  columns.push(healthAndCareVisa);
 
   // "STARTDATE"
   const mainJobStartDateParts = entity.MainJobStartDateValue ? entity.MainJobStartDateValue.split('-') : null;
