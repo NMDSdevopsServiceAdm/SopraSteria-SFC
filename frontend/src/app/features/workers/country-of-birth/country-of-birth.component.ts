@@ -100,14 +100,8 @@ export class CountryOfBirthComponent extends QuestionComponent {
     const nextRoute = this.determineBaseRoute();
     const { countryOfBirthKnown } = this.form.value;
     if (
-      this.worker.nationality?.value === 'Other' &&
-      ['No', "Don't know", null].includes(this.worker.britishCitizenship) &&
-      countryOfBirthKnown === 'United Kingdom'
-    ) {
-      nextRoute.push('health-and-care-visa');
-    } else if (
-      this.worker.nationality?.value === "Don't know" &&
-      this.worker.britishCitizenship === 'No' &&
+      this.insideFlow &&
+      this.workerService.shouldSeeInternationalRecruitmentQuestions(this.worker) &&
       countryOfBirthKnown === 'United Kingdom'
     ) {
       nextRoute.push('health-and-care-visa');
