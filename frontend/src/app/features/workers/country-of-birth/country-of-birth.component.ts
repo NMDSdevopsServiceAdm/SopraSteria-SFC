@@ -99,8 +99,20 @@ export class CountryOfBirthComponent extends QuestionComponent {
   private determineConditionalRouting(): string[] {
     const nextRoute = this.determineBaseRoute();
     const { countryOfBirthKnown } = this.form.value;
-    if (countryOfBirthKnown === 'United Kingdom' && this.insideFlow) {
+    if (
+      this.worker.nationality?.value === 'Other' &&
+      ['No', "Don't know", null].includes(this.worker.britishCitizenship) &&
+      countryOfBirthKnown === 'United Kingdom'
+    ) {
       nextRoute.push('health-and-care-visa');
+    } else if (
+      this.worker.nationality?.value === "Don't know" &&
+      this.worker.britishCitizenship === 'No' &&
+      countryOfBirthKnown === 'United Kingdom'
+    ) {
+      nextRoute.push('health-and-care-visa');
+    } else if (countryOfBirthKnown === 'United Kingdom' && this.insideFlow) {
+      nextRoute.push('main-job-start-date');
     } else if (countryOfBirthKnown !== 'United Kingdom') {
       nextRoute.push('year-arrived-uk');
     }

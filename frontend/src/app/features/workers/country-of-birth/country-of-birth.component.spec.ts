@@ -102,7 +102,7 @@ describe('CountryOfBirthComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should call submit data and navigate to health-and-care-visa page when 'United Kingdom' radio button is selected and 'Save and continue' is clicked`, async () => {
+    it(`should call submit data and navigate to main-job-start-date page when 'United Kingdom' radio button is selected and 'Save and continue' is clicked`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, workerServiceSpy, routerSpy } = await setup();
 
       fireEvent.click(getByLabelText('United Kingdom'));
@@ -116,6 +116,46 @@ describe('CountryOfBirthComponent', () => {
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         countryOfBirth: { value: 'United Kingdom' },
       });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        component.worker.uid,
+        'main-job-start-date',
+      ]);
+    });
+
+    it(`should navigate to health-and-care-visa page when 'United Kingdom' is selected and worker has other nationality and British citizenship not known`, async () => {
+      const { component, fixture, getByText, getByLabelText, routerSpy } = await setup(true);
+
+      component.worker.nationality = { value: 'Other' };
+      component.worker.britishCitizenship = 'No';
+      fixture.detectChanges();
+
+      fireEvent.click(getByLabelText('United Kingdom'));
+      fireEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        component.worker.uid,
+        'health-and-care-visa',
+      ]);
+    });
+
+    it(`should navigate to health-and-care-visa page when 'United Kingdom' is selected and worker nationality not known and not British citizen`, async () => {
+      const { component, fixture, getByText, getByLabelText, routerSpy } = await setup(true);
+
+      component.worker.nationality = { value: "Don't know" };
+      component.worker.britishCitizenship = 'No';
+      fixture.detectChanges();
+
+      fireEvent.click(getByLabelText('United Kingdom'));
+      fireEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
         component.workplace.uid,
