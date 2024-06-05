@@ -7,13 +7,13 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { EmployedFromInsideUkComponent } from './employed-from-inside-uk.component';
+import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk.component';
 
 
-describe('EmployedFromInsideUkComponent', () => {
+describe('EmployedFromOutsideUkComponent', () => {
   async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
-      EmployedFromInsideUkComponent,
+      EmployedFromOutsideUkComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [

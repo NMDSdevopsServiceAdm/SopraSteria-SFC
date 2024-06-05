@@ -5,7 +5,7 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div
         class="govuk-form-group"
-        [class.govuk-form-group--error]="submitted && form.get('employedFromInsideUk').invalid"
+        [class.govuk-form-group--error]="submitted && form.get('employedFromOutsideUk').invalid"
       >
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -21,13 +21,13 @@
             <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
-                [formControlName]="'employedFromInsideUk'"
-                id="employedFromInsideUk-{{ idx }}"
-                name="employedFromInsideUk"
+                [formControlName]="'employedFromOutsideUk'"
+                id="employedFromOutsideUk-{{ idx }}"
+                name="employedFromOutsideUk"
                 type="radio"
                 [value]="answer.value"
               />
-              <label class="govuk-label govuk-radios__label" for="employedFromInsideUk-{{ idx }}">
+              <label class="govuk-label govuk-radios__label" for="employedFromOutsideUk-{{ idx }}">
                 {{ answer.tag }}
               </label>
             </div>

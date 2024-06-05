@@ -2,21 +2,21 @@
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const EMPLOYED_FROM_INSIDE_UK_TYPE = ['Yes', 'No', "Don't know"];
-exports.EmployedFromInsideUkProperty = class EmployedFromInsideUkProperty extends ChangePropertyPrototype {
+exports.EmployedFromOutsideUkProperty = class EmployedFromOutsideUkProperty extends ChangePropertyPrototype {
   constructor() {
-    super('EmployedFromInsideUk');
+    super('EmployedFromOutsideUk');
     this._allowNull = true;
   }
 
   static clone() {
-    return new EmployedFromInsideUkProperty();
+    return new EmployedFromOutsideUkProperty();
   }
 
   // concrete implementations
   async restoreFromJson(document) {
-    if (document.employedFromInsideUk) {
-      if (EMPLOYED_FROM_INSIDE_UK_TYPE.includes(document.employedFromInsideUk)) {
-        this.property = document.employedFromInsideUk;
+    if (document.employedFromOutsideUk) {
+      if (EMPLOYED_FROM_INSIDE_UK_TYPE.includes(document.employedFromOutsideUk)) {
+        this.property = document.employedFromOutsideUk;
       } else {
         this.property = null;
       }
@@ -24,12 +24,12 @@ exports.EmployedFromInsideUkProperty = class EmployedFromInsideUkProperty extend
   }
 
   restorePropertyFromSequelize(document) {
-    return document.EmployedFromInsideUkValue;
+    return document.EmployedFromOutsideUkValue;
   }
 
   savePropertyToSequelize() {
     return {
-      EmployedFromInsideUkValue: this.property,
+      EmployedFromOutsideUkValue: this.property,
     };
   }
 
@@ -42,12 +42,12 @@ exports.EmployedFromInsideUkProperty = class EmployedFromInsideUkProperty extend
     if (!withHistory) {
       // simple form
       return {
-        employedFromInsideUk: this.property,
+        employedFromOutsideUk: this.property,
       };
     }
 
     return {
-      employedFromInsideUk: {
+      employedFromOutsideUk: {
         currentValue: this.property,
         ...this.changePropsToJSON(showPropertyHistoryOnly),
       },

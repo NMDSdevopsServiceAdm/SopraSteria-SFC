@@ -47,7 +47,7 @@ const localIdentifierProperty = require('./properties/localIdentifierProperty').
 const establishmentFkProperty = require('./properties/establishmentFkProperty').EstablishmentFkProperty;
 const longTermAbsenceProperty = require('./properties/longTermAbsenceProperty').LongTermAbsenceProperty;
 const healthAndCareVisaProperty = require('./properties/healthAndCareVisa').HealthAndCareVisaProperty;
-const employedFromInsideUkProperty = require('./properties/employedFromInsideUk').EmployedFromInsideUkProperty;
+const employedFromOutsideUkProperty = require('./properties/employedFromOutsideUk').EmployedFromOutsideUkProperty;
 
 class WorkerPropertyManager {
   constructor() {
@@ -90,7 +90,7 @@ class WorkerPropertyManager {
     this._thisManager.registerProperty(establishmentFkProperty);
     this._thisManager.registerProperty(longTermAbsenceProperty);
     this._thisManager.registerProperty(healthAndCareVisaProperty);
-    this._thisManager.registerProperty(employedFromInsideUkProperty)
+    this._thisManager.registerProperty(employedFromOutsideUkProperty)
   }
 
   get manager() {

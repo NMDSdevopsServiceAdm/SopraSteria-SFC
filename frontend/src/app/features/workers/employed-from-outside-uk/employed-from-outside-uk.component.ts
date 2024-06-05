@@ -9,13 +9,13 @@ import { WorkerService } from '@core/services/worker.service';
 import { QuestionComponent } from '../question/question.component';
 
 @Component({
-  selector: 'app-employed-from-inside-uk',
-  templateUrl: './employed-from-inside-uk.component.html',
+  selector: 'app-employed-from-outside-uk',
+  templateUrl: './employed-from-outside-uk.component.html',
 })
-export class EmployedFromInsideUkComponent extends QuestionComponent {
+export class EmployedFromOutsideUkComponent extends QuestionComponent {
   public answersAvailable = [
-    { tag: 'Outside the UK', value: 'No' },
-    { tag: 'Inside the UK', value: 'Yes' },
+    { tag: 'Outside the UK', value: 'Yes' },
+    { tag: 'Inside the UK', value: 'No' },
     { tag: 'I do not know', value: `Don't know` },
   ];
 
@@ -31,14 +31,14 @@ export class EmployedFromInsideUkComponent extends QuestionComponent {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
-      employedFromInsideUk: null,
+      employedFromOutsideUk: null,
     });
   }
 
   init() {
-    if (this.worker.employedFromInsideUk) {
+    if (this.worker.employedFromOutsideUk) {
       this.form.patchValue({
-        employedFromInsideUk: this.worker.employedFromInsideUk,
+        employedFromOutsideUk: this.worker.employedFromOutsideUk,
       });
     }
 
@@ -46,14 +46,14 @@ export class EmployedFromInsideUkComponent extends QuestionComponent {
   }
 
   generateUpdateProps(): unknown {
-    const { employedFromInsideUk } = this.form.value;
+    const { employedFromOutsideUk } = this.form.value;
 
-    if (!employedFromInsideUk) {
+    if (!employedFromOutsideUk) {
       return null;
     }
 
     return {
-      employedFromInsideUk,
+      employedFromOutsideUk,
     };
   }
 

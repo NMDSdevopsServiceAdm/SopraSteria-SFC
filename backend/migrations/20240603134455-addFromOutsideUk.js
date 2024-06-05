@@ -8,7 +8,7 @@ module.exports = {
       return Promise.all([
         queryInterface.addColumn(
           table,
-          'EmployedFromInsideUkValue',
+          'EmployedFromOutsideUkValue',
           {
             type: Sequelize.DataTypes.ENUM,
             allowNull: true,
@@ -18,7 +18,7 @@ module.exports = {
         ),
         queryInterface.addColumn(
           table,
-          'EmployedFromInsideUkSavedAt',
+          'EmployedFromOutsideUkSavedAt',
           {
             type: Sequelize.DataTypes.DATE,
             allowNull: true,
@@ -27,7 +27,7 @@ module.exports = {
         ),
         queryInterface.addColumn(
           table,
-          'EmployedFromInsideUkChangedAt',
+          'EmployedFromOutsideUkChangedAt',
           {
             type: Sequelize.DataTypes.DATE,
             allowNull: true,
@@ -36,7 +36,7 @@ module.exports = {
         ),
         queryInterface.addColumn(
           table,
-          'EmployedFromInsideUkSavedBy',
+          'EmployedFromOutsideUkSavedBy',
           {
             type: Sequelize.DataTypes.TEXT,
             allowNull: true,
@@ -45,7 +45,7 @@ module.exports = {
         ),
         queryInterface.addColumn(
           table,
-          'EmployedFromInsideUkChangedBy',
+          'EmployedFromOutsideUkChangedBy',
           {
             type: Sequelize.DataTypes.TEXT,
             allowNull: true,
@@ -58,11 +58,11 @@ module.exports = {
   down: (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction((transaction) => {
       return Promise.all([
-        queryInterface.removeColumn(table, 'EmployedFromInsideUkValue', { transaction }),
-        queryInterface.removeColumn(table, 'EmployedFromInsideUkSavedAt', { transaction }),
-        queryInterface.removeColumn(table, 'EmployedFromInsideUkChangedAt', { transaction }),
-        queryInterface.removeColumn(table, 'EmployedFromInsideUkSavedBy', { transaction }),
-        queryInterface.removeColumn(table, 'EmployedFromInsideUkChangedBy', { transaction }),
+        queryInterface.removeColumn(table, 'EmployedFromOutsideUkValue', { transaction }),
+        queryInterface.removeColumn(table, 'EmployedFromOutsideUkSavedAt', { transaction }),
+        queryInterface.removeColumn(table, 'EmployedFromOutsideUkChangedAt', { transaction }),
+        queryInterface.removeColumn(table, 'EmployedFromOutsideUkSavedBy', { transaction }),
+        queryInterface.removeColumn(table, 'EmployedFromOutsideUkChangedBy', { transaction }),
       ]);
     });
   },

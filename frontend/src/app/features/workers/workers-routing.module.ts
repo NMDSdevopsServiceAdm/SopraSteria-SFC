@@ -51,7 +51,7 @@ import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { EmployedFromInsideUkComponent } from './employed-from-inside-uk/employed-from-inside-uk.component';
+import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
 
 const routes: Routes = [
   {
@@ -201,7 +201,7 @@ const routes: Routes = [
           },
           {
             path: 'inside-or-outside-of-uk',
-            component: EmployedFromInsideUkComponent,
+            component: EmployedFromOutsideUkComponent,
             data: { title: 'Inside or Outside UK'}
           },
           {
@@ -445,7 +445,7 @@ const routes: Routes = [
       },
       {
         path: 'inside-or-outside-of-uk',
-        component: EmployedFromInsideUkComponent,
+        component: EmployedFromOutsideUkComponent,
         data: { title: 'Inside or Outside UK'}
       },
       {

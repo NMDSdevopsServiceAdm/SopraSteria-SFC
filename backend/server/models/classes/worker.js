@@ -329,8 +329,8 @@ class Worker extends EntityValidator {
     return this._properties.get('HealthAndCareVisa') ? this._properties.get('HealthAndCareVisa').property : null;
   }
 
-  get employedFromInsideUk() {
-    return this._properties.get('EmployedFromInsideUk') ? this._properties.get('EmployedFromInsideUk').property : null;
+  get employedFromOutsideUk() {
+    return this._properties.get('EmployedFromOutsideUk') ? this._properties.get('EmployedFromOutsideUk').property : null;
   }
 
   // takes the given JSON document and creates a Worker's set of extendable properties

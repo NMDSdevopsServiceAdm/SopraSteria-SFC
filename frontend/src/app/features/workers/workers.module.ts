@@ -64,7 +64,7 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { EmployedFromInsideUkComponent } from './employed-from-inside-uk/employed-from-inside-uk.component';
+import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -118,7 +118,7 @@ import { EmployedFromInsideUkComponent } from './employed-from-inside-uk/employe
     NewTrainingAndQualificationsRecordSummaryComponent,
     DownloadPdfTrainingAndQualificationComponent,
     HealthAndCareVisaComponent,
-    EmployedFromInsideUkComponent,
+    EmployedFromOutsideUkComponent,
   ],
   providers: [
     DialogService,

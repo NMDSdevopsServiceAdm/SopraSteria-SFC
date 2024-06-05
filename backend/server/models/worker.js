@@ -359,31 +359,31 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"EthnicityFKChangedBy"',
       },
-      EmployedFromInsideUkValue: {
+      EmployedFromOutsideUkValue: {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Yes', 'No', "Don't know"],
-        field: '"EmployedFromInsideUkValue"'
+        field: '"EmployedFromOutsideUkValue"'
       },
-      EmployedFromInsideUkSavedAt: {
+      EmployedFromOutsideUkSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"EmployedFromInsideUkSavedAt"'
+        field: '"EmployedFromOutsideUkSavedAt"'
       },
-      EmployedFromInsideUkChangedAt: {
+      EmployedFromOutsideUkChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"EmployedFromInsideUkChangedAt"'
+        field: '"EmployedFromOutsideUkChangedAt"'
       },
-      EmployedFromInsideUkSavedBy: {
+      EmployedFromOutsideUkSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"EmployedFromInsideUkSavedBy"'
+        field: '"EmployedFromOutsideUkSavedBy"'
       },
-      EmployedFromInsideUkChangedBy: {
+      EmployedFromOutsideUkChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"EmployedFromInsideUkChangedBy"'
+        field: '"EmployedFromOutsideUkChangedBy"'
       },
       NationalityValue: {
         type: DataTypes.ENUM,
