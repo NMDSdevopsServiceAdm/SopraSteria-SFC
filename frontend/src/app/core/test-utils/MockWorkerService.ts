@@ -61,6 +61,8 @@ export const workerBuilder = build('Worker', {
     countryOfBirth: {
       value: 'United Kingdom',
     },
+    nationality: { value: null },
+    britishCitizenship: null,
   },
 });
 

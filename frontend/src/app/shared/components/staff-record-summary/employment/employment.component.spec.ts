@@ -14,7 +14,7 @@ import { render, within } from '@testing-library/angular';
 
 import { EmploymentComponent } from './employment.component';
 
-describe('EmploymentComponent', () => {
+fdescribe('EmploymentComponent', () => {
   async function setup() {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(EmploymentComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -50,10 +50,139 @@ describe('EmploymentComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  fdescribe('Health and Social Care visa', () => {
+  describe('Health and Social Care visa', () => {
+    it('should not show the health and care visa section nationality is not answered', async () => {
+      const { fixture, component, queryByTestId } = await setup();
+
+      component.worker.nationality.value = undefined;
+      fixture.detectChanges();
+
+      const healthAndCareVisaSection = queryByTestId('health-and-care-visa-section');
+
+      expect(healthAndCareVisaSection).toBeFalsy();
+    });
+
+    it('should not show the health and care visa section if the nationality is British', async () => {
+      const { fixture, component, queryByTestId } = await setup();
+
+      component.worker.nationality.value = 'British';
+      fixture.detectChanges();
+
+      const healthAndCareVisaSection = queryByTestId('health-and-care-visa-section');
+
+      expect(healthAndCareVisaSection).toBeFalsy();
+    });
+
+    describe('nationality is other', () => {
+      it('should not show the health and care visa section if the british citizenship is Yes', async () => {
+        const { fixture, component, queryByTestId } = await setup();
+
+        component.worker.nationality.value = 'Other';
+        component.worker.britishCitizenship = 'Yes';
+
+        fixture.detectChanges();
+
+        const healthAndCareVisaSection = queryByTestId('health-and-care-visa-section');
+
+        expect(healthAndCareVisaSection).toBeFalsy();
+      });
+
+      it('should show the health and care visa section if the british citizenship is No', async () => {
+        const { fixture, component, getByTestId } = await setup();
+
+        component.worker.nationality.value = 'Other';
+        component.worker.britishCitizenship = 'No';
+        fixture.detectChanges();
+
+        const healthAndCareVisaSection = getByTestId('health-and-care-visa-section');
+
+        expect(healthAndCareVisaSection).toBeTruthy();
+      });
+
+      it("should show the health and care visa section if the british citizenship is Don't know", async () => {
+        const { fixture, component, getByTestId } = await setup();
+
+        component.worker.nationality.value = 'Other';
+        component.worker.britishCitizenship = "Don't know";
+        fixture.detectChanges();
+
+        const healthAndCareVisaSection = getByTestId('health-and-care-visa-section');
+
+        expect(healthAndCareVisaSection).toBeTruthy();
+      });
+
+      it('should show the health and care visa section if the british citizenship is not answered', async () => {
+        const { fixture, component, getByTestId } = await setup();
+
+        component.worker.nationality.value = 'Other';
+        component.worker.britishCitizenship = undefined;
+        fixture.detectChanges();
+
+        const healthAndCareVisaSection = getByTestId('health-and-care-visa-section');
+
+        expect(healthAndCareVisaSection).toBeTruthy();
+      });
+    });
+
+    describe('nationality is not known', () => {
+      it('should not show if britishCitizenship is Yes', async () => {
+        const { fixture, component, queryByTestId } = await setup();
+
+        component.worker.nationality.value = "Don't know";
+        component.worker.britishCitizenship = 'Yes';
+
+        fixture.detectChanges();
+
+        const healthAndCareVisaSection = queryByTestId('health-and-care-visa-section');
+
+        expect(healthAndCareVisaSection).toBeFalsy();
+      });
+
+      it('should not show if britishCitizenship is not known', async () => {
+        const { fixture, component, queryByTestId } = await setup();
+
+        component.worker.nationality.value = "Don't know";
+        component.worker.britishCitizenship = "Don't know";
+
+        fixture.detectChanges();
+
+        const healthAndCareVisaSection = queryByTestId('health-and-care-visa-section');
+
+        expect(healthAndCareVisaSection).toBeFalsy();
+      });
+
+      it('should not show if britishCitizenship is not answered', async () => {
+        const { fixture, component, queryByTestId } = await setup();
+
+        component.worker.nationality.value = "Don't know";
+        component.worker.britishCitizenship = undefined;
+
+        fixture.detectChanges();
+
+        const healthAndCareVisaSection = queryByTestId('health-and-care-visa-section');
+
+        expect(healthAndCareVisaSection).toBeFalsy();
+      });
+
+      it('should show if britishCitizenship is No', async () => {
+        const { fixture, component, getByTestId } = await setup();
+
+        component.worker.nationality.value = "Don't know";
+        component.worker.britishCitizenship = 'No';
+
+        fixture.detectChanges();
+
+        const healthAndCareVisaSection = getByTestId('health-and-care-visa-section');
+
+        expect(healthAndCareVisaSection).toBeTruthy();
+      });
+    });
+
     it('should render Add link with the staff-record-summary/health-and-social-care url when health and care visa question not answered', async () => {
       const { fixture, component, getByTestId } = await setup();
 
+      component.worker.nationality.value = 'Other';
+      component.worker.britishCitizenship = 'No';
       component.worker.healthAndCareVisa = undefined;
       fixture.detectChanges();
 
@@ -68,6 +197,8 @@ describe('EmploymentComponent', () => {
     it('should render Yes and a Change link with the staff-record-summary/health-and-social-care url when health and care visa question answered Yes', async () => {
       const { fixture, component, getByTestId } = await setup();
 
+      component.worker.nationality.value = 'Other';
+      component.worker.britishCitizenship = 'No';
       component.worker.healthAndCareVisa = 'Yes';
       fixture.detectChanges();
 
@@ -84,6 +215,8 @@ describe('EmploymentComponent', () => {
     it("should display Not known when health and care visa question answered as Don't know", async () => {
       const { fixture, component, getByTestId } = await setup();
 
+      component.worker.nationality.value = 'Other';
+      component.worker.britishCitizenship = 'No';
       component.worker.healthAndCareVisa = "Don't know";
       fixture.detectChanges();
 
@@ -98,10 +231,12 @@ describe('EmploymentComponent', () => {
     });
   });
 
-  fdescribe('Employed from outside or inside the UK', () => {
+  describe('Employed from outside or inside the UK', () => {
     it('should not display if the health and care visa question is not answered', async () => {
       const { fixture, component, queryByTestId } = await setup();
 
+      component.worker.nationality.value = 'Other';
+      component.worker.britishCitizenship = 'No';
       component.worker.healthAndCareVisa = undefined;
       fixture.detectChanges();
 
@@ -113,6 +248,8 @@ describe('EmploymentComponent', () => {
     it('should not display if the health and care visa question is no', async () => {
       const { fixture, component, queryByTestId } = await setup();
 
+      component.worker.nationality.value = 'Other';
+      component.worker.britishCitizenship = 'No';
       component.worker.healthAndCareVisa = 'No';
       fixture.detectChanges();
 
@@ -124,6 +261,8 @@ describe('EmploymentComponent', () => {
     it("should not display if the health and care visa question is Don't know", async () => {
       const { fixture, component, queryByTestId } = await setup();
 
+      component.worker.nationality.value = 'Other';
+      component.worker.britishCitizenship = 'No';
       component.worker.healthAndCareVisa = "Don't know";
       fixture.detectChanges();
 
@@ -136,6 +275,8 @@ describe('EmploymentComponent', () => {
       xit('should display the Add link when the question is not answered', async () => {
         const { component, fixture, getByTestId } = await setup();
 
+        component.worker.nationality.value = 'Other';
+        component.worker.britishCitizenship = 'No';
         component.worker.healthAndCareVisa = 'Yes';
         //component.worker.employedFromInsideUk = undefined;
         fixture.detectChanges();
@@ -153,6 +294,8 @@ describe('EmploymentComponent', () => {
       xit('should display From outside the UK when the questioned is answered as Outside the UK', async () => {
         const { component, fixture, getByTestId } = await setup();
 
+        component.worker.nationality.value = 'Other';
+        component.worker.britishCitizenship = 'No';
         component.worker.healthAndCareVisa = 'Yes';
         //component.worker.employedFromInsideUk = "Outside the UK";
         fixture.detectChanges();
@@ -170,6 +313,8 @@ describe('EmploymentComponent', () => {
       xit('should display From inside the UK when the questioned is answered as inside the UK', async () => {
         const { component, fixture, getByTestId } = await setup();
 
+        component.worker.nationality.value = 'Other';
+        component.worker.britishCitizenship = 'No';
         component.worker.healthAndCareVisa = 'Yes';
         //component.worker.employedFromInsideUk = "Inside the UK";
         fixture.detectChanges();
@@ -187,6 +332,8 @@ describe('EmploymentComponent', () => {
       xit('should display Not known when the questioned is answered as I do not know', async () => {
         const { component, fixture, getByTestId } = await setup();
 
+        component.worker.nationality.value = 'Other';
+        component.worker.britishCitizenship = 'No';
         component.worker.healthAndCareVisa = 'Yes';
         //component.worker.employedFromInsideUk = "I do not know";
         fixture.detectChanges();

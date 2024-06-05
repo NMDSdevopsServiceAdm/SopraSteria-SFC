@@ -62,6 +62,18 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     return dayjs(this.worker.mainJobStartDate).format('D MMMM YYYY');
   }
 
+  get displayHealthAndCareVisa() {
+    if (this.worker.nationality?.value === 'Other') {
+      return (
+        this.worker.britishCitizenship === 'No' ||
+        this.worker.britishCitizenship === "Don't know" ||
+        this.worker.britishCitizenship === undefined
+      );
+    } else if (this.worker.nationality?.value === "Don't know") {
+      return this.worker.britishCitizenship === 'No';
+    }
+  }
+
   get displayEmployedFromOutSideOrInsideUk() {
     return this.worker.healthAndCareVisa === 'Yes';
   }

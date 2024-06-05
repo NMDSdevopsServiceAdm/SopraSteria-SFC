@@ -1,6 +1,6 @@
 <h2 class="govuk-heading-m">Employment details</h2>
 <dl class="govuk-summary-list asc-summarylist-border-top">
-  <div class="govuk-summary-list__row" data-testid="health-and-care-visa-section">
+  <div class="govuk-summary-list__row" *ngIf="displayHealthAndCareVisa" data-testid="health-and-care-visa-section">
     <dt class="govuk-summary-list__key govuk-!-width-one-half">On a Health and Care Worker visa</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-9">
       {{ worker.healthAndCareVisa | closedEndedAnswer }}
