@@ -15,14 +15,18 @@ jwt:
   ttl:
     login: 60
 db:
+  host: e2etest
   pool:
     min: 15
     max: 15
   ssl: false
-  username: sfc-test-user
+  # username: sfc-test-user
 
 log:
   sequelize: false
+
+redis:
+  url: redis://localhost:6379
 
 bulkupload:
   region: eu-west-2

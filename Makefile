@@ -20,3 +20,8 @@ test-be:
 db-migrate:
 	cd backend && export NODE_ENV=localhost & \
 	cd backend && npm run db:migrate
+
+test-e2e:
+	cd backend && export NODE_ENV=e2etest && npm run dev-start & \
+	(cd frontend && export NODE_ENV=e2etest && npm run build:watch) & \
+	npx cypress open
