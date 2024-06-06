@@ -17,8 +17,6 @@ import { QuestionComponent } from '../question/question.component';
 export class YearArrivedUkComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();
   public section = 'Personal details';
-  private mainJobStartDatePath: string[];
-  public insideYearArrivedUkMiniFlow: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
