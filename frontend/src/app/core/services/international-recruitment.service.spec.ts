@@ -23,23 +23,23 @@ describe('InternationalRecruitmentService', () => {
 
   describe('employed from outside or inside UK values', () => {
     it('should convert the yes value', () => {
-      worker.employedFromOutsideUk = 'Yes';
-      expect(service.convertEmployedFromOutsideUkValue(worker)).toBe('Outside the UK');
+      const employedFromOutsideUk = 'Yes';
+      expect(service.convertEmployedFromOutsideUkValue(employedFromOutsideUk)).toBe('Outside the UK');
     });
 
     it('should convert the no value', () => {
-      worker.employedFromOutsideUk = 'No';
-      expect(service.convertEmployedFromOutsideUkValue(worker)).toBe('Inside the UK');
+      const employedFromOutsideUk = 'No';
+      expect(service.convertEmployedFromOutsideUkValue(employedFromOutsideUk)).toBe('Inside the UK');
     });
 
     it("should convert the don't know value", () => {
-      worker.employedFromOutsideUk = "Don't know";
-      expect(service.convertEmployedFromOutsideUkValue(worker)).toBe('Not known');
+      const employedFromOutsideUk = "Don't know";
+      expect(service.convertEmployedFromOutsideUkValue(employedFromOutsideUk)).toBe('I do not know');
     });
 
     it('should convert the null value', () => {
-      worker.employedFromOutsideUk = null;
-      expect(service.convertEmployedFromOutsideUkValue(worker)).toBe(null);
+      const employedFromOutsideUk = null;
+      expect(service.convertEmployedFromOutsideUkValue(employedFromOutsideUk)).toBe(null);
     });
   });
 

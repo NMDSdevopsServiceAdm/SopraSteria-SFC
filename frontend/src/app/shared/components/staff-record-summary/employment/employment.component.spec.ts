@@ -13,6 +13,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
 import { EmploymentComponent } from './employment.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('EmploymentComponent', () => {
   async function setup() {
@@ -20,11 +21,13 @@ describe('EmploymentComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [SummaryRecordChangeComponent],
       providers: [
+        InternationalRecruitmentService,
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(['canEditWorker']),
           deps: [HttpClient],
         },
+        //{ provide: InternationalRecruitmentService },
       ],
       componentProperties: {
         canEditWorker: true,
@@ -54,7 +57,7 @@ describe('EmploymentComponent', () => {
     it('should not show the health and care visa section nationality is not answered', async () => {
       const { fixture, component, queryByTestId } = await setup();
 
-      component.worker.nationality.value = undefined;
+      component.worker.nationality.value = null;
       fixture.detectChanges();
 
       const healthAndCareVisaSection = queryByTestId('health-and-care-visa-section');
@@ -115,7 +118,7 @@ describe('EmploymentComponent', () => {
         const { fixture, component, getByTestId } = await setup();
 
         component.worker.nationality.value = 'Other';
-        component.worker.britishCitizenship = undefined;
+        component.worker.britishCitizenship = null;
         fixture.detectChanges();
 
         const healthAndCareVisaSection = getByTestId('health-and-care-visa-section');
@@ -155,7 +158,7 @@ describe('EmploymentComponent', () => {
         const { fixture, component, queryByTestId } = await setup();
 
         component.worker.nationality.value = "Don't know";
-        component.worker.britishCitizenship = undefined;
+        component.worker.britishCitizenship = null;
 
         fixture.detectChanges();
 
@@ -183,7 +186,7 @@ describe('EmploymentComponent', () => {
 
       component.worker.nationality.value = 'Other';
       component.worker.britishCitizenship = 'No';
-      component.worker.healthAndCareVisa = undefined;
+      component.worker.healthAndCareVisa = null;
       fixture.detectChanges();
 
       const healthAndCareVisaSection = within(getByTestId('health-and-care-visa-section'));
@@ -237,7 +240,7 @@ describe('EmploymentComponent', () => {
 
       component.worker.nationality.value = 'Other';
       component.worker.britishCitizenship = 'No';
-      component.worker.healthAndCareVisa = undefined;
+      component.worker.healthAndCareVisa = null;
       fixture.detectChanges();
 
       const employedInsideTheUKSection = queryByTestId('employed-inside-or-outside-section');
@@ -278,7 +281,7 @@ describe('EmploymentComponent', () => {
         component.worker.nationality.value = 'Other';
         component.worker.britishCitizenship = 'No';
         component.worker.healthAndCareVisa = 'Yes';
-        component.worker.employedFromOutsideUk = undefined;
+        component.worker.employedFromOutsideUk = null;
         fixture.detectChanges();
 
         const employedInsideTheUKSection = within(getByTestId('employed-inside-or-outside-section'));

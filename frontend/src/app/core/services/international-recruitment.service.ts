@@ -5,14 +5,14 @@ import { Worker } from '@core/model/worker.model';
 export class InternationalRecruitmentService {
   constructor() {}
 
-  public convertEmployedFromOutsideUkValue(worker: Worker) {
-    return worker.employedFromOutsideUk === 'Yes'
+  public convertEmployedFromOutsideUkValue(employedFromOutsideUk) {
+    return employedFromOutsideUk === 'Yes'
       ? 'Outside the UK'
-      : worker.employedFromOutsideUk === 'No'
+      : employedFromOutsideUk === 'No'
       ? 'Inside the UK'
-      : worker.employedFromOutsideUk === "Don't know"
-      ? 'Not known'
-      : null;
+      : employedFromOutsideUk === "Don't know"
+      ? 'I do not know'
+      : employedFromOutsideUk;
   }
 
   public shouldSeeInternationalRecruitmentQuestions(worker: Worker) {

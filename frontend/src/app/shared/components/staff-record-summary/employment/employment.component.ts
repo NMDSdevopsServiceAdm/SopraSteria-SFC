@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import isNumber from 'lodash/isNumber';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 @Component({
   selector: 'app-employment',
@@ -27,8 +28,16 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     wdfConfirmFieldsService: WdfConfirmFieldsService,
     route: ActivatedRoute,
     ethnicityService: EthnicityService,
+    internationalRecruitmentService: InternationalRecruitmentService,
   ) {
-    super(permissionsService, workerService, wdfConfirmFieldsService, route, ethnicityService);
+    super(
+      permissionsService,
+      workerService,
+      wdfConfirmFieldsService,
+      route,
+      ethnicityService,
+      internationalRecruitmentService,
+    );
   }
 
   isNumber(number: number) {
@@ -63,15 +72,7 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   }
 
   get displayHealthAndCareVisa() {
-    if (this.worker.nationality?.value === 'Other') {
-      return (
-        this.worker.britishCitizenship === 'No' ||
-        this.worker.britishCitizenship === "Don't know" ||
-        this.worker.britishCitizenship === undefined
-      );
-    } else if (this.worker.nationality?.value === "Don't know") {
-      return this.worker.britishCitizenship === 'No';
-    }
+    return this.internationalRecruitmentService.shouldSeeInternationalRecruitmentQuestions(this.worker);
   }
 
   get displayEmployedFromOutsideOrInsideUk() {
@@ -79,12 +80,19 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   }
 
   get displayEmployedFromOutsideOrInsideUkValue() {
-    return this.worker.employedFromOutsideUk === 'Yes'
-      ? 'From outside the UK'
-      : this.worker.employedFromOutsideUk === 'No'
-      ? 'From inside the UK'
-      : this.worker.employedFromOutsideUk === "Don't know"
-      ? 'Not known'
-      : null;
+    if (this.worker.employedFromOutsideUk === 'Yes' || this.worker.employedFromOutsideUk === 'No') {
+      return (
+        'From ' +
+        this.internationalRecruitmentService
+          .convertEmployedFromOutsideUkValue(this.worker.employedFromOutsideUk)
+          .charAt(0)
+          .toLowerCase() +
+        this.internationalRecruitmentService
+          .convertEmployedFromOutsideUkValue(this.worker.employedFromOutsideUk)
+          .slice(1)
+      );
+    } else {
+      return this.worker.employedFromOutsideUk;
+    }
   }
 }
