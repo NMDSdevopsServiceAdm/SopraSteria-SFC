@@ -14,7 +14,7 @@ import { render, within } from '@testing-library/angular';
 
 import { EmploymentComponent } from './employment.component';
 
-fdescribe('EmploymentComponent', () => {
+describe('EmploymentComponent', () => {
   async function setup() {
     const { fixture, getByText, getByTestId, queryByTestId } = await render(EmploymentComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -272,32 +272,30 @@ fdescribe('EmploymentComponent', () => {
     });
 
     describe('health and care visa question is answered Yes', () => {
-      xit('should display the Add link when the question is not answered', async () => {
+      it('should display the Add link when the question is not answered', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.worker.nationality.value = 'Other';
         component.worker.britishCitizenship = 'No';
         component.worker.healthAndCareVisa = 'Yes';
-        //component.worker.employedFromInsideUk = undefined;
+        component.worker.employedFromOutsideUk = undefined;
         fixture.detectChanges();
 
         const employedInsideTheUKSection = within(getByTestId('employed-inside-or-outside-section'));
-        const notKnownMessage = employedInsideTheUKSection.getByText('Not known');
         const addLink = employedInsideTheUKSection.getByText('Add');
 
-        expect(notKnownMessage).toBeTruthy();
         expect(addLink.getAttribute('href')).toBe(
           `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/inside-or-outside-of-uk`,
         );
       });
 
-      xit('should display From outside the UK when the questioned is answered as Outside the UK', async () => {
+      it('should display From outside the UK when the questioned is answered as Outside the UK', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.worker.nationality.value = 'Other';
         component.worker.britishCitizenship = 'No';
         component.worker.healthAndCareVisa = 'Yes';
-        //component.worker.employedFromInsideUk = "Outside the UK";
+        component.worker.employedFromOutsideUk = 'Yes';
         fixture.detectChanges();
 
         const employedInsideTheUKSection = within(getByTestId('employed-inside-or-outside-section'));
@@ -310,13 +308,13 @@ fdescribe('EmploymentComponent', () => {
         );
       });
 
-      xit('should display From inside the UK when the questioned is answered as inside the UK', async () => {
+      it('should display From inside the UK when the questioned is answered as inside the UK', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.worker.nationality.value = 'Other';
         component.worker.britishCitizenship = 'No';
         component.worker.healthAndCareVisa = 'Yes';
-        //component.worker.employedFromInsideUk = "Inside the UK";
+        component.worker.employedFromOutsideUk = 'No';
         fixture.detectChanges();
 
         const employedInsideTheUKSection = within(getByTestId('employed-inside-or-outside-section'));
@@ -329,13 +327,13 @@ fdescribe('EmploymentComponent', () => {
         );
       });
 
-      xit('should display Not known when the questioned is answered as I do not know', async () => {
+      it('should display Not known when the questioned is answered as I do not know', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         component.worker.nationality.value = 'Other';
         component.worker.britishCitizenship = 'No';
         component.worker.healthAndCareVisa = 'Yes';
-        //component.worker.employedFromInsideUk = "I do not know";
+        component.worker.employedFromOutsideUk = "Don't know";
         fixture.detectChanges();
 
         const employedInsideTheUKSection = within(getByTestId('employed-inside-or-outside-section'));

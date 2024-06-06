@@ -74,7 +74,17 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     }
   }
 
-  get displayEmployedFromOutSideOrInsideUk() {
+  get displayEmployedFromOutsideOrInsideUk() {
     return this.worker.healthAndCareVisa === 'Yes';
+  }
+
+  get displayEmployedFromOutsideOrInsideUkValue() {
+    return this.worker.employedFromOutsideUk === 'Yes'
+      ? 'From outside the UK'
+      : this.worker.employedFromOutsideUk === 'No'
+      ? 'From inside the UK'
+      : this.worker.employedFromOutsideUk === "Don't know"
+      ? 'Not known'
+      : null;
   }
 }

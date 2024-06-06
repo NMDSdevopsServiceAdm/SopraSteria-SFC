@@ -16,20 +16,20 @@
   </div>
   <div
     class="govuk-summary-list__row"
-    *ngIf="displayEmployedFromOutSideOrInsideUk"
+    *ngIf="displayEmployedFromOutsideOrInsideUk"
     data-testid="employed-inside-or-outside-section"
   >
     <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-right-1">
       Employed from outside or inside the UK
     </dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-9">
-      {{ (worker.employedFromInsideUk | closedEndedAnswer) || '-' }}
+      {{ displayEmployedFromOutsideOrInsideUkValue | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
         [explanationText]="'Employed from outside or inside UK'"
         [link]="getRoutePath('inside-or-outside-of-uk', wdfView)"
-        [hasData]="!!worker.employedFromInsideUk"
+        [hasData]="!!worker.employedFromOutsideUk"
         (setReturnClicked)="this.setReturn()"
       ></app-summary-record-change>
     </dd>
