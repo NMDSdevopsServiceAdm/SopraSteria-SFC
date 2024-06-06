@@ -1,10 +1,12 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -12,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 import { YearArrivedUkComponent } from './year-arrived-uk.component';
 
 describe('YearArrivedUkComponent', () => {
-  async function setup(insideFlow = true) {
+  async function setup(insideFlow = true, workerFields = {}) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       YearArrivedUkComponent,
       {
@@ -39,7 +41,8 @@ describe('YearArrivedUkComponent', () => {
 
           {
             provide: WorkerService,
-            useClass: MockWorkerServiceWithUpdateWorker,
+            useFactory: MockWorkerServiceWithUpdateWorker.factory({ ...workerBuilder(), ...workerFields } as Worker),
+            deps: [HttpClient],
           },
         ],
       },
@@ -102,7 +105,47 @@ describe('YearArrivedUkComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to health-and-care-visa page when submitting from flow', async () => {
+    it(`should navigate to health-and-care-visa page when worker has other nationality and British citizenship not known`, async () => {
+      const workerFields = {
+        nationality: { value: 'Other' },
+        britishCitizenship: 'No',
+      };
+
+      const { component, fixture, getByText, getByLabelText, routerSpy } = await setup(true, workerFields);
+
+      fireEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        component.worker.uid,
+        'health-and-care-visa',
+      ]);
+    });
+
+    it(`should navigate to health-and-care-visa page when worker nationality not known and not British citizen`, async () => {
+      const workerFields = {
+        nationality: { value: "Don't know" },
+        britishCitizenship: 'No',
+      };
+
+      const { component, fixture, getByText, routerSpy } = await setup(true, workerFields);
+
+      fireEvent.click(getByText('Save and continue'));
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        component.worker.uid,
+        'health-and-care-visa',
+      ]);
+    });
+
+    it('should navigate to main-job-start-date page when submitting from flow and should not see health and care visa page', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -118,11 +161,11 @@ describe('YearArrivedUkComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'health-and-care-visa',
+        'main-job-start-date',
       ]);
     });
 
-    it('should navigate to health-and-care-visa page when skipping the question in the flow', async () => {
+    it('should navigate to main-job-start-date page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -136,7 +179,7 @@ describe('YearArrivedUkComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'health-and-care-visa',
+        'main-job-start-date',
       ]);
     });
 
