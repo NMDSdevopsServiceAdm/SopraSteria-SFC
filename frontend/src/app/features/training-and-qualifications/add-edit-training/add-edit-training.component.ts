@@ -128,12 +128,13 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   private onSuccess() {
     const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
-    this.router.navigate(this.previousUrl).then(()=>{
+
+    this.router.navigate(this.previousUrl).then(() => {
       this.alertService.addAlert({
         type: 'success',
         message: message,
       });
-    });;
+    });
   }
 
   private onError(error) {
