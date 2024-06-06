@@ -11,6 +11,6 @@ export class AboutTheDataLinkComponent implements OnInit {
   constructor(private establishmentService: EstablishmentService) {}
 
   ngOnInit(): void {
-    this.workplaceUid = this.establishmentService ? this.establishmentService.primaryWorkplace.uid : null;
+    this.workplaceUid = this.establishmentService.establishment?.uid;
   }
 }
