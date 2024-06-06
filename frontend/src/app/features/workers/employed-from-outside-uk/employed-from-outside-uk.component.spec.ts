@@ -7,8 +7,8 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk.component';
 
+import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk.component';
 
 describe('EmployedFromOutsideUkComponent', () => {
   async function setup(insideFlow = true) {
@@ -98,10 +98,10 @@ describe('EmployedFromOutsideUkComponent', () => {
       expect(getByText('View this staff record')).toBeTruthy();
     });
 
-    it(`should show 'Save' cta button and 'Cancel' link if a return url is provided`, async () => {
+    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
   });
@@ -150,7 +150,7 @@ describe('EmployedFromOutsideUkComponent', () => {
     describe('Outside flow', () => {
       const testCases = ['Outside the UK', 'Inside the UK', 'I do not know'];
       for (let radioButton of testCases) {
-        it(`should navigate to staff-summary-page page when pressing save and '${radioButton}' is entered`, async () => {
+        it(`should navigate to staff-summary-page page when pressing 'Save and return' and '${radioButton}' is entered`, async () => {
           const { component, fixture, routerSpy, getByText, getByLabelText } = await setup(false);
 
           const radioButtonNo = getByLabelText(radioButton);
@@ -158,7 +158,7 @@ describe('EmployedFromOutsideUkComponent', () => {
 
           fixture.detectChanges();
 
-          const saveButton = getByText('Save');
+          const saveButton = getByText('Save and return');
           fireEvent.click(saveButton);
 
           expect(routerSpy).toHaveBeenCalledWith([
@@ -208,10 +208,8 @@ describe('EmployedFromOutsideUkComponent', () => {
 
         fixture.detectChanges();
 
-        const saveButton = getByText('Save');
+        const saveButton = getByText('Save and return');
         fireEvent.click(saveButton);
-
-        expect(getByText('Save')).toBeTruthy();
 
         expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
       });
