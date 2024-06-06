@@ -7,7 +7,6 @@ import { URLStructure } from '@core/model/url.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -27,24 +26,20 @@ export class DataAreaAboutTheDataComponent implements OnInit, OnDestroy {
     protected router: Router,
     protected route: ActivatedRoute,
     protected benchmarksService: BenchmarksServiceBase,
-    private permissionsService: PermissionsService,
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
-    this.workplace = this.establishmentService.primaryWorkplace;
+    this.workplace = this.establishmentService.establishment;
     this.url = this.benchmarksService.returnTo?.url;
     this.fragment = this.benchmarksService.returnTo?.fragment;
-    const workplaceUid = this.workplace ? this.workplace.uid : this.route.snapshot.params.establishmentuid;
-
-    const canViewBenchmarks = this.permissionsService.can(workplaceUid, 'canViewBenchmarks');
 
     this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
   }
 
   public returnToHome(): void {
-    const returnLink = this.router.navigate(['/dashboard'], { fragment: 'benchmarks' });
+    this.router.navigate(['/dashboard'], { fragment: 'benchmarks' });
   }
 
   ngOnDestroy() {

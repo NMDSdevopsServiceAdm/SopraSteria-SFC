@@ -1,23 +1,23 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-
+import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { DataAreaAboutTheDataComponent } from './about-the-data.component';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { SharedModule } from '@shared/shared.module';
-import { getTestBed } from '@angular/core/testing';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 describe('DataAreaAboutTheDataComponent', () => {
   async function setup() {
+    const workplaceName = 'Mock Workplace Name';
+
     const { getByText, getByLabelText, getByTestId, fixture } = await render(DataAreaAboutTheDataComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -31,7 +31,7 @@ describe('DataAreaAboutTheDataComponent', () => {
 
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useValue: { establishment: { name: workplaceName } },
         },
         {
           provide: ActivatedRoute,
@@ -57,17 +57,19 @@ describe('DataAreaAboutTheDataComponent', () => {
       fixture,
       component,
       routerSpy,
+      workplaceName,
     };
   }
+
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
   it('should show the workplace name', async () => {
-    const { component } = await setup();
-    const workplaceName = component.workplace.name;
-    expect(workplaceName).toBeTruthy();
+    const { getByText, workplaceName } = await setup();
+
+    expect(getByText(workplaceName)).toBeTruthy();
   });
 
   it('should show the About the data header', async () => {
@@ -78,7 +80,7 @@ describe('DataAreaAboutTheDataComponent', () => {
   });
 
   it('should navigate to the benchmarks page', async () => {
-    const { component, getByText, routerSpy, fixture } = await setup();
+    const { getByText, routerSpy, fixture } = await setup();
 
     const returnButton = getByText('Return to benchmarks');
 
