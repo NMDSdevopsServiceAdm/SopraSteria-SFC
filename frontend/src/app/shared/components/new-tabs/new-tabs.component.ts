@@ -41,15 +41,17 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   }
 
   private trackRouterEventsToSetTabInSubView(): void {
-    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((route: NavigationEnd) => {
-      if (this.isParentViewingSub) {
-        const tabInUrl = this.getTabSlugFromNavigationEvent(route);
+    this.subscriptions.add(
+      this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((route: NavigationEnd) => {
+        if (this.isParentViewingSub) {
+          const tabInUrl = this.getTabSlugFromNavigationEvent(route);
 
-        if (tabInUrl) {
-          this.tabsService.selectedTab = tabInUrl.slug;
+          if (tabInUrl) {
+            this.tabsService.selectedTab = tabInUrl.slug;
+          }
         }
-      }
-    });
+      }),
+    );
   }
 
   public getTabSlugFromNavigationEvent(route: NavigationEnd) {
