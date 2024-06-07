@@ -14,11 +14,7 @@ import { InternationalRecruitmentService } from '@core/services/international-re
   templateUrl: './employed-from-outside-uk.component.html',
 })
 export class EmployedFromOutsideUkComponent extends QuestionComponent {
-  public answersAvailable = [
-    { tag: this.internationalRecruitmentService.convertEmployedFromOutsideUkValue('Yes'), value: 'Yes' },
-    { tag: this.internationalRecruitmentService.convertEmployedFromOutsideUkValue('No'), value: 'No' },
-    { tag: this.internationalRecruitmentService.convertEmployedFromOutsideUkValue(`Don't know`), value: `Don't know` },
-  ];
+  public answersAvailable = this.internationalRecruitmentService.getEmployedFromOutsideUkAnswers();
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

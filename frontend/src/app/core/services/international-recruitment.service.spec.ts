@@ -7,7 +7,7 @@ import { Worker } from '@core/model/worker.model';
 
 describe('InternationalRecruitmentService', () => {
   let service: InternationalRecruitmentService;
-  let worker = workerBuilder() as Worker;
+  let worker: Worker;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -15,31 +15,32 @@ describe('InternationalRecruitmentService', () => {
       providers: [InternationalRecruitmentService],
     });
     service = TestBed.inject(InternationalRecruitmentService);
+    worker = workerBuilder() as Worker;
   });
 
   it('should create the service', async () => {
     expect(service).toBeTruthy();
   });
 
-  describe('employed from outside or inside UK values', () => {
-    it('should convert the yes value', () => {
+  describe('employed from outside or inside UK values for staff record', () => {
+    it('should map the yes value', () => {
       const employedFromOutsideUk = 'Yes';
-      expect(service.convertEmployedFromOutsideUkValue(employedFromOutsideUk)).toBe('Outside the UK');
+      expect(service.getEmployedFromOutsideUkStaffRecordValue(employedFromOutsideUk)).toBe('From outside the UK');
     });
 
-    it('should convert the no value', () => {
+    it('should map the no value', () => {
       const employedFromOutsideUk = 'No';
-      expect(service.convertEmployedFromOutsideUkValue(employedFromOutsideUk)).toBe('Inside the UK');
+      expect(service.getEmployedFromOutsideUkStaffRecordValue(employedFromOutsideUk)).toBe('From inside the UK');
     });
 
-    it("should convert the don't know value", () => {
+    it("should map the don't know value", () => {
       const employedFromOutsideUk = "Don't know";
-      expect(service.convertEmployedFromOutsideUkValue(employedFromOutsideUk)).toBe('I do not know');
+      expect(service.getEmployedFromOutsideUkStaffRecordValue(employedFromOutsideUk)).toBe('Not known');
     });
 
-    it('should convert the null value', () => {
+    it('should map the null value', () => {
       const employedFromOutsideUk = null;
-      expect(service.convertEmployedFromOutsideUkValue(employedFromOutsideUk)).toBe(null);
+      expect(service.getEmployedFromOutsideUkStaffRecordValue(employedFromOutsideUk)).toBe(null);
     });
   });
 
