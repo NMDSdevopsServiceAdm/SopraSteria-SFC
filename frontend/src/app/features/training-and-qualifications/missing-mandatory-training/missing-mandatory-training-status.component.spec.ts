@@ -4,14 +4,13 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
-import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { UserService } from '@core/services/user.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
@@ -40,11 +39,7 @@ const workers = [
 ];
 
 describe('MissingMandatoryTrainingStatusComponent', () => {
-  async function setup(
-    addPermissions = true,
-    fixTrainingCount = false,
-    qsParamGetMock = sinon.fake(),
-  ) {
+  async function setup(addPermissions = true, fixTrainingCount = false, qsParamGetMock = sinon.fake()) {
     let workerObj = {
       workers,
       workerCount: 2,
@@ -81,6 +76,7 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
                 },
                 data: {
                   training: workerObj,
+                  establishment: establishmentBuilder(),
                 },
                 params: {
                   establishmentuid: '1234-5678',
@@ -102,9 +98,6 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
       of({ workers, workerCount: 2 }),
     );
 
-    const alertService = injector.inject(AlertService) as AlertService;
-    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
-
     return {
       component,
       fixture,
@@ -116,7 +109,6 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
       routerSpy,
       trainingService,
       trainingServiceSpy,
-      alertSpy,
     };
   }
   it('should render a MissingMandatoryTrainingStatusComponent', async () => {
@@ -227,21 +219,13 @@ describe('MissingMandatoryTrainingStatusComponent', () => {
     expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__bottom-row');
   });
 
-  it('should navigate back to the dashboard when clicking the return to home button in a parent or stand alone account', async () => {
+  it('should navigate back to the dashboard when clicking the return to home button', async () => {
     const { getByText, component, fixture, routerSpy } = await setup();
     component.workplace.uid = '1234-5678';
     const button = getByText('Return to home');
     fireEvent.click(button);
     fixture.detectChanges();
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
-  });
-
-  it('should navigate back to the workplace page when clicking the return to home button when accessing a sub account from a parent', async () => {
-    const { getByText, fixture, routerSpy } = await setup();
-    const button = getByText('Return to home');
-    fireEvent.click(button);
-    fixture.detectChanges();
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', '1234-5678'], { fragment: 'training-and-qualifications' });
   });
 
   describe('sort', () => {

@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment, SortTrainingOptionsStatus } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
@@ -35,7 +34,6 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
     private permissionsService: PermissionsService,
     public trainingStatusService: TrainingStatusService,
     private router: Router,
-    private establishmentService: EstablishmentService,
     private trainingService: TrainingService,
     protected backLinkService: BackLinkService,
     private route: ActivatedRoute,
@@ -44,7 +42,7 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
 
   ngOnInit(): void {
     this.setMissingTrainingAndCount();
-    this.workplace = this.establishmentService.primaryWorkplace;
+    this.workplace = this.route.snapshot.data.establishment;
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
 
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
@@ -104,7 +102,6 @@ export class MissingMandatoryTrainingStatusComponent implements OnInit {
   }
 
   public returnToHome(): void {
-    const returnLink = this.workplaceUid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
-    this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });
+    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
 }

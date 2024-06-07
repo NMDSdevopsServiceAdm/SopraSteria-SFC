@@ -281,7 +281,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   public onCancel(event: Event): void {
     event.preventDefault();
-    this.router.navigate(this.previousUrl);
+    if (this.previousUrl?.length) {
+      this.router.navigate(this.previousUrl);
+    } else {
+      this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
+    }
   }
 
   protected navigateToDeleteTrainingRecord(): void {
