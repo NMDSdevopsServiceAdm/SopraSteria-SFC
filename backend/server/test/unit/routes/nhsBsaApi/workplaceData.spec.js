@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
-const { nhsBsaApi, subsidiariesList,wdfData } = require('../../../../routes/nhsBsaApi/workplaceData');
+const { nhsBsaApi, subsidiariesList, wdfData } = require('../../../../routes/nhsBsaApi/workplaceData');
 const models = require('../../../../models');
 
 describe('server/routes/nhsBsaApi/workplaceData.js', () => {
@@ -69,7 +69,7 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
           serviceCategory: 'Adult domiciliary',
           eligibilityPercentage: 0,
           eligibilityDate: '2021-05-13T09:27:34.471Z',
-          isEligible: 'false',
+          isEligible: false,
         },
       });
     });
@@ -93,24 +93,21 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
           serviceCategory: 'Adult domiciliary',
           eligibilityPercentage: 0,
           eligibilityDate: new Date('2021-05-13T09:27:34.471Z'),
-          isEligible: 'false'
-        }
+          isEligible: false,
+        },
       ]);
     });
-
 
     it('should return WDF eligibility of a workplace', async () => {
       const establishmentId = result.id;
 
       const wdf = await wdfData(establishmentId);
 
-      expect(wdf).to.deep.equal(
-        {
-          eligibilityPercentage: 0,
-          eligibilityDate: new Date('2021-05-13T09:27:34.471Z'),
-          isEligible: 'false'
-        }
-      );
+      expect(wdf).to.deep.equal({
+        eligibilityPercentage: 0,
+        eligibilityDate: new Date('2021-05-13T09:27:34.471Z'),
+        isEligible: false,
+      });
     });
 
     it('should return 404 when workplace is not found', async () => {

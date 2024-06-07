@@ -21,6 +21,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { WorkersModule } from '../workers.module';
 import { StaffRecordComponent } from './staff-record.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('StaffRecordComponent', () => {
   async function setup(isParent = true) {
@@ -31,6 +32,7 @@ describe('StaffRecordComponent', () => {
         AlertService,
         WindowRef,
         DialogService,
+        InternationalRecruitmentService,
         {
           provide: ActivatedRoute,
           useValue: {

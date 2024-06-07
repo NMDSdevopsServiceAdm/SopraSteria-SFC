@@ -9,6 +9,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('EmployedFromOutsideUkComponent', () => {
   async function setup(insideFlow = true) {
@@ -18,6 +19,7 @@ describe('EmployedFromOutsideUkComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
+          InternationalRecruitmentService,
           {
             provide: WorkerService,
             useClass: MockWorkerServiceWithUpdateWorker,
