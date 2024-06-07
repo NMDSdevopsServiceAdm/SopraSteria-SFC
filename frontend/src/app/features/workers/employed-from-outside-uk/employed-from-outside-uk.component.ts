@@ -56,4 +56,5 @@ export class EmployedFromOutsideUkComponent extends QuestionComponent {
       employedFromOutsideUk,
     };
   }
+
 }
