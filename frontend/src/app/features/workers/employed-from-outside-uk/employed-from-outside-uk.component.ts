@@ -7,17 +7,14 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 @Component({
   selector: 'app-employed-from-outside-uk',
   templateUrl: './employed-from-outside-uk.component.html',
 })
 export class EmployedFromOutsideUkComponent extends QuestionComponent {
-  public answersAvailable = [
-    { tag: 'Outside the UK', value: 'Yes' },
-    { tag: 'Inside the UK', value: 'No' },
-    { tag: 'I do not know', value: `Don't know` },
-  ];
+  public answersAvailable = this.internationalRecruitmentService.getEmployedFromOutsideUkAnswers();
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -27,6 +24,7 @@ export class EmployedFromOutsideUkComponent extends QuestionComponent {
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
+    public internationalRecruitmentService: InternationalRecruitmentService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 

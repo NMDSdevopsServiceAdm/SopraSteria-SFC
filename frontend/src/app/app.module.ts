@@ -90,6 +90,7 @@ import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 @NgModule({
   declarations: [
@@ -177,6 +178,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     TrainingService,
     WindowRef,
     WorkerService,
+    InternationalRecruitmentService,
     { provide: WindowToken, useFactory: windowProvider },
     {
       provide: HTTP_INTERCEPTORS,
