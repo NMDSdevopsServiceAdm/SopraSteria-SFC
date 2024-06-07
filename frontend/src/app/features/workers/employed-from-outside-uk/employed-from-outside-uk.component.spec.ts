@@ -98,10 +98,10 @@ describe('EmployedFromOutsideUkComponent', () => {
       expect(getByText('View this staff record')).toBeTruthy();
     });
 
-    it(`should show 'Save' cta button and 'Cancel' link if a return url is provided`, async () => {
+    it(`should show 'Save and return' cta button and 'Cancel' link if a return url is provided`, async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
   });
@@ -158,7 +158,7 @@ describe('EmployedFromOutsideUkComponent', () => {
 
           fixture.detectChanges();
 
-          const saveButton = getByText('Save');
+          const saveButton = getByText('Save and return');
           fireEvent.click(saveButton);
 
           expect(routerSpy).toHaveBeenCalledWith([
@@ -208,10 +208,10 @@ describe('EmployedFromOutsideUkComponent', () => {
 
         fixture.detectChanges();
 
-        const saveButton = getByText('Save');
+        const saveButton = getByText('Save and return');
         fireEvent.click(saveButton);
 
-        expect(getByText('Save')).toBeTruthy();
+        expect(getByText('Save and return')).toBeTruthy();
 
         expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
       });
