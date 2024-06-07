@@ -1,12 +1,14 @@
 import { Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { AllRankingsResponse, MetricsContent, BenchmarksResponse } from '@core/model/benchmarks-v2.model';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { AllRankingsResponse, BenchmarksResponse, MetricsContent } from '@core/model/benchmarks-v2.model';
 import { Establishment } from '@core/model/establishment.model';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 
 import { DataAreaAboutTheDataComponent } from './about-the-data/about-the-data.component';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
 @Component({
   selector: 'app-data-area-tab',
@@ -38,6 +40,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     protected benchmarksService: BenchmarksServiceBase,
     protected router: Router,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +50,7 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
     this.setDownloadBenchmarksText();
     this.checkComparisonDataExists();
     this.showRegisteredNurseSalary = this.workplace.mainService.reportingID === 1;
+    this.breadcrumbService.show(this.getBreadcrumbsJourney());
   }
 
   public checkComparisonDataExists(): void {
@@ -80,6 +84,12 @@ export class DataAreaTabComponent implements OnInit, OnDestroy {
 
   public handleViewBenchmarkPosition(visible: boolean): void {
     this.viewBenchmarksPosition = visible;
+  }
+
+  public getBreadcrumbsJourney(): JourneyType {
+    return this.parentSubsidiaryViewService.getViewingSubAsParent()
+      ? JourneyType.SUBSIDIARY
+      : JourneyType.BENCHMARKS_TAB;
   }
 
   ngOnDestroy(): void {

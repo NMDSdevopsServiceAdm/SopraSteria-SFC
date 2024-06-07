@@ -5,6 +5,7 @@ import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
@@ -119,12 +120,26 @@ describe('NewBenchmarksTabComponent', () => {
   });
 
   it('should not render the banner when in subsidiary view of benchmark tab', async () => {
-    const {queryByTestId } = await setup(true, 0, true);
-    expect(queryByTestId("dashboardHeader")).toBeFalsy();
+    const { queryByTestId } = await setup(true, 0, true);
+    expect(queryByTestId('dashboardHeader')).toBeFalsy();
   });
 
   it('should render the banner when in parent view of benchmark tab', async () => {
-    const {queryByTestId } = await setup(true, 0, false);
-    expect(queryByTestId("dashboardHeader")).toBeTruthy();
+    const { queryByTestId } = await setup(true, 0, false);
+    expect(queryByTestId('dashboardHeader')).toBeTruthy();
+  });
+
+  describe('getBreadcrumbsJourney', () => {
+    it('should return subsidiary journey when viewing sub as parent', async () => {
+      const { component } = await setup(false, 0, true);
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.SUBSIDIARY);
+    });
+
+    it('should return old benchmarks tab journey when not viewing sub', async () => {
+      const { component } = await setup(false, 0, false);
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.OLD_BENCHMARKS_DATA_TAB);
+    });
   });
 });
