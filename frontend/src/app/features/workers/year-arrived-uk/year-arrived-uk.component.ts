@@ -5,6 +5,7 @@ import { INT_PATTERN } from '@core/constants/constants';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
@@ -26,6 +27,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
+    protected internationalRecruitmentService: InternationalRecruitmentService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
@@ -119,7 +121,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
   private determineConditionalRouting(): string[] {
     const nextRoute = this.determineBaseRoute();
 
-    if (this.insideFlow && this.workerService.shouldSeeInternationalRecruitmentQuestions(this.worker)) {
+    if (this.internationalRecruitmentService.shouldSeeInternationalRecruitmentQuestions(this.worker)) {
       nextRoute.push('health-and-care-visa');
     } else {
       nextRoute.push('main-job-start-date');

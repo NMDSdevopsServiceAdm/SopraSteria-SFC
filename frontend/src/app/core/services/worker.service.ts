@@ -290,19 +290,4 @@ export class WorkerService {
   public getLongTermAbsenceReasons(): Observable<Array<string>> {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/longTermAbsence`).pipe(map((res) => res.reasons));
   }
-
-  public shouldSeeInternationalRecruitmentQuestions(worker: Worker) {
-    return (
-      this._isWorkerFromOtherNationWithUnknownCitizenship(worker) ||
-      this._isWorkerWithoutBritishCitizenshipAndUnknownNationality(worker)
-    );
-  }
-
-  private _isWorkerFromOtherNationWithUnknownCitizenship(worker) {
-    return worker.nationality?.value === 'Other' && ['No', "Don't know", null].includes(worker.britishCitizenship);
-  }
-
-  private _isWorkerWithoutBritishCitizenshipAndUnknownNationality(worker) {
-    return worker.nationality?.value === "Don't know" && worker.britishCitizenship === 'No';
-  }
 }

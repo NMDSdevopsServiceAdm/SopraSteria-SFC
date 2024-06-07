@@ -5,6 +5,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { CountryResponse, CountryService } from '@core/services/country.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { QuestionComponent } from '../question/question.component';
@@ -24,6 +25,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
+    protected internationalRecruitmentService: InternationalRecruitmentService,
     private countryService: CountryService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
@@ -101,7 +103,7 @@ export class CountryOfBirthComponent extends QuestionComponent {
     const { countryOfBirthKnown } = this.form.value;
     if (
       this.insideFlow &&
-      this.workerService.shouldSeeInternationalRecruitmentQuestions(this.worker) &&
+      this.internationalRecruitmentService.shouldSeeInternationalRecruitmentQuestions(this.worker) &&
       countryOfBirthKnown === 'United Kingdom'
     ) {
       nextRoute.push('health-and-care-visa');
