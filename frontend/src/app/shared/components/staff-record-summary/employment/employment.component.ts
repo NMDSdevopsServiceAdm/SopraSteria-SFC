@@ -81,16 +81,10 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
 
   get displayEmployedFromOutsideOrInsideUkValue() {
     if (this.worker.employedFromOutsideUk === 'Yes' || this.worker.employedFromOutsideUk === 'No') {
-      return (
-        'From ' +
-        this.internationalRecruitmentService
-          .convertEmployedFromOutsideUkValue(this.worker.employedFromOutsideUk)
-          .charAt(0)
-          .toLowerCase() +
-        this.internationalRecruitmentService
-          .convertEmployedFromOutsideUkValue(this.worker.employedFromOutsideUk)
-          .slice(1)
+      let convertedValue = this.internationalRecruitmentService.convertEmployedFromOutsideUkValue(
+        this.worker.employedFromOutsideUk,
       );
+      return 'From ' + convertedValue.charAt(0).toLowerCase() + convertedValue.slice(1);
     } else {
       return this.worker.employedFromOutsideUk;
     }
