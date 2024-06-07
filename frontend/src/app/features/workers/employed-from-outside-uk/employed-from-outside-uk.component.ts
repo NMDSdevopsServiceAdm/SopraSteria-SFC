@@ -57,17 +57,4 @@ export class EmployedFromOutsideUkComponent extends QuestionComponent {
     };
   }
 
-  private determineConditionalRouting(): string[] {
-    const nextRoute = this.determineBaseRoute();
-
-    if (this.insideFlow) {
-      nextRoute.push('main-job-start-date');
-    }
-
-    return nextRoute;
-  }
-
-  onSuccess(): void {
-    this.next = this.determineConditionalRouting();
-  }
 }

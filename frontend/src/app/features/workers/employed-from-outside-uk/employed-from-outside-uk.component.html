@@ -14,7 +14,7 @@
           </legend>
           <app-details [title]="'Why we ask for this information'" data-testid="reveal-WhyWeAsk">
             <p>
-              DHSC use this data to help them identify movement trends for workers with Health and Care Worker visas. The data is also used to inform recruitment plans.
+              DHSC use the anonymised data to help them identify which roles workers with Health and Care Worker visas have. The data is also used to look at employment trends and inform recruitment policies.
             </p>
           </app-details>
           <div class="govuk-radios">
@@ -47,7 +47,6 @@
   </div>
 
   <app-submit-button
-    [summaryContinue]="true"
     [return]="!insideFlow"
     (clicked)="setSubmitAction($event)"
   ></app-submit-button>
