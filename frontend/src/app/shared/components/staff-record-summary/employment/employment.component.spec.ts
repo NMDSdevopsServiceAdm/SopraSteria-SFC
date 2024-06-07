@@ -27,7 +27,6 @@ describe('EmploymentComponent', () => {
           useFactory: MockPermissionsService.factory(['canEditWorker']),
           deps: [HttpClient],
         },
-        //{ provide: InternationalRecruitmentService },
       ],
       componentProperties: {
         canEditWorker: true,
