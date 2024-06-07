@@ -1,7 +1,7 @@
 'use strict';
 const router = require('express').Router();
 const moment = require('moment');
-const CQCProviderDataAPI = require('../../utils/CQCProviderDataAPI');
+const CQCDataAPI = require('../../utils/CQCDataAPI');
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
 
@@ -27,7 +27,7 @@ const missingCqcProviderLocations = async (req, res) => {
     }
 
     if (locationId) {
-      let CQCProviderData = await CQCProviderDataAPI.getCQCProviderData(locationId);
+      let CQCProviderData = await CQCDataAPI.getCQCProviderData(locationId);
 
       const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
 
