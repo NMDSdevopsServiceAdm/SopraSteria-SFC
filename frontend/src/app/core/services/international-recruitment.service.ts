@@ -30,9 +30,6 @@ export class InternationalRecruitmentService {
       },
       staffRecordValue: 'Not known',
     },
-    null: {
-      staffRecordValue: null,
-    },
   };
 
   private _employedFromOutsideUkAnswers = [
@@ -46,7 +43,7 @@ export class InternationalRecruitmentService {
   }
 
   public getEmployedFromOutsideUkStaffRecordValue(employedFromOutsideUkDbValue) {
-    return this._employedFromOutsideUkMappings[employedFromOutsideUkDbValue]?.staffRecordValue;
+    return this._employedFromOutsideUkMappings[employedFromOutsideUkDbValue]?.staffRecordValue || null;
   }
 
   public shouldSeeInternationalRecruitmentQuestions(worker: Worker) {
