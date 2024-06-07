@@ -12,7 +12,7 @@ export class InternationalRecruitmentService {
       ? 'Inside the UK'
       : employedFromOutsideUk === "Don't know"
       ? 'I do not know'
-      : employedFromOutsideUk;
+      : null;
   }
 
   public shouldSeeInternationalRecruitmentQuestions(worker: Worker) {
