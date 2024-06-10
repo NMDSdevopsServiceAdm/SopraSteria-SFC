@@ -3,7 +3,7 @@ const httpMocks = require('node-mocks-http');
 const sinon = require('sinon');
 const moment = require('moment');
 const models = require('../../../../models/index');
-const CQCProviderDataAPI = require('../../../../utils/CQCProviderDataAPI');
+const CQCDataAPI = require('../../../../utils/CQCDataAPI');
 
 const {
   missingCqcProviderLocations,
@@ -20,7 +20,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
     const cqcLocationIds = ['1-12427547986', '1-2043158439', '1-5310224737'];
 
     beforeEach(() => {
-      sinon.stub(CQCProviderDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
+      sinon.stub(CQCDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
         return {
           providerId: locationId,
           locationIds: cqcLocationIds,
@@ -103,14 +103,14 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       expect(res.statusCode).to.deep.equal(200);
     });
 
-    it('should return false for showMissingCqcMessage and missingCqcLocations with an empty array if CQCProviderDataAPI has an error', async () => {
+    it('should return false for showMissingCqcMessage and missingCqcLocations with an empty array if CQCDataAPI has an error', async () => {
       sinon.restore();
 
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });
 
-      sinon.stub(CQCProviderDataAPI, 'getCQCProviderData').throws();
+      sinon.stub(CQCDataAPI, 'getCQCProviderData').throws();
 
       const expectedResult = {
         showMissingCqcMessage: false,
@@ -146,7 +146,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });
-      sinon.stub(CQCProviderDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
+      sinon.stub(CQCDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
         return {};
       });
 
