@@ -51,12 +51,22 @@ describe('SubsidiaryRouterService', () => {
       expect(routerSpy).toHaveBeenCalledWith(expectedUrlTree, undefined);
     });
 
-    it('should just navigate if unexpected format of url tree', async () => {
+    it('should clear sub view and navigate if unexpected format of url tree', async () => {
       const urlAsString = 'urlasstring.com/test';
       const unexpectedUrlTree = urlAsString as unknown as UrlTree;
       service.navigateByUrl(unexpectedUrlTree);
 
+      expect(subViewServiceSpy.clearViewingSubAsParent).toHaveBeenCalled();
       expect(routerSpy).toHaveBeenCalledWith(urlAsString, undefined);
+    });
+
+    it('should clear sub view and navigate if navigation event to root', async () => {
+      const rootUrl = service.createUrlTree(['/']);
+
+      service.navigateByUrl(rootUrl);
+
+      expect(subViewServiceSpy.clearViewingSubAsParent).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(rootUrl, undefined);
     });
   });
 
