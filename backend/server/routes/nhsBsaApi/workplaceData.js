@@ -109,9 +109,7 @@ const wdfData = async (workplaceId) => {
       eligibilityPercentage: percentageEligibleWorkers,
       eligibilityDate: wdfMeeting.OverallWdfEligibility,
       isEligible:
-        wdfMeeting.OverallWdfEligibility && wdfMeeting.OverallWdfEligibility.getTime() > WdfCalculator.effectiveTime
-          ? 'true'
-          : 'false',
+        wdfMeeting.OverallWdfEligibility && wdfMeeting.OverallWdfEligibility.getTime() > WdfCalculator.effectiveTime,
     };
   }
 };
