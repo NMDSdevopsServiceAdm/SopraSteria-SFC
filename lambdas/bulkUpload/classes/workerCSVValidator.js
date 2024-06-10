@@ -1032,6 +1032,56 @@ class WorkerCsvValidator {
     }
   }
 
+  _validateHealthAndCareVisa() {
+    const healthAndCareVisaValues = [1, 2, 999];
+    const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
+
+    const nationality = parseInt(this._currentLine.NATIONALITY, 10);
+    const britishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP, 10);
+    const shouldNotAnswerHealthAndCareVisaQuestion = nationality === 826 || britishCitizenship === 1;
+
+    if (this._currentLine.HANDCVISA && this._currentLine.HANDCVISA.length > 0) {
+      if (shouldNotAnswerHealthAndCareVisaQuestion) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: WorkerCsvValidator.HANDCVISA_NOT_REQUIRED,
+          warnType: 'HANDCVISA_WARNING',
+          warning: 'HANDCVISA not required when worker has British citizenship',
+          source: this._currentLine.HANDCVISA,
+          column: 'HANDCVISA',
+        });
+      } else if (isNaN(healthAndCareVisa) || !healthAndCareVisaValues.includes(parseInt(healthAndCareVisa, 10))) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
+          warnType: 'HANDCVISA_WARNING',
+          warning: 'HANDCVISA is incorrectly formatted and will be ignored',
+          source: this._currentLine.HANDCVISA,
+          column: 'HANDCVISA',
+        });
+        return false;
+      } else {
+        switch (healthAndCareVisa) {
+          case 1:
+            this._healthAndCareVisa = 'Yes';
+            break;
+          case 2:
+            this._healthAndCareVisa = 'No';
+            break;
+          case 999:
+            this._healthAndCareVisa = "Don't know";
+            break;
+        }
+        return true;
+      }
+    }
+    return true;
+  }
+
   _validateDisabled() {
     const disabledValues = [0, 1, 2, 3];
     const myDisabled = parseInt(this._currentLine.DISABLED, 10);
@@ -2658,6 +2708,7 @@ class WorkerCsvValidator {
       status = !this._validateCitizenShip() ? false : status;
       status = !this._validateCountryOfBirth() ? false : status;
       status = !this._validateYearOfEntry() ? false : status;
+      status = !this._validateHealthAndCareVisa() ? false : status;
       status = !this._validateDisabled() ? false : status;
       status = !this._validateCareCert() ? false : status;
       status = !this._validateRecSource() ? false : status;
