@@ -4,6 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { Ethnicity } from '@core/model/ethnicity.model';
 import { Worker } from '@core/model/worker.model';
 import { EthnicityService } from '@core/services/ethnicity.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -44,6 +45,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     private wdfConfirmFieldsService: WdfConfirmFieldsService,
     protected route: ActivatedRoute,
     public ethnicityService: EthnicityService,
+    public internationalRecruitmentService: InternationalRecruitmentService,
   ) {}
 
   ngOnInit(): void {
