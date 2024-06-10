@@ -22,7 +22,7 @@ const _maptoCSVregisteredNurse = (registeredNurse) => {
 // takes the given Worker entity and writes it out to CSV string (one line)
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
-  //     "CARECERT","RECSOURCE","HANDCVISA","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
+  //     "CARECERT","RECSOURCE","HANDCVISA","INOUTUK","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
   //     "NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
   const columns = [];
 
@@ -197,6 +197,25 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   }
 
   columns.push(healthAndCareVisa);
+
+  // "INOUTUK"
+  let employedFromOutsideUk = '';
+
+  switch (entity.EmployedFromOutsideUkValue) {
+    case 'Yes':
+      employedFromOutsideUk = 1;
+      break;
+
+    case 'No':
+      employedFromOutsideUk = 2;
+      break;
+
+    case "Don't know":
+      employedFromOutsideUk = 999;
+      break;
+  }
+
+  columns.push(employedFromOutsideUk);
 
   // "STARTDATE"
   const mainJobStartDateParts = entity.MainJobStartDateValue ? entity.MainJobStartDateValue.split('-') : null;

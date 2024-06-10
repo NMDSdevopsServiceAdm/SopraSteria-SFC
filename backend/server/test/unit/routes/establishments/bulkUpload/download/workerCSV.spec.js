@@ -338,6 +338,15 @@ describe('workerCSV', () => {
 
             expect(csvAsArray[getWorkerColumnIndex('HANDCVISA')]).to.equal(value.code);
           });
+
+          it('should return the correct code for inside or outside of UK ' + value.value, async () => {
+            worker.EmployedFromOutsideUkValue = value.value;
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('INOUTUK')]).to.equal(value.code);
+          });
         });
 
         it('should return start date', async () => {

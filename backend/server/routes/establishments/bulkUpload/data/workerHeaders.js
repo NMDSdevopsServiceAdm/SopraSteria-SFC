@@ -17,6 +17,7 @@ const workerHeaders = [
   'CARECERT',
   'RECSOURCE',
   'HANDCVISA',
+  'INOUTUK',
   'STARTDATE',
   'STARTINSECT',
   'APPRENTICE',

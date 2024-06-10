@@ -152,6 +152,7 @@ exports.knownHeaders = [
   'CARECERT',
   'RECSOURCE',
   'HANDCVISA',
+  'INOUTUK',
   'STARTDATE',
   'STARTINSECT',
   'APPRENTICE',
