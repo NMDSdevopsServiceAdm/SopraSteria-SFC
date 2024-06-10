@@ -40,7 +40,9 @@ export class YearArrivedUkComponent extends QuestionComponent {
   }
 
   init() {
-    this.next = this.getRoutePath('main-job-start-date');
+    this.next = this.internationalRecruitmentService.shouldSeeInternationalRecruitmentQuestions(this.worker)
+      ? this.getRoutePath('health-and-care-visa')
+      : this.getRoutePath('main-job-start-date');
 
     this.setupFormValidation();
     if (this.worker.yearArrived) {
@@ -116,20 +118,5 @@ export class YearArrivedUkComponent extends QuestionComponent {
     }
 
     return null;
-  }
-
-  private determineConditionalRouting(): string[] {
-    const nextRoute = this.determineBaseRoute();
-
-    if (this.internationalRecruitmentService.shouldSeeInternationalRecruitmentQuestions(this.worker)) {
-      nextRoute.push('health-and-care-visa');
-    } else {
-      nextRoute.push('main-job-start-date');
-    }
-    return nextRoute;
-  }
-
-  onSuccess() {
-    this.next = this.determineConditionalRouting();
   }
 }

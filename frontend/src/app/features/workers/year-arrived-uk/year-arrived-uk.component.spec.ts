@@ -106,86 +106,69 @@ describe('YearArrivedUkComponent', () => {
     });
   });
 
-  describe('navigation', () => {
-    it(`should navigate to health-and-care-visa page when worker has other nationality and British citizenship not known`, async () => {
-      const workerFields = {
-        nationality: { value: 'Other' },
-        britishCitizenship: 'No',
-      };
+  describe('should navigate to ', () => {
+    ['Save and continue', 'Skip this question'].forEach((button) => {
+      it(`health-and-care-visa page when other nationality, British citizenship not known and '${button}' clicked`, async () => {
+        const workerFields = {
+          nationality: { value: 'Other' },
+          britishCitizenship: 'No',
+        };
 
-      const { component, fixture, getByText, getByLabelText, routerSpy } = await setup(true, workerFields);
+        const { component, fixture, getByText, getByLabelText, routerSpy } = await setup(true, workerFields);
 
-      fireEvent.click(getByText('Save and continue'));
-      fixture.detectChanges();
+        fireEvent.click(getByText(button));
+        fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        component.workplace.uid,
-        'staff-record',
-        component.worker.uid,
-        'health-and-care-visa',
-      ]);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'health-and-care-visa',
+        ]);
+      });
+
+      it(`health-and-care-visa page when worker nationality not known and not British citizen and '${button}' clicked`, async () => {
+        const workerFields = {
+          nationality: { value: "Don't know" },
+          britishCitizenship: 'No',
+        };
+
+        const { component, fixture, getByText, routerSpy } = await setup(true, workerFields);
+
+        fireEvent.click(getByText(button));
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'health-and-care-visa',
+        ]);
+      });
     });
 
-    it(`should navigate to health-and-care-visa page when worker nationality not known and not British citizen`, async () => {
-      const workerFields = {
-        nationality: { value: "Don't know" },
-        britishCitizenship: 'No',
-      };
+    ['Save and continue', 'Skip this question'].forEach((button) => {
+      it(`main-job-start-date page when in flow, should not see health and care visa page and '${button}' clicked`, async () => {
+        const { component, routerSpy, getByText } = await setup();
 
-      const { component, fixture, getByText, routerSpy } = await setup(true, workerFields);
+        const workerId = component.worker.uid;
+        const workplaceId = component.workplace.uid;
 
-      fireEvent.click(getByText('Save and continue'));
-      fixture.detectChanges();
+        fireEvent.click(getByText(button));
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        component.workplace.uid,
-        'staff-record',
-        component.worker.uid,
-        'health-and-care-visa',
-      ]);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          workplaceId,
+          'staff-record',
+          workerId,
+          'main-job-start-date',
+        ]);
+      });
     });
 
-    it('should navigate to main-job-start-date page when submitting from flow and should not see health and care visa page', async () => {
-      const { component, routerSpy, getByText } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      const saveButton = getByText('Save and continue');
-      fireEvent.click(saveButton);
-
-      expect(getByText('Save and continue')).toBeTruthy();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'main-job-start-date',
-      ]);
-    });
-
-    it('should navigate to main-job-start-date page when skipping the question in the flow', async () => {
-      const { component, routerSpy, getByText } = await setup();
-
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
-
-      const link = getByText('Skip this question');
-      fireEvent.click(link);
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'main-job-start-date',
-      ]);
-    });
-
-    it('should navigate to staff-summary-page page when pressing view this staff record', async () => {
+    it('staff-summary-page page when pressing view this staff record', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -203,7 +186,7 @@ describe('YearArrivedUkComponent', () => {
       ]);
     });
 
-    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+    it('staff-summary-page page when pressing save and return', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -221,7 +204,7 @@ describe('YearArrivedUkComponent', () => {
       ]);
     });
 
-    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+    it('staff-summary-page page when pressing cancel', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -239,7 +222,7 @@ describe('YearArrivedUkComponent', () => {
       ]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
+    it('wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
       const { component, routerSpy, getByText, fixture, router } = await setup(false);
       spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
       component.returnUrl = undefined;
@@ -253,7 +236,7 @@ describe('YearArrivedUkComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+    it('wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
       const { component, routerSpy, getByText, fixture, router } = await setup(false);
       spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
       component.returnUrl = undefined;
