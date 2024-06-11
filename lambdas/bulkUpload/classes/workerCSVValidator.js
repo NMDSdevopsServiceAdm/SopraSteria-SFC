@@ -193,6 +193,10 @@ class WorkerCsvValidator {
     return 1380;
   }
 
+  static get HANDCVISA_WARNING() {
+    return 1390;
+  }
+
   static get UNIQUE_WORKER_ID_WARNING() {
     return 3020;
   }
@@ -1038,6 +1042,7 @@ class WorkerCsvValidator {
 
     const nationality = parseInt(this._currentLine.NATIONALITY, 10);
     const britishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP, 10);
+
     const shouldNotAnswerHealthAndCareVisaQuestion = nationality === 826 || britishCitizenship === 1;
 
     if (this._currentLine.HANDCVISA && this._currentLine.HANDCVISA.length > 0) {
@@ -1046,7 +1051,7 @@ class WorkerCsvValidator {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.HANDCVISA_NOT_REQUIRED,
+          warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
           warnType: 'HANDCVISA_WARNING',
           warning: 'HANDCVISA not required when worker has British citizenship',
           source: this._currentLine.HANDCVISA,
