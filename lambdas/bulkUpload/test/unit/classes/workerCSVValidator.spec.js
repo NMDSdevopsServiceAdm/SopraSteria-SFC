@@ -414,6 +414,19 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
     });
 
     describe('_validateHealthAndCareVisa()', () => {
+      const healthAndCareVisaWarning = (warning, source) => {
+        return {
+          column: 'HANDCVISA',
+          lineNumber: 2,
+          name: 'MARMA',
+          source,
+          warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
+          warnType: 'HANDCVISA_WARNING',
+          warning,
+          worker: '3',
+        };
+      };
+
       it('should not add warning when health and care visa provided and worker does not have British citizenship', async () => {
         const worker = buildWorkerCsv({
           overrides: {
@@ -434,12 +447,13 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
 
       it('should add warning when health and care visa provided but worker has British citizenship', async () => {
+        const healthAndCareVisaValue = '1';
         const worker = buildWorkerCsv({
           overrides: {
             STATUS: 'NEW',
             NATIONALITY: '418',
             BRITISHCITIZENSHIP: '1',
-            HANDCVISA: '1',
+            HANDCVISA: healthAndCareVisaValue,
           },
         });
 
@@ -449,27 +463,22 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         await validator.transform();
 
         expect(validator._validationErrors).to.deep.equal([
-          {
-            column: 'HANDCVISA',
-            lineNumber: 2,
-            name: 'MARMA',
-            source: '1',
-            warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
-            warnType: 'HANDCVISA_WARNING',
-            warning: 'HANDCVISA not required when worker has British citizenship',
-            worker: '3',
-          },
+          healthAndCareVisaWarning(
+            'HANDCVISA not required when worker has British citizenship',
+            healthAndCareVisaValue,
+          ),
         ]);
         expect(validator._validationErrors.length).to.equal(1);
       });
 
       it('should add warning when health and care visa provided but worker is British', async () => {
+        const healthAndCareVisaValue = '1';
         const worker = buildWorkerCsv({
           overrides: {
             STATUS: 'NEW',
             NATIONALITY: '826', // British code
             BRITISHCITIZENSHIP: '',
-            HANDCVISA: '1',
+            HANDCVISA: healthAndCareVisaValue,
           },
         });
 
@@ -479,27 +488,22 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         await validator.transform();
 
         expect(validator._validationErrors).to.deep.equal([
-          {
-            column: 'HANDCVISA',
-            lineNumber: 2,
-            name: 'MARMA',
-            source: '1',
-            warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
-            warnType: 'HANDCVISA_WARNING',
-            warning: 'HANDCVISA not required when worker has British citizenship',
-            worker: '3',
-          },
+          healthAndCareVisaWarning(
+            'HANDCVISA not required when worker has British citizenship',
+            healthAndCareVisaValue,
+          ),
         ]);
         expect(validator._validationErrors.length).to.equal(1);
       });
 
       it('should add warning when health and care visa invalid', async () => {
+        const healthAndCareVisaValue = '12345';
         const worker = buildWorkerCsv({
           overrides: {
             STATUS: 'NEW',
             NATIONALITY: '418',
             BRITISHCITIZENSHIP: '2',
-            HANDCVISA: '12345',
+            HANDCVISA: healthAndCareVisaValue,
           },
         });
 
@@ -509,16 +513,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         await validator.transform();
 
         expect(validator._validationErrors).to.deep.equal([
-          {
-            column: 'HANDCVISA',
-            lineNumber: 2,
-            name: 'MARMA',
-            source: '12345',
-            warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
-            warnType: 'HANDCVISA_WARNING',
-            warning: 'HANDCVISA is incorrectly formatted and will be ignored',
-            worker: '3',
-          },
+          healthAndCareVisaWarning('HANDCVISA is incorrectly formatted and will be ignored', healthAndCareVisaValue),
         ]);
         expect(validator._validationErrors.length).to.equal(1);
       });
