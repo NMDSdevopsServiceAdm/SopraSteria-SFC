@@ -85,7 +85,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[dobColumn]).to.equal(`${dobParts[2]}/${dobParts[1]}/${dobParts[0]}`);
+          expect(csvAsArray[getWorkerColumnIndex('DOB')]).to.equal(`${dobParts[2]}/${dobParts[1]}/${dobParts[0]}`);
         });
         it('should return sanitised dob if download-type is workers-sanitise', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
