@@ -1036,6 +1036,16 @@ class WorkerCsvValidator {
     }
   }
 
+  _convertYesNoDontKnow(value) {
+    const mappings = {
+      1: 'Yes',
+      2: 'No',
+      999: "Don't know",
+    };
+
+    return mappings[value] || '';
+  }
+
   _validateHealthAndCareVisa() {
     const healthAndCareVisaValues = [1, 2, 999];
     const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
@@ -1046,41 +1056,29 @@ class WorkerCsvValidator {
     const shouldNotAnswerHealthAndCareVisaQuestion = nationality === 826 || britishCitizenship === 1;
 
     if (this._currentLine.HANDCVISA && this._currentLine.HANDCVISA.length > 0) {
+      const healthAndCareVisaWarning = (warning) => {
+        return {
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
+          warnType: 'HANDCVISA_WARNING',
+          warning,
+          source: this._currentLine.HANDCVISA,
+          column: 'HANDCVISA',
+        };
+      };
+
       if (shouldNotAnswerHealthAndCareVisaQuestion) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
-          warnType: 'HANDCVISA_WARNING',
-          warning: 'HANDCVISA not required when worker has British citizenship',
-          source: this._currentLine.HANDCVISA,
-          column: 'HANDCVISA',
-        });
+        this._validationErrors.push(
+          healthAndCareVisaWarning('HANDCVISA not required when worker has British citizenship'),
+        );
+        return false;
       } else if (isNaN(healthAndCareVisa) || !healthAndCareVisaValues.includes(parseInt(healthAndCareVisa, 10))) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
-          warnType: 'HANDCVISA_WARNING',
-          warning: 'HANDCVISA is incorrectly formatted and will be ignored',
-          source: this._currentLine.HANDCVISA,
-          column: 'HANDCVISA',
-        });
+        this._validationErrors.push(healthAndCareVisaWarning('HANDCVISA is incorrectly formatted and will be ignored'));
         return false;
       } else {
-        switch (healthAndCareVisa) {
-          case 1:
-            this._healthAndCareVisa = 'Yes';
-            break;
-          case 2:
-            this._healthAndCareVisa = 'No';
-            break;
-          case 999:
-            this._healthAndCareVisa = "Don't know";
-            break;
-        }
+        this._healthAndCareVisa = this._convertYesNoDontKnow(healthAndCareVisa);
         return true;
       }
     }
