@@ -29,6 +29,8 @@ class WorkerCsvValidator {
     this._ethnicity = null;
     this._britishNationality = null;
     this._yearOfEntry = null;
+    this._healthAndCareVisa = null;
+    this._employedFromOutsideUk = null;
 
     this._disabled = null;
     this._careCert = null;
@@ -2832,6 +2834,8 @@ class WorkerCsvValidator {
       britishCitizenship: this._britishNationality ? this._britishNationality : undefined,
       countryofBirth: this._countryOfBirth ? this._countryOfBirth : undefined,
       yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
+      healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
+      employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
       disabled: this._disabled !== null ? this._disabled : undefined,
       careCertificate: this._careCert
         ? {
@@ -2916,6 +2920,8 @@ class WorkerCsvValidator {
             year: this._yearOfEntry,
           }
         : undefined,
+      healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
+      employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
       disability: this._disabled ? this._disabled : undefined,
       careCertificate: this._careCert ? this._careCert : undefined,
       apprenticeshipTraining: this._apprentice ? this._apprentice : undefined,
