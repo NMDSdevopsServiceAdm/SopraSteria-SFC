@@ -1073,7 +1073,11 @@ class WorkerCsvValidator {
     const nationality = parseInt(this._currentLine.NATIONALITY, 10);
     const britishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP, 10);
 
-    const shouldNotAnswerHealthAndCareVisaQuestion = nationality === 826 || britishCitizenship === 1;
+    const isWorkerFromOtherNationWithUnknownCitizenship =
+      nationality !== 826 && nationality !== 999 && britishCitizenship !== 1;
+    const isWorkerWithoutBritishCitizenshipAndUnknownNationality = nationality === 999 && britishCitizenship === 2;
+    const shouldNotAnswerHealthAndCareVisaQuestion =
+      !isWorkerFromOtherNationWithUnknownCitizenship && !isWorkerWithoutBritishCitizenshipAndUnknownNationality;
 
     if (this._currentLine.HANDCVISA && this._currentLine.HANDCVISA.length > 0) {
       if (shouldNotAnswerHealthAndCareVisaQuestion) {
