@@ -492,6 +492,30 @@ class WorkerCsvValidator {
     return this._amhp;
   }
 
+  _convertYesNoDontKnow(value) {
+    const mappings = {
+      1: 'Yes',
+      2: 'No',
+      999: "Don't know",
+    };
+
+    return mappings[value] || '';
+  }
+
+  _generateWarning(warning, columnName) {
+    const warningType = `${columnName}_WARNING`;
+    return {
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+      lineNumber: this._lineNumber,
+      warnCode: WorkerCsvValidator[warningType],
+      warnType: warningType,
+      warning,
+      source: this._currentLine[columnName],
+      column: columnName,
+    };
+  }
+
   _validateContractType() {
     const myContractType = parseInt(this._currentLine.EMPLSTATUS, 10);
 
@@ -1040,16 +1064,6 @@ class WorkerCsvValidator {
     }
   }
 
-  _convertYesNoDontKnow(value) {
-    const mappings = {
-      1: 'Yes',
-      2: 'No',
-      999: "Don't know",
-    };
-
-    return mappings[value] || '';
-  }
-
   _validateHealthAndCareVisa() {
     const healthAndCareVisaValues = [1, 2, 999];
     const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
@@ -1060,26 +1074,15 @@ class WorkerCsvValidator {
     const shouldNotAnswerHealthAndCareVisaQuestion = nationality === 826 || britishCitizenship === 1;
 
     if (this._currentLine.HANDCVISA && this._currentLine.HANDCVISA.length > 0) {
-      const healthAndCareVisaWarning = (warning) => {
-        return {
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
-          warnType: 'HANDCVISA_WARNING',
-          warning,
-          source: this._currentLine.HANDCVISA,
-          column: 'HANDCVISA',
-        };
-      };
-
       if (shouldNotAnswerHealthAndCareVisaQuestion) {
         this._validationErrors.push(
-          healthAndCareVisaWarning('HANDCVISA not required when worker has British citizenship'),
+          this._generateWarning('HANDCVISA not required when worker has British citizenship', 'HANDCVISA'),
         );
         return false;
       } else if (isNaN(healthAndCareVisa) || !healthAndCareVisaValues.includes(parseInt(healthAndCareVisa, 10))) {
-        this._validationErrors.push(healthAndCareVisaWarning('HANDCVISA is incorrectly formatted and will be ignored'));
+        this._validationErrors.push(
+          this._generateWarning('HANDCVISA is incorrectly formatted and will be ignored', 'HANDCVISA'),
+        );
         return false;
       } else {
         this._healthAndCareVisa = this._convertYesNoDontKnow(healthAndCareVisa);
@@ -1096,22 +1099,9 @@ class WorkerCsvValidator {
     const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
 
     if (this._currentLine.INOUTUK && this._currentLine.INOUTUK.length > 0) {
-      const employedFromOutsideUkWarning = (warning) => {
-        return {
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.INOUTUK_WARNING,
-          warnType: 'INOUTUK_WARNING',
-          warning,
-          source: this._currentLine.INOUTUK,
-          column: 'INOUTUK',
-        };
-      };
-
       if (healthAndCareVisa != 1) {
         this._validationErrors.push(
-          employedFromOutsideUkWarning('INOUTUK not required when worker does not have Health and Care visa'),
+          this._generateWarning('INOUTUK not required when worker does not have Health and Care visa', 'INOUTUK'),
         );
         return false;
       } else if (
@@ -1119,7 +1109,7 @@ class WorkerCsvValidator {
         !employedFromOutsideUkValues.includes(parseInt(employedFromOutsideUk, 10))
       ) {
         this._validationErrors.push(
-          employedFromOutsideUkWarning('INOUTUK is incorrectly formatted and will be ignored'),
+          this._generateWarning('INOUTUK is incorrectly formatted and will be ignored', 'INOUTUK'),
         );
         return false;
       } else {
