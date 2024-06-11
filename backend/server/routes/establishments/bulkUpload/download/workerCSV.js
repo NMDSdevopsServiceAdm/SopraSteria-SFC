@@ -19,6 +19,16 @@ const _maptoCSVregisteredNurse = (registeredNurse) => {
   return '';
 };
 
+const _convertYesNoDontKnow = (value) => {
+  const mappings = {
+    Yes: 1,
+    No: 2,
+    "Don't know": 999,
+  };
+
+  return mappings[value] || '';
+};
+
 // takes the given Worker entity and writes it out to CSV string (one line)
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
@@ -180,42 +190,10 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   columns.push(recruitmentSource);
 
   // "HANDCVISA"
-  let healthAndCareVisa = '';
-
-  switch (entity.HealthAndCareVisaValue) {
-    case 'Yes':
-      healthAndCareVisa = 1;
-      break;
-
-    case 'No':
-      healthAndCareVisa = 2;
-      break;
-
-    case "Don't know":
-      healthAndCareVisa = 999;
-      break;
-  }
-
-  columns.push(healthAndCareVisa);
+  columns.push(_convertYesNoDontKnow(entity.HealthAndCareVisaValue));
 
   // "INOUTUK"
-  let employedFromOutsideUk = '';
-
-  switch (entity.EmployedFromOutsideUkValue) {
-    case 'Yes':
-      employedFromOutsideUk = 1;
-      break;
-
-    case 'No':
-      employedFromOutsideUk = 2;
-      break;
-
-    case "Don't know":
-      employedFromOutsideUk = 999;
-      break;
-  }
-
-  columns.push(employedFromOutsideUk);
+  columns.push(_convertYesNoDontKnow(entity.EmployedFromOutsideUkValue));
 
   // "STARTDATE"
   const mainJobStartDateParts = entity.MainJobStartDateValue ? entity.MainJobStartDateValue.split('-') : null;
