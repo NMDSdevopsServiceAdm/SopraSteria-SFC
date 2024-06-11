@@ -22,6 +22,7 @@ const buildWorkerCsv = build('WorkerCSV', {
     GENDER: '1',
     HANDCVISA: '',
     HOURLYRATE: '',
+    INOUTUK: '',
     LOCALESTID: 'MARMA',
     MAINJOBROLE: '4',
     MAINJRDESC: '',
@@ -514,6 +515,93 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors).to.deep.equal([
           healthAndCareVisaWarning('HANDCVISA is incorrectly formatted and will be ignored', healthAndCareVisaValue),
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
+
+    describe('_validateEmployedFromOutsideUk()', () => {
+      const employedFromOutsideUkWarning = (warning, source) => {
+        return {
+          column: 'INOUTUK',
+          lineNumber: 2,
+          name: 'MARMA',
+          source,
+          warnCode: WorkerCsvValidator.INOUTUK_WARNING,
+          warnType: 'INOUTUK_WARNING',
+          warning,
+          worker: '3',
+        };
+      };
+
+      it('should not add warning when valid health and care visa is Yes (1) and valid value', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '418',
+            BRITISHCITIZENSHIP: '2',
+            HANDCVISA: '1',
+            INOUTUK: '2',
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._validationErrors.length).to.equal(0);
+      });
+
+      it('should add warning when health and care visa is not Yes (No - 2) and INOUTUK is filled in', async () => {
+        const employedFromOutsideUkValue = '2';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '418',
+            BRITISHCITIZENSHIP: '2',
+            HANDCVISA: '2',
+            INOUTUK: employedFromOutsideUkValue,
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          employedFromOutsideUkWarning(
+            'INOUTUK not required when worker does not have Health and Care visa',
+            employedFromOutsideUkValue,
+          ),
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+
+      it('should add warning when employed from inside or outside is invalid value', async () => {
+        const employedFromOutsideUkValue = '12345';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '418',
+            BRITISHCITIZENSHIP: '2',
+            HANDCVISA: '1',
+            INOUTUK: employedFromOutsideUkValue,
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          employedFromOutsideUkWarning(
+            'INOUTUK is incorrectly formatted and will be ignored',
+            employedFromOutsideUkValue,
+          ),
         ]);
         expect(validator._validationErrors.length).to.equal(1);
       });

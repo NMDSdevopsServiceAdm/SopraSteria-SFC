@@ -193,10 +193,6 @@ class WorkerCsvValidator {
     return 1380;
   }
 
-  static get HANDCVISA_WARNING() {
-    return 1390;
-  }
-
   static get UNIQUE_WORKER_ID_WARNING() {
     return 3020;
   }
@@ -350,6 +346,14 @@ class WorkerCsvValidator {
   }
   static get QUAL_ACH03_NOTES_WARNING() {
     return 5560;
+  }
+
+  static get HANDCVISA_WARNING() {
+    return 5570;
+  }
+
+  static get INOUTUK_WARNING() {
+    return 5580;
   }
 
   get lineNumber() {
@@ -1079,6 +1083,47 @@ class WorkerCsvValidator {
         return false;
       } else {
         this._healthAndCareVisa = this._convertYesNoDontKnow(healthAndCareVisa);
+        return true;
+      }
+    }
+    return true;
+  }
+
+  _validateEmployedFromOutsideUk() {
+    const employedFromOutsideUkValues = [1, 2, 999];
+
+    const employedFromOutsideUk = parseInt(this._currentLine.INOUTUK, 10);
+    const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
+
+    if (this._currentLine.INOUTUK && this._currentLine.INOUTUK.length > 0) {
+      const employedFromOutsideUkWarning = (warning) => {
+        return {
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: WorkerCsvValidator.INOUTUK_WARNING,
+          warnType: 'INOUTUK_WARNING',
+          warning,
+          source: this._currentLine.INOUTUK,
+          column: 'INOUTUK',
+        };
+      };
+
+      if (healthAndCareVisa != 1) {
+        this._validationErrors.push(
+          employedFromOutsideUkWarning('INOUTUK not required when worker does not have Health and Care visa'),
+        );
+        return false;
+      } else if (
+        isNaN(employedFromOutsideUk) ||
+        !employedFromOutsideUkValues.includes(parseInt(employedFromOutsideUk, 10))
+      ) {
+        this._validationErrors.push(
+          employedFromOutsideUkWarning('INOUTUK is incorrectly formatted and will be ignored'),
+        );
+        return false;
+      } else {
+        this._healthAndCareVisa = this._convertYesNoDontKnow(employedFromOutsideUk);
         return true;
       }
     }
@@ -2712,6 +2757,7 @@ class WorkerCsvValidator {
       status = !this._validateCountryOfBirth() ? false : status;
       status = !this._validateYearOfEntry() ? false : status;
       status = !this._validateHealthAndCareVisa() ? false : status;
+      status = !this._validateEmployedFromOutsideUk() ? false : status;
       status = !this._validateDisabled() ? false : status;
       status = !this._validateCareCert() ? false : status;
       status = !this._validateRecSource() ? false : status;
