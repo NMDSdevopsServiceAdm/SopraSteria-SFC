@@ -15,6 +15,9 @@ const getAllWorkersNationalityAndBritishCitizenship = async (req, res) => {
   try {
     const allWorkers = await models.worker.getAllWorkersNationalityAndBritishCitizenship(establishmentId);
 
+    //worker.nationality?.value === 'Other' && ['No', "Don't know", null].includes(worker.britishCitizenship);
+    //worker.nationality?.value === "Don't know" && worker.britishCitizenship === 'No';
+
     res.status(200).send({
       workers: allWorkers.map((worker) => {
         return {

@@ -1,9 +1,22 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
+import { environment } from 'src/environments/environment';
+
+export interface internationalRecruitmentWorkersResponse {
+  id: number;
+  uid: string;
+  name: string;
+  nationality: string;
+  britishCitizenship: string;
+  healthAndCareVisaValue: string;
+}
 
 @Injectable()
 export class InternationalRecruitmentService {
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   private _employedFromOutsideUkMappings = {
     Yes: {
@@ -59,5 +72,11 @@ export class InternationalRecruitmentService {
 
   private _isWorkerWithoutBritishCitizenshipAndUnknownNationality(worker) {
     return worker.nationality?.value === "Don't know" && worker.britishCitizenship === 'No';
+  }
+
+  public getAllWorkersNationalityAndBritishCitizenship(establishmentuid): Observable<any> {
+    return this.http
+      .get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/internationalRecruitment`)
+      .pipe(map((data) => data));
   }
 }

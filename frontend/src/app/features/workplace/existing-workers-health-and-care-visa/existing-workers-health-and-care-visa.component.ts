@@ -56,14 +56,6 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
     //this.getWorkers();
     //console.log(this.route.snapshot.data?.workers);
     this.getWorkers();
-
-    // this.subscriptions.add(
-    //   this.internationalRecruitmentService
-    //     .getAllWorkersNationalityAndBritishCitizenship(this.workplaceUid)
-    //     .subscribe((data) => {
-    //       console.log(data);
-    //     }),
-    // );
   }
 
   private getWorkers(): void {
