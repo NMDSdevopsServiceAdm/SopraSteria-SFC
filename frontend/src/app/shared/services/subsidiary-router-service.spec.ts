@@ -68,6 +68,15 @@ describe('SubsidiaryRouterService', () => {
       expect(subViewServiceSpy.clearViewingSubAsParent).toHaveBeenCalled();
       expect(routerSpy).toHaveBeenCalledWith(rootUrl, undefined);
     });
+
+    it('should navigate and not clear sub view if navigation event to /subsidiary (skipped navigate for clean rendering from dropdown)', async () => {
+      const subsidiaryUrlAsString = '/subsidiary';
+      const subsidiaryUrl = subsidiaryUrlAsString as unknown as UrlTree;
+      service.navigateByUrl(subsidiaryUrl);
+
+      expect(subViewServiceSpy.clearViewingSubAsParent).not.toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(subsidiaryUrl, undefined);
+    });
   });
 
   describe('When hitting exit sub view pages', () => {

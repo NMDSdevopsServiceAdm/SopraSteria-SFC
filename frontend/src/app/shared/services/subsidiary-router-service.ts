@@ -42,7 +42,9 @@ export class SubsidiaryRouterService extends Router {
 
   navigateByUrl(url: UrlTree, extras?: NavigationBehaviorOptions): Promise<boolean> {
     if (!url.root?.children?.primary?.segments) {
-      this.parentSubsidiaryViewService.clearViewingSubAsParent();
+      if (this.isNotNavigateToWorkplaceDropdownSkippedNavigation(url)) {
+        this.parentSubsidiaryViewService.clearViewingSubAsParent();
+      }
       return super.navigateByUrl(url, extras);
     }
 
@@ -77,5 +79,9 @@ export class SubsidiaryRouterService extends Router {
     }
 
     return true;
+  }
+
+  isNotNavigateToWorkplaceDropdownSkippedNavigation(url: UrlTree | string) {
+    return url !== '/subsidiary';
   }
 }
