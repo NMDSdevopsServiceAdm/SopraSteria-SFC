@@ -489,7 +489,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors).to.deep.equal([
           healthAndCareVisaWarning(
-            'HANDCVISA not required when worker has British citizenship',
+            'HANDCVISA not required when worker is British or has British citizenship',
             healthAndCareVisaValue,
           ),
         ]);
@@ -515,7 +515,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors).to.deep.equal([
           healthAndCareVisaWarning(
-            'HANDCVISA not required when worker has British citizenship',
+            'HANDCVISA not required when worker is British or has British citizenship',
             healthAndCareVisaValue,
           ),
         ]);
@@ -625,7 +625,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors).to.deep.equal([
           employedFromOutsideUkWarning(
-            'INOUTUK not required when worker does not have Health and Care visa',
+            'INOUTUK not required when worker does not have a Health and Care visa',
             employedFromOutsideUkValue,
           ),
         ]);
@@ -678,7 +678,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors[1]).to.deep.equal(
           employedFromOutsideUkWarning(
-            'INOUTUK not required when worker does not have Health and Care visa',
+            'INOUTUK not required when worker does not have a Health and Care visa',
             employedFromOutsideUkValue,
           ),
         );

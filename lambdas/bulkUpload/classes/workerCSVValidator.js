@@ -1092,7 +1092,10 @@ class WorkerCsvValidator {
     if (this._currentLine.HANDCVISA && this._currentLine.HANDCVISA.length > 0) {
       if (this._shouldNotAnswerHealthAndCareVisaQuestion()) {
         this._validationErrors.push(
-          this._generateWarning('HANDCVISA not required when worker has British citizenship', 'HANDCVISA'),
+          this._generateWarning(
+            'HANDCVISA not required when worker is British or has British citizenship',
+            'HANDCVISA',
+          ),
         );
         return false;
       } else if (isNaN(healthAndCareVisa) || !healthAndCareVisaValues.includes(parseInt(healthAndCareVisa, 10))) {
@@ -1117,7 +1120,7 @@ class WorkerCsvValidator {
     if (this._currentLine.INOUTUK && this._currentLine.INOUTUK.length > 0) {
       if (healthAndCareVisa != 1 || this._shouldNotAnswerHealthAndCareVisaQuestion()) {
         this._validationErrors.push(
-          this._generateWarning('INOUTUK not required when worker does not have Health and Care visa', 'INOUTUK'),
+          this._generateWarning('INOUTUK not required when worker does not have a Health and Care visa', 'INOUTUK'),
         );
         return false;
       } else if (
