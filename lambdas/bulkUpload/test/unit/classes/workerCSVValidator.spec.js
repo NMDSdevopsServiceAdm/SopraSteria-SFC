@@ -494,6 +494,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           ),
         ]);
         expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._healthAndCareVisa).to.equal(null);
       });
 
       it('should add warning when health and care visa provided but worker is British', async () => {
@@ -519,6 +520,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           ),
         ]);
         expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._healthAndCareVisa).to.equal(null);
       });
 
       it('should add warning when health and care visa invalid', async () => {
@@ -541,6 +543,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           healthAndCareVisaWarning('HANDCVISA is incorrectly formatted and will be ignored', healthAndCareVisaValue),
         ]);
         expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._healthAndCareVisa).to.equal(null);
       });
     });
 
@@ -627,6 +630,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           ),
         ]);
         expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._employedFromOutsideUk).to.equal(null);
       });
 
       it('should add warning when employed from inside or outside is invalid value', async () => {
@@ -653,6 +657,33 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           ),
         ]);
         expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._employedFromOutsideUk).to.equal(null);
+      });
+
+      it('should add warning when health and care visa is Yes(1) but invalid and INOUTUK is filled in', async () => {
+        const employedFromOutsideUkValue = '2';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '826', // British code
+            HANDCVISA: '1',
+            INOUTUK: employedFromOutsideUkValue,
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors[1]).to.deep.equal(
+          employedFromOutsideUkWarning(
+            'INOUTUK not required when worker does not have Health and Care visa',
+            employedFromOutsideUkValue,
+          ),
+        );
+        expect(validator._validationErrors.length).to.equal(2);
+        expect(validator._employedFromOutsideUk).to.equal(null);
       });
     });
 

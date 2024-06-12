@@ -1074,21 +1074,23 @@ class WorkerCsvValidator {
     }
   }
 
-  _validateHealthAndCareVisa() {
-    const healthAndCareVisaValues = [1, 2, 999];
-    const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
-
+  _shouldNotAnswerHealthAndCareVisaQuestion() {
     const nationality = parseInt(this._currentLine.NATIONALITY, 10);
     const britishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP, 10);
 
     const isWorkerFromOtherNationWithUnknownCitizenship =
       nationality !== 826 && nationality !== 999 && britishCitizenship !== 1;
     const isWorkerWithoutBritishCitizenshipAndUnknownNationality = nationality === 999 && britishCitizenship === 2;
-    const shouldNotAnswerHealthAndCareVisaQuestion =
-      !isWorkerFromOtherNationWithUnknownCitizenship && !isWorkerWithoutBritishCitizenshipAndUnknownNationality;
+
+    return !isWorkerFromOtherNationWithUnknownCitizenship && !isWorkerWithoutBritishCitizenshipAndUnknownNationality;
+  }
+
+  _validateHealthAndCareVisa() {
+    const healthAndCareVisaValues = [1, 2, 999];
+    const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
 
     if (this._currentLine.HANDCVISA && this._currentLine.HANDCVISA.length > 0) {
-      if (shouldNotAnswerHealthAndCareVisaQuestion) {
+      if (this._shouldNotAnswerHealthAndCareVisaQuestion()) {
         this._validationErrors.push(
           this._generateWarning('HANDCVISA not required when worker has British citizenship', 'HANDCVISA'),
         );
@@ -1113,7 +1115,7 @@ class WorkerCsvValidator {
     const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
 
     if (this._currentLine.INOUTUK && this._currentLine.INOUTUK.length > 0) {
-      if (healthAndCareVisa != 1) {
+      if (healthAndCareVisa != 1 || this._shouldNotAnswerHealthAndCareVisaQuestion()) {
         this._validationErrors.push(
           this._generateWarning('INOUTUK not required when worker does not have Health and Care visa', 'INOUTUK'),
         );
