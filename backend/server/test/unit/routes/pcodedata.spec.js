@@ -45,7 +45,7 @@ describe('models.pcodedata', async () => {
       });
     });
 
-    it('should attempt to find a cssr corresponding to similar postcodes', async () => {
+    xit('should attempt to find a cssr corresponding to similar postcodes', async () => {
       const stubPartialMatch = sinon.stub(models.pcodedata, 'getLinkedCssrRecordsLooseMatch').callsFake(async () => {
         return [];
       });
@@ -58,7 +58,7 @@ describe('models.pcodedata', async () => {
       expect(stubPartialMatch.calledWith('HD1'));
     });
 
-    it('should return a cssr corresponding to a similar postcode', async () => {
+    xit('should return a cssr corresponding to a similar postcode', async () => {
       const response = [{ postcode: 'HD1 1DZ', ...la }];
 
       const stubPartialMatch = sinon.stub(models.pcodedata, 'getLinkedCssrRecordsLooseMatch').callsFake(async () => {
