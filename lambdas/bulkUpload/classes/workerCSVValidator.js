@@ -494,6 +494,14 @@ class WorkerCsvValidator {
     return this._amhp;
   }
 
+  get healthAndCareVisa() {
+    return this._healthAndCareVisa;
+  }
+
+  get employedFromOutsideUk() {
+    return this._employedFromOutsideUk;
+  }
+
   _convertYesNoDontKnow(value) {
     const mappings = {
       1: 'Yes',
@@ -1119,7 +1127,7 @@ class WorkerCsvValidator {
         );
         return false;
       } else {
-        this._healthAndCareVisa = this._convertYesNoDontKnow(employedFromOutsideUk);
+        this._employedFromOutsideUk = this._convertYesNoDontKnow(employedFromOutsideUk);
         return true;
       }
     }
