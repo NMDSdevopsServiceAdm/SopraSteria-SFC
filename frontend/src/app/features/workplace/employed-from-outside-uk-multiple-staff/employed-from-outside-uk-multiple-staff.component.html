@@ -41,7 +41,7 @@
                   class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-quarter"
                   style="vertical-align: middle"
                 >
-                  <a href="#" (click)="getWorkerRecordPath($event, worker)">
+                  <a href="#" (click)="navigateToStaffRecord($event, worker)">
                     {{ worker.value.nameOrId }}
                   </a>
                 </th>
@@ -56,7 +56,9 @@
                         name="insideOutsideUk-{{ i }}"
                         class="govuk-radios__input"
                         type="radio"
+                        [checked]="worker.value == answer"
                         [value]="answer.value"
+                        (change)="radioChange(i, j)"
                       />
                       <label class="govuk-label govuk-radios__label" for="fluJab-{{ i }}-{{ j }}">
                         {{ answer.tag }}
@@ -71,5 +73,5 @@
       </div>
     </div>
   </fieldset>
-  <app-submit-exit-buttons [cta]="'Save'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
+  <app-submit-exit-buttons [cta]="'Save information'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
 </form>

@@ -2,7 +2,6 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -13,7 +12,7 @@ import { InternationalRecruitmentService } from '@core/services/international-re
   templateUrl: './employed-from-outside-uk-multiple-staff.component.html',
 })
 export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
-  private workplace: Establishment;
+  private workplaceUid: string;
   public submitted: boolean;
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
@@ -38,11 +37,11 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.workplace = this.establishmentService.establishment;
+    this.workplaceUid = this.establishmentService.establishment.uid;
     this.submitted = false;
     this.answers = this.internationalRecruitmentService.getEmployedFromOutsideUkAnswers();
     this.internationalRecruitmentService
-      .getWorkersWithHealthAndCareVisaForWorkplace(this.workplace.uid)
+      .getWorkersWithHealthAndCareVisaForWorkplace(this.workplaceUid)
       .subscribe((data) => {
         this.setUpFormData(data);
       });
@@ -62,16 +61,25 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     this.workersWithHealthAndCareVisas.forEach((worker) => {
       this.employedFromOutsideUKStaff.push(this.formBuilder.control({ ...worker, employedFromOutsideUK: null }));
     });
-    console.log(this.employedFromOutsideUKStaff);
   }
 
-  onSubmitSuccess() {
+  public navigateToStaffRecord(event: Event, worker): void {
+    event.preventDefault();
+    this.router.navigate(['/workplace', this.workplaceUid, 'staff-record', worker.value.uid, 'staff-record-summary']);
+  }
+
+  onSubmitSuccess(): void {
     this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
       this.alertService.addAlert({
         type: 'success',
         message: 'Health and Care  Worker visa information saved',
       });
     });
+  }
+
+  radioChange(workerIndex, answerIndex) {
+    const updatedWorker = this.employedFromOutsideUKStaff.value[workerIndex];
+    updatedWorker.employedFromOutsideUK = this.answers[answerIndex].value;
   }
 
   onSubmitError(error) {

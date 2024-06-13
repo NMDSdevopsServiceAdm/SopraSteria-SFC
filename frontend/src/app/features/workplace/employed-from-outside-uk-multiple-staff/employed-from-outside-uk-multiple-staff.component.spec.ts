@@ -7,14 +7,14 @@ import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-outside-uk-multiple-staff.component';
 
-fdescribe('EmployedFromOutsideUkMultipleStaffComponent', () => {
+describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
+  const workplaceUid = 'abcd13528233';
   const workersWithHealthAndCareVisas = [
     {
       id: 123,
@@ -41,7 +41,7 @@ fdescribe('EmployedFromOutsideUkMultipleStaffComponent', () => {
             provide: InternationalRecruitmentService,
             useValue: {
               getWorkersWithHealthAndCareVisaForWorkplace() {
-                return of(workersWithHealthAndCareVisas);
+                return of({ workersWithHealthAndCareVisas });
               },
               getEmployedFromOutsideUkAnswers() {
                 return [
@@ -63,7 +63,7 @@ fdescribe('EmployedFromOutsideUkMultipleStaffComponent', () => {
           },
           {
             provide: EstablishmentService,
-            useClass: MockEstablishmentService,
+            useValue: { establishment: { uid: workplaceUid } },
           },
         ],
       },
@@ -91,10 +91,35 @@ fdescribe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display names of workers returned from backend call', async () => {
-    const { fixture, component, getByText } = await setup();
-    fixture.detectChanges();
+  it('should display names of workers returned from international recruitment API call', async () => {
+    const { getByText } = await setup();
+
     expect(getByText(workersWithHealthAndCareVisas[0].nameOrId)).toBeTruthy();
     expect(getByText(workersWithHealthAndCareVisas[1].nameOrId)).toBeTruthy();
+  });
+
+  it('should navigate to worker staff record on click of name', async () => {
+    const { getByText, routerSpy } = await setup();
+    const worker = workersWithHealthAndCareVisas[0];
+    const workerLink = getByText(worker.nameOrId);
+
+    fireEvent.click(workerLink);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      workplaceUid,
+      'staff-record',
+      worker.uid,
+      'staff-record-summary',
+    ]);
+  });
+
+  it('should navigate to home page after successful submit', async () => {
+    const { getByText, routerSpy } = await setup();
+
+    const saveButton = getByText('Save information');
+    fireEvent.click(saveButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
   });
 });
