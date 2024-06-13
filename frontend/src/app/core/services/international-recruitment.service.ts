@@ -1,9 +1,11 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Worker } from '@core/model/worker.model';
+import { environment } from 'src/environments/environment';
 
 @Injectable()
 export class InternationalRecruitmentService {
-  constructor() {}
+  constructor(private http: HttpClient) {}
 
   private _employedFromOutsideUkMappings = {
     Yes: {
@@ -59,5 +61,9 @@ export class InternationalRecruitmentService {
 
   private _isWorkerWithoutBritishCitizenshipAndUnknownNationality(worker) {
     return worker.nationality?.value === "Don't know" && worker.britishCitizenship === 'No';
+  }
+
+  getWorkersWithHealthAndCareVisaForWorkplace(workplaceUid: string) {
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/healthAndCareVisa`);
   }
 }

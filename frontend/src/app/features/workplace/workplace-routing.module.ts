@@ -4,11 +4,15 @@ import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edi
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
@@ -29,6 +33,7 @@ import { ConfirmStaffRecruitmentAndBenefitsComponent } from './confirm-staff-rec
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-outside-uk-multiple-staff/employed-from-outside-uk-multiple-staff.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
@@ -54,10 +59,6 @@ import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -119,6 +120,11 @@ const routes: Routes = [
         data: {
           title: 'Staff Recruitment Start',
         },
+      },
+      {
+        path: 'employed-from-outside-uk-multiple-staff',
+        component: EmployedFromOutsideUkMultipleStaffComponent,
+        data: { title: 'Employed from Outside the UK' },
       },
       {
         path: 'regulated-by-cqc',

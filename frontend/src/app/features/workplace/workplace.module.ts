@@ -2,9 +2,13 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -29,6 +33,7 @@ import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-outside-uk-multiple-staff/employed-from-outside-uk-multiple-staff.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
@@ -59,10 +64,6 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
-import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 
 @NgModule({
   imports: [
@@ -121,6 +122,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
     PensionsComponent,
+    EmployedFromOutsideUkMultipleStaffComponent,
   ],
   providers: [
     DialogService,
