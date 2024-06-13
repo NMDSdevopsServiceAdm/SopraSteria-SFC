@@ -363,27 +363,27 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.ENUM,
         allowNull: true,
         values: ['Yes', 'No', "Don't know"],
-        field: '"EmployedFromOutsideUkValue"'
+        field: '"EmployedFromOutsideUkValue"',
       },
       EmployedFromOutsideUkSavedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"EmployedFromOutsideUkSavedAt"'
+        field: '"EmployedFromOutsideUkSavedAt"',
       },
       EmployedFromOutsideUkChangedAt: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: '"EmployedFromOutsideUkChangedAt"'
+        field: '"EmployedFromOutsideUkChangedAt"',
       },
       EmployedFromOutsideUkSavedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"EmployedFromOutsideUkSavedBy"'
+        field: '"EmployedFromOutsideUkSavedBy"',
       },
       EmployedFromOutsideUkChangedBy: {
         type: DataTypes.TEXT,
         allowNull: true,
-        field: '"EmployedFromOutsideUkChangedBy"'
+        field: '"EmployedFromOutsideUkChangedBy"',
       },
       NationalityValue: {
         type: DataTypes.ENUM,
@@ -1293,6 +1293,18 @@ module.exports = function (sequelize, DataTypes) {
         archived: false,
         ContractValue: ['Permanent', 'Temporary'],
         MainJobStartDateValue: null,
+      },
+    });
+  };
+
+  Worker.getWorkersWithHealthAndCareVisaForWorkplace = async function (establishmentId) {
+    return this.findAll({
+      attributes: ['id', 'uid', 'NameOrIdValue', 'HealthAndCareVisaValue'],
+      where: {
+        establishmentFk: establishmentId,
+        HealthAndCareVisaValue: 'Yes',
+        EmployedFromOutsideUkValue: null,
+        archived: false,
       },
     });
   };
