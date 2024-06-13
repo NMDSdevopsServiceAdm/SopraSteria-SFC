@@ -25,11 +25,13 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
     { tag: 'I do not know', value: `Don't know` },
   ];
 
+  public headerText;
+
   public form: FormGroup;
   public healthCareAndVisaWorkersList;
   public returnUrl: URLStructure = { url: ['/dashboard'] };
   public workplaceUid: string;
-  public workers: Array<Worker>;
+  public workers: any = [];
   public canViewWorker = false;
   public canEditWorker: boolean;
   private subscriptions: Subscription = new Subscription();
@@ -61,8 +63,8 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
 
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
-
     this.getWorkers();
+    this.setPluralisation();
   }
 
   setupServerErrorsMap() {
@@ -89,21 +91,29 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
           .getAllWorkersNationalityAndBritishCitizenship(this.workplaceUid)
           .pipe(take(1))
           .subscribe(({ workers }) => {
-            console.log(workers);
-            this.healthCareAndVisaWorkersList = workers;
+            this.workers = workers;
           }),
       );
     }
   }
 
+  private setPluralisation(): void {
+    if (this.workers?.length === 1) {
+      this.headerText = 'Is this worker on a Health and Care Worker visa?';
+    } else {
+      this.headerText = 'Are these workers on Health and Care Worker visas?';
+    }
+  }
+
   public radioChange(worker, answer) {
-    const updatedWorkerHealthAndCareVisa = this.healthCareAndVisaWorkersList[worker];
+    const updatedWorkerHealthAndCareVisa = this.workers[worker];
+
     this.updatedWorkersHealthAndCareVisas = this.updatedWorkersHealthAndCareVisas.filter(
-      (visa) => visa.id !== updatedWorkerHealthAndCareVisa.id,
+      (updateWorker) => updateWorker.uid !== updatedWorkerHealthAndCareVisa.uid,
     );
+
     if (updatedWorkerHealthAndCareVisa.healthAndCareVisa != this.healthCareAndVisaAnswers[answer].value) {
       this.updatedWorkersHealthAndCareVisas.push({
-        id: updatedWorkerHealthAndCareVisa.worker,
         uid: updatedWorkerHealthAndCareVisa.uid,
         healthAndCareVisa: this.healthCareAndVisaAnswers[answer].value,
       });
@@ -119,11 +129,11 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
   public onSubmit(): void {
     this.updateHasWorkersWithHealthAndCareVisa(this.updatedWorkersHealthAndCareVisas);
     this.submitted = true;
-    this.onSubmitSuccess();
-    // this.establishmentService.updateWorkers(this.workplaceUid, this.updatedWorkersHealthAndCareVisas).subscribe(
-    //   (response) => this.onSubmitSuccess(),
-    //   (error) => this.onSubmitError(error),
-    // );
+
+    this.establishmentService.updateWorkers(this.workplaceUid, this.updatedWorkersHealthAndCareVisas).subscribe(
+      (response) => this.onSubmitSuccess(),
+      (error) => this.onSubmitError(error),
+    );
   }
 
   public updateHasWorkersWithHealthAndCareVisa(updatedWorkersHealthAndCareVisas) {

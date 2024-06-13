@@ -1358,13 +1358,6 @@ module.exports = function (sequelize, DataTypes) {
         establishmentFk: establishmentId,
         archived: false,
         HealthAndCareVisaValue: null,
-        // [Op.or]: {
-        //   [Op.and]: [
-        //     { NationalityValue: 'Other' },
-        //     { BritishCitizenshipValue: { [Op.or]: ['No', "Don't know", null] } },
-        //   ],
-        //[Op.and]: [{ NationalityValue: "Don't know" }, { BritishCitizenshipValue: 'No' }],
-        //},
       },
       order: [['NameOrIdValue', 'ASC']],
     });

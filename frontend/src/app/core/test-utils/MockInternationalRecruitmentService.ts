@@ -38,20 +38,40 @@ const internationalRecruitmentWorkers = [
   },
 ];
 
+const singleInternationalRecruitmentWorker = [
+  {
+    uid: 'a4314',
+    name: 'Trevor Lane',
+    nationality: null,
+    britishCitizenship: null,
+    healthAndCareVisa: null,
+  },
+];
+
 export const getAllWorkersNationalityAndBritishCitizenshipResponse = {
   workers: internationalRecruitmentWorkers,
 };
 
+export const getSingleWorkerNationalityAndBritishCitizenshipResponse = {
+  workers: singleInternationalRecruitmentWorker,
+};
+
 @Injectable({ providedIn: 'root' })
 export class MockInternationalRecruitmentService extends InternationalRecruitmentService {
-  public static factory() {
+  private _singleWorker: boolean = false;
+
+  public static factory(singleWorker = false) {
     return (httpClient: HttpClient) => {
       const service = new MockInternationalRecruitmentService(httpClient);
+      service._singleWorker = singleWorker;
       return service;
     };
   }
 
   getAllWorkersNationalityAndBritishCitizenship(establishmentuid: string): Observable<any> {
+    if (this._singleWorker) {
+      return of(getSingleWorkerNationalityAndBritishCitizenshipResponse);
+    }
     return of(getAllWorkersNationalityAndBritishCitizenshipResponse);
   }
 }

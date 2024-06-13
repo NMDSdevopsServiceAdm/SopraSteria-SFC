@@ -8,18 +8,17 @@ const { hasPermission } = require('../../utils/security/hasPermission');
 const getAllWorkersNationalityAndBritishCitizenship = async (req, res) => {
   const establishmentId = req.establishmentId;
 
-  const where = {
-    archived: false,
-  };
-
   try {
     const allWorkers = await models.worker.getAllWorkersNationalityAndBritishCitizenship(establishmentId);
 
-    //worker.nationality?.value === 'Other' && ['No', "Don't know", null].includes(worker.britishCitizenship);
-    //worker.nationality?.value === "Don't know" && worker.britishCitizenship === 'No';
+    const filterWorkers = allWorkers.filter(
+      (worker) =>
+        (worker.NationalityValue === 'Other' && ['No', "Don't know", null].includes(worker.BritishCitizenshipValue)) ||
+        (worker.NationalityValue === "Don't know" && worker.BritishCitizenshipValue === 'No'),
+    );
 
     res.status(200).send({
-      workers: allWorkers.map((worker) => {
+      workers: filterWorkers.map((worker) => {
         return {
           uid: worker.uid,
           name: worker.NameOrIdValue,

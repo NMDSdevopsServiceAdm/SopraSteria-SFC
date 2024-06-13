@@ -6,7 +6,7 @@
       <div class="govuk-grid-column-two-thirds-from-desktop">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-xl">Employment details</span>
-          <h1 class="govuk-fieldset__heading">Are these workers on Health and Care Worker visas?</h1>
+          <h1 class="govuk-fieldset__heading">{{ headerText }}</h1>
         </legend>
         <p class="govuk-!-padding-bottom-2">
           We only want to know about Health and Care Worker visas and your workplace does not need to be the worker’s
@@ -37,7 +37,7 @@
               ></th>
               <td class="govuk-table__cell"></td>
             </tr>
-            <tr class="govuk-table__row" *ngFor="let worker of healthCareAndVisaWorkersList; let i = index">
+            <tr class="govuk-table__row" *ngFor="let worker of workers; let i = index">
               <th
                 scope="row"
                 class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third"

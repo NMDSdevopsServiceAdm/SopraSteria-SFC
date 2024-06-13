@@ -16,21 +16,29 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { MockInternationalRecruitmentService } from '@core/test-utils/MockInternationalRecruitmentService';
+import { WindowRef } from '@core/services/window.ref';
+import { AlertService } from '@core/services/alert.service';
+import { PermissionType } from '@core/model/permissions.model';
+import { HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 
 fdescribe('ExistingWorkersHealthAndCareVisa', () => {
-  async function setup() {
+  async function setup(permissions = [], singleWorker = false) {
     const { fixture, getByText, getByTestId, getByRole } = await render(ExistingWorkersHealthAndCareVisa, {
       imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule, SharedModule],
       declarations: [DetailsComponent, SubmitExitButtonsComponent],
       providers: [
         UntypedFormBuilder,
+        WindowRef,
+        AlertService,
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
         {
           provide: PermissionsService,
-          useClass: MockPermissionsService,
+          useFactory: MockPermissionsService.factory(permissions as PermissionType[], true),
+          deps: [HttpClient, Router],
         },
         {
           provide: WorkerService,
@@ -38,11 +46,7 @@ fdescribe('ExistingWorkersHealthAndCareVisa', () => {
         },
         {
           provide: InternationalRecruitmentService,
-          useClass: MockInternationalRecruitmentService,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {},
+          useFactory: MockInternationalRecruitmentService.factory(singleWorker),
         },
       ],
     });
@@ -63,6 +67,9 @@ fdescribe('ExistingWorkersHealthAndCareVisa', () => {
       'getAllWorkersNationalityAndBritishCitizenship',
     ).and.callThrough();
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     return {
       fixture,
       component,
@@ -71,6 +78,7 @@ fdescribe('ExistingWorkersHealthAndCareVisa', () => {
       getByRole,
       routerSpy,
       internationalRecruitmentServiceSpy,
+      alertServiceSpy,
     };
   }
 
@@ -80,11 +88,20 @@ fdescribe('ExistingWorkersHealthAndCareVisa', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the heading', async () => {
-    const { component, fixture } = await setup();
+  describe('heading', async () => {
+    it('should be pluralised when we have more than one worker', async () => {
+      const { component, fixture } = await setup();
 
-    const headingText = fixture.nativeElement.querySelector('h1');
-    expect(headingText.innerText).toContain('Are these workers on Health and Care Worker visas?');
+      const headingText = fixture.nativeElement.querySelector('h1');
+      expect(headingText.innerText).toContain('Are these workers on Health and Care Worker visas?');
+    });
+
+    it('should be singular when we have only one worker', async () => {
+      const { component, fixture } = await setup([], true);
+
+      const headingText = fixture.nativeElement.querySelector('h1');
+      expect(headingText.innerText).toContain('Is this worker on a Health and Care Worker visa?');
+    });
   });
 
   it('should render the reveal', async () => {
@@ -105,24 +122,38 @@ fdescribe('ExistingWorkersHealthAndCareVisa', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
   });
 
-  xit('should call getAllWorkersNationalityAndBritishCitizenship', async () => {
-    const { component, fixture, internationalRecruitmentServiceSpy } = await setup();
+  it('should call getAllWorkersNationalityAndBritishCitizenship', async () => {
+    const { component, fixture, internationalRecruitmentServiceSpy } = await setup(['canEditWorker']);
 
     component.canEditWorker = true;
 
     component.ngOnInit();
     fixture.detectChanges();
 
-    expect(internationalRecruitmentServiceSpy).toHaveBeenCalled();
+    expect(internationalRecruitmentServiceSpy).toHaveBeenCalledWith(component.workplaceUid);
   });
 
-  xit('should show the worker name', async () => {
-    const { getByText, internationalRecruitmentServiceSpy } = await setup();
+  it('should show the worker name', async () => {
+    const { getByText } = await setup(['canEditWorker']);
 
     const workerName = getByText('Joy Wood');
 
-    //expect(workerName).toBeTruthy();
-    expect(internationalRecruitmentServiceSpy).toHaveBeenCalled();
+    expect(workerName).toBeTruthy();
+  });
+
+  xit('should show the link to the worker staff record', async () => {
+    const { component, getByText, routerSpy } = await setup(['canEditWorker']);
+
+    const workerName = getByText(component.workers[0].name);
+    fireEvent.click(workerName);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      '/workplace',
+      component.workplaceUid,
+      'staff-record',
+      component.healthCareAndVisaWorkersList[0].uid,
+      'staff-record-summary',
+    ]);
   });
 
   it('should show the continue button', async () => {
@@ -139,5 +170,81 @@ fdescribe('ExistingWorkersHealthAndCareVisa', () => {
     const cancelLink = getByText('Cancel');
 
     expect(cancelLink).toBeTruthy();
+  });
+
+  it('should not show anything selected when you land on the page', async () => {
+    const { fixture } = await setup(['canEditWorker']);
+
+    const yes = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+    const no = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
+    const dontKnow = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-2"]');
+
+    expect(yes.checked).toBeFalsy();
+    expect(no.checked).toBeFalsy();
+    expect(dontKnow.checked).toBeFalsy();
+  });
+
+  it('should select "Yes" when worker has a health and care visa', async () => {
+    const { fixture } = await setup(['canEditWorker']);
+
+    const yes = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+    const no = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
+    const dontKnow = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-2"]');
+
+    fireEvent.click(yes);
+    fixture.detectChanges();
+
+    expect(yes.checked).toBeTruthy();
+    expect(no.checked).toBeFalsy();
+    expect(dontKnow.checked).toBeFalsy();
+  });
+
+  it('should select "No" when worker does not have a health and care visa', async () => {
+    const { fixture } = await setup(['canEditWorker']);
+
+    const yes = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+    const no = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
+    const dontKnow = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-2"]');
+
+    fireEvent.click(no);
+    fixture.detectChanges();
+
+    expect(yes.checked).toBeFalsy();
+    expect(no.checked).toBeTruthy();
+    expect(dontKnow.checked).toBeFalsy();
+  });
+
+  it("should select 'Don't know' when worker is not known to have a health and care visa'", async () => {
+    const { fixture } = await setup(['canEditWorker']);
+
+    const yes = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+    const no = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
+    const dontKnow = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-2"]');
+
+    fireEvent.click(dontKnow);
+    fixture.detectChanges();
+
+    expect(yes.checked).toBeFalsy();
+    expect(no.checked).toBeFalsy();
+    expect(dontKnow.checked).toBeTruthy();
+  });
+
+  xit("should navigate to the home page if there are only 'No' or Don't know answered", async () => {
+    const { fixture, getByText, routerSpy, alertServiceSpy } = await setup(['canEditWorker']);
+
+    const yes = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+    const no = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
+    const dontKnow = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-2"]');
+    const continueButton = getByText('Continue');
+
+    fireEvent.click(no);
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'home' });
+    expect(alertServiceSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'Health and Care Worker visa information saved',
+    });
   });
 });
