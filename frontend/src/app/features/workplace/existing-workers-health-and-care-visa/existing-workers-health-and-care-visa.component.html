@@ -1,3 +1,5 @@
+<app-error-summary *ngIf="submitted && serverError" [serverError]="serverError" [form]="form"> </app-error-summary>
+
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <div class="govuk-grid-row">
@@ -41,7 +43,9 @@
                 class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third"
                 style="vertical-align: middle"
               >
-                {{ worker.name }}
+                <a href="#" (click)="getWorkerRecordPath($event, worker)">
+                  {{ worker.name }}
+                </a>
               </th>
               <td class="govuk-table__cell">
                 <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
@@ -55,6 +59,7 @@
                       class="govuk-radios__input"
                       type="radio"
                       [value]="answer.value"
+                      (change)="radioChange(i, j)"
                     />
                     <label class="govuk-label govuk-radios__label" for="healthAndCareVisa-{{ i }}-{{ j }}">
                       {{ answer.tag }}

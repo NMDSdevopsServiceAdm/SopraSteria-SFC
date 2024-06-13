@@ -1,7 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormArray, FormGroup, UntypedFormBuilder } from '@angular/forms';
+import { FormGroup, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
+import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -11,6 +12,7 @@ import { Worker } from '@core/model/worker.model';
 import { Subscription } from 'rxjs';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-existing-workers-health-and-care-visa',
@@ -31,6 +33,11 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
   public canViewWorker = false;
   public canEditWorker: boolean;
   private subscriptions: Subscription = new Subscription();
+  public serverErrorsMap: Array<ErrorDefinition>;
+  public serverError: string;
+  public hasWorkersWithHealthAndCareVisa: boolean;
+  public submitted: boolean;
+  public updatedWorkersHealthAndCareVisas: any = [];
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -42,6 +49,7 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private internationalRecruitmentService: InternationalRecruitmentService,
+    private alertService: AlertService,
   ) {
     this.form = this.formBuilder.group({
       healthCareAndVisaRadioList: this.formBuilder.array([]),
@@ -53,9 +61,25 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
 
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
-    //this.getWorkers();
-    //console.log(this.route.snapshot.data?.workers);
+
     this.getWorkers();
+  }
+
+  setupServerErrorsMap() {
+    this.serverErrorsMap = [
+      {
+        name: 400,
+        message: 'There has been a problem saving . Please try again.',
+      },
+      {
+        name: 404,
+        message: 'There has been a problem saving. Please try again.',
+      },
+      {
+        name: 503,
+        message: 'There has been a problem saving. Please try again.',
+      },
+    ];
   }
 
   private getWorkers(): void {
@@ -72,29 +96,63 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
     }
   }
 
-  public onSubmit() {}
+  public radioChange(worker, answer) {
+    const updatedWorkerHealthAndCareVisa = this.healthCareAndVisaWorkersList[worker];
+    this.updatedWorkersHealthAndCareVisas = this.updatedWorkersHealthAndCareVisas.filter(
+      (visa) => visa.id !== updatedWorkerHealthAndCareVisa.id,
+    );
+    if (updatedWorkerHealthAndCareVisa.healthAndCareVisa != this.healthCareAndVisaAnswers[answer].value) {
+      this.updatedWorkersHealthAndCareVisas.push({
+        id: updatedWorkerHealthAndCareVisa.worker,
+        uid: updatedWorkerHealthAndCareVisa.uid,
+        healthAndCareVisa: this.healthCareAndVisaAnswers[answer].value,
+      });
+    }
+  }
+
+  public getWorkerRecordPath(event: Event, worker: Worker) {
+    event.preventDefault();
+    const path = ['/workplace', this.workplaceUid, 'staff-record', worker.uid, 'staff-record-summary'];
+    this.router.navigate(path);
+  }
+
+  public onSubmit(): void {
+    this.updateHasWorkersWithHealthAndCareVisa(this.updatedWorkersHealthAndCareVisas);
+    this.submitted = true;
+    this.onSubmitSuccess();
+    // this.establishmentService.updateWorkers(this.workplaceUid, this.updatedWorkersHealthAndCareVisas).subscribe(
+    //   (response) => this.onSubmitSuccess(),
+    //   (error) => this.onSubmitError(error),
+    // );
+  }
+
+  public updateHasWorkersWithHealthAndCareVisa(updatedWorkersHealthAndCareVisas) {
+    this.hasWorkersWithHealthAndCareVisa = updatedWorkersHealthAndCareVisas.some(
+      (worker) => worker.healthAndCareVisa === 'Yes',
+    );
+  }
+
+  public onSubmitSuccess() {
+    if (this.hasWorkersWithHealthAndCareVisa) {
+      this.router.navigate([]);
+    } else {
+      this.router.navigate(['dashboard'], { fragment: 'home' });
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Health and Care Worker visa information saved',
+      });
+    }
+  }
+
+  onSubmitError(error) {
+    this.errorSummaryService.scrollToErrorSummary();
+    this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+  }
 
   public navigateToStaffRecords(event: Event) {
     event.preventDefault();
     this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
   }
-
-  // public getWorkers() {
-  //   this.healthCareAndVisaWorkersList = [
-  //     {
-  //       id: '124r',
-  //       name: 'Frank Abagnale',
-  //     },
-  //     {
-  //       id: '124q',
-  //       name: 'Henry Adams',
-  //     },
-  //     {
-  //       id: '124g',
-  //       name: 'Elly Connor',
-  //     },
-  //   ];
-  // }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
