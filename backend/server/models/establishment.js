@@ -1476,6 +1476,8 @@ module.exports = function (sequelize, DataTypes) {
             'DisabilityValue',
             'CareCertificateValue',
             'RecruitedFromValue',
+            'HealthAndCareVisaValue',
+            'EmployedFromOutsideUkValue',
             'MainJobStartDateValue',
             'SocialCareStartDateValue',
             'SocialCareStartDateYear',
@@ -2322,7 +2324,6 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-
   const nhsBsaAttributes = [
     'id',
     'nmdsId',
@@ -2344,7 +2345,7 @@ module.exports = function (sequelize, DataTypes) {
 
       where: {
         archived: false,
-       ...where
+        ...where,
       },
       include: [
         {
@@ -2357,8 +2358,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-
-  Establishment.getNhsBsaApiDataForSubs= async function (establishmentId) {
+  Establishment.getNhsBsaApiDataForSubs = async function (establishmentId) {
     return await this.findAll({
       nhsBsaAttributes,
       as: 'establishment',
@@ -2377,9 +2377,7 @@ module.exports = function (sequelize, DataTypes) {
         },
       ],
     });
-
   };
-
 
   return Establishment;
 };

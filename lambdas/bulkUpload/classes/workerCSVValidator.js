@@ -29,6 +29,8 @@ class WorkerCsvValidator {
     this._ethnicity = null;
     this._britishNationality = null;
     this._yearOfEntry = null;
+    this._healthAndCareVisa = null;
+    this._employedFromOutsideUk = null;
 
     this._disabled = null;
     this._careCert = null;
@@ -348,6 +350,14 @@ class WorkerCsvValidator {
     return 5560;
   }
 
+  static get HANDCVISA_WARNING() {
+    return 5570;
+  }
+
+  static get INOUTUK_WARNING() {
+    return 5580;
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -482,6 +492,38 @@ class WorkerCsvValidator {
 
   get amhp() {
     return this._amhp;
+  }
+
+  get healthAndCareVisa() {
+    return this._healthAndCareVisa;
+  }
+
+  get employedFromOutsideUk() {
+    return this._employedFromOutsideUk;
+  }
+
+  _convertYesNoDontKnow(value) {
+    const mappings = {
+      1: 'Yes',
+      2: 'No',
+      999: "Don't know",
+    };
+
+    return mappings[value] || '';
+  }
+
+  _generateWarning(warning, columnName) {
+    const warningType = `${columnName}_WARNING`;
+    return {
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+      lineNumber: this._lineNumber,
+      warnCode: WorkerCsvValidator[warningType],
+      warnType: warningType,
+      warning,
+      source: this._currentLine[columnName],
+      column: columnName,
+    };
   }
 
   _validateContractType() {
@@ -1030,6 +1072,71 @@ class WorkerCsvValidator {
         return true;
       }
     }
+  }
+
+  _shouldNotAnswerHealthAndCareVisaQuestion() {
+    const nationality = parseInt(this._currentLine.NATIONALITY, 10);
+    const britishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP, 10);
+
+    const isWorkerFromOtherNationWithUnknownCitizenship =
+      nationality !== 826 && nationality !== 999 && britishCitizenship !== 1;
+    const isWorkerWithoutBritishCitizenshipAndUnknownNationality = nationality === 999 && britishCitizenship === 2;
+
+    return !isWorkerFromOtherNationWithUnknownCitizenship && !isWorkerWithoutBritishCitizenshipAndUnknownNationality;
+  }
+
+  _validateHealthAndCareVisa() {
+    const healthAndCareVisaValues = [1, 2, 999];
+    const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
+
+    if (this._currentLine.HANDCVISA && this._currentLine.HANDCVISA.length > 0) {
+      if (this._shouldNotAnswerHealthAndCareVisaQuestion()) {
+        this._validationErrors.push(
+          this._generateWarning(
+            'HANDCVISA not required when worker is British or has British citizenship',
+            'HANDCVISA',
+          ),
+        );
+        return false;
+      } else if (isNaN(healthAndCareVisa) || !healthAndCareVisaValues.includes(parseInt(healthAndCareVisa, 10))) {
+        this._validationErrors.push(
+          this._generateWarning('HANDCVISA is incorrectly formatted and will be ignored', 'HANDCVISA'),
+        );
+        return false;
+      } else {
+        this._healthAndCareVisa = this._convertYesNoDontKnow(healthAndCareVisa);
+        return true;
+      }
+    }
+    return true;
+  }
+
+  _validateEmployedFromOutsideUk() {
+    const employedFromOutsideUkValues = [1, 2, 999];
+
+    const employedFromOutsideUk = parseInt(this._currentLine.INOUTUK, 10);
+    const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
+
+    if (this._currentLine.INOUTUK && this._currentLine.INOUTUK.length > 0) {
+      if (healthAndCareVisa != 1 || this._shouldNotAnswerHealthAndCareVisaQuestion()) {
+        this._validationErrors.push(
+          this._generateWarning('INOUTUK not required when worker does not have a Health and Care visa', 'INOUTUK'),
+        );
+        return false;
+      } else if (
+        isNaN(employedFromOutsideUk) ||
+        !employedFromOutsideUkValues.includes(parseInt(employedFromOutsideUk, 10))
+      ) {
+        this._validationErrors.push(
+          this._generateWarning('INOUTUK is incorrectly formatted and will be ignored', 'INOUTUK'),
+        );
+        return false;
+      } else {
+        this._employedFromOutsideUk = this._convertYesNoDontKnow(employedFromOutsideUk);
+        return true;
+      }
+    }
+    return true;
   }
 
   _validateDisabled() {
@@ -2658,6 +2765,8 @@ class WorkerCsvValidator {
       status = !this._validateCitizenShip() ? false : status;
       status = !this._validateCountryOfBirth() ? false : status;
       status = !this._validateYearOfEntry() ? false : status;
+      status = !this._validateHealthAndCareVisa() ? false : status;
+      status = !this._validateEmployedFromOutsideUk() ? false : status;
       status = !this._validateDisabled() ? false : status;
       status = !this._validateCareCert() ? false : status;
       status = !this._validateRecSource() ? false : status;
@@ -2742,6 +2851,8 @@ class WorkerCsvValidator {
       britishCitizenship: this._britishNationality ? this._britishNationality : undefined,
       countryofBirth: this._countryOfBirth ? this._countryOfBirth : undefined,
       yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
+      healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
+      employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
       disabled: this._disabled !== null ? this._disabled : undefined,
       careCertificate: this._careCert
         ? {
@@ -2826,6 +2937,8 @@ class WorkerCsvValidator {
             year: this._yearOfEntry,
           }
         : undefined,
+      healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
+      employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
       disability: this._disabled ? this._disabled : undefined,
       careCertificate: this._careCert ? this._careCert : undefined,
       apprenticeshipTraining: this._apprentice ? this._apprentice : undefined,
