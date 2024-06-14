@@ -7,6 +7,7 @@ import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -14,7 +15,6 @@ import { of } from 'rxjs';
 import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-outside-uk-multiple-staff.component';
 
 describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
-  const workplaceUid = 'abcd13528233';
   const pluralWorkers = () => [
     {
       id: 123,
@@ -70,7 +70,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
           },
           {
             provide: EstablishmentService,
-            useValue: { establishment: { uid: workplaceUid } },
+            useClass: MockEstablishmentService,
           },
         ],
       },
@@ -78,10 +78,15 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
+
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     const alertService = injector.inject(AlertService) as AlertService;
     const addAlertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const updateWorkersSpy = spyOn(establishmentService, 'updateWorkers').and.returnValue(of(null));
 
     return {
       component,
@@ -93,6 +98,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       queryByTestId,
       routerSpy,
       addAlertSpy,
+      updateWorkersSpy,
     };
   }
 
@@ -122,6 +128,26 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     expect(revealText).toBeTruthy();
   });
 
+  it('should call updateWorkers with database value of selected answer', async () => {
+    const workers = singleWorker();
+
+    const { component, fixture, getByText, updateWorkersSpy } = await setup(workers);
+
+    const outsideTheUk = fixture.nativeElement.querySelector('input[id="insideOutsideUk-0-0"]');
+    const saveButton = getByText('Save information');
+
+    fireEvent.click(outsideTheUk);
+    fireEvent.click(saveButton);
+
+    expect(updateWorkersSpy).toHaveBeenCalledWith(component.workplaceUid, [
+      {
+        id: workers[0].id,
+        uid: workers[0].uid,
+        employedFromOutsideUk: 'Yes',
+      },
+    ]);
+  });
+
   describe('Pluralisation of title question', () => {
     it('should display title question in plural when more than one worker', async () => {
       const { getByText } = await setup();
@@ -143,7 +169,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
   describe('Navigation', () => {
     it('should navigate to worker staff record on click of name', async () => {
       const workersWithHealthAndCareVisas = pluralWorkers();
-      const { getByText, routerSpy } = await setup(workersWithHealthAndCareVisas);
+      const { component, getByText, routerSpy } = await setup(workersWithHealthAndCareVisas);
       const worker = workersWithHealthAndCareVisas[0];
       const workerLink = getByText(worker.nameOrId);
 
@@ -151,7 +177,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
-        workplaceUid,
+        component.workplaceUid,
         'staff-record',
         worker.uid,
         'staff-record-summary',

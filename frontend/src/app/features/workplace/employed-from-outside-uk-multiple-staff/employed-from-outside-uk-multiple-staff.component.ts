@@ -13,7 +13,7 @@ import { InternationalRecruitmentService } from '@core/services/international-re
   templateUrl: './employed-from-outside-uk-multiple-staff.component.html',
 })
 export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
-  private workplaceUid: string;
+  public workplaceUid: string;
   public submitted: boolean;
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
@@ -52,15 +52,28 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     return this.form.get('employedFromOutsideUKStaff') as FormArray;
   }
 
-  onSubmit(): void {
+  public onSubmit(): void {
     this.submitted = true;
-    this.onSubmitSuccess();
+
+    this.establishmentService
+      .updateWorkers(this.workplaceUid, this.workersWithHealthAndCareVisasWithNamesFiltered())
+      .subscribe(
+        () => this.onSubmitSuccess(),
+        (error) => this.onSubmitError(error),
+      );
+  }
+
+  private workersWithHealthAndCareVisasWithNamesFiltered(): Array<any> {
+    return this.workersWithHealthAndCareVisas.map((worker) => {
+      const { nameOrId, ...workerWithoutName } = worker;
+      return workerWithoutName;
+    });
   }
 
   private setUpFormData(data) {
     this.workersWithHealthAndCareVisas = data.workersWithHealthAndCareVisas;
     this.workersWithHealthAndCareVisas.forEach((worker) => {
-      this.employedFromOutsideUKStaff.push(this.formBuilder.control({ ...worker, employedFromOutsideUK: null }));
+      this.employedFromOutsideUKStaff.push(this.formBuilder.control({ ...worker, employedFromOutsideUk: null }));
     });
   }
 
@@ -79,8 +92,8 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   }
 
   radioChange(workerIndex, answerIndex) {
-    const updatedWorker = this.employedFromOutsideUKStaff.value[workerIndex];
-    updatedWorker.employedFromOutsideUK = this.answers[answerIndex].value;
+    const updatedWorker = this.workersWithHealthAndCareVisas[workerIndex];
+    updatedWorker.employedFromOutsideUk = this.answers[answerIndex].value;
   }
 
   onSubmitError(error) {
