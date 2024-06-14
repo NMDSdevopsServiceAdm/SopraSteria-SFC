@@ -25,6 +25,7 @@ const getAllWorkersNationalityAndBritishCitizenship = async (req, res) => {
           nationality: worker.NationalityValue,
           britishCitizenship: worker.BritishCitizenshipValue,
           healthAndCareVisa: worker.HealthAndCareVisaValue,
+          employedFromOutsideUk: worker.EmployedFromOutsideUkValue,
         };
       }),
     });

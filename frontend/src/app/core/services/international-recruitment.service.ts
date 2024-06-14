@@ -51,6 +51,17 @@ export class InternationalRecruitmentService {
     this._employedFromOutsideUkMappings[`Don't know`].questionValues,
   ];
 
+  private _internationalRecruitmentWorkerAnswers;
+
+  public setInternationalRecruitmentWorkerAnswers(data) {
+    this._internationalRecruitmentWorkerAnswers = data;
+    console.log(this._internationalRecruitmentWorkerAnswers);
+  }
+
+  public getInternationalRecruitmentWorkerAnswers() {
+    return this._internationalRecruitmentWorkerAnswers;
+  }
+
   public getEmployedFromOutsideUkAnswers() {
     return this._employedFromOutsideUkAnswers;
   }

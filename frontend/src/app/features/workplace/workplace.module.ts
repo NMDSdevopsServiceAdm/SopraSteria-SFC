@@ -63,7 +63,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
-import { ExistingWorkersHealthAndCareVisa } from './existing-workers-health-and-care-visa/existing-workers-health-and-care-visa.component';
+import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 
 @NgModule({
   imports: [
@@ -122,7 +122,7 @@ import { ExistingWorkersHealthAndCareVisa } from './existing-workers-health-and-
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
     PensionsComponent,
-    ExistingWorkersHealthAndCareVisa,
+    HealthAndCareVisaExistingWorkers,
   ],
   providers: [
     DialogService,

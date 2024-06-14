@@ -1353,6 +1353,7 @@ module.exports = function (sequelize, DataTypes) {
         'NationalityValue',
         'BritishCitizenshipValue',
         'HealthAndCareVisaValue',
+        'EmployedFromOutsideUkValue',
       ],
       where: {
         establishmentFk: establishmentId,

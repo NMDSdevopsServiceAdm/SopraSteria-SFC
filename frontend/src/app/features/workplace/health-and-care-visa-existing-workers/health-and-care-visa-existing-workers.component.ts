@@ -15,10 +15,10 @@ import { InternationalRecruitmentService } from '@core/services/international-re
 import { AlertService } from '@core/services/alert.service';
 
 @Component({
-  selector: 'app-existing-workers-health-and-care-visa',
-  templateUrl: 'existing-workers-health-and-care-visa.component.html',
+  selector: 'app-health-and-care-visa-existing-workers',
+  templateUrl: 'health-and-care-visa-existing-workers.component.html',
 })
-export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
+export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   public healthCareAndVisaAnswers = [
     { tag: 'Yes', value: 'Yes' },
     { tag: 'No', value: 'No' },
@@ -114,7 +114,7 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
 
     if (updatedWorkerHealthAndCareVisa.healthAndCareVisa != this.healthCareAndVisaAnswers[answer].value) {
       this.updatedWorkersHealthAndCareVisas.push({
-        uid: updatedWorkerHealthAndCareVisa.uid,
+        ...updatedWorkerHealthAndCareVisa,
         healthAndCareVisa: this.healthCareAndVisaAnswers[answer].value,
       });
     }
@@ -130,10 +130,20 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
     this.updateHasWorkersWithHealthAndCareVisa(this.updatedWorkersHealthAndCareVisas);
     this.submitted = true;
 
-    this.establishmentService.updateWorkers(this.workplaceUid, this.updatedWorkersHealthAndCareVisas).subscribe(
-      (response) => this.onSubmitSuccess(),
-      (error) => this.onSubmitError(error),
-    );
+    console.log(this.updatedWorkersHealthAndCareVisas);
+
+    // if (this.hasWorkersWithHealthAndCareVisa) {
+    //   this.internationalRecruitmentService.setInternationalRecruitmentWorkerAnswers({
+    //     workplaceUid: this.workplaceUid,
+    //     healthAndCareVisaWorkerAnswers: this.updatedWorkersHealthAndCareVisas,
+    //   });
+    //   this.onSubmitSuccess();
+    // } else {
+    //   this.establishmentService.updateWorkers(this.workplaceUid, this.updatedWorkersHealthAndCareVisas).subscribe(
+    //     (response) => this.onSubmitSuccess(),
+    //     (error) => this.onSubmitError(error),
+    //   );
+    // }
   }
 
   public updateHasWorkersWithHealthAndCareVisa(updatedWorkersHealthAndCareVisas) {
@@ -144,7 +154,7 @@ export class ExistingWorkersHealthAndCareVisa implements OnInit, OnDestroy {
 
   public onSubmitSuccess() {
     if (this.hasWorkersWithHealthAndCareVisa) {
-      this.router.navigate([]);
+      this.router.navigate(['workplace', this.workplaceUid, 'employed-from-outside-or-inside-uk']);
     } else {
       this.router.navigate(['dashboard'], { fragment: 'home' });
       this.alertService.addAlert({
