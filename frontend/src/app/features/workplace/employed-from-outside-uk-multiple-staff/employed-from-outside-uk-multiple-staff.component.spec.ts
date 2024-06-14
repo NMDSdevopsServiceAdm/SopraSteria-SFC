@@ -35,7 +35,6 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
-          AlertService,
           WindowRef,
           {
             provide: InternationalRecruitmentService,
@@ -73,6 +72,8 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const alertService = injector.inject(AlertService) as AlertService;
+    const addAlertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
     return {
       component,
@@ -83,6 +84,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       getByTestId,
       queryByTestId,
       routerSpy,
+      addAlertSpy,
     };
   }
 
@@ -114,7 +116,21 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     ]);
   });
 
-  it('should navigate to home page after successful submit', async () => {
+  it('should navigate to home page and show banner after successful submit', async () => {
+    const { fixture, getByText, routerSpy, addAlertSpy } = await setup();
+
+    const saveButton = getByText('Save information');
+    fireEvent.click(saveButton);
+
+    await fixture.whenStable();
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+    expect(addAlertSpy).toHaveBeenCalledWith({
+      type: 'success',
+      message: 'Health and Care  Worker visa information saved',
+    });
+  });
+
+  it('should navigate to home page when you click Cancel link', async () => {
     const { getByText, routerSpy } = await setup();
 
     const saveButton = getByText('Save information');

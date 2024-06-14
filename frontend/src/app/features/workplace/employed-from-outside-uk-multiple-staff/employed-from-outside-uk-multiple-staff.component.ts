@@ -2,6 +2,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -19,7 +20,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
-  public return: ['/dashboard'];
+  public return: URLStructure = { url: ['/dashboard'], fragment: 'home' };
   public workersWithHealthAndCareVisas: any;
   public answers: any;
 
