@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
@@ -7,6 +7,7 @@ import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-employed-from-outside-uk-multiple-staff',
@@ -23,6 +24,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   public return: URLStructure = { url: ['/dashboard'], fragment: 'home' };
   public workersWithHealthAndCareVisas: Array<any>;
   public answers: any;
+  private subscriptions: Subscription = new Subscription();
 
   constructor(
     private formBuilder: FormBuilder,
@@ -33,7 +35,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     private internationalRecruitmentService: InternationalRecruitmentService,
   ) {
     this.form = this.formBuilder.group({
-      employedFromOutsideUKStaff: this.formBuilder.array([]),
+      workers: this.formBuilder.array([]),
     });
   }
 
@@ -41,19 +43,26 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     this.workplaceUid = this.establishmentService.establishment.uid;
     this.submitted = false;
     this.answers = this.internationalRecruitmentService.getEmployedFromOutsideUkAnswers();
-    this.internationalRecruitmentService
-      .getWorkersWithHealthAndCareVisaForWorkplace(this.workplaceUid)
-      .subscribe((data) => {
-        this.setUpFormData(data);
-      });
+    this.subscriptions.add(
+      this.internationalRecruitmentService
+        .getWorkersWithHealthAndCareVisaForWorkplace(this.workplaceUid)
+        .subscribe((data) => {
+          this.setUpFormData(data);
+          this.setupFormErrorsMap();
+        }),
+    );
   }
 
-  get employedFromOutsideUKStaff() {
-    return this.form.get('employedFromOutsideUKStaff') as FormArray;
+  get workers() {
+    return this.form.get('workers') as FormArray;
   }
 
   public onSubmit(): void {
     this.submitted = true;
+    if (this.form.invalid) {
+      console.log(this.form);
+      return;
+    }
 
     this.establishmentService
       .updateWorkers(this.workplaceUid, this.workersWithHealthAndCareVisasWithNamesFiltered())
@@ -61,6 +70,20 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
         () => this.onSubmitSuccess(),
         (error) => this.onSubmitError(error),
       );
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.workers.controls.forEach((_, index) => {
+      this.formErrorsMap.push({
+        item: `workers.insideOrOutsideUk.${index}`,
+        type: [
+          {
+            name: 'required',
+            message: `Answer required for ${this.workersWithHealthAndCareVisas[index].nameOrId}`,
+          },
+        ],
+      });
+    });
   }
 
   private workersWithHealthAndCareVisasWithNamesFiltered(): Array<any> {
@@ -73,7 +96,13 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   private setUpFormData(data) {
     this.workersWithHealthAndCareVisas = data.workersWithHealthAndCareVisas;
     this.workersWithHealthAndCareVisas.forEach((worker) => {
-      this.employedFromOutsideUKStaff.push(this.formBuilder.control({ ...worker, employedFromOutsideUk: null }));
+      this.workers.push(this.createFormGroupForWorker());
+    });
+  }
+
+  private createFormGroupForWorker(): FormGroup {
+    return this.formBuilder.group({
+      insideOrOutsideUk: [null, Validators.required],
     });
   }
 
@@ -99,5 +128,9 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   onSubmitError(error) {
     this.errorSummaryService.scrollToErrorSummary();
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

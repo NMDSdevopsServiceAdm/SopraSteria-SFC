@@ -1,7 +1,13 @@
-<app-error-summary *ngIf="submitted && serverError" [serverError]="serverError" [form]="form"> </app-error-summary>
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [serverError]="serverError"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+>
+</app-error-summary>
 
-<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
-  <fieldset class="govuk-fieldset">
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="workersWithHealthAndCareVisas?.length">
+  <fieldset class="govuk-fieldset" formArrayName="workers">
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds-from-desktop">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -37,15 +43,16 @@
                 ></th>
                 <td class="govuk-table__cell"></td>
               </tr>
-              <tr class="govuk-table__row" *ngFor="let worker of employedFromOutsideUKStaff.controls; let i = index">
+              <tr class="govuk-table__row" *ngFor="let worker of workers.controls; let i = index" [formGroupName]="i">
                 <th
                   scope="row"
                   class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-quarter"
                   style="vertical-align: middle"
                 >
                   <a href="#" (click)="navigateToStaffRecord($event, worker)">
-                    {{ worker.value.nameOrId }}
+                    {{ workersWithHealthAndCareVisas[i].nameOrId }}
                   </a>
+                  <span *ngIf="submitted && worker.invalid" class="govuk-error-message"> Answer required </span>
                 </th>
                 <td class="govuk-table__cell">
                   <div class="govuk-radios govuk-radios--inline">
@@ -54,13 +61,13 @@
                       class="govuk-radios__item govuk-!-margin-left-2 govuk-!-margin-bottom-0"
                     >
                       <input
-                        id="insideOutsideUk-{{ i }}-{{ j }}"
-                        name="insideOutsideUk-{{ i }}"
+                        id="workers-insideOutsideUk-{{ i }}"
                         class="govuk-radios__input"
                         type="radio"
                         [checked]="worker.value == answer"
                         [value]="answer.value"
                         (change)="radioChange(i, j)"
+                        formControlName="insideOrOutsideUk"
                       />
                       <label class="govuk-label govuk-radios__label" for="insideOutsideUk-{{ i }}-{{ j }}">
                         {{ answer.tag }}
