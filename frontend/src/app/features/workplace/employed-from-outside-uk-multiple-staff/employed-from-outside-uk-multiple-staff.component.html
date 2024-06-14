@@ -6,7 +6,9 @@
       <div class="govuk-grid-column-two-thirds-from-desktop">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <h1 class="govuk-fieldset__heading">
-            Did your organisation employ these workers from outside the UK or from inside the UK?
+            Did your organisation employ
+            {{ workersWithHealthAndCareVisas.length > 1 ? 'these workers' : 'this worker' }} from outside the UK or from
+            inside the UK?
           </h1>
         </legend>
         <details class="govuk-details">

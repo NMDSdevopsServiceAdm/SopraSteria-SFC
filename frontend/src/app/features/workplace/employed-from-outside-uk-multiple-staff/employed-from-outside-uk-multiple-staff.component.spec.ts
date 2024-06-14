@@ -15,7 +15,7 @@ import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-out
 
 describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
   const workplaceUid = 'abcd13528233';
-  const workersWithHealthAndCareVisas = [
+  const pluralWorkers = () => [
     {
       id: 123,
       uid: 'abc123',
@@ -28,7 +28,15 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     },
   ];
 
-  async function setup() {
+  const singleWorker = () => [
+    {
+      id: 123,
+      uid: 'abc123',
+      nameOrId: 'Bobby',
+    },
+  ];
+
+  async function setup(workers = pluralWorkers()) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       EmployedFromOutsideUkMultipleStaffComponent,
       {
@@ -40,7 +48,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
             provide: InternationalRecruitmentService,
             useValue: {
               getWorkersWithHealthAndCareVisaForWorkplace() {
-                return of({ workersWithHealthAndCareVisas });
+                return of({ workersWithHealthAndCareVisas: workers });
               },
               getEmployedFromOutsideUkAnswers() {
                 return [
@@ -90,52 +98,74 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
 
   it('should render an EmployedFromOutsideUkMultipleStaffComponent', async () => {
     const { component } = await setup();
+
     expect(component).toBeTruthy();
   });
 
   it('should display names of workers returned from international recruitment API call', async () => {
-    const { getByText } = await setup();
+    const workersWithHealthAndCareVisas = pluralWorkers();
+    const { getByText } = await setup(workersWithHealthAndCareVisas);
 
     expect(getByText(workersWithHealthAndCareVisas[0].nameOrId)).toBeTruthy();
     expect(getByText(workersWithHealthAndCareVisas[1].nameOrId)).toBeTruthy();
   });
 
-  it('should navigate to worker staff record on click of name', async () => {
-    const { getByText, routerSpy } = await setup();
-    const worker = workersWithHealthAndCareVisas[0];
-    const workerLink = getByText(worker.nameOrId);
+  describe('Pluralisation of question', () => {
+    it('should display title question in plural when more than one worker', async () => {
+      const { getByText } = await setup();
 
-    fireEvent.click(workerLink);
+      expect(
+        getByText('Did your organisation employ these workers from outside the UK or from inside the UK?'),
+      ).toBeTruthy();
+    });
 
-    expect(routerSpy).toHaveBeenCalledWith([
-      '/workplace',
-      workplaceUid,
-      'staff-record',
-      worker.uid,
-      'staff-record-summary',
-    ]);
-  });
+    it('should display title question in singular when one worker', async () => {
+      const { getByText } = await setup(singleWorker());
 
-  it('should navigate to home page and show banner after successful submit', async () => {
-    const { fixture, getByText, routerSpy, addAlertSpy } = await setup();
-
-    const saveButton = getByText('Save information');
-    fireEvent.click(saveButton);
-
-    await fixture.whenStable();
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
-    expect(addAlertSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'Health and Care  Worker visa information saved',
+      expect(
+        getByText('Did your organisation employ this worker from outside the UK or from inside the UK?'),
+      ).toBeTruthy();
     });
   });
 
-  it('should navigate to home page when you click Cancel link', async () => {
-    const { getByText, routerSpy } = await setup();
+  describe('Navigation', () => {
+    it('should navigate to worker staff record on click of name', async () => {
+      const workersWithHealthAndCareVisas = pluralWorkers();
+      const { getByText, routerSpy } = await setup(workersWithHealthAndCareVisas);
+      const worker = workersWithHealthAndCareVisas[0];
+      const workerLink = getByText(worker.nameOrId);
 
-    const saveButton = getByText('Save information');
-    fireEvent.click(saveButton);
+      fireEvent.click(workerLink);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceUid,
+        'staff-record',
+        worker.uid,
+        'staff-record-summary',
+      ]);
+    });
+
+    it('should navigate to home page and show banner after successful submit', async () => {
+      const { fixture, getByText, routerSpy, addAlertSpy } = await setup();
+
+      const saveButton = getByText('Save information');
+      fireEvent.click(saveButton);
+
+      await fixture.whenStable();
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+      expect(addAlertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Health and Care  Worker visa information saved',
+      });
+    });
+
+    it('should navigate to home page when you click Cancel link', async () => {
+      const { getByText } = await setup();
+
+      const cancelButton = getByText('Cancel');
+
+      expect(cancelButton.getAttribute('href')).toBe('/dashboard#home');
+    });
   });
 });

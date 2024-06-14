@@ -21,7 +21,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
   public return: URLStructure = { url: ['/dashboard'], fragment: 'home' };
-  public workersWithHealthAndCareVisas: any;
+  public workersWithHealthAndCareVisas: Array<any>;
   public answers: any;
 
   constructor(
