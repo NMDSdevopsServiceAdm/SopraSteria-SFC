@@ -110,7 +110,19 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     expect(getByText(workersWithHealthAndCareVisas[1].nameOrId)).toBeTruthy();
   });
 
-  describe('Pluralisation of question', () => {
+  it('should render the reveal', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('Why we ask for this information');
+    const revealText = getByText(
+      'DHSC use the anonymised data to help them identify which roles workers with Health and Care Worker visas have. The data is also used to look at employment trends and inform recruitment policies.',
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
+  describe('Pluralisation of title question', () => {
     it('should display title question in plural when more than one worker', async () => {
       const { getByText } = await setup();
 
