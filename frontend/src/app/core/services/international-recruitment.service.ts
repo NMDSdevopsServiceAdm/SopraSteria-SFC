@@ -55,7 +55,6 @@ export class InternationalRecruitmentService {
 
   public setInternationalRecruitmentWorkerAnswers(data) {
     this._internationalRecruitmentWorkerAnswers = data;
-    console.log(this._internationalRecruitmentWorkerAnswers);
   }
 
   public getInternationalRecruitmentWorkerAnswers() {

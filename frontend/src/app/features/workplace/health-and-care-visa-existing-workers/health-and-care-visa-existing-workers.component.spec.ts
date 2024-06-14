@@ -20,10 +20,11 @@ import { WindowRef } from '@core/services/window.ref';
 import { AlertService } from '@core/services/alert.service';
 import { PermissionType } from '@core/model/permissions.model';
 import { HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 
-fdescribe('HealthAndCareVisaExistingWorkers', () => {
+describe('HealthAndCareVisaExistingWorkers', () => {
   async function setup(permissions = [], singleWorker = false) {
-    const { fixture, getByText, getByTestId, getByRole } = await render(HealthAndCareVisaExistingWorkers, {
+    const { fixture, getByText, getByTestId, getByRole, queryByText } = await render(HealthAndCareVisaExistingWorkers, {
       imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule, SharedModule],
       declarations: [DetailsComponent, SubmitExitButtonsComponent],
       providers: [
@@ -36,7 +37,7 @@ fdescribe('HealthAndCareVisaExistingWorkers', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(permissions as PermissionType[], true),
+          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
           deps: [HttpClient, Router],
         },
         {
@@ -55,7 +56,7 @@ fdescribe('HealthAndCareVisaExistingWorkers', () => {
     const injector = getTestBed();
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateWorkers').and.callThrough();
+    const establishmentServiceSpy = spyOn(establishmentService, 'updateWorkers').and.returnValue(of({}));
 
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
@@ -75,6 +76,7 @@ fdescribe('HealthAndCareVisaExistingWorkers', () => {
       getByText,
       getByTestId,
       getByRole,
+      queryByText,
       routerSpy,
       internationalRecruitmentService,
       alertServiceSpy,
@@ -90,14 +92,14 @@ fdescribe('HealthAndCareVisaExistingWorkers', () => {
 
   describe('heading', async () => {
     it('should be pluralised when we have more than one worker', async () => {
-      const { component, fixture } = await setup();
+      const { component, fixture } = await setup(['canEditWorker']);
 
       const headingText = fixture.nativeElement.querySelector('h1');
       expect(headingText.innerText).toContain('Are these workers on Health and Care Worker visas?');
     });
 
     it('should be singular when we have only one worker', async () => {
-      const { component, fixture } = await setup([], true);
+      const { component, fixture } = await setup(['canEditWorker'], true);
 
       const headingText = fixture.nativeElement.querySelector('h1');
       expect(headingText.innerText).toContain('Is this worker on a Health and Care Worker visa?');
@@ -136,6 +138,14 @@ fdescribe('HealthAndCareVisaExistingWorkers', () => {
     fixture.detectChanges();
 
     expect(internationalRecruitmentServiceSpy).toHaveBeenCalledWith(component.workplaceUid);
+  });
+
+  it("should not show the worker name if they don't have permissions", async () => {
+    const { queryByText } = await setup();
+
+    const workerName = queryByText('Joy Wood');
+
+    expect(workerName).toBeFalsy();
   });
 
   it('should show the worker name', async () => {

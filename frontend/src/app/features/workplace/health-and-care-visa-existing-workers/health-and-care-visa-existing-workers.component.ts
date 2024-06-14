@@ -39,7 +39,8 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   public serverError: string;
   public hasWorkersWithHealthAndCareVisa: boolean;
   public submitted: boolean;
-  public updatedWorkersHealthAndCareVisas: any = [];
+  public updatedWorkers: any = [];
+  public workersHealthAndCareVisaAnswersToSave = [];
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -108,12 +109,17 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   public radioChange(worker, answer) {
     const updatedWorkerHealthAndCareVisa = this.workers[worker];
 
-    this.updatedWorkersHealthAndCareVisas = this.updatedWorkersHealthAndCareVisas.filter(
+    this.updatedWorkers = this.updatedWorkers.filter(
       (updateWorker) => updateWorker.uid !== updatedWorkerHealthAndCareVisa.uid,
     );
 
     if (updatedWorkerHealthAndCareVisa.healthAndCareVisa != this.healthCareAndVisaAnswers[answer].value) {
-      this.updatedWorkersHealthAndCareVisas.push({
+      this.workersHealthAndCareVisaAnswersToSave.push({
+        uid: updatedWorkerHealthAndCareVisa.uid,
+        healthAndCareVisa: this.healthCareAndVisaAnswers[answer].value,
+      });
+
+      this.updatedWorkers.push({
         ...updatedWorkerHealthAndCareVisa,
         healthAndCareVisa: this.healthCareAndVisaAnswers[answer].value,
       });
@@ -127,41 +133,37 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   public onSubmit(): void {
-    this.updateHasWorkersWithHealthAndCareVisa(this.updatedWorkersHealthAndCareVisas);
+    this.updateHasWorkersWithHealthAndCareVisa(this.updatedWorkers);
     this.submitted = true;
 
-    console.log(this.updatedWorkersHealthAndCareVisas);
-
-    // if (this.hasWorkersWithHealthAndCareVisa) {
-    //   this.internationalRecruitmentService.setInternationalRecruitmentWorkerAnswers({
-    //     workplaceUid: this.workplaceUid,
-    //     healthAndCareVisaWorkerAnswers: this.updatedWorkersHealthAndCareVisas,
-    //   });
-    //   this.onSubmitSuccess();
-    // } else {
-    //   this.establishmentService.updateWorkers(this.workplaceUid, this.updatedWorkersHealthAndCareVisas).subscribe(
-    //     (response) => this.onSubmitSuccess(),
-    //     (error) => this.onSubmitError(error),
-    //   );
-    // }
-  }
-
-  public updateHasWorkersWithHealthAndCareVisa(updatedWorkersHealthAndCareVisas) {
-    this.hasWorkersWithHealthAndCareVisa = updatedWorkersHealthAndCareVisas.some(
-      (worker) => worker.healthAndCareVisa === 'Yes',
-    );
-  }
-
-  public onSubmitSuccess() {
     if (this.hasWorkersWithHealthAndCareVisa) {
-      this.router.navigate(['workplace', this.workplaceUid, 'employed-from-outside-or-inside-uk']);
-    } else {
-      this.router.navigate(['dashboard'], { fragment: 'home' });
-      this.alertService.addAlert({
-        type: 'success',
-        message: 'Health and Care Worker visa information saved',
+      this.internationalRecruitmentService.setInternationalRecruitmentWorkerAnswers({
+        workplaceUid: this.workplaceUid,
+        healthAndCareVisaWorkerAnswers: this.updatedWorkers,
       });
+      this.navigateToEmployedFromOutsideOrInsideUk();
+    } else {
+      this.establishmentService.updateWorkers(this.workplaceUid, this.workersHealthAndCareVisaAnswersToSave).subscribe(
+        (response) => this.navigateToHome(),
+        (error) => this.onSubmitError(error),
+      );
     }
+  }
+
+  public updateHasWorkersWithHealthAndCareVisa(updatedWorkers) {
+    this.hasWorkersWithHealthAndCareVisa = updatedWorkers.some((worker) => worker.healthAndCareVisa === 'Yes');
+  }
+
+  public navigateToHome(): void {
+    this.router.navigate(['dashboard'], { fragment: 'home' });
+    this.alertService.addAlert({
+      type: 'success',
+      message: 'Health and Care Worker visa information saved',
+    });
+  }
+
+  public navigateToEmployedFromOutsideOrInsideUk(): void {
+    this.router.navigate(['workplace', this.workplaceUid, 'employed-from-outside-or-inside-uk']);
   }
 
   onSubmitError(error) {

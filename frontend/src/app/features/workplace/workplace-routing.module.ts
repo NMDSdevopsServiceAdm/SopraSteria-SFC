@@ -361,7 +361,7 @@ const routes: Routes = [
         },
         data: {
           permissions: ['canEditWorker'],
-          title: 'Are Workers On Health And Care Visa',
+          title: 'Health And Care Visa',
         },
       },
       {
