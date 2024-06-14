@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router({ mergeParams: true });
-
-//onst Workers = require('../../models/classes/worker');
 const models = require('../../models');
 const { hasPermission } = require('../../utils/security/hasPermission');
 

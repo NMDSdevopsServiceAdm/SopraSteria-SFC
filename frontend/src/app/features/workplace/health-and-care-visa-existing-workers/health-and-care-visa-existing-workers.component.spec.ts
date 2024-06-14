@@ -65,8 +65,6 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       InternationalRecruitmentService,
     ) as InternationalRecruitmentService;
 
-    //spyOn(internationalRecruitmentService, 'getAllWorkersNationalityAndBritishCitizenship').and.callThrough();
-
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
