@@ -122,7 +122,7 @@ const routes: Routes = [
         },
       },
       {
-        path: 'employed-from-outside-uk-multiple-staff',
+        path: 'employed-from-outside-or-inside-uk',
         component: EmployedFromOutsideUkMultipleStaffComponent,
         data: { title: 'Employed from Outside the UK' },
       },
