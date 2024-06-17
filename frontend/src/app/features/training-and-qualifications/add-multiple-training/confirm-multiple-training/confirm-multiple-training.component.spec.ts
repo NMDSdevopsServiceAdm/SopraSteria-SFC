@@ -190,20 +190,5 @@ describe('MultipleTrainingDetailsComponent', () => {
         message: '2 training records added',
       } as Alert);
     });
-
-    it('should navigate back to the sub workplace home page and add an alert when it is not the primary workplace', async () => {
-      const { fixture, getByText, routerSpy, alertSpy } = await setup(false, false);
-
-      const button = getByText('Confirm details');
-      fireEvent.click(button);
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mock-uid'], { fragment: 'training-and-qualifications' });
-      await fixture.whenStable();
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: '2 training records added',
-      } as Alert);
-    });
   });
 });

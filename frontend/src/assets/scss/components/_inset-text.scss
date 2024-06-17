@@ -13,4 +13,9 @@
     border-color: govuk-colour('orange');
     background-color: rgba(govuk-colour('orange'), 0.12);
   }
+
+  &.pending {
+    border-color: govuk-colour('blue');
+    background-color: rgba(govuk-colour('blue'), 0.15);
+  }
 }

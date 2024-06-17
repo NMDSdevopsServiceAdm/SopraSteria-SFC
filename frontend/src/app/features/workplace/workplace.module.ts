@@ -59,10 +59,12 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.component';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 
 @NgModule({
   imports: [
@@ -121,6 +123,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
     PensionsComponent,
+    ChangeDataOwnerComponent,
   ],
   providers: [
     DialogService,
@@ -133,6 +136,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     RankingsResolver,
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
+    GetMissingCqcLocationsResolver,
   ],
 })
 export class WorkplaceModule {}

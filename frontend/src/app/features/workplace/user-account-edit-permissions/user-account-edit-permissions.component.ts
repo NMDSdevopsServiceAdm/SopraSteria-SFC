@@ -10,10 +10,9 @@ import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { DialogService } from '@core/services/dialog.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { UserService } from '@core/services/user.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
 
@@ -47,10 +46,9 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     private formBuilder: UntypedFormBuilder,
     private breadcrumbService: BreadcrumbService,
     private errorSummaryService: ErrorSummaryService,
-    private dialogService: DialogService,
     private userService: UserService,
     private alertService: AlertService,
-    private establishmentService: EstablishmentService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {
     this.user = this.route.snapshot.data.user;
     this.workplace = this.route.parent.snapshot.data.establishment;
@@ -65,8 +63,7 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
       }),
     );
 
-    const journey = this.setBreadcrumbJourney();
-    this.breadcrumbService.show(journey);
+    this.breadcrumbService.show(this.getBreadcrumbsJourney());
 
     this.form = this.formBuilder.group({
       role: [this.user.role, Validators.required],
@@ -78,8 +75,10 @@ export class UserAccountEditPermissionsComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public setBreadcrumbJourney() {
-    if (this.return.fragment == null) {
+  public getBreadcrumbsJourney(): JourneyType {
+    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+      return JourneyType.SUBSIDIARY;
+    } else if (this.return.fragment == null) {
       return JourneyType.MY_WORKPLACE;
     } else {
       return JourneyType.ALL_WORKPLACES;

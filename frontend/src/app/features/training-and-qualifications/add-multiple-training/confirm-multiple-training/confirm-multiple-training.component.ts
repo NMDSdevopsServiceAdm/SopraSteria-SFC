@@ -35,7 +35,6 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     this.workplaceUid = this.route.snapshot.data.establishment.uid;
     this.getStaffData();
     this.convertTrainingRecord();
-    this.setReturnLink();
     this.backLinkService.showBackLink();
   }
 
@@ -55,13 +54,6 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     this.workers = this.trainingService.selectedStaff;
   }
 
-  public setReturnLink(): void {
-    this.returnLink =
-      this.workplaceUid === this.establishmentService.primaryWorkplace?.uid
-        ? ['/dashboard']
-        : ['/workplace', this.workplaceUid];
-  }
-
   public getRoutePath(pageName: string): Array<string> {
     return ['/workplace', this.workplaceUid, 'add-multiple-training', 'confirm-training', pageName];
   }
@@ -77,7 +69,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
     const message = `${this.workers.length} training records added`;
     this.trainingService.resetState();
 
-    await this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
+    await this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
     this.alertService.addAlert({
       type: 'success',
       message: message,

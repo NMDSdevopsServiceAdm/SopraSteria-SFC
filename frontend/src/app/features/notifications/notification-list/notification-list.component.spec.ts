@@ -154,7 +154,7 @@ describe('NotificationListComponent', () => {
 
       const notifcationsTableRows = fixture.nativeElement.querySelectorAll('tr');
       const rowOne = notifcationsTableRows[1];
-      expect(rowOne.cells['1'].innerHTML).toContain('Become a parent organisation');
+      expect(rowOne.cells['1'].innerHTML).toContain('Parent request');
       expect(rowOne.cells['2'].innerHTML).toContain('1 January 2020 at 12:00am');
     });
   });

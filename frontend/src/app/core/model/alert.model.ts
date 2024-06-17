@@ -1,4 +1,4 @@
 export interface Alert {
-  type: 'success' | 'warning';
+  type: 'success' | 'warning' | 'pending';
   message: string;
 }

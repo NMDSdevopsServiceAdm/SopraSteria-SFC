@@ -126,7 +126,7 @@ const dataPermissionWorkplaceAndStaff = (establishmentAndUserInfo) => [
 const getAdditionalEditPermissions = (estabType, establishmentAndUserInfo, isLoggedInAsParent) => {
   const additionalPermissions = [
     _canAddEstablishment(estabType),
-    _canDeleteEstablishment(estabType),
+    _canDeleteEstablishment(estabType, isLoggedInAsParent),
     _canLinkToParent(isLoggedInAsParent, establishmentAndUserInfo),
     _canRemoveParentAssociation(isLoggedInAsParent, establishmentAndUserInfo),
     _canDownloadWdfReport(isLoggedInAsParent),
@@ -169,7 +169,8 @@ const _isRegulatedAndHasServiceWithBenchmarksData = (establishmentAndUserInfo) =
 
 const _canAddEstablishment = (estabType) => (estabType === 'Parent' ? 'canAddEstablishment' : undefined);
 
-const _canDeleteEstablishment = (estabType) => (estabType === 'Subsidiary' ? 'canDeleteEstablishment' : undefined);
+const _canDeleteEstablishment = (estabType, isLoggedInAsParent) =>
+  isLoggedInAsParent && estabType === 'Subsidiary' ? 'canDeleteEstablishment' : undefined;
 
 const _canLinkToParent = (isLoggedInAsParent, establishmentAndUserInfo) =>
   _isStandaloneAndNoRequestToBecomeParent(isLoggedInAsParent, establishmentAndUserInfo) ? 'canLinkToParent' : undefined;

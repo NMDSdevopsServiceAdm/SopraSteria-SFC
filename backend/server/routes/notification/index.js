@@ -185,7 +185,7 @@ const setNotificationRead = async (req, res) => {
     } else {
       await notifications.markUserNotificationAsRead(params);
     }
-    notificationData.isViewed = true;
+    notificationData.notification.isViewed = true;
 
     await addTypeContent(notificationData);
 
