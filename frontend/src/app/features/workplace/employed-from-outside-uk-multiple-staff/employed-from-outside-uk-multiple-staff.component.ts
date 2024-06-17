@@ -60,7 +60,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   public onSubmit(): void {
     this.submitted = true;
     if (this.form.invalid) {
-      console.log(this.form);
+      this.errorSummaryService.scrollToErrorSummary();
       return;
     }
 
@@ -95,7 +95,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
 
   private setUpFormData(data) {
     this.workersWithHealthAndCareVisas = data.workersWithHealthAndCareVisas;
-    this.workersWithHealthAndCareVisas.forEach((worker) => {
+    this.workersWithHealthAndCareVisas.forEach(() => {
       this.workers.push(this.createFormGroupForWorker());
     });
   }
@@ -108,7 +108,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
 
   public navigateToStaffRecord(event: Event, worker): void {
     event.preventDefault();
-    this.router.navigate(['/workplace', this.workplaceUid, 'staff-record', worker.value.uid, 'staff-record-summary']);
+    this.router.navigate(['/workplace', this.workplaceUid, 'staff-record', worker.uid, 'staff-record-summary']);
   }
 
   onSubmitSuccess(): void {

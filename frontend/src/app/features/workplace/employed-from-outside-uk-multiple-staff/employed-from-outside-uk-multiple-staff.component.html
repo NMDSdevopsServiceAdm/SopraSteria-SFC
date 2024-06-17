@@ -49,7 +49,7 @@
                   class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-quarter"
                   style="vertical-align: middle"
                 >
-                  <a href="#" (click)="navigateToStaffRecord($event, worker)">
+                  <a href="#" (click)="navigateToStaffRecord($event, workersWithHealthAndCareVisas[i])">
                     {{ workersWithHealthAndCareVisas[i].nameOrId }}
                   </a>
                   <span *ngIf="submitted && worker.invalid" class="govuk-error-message"> Answer required </span>
@@ -61,7 +61,7 @@
                       class="govuk-radios__item govuk-!-margin-left-2 govuk-!-margin-bottom-0"
                     >
                       <input
-                        id="workers-insideOutsideUk-{{ i }}"
+                        id="workers-insideOutsideUk-{{ i }}-{{ j }}"
                         class="govuk-radios__input"
                         type="radio"
                         [checked]="worker.value == answer"

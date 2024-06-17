@@ -128,24 +128,106 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     expect(revealText).toBeTruthy();
   });
 
-  it('should call updateWorkers with database value of selected answer', async () => {
-    const workers = singleWorker();
+  describe('On submit, ', () => {
+    it('should call updateWorkers with database value of selected answer when answer given for single worker', async () => {
+      const workers = singleWorker();
 
-    const { component, fixture, getByText, updateWorkersSpy } = await setup(workers);
+      const { component, fixture, getByText, updateWorkersSpy } = await setup(workers);
 
-    const outsideTheUk = fixture.nativeElement.querySelector('input[id="insideOutsideUk-0-0"]');
-    const saveButton = getByText('Save information');
+      const outsideTheUk = fixture.nativeElement.querySelector('input[id="workers-insideOutsideUk-0-0"]');
+      const saveButton = getByText('Save information');
 
-    fireEvent.click(outsideTheUk);
-    fireEvent.click(saveButton);
+      fireEvent.click(outsideTheUk);
+      fireEvent.click(saveButton);
 
-    expect(updateWorkersSpy).toHaveBeenCalledWith(component.workplaceUid, [
-      {
-        id: workers[0].id,
-        uid: workers[0].uid,
-        employedFromOutsideUk: 'Yes',
-      },
-    ]);
+      expect(updateWorkersSpy).toHaveBeenCalledWith(component.workplaceUid, [
+        {
+          id: workers[0].id,
+          uid: workers[0].uid,
+          employedFromOutsideUk: 'Yes',
+        },
+      ]);
+    });
+
+    it('should call updateWorkers with database value of selected answers when answer given for all workers', async () => {
+      const workers = pluralWorkers();
+
+      const { component, fixture, getByText, updateWorkersSpy } = await setup(workers);
+
+      const outsideTheUkWorker1 = fixture.nativeElement.querySelector('input[id="workers-insideOutsideUk-0-0"]');
+      const insideTheUkWorker2 = fixture.nativeElement.querySelector('input[id="workers-insideOutsideUk-1-1"]');
+      const saveButton = getByText('Save information');
+
+      fireEvent.click(outsideTheUkWorker1);
+      fireEvent.click(insideTheUkWorker2);
+      fireEvent.click(saveButton);
+
+      expect(updateWorkersSpy).toHaveBeenCalledWith(component.workplaceUid, [
+        {
+          id: workers[0].id,
+          uid: workers[0].uid,
+          employedFromOutsideUk: 'Yes',
+        },
+        {
+          id: workers[1].id,
+          uid: workers[1].uid,
+          employedFromOutsideUk: 'No',
+        },
+      ]);
+    });
+
+    it('should navigate to home page and show banner after successful submit', async () => {
+      const workers = singleWorker();
+
+      const { fixture, getByText, routerSpy, addAlertSpy } = await setup(workers);
+
+      const outsideTheUk = fixture.nativeElement.querySelector('input[id="workers-insideOutsideUk-0-0"]');
+      const saveButton = getByText('Save information');
+
+      fireEvent.click(outsideTheUk);
+      fireEvent.click(saveButton);
+
+      await fixture.whenStable();
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
+      expect(addAlertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Health and Care  Worker visa information saved',
+      });
+    });
+
+    it('should not call updateWorkers and display error message with worker name when answer not given for single worker', async () => {
+      const workers = singleWorker();
+
+      const { fixture, getByText, updateWorkersSpy } = await setup(workers);
+
+      const saveButton = getByText('Save information');
+
+      fireEvent.click(saveButton);
+      fixture.detectChanges();
+
+      const errorMessage = `Answer required for ${workers[0].nameOrId}`;
+
+      expect(updateWorkersSpy).not.toHaveBeenCalled();
+      expect(getByText(errorMessage)).toBeTruthy();
+    });
+
+    it('should not call updateWorkers and display error message for each worker answer not given for', async () => {
+      const workers = pluralWorkers();
+
+      const { fixture, getByText, updateWorkersSpy } = await setup(workers);
+
+      const saveButton = getByText('Save information');
+
+      fireEvent.click(saveButton);
+      fixture.detectChanges();
+
+      const errorMessageWorker1 = `Answer required for ${workers[0].nameOrId}`;
+      const errorMessageWorker2 = `Answer required for ${workers[1].nameOrId}`;
+
+      expect(updateWorkersSpy).not.toHaveBeenCalled();
+      expect(getByText(errorMessageWorker1)).toBeTruthy();
+      expect(getByText(errorMessageWorker2)).toBeTruthy();
+    });
   });
 
   describe('Pluralisation of title question', () => {
@@ -182,20 +264,6 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
         worker.uid,
         'staff-record-summary',
       ]);
-    });
-
-    it('should navigate to home page and show banner after successful submit', async () => {
-      const { fixture, getByText, routerSpy, addAlertSpy } = await setup();
-
-      const saveButton = getByText('Save information');
-      fireEvent.click(saveButton);
-
-      await fixture.whenStable();
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'home' });
-      expect(addAlertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Health and Care  Worker visa information saved',
-      });
     });
 
     it('should navigate to home page when you click Cancel link', async () => {
