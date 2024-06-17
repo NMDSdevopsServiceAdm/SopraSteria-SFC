@@ -1,4 +1,4 @@
-import { HttpClient, HttpHandler } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
@@ -12,8 +12,8 @@ describe('InternationalRecruitmentService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [RouterTestingModule],
-      providers: [InternationalRecruitmentService, HttpClient, HttpHandler],
+      imports: [RouterTestingModule, HttpClientTestingModule],
+      providers: [InternationalRecruitmentService],
     });
     service = TestBed.inject(InternationalRecruitmentService);
     worker = workerBuilder() as Worker;
@@ -111,6 +111,30 @@ describe('InternationalRecruitmentService', () => {
       worker.britishCitizenship = null;
 
       expect(service.shouldSeeInternationalRecruitmentQuestions(worker)).toBe(false);
+    });
+  });
+
+  describe('international recruitment worker answers', () => {
+    const data = {
+      workplaceUid: 'workplaceUid',
+      healthAndCareVisaWorkerAnswers: [
+        {
+          healthAndCareVisa: 'Yes',
+          name: 'Worker 1',
+          uid: 'c1166',
+        },
+        {
+          healthAndCareVisa: 'No',
+          name: 'Worker 2',
+          uid: 'c1h84',
+        },
+      ],
+    };
+
+    it('should set the international recruitment worker answers', () => {
+      service.setInternationalRecruitmentWorkerAnswers(data);
+
+      expect(service.getInternationalRecruitmentWorkerAnswers()).toBe(data);
     });
   });
 });

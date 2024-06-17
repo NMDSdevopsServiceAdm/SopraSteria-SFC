@@ -34,6 +34,7 @@ import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-outside-uk-multiple-staff/employed-from-outside-uk-multiple-staff.component';
+import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
@@ -355,6 +356,18 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Check Answers',
+        },
+      },
+      {
+        path: 'health-and-care-visa-existing-workers',
+        component: HealthAndCareVisaExistingWorkers,
+        canActivate: [CheckPermissionsGuard],
+        resolve: {
+          workers: WorkersResolver,
+        },
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Health And Care Visa',
         },
       },
       {

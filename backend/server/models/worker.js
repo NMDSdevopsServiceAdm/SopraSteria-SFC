@@ -1356,5 +1356,25 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Worker.getAllWorkersNationalityAndBritishCitizenship = async function (establishmentId) {
+    return await this.findAll({
+      attributes: [
+        'id',
+        'uid',
+        'NameOrIdValue',
+        'NationalityValue',
+        'BritishCitizenshipValue',
+        'HealthAndCareVisaValue',
+        'EmployedFromOutsideUkValue',
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        HealthAndCareVisaValue: null,
+      },
+      order: [['NameOrIdValue', 'ASC']],
+    });
+  };
+
   return Worker;
 };
