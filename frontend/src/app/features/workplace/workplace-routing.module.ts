@@ -58,6 +58,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
+import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -349,6 +350,18 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Check Answers',
+        },
+      },
+      {
+        path: 'health-and-care-visa-existing-workers',
+        component: HealthAndCareVisaExistingWorkers,
+        canActivate: [CheckPermissionsGuard],
+        resolve: {
+          workers: WorkersResolver,
+        },
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Health And Care Visa',
         },
       },
       {
