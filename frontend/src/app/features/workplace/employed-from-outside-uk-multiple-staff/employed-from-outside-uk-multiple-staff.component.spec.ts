@@ -8,6 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockInternationalRecruitmentService } from '@core/test-utils/MockInternationalRecruitmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -19,12 +20,14 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     {
       id: 123,
       uid: 'abc123',
-      nameOrId: 'Bobby',
+      name: 'Bobby',
+      healthAndCareVisa: 'Yes',
     },
     {
       id: 456,
       uid: 'abc456',
-      nameOrId: 'Benny',
+      name: 'Benny',
+      healthAndCareVisa: 'Yes',
     },
   ];
 
@@ -32,7 +35,8 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     {
       id: 123,
       uid: 'abc123',
-      nameOrId: 'Bobby',
+      name: 'Bobby',
+      healthAndCareVisa: 'Yes',
     },
   ];
 
@@ -46,27 +50,10 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
           WindowRef,
           {
             provide: InternationalRecruitmentService,
-            useValue: {
-              getWorkersWithHealthAndCareVisaForWorkplace() {
-                return of({ workersWithHealthAndCareVisas: workers });
-              },
-              getEmployedFromOutsideUkAnswers() {
-                return [
-                  {
-                    tag: 'Outside the UK',
-                    value: 'Yes',
-                  },
-                  {
-                    tag: 'Inside the UK',
-                    value: 'No',
-                  },
-                  {
-                    tag: 'I do not know',
-                    value: "Don't know",
-                  },
-                ];
-              },
-            },
+            useFactory: MockInternationalRecruitmentService.factory(false, {
+              workplaceUid: 'mocked-uid',
+              healthAndCareVisaWorkerAnswers: workers,
+            }),
           },
           {
             provide: EstablishmentService,
@@ -112,8 +99,8 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     const workersWithHealthAndCareVisas = pluralWorkers();
     const { getByText } = await setup(workersWithHealthAndCareVisas);
 
-    expect(getByText(workersWithHealthAndCareVisas[0].nameOrId)).toBeTruthy();
-    expect(getByText(workersWithHealthAndCareVisas[1].nameOrId)).toBeTruthy();
+    expect(getByText(workersWithHealthAndCareVisas[0].name)).toBeTruthy();
+    expect(getByText(workersWithHealthAndCareVisas[1].name)).toBeTruthy();
   });
 
   it('should render the reveal', async () => {
@@ -145,11 +132,12 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
           id: workers[0].id,
           uid: workers[0].uid,
           employedFromOutsideUk: 'Yes',
+          healthAndCareVisa: 'Yes',
         },
       ]);
     });
 
-    it('should call updateWorkers with database value of selected answers when answer given for all workers', async () => {
+    it('should call updateWorkers with database value of selected answers and healthAndCareVisa value when answer given for all workers', async () => {
       const workers = pluralWorkers();
 
       const { component, fixture, getByText, updateWorkersSpy } = await setup(workers);
@@ -167,11 +155,13 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
           id: workers[0].id,
           uid: workers[0].uid,
           employedFromOutsideUk: 'Yes',
+          healthAndCareVisa: 'Yes',
         },
         {
           id: workers[1].id,
           uid: workers[1].uid,
           employedFromOutsideUk: 'No',
+          healthAndCareVisa: 'Yes',
         },
       ]);
     });
@@ -205,7 +195,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       fireEvent.click(saveButton);
       fixture.detectChanges();
 
-      const errorMessage = `Answer required for ${workers[0].nameOrId}`;
+      const errorMessage = `Answer required for ${workers[0].name}`;
 
       expect(updateWorkersSpy).not.toHaveBeenCalled();
       expect(getByText(errorMessage)).toBeTruthy();
@@ -221,8 +211,8 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       fireEvent.click(saveButton);
       fixture.detectChanges();
 
-      const errorMessageWorker1 = `Answer required for ${workers[0].nameOrId}`;
-      const errorMessageWorker2 = `Answer required for ${workers[1].nameOrId}`;
+      const errorMessageWorker1 = `Answer required for ${workers[0].name}`;
+      const errorMessageWorker2 = `Answer required for ${workers[1].name}`;
 
       expect(updateWorkersSpy).not.toHaveBeenCalled();
       expect(getByText(errorMessageWorker1)).toBeTruthy();
@@ -253,7 +243,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       const workersWithHealthAndCareVisas = pluralWorkers();
       const { component, getByText, routerSpy } = await setup(workersWithHealthAndCareVisas);
       const worker = workersWithHealthAndCareVisas[0];
-      const workerLink = getByText(worker.nameOrId);
+      const workerLink = getByText(worker.name);
 
       fireEvent.click(workerLink);
 

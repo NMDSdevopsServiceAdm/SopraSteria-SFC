@@ -43,18 +43,34 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     this.workplaceUid = this.establishmentService.establishment.uid;
     this.submitted = false;
     this.answers = this.internationalRecruitmentService.getEmployedFromOutsideUkAnswers();
-    this.subscriptions.add(
-      this.internationalRecruitmentService
-        .getWorkersWithHealthAndCareVisaForWorkplace(this.workplaceUid)
-        .subscribe((data) => {
-          this.setUpFormData(data);
-          this.setupFormErrorsMap();
-        }),
-    );
+
+    this.workersWithHealthAndCareVisas = this.getWorkersWhichRequireAnswer();
+
+    if (!this.workersWithHealthAndCareVisas) {
+      this.router.navigate(['/workplace', this.workplaceUid, 'health-and-care-visa-existing-workers']);
+    } else {
+      this.setUpFormData();
+      this.setupFormErrorsMap();
+    }
   }
 
   get workers() {
     return this.form.get('workers') as FormArray;
+  }
+
+  private getWorkersWhichRequireAnswer(): any[] {
+    const internationalRecruitmentWorkerAnswers =
+      this.internationalRecruitmentService.getInternationalRecruitmentWorkerAnswers();
+
+    if (internationalRecruitmentWorkerAnswers?.workplaceUid !== this.workplaceUid) {
+      return null;
+    }
+    const workersWithHealthAndCareVisas = internationalRecruitmentWorkerAnswers.healthAndCareVisaWorkerAnswers.filter(
+      (worker) => worker.healthAndCareVisa === 'Yes',
+    );
+
+    if (!workersWithHealthAndCareVisas.length) return null;
+    return workersWithHealthAndCareVisas;
   }
 
   public onSubmit(): void {
@@ -79,7 +95,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: `Answer required for ${this.workersWithHealthAndCareVisas[index].nameOrId}`,
+            message: `Answer required for ${this.workersWithHealthAndCareVisas[index].name}`,
           },
         ],
       });
@@ -88,13 +104,12 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
 
   private workersWithHealthAndCareVisasWithNamesFiltered(): Array<any> {
     return this.workersWithHealthAndCareVisas.map((worker) => {
-      const { nameOrId, ...workerWithoutName } = worker;
+      const { name, ...workerWithoutName } = worker;
       return workerWithoutName;
     });
   }
 
-  private setUpFormData(data) {
-    this.workersWithHealthAndCareVisas = data.workersWithHealthAndCareVisas;
+  private setUpFormData(): void {
     this.workersWithHealthAndCareVisas.forEach(() => {
       this.workers.push(this.createFormGroupForWorker());
     });
@@ -120,12 +135,12 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     });
   }
 
-  radioChange(workerIndex, answerIndex) {
+  radioChange(workerIndex, answerIndex): void {
     const updatedWorker = this.workersWithHealthAndCareVisas[workerIndex];
     updatedWorker.employedFromOutsideUk = this.answers[answerIndex].value;
   }
 
-  onSubmitError(error) {
+  onSubmitError(error): void {
     this.errorSummaryService.scrollToErrorSummary();
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
   }

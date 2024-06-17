@@ -56,7 +56,7 @@
                 >
                   <div [class.govuk-!-margin-left-2]="submitted && worker.invalid">
                     <a href="#" (click)="navigateToStaffRecord($event, workersWithHealthAndCareVisas[i])">
-                      {{ workersWithHealthAndCareVisas[i].nameOrId }}
+                      {{ workersWithHealthAndCareVisas[i].name }}
                     </a>
                     <span *ngIf="submitted && worker.invalid" class="govuk-error-message"> Answer required </span>
                   </div>
