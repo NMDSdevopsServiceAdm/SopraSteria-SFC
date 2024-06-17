@@ -29,6 +29,12 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       name: 'Benny',
       healthAndCareVisa: 'Yes',
     },
+    {
+      id: 789,
+      uid: 'abc789',
+      name: 'Andrew',
+      healthAndCareVisa: 'No',
+    },
   ];
 
   const singleWorker = () => [
@@ -41,7 +47,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
   ];
 
   async function setup(workers = pluralWorkers()) {
-    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       EmployedFromOutsideUkMultipleStaffComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -86,6 +92,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       routerSpy,
       addAlertSpy,
       updateWorkersSpy,
+      queryByText,
     };
   }
 
@@ -95,12 +102,19 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display names of workers returned from international recruitment API call', async () => {
+  it('should display names of workers returned from international recruitment service with health and care visas', async () => {
     const workersWithHealthAndCareVisas = pluralWorkers();
     const { getByText } = await setup(workersWithHealthAndCareVisas);
 
     expect(getByText(workersWithHealthAndCareVisas[0].name)).toBeTruthy();
     expect(getByText(workersWithHealthAndCareVisas[1].name)).toBeTruthy();
+  });
+
+  it('should not display names of workers returned from international recruitment service', async () => {
+    const workersWithHealthAndCareVisas = pluralWorkers();
+    const { queryByText } = await setup(workersWithHealthAndCareVisas);
+
+    expect(queryByText(workersWithHealthAndCareVisas[2].name)).toBeFalsy();
   });
 
   it('should render the reveal', async () => {
@@ -162,6 +176,11 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
           uid: workers[1].uid,
           employedFromOutsideUk: 'No',
           healthAndCareVisa: 'Yes',
+        },
+        {
+          id: workers[2].id,
+          uid: workers[2].uid,
+          healthAndCareVisa: 'No',
         },
       ]);
     });

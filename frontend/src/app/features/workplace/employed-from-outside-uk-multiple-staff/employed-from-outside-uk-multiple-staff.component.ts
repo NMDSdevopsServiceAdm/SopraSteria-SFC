@@ -23,6 +23,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   public serverErrorsMap: Array<ErrorDefinition> = [];
   public return: URLStructure = { url: ['/dashboard'], fragment: 'home' };
   public workersWithHealthAndCareVisas: Array<any>;
+  public workersWhichDontHaveHealthAndCareVisas: Array<any>;
   public answers: any;
   private subscriptions: Subscription = new Subscription();
 
@@ -44,11 +45,14 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     this.submitted = false;
     this.answers = this.internationalRecruitmentService.getEmployedFromOutsideUkAnswers();
 
-    this.workersWithHealthAndCareVisas = this.getWorkersWhichRequireAnswer();
+    const allWorkers = this.getInternationalRecruitmentWorkers();
 
-    if (!this.workersWithHealthAndCareVisas) {
+    if (!allWorkers) {
       this.router.navigate(['/workplace', this.workplaceUid, 'health-and-care-visa-existing-workers']);
     } else {
+      this.workersWithHealthAndCareVisas = allWorkers.workersWithHealthAndCareVisas;
+      this.workersWhichDontHaveHealthAndCareVisas = allWorkers.workersWhichDontHaveHealthAndCareVisas;
+
       this.setUpFormData();
       this.setupFormErrorsMap();
     }
@@ -58,7 +62,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     return this.form.get('workers') as FormArray;
   }
 
-  private getWorkersWhichRequireAnswer(): any[] {
+  private getInternationalRecruitmentWorkers(): any {
     const internationalRecruitmentWorkerAnswers =
       this.internationalRecruitmentService.getInternationalRecruitmentWorkerAnswers();
 
@@ -68,9 +72,14 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     const workersWithHealthAndCareVisas = internationalRecruitmentWorkerAnswers.healthAndCareVisaWorkerAnswers.filter(
       (worker) => worker.healthAndCareVisa === 'Yes',
     );
+    const workersWhichDontHaveHealthAndCareVisas =
+      internationalRecruitmentWorkerAnswers.healthAndCareVisaWorkerAnswers.filter(
+        (worker) => worker.healthAndCareVisa !== 'Yes',
+      );
 
     if (!workersWithHealthAndCareVisas.length) return null;
-    return workersWithHealthAndCareVisas;
+
+    return { workersWithHealthAndCareVisas, workersWhichDontHaveHealthAndCareVisas };
   }
 
   public onSubmit(): void {
@@ -103,7 +112,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   }
 
   private workersWithHealthAndCareVisasWithNamesFiltered(): Array<any> {
-    return this.workersWithHealthAndCareVisas.map((worker) => {
+    return [...this.workersWithHealthAndCareVisas, ...this.workersWhichDontHaveHealthAndCareVisas].map((worker) => {
       const { name, ...workerWithoutName } = worker;
       return workerWithoutName;
     });
