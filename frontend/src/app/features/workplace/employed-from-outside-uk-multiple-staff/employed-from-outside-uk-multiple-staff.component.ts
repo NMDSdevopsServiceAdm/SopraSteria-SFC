@@ -102,7 +102,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
 
   private createFormGroupForWorker(): FormGroup {
     return this.formBuilder.group({
-      insideOrOutsideUk: [null, Validators.required],
+      insideOrOutsideUk: [null, { validators: Validators.required, updateOn: 'submit' }],
     });
   }
 
