@@ -104,7 +104,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: `Answer required for ${this.workersWithHealthAndCareVisas[index].name}`,
+            message: `Select where your organisation employed ${this.workersWithHealthAndCareVisas[index].name}`,
           },
         ],
       });
