@@ -32,11 +32,22 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       healthAndCareVisa: 'Yes',
       employedFromOutsideUk: null,
     },
+  ];
+
+  const pluralWorkersWithWorkersWithoutHealthCareVisa = () => [
+    ...pluralWorkers(),
     {
       id: 789,
       uid: 'abc789',
       name: 'Andrew',
       healthAndCareVisa: 'No',
+      employedFromOutsideUk: null,
+    },
+    {
+      id: 789,
+      uid: 'def123',
+      name: 'David',
+      healthAndCareVisa: "Don't know",
       employedFromOutsideUk: null,
     },
   ];
@@ -112,18 +123,19 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
   });
 
   it('should display names of workers returned from international recruitment service with health and care visas', async () => {
-    const workersWithHealthAndCareVisas = pluralWorkers();
+    const workersWithHealthAndCareVisas = pluralWorkersWithWorkersWithoutHealthCareVisa();
     const { getByText } = await setup(workersWithHealthAndCareVisas);
 
     expect(getByText(workersWithHealthAndCareVisas[0].name)).toBeTruthy();
     expect(getByText(workersWithHealthAndCareVisas[1].name)).toBeTruthy();
   });
 
-  it('should not display names of workers returned from international recruitment service', async () => {
-    const workersWithHealthAndCareVisas = pluralWorkers();
-    const { queryByText } = await setup(workersWithHealthAndCareVisas);
+  it('should not display names of workers returned from international recruitment service which do not have health and care visa', async () => {
+    const workers = pluralWorkersWithWorkersWithoutHealthCareVisa();
+    const { queryByText } = await setup(workers);
 
-    expect(queryByText(workersWithHealthAndCareVisas[2].name)).toBeFalsy();
+    expect(queryByText(workers[2].name)).toBeFalsy();
+    expect(queryByText(workers[3].name)).toBeFalsy();
   });
 
   it('should render the reveal', async () => {
@@ -193,9 +205,41 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
           employedFromOutsideUk: 'No',
           healthAndCareVisa: 'Yes',
         },
+      ]);
+    });
+
+    it('should call updateWorkers with database value of selected answers and healthAndCareVisa value when answer given for all workers', async () => {
+      const workers = pluralWorkersWithWorkersWithoutHealthCareVisa();
+
+      const { component, fixture, getByText, updateWorkersSpy } = await setup(workers);
+
+      const outsideTheUkWorker1 = fixture.nativeElement.querySelector('input[id="workers-insideOutsideUk-0-0"]');
+      const insideTheUkWorker2 = fixture.nativeElement.querySelector('input[id="workers-insideOutsideUk-1-1"]');
+      const saveButton = getByText('Save information');
+
+      fireEvent.click(outsideTheUkWorker1);
+      fireEvent.click(insideTheUkWorker2);
+      fireEvent.click(saveButton);
+
+      expect(updateWorkersSpy).toHaveBeenCalledWith(component.workplaceUid, [
+        {
+          uid: workers[0].uid,
+          employedFromOutsideUk: 'Yes',
+          healthAndCareVisa: 'Yes',
+        },
+        {
+          uid: workers[1].uid,
+          employedFromOutsideUk: 'No',
+          healthAndCareVisa: 'Yes',
+        },
         {
           uid: workers[2].uid,
           healthAndCareVisa: 'No',
+          employedFromOutsideUk: null,
+        },
+        {
+          uid: 'def123',
+          healthAndCareVisa: "Don't know",
           employedFromOutsideUk: null,
         },
       ]);
