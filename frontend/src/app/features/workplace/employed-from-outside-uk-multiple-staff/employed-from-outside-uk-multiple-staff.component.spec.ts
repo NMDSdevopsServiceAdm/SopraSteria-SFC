@@ -23,18 +23,21 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       uid: 'abc123',
       name: 'Bobby',
       healthAndCareVisa: 'Yes',
+      employedFromOutsideUk: null,
     },
     {
       id: 456,
       uid: 'abc456',
       name: 'Benny',
       healthAndCareVisa: 'Yes',
+      employedFromOutsideUk: null,
     },
     {
       id: 789,
       uid: 'abc789',
       name: 'Andrew',
       healthAndCareVisa: 'No',
+      employedFromOutsideUk: null,
     },
   ];
 
@@ -44,6 +47,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       uid: 'abc123',
       name: 'Bobby',
       healthAndCareVisa: 'Yes',
+      employedFromOutsideUk: null,
     },
   ];
 
@@ -158,7 +162,6 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
 
       expect(updateWorkersSpy).toHaveBeenCalledWith(component.workplaceUid, [
         {
-          id: workers[0].id,
           uid: workers[0].uid,
           employedFromOutsideUk: 'Yes',
           healthAndCareVisa: 'Yes',
@@ -181,21 +184,19 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
 
       expect(updateWorkersSpy).toHaveBeenCalledWith(component.workplaceUid, [
         {
-          id: workers[0].id,
           uid: workers[0].uid,
           employedFromOutsideUk: 'Yes',
           healthAndCareVisa: 'Yes',
         },
         {
-          id: workers[1].id,
           uid: workers[1].uid,
           employedFromOutsideUk: 'No',
           healthAndCareVisa: 'Yes',
         },
         {
-          id: workers[2].id,
           uid: workers[2].uid,
           healthAndCareVisa: 'No',
+          employedFromOutsideUk: null,
         },
       ]);
     });

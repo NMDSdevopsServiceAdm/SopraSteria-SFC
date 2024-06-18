@@ -95,12 +95,10 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
       return;
     }
 
-    this.establishmentService
-      .updateWorkers(this.workplaceUid, this.workersWithHealthAndCareVisasWithNamesFiltered())
-      .subscribe(
-        () => this.onSubmitSuccess(),
-        (error) => this.onSubmitError(error),
-      );
+    this.establishmentService.updateWorkers(this.workplaceUid, this.workersWithUpdatedFields()).subscribe(
+      () => this.onSubmitSuccess(),
+      (error) => this.onSubmitError(error),
+    );
   }
 
   protected setupFormErrorsMap(): void {
@@ -117,10 +115,13 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     });
   }
 
-  private workersWithHealthAndCareVisasWithNamesFiltered(): Array<any> {
+  private workersWithUpdatedFields(): Array<any> {
     return [...this.workersWithHealthAndCareVisas, ...this.workersWhichDontHaveHealthAndCareVisas].map((worker) => {
-      const { name, ...workerWithoutName } = worker;
-      return workerWithoutName;
+      return {
+        employedFromOutsideUk: worker.employedFromOutsideUk,
+        healthAndCareVisa: worker.healthAndCareVisa,
+        uid: worker.uid,
+      };
     });
   }
 
@@ -141,7 +142,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     this.router.navigate(['/workplace', this.workplaceUid, 'staff-record', worker.uid, 'staff-record-summary']);
   }
 
-  onSubmitSuccess(): void {
+  private onSubmitSuccess(): void {
     this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
       this.alertService.addAlert({
         type: 'success',
@@ -150,12 +151,12 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     });
   }
 
-  radioChange(workerIndex, answerIndex): void {
+  public radioChange(workerIndex, answerIndex): void {
     const updatedWorker = this.workersWithHealthAndCareVisas[workerIndex];
     updatedWorker.employedFromOutsideUk = this.answers[answerIndex].value;
   }
 
-  onSubmitError(error): void {
+  private onSubmitError(error): void {
     this.errorSummaryService.scrollToErrorSummary();
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
   }
