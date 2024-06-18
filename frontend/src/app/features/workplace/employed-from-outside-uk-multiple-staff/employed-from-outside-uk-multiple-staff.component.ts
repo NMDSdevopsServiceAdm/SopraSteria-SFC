@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
@@ -25,6 +26,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   public workersWithHealthAndCareVisas: Array<any>;
   public workersWhichDontHaveHealthAndCareVisas: Array<any>;
   public answers: any;
+  private existingStaffHealthAndCareVisaUrl: Array<string>;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -34,6 +36,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     private errorSummaryService: ErrorSummaryService,
     private alertService: AlertService,
     private internationalRecruitmentService: InternationalRecruitmentService,
+    private backService: BackService,
   ) {
     this.form = this.formBuilder.group({
       workers: this.formBuilder.array([]),
@@ -43,12 +46,15 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   ngOnInit(): void {
     this.workplaceUid = this.establishmentService.establishment.uid;
     this.submitted = false;
+    this.existingStaffHealthAndCareVisaUrl = ['/workplace', this.workplaceUid, 'health-and-care-visa-existing-workers'];
+    this.setBackLink();
+
     this.answers = this.internationalRecruitmentService.getEmployedFromOutsideUkAnswers();
 
     const allWorkers = this.getInternationalRecruitmentWorkers();
 
     if (!allWorkers) {
-      this.router.navigate(['/workplace', this.workplaceUid, 'health-and-care-visa-existing-workers']);
+      this.router.navigate(this.existingStaffHealthAndCareVisaUrl);
     } else {
       this.workersWithHealthAndCareVisas = allWorkers.workersWithHealthAndCareVisas;
       this.workersWhichDontHaveHealthAndCareVisas = allWorkers.workersWhichDontHaveHealthAndCareVisas;
@@ -152,6 +158,10 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   onSubmitError(error): void {
     this.errorSummaryService.scrollToErrorSummary();
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+  }
+
+  public setBackLink(): void {
+    this.backService.setBackLink({ url: this.existingStaffHealthAndCareVisaUrl });
   }
 
   ngOnDestroy(): void {

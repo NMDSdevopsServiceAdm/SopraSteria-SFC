@@ -4,6 +4,7 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -81,6 +82,9 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const updateWorkersSpy = spyOn(establishmentService, 'updateWorkers').and.returnValue(of(null));
 
+    const backService = injector.inject(BackService) as BackService;
+    const backLinkSpy = spyOn(backService, 'setBackLink');
+
     return {
       component,
       fixture,
@@ -93,6 +97,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       addAlertSpy,
       updateWorkersSpy,
       queryByText,
+      backLinkSpy,
     };
   }
 
@@ -127,6 +132,16 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
 
     expect(reveal).toBeTruthy();
     expect(revealText).toBeTruthy();
+  });
+
+  it('should set the existing staff health and care visa page as back link', async () => {
+    const { component, backLinkSpy } = await setup();
+
+    component.setBackLink();
+
+    expect(backLinkSpy).toHaveBeenCalledWith({
+      url: ['/workplace', component.workplaceUid, 'health-and-care-visa-existing-workers'],
+    });
   });
 
   describe('On submit, ', () => {
