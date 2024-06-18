@@ -98,9 +98,6 @@ export class PdfService {
 
   private appendElRef(html: HTMLElement, elRef: ElementRef): void {
     const elements = elRef.nativeElement.cloneNode(true);
-    if (elements.nodeName === 'APP-NEW-BENCHMARKS-TAB') {
-      elements.children[1].classList.remove('govuk-width-container');
-    }
     html.append(elements);
   }
 

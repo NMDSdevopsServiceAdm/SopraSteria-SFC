@@ -51,7 +51,7 @@ const nhsBsaApi = async (req, res) => {
 };
 
 const workplaceObject = async (workplace) => {
-  const wdfEligible = await wdfData(workplace.id);
+  const wdfEligible = await wdfData(workplace.id, WdfCalculator.effectiveDate);
 
   return {
     workplaceId: workplace.nmdsId,
@@ -90,15 +90,16 @@ const parentWorkplace = async (parentId) => {
   return await workplaceObject(parentWorkplace);
 };
 
-const wdfData = async (workplaceId) => {
-  const effectiveFrom = WdfCalculator.effectiveDate;
-
-  const reportData = await models.sequelize.query(`select * from cqc.wdfsummaryreport(:givenEffectiveDate)`, {
-    replacements: {
-      givenEffectiveDate: effectiveFrom,
+const wdfData = async (workplaceId, effectiveFrom) => {
+  const reportData = await models.sequelize.query(
+    `SELECT * FROM cqc.wdfsummaryreport(:givenEffectiveDate) WHERE "EstablishmentID" = '${workplaceId}'`,
+    {
+      replacements: {
+        givenEffectiveDate: effectiveFrom,
+      },
+      type: models.sequelize.QueryTypes.SELECT,
     },
-    type: models.sequelize.QueryTypes.SELECT,
-  });
+  );
 
   const wdfMeeting = reportData.find((workplace) => workplace.EstablishmentID === workplaceId);
   if (wdfMeeting) {
@@ -109,9 +110,7 @@ const wdfData = async (workplaceId) => {
       eligibilityPercentage: percentageEligibleWorkers,
       eligibilityDate: wdfMeeting.OverallWdfEligibility,
       isEligible:
-        wdfMeeting.OverallWdfEligibility && wdfMeeting.OverallWdfEligibility.getTime() > WdfCalculator.effectiveTime
-          ? 'true'
-          : 'false',
+        wdfMeeting.OverallWdfEligibility && wdfMeeting.OverallWdfEligibility.getTime() > effectiveFrom ? true : false,
     };
   }
 };

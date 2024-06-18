@@ -26,6 +26,12 @@ export class MockFeatureFlagsService extends FeatureFlagsService {
           return resolve(true);
         });
       }
+      if (flagName === 'homePageNewDesignParent') {
+        return new Promise((resolve) => {
+          return resolve(true);
+        });
+      }
+
       return new Promise((resolve) => {
         return resolve(defaultSetting);
       });

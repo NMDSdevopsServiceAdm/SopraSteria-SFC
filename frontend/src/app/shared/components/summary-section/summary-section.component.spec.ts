@@ -1,5 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -8,10 +11,10 @@ import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEs
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import dayjs from 'dayjs';
 
-import { Establishment } from '../../../../../mockdata/establishment';
+import { Establishment } from '../../../../mockdata/establishment';
 import { SummarySectionComponent } from './summary-section.component';
 
 describe('Summary section', () => {
@@ -22,9 +25,12 @@ describe('Summary section', () => {
     trainingCounts = {} as TrainingCounts,
     workerCreatedDate = [dayjs()],
     workersNotCompleted = [workerBuilder()] as Worker[],
+    canViewListOfWorkers = true,
+    canViewEstablishment = true,
+    isParentSubsidiaryView = false,
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
-      imports: [SharedModule, HttpClientTestingModule],
+      imports: [SharedModule, HttpClientTestingModule, RouterModule, RouterTestingModule],
       providers: [
         {
           provide: TabsService,
@@ -45,10 +51,20 @@ describe('Summary section', () => {
         workerCount,
         workersCreatedDate: workerCreatedDate,
         workersNotCompleted: workersNotCompleted as Worker[],
+        isParent: false,
+        canViewListOfWorkers: canViewListOfWorkers,
+        canViewEstablishment: canViewEstablishment,
+        showMissingCqcMessage: false,
+        workplacesCount: 0,
+        isParentSubsidiaryView,
       },
     });
 
     const component = fixture.componentInstance;
+    const injector = getTestBed();
+
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
@@ -57,6 +73,7 @@ describe('Summary section', () => {
       queryByText,
       getByTestId,
       queryByTestId,
+      routerSpy,
     };
   };
 
@@ -70,6 +87,41 @@ describe('Summary section', () => {
       const { getByText } = await setup();
 
       expect(getByText('Workplace')).toBeTruthy();
+    });
+
+    it('should not show clickable workplace link if no access to data', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(1, 'year'),
+        numberOfStaff: 12,
+      };
+
+      const date = [dayjs().subtract(1, 'year')];
+
+      const { fixture, getByText } = await setup(false, establishment, 0, {}, date, [], false, false);
+
+      fixture.detectChanges();
+
+      const workplaceText = getByText('Workplace');
+
+      expect(workplaceText.getAttribute('href')).toBeFalsy();
+    });
+
+    it('should show clickable workplace link if access to workplace', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(1, 'year'),
+        numberOfStaff: 12,
+      };
+
+      const date = [dayjs().subtract(1, 'year')];
+
+      const { component, fixture, getByText } = await setup(false, establishment, 0, {}, date, [], false, true);
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workplaceText = getByText('Workplace');
+
+      expect(workplaceText.getAttribute('href')).toBeTruthy();
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
@@ -86,6 +138,16 @@ describe('Summary section', () => {
       const workplaceRow = getByTestId('workplace-row');
       expect(within(workplaceRow).getByText('Add more details to your workplace')).toBeTruthy();
       expect(within(workplaceRow).getByTestId('orange-flag')).toBeTruthy();
+    });
+
+    it('should navigate to sub workplace page when clicking the add workplace details message in sub view', async () => {
+      const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
+      const { getByText, routerSpy } = await setup(true, establishment, 0, {}, [], [], true, true, true);
+
+      const workplaceDetailsMessage = getByText('Add more details to your workplace');
+      fireEvent.click(workplaceDetailsMessage);
+
+      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'workplace']);
     });
 
     it('should show the check cqc details message if checkCQCDetails banner is true and the showAddWorkplaceDetailsBanner is false', async () => {
@@ -179,6 +241,35 @@ describe('Summary section', () => {
       expect(getByText('Staff records')).toBeTruthy();
     });
 
+    it('should not show clickable staff records link if no access to data', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(1, 'year'),
+        numberOfStaff: 12,
+      };
+
+      const date = [dayjs().subtract(1, 'year')];
+
+      const { fixture, getByText } = await setup(false, establishment, 0, {}, date, [], false, true);
+
+      fixture.detectChanges();
+
+      const staffRecordsLinkText = getByText('Staff records');
+
+      expect(staffRecordsLinkText.getAttribute('href')).toBeFalsy();
+    });
+
+    it('should show clickable staff records link if access to workplace', async () => {
+      const { component, fixture, getByText } = await setup();
+      component.canViewListOfWorkers = true;
+
+      fixture.detectChanges();
+
+      const staffRecordsLinkText = getByText('Staff records');
+
+      expect(staffRecordsLinkText.getAttribute('href')).toBeTruthy();
+    });
+
     it('should show default summary message when no data needs to be adding or updating', async () => {
       const { getByTestId } = await setup();
 
@@ -192,6 +283,15 @@ describe('Summary section', () => {
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).getByText('You can start to add your staff records now')).toBeTruthy();
       expect(getByTestId('orange-flag')).toBeTruthy();
+    });
+
+    it('should navigate to sub staff records page when clicking on start to add your staff message in sub view', async () => {
+      const { getByText, routerSpy } = await setup(false, Establishment, 0, {}, [], [], true, true, true);
+
+      const staffRecordMessage = getByText('You can start to add your staff records now');
+      fireEvent.click(staffRecordMessage);
+
+      expect(routerSpy).toHaveBeenCalledWith(['subsidiary', Establishment.uid, 'staff-records']);
     });
 
     it('should show staff record does not match message when the number of staff is more than the staff record', async () => {
@@ -292,55 +392,77 @@ describe('Summary section', () => {
       expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
     });
 
-    it('should show "Some records only have mandatory data added" message when staff records are not completed and worker added date is more than 1 month ago', async () => {
-      const date = new Date();
+    describe('"Some records only have mandatory data added" link', () => {
+      const workerCreatedDate = (timeframe) => {
+        return [
+          {
+            ...workerBuilder(),
+            completed: false,
+            created: dayjs().subtract(2, timeframe).toISOString(),
+          },
+        ] as Worker[];
+      };
 
-      const workerCreatedDate = [
-        {
-          ...workerBuilder(),
-          completed: false,
-          created: dayjs().subtract(2, 'month').toISOString(),
-        },
-      ] as Worker[];
-      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+      it('should show "Some records only have mandatory data added" message when staff records are not completed and worker added date is more than 1 month ago', async () => {
+        const { fixture, getByTestId } = await setup(
+          false,
+          Establishment,
+          12,
+          {},
+          [dayjs()],
+          workerCreatedDate('month'),
+        );
 
-      fixture.detectChanges();
-      const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeTruthy();
-    });
+        const staffRecordsRow = getByTestId('staff-records-row');
+        expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeTruthy();
+      });
 
-    it('should not show "Some records only have mandatory data added" message when staff records are not completed and worker added date is less than 1 month ago', async () => {
-      const date = new Date();
+      it('should navigate to basic-staff-records when "Some records only have mandatory data added" clicked', async () => {
+        const { getByText, routerSpy } = await setup(
+          false,
+          Establishment,
+          12,
+          {},
+          [dayjs()],
+          workerCreatedDate('month'),
+        );
 
-      const workerCreatedDate = [
-        {
-          ...workerBuilder(),
-          completed: false,
-          created: dayjs().subtract(1, 'week').toISOString(),
-        },
-      ] as Worker[];
-      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+        const basicStaffRecordsLink = getByText('Some records only have mandatory data added');
+        fireEvent.click(basicStaffRecordsLink);
+        expect(routerSpy).toHaveBeenCalledWith(['/staff-basic-records']);
+      });
 
-      fixture.detectChanges();
-      const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
-    });
+      it('should navigate to basic-staff-records with uid when "Some records only have mandatory data added" clicked in sub view', async () => {
+        const { getByText, routerSpy } = await setup(
+          false,
+          Establishment,
+          12,
+          {},
+          [dayjs()],
+          workerCreatedDate('month'),
+          true,
+          true,
+          true,
+        );
 
-    it('should not show "Some records only have mandatory data added" message when staff records are completed and worker added date is less than 1 month ago', async () => {
-      const date = new Date();
+        const basicStaffRecordsLink = getByText('Some records only have mandatory data added');
+        fireEvent.click(basicStaffRecordsLink);
+        expect(routerSpy).toHaveBeenCalledWith(['/staff-basic-records', Establishment.uid]);
+      });
 
-      const workerCreatedDate = [
-        {
-          ...workerBuilder(),
-          completed: true,
-          created: dayjs().subtract(1, 'week').toISOString(),
-        },
-      ] as Worker[];
-      const { fixture, getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate);
+      it('should not show "Some records only have mandatory data added" message when staff records are not completed and worker added date is less than 1 month ago', async () => {
+        const { getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate('week'));
 
-      fixture.detectChanges();
-      const staffRecordsRow = getByTestId('staff-records-row');
-      expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
+        const staffRecordsRow = getByTestId('staff-records-row');
+        expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
+      });
+
+      it('should not show "Some records only have mandatory data added" message when staff records are completed and worker added date is less than 1 month ago', async () => {
+        const { getByTestId } = await setup(false, Establishment, 12, {}, [dayjs()], workerCreatedDate('week'));
+
+        const staffRecordsRow = getByTestId('staff-records-row');
+        expect(within(staffRecordsRow).queryByText('Some records only have mandatory data added')).toBeFalsy();
+      });
     });
   });
 
@@ -349,6 +471,35 @@ describe('Summary section', () => {
       const { getByText } = await setup();
 
       expect(getByText('Training and qualifications')).toBeTruthy();
+    });
+
+    it('should not show clickable training and qualifications link if no access to data', async () => {
+      const establishment = {
+        ...Establishment,
+        created: dayjs().subtract(1, 'year'),
+        numberOfStaff: 12,
+      };
+
+      const date = [dayjs().subtract(1, 'year')];
+
+      const { fixture, getByText } = await setup(false, establishment, 0, {}, date, [], false, true);
+
+      fixture.detectChanges();
+
+      const trainingAndQualificationsLinkText = getByText('Training and qualifications');
+
+      expect(trainingAndQualificationsLinkText.getAttribute('href')).toBeFalsy();
+    });
+
+    it('should show clickable training and qualifications link if access to workplace', async () => {
+      const { component, fixture, getByText } = await setup();
+      component.canViewListOfWorkers = true;
+
+      fixture.detectChanges();
+
+      const trainingAndQualificationsLinkText = getByText('Training and qualifications');
+
+      expect(trainingAndQualificationsLinkText.getAttribute('href')).toBeTruthy();
     });
 
     it('should show default summary message when no data needs to be adding or updating', async () => {
@@ -465,6 +616,76 @@ describe('Summary section', () => {
         expect(within(tAndQRow).queryByTestId('red-flag')).toBeFalsy();
         expect(within(tAndQRow).queryByText('Manage your staff training and qualifications')).toBeFalsy();
       });
+    });
+  });
+
+  describe('your other workplaces summary section', () => {
+    it('should show the row', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.isParent = true;
+      fixture.detectChanges();
+
+      const workplacesRow = getByTestId('workplaces-row');
+      expect(workplacesRow).toBeTruthy();
+    });
+
+    it('should show you other workplaces link', async () => {
+      const { component, getByText } = await setup();
+
+      component.isParent = true;
+      const yourOtherWorkplacesText = getByText('Your other workplaces');
+
+      expect(yourOtherWorkplacesText).toBeTruthy();
+      expect(yourOtherWorkplacesText.getAttribute('href')).toBeTruthy();
+    });
+
+    it('should show message if there are no workplaces added', async () => {
+      const { component, getByText, queryByTestId } = await setup();
+
+      component.isParent = true;
+
+      const yourOtherWorkplacesSummaryText = getByText("You've not added any other workplaces yet");
+
+      expect(yourOtherWorkplacesSummaryText).toBeTruthy();
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBeFalsy();
+      expect(queryByTestId('workplaces-orange-flag')).toBeFalsy();
+    });
+
+    it('should show message if showMissingCqcMessage is true and there are workplaces', async () => {
+      const { component, fixture, getByText, getByTestId } = await setup();
+
+      component.workplacesCount = 1;
+      component.showMissingCqcMessage = true;
+      component.otherWorkplacesSection.orangeFlag = true;
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      component.isParent = true;
+
+      const yourOtherWorkplacesSummaryText = getByText('Have you added all of your workplaces?');
+
+      expect(yourOtherWorkplacesSummaryText).toBeTruthy();
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBe('/workplace/view-all-workplaces');
+      expect(getByTestId('workplaces-orange-flag')).toBeTruthy();
+    });
+
+    it('should show the no workplace message when showMissingCqcMessage is false and there are workplaces', async () => {
+      const { component, getByText, fixture, queryByTestId } = await setup();
+
+      component.workplacesCount = 1;
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      component.isParent = true;
+
+      const yourOtherWorkplacesSummaryText = getByText('Check and update your other workplaces often');
+
+      expect(yourOtherWorkplacesSummaryText).toBeTruthy();
+      expect(yourOtherWorkplacesSummaryText.getAttribute('href')).toBeFalsy();
+      expect(queryByTestId('workplaces-orange-flag')).toBeFalsy();
     });
   });
 });

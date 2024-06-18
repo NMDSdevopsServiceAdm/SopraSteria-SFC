@@ -134,6 +134,7 @@ export interface Establishment {
   wdf?: WDF;
   isParent?: boolean;
   parentName?: string;
+  parentPostcode?: string;
   dataOwner: WorkplaceDataOwner;
   dataPermissions: DataPermissions;
   dataOwnershipRequested: string;
@@ -158,6 +159,7 @@ export interface Establishment {
   careWorkersLeaveDaysPerYear?: string;
   careWorkersCashLoyaltyForFirstTwoYears?: string;
   sickPay?: string;
+  isParentApprovedBannerViewed?: boolean;
 }
 
 export interface UpdateJobsRequest {

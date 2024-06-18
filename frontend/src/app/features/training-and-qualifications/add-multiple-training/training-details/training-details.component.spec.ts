@@ -17,7 +17,6 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import sinon from 'sinon';
 
-
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
 
@@ -184,7 +183,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     ]);
   });
 
-  it('should reset training service state and navigate to dashboard when pressing cancel when in the flow and primary user', async () => {
+  it('should reset training service state and navigate to dashboard when pressing cancel when in the flow', async () => {
     const { getByText, spy, trainingSpy } = await setup();
 
     const cancelButton = getByText('Cancel');
@@ -192,16 +191,6 @@ describe('MultipleTrainingDetailsComponent', () => {
 
     expect(trainingSpy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
-  });
-
-  it('should reset training service state and navigate to sub workplace home page åwhen pressing cancel when in the flow but not the primary user', async () => {
-    const { getByText, spy, trainingSpy } = await setup(false, false, false);
-
-    const cancelButton = getByText('Cancel');
-    fireEvent.click(cancelButton);
-
-    expect(trainingSpy).toHaveBeenCalled();
-    expect(spy).toHaveBeenCalledWith(['workplace', 'mock-uid'], { fragment: 'training-and-qualifications' });
   });
 
   it('should not clear selected staff and navigate when pressing cancel when in the flow', async () => {
@@ -332,18 +321,18 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
 
     it('should show an error when expiry date is before the completed date', async () => {
-      const { component,getByTestId, getByText, fixture, getAllByText } = await setup();
-    component.form.markAsDirty();
-    const today = new Date();
-    const completedDate = getByTestId('completedDate');
-    userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
-    userEvent.type(within(completedDate).getByLabelText('Month'), `${today.getMonth()+1}`);
-    userEvent.type(within(completedDate).getByLabelText('Year'), `${today.getFullYear()}`);
-    const expiresDate = getByTestId('expiresDate');
-    userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
-    userEvent.type(within(expiresDate).getByLabelText('Month'), `${today.getMonth()+1}`);
-     userEvent.type(within(expiresDate).getByLabelText('Year'), `${today.getFullYear()}`);
-    fireEvent.click(getByText('Continue'));
+      const { component, getByTestId, getByText, fixture, getAllByText } = await setup();
+      component.form.markAsDirty();
+      const today = new Date();
+      const completedDate = getByTestId('completedDate');
+      userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
+      userEvent.type(within(completedDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
+      userEvent.type(within(completedDate).getByLabelText('Year'), `${today.getFullYear()}`);
+      const expiresDate = getByTestId('expiresDate');
+      userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
+      userEvent.type(within(expiresDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
+      userEvent.type(within(expiresDate).getByLabelText('Year'), `${today.getFullYear()}`);
+      fireEvent.click(getByText('Continue'));
       fixture.detectChanges();
 
       expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);

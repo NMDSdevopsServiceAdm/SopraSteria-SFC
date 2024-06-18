@@ -16,7 +16,9 @@ export class PermissionsService {
   constructor(private http: HttpClient, private router: Router, private userService: UserService) {}
 
   public getPermissions(workplaceUid: string): Observable<PermissionsResponse> {
-    return this.http.get<PermissionsResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/permissions`);
+    return this.http.get<PermissionsResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/permissions`,
+    );
   }
 
   public clearPermissions(): void {
@@ -36,8 +38,10 @@ export class PermissionsService {
 
   public can(workplaceUid: string, permissionType: PermissionType): boolean {
     const permissions = this.permissions(workplaceUid);
-
-    return permissions.includes(permissionType);
+    if (permissions) {
+      return permissions.includes(permissionType);
+    }
+    return false;
   }
 
   public handlePermissionsCheck(requiredPermissions: PermissionType[], permissionsList: PermissionType[]): boolean {

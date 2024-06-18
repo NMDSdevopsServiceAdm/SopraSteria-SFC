@@ -20,7 +20,7 @@ import { of } from 'rxjs';
 import { HeaderComponent } from './header.component';
 
 describe('HeaderComponent', () => {
-  async function setup(isAdmin = false, subsidiaries = 0, isLoggedIn = false, standAloneAccount = true) {
+  async function setup(isAdmin = false, subsidiaries = 0, isLoggedIn = false, showNotificationsLink = true) {
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(HeaderComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
@@ -46,7 +46,7 @@ describe('HeaderComponent', () => {
         },
       ],
       componentProperties: {
-        standAloneAccount,
+        showNotificationsLink,
       },
     });
 

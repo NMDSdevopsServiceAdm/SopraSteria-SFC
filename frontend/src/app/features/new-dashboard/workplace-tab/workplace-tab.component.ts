@@ -2,9 +2,11 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TabsService } from '@core/services/tabs.service';
 
 @Component({
   selector: 'app-new-workplace-tab',
@@ -23,6 +25,8 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
+    private alertService: AlertService,
+    private tabsService: TabsService,
   ) {}
 
   ngOnInit(): void {
@@ -33,9 +37,15 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
     this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
   }
 
+  public navigateToTab(event: Event, selectedTab: string): void {
+    event.preventDefault();
+    this.tabsService.selectedTab = selectedTab;
+  }
+
   ngOnDestroy(): void {
     // need to manually remove breadcrumbs on tabs, because a
     // navigation event isn't called when going from one tab to another
     this.breadcrumbService.removeRoutes();
+    this.alertService.removeAlert();
   }
 }

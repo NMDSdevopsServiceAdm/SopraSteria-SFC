@@ -145,14 +145,4 @@ describe('MandatoryDetailsComponent', () => {
     expect(navDash).toHaveBeenCalled();
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
   });
-
-  it('should take you to to the workplace home page if adding a staff record to subsidiary establishment', async () => {
-    const { getByTestId, component, routerSpy } = await setup(true, 345);
-
-    const navDash = spyOn(component, 'navigateToDashboard').and.callThrough();
-    const allWorkersButton = getByTestId('view-all-workers-button');
-    userEvent.click(allWorkersButton);
-    expect(navDash).toHaveBeenCalled();
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 123], { fragment: 'staff-records' });
-  });
 });

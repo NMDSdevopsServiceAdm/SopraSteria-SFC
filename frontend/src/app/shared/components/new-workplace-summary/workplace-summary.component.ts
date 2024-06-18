@@ -1,5 +1,6 @@
 import { I18nPluralPipe } from '@angular/common';
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -20,6 +21,7 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @Input() return: URLStructure = null;
   @Input() workerCount: number;
+  @Input() navigateToTab: (event: Event, tabSlug: string) => void;
 
   private subscriptions: Subscription = new Subscription();
   public canEditEstablishment: boolean;
@@ -36,12 +38,14 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
   public numberOfStaffError: boolean;
   public numberOfStaffWarning: boolean;
   public typeOfEmployer: string;
+  public isParent: boolean;
 
   constructor(
     private i18nPluralPipe: I18nPluralPipe,
     private permissionsService: PermissionsService,
     private establishmentService: EstablishmentService,
     private cqcStatusChangeService: CqcStatusChangeService,
+    private router: Router,
     private tabsService: TabsService,
   ) {
     this.pluralMap['How many beds do you have?'] = {
@@ -74,6 +78,8 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
     if (this.workplace.employerType) {
       this.typeOfEmployer = WorkplaceUtil.formatTypeOfEmployer(this.workplace.employerType.value);
     }
+
+    this.isParent = this.workplace.isParent;
 
     this.getCapacityMessages();
     this.getPermissions();
@@ -173,11 +179,6 @@ export class NewWorkplaceSummaryComponent implements OnInit, OnDestroy {
 
   public formatMonetaryValue(unformattedMoneyString: string): string {
     return unformattedMoneyString.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  }
-
-  public navigateToTab(event: Event, selectedTab: string): void {
-    event.preventDefault();
-    this.tabsService.selectedTab = selectedTab;
   }
 
   ngOnDestroy(): void {

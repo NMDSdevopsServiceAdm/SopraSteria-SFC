@@ -1,5 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { JourneyRoute } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { TabsService } from '@core/services/tabs.service';
@@ -10,10 +9,12 @@ import { Subscription } from 'rxjs';
   templateUrl: './breadcrumbs.component.html',
 })
 export class BreadcrumbsComponent implements OnInit, OnDestroy {
+  @Input() workplaceName: string;
   public breadcrumbs: JourneyRoute[];
+  public overrideMessage: string;
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private breadcrumbService: BreadcrumbService, private router: Router, private tabsService: TabsService) {}
+  constructor(private breadcrumbService: BreadcrumbService, private tabsService: TabsService) {}
 
   ngOnInit(): void {
     this.subscriptions.add(

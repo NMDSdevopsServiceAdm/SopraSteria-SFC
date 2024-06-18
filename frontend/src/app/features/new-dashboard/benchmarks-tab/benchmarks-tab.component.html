@@ -1,18 +1,21 @@
 <app-new-dashboard-header
+  *ngIf="!isParentViewingSubsidiary"
   [tab]="'benchmarks'"
+  [workplace]="workplace"
   [updatedDate]="tilesData?.meta.lastUpdated"
   data-html2canvas-ignore
+  data-testid="dashboardHeader"
 ></app-new-dashboard-header>
 
 <div class="govuk-width-container govuk-!-margin-top-7">
   <!-- <div id="benchmarks-tiles"> -->
 
-    <app-new-comparison-group-header
-      [canViewFullContent]="canViewFullBenchmarks"
-      [meta]="tilesData?.meta"
-      [workplaceID]="workplace.uid"
-      (downloadPDF)="downloadAsPDF()"
-    ></app-new-comparison-group-header>
+  <app-new-comparison-group-header
+    [canViewFullContent]="canViewFullBenchmarks"
+    [meta]="tilesData?.meta"
+    [workplaceID]="workplace.uid"
+    (downloadPDF)="downloadAsPDF()"
+  ></app-new-comparison-group-header>
 
   <div class="govuk-grid-row">
     <app-benchmark-tile
@@ -43,53 +46,11 @@
       [workplaceID]="workplace.uid"
     >
     </app-benchmark-tile>
-  </div>
-    <!-- <div class="govuk-grid-row" data-cy="benchmarks-tiles">
-      <app-benchmark-tile
-      [canViewFullContent]="canViewFullBenchmarks"
-      [content]="payContent"
-      [tile]="payTile"
-      [workplaceID]="workplace.uid"
-    >
-    </app-benchmark-tile>
-      <app-benchmark-tile
-        [canViewFullContent]="canViewFullBenchmarks"
-        [content]="payContent"
-        [tile]="tilesData?.pay"
-        [workplaceID]="workplace.uid"
-      >
-
-      </app-benchmark-tile>
-      [tile]="tilesData?.careWorkerPay"
-      <app-benchmark-tile
-        [canViewFullContent]="canViewFullBenchmarks"
-        [content]="turnoverContent"
-        [tile]="tilesData?.turnover"
-        [workplaceID]="workplace.uid"
-      >
-      [tile]="tilesData?.turnoverRate"
-      </app-benchmark-tile>
-      <app-benchmark-tile
-        [canViewFullContent]="canViewFullBenchmarks"
-        [content]="sicknessContent"
-        [tile]="tilesData?.sickness"
-        [workplaceID]="workplace.uid"
-      >
-      </app-benchmark-tile>
-      <app-benchmark-tile
-        [canViewFullContent]="canViewFullBenchmarks"
-        [content]="qualificationsContent"
-        [tile]="tilesData?.qualifications"
-        [workplaceID]="workplace.uid"
-      >
-      </app-benchmark-tile>
-    </div> -->
-    <!-- <app-benchmarks-about-the-data
+    <app-benchmarks-about-the-data
       #aboutData
       class="govuk-visually-hidden"
       [workplace]="workplace"
-    ></app-benchmarks-about-the-data> -->
-  <!-- </div> -->
+      [isParentViewingSubsidiary]=isParentViewingSubsidiary
+    ></app-benchmarks-about-the-data>
+  </div>
 </div>
-
-

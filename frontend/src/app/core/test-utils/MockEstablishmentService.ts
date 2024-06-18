@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Establishment, mandatoryTraining, UpdateJobsRequest } from '@core/model/establishment.model';
+import { ChangeOwner, Establishment, mandatoryTraining, UpdateJobsRequest } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { ServiceGroup } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
@@ -63,6 +63,7 @@ export const establishmentBuilder = build('Establishment', {
     sickPay: 'Yes',
     careWorkersLeaveDaysPerYear: fake((f) => f.datatype.number(1000)),
     wdf: null,
+    isParentParentApprovedBannerViewed: null,
   },
 });
 
@@ -96,6 +97,11 @@ export const establishmentWithWdfBuilder = () => {
 export class MockEstablishmentService extends EstablishmentService {
   public shareWith: any = { cqc: null, localAuthorities: null };
   private returnToUrl = true;
+  private childWorkplaces = {
+    childWorkplaces: [subsid1, subsid2, subsid3],
+    count: 3,
+    activeWorkplaceCount: 2,
+  };
   public establishmentObj = {
     address: 'mock establishment address',
     capacities: [],
@@ -106,6 +112,7 @@ export class MockEstablishmentService extends EstablishmentService {
     employerType: { other: 'other employer type', value: 'Other' },
     id: 0,
     isRegulated: false,
+    isParent: false,
     leavers: undefined,
     localAuthorities: [],
     mainService: { name: 'Care', id: 123, isCQC: false },
@@ -137,13 +144,17 @@ export class MockEstablishmentService extends EstablishmentService {
     careWorkersLeaveDaysPerYear: '35',
   };
 
-  public static factory(shareWith: any, returnToUrl = true, estObj: any = {}) {
+  public static factory(shareWith: any, returnToUrl = true, estObj: any = {}, childWorkplaces: any = null) {
     return (http: HttpClient) => {
       const service = new MockEstablishmentService(http);
       if (shareWith) {
         service.setShareWith(shareWith);
       }
       service.returnToUrl = returnToUrl;
+
+      if (childWorkplaces) {
+        service.childWorkplaces = { childWorkplaces, count: childWorkplaces.length, activeWorkplaceCount: 1 };
+      }
 
       if (estObj) {
         Object.keys(estObj).forEach((key) => {
@@ -209,6 +220,7 @@ export class MockEstablishmentService extends EstablishmentService {
       employerType: { value: 'Private Sector' },
       id: 0,
       isRegulated: false,
+      isParent: false,
       leavers: undefined,
       localAuthorities: [],
       mainService: { name: 'Care', id: 123, isCQC: true },
@@ -246,11 +258,11 @@ export class MockEstablishmentService extends EstablishmentService {
   }
 
   public getChildWorkplaces(establishmentUid: string): Observable<GetChildWorkplacesResponse> {
-    return of({
-      childWorkplaces: [subsid1, subsid2, subsid3],
-      count: 3,
-      activeWorkplaceCount: 2,
-    } as GetChildWorkplacesResponse);
+    return of(this.childWorkplaces as GetChildWorkplacesResponse);
+  }
+
+  public changeOwnership(establishmentId, data: ChangeOwner): Observable<Establishment> {
+    return of(this.establishment);
   }
 
   public updateJobs(establishmemntId, data: UpdateJobsRequest): Observable<Establishment> {
@@ -267,6 +279,18 @@ export class MockEstablishmentService extends EstablishmentService {
       updatedBy: '',
       vacancies: 'None',
     } as Establishment);
+  }
+
+  public getMissingCqcLocations({ locationid: locationId, uid: uid, id: id }): Observable<any> {
+    return of({
+      showMissingCqcMessage: false,
+      missingCqcLocations: {
+        count: 0,
+        missingCqcLocationIds: [],
+      },
+      weeksSinceParentApproval: 0,
+      childWorkplacesCount: 0,
+    });
   }
 
   public getCapacity(establishmentId: any, all: boolean): Observable<any> {
@@ -318,6 +342,7 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
     employerType: undefined,
     id: 0,
     isRegulated: false,
+    isParent: false,
     leavers: undefined,
     localAuthorities: [],
     mainService: { name: 'Care', id: 123, isCQC: false },

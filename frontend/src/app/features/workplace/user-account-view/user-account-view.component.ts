@@ -8,11 +8,10 @@ import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { DialogService } from '@core/services/dialog.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 import { take, withLatestFrom } from 'rxjs/operators';
 
@@ -37,12 +36,11 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
   constructor(
     private alertService: AlertService,
     private breadcrumbService: BreadcrumbService,
-    private dialogService: DialogService,
-    private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
     private userService: UserService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {
     this.user = this.route.snapshot.data.user;
     this.establishment = this.route.parent.snapshot.data.establishment;
@@ -55,8 +53,8 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
         this.return = returnUrl;
       }),
     );
-    const journey = this.setBreadcrumbJourney();
-    this.breadcrumbService.show(journey);
+
+    this.breadcrumbService.show(this.getBreadcrumbsJourney());
 
     this.subscriptions.add(
       this.userService
@@ -74,8 +72,10 @@ export class UserAccountViewComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  public setBreadcrumbJourney() {
-    if (this.return.fragment == null) {
+  public getBreadcrumbsJourney(): JourneyType {
+    if (this.parentSubsidiaryViewService.getViewingSubAsParent()) {
+      return JourneyType.SUBSIDIARY;
+    } else if (this.return.fragment == null) {
       return JourneyType.MY_WORKPLACE;
     } else {
       return JourneyType.ALL_WORKPLACES;
