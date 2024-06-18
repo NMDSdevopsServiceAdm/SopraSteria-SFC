@@ -9,7 +9,6 @@ import { PdfService } from '@core/services/pdf.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { BenchmarksAboutTheDataComponent } from '@shared/components/benchmarks-tab/about-the-data/about-the-data.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-benchmarks-tab',
@@ -18,7 +17,7 @@ import { Subscription } from 'rxjs';
 export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
   @Input() workplace: Establishment;
   @ViewChild('aboutData') private aboutData: BenchmarksAboutTheDataComponent;
-  private subscriptions: Subscription = new Subscription();
+  @Input() isParentViewingSubsidiary = false;
   public canViewFullBenchmarks: boolean;
   public payContent = MetricsContent.Pay;
   public turnoverContent = MetricsContent.Turnover;
@@ -41,7 +40,8 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
     this.tilesData = this.featureFlagService.newBenchmarksDataArea
       ? this.benchmarksService.benchmarksData.oldBenchmarks
       : this.benchmarksService.benchmarksData;
-    this.breadcrumbService.show(JourneyType.BENCHMARKS_TAB);
+
+    this.breadcrumbService.show(this.getBreadcrumbsJourney());
   }
 
   public async downloadAsPDF() {
@@ -74,6 +74,10 @@ export class NewBenchmarksTabComponent implements OnInit, OnDestroy {
       url: [this.router.url.split('#')[0]],
       fragment: 'benchmarks',
     });
+  }
+
+  public getBreadcrumbsJourney(): JourneyType {
+    return this.isParentViewingSubsidiary ? JourneyType.SUBSIDIARY : JourneyType.OLD_BENCHMARKS_DATA_TAB;
   }
 
   ngOnDestroy(): void {

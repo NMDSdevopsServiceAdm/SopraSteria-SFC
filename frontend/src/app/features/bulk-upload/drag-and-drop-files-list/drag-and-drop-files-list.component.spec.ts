@@ -4,6 +4,7 @@ import { getTestBed, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BulkUploadFileType, ValidatedFile } from '@core/model/bulk-upload.model';
+import { Establishment } from '@core/model/establishment.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -16,15 +17,15 @@ import {
   TrainingFile,
   WorkerFile,
 } from '@core/test-utils/MockBulkUploadService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
+import { environment } from 'src/environments/environment';
 
 import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.component';
-import { environment } from 'src/environments/environment';
 
 describe('DragAndDropFilesListComponent', () => {
   const setup = async () => {
@@ -192,6 +193,32 @@ describe('DragAndDropFilesListComponent', () => {
     expect(bulkUploadCompleteSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de');
   });
 
+  it('sets state in the establishment service when upload successfully completed', async () => {
+    const { component, fixture, getByText, bulkUploadService, establishmentService } = await setup();
+    const workplace = establishmentBuilder() as Establishment;
+    spyOn(bulkUploadService, 'complete').and.callFake(() => of({}));
+    const getEstablishmentSpy = spyOn(establishmentService, 'getEstablishment').and.callFake(() => of(workplace));
+    const setWorkplaceSpy = spyOn(establishmentService, 'setWorkplace').and.callFake(() => {});
+    const setPrimaryWorkplaceSpy = spyOn(establishmentService, 'setPrimaryWorkplace').and.callFake(() => {});
+    const setCheckForChildWorkplaceChangesSpy = spyOn(
+      establishmentService,
+      'setCheckForChildWorkplaceChanges',
+    ).and.callFake(() => {});
+
+    const dummyFiles = [WorkerFile, TrainingFile, EstablishmentFile];
+    component.uploadedFiles = dummyFiles as ValidatedFile[];
+    component.validationComplete = true;
+    fixture.detectChanges();
+
+    const button = getByText('Complete the upload');
+    fireEvent.click(button);
+
+    expect(getEstablishmentSpy).toHaveBeenCalledWith('98a83eef-e1e1-49f3-89c5-b1287a3cc8de');
+    expect(setWorkplaceSpy).toHaveBeenCalledWith(workplace);
+    expect(setPrimaryWorkplaceSpy).toHaveBeenCalledWith(workplace);
+    expect(setCheckForChildWorkplaceChangesSpy).toHaveBeenCalledWith(true);
+  });
+
   describe('DownloadContent', () => {
     it('should call getUploadedFileFromS3 with the StaffSanitise file type when the staff link is clicked and sanitise is true', async () => {
       const { component, fixture, bulkUploadServiceSpy, getByText, establishmentService } = await setup();
@@ -348,7 +375,9 @@ describe('DragAndDropFilesListComponent', () => {
       component.deleteFile(event, filenameToDelete);
       fixture.detectChanges();
 
-      http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkupload/delete/${filenameToDelete}`);
+      http.expectOne(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/bulkupload/delete/${filenameToDelete}`,
+      );
     });
 
     it('should should show validation as not complete after deleting a file and clear error message', async () => {

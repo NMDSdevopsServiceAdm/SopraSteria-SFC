@@ -79,6 +79,7 @@ class Establishment extends EntityValidator {
     this._parentUid = null;
     this._parentId = null;
     this._parentName = null;
+    this._parentPostcode = null;
     this._dataOwner = null;
     this._dataPermissions = null;
     this._archived = null;
@@ -98,6 +99,7 @@ class Establishment extends EntityValidator {
     this._pensionContribution = null;
     this._sickPay = null;
     this._recruitmentJourneyExistingUserBanner = false;
+    this._isParentApprovedBannerViewed = null;
     this._primaryAuthorityCssr = null;
 
     // interim reasons for leaving - https://trello.com/c/vNHbfdms
@@ -307,6 +309,10 @@ class Establishment extends EntityValidator {
     return this._parentName;
   }
 
+  get parentPostcode() {
+    return this._parentPostcode;
+  }
+
   get dataOwner() {
     return this._dataOwner;
   }
@@ -389,6 +395,10 @@ class Establishment extends EntityValidator {
 
   get recruitmentJourneyExistingUserBanner() {
     return this._recruitmentJourneyExistingUserBanner;
+  }
+
+  get isParentApprovedBannerViewed() {
+    return this._isParentApprovedBannerViewed;
   }
 
   get primaryAuthorityCssr() {
@@ -610,6 +620,10 @@ class Establishment extends EntityValidator {
 
         if ('recruitmentJourneyExistingUserBanner' in document) {
           this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
+        }
+
+        if ('isParentApprovedBannerViewed' in document) {
+          this._isParentApprovedBannerViewed = document.isParentApprovedBannerViewed;
         }
         if ('primaryAuthorityCssr' in document) {
           this._primaryAuthorityCssr = document.primaryAuthorityCssr;
@@ -839,6 +853,7 @@ class Establishment extends EntityValidator {
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
           recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
+          isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
         };
 
@@ -1041,6 +1056,7 @@ class Establishment extends EntityValidator {
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
             recruitmentJourneyExistingUserBanner: bulkUploaded ? true : this._recruitmentJourneyExistingUserBanner,
+            isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
             primaryAuthorityCssr: this._primaryAuthorityCssr,
           };
 
@@ -1235,8 +1251,10 @@ class Establishment extends EntityValidator {
       if (fetchDetails && fetchDetails.id && Number.isInteger(fetchDetails.id)) {
         this._parentName = fetchDetails.NameValue;
         this._id = fetchDetails.id;
+        this._parentPostcode = fetchDetails.postcode;
         parentDetails.parentName = this._parentName;
         parentDetails.id = this._id;
+        parentDetails.parentPostcode = this._parentPostcode;
       }
       return parentDetails;
     } catch (err) {
@@ -1356,6 +1374,7 @@ class Establishment extends EntityValidator {
         this._pensionContribution = fetchResults.pensionContribution;
         this._careWorkersLeaveDaysPerYear = fetchResults.careWorkersLeaveDaysPerYear;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
+        this._isParentApprovedBannerViewed = fetchResults.isParentApprovedBannerViewed;
 
         this._primaryAuthorityCssr = this.primaryAuthorityCssr;
         // if history of the User is also required; attach the association
@@ -1796,6 +1815,7 @@ class Establishment extends EntityValidator {
         myDefaultJSON.pensionContribution = this.pensionContribution;
         myDefaultJSON.careWorkersLeaveDaysPerYear = this.careWorkersLeaveDaysPerYear;
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
+        myDefaultJSON.isParentApprovedBannerViewed = this.isParentApprovedBannerViewed;
       }
 
       if (this.showSharingPermissionsBanner !== null) {

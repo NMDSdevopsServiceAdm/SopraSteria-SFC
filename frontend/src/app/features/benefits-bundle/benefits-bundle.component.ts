@@ -9,7 +9,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 })
 export class BenefitsBundleComponent implements OnInit {
   public workplaceName: string;
-  public workplaceId: string;
   public revealTitle = `What's the ASC-WDS Benefits Bundle?`;
   public allOpen = false;
   public endorsedProvidersLinkFlag: boolean;
@@ -39,8 +38,7 @@ export class BenefitsBundleComponent implements OnInit {
   constructor(private establishmentService: EstablishmentService, private breadcrumbService: BreadcrumbService) {}
 
   public async ngOnInit(): Promise<void> {
-    this.workplaceName = this.establishmentService.primaryWorkplace.name;
-    this.workplaceId = this.establishmentService.primaryWorkplace.nmdsId;
+    this.workplaceName = this.establishmentService.establishment.name;
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
   }
 

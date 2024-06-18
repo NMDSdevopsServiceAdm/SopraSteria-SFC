@@ -2,6 +2,7 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -16,6 +17,7 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -24,7 +26,7 @@ import { StaffRecordComponent } from './staff-record.component';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('StaffRecordComponent', () => {
-  async function setup(isParent = true) {
+  async function setup(isParent = true, ownWorkplace = true) {
     const workplace = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
@@ -41,7 +43,7 @@ describe('StaffRecordComponent', () => {
                 data: {
                   establishment: workplace,
                 },
-                url: [{ path: '' }],
+                url: [{ path: ownWorkplace ? 'staff-record-summary' : '' }],
               },
             },
             snapshot: {},
@@ -55,7 +57,7 @@ describe('StaffRecordComponent', () => {
           provide: EstablishmentService,
           useValue: {
             establishmentId: 'mock-uid',
-            isOwnWorkplace: () => true,
+            isOwnWorkplace: () => ownWorkplace,
             primaryWorkplace: {
               isParent,
             },
@@ -81,6 +83,11 @@ describe('StaffRecordComponent', () => {
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
 
+    const alert = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
+
+    const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService) as ParentSubsidiaryViewService;
+
     return {
       component,
       fixture,
@@ -93,6 +100,8 @@ describe('StaffRecordComponent', () => {
       queryByText,
       workplaceUid,
       workerUid,
+      alertSpy,
+      parentSubsidiaryViewService,
     };
   }
 
@@ -276,19 +285,22 @@ describe('StaffRecordComponent', () => {
       });
     });
 
-    it('should redirect back to the child workplace when the worker is confirmed if a parent is in a child workplace', async () => {
-      const { component, fixture, routerSpy, getByText } = await setup();
+    it('should display a confirmation alert when the confirm record details button has been clicked', async () => {
+      const { getByText, alertSpy, fixture, component } = await setup();
 
       component.canEditWorker = true;
+      component.workplace.uid = 'mock-uid';
       component.worker.completed = false;
       fixture.detectChanges();
 
       const button = getByText('Confirm record details');
       fireEvent.click(button);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
-        fragment: 'staff-records',
-        state: { showBanner: true },
+      fixture.whenStable().then(() => {
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Staff record saved',
+        });
       });
     });
   });
@@ -332,6 +344,26 @@ describe('StaffRecordComponent', () => {
       fixture.detectChanges();
 
       expect(queryByText('Transfer staff record')).toBeFalsy();
+    });
+  });
+
+  describe('Breadcrumbs', async () => {
+    it('getBreadcrumbsJourney should return my workplace journey when viewing sub as parent', async () => {
+      const { component, parentSubsidiaryViewService } = await setup(false, false);
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MY_WORKPLACE);
+    });
+
+    it('getBreadcrumbsJourney should return main workplace journey when is own workplace', async () => {
+      const { component } = await setup();
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MY_WORKPLACE);
+    });
+
+    it('getBreadcrumbsJourney should return all workplaces journey when is not own workplace and not in parent sub view', async () => {
+      const { component } = await setup(false, false);
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
     });
   });
 });

@@ -3,7 +3,6 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
-import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -15,6 +14,7 @@ import { Observable, Subscription } from 'rxjs';
 @Component({
   selector: 'app-notification-link-to-parent',
   templateUrl: './notification-link-to-parent.component.html',
+  styleUrls: ['../notification/notification.component.scss'],
   providers: [DialogService, Overlay],
 })
 export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
@@ -32,7 +32,8 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
   public notificationRequestedFrom: string;
   public notificationRequestedTo: string;
   public requestorName: string;
-  public postCode: string;
+  public subPostcode: string;
+  public parentPostcode: string;
   public notificationRequestedFromUid: string;
 
   constructor(
@@ -41,7 +42,6 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     private establishmentService: EstablishmentService,
     private router: Router,
     private permissionsService: PermissionsService,
-    private alertService: AlertService,
     private notificationsService: NotificationsService,
     private dialogService: DialogService,
   ) {}
@@ -55,7 +55,8 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
     this.notificationRequestedFrom = this.notification.typeContent.subEstablishmentName;
     this.notificationRequestedFromUid = this.notification.typeContent.subEstablishmentUid;
     this.requestorName = this.notification.typeContent.requestorName;
-    this.postCode = this.notification.typeContent.postCode;
+    this.parentPostcode = this.notification.typeContent.parentPostCode;
+    this.subPostcode = this.notification.typeContent.subPostCode;
     this.isWorkPlaceRequester = this.workplace.name === this.notificationRequestedTo;
   }
 
@@ -103,18 +104,15 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
                         this.permissionsService.setPermissions(this.workplace.uid, hasPermission.permissions);
                         this.establishmentService.setState(workplace);
                         this.establishmentService.setPrimaryWorkplace(workplace);
+                        this.establishmentService.setCheckForChildWorkplaceChanges(true);
                         this.router.navigate(['/dashboard']);
-                        this.alertService.addAlert({
-                          type: 'success',
-                          message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
-                        });
                       }
                     });
                   }
                 });
                 //get all notification and update with latest
                 this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-                  this.notificationsService.notifications$.next(notify.notifications);
+                  this.notificationsService.notifications = notify.notifications;
                 });
               }
             },
@@ -168,13 +166,9 @@ export class NotificationLinkToParentComponent implements OnInit, OnDestroy {
           if (request) {
             //get all notification and update with latest status
             this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-              this.notificationsService.notifications$.next(notify.notifications);
+              this.notificationsService.notifications = notify.notifications;
             });
             this.router.navigate(['/dashboard']);
-            this.alertService.addAlert({
-              type: 'success',
-              message: `Your decision to link to you has been sent to ${this.notification.typeContent.requestorName} `,
-            });
           }
         }),
     );

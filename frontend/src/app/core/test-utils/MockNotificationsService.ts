@@ -1,12 +1,21 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Notification } from '@core/model/notifications.model';
+import { Notification, NotificationData } from '@core/model/notifications.model';
 import { NotificationsService } from '@core/services/notifications/notifications.service';
 import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockNotificationsService extends NotificationsService {
   private approved = false;
+  private singleNotification: Notification = {
+    created: '2020-01-01',
+    type: 'BECOMEAPARENT',
+    typeContent: {
+      status: this.approved ? 'Approved' : 'Rejected',
+    },
+    isViewed: false,
+    notificationUid: ''
+  }
 
   public static factory(approved = false) {
     return (httpClient: HttpClient) => {
@@ -39,6 +48,10 @@ export class MockNotificationsService extends NotificationsService {
     ];
   }
 
+  set notifications(notifications: Notification[]) {
+    return;
+  }
+
   public getNotificationDetails(): Observable<any> {
     return of({
       created: '2020-01-01',
@@ -46,6 +59,13 @@ export class MockNotificationsService extends NotificationsService {
       typeContent: {
         status: this.approved ? 'Approved' : 'Rejected',
       },
+    });
+  }
+
+  public setNotificationViewed(): Observable<NotificationData> {
+    return of({
+      establishmentNotification: true,
+      notification: this.singleNotification,
     });
   }
 

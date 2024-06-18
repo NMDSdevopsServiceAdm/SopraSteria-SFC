@@ -131,10 +131,11 @@ exports.updateLinkToParent = async (params) =>
 
 const getNotificationDetailsQuery = `
   select "ApprovalStatus" as "approvalStatus", "PermissionRequest" as "permissionRequest",
-  parent."NameValue" as "parentEstablishmentName", parent."PostCode" as "postCode"
+  parent."NameValue" as "parentEstablishmentName", parent."PostCode" as "parentPostCode", sub."Updated" as updated, subDetails."PostCode" as "subPostCode"
   from cqc."LinkToParent" as sub
   JOIN cqc."Establishment" as parent on sub."ParentEstablishmentID" =  parent."EstablishmentID"
-  where "LinkToParentUID" = :uid `;
+  JOIN cqc."Establishment" as subDetails on sub."SubEstablishmentID" = subDetails."EstablishmentID"
+  where "LinkToParentUID" = :uid`;
 
 exports.getNotificationDetails = async (params) =>
   db.query(getNotificationDetailsQuery, {

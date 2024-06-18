@@ -755,6 +755,11 @@ module.exports = function (sequelize, DataTypes) {
         values: ['Yes', 'No', "Don't know"],
         field: 'SickPay',
       },
+      isParentApprovedBannerViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'IsParentApprovedBannerViewed',
+      },
       cssrId: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -2117,11 +2122,41 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 0, pageIndex = 0, searchTerm = '') {
+  Establishment.getChildWorkplaces = async function (
+    establishmentUid,
+    limit = 0,
+    pageIndex = 0,
+    searchTerm = '',
+    getPendingWorkplaces,
+  ) {
     const offset = pageIndex * limit;
+    let ustatus;
+
+    if (getPendingWorkplaces) {
+      ustatus = {
+        [Op.or]: {
+          [Op.ne]: 'REJECTED',
+          [Op.is]: null,
+        },
+      };
+    } else {
+      ustatus = {
+        [Op.is]: null,
+      };
+    }
 
     const data = await this.findAndCountAll({
-      attributes: ['uid', 'updated', 'NameValue', 'dataOwner', 'dataPermissions', 'dataOwnershipRequested', 'ustatus'],
+      attributes: [
+        'uid',
+        'updated',
+        'NameValue',
+        'dataOwner',
+        'dataPermissions',
+        'dataOwnershipRequested',
+        'ustatus',
+        'postcode',
+        'locationId',
+      ],
       include: [
         {
           model: sequelize.models.services,
@@ -2131,19 +2166,14 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         ParentUID: establishmentUid,
-        ustatus: {
-          [Op.or]: {
-            [Op.ne]: 'REJECTED',
-            [Op.is]: null,
-          },
-        },
+        ustatus,
         ...(searchTerm ? { NameValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
       },
       order: [
         [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
         ['NameValue', 'ASC'],
       ],
-      limit,
+      ...(limit ? { limit } : {}),
       offset,
     });
 

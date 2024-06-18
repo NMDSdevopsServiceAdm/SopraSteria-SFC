@@ -115,6 +115,11 @@ export class MockWorkplaceService extends WorkplaceService {
             name: 'Name',
           },
           { id: 123, name: 'Other Mock Service', other: true },
+          {
+            id: 16,
+            name: 'Head office services',
+            other: true,
+          },
         ],
       },
     ]);

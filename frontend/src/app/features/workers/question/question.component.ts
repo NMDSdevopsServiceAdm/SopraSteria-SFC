@@ -135,9 +135,7 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'exit':
-        const url =
-          this.primaryWorkplace?.uid === this.workplace.uid ? ['/dashboard'] : ['/workplace', this.workplace.uid];
-        this.router.navigate(url, { fragment: 'staff-records' });
+        this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
         break;
 
       case 'return':
