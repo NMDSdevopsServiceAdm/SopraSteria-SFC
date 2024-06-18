@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
-import { UserDetails, UserPermissionsType, UserStatus } from '@core/model/userDetails.model';
+import { UserDetails, UserPermissionsType } from '@core/model/userDetails.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { getUserPermissionsTypes } from '@core/utils/users-util';
@@ -16,6 +16,8 @@ import { Subscription } from 'rxjs/internal/Subscription';
 export class UserAccountsSummaryComponent implements OnInit {
   @Input() workplace: Establishment;
   @Input() showSecondUserBanner: boolean;
+  @Input() isParentUsers: boolean;
+  @Input() setReturnUrl: () => void;
 
   private subscriptions: Subscription = new Subscription();
   public users: Array<UserDetails> = [];
@@ -31,7 +33,8 @@ export class UserAccountsSummaryComponent implements OnInit {
 
   ngOnInit(): void {
     this.setUsers();
-    this.setUserServiceReturnUrl();
+    this.setReturnUrl === undefined ? this.setUserServiceReturnUrl() : this.setReturnUrl();
+    this.showSecondUserBanner === undefined ? this.setShowSecondUserBanner() : this.showSecondUserBanner;
   }
 
   public setUsers(): void {
@@ -46,20 +49,8 @@ export class UserAccountsSummaryComponent implements OnInit {
       ['desc', 'desc', 'asc', 'asc'],
     );
   }
-
-  public getUserType(user: UserDetails): string {
-    const userType = this.userPermissionsTypes.find(
-      (type) =>
-        type.role === user.role &&
-        type.canManageWdfClaims === user.canManageWdfClaims &&
-        !!user.isPrimary === !!type.isPrimary,
-    );
-
-    return userType?.userTableValue;
-  }
-
-  public isPending(user: UserDetails): boolean {
-    return user.status === UserStatus.Pending;
+  public setShowSecondUserBanner(): void {
+    this.showSecondUserBanner = this.canAddUser && this.route.snapshot.data.users?.length === 1;
   }
 
   private userSlotsAvailable(users: Array<UserDetails>): boolean {

@@ -2681,9 +2681,6 @@ class WorkerCsvValidator {
       status = !this._validateAmhp() ? false : status;
     }
 
-    console.log('DBG workerCSVValidator Errors');
-    console.log(this._validationErrors);
-
     return status;
   }
 
@@ -2692,8 +2689,6 @@ class WorkerCsvValidator {
     // if this Worker is unchecked/deleted, skip all transformations
     if (!STOP_VALIDATING_ON.includes(this._status)) {
       let status = true;
-
-      console.log('DBG start transform');
 
       // status = !this._transformMainService() ? false : status;
       status = !this._transformContractType() ? false : status;
@@ -2707,8 +2702,6 @@ class WorkerCsvValidator {
       status = !this._transformSocialCareQualificationLevel() ? false : status;
       status = !this._transformNonSocialCareQualificationLevel() ? false : status;
       status = !this._transformQualificationRecords() ? false : status;
-
-      console.log('DBG end transform');
 
       return status;
     } else {

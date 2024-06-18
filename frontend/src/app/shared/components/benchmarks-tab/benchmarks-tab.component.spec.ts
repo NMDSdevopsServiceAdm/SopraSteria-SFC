@@ -1,16 +1,18 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FormatUtil } from '@core/utils/format-util';
 import { BenchmarksTabComponent } from '@shared/components/benchmarks-tab/benchmarks-tab.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 import { Establishment } from '../../../../mockdata/establishment';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('BenchmarksTabComponent', () => {
   let component: BenchmarksTabComponent;
@@ -25,6 +27,10 @@ describe('BenchmarksTabComponent', () => {
           {
             provide: BenchmarksServiceBase,
             useClass: MockBenchmarksService,
+          },
+          {
+            provide: BreadcrumbService,
+            useClass: MockBreadcrumbService,
           },
           {
             provide: FeatureFlagsService,

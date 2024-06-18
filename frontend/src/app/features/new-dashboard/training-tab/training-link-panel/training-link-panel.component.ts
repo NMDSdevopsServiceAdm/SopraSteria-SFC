@@ -17,6 +17,7 @@ export class NewTrainingLinkPanelComponent implements OnInit, OnDestroy {
   @Input() workers: Worker[];
   @Input() totalRecords: number;
   @Input() canEditEstablishment: boolean;
+  @Input() canEditWorker: boolean;
 
   public establishmentUid: string;
   public url: string;

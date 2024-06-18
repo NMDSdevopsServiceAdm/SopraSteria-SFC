@@ -226,6 +226,7 @@ const getEstablishment = async (req, res) => {
         const parentEstablishmentName = await thisEstablishment.fetchParentDetails(jsonResponse.parentUid);
         if (parentEstablishmentName) {
           jsonResponse.parentName = parentEstablishmentName.parentName;
+          jsonResponse.parentPostcode = parentEstablishmentName.parentPostcode;
         }
       }
       return res.status(200).json(jsonResponse);

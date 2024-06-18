@@ -8,7 +8,9 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkplaceService } from '@core/services/workplace.service';
-import { WorkplaceNameAddressDirective } from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
+import {
+  WorkplaceNameAddressDirective,
+} from '@shared/directives/create-workplace/workplace-name-address/workplace-name-address';
 
 @Component({
   selector: 'app-workplace-name-address',
@@ -17,6 +19,7 @@ import { WorkplaceNameAddressDirective } from '@shared/directives/create-workpla
 })
 export class WorkplaceNameAddressComponent extends WorkplaceNameAddressDirective {
   public workplace: Establishment;
+
   constructor(
     private workplaceService: WorkplaceService,
     protected backService: BackService,

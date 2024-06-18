@@ -236,8 +236,10 @@ SELECT
   "createdByUserUID",
   parent."NameValue" as "parentEstablishmentName",
   parent."EstablishmentUID" as "parentEstablishmentUid",
+  parent."PostCode" as "parentPostCode",
   sub."NameValue" as "subEstablishmentName",
   sub."EstablishmentUID" as "subEstablishmentUid",
+  sub."PostCode" as "subPostCode",
   CASE
       WHEN sub."DataOwner" = :parent THEN :workplace
       WHEN sub."DataOwner" = :workplace THEN :parent

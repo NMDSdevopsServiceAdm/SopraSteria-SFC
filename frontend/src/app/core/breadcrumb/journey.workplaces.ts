@@ -13,6 +13,11 @@ enum Path {
   TRAINING_AND_QUALIFICATIONS_RECORD = '/workplace/:workplaceUid/training-and-qualifications-record/:workerUid/training',
   MANDATORY_TRAINING = '/workplace/:workplaceUid/add-and-manage-mandatory-training',
   ABOUT_DATA = '/workplace/:workplaceUid/data-area/about-the-data',
+  BENCHMARKS_ABOUT_DATA = '/workplace/:workplaceUid/benchmarks/about-the-data',
+  OTHER_WORKPLACES = '/workplace/other-workplaces',
+  ABOUT_PARENTS = '/workplace/about-parents',
+  CHANGE_DATA_OWNER = '/workplace/change-data-owner',
+  DELETE_WORKPLACE = '/delete-workplace',
 }
 
 export const workplaceTabJourney: JourneyRoute = {
@@ -21,6 +26,16 @@ export const workplaceTabJourney: JourneyRoute = {
       title: 'Workplace',
       path: Path.DASHBOARD,
       fragment: 'workplace',
+      children: [
+        {
+          title: 'What you can do as a parent workplace',
+          path: Path.ABOUT_PARENTS,
+          referrer: {
+            path: Path.WORKPLACE,
+            fragment: 'about-parents',
+          },
+        },
+      ],
     },
   ],
 };
@@ -73,25 +88,23 @@ export const trainingAndQualificationsTabJourney: JourneyRoute = {
   ],
 };
 
-export const brenchmarksTabJourney: JourneyRoute = {
-  children: [
-    {
-      title: 'Benchmarks',
-      path: Path.DASHBOARD,
-      fragment: 'benchmarks',
-      children: [
-        {
-          title: 'About the data',
-          path: Path.ABOUT_DATA,
-          referrer: {
-            path: Path.DASHBOARD,
-            fragment: 'benchmarks',
+export function benchmarksTabJourney(isOldTab: boolean = false): JourneyRoute {
+  return {
+    children: [
+      {
+        title: 'Benchmarks',
+        path: Path.DASHBOARD,
+        fragment: 'benchmarks',
+        children: [
+          {
+            title: 'About the data',
+            path: isOldTab ? Path.BENCHMARKS_ABOUT_DATA : Path.ABOUT_DATA,
           },
-        },
-      ],
-    },
-  ],
-};
+        ],
+      },
+    ],
+  };
+}
 
 export const myWorkplaceJourney: JourneyRoute = {
   children: [
@@ -145,9 +158,22 @@ export const myWorkplaceJourney: JourneyRoute = {
 export const allWorkplacesJourney: JourneyRoute = {
   children: [
     {
-      title: 'All workplaces',
+      title: 'Your other workplaces',
       path: Path.ALL_WORKPLACES,
+      fragment: 'workplaces',
       children: [
+        {
+          title: 'What you can do as a parent workplace',
+          path: Path.ABOUT_PARENTS,
+          referrer: {
+            path: Path.WORKPLACE,
+            fragment: 'about-parents',
+          },
+        },
+        {
+          title: 'Change data owner',
+          path: Path.CHANGE_DATA_OWNER,
+        },
         {
           title: 'Workplace',
           path: Path.WORKPLACE,
@@ -213,6 +239,18 @@ export const allWorkplacesJourney: JourneyRoute = {
           ],
         },
       ],
+    },
+  ],
+};
+
+export const deleteWorkplaceJourney: JourneyRoute = {
+  children: [
+    {
+      title: 'Delete workplace',
+      path: Path.DELETE_WORKPLACE,
+      referrer: {
+        path: Path.DASHBOARD,
+      },
     },
   ],
 };

@@ -6,7 +6,6 @@ import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Subscription } from 'rxjs';
-import { tap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-check-answers',
@@ -25,22 +24,7 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.updateEstablishmentService();
     this.getEstablishmentData();
-  }
-
-  protected updateEstablishmentService(): void {
-    this.establishmentService
-      .getEstablishment(this.establishmentService.establishmentId)
-      .pipe(
-        tap((establishment) => {
-          return (
-            this.establishmentService.setWorkplace(establishment),
-            this.establishmentService.setPrimaryWorkplace(establishment)
-          );
-        }),
-      )
-      .subscribe();
   }
 
   public getEstablishmentData(): void {
@@ -57,15 +41,16 @@ export class CheckAnswersComponent implements OnInit, OnDestroy {
     this.backService.setBackLink({ url: ['/workplace', this.establishment.uid, 'sharing-data'] });
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
+  public showConfirmWorkplaceDetailsAlert(): void {
+    this.router.navigate(['/dashboard'], { fragment: 'workplace' })
+    .then(()=>{
+      this.alertService.addAlert({
+        type: 'success',
+        message: `You've confirmed the workplace details that you added`,
+      });})
   }
 
-  public showConfirmWorkplaceDetailsAlert(): void {
-    this.router.navigate(['/dashboard'], { fragment: 'workplace' });
-    this.alertService.addAlert({
-      type: 'success',
-      message: `You've confirmed the workplace details that you added`,
-    });
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
