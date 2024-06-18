@@ -229,7 +229,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       fireEvent.click(saveButton);
       fixture.detectChanges();
 
-      const errorMessage = `Select where your organisation employed ${workers[0].name}`;
+      const errorMessage = `Select where your organisation employed ${workers[0].name} from`;
 
       expect(updateWorkersSpy).not.toHaveBeenCalled();
       expect(getByText(errorMessage)).toBeTruthy();
@@ -245,8 +245,8 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       fireEvent.click(saveButton);
       fixture.detectChanges();
 
-      const errorMessageWorker1 = `Select where your organisation employed ${workers[0].name}`;
-      const errorMessageWorker2 = `Select where your organisation employed ${workers[1].name}`;
+      const errorMessageWorker1 = `Select where your organisation employed ${workers[0].name} from`;
+      const errorMessageWorker2 = `Select where your organisation employed ${workers[1].name} from`;
 
       expect(updateWorkersSpy).not.toHaveBeenCalled();
       expect(getByText(errorMessageWorker1)).toBeTruthy();
