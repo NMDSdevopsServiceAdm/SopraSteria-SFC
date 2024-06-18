@@ -84,10 +84,6 @@ export class InternationalRecruitmentService {
     return worker.nationality?.value === "Don't know" && worker.britishCitizenship === 'No';
   }
 
-  getWorkersWithHealthAndCareVisaForWorkplace(workplaceUid: string) {
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/healthAndCareVisa`);
-  }
-
   public getAllWorkersNationalityAndBritishCitizenship(establishmentuid): Observable<any> {
     return this.http
       .get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/internationalRecruitment`)

@@ -37,7 +37,6 @@ const ChildWorkplaces = require('./childWorkplaces');
 const UpdateSingleEstablishmentField = require('./updateSingleEstablishmentField');
 const Certificates = require('./certificates');
 const TrainingAndQualifications = require('./trainingSummary');
-const HealthAndCareVisa = require('./healthAndCareVisa');
 const InternationalRecruitment = require('./internationalRecruitment');
 
 // ensure all establishment routes are authorised
@@ -69,7 +68,6 @@ router.use('/:id/childWorkplaces', ChildWorkplaces);
 router.use('/:id/updateSingleEstablishmentField', UpdateSingleEstablishmentField);
 router.use('/:id/certificate', Certificates);
 router.use('/:id/trainingAndQualifications', TrainingAndQualifications);
-router.use('/:id/healthAndCareVisa', HealthAndCareVisa);
 router.use('/:id/internationalRecruitment', InternationalRecruitment);
 
 router.route('/:id').get(getEstablishment);

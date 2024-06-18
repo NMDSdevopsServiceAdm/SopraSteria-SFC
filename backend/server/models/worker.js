@@ -1297,18 +1297,6 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Worker.getWorkersWithHealthAndCareVisaForWorkplace = async function (establishmentId) {
-    return this.findAll({
-      attributes: ['id', 'uid', 'NameOrIdValue', 'HealthAndCareVisaValue'],
-      where: {
-        establishmentFk: establishmentId,
-        HealthAndCareVisaValue: 'Yes',
-        EmployedFromOutsideUkValue: null,
-        archived: false,
-      },
-    });
-  };
-
   Worker.getEstablishmentTrainingRecords = async function (establishmentId) {
     return this.findAll({
       attributes: [
