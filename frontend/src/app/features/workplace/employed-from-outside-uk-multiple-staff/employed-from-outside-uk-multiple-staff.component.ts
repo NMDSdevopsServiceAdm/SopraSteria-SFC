@@ -55,13 +55,18 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
 
     if (!allWorkers) {
       this.router.navigate(this.existingStaffHealthAndCareVisaUrl);
-    } else {
-      this.workersWithHealthAndCareVisas = allWorkers.workersWithHealthAndCareVisas;
-      this.workersWhichDontHaveHealthAndCareVisas = allWorkers.workersWhichDontHaveHealthAndCareVisas;
-
-      this.setUpFormData();
-      this.setupFormErrorsMap();
+      return;
     }
+
+    this.workersWithHealthAndCareVisas = allWorkers.workersWithHealthAndCareVisas;
+    this.workersWhichDontHaveHealthAndCareVisas = allWorkers.workersWhichDontHaveHealthAndCareVisas;
+
+    this.setUpFormData();
+    this.setupFormErrorsMap();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   get workers() {

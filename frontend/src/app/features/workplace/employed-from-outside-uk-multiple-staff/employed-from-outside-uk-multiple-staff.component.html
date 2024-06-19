@@ -59,13 +59,16 @@
                     <a href="#" (click)="navigateToStaffRecord($event, workersWithHealthAndCareVisas[i])">
                       {{ workersWithHealthAndCareVisas[i].name }}
                     </a>
-                    <span *ngIf="submitted && worker.invalid" class="govuk-error-message"> Answer required </span>
+                    <span *ngIf="submitted && worker.invalid" class="govuk-error-message">
+                      <span class="govuk-visually-hidden">Error:</span> Answer required
+                    </span>
                   </div>
                 </th>
                 <td class="govuk-table__cell">
                   <div class="govuk-radios govuk-radios--inline">
                     <div
                       *ngFor="let answer of answers; let j = index"
+                      [attr.id]="'workers-insideOrOutsideUk-' + i + (worker.invalid ? '-error' : '')"
                       class="govuk-radios__item govuk-!-margin-left-2 govuk-!-margin-bottom-0"
                     >
                       <input
