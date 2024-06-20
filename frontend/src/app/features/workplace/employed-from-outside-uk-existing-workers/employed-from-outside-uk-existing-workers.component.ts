@@ -11,11 +11,11 @@ import { InternationalRecruitmentService } from '@core/services/international-re
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-employed-from-outside-uk-multiple-staff',
-  templateUrl: './employed-from-outside-uk-multiple-staff.component.html',
-  styleUrls: ['./employed-from-outside-uk-multiple-staff.component.scss'],
+  selector: 'app-employed-from-outside-uk-existing-workers',
+  templateUrl: './employed-from-outside-uk-existing-workers.component.html',
+  styleUrls: ['./employed-from-outside-uk-existing-workers.component.scss'],
 })
-export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
+export class EmployedFromOutsideUkExistingWorkersComponent implements OnInit {
   public workplaceUid: string;
   public submitted: boolean;
   @ViewChild('formEl') formEl: ElementRef;

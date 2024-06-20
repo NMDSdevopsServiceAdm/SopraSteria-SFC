@@ -15,7 +15,7 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
 
-import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-outside-uk-multiple-staff.component';
+import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-outside-uk-existing-workers.component';
 
 describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
   const pluralWorkers = () => [

@@ -32,7 +32,7 @@ import { CreateUserAccountComponent } from '@features/workplace/create-user-acco
 import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from '@features/workplace/delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-workplace.component';
-import { EmployedFromOutsideUkMultipleStaffComponent } from '@features/workplace/employed-from-outside-uk-multiple-staff/employed-from-outside-uk-multiple-staff.component';
+import { EmployedFromOutsideUkExistingWorkersComponent } from '@features/workplace/employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
 import { HealthAndCareVisaExistingWorkers } from '@features/workplace/health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 import { LeaversComponent } from '@features/workplace/leavers/leavers.component';
 import { NumberOfInterviewsComponent } from '@features/workplace/number-of-interviews/number-of-interviews.component';
@@ -248,7 +248,7 @@ const routes: Routes = [
       },
       {
         path: 'employed-from-outside-or-inside-uk',
-        component: EmployedFromOutsideUkMultipleStaffComponent,
+        component: EmployedFromOutsideUkExistingWorkersComponent,
         canActivate: [CheckPermissionsGuard],
         data: {
           permissions: ['canEditWorker'],
