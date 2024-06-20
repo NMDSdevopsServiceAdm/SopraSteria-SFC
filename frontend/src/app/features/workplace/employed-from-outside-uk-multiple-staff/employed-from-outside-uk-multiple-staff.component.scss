@@ -1,0 +1,21 @@
+/* Override the default GOV.UK inline radio styling for right alignment */
+.asc-inline-radio-buttons {
+  display: flex;
+  justify-content: flex-end; /* Align the whole group to the right */
+}
+
+.asc-inline-radio-buttons .govuk-radios__item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* Align items within each .govuk-radios__item to the right */
+  margin-right: 30;
+}
+
+.asc-inline-radio-buttons .govuk-radios__item:last-child {
+  margin-right: 0; /* No margin-right for the last item */
+}
+
+.asc-inline-radio-buttons .govuk-radios__label {
+  vertical-align: middle;
+  padding: 5px 0px 5px 10px;
+}

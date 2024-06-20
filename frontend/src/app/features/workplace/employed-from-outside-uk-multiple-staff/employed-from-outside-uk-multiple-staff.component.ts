@@ -13,6 +13,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-employed-from-outside-uk-multiple-staff',
   templateUrl: './employed-from-outside-uk-multiple-staff.component.html',
+  styleUrls: ['./employed-from-outside-uk-multiple-staff.component.scss'],
 })
 export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   public workplaceUid: string;
