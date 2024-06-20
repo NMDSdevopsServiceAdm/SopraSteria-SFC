@@ -66,11 +66,11 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     this.setupServerErrorsMap();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  get workers() {
+  get workers(): FormArray {
     return this.form.get('workers') as FormArray;
   }
 
