@@ -62,6 +62,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     this.workersWhichDontHaveHealthAndCareVisas = allWorkers.workersWhichDontHaveHealthAndCareVisas;
 
     this.setUpFormData();
+    this.setupServerErrorsMap();
   }
 
   ngAfterViewInit() {
@@ -120,6 +121,16 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
   private createFormGroupForWorker(): FormGroup {
     return this.formBuilder.group({
       insideOrOutsideUk: null,
+    });
+  }
+
+  private setupServerErrorsMap(): void {
+    const serverErrorMessage = 'There has been a problem saving your Health and Care visa data. Please try again.';
+    this.serverErrorsMap = [400, 404, 503].map((errorCode) => {
+      return {
+        name: errorCode,
+        message: serverErrorMessage,
+      };
     });
   }
 

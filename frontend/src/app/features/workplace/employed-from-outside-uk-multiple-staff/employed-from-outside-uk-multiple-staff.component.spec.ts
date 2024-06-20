@@ -1,3 +1,4 @@
+import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -12,7 +13,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockInternationalRecruitmentService } from '@core/test-utils/MockInternationalRecruitmentService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-outside-uk-multiple-staff.component';
 
@@ -307,39 +308,25 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       });
     });
 
-    // it('should not call updateWorkers and display error message with worker name when answer not given for single worker', async () => {
-    //   const workers = singleWorker();
+    describe('On server error, ', () => {
+      [400, 404, 503].forEach((errorCode) => {
+        it(`should display server error message when ${errorCode} error returned from updateWorkers`, async () => {
+          const workers = singleWorker();
 
-    //   const { fixture, getByText, updateWorkersSpy } = await setup(workers);
+          const { fixture, getByText, updateWorkersSpy } = await setup(workers);
+          updateWorkersSpy.and.returnValue(throwError(new HttpErrorResponse({ status: 404 })));
 
-    //   const saveButton = getByText('Save information');
+          const saveButton = getByText('Save information');
 
-    //   fireEvent.click(saveButton);
-    //   fixture.detectChanges();
+          fireEvent.click(saveButton);
+          fixture.detectChanges();
 
-    //   const errorMessage = `Select where your organisation employed ${workers[0].name} from`;
+          const errorMessage = 'There has been a problem saving your Health and Care visa data. Please try again.';
 
-    //   expect(updateWorkersSpy).not.toHaveBeenCalled();
-    //   expect(getByText(errorMessage)).toBeTruthy();
-    // });
-
-    // it('should not call updateWorkers and display error message for each worker answer not given for', async () => {
-    //   const workers = pluralWorkers();
-
-    //   const { fixture, getByText, updateWorkersSpy } = await setup(workers);
-
-    //   const saveButton = getByText('Save information');
-
-    //   fireEvent.click(saveButton);
-    //   fixture.detectChanges();
-
-    //   const errorMessageWorker1 = `Select where your organisation employed ${workers[0].name} from`;
-    //   const errorMessageWorker2 = `Select where your organisation employed ${workers[1].name} from`;
-
-    //   expect(updateWorkersSpy).not.toHaveBeenCalled();
-    //   expect(getByText(errorMessageWorker1)).toBeTruthy();
-    //   expect(getByText(errorMessageWorker2)).toBeTruthy();
-    // });
+          expect(getByText(errorMessage)).toBeTruthy();
+        });
+      });
+    });
   });
 
   describe('Pluralisation of title question', () => {
