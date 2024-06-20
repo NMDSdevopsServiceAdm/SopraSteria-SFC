@@ -1,6 +1,15 @@
 <ng-container [ngSwitch]="selectedTab">
   <ng-container *ngSwitchCase="'home'">
-    <app-new-home-tab [workplace]="workplace" [meta]="tilesData?.meta" data-testid="home-tab"></app-new-home-tab>
+    <ng-container *ngIf="!isParent; else parent">
+      <app-new-home-tab [workplace]="workplace" [meta]="tilesData?.meta" data-testid="home-tab"></app-new-home-tab>
+    </ng-container>
+    <ng-template #parent>
+      <app-parent-home-tab
+        [workplace]="workplace"
+        [meta]="tilesData?.meta"
+        data-testid="parentHomeTab"
+      ></app-parent-home-tab>
+    </ng-template>
   </ng-container>
 
   <ng-container *ngSwitchCase="'workplace'">
@@ -36,13 +45,14 @@
   </ng-container>
 
   <ng-container *ngSwitchCase="'benchmarks'">
-    <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea ; else benchmarksTab">
+    <ng-container *ngIf="newDataAreaFlag && canSeeNewDataArea; else benchmarksTab">
       <app-data-area-tab [workplace]="workplace" [newDashboard]="true" data-testid="data-area-tab"></app-data-area-tab>
     </ng-container>
     <ng-template #benchmarksTab>
       <app-new-benchmarks-tab
-      class="asc-benchmarks-tab"
+        class="asc-benchmarks-tab"
         [workplace]="workplace"
+        [isParentViewingSubsidiary]="false"
         data-testid="benchmarks-tab"
       ></app-new-benchmarks-tab>
     </ng-template>

@@ -1,8 +1,9 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -62,6 +63,8 @@ describe('AddEditTrainingComponent', () => {
     const createSpy = spyOn(workerService, 'createTrainingRecord').and.callThrough();
 
     const component = fixture.componentInstance;
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertServiceSpy = spyOn(alertService, 'addAlert');
 
     return {
       component,
@@ -76,6 +79,7 @@ describe('AddEditTrainingComponent', () => {
       updateSpy,
       createSpy,
       workerService,
+      alertServiceSpy,
     };
   }
 
@@ -259,7 +263,7 @@ describe('AddEditTrainingComponent', () => {
 
   describe('submitting form', () => {
     it('should call the updateTrainingRecord function if editing existing training, and navigate away from page', async () => {
-      const { component, fixture, getByText, getByLabelText, updateSpy, routerSpy } = await setup();
+      const { component, fixture, getByText, getByLabelText, updateSpy, routerSpy, alertServiceSpy } = await setup();
 
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
@@ -292,13 +296,19 @@ describe('AddEditTrainingComponent', () => {
           notes: 'Some notes added to this training',
         },
       );
-      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl'], {
-        state: { alertMessage: 'Training record updated' },
+
+      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+
+      fixture.whenStable().then(() => {
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Training record updated',
+        });
       });
     });
 
     it('should call the createTrainingRecord function if adding a new training record, and navigate away from page', async () => {
-      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy } = await setup(null);
+      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy, alertServiceSpy } = await setup(null);
 
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
@@ -338,9 +348,16 @@ describe('AddEditTrainingComponent', () => {
         expires: '2022-04-10',
         notes: 'Some notes for this training',
       });
-      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl'], {
-        state: { alertMessage: 'Training record added' },
+
+      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+
+      fixture.whenStable().then(() => {
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Training record added',
+        });
       });
+
     });
   });
 

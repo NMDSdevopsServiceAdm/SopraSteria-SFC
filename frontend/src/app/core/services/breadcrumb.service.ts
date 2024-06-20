@@ -27,11 +27,19 @@ import { bulkUploadHelpJourney, bulkUploadJourney } from '@core/breadcrumb/journ
 import { mandatoryTrainingJourney } from '@core/breadcrumb/journey.mandatory_training';
 import { notificationsJourney } from '@core/breadcrumb/journey.notifications';
 import { pagesArticlesJourney } from '@core/breadcrumb/journey.pages-articles';
+import {
+  becomeAParentJourney,
+  changeDataOwnerJourney,
+  linkToParentJourney,
+  removeLinkToParentJourney,
+} from '@core/breadcrumb/journey.parent-requests';
 import { publicJourney } from '@core/breadcrumb/journey.public';
+import { subsidiaryJourney } from '@core/breadcrumb/journey.subsidiary';
 import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
-  brenchmarksTabJourney,
+  benchmarksTabJourney,
+  deleteWorkplaceJourney,
   myWorkplaceJourney,
   staffRecordsTabJourney,
   trainingAndQualificationsTabJourney,
@@ -47,6 +55,8 @@ import { parse } from 'url';
 export class BreadcrumbService {
   private readonly _routes$: BehaviorSubject<Array<JourneyRoute>> = new BehaviorSubject<Array<JourneyRoute>>(null);
   public readonly routes$: Observable<Array<JourneyRoute>> = this._routes$.asObservable();
+  private readonly _overrideMessage$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  public readonly overrideMessage$: Observable<string> = this._overrideMessage$.asObservable();
 
   constructor(private router: Router, private location: Location) {
     this.router.events
@@ -62,12 +72,21 @@ export class BreadcrumbService {
       });
   }
 
-  public show(journey: JourneyType) {
-    const urlTree = this.router.parseUrl(this.location.path());
+  // Parent  , Home, Your other workplaces, Workplace, Staff record
+  // Sketch  , Home, Staff Records
+  // Sub view, Home, Users, User details, Permissions
+  public show(journey: JourneyType, overrideMessage: string = null) {
+    let path = this.location.path();
+    if (journey !== JourneyType.SUBSIDIARY) {
+      path = path.replace('/subsidiary', '');
+    }
+
+    const urlTree = this.router.parseUrl(path);
     const segmentGroup = urlTree.root.children[PRIMARY_OUTLET];
     const segments = segmentGroup ? segmentGroup.segments : null;
     const routes = this.getRoutes(this.getRoutesConfig(journey), segments);
     this._routes$.next(routes);
+    this._overrideMessage$.next(overrideMessage);
   }
 
   public removeRoutes(): void {
@@ -96,10 +115,11 @@ export class BreadcrumbService {
 
       const isCurrentRoute = this.isCurrentRoute(path, segments);
 
-      if (isCurrentRoute || index === children.length - 1) {
+      if (isCurrentRoute || index === children?.length - 1) {
         routes.push({
           title,
           path: this.getPath(path, segments),
+          fragment: child.fragment,
           ...(referrer && { referrer: this.getReferrer(referrer, segments) }),
         });
       }
@@ -115,9 +135,12 @@ export class BreadcrumbService {
     return routes;
   }
 
-  private getPath(url: string, segments: UrlSegment[]) {
+  public getPath(url: string, segments: UrlSegment[]) {
     const path = this.getParts(url).map((part, index) => {
       if (this.isParameter(part)) {
+        if (part === ':establishmentuid' && segments[index]?.path === 'workplace') {
+          return segments[index + 1]?.path;
+        }
         return segments[index] ? segments[index].path : part;
       }
       return part;
@@ -275,7 +298,46 @@ export class BreadcrumbService {
         break;
       }
       case JourneyType.BENCHMARKS_TAB: {
-        routes = brenchmarksTabJourney;
+        routes = benchmarksTabJourney();
+        break;
+      }
+      case JourneyType.OLD_BENCHMARKS_DATA_TAB: {
+        routes = benchmarksTabJourney(true);
+        break;
+      }
+
+      case JourneyType.BECOME_A_PARENT: {
+        routes = becomeAParentJourney;
+        break;
+      }
+
+      case JourneyType.REMOVE_LINK_TO_PARENT: {
+        routes = removeLinkToParentJourney;
+        break;
+      }
+
+      case JourneyType.LINK_TO_PARENT: {
+        routes = linkToParentJourney;
+        break;
+      }
+
+      case JourneyType.CHANGE_DATA_OWNER: {
+        routes = changeDataOwnerJourney;
+        break;
+      }
+
+      case JourneyType.ABOUT_PARENTS: {
+        routes = workplaceTabJourney;
+        break;
+      }
+
+      case JourneyType.SUBSIDIARY: {
+        routes = subsidiaryJourney;
+        break;
+      }
+
+      case JourneyType.DELETE_WORKPLACE: {
+        routes = deleteWorkplaceJourney;
         break;
       }
 

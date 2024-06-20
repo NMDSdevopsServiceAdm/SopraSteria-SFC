@@ -40,7 +40,7 @@ const exceedsNationalInsuranceMaximum = (thisWorker) => {
     source: thisWorker.localId,
     column: 'NINUMBER',
     worker: thisWorker.uniqueWorkerId,
-    name: thisWorker.niNumber,
+    name: thisWorker.localId,
   };
 };
 

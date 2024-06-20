@@ -41,9 +41,9 @@ class EstablishmentSaveException extends EstablishmentException {
 
     get safe()  {
         if (super.id === null) {
-            return `Failed to create Establishment with identity: ${super.name}:(${super.identifier}). err:${super.err}. safeErr:${super.safeErr}`;
+            return `Failed to create Establishment with identity: ${super.name}:(${super.identifier}).`;
         } else if (!super.safeErr) {
-            return `Failed to save Establishment with identity: ${super.name}:(${super.identifier}). err:${super.err}. safeErr:${super.safeErr}`;
+            return `Failed to save Establishment with identity: ${super.name}:(${super.identifier}).`;
         } else {
             return super.safe;
         }

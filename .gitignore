@@ -10,7 +10,8 @@ dist
 /node_modules
 */node_modules
 
-frontend/.angular/cache
+frontend/.angular
+.angular
 
 # IDEs and editors
 .idea
@@ -53,6 +54,7 @@ Thumbs.db
 */coverage
 */.nyc_output
 */fecoverage
+fecoverage
 
 # localhost config variations
 /server/config/localhost.*.yaml

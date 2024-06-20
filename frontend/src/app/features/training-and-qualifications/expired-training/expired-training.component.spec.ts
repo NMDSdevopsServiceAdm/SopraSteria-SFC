@@ -67,7 +67,6 @@ describe('ExpiredTrainingComponent', () => {
     addPermissions = true,
     fixTrainingCount = false,
     qsParamGetMock = sinon.fake(),
-    addAlert = false,
   ) {
     let workerObj = {
       workers,
@@ -76,9 +75,6 @@ describe('ExpiredTrainingComponent', () => {
     if (fixTrainingCount) workerObj = { workers: [workers[0]], workerCount: 1 };
     const permissions = addPermissions ? ['canEditWorker'] : [];
 
-    if (addAlert) {
-      window.history.pushState({ alertMessage: 'Updated record' }, '');
-    }
     const { fixture, getByText, getByTestId, getByLabelText, queryByLabelText, queryByTestId } = await render(
       ExpiredTrainingComponent,
       {
@@ -145,17 +141,6 @@ describe('ExpiredTrainingComponent', () => {
   it('should render a ExpiredTrainingComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
-  });
-
-  it('should render an alert banner if there is an aler message in state', async () => {
-    const { component, fixture, alertSpy } = await setup(true, false, sinon.fake(), true);
-
-    component.ngOnInit();
-    fixture.detectChanges();
-    expect(alertSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'Updated record',
-    });
   });
 
   it('should render a row for each expired training for a worker, with the worker name shown in top row', async () => {
@@ -264,25 +249,14 @@ describe('ExpiredTrainingComponent', () => {
     expect(tableRow4CategoryCell.getAttribute('class')).not.toContain('asc-table__cell-no-border__bottom-row');
   });
 
-  it('should navigate back to the dashboard when clicking the return to home button in a parent or stand alone account', async () => {
-    const { getByText, component, fixture, routerSpy } = await setup();
-
-    component.primaryWorkplaceUid = '1234-5678';
-    const button = getByText('Return to home');
-    fireEvent.click(button);
-    fixture.detectChanges();
-
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
-  });
-
-  it('should navigate back to the workplace page when clicking the return to home button when accessing a sub account from a parent', async () => {
+  it('should navigate back to the dashboard when clicking the return to home button', async () => {
     const { getByText, fixture, routerSpy } = await setup();
 
     const button = getByText('Return to home');
     fireEvent.click(button);
     fixture.detectChanges();
 
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', '1234-5678'], { fragment: 'training-and-qualifications' });
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
   });
 
   describe('sort', () => {

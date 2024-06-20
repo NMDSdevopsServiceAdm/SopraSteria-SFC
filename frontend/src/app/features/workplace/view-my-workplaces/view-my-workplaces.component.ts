@@ -5,6 +5,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetChildWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -29,6 +30,9 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public itemsPerPage = 12;
   public currentPageIndex = 0;
   private searchTerm = '';
+  public locationId: string;
+  public showMissingCqcMessage: boolean;
+  public missingCqcLocations: any;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -37,13 +41,15 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
+    this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.canAddEstablishment = this.permissionsService.can(this.primaryWorkplace.uid, 'canAddEstablishment');
 
+    this.establishmentService.setCheckForChildWorkplaceChanges(true);
     const childWorkplaces = this.route.snapshot.data.childWorkplaces;
     this.totalWorkplaceCount = childWorkplaces.count;
     this.activeWorkplaceCount = childWorkplaces.activeWorkplaceCount;
@@ -51,6 +57,10 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
     this.setupServerErrorsMap();
     this.setSearchIfPrevious();
+
+    this.locationId = this.primaryWorkplace.locationId;
+
+    this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
   }
 
   private setSearchIfPrevious(): void {
@@ -75,6 +85,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
       .getChildWorkplaces(this.primaryWorkplace.uid, {
         pageIndex: this.currentPageIndex,
         itemsPerPage: this.itemsPerPage,
+        getPendingWorkplaces: true,
         ...(this.searchTerm ? { searchTerm: this.searchTerm } : {}),
       })
       .pipe(take(1))
@@ -117,5 +128,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    this.alertService.removeAlert();
   }
 }

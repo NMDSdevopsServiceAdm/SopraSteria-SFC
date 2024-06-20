@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
@@ -24,6 +25,7 @@ import { SharedModule } from '@shared/shared.module';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
+import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
@@ -125,6 +127,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     PensionsComponent,
     EmployedFromOutsideUkMultipleStaffComponent,
     HealthAndCareVisaExistingWorkers,
+    ChangeDataOwnerComponent,
   ],
   providers: [
     DialogService,
@@ -137,6 +140,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     RankingsResolver,
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
+    GetMissingCqcLocationsResolver,
   ],
 })
 export class WorkplaceModule {}

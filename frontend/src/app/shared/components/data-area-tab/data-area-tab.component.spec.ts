@@ -1,28 +1,31 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+
 import { BenchmarksSelectViewPanelComponent } from '../benchmarks-select-view-panel/benchmarks-select-view-panel.component';
 import { DataAreaTabComponent } from './data-area-tab.component';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 
-xdescribe('DataAreaTabComponent', () => {
-  const setup = async (newDashboard = true) => {
+describe('DataAreaTabComponent', () => {
+  const setup = async (newDashboard = true, showBanner = true) => {
     const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByText, getByTestId, queryByTestId } = await render(DataAreaTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -54,10 +57,14 @@ xdescribe('DataAreaTabComponent', () => {
       componentProperties: {
         workplace: establishment,
         newDashboard,
+        showBanner,
       },
     });
 
     const component = fixture.componentInstance;
+
+    const injector = getTestBed();
+    const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService) as ParentSubsidiaryViewService;
 
     return {
       component,
@@ -65,12 +72,31 @@ xdescribe('DataAreaTabComponent', () => {
       getByText,
       getByTestId,
       queryByTestId,
+      parentSubsidiaryViewService,
     };
   };
 
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  it('should render the new dashboard header when showBanner is true', async () => {
+    const { queryByTestId } = await setup(true, true);
+
+    expect(queryByTestId('newDashboardHeader')).toBeTruthy();
+  });
+
+  it('should not render the new dashboard header when showBanner is false', async () => {
+    const { queryByTestId } = await setup(true, false);
+
+    expect(queryByTestId('newDashboardHeader')).toBeFalsy();
+  });
+
+  it('should not render the new dashboard header when newDashboard is false', async () => {
+    const { queryByTestId } = await setup(false, true);
+
+    expect(queryByTestId('newDashboardHeader')).toBeFalsy();
   });
 
   it('should render the pay area and the correct heading when viewBenchmarksByCategory is false', async () => {
@@ -119,5 +145,19 @@ xdescribe('DataAreaTabComponent', () => {
     component.checkComparisonDataExists();
 
     expect(component.comparisonDataExists).toBeFalsy();
+  });
+
+  describe('getBreadcrumbsJourney', () => {
+    it('should return subsidiary journey when viewing sub as parent', async () => {
+      const { component, parentSubsidiaryViewService } = await setup();
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.SUBSIDIARY);
+    });
+
+    it('should return benchmarks tab journey when not viewing sub', async () => {
+      const { component, parentSubsidiaryViewService } = await setup();
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(false);
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.BENCHMARKS_TAB);
+    });
   });
 });

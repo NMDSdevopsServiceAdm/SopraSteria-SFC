@@ -14,7 +14,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class NotificationsService {
-  public notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject(null);
+  private notifications$: BehaviorSubject<Notification[]> = new BehaviorSubject(null);
   constructor(private http: HttpClient) {}
 
   public getAllNotifications(establishmentUid, limit?, sort?, page?) {

@@ -1,0 +1,14 @@
+@import 'govuk-frontend/govuk/base';
+
+.asc-navigate-to-workplace-dropdown-container {
+  background-color: govuk-colour('blue');
+  color: govuk-colour('white');
+}
+
+.asc-navigate-to-workplace-dropdown {
+  padding: 12px 0 12px 0;
+}
+
+.asc-navigate-to-workplace-dropdown a {
+  color: govuk-colour('white');
+}
