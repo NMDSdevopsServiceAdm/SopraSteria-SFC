@@ -1,0 +1,192 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+  data-testid="linkToParentErrorSummary"
+>
+</app-error-summary>
+<div>
+  <div class="govuk-grid-row govuk-!-padding-bottom-1">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="parentRequestTextContainer">
+        <span class="govuk-caption-l">{{ workplace.name }}</span>
+        <h1 class="govuk-heading-l">Link to a parent workplace</h1>
+      </div>
+    </div>
+  </div>
+  <ng-container *ngIf="linkToParentRequested">
+    <div class="govuk-!-padding-bottom-1">
+      <app-inset-text color="pending" [removeTopMargin]="true" data-testid="pendingBlueBanner">
+        Your request to link to <span class="govuk-!-font-weight-bold">{{ requestedParentNameAndPostcode }}</span> is
+        pending
+        <span>
+          <a href="#" (click)="cancelRequestToParent($event)" class="govuk-util__float-right">Cancel link request</a>
+        </span>
+      </app-inset-text>
+    </div>
+  </ng-container>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <div class="parentRequestTextContainer">
+        <p>
+          When you send a link request to a parent workplace, the parent needs to approve your request. You’ll get a
+          notification to tell you whether your request was approved or not.
+        </p>
+
+        <h2 class="govuk-!-font-size-27 govuk-!-margin-bottom-4">What's a parent workplace?</h2>
+        <p>
+          A parent workplace is a workplace that's taken responsibility in ASC-WDS for a number of other workplaces as
+          part of a group or organisation.
+        </p>
+        <app-details data-testid="linkToParentRevealTitle" [title]="'Why you might link to a parent workplace'"
+          ><p data-testid="linkToParentRevealText">
+            You can allow a parent workplace to view or edit your data. Alternatively, you can just link to a parent to
+            show that you’re part of a group or organisation.
+          </p></app-details
+        >
+      </div>
+      <ng-container *ngIf="!linkToParentRequested; else linkToParentRequestedPending">
+        <form
+          #formEl
+          novalidate
+          (ngSubmit)="onSubmit()"
+          [formGroup]="form"
+          autocomplete="off"
+          aria-label="form"
+          data-testid="linkToParentForm"
+        >
+          <div>
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+                <h2 class="govuk-fieldset__heading govuk-!-font-size-27">Select the parent workplace</h2>
+              </legend>
+              <div
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="submitted && form.get('parentNameOrPostCode').invalid"
+              >
+                <label class="govuk-label govuk-!-margin-top-3" for="parentNameOrPostCode"
+                  >Start to type the parent workplace's name or postcode</label
+                >
+                <span
+                  *ngIf="submitted && form.get('parentNameOrPostCode').invalid"
+                  id="parentNameOrPostCode-error"
+                  class="govuk-error-message"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFirstErrorMessage('parentNameOrPostCode') }}
+                </span>
+                <div class="linkToParentInput">
+                  <app-auto-suggest
+                    [formGroup]="form"
+                    [dataProvider]="parentNameOrPostCodeFilter"
+                    [formControlName]="'parentNameOrPostCode'"
+                    [error]="submitted && form.get('parentNameOrPostCode').invalid"
+                  ></app-auto-suggest>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+
+          <div>
+            <fieldset class="govuk-fieldset">
+              <legend class="govuk-fieldset__legend">
+                <h2 class="govuk-heading-m govuk-!-margin-bottom-2">Data permissions</h2>
+              </legend>
+              <div
+                class="govuk-form-group"
+                [class.govuk-form-group--error]="submitted && form.get('dataPermission').invalid"
+              >
+                <p>
+                  If the parent workplace approves your request, what data do you want them to have
+                  <span class="govuk-!-font-weight-bold">view only access</span> to?
+                </p>
+
+                <span
+                  *ngIf="submitted && form.get('dataPermission').invalid"
+                  id="dataPermission-error"
+                  class="govuk-error-message"
+                >
+                  <span class="govuk-visually-hidden">Error:</span>
+                  {{ getFirstErrorMessage('dataPermission') }}
+                </span>
+
+                <div class="govuk-radios" data-module="govuk-radios">
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                      id="dataPermission-0"
+                      name="dataPermission"
+                      [formControlName]="'dataPermission'"
+                      type="radio"
+                      [value]="dataPermissions[0]"
+                    />
+
+                    <label class="govuk-label govuk-radios__label" for="dataPermission-0">
+                      {{ dataPermissions[0] | newDataViewPermissions }}
+                    </label>
+                  </div>
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                      id="dataPermission-1"
+                      name="dataPermission"
+                      [formControlName]="'dataPermission'"
+                      type="radio"
+                      [value]="dataPermissions[1]"
+                    />
+
+                    <label class="govuk-label govuk-radios__label" for="dataPermission-1">
+                      {{ dataPermissions[1] | newDataViewPermissions }}
+                    </label>
+                  </div>
+                  <div
+                    class="govuk-radios__divider govuk-!-text-align-left govuk-!-padding-top-2 govuk-!-padding-bottom-2"
+                  >
+                    Or
+                  </div>
+                  <div class="govuk-radios__item">
+                    <input
+                      class="govuk-radios__input"
+                      [class.govuk-input--error]="submitted && form.get('dataPermission').invalid"
+                      id="dataPermission-2"
+                      name="dataPermission"
+                      [formControlName]="'dataPermission'"
+                      type="radio"
+                      [value]="dataPermissions[2]"
+                    />
+
+                    <label class="govuk-label govuk-radios__label" for="dataPermission-2">
+                      {{ dataPermissions[2] | newDataViewPermissions }}
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="govuk-!-margin-top-5 govuk-button-group">
+            <button type="submit" (click)="sendRequestToParent()" class="govuk-button govuk-!-margin-right-9">
+              Send link request
+            </button>
+            <a href="#" [routerLink]="['/dashboard']" class="govuk-button govuk-button--link govuk-!-margin-left-9"
+              >Cancel</a
+            >
+          </div>
+        </form>
+      </ng-container>
+      <ng-template #linkToParentRequestedPending>
+        <button
+          data-testid="returnToHomeButton"
+          type="button"
+          (click)="returnToHome()"
+          class="govuk-button govuk-!-margin-top-4"
+        >
+          Return to home
+        </button>
+      </ng-template>
+    </div>
+  </div>
+</div>
