@@ -66,6 +66,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.getWorkers();
     this.setPluralisation();
+    this.setBackLink();
   }
 
   setupServerErrorsMap() {
@@ -96,6 +97,10 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
           }),
       );
     }
+  }
+
+  private setBackLink(): void {
+    this.backLinkService.showBackLink();
   }
 
   private setPluralisation(): void {
