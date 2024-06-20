@@ -136,6 +136,11 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     this.updateHasWorkersWithHealthAndCareVisa(this.updatedWorkers);
     this.submitted = true;
 
+    if(this.updatedWorkers.length === 0) {
+      this.navigateToHome();
+      return;
+    }
+
     if (this.hasWorkersWithHealthAndCareVisa) {
       this.internationalRecruitmentService.setInternationalRecruitmentWorkerAnswers({
         workplaceUid: this.workplaceUid,
@@ -144,7 +149,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
       this.navigateToEmployedFromOutsideOrInsideUk();
     } else {
       this.establishmentService.updateWorkers(this.workplaceUid, this.workersHealthAndCareVisaAnswersToSave).subscribe(
-        (response) => this.navigateToHome(),
+        (response) => this.navigateToHomeWithSuccessAlert(),
         (error) => this.onSubmitError(error),
       );
     }
@@ -156,6 +161,10 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
 
   public navigateToHome(): void {
     this.router.navigate(['dashboard'], { fragment: 'home' });
+  }
+
+  public navigateToHomeWithSuccessAlert(): void {
+    this.navigateToHome();
     this.alertService.addAlert({
       type: 'success',
       message: 'Health and Care Worker visa information saved',

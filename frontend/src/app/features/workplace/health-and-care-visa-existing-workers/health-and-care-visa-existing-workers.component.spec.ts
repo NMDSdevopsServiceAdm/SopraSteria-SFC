@@ -269,51 +269,65 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       ]);
       expect(internationalRecruitmentServiceSpy).toHaveBeenCalled();
     });
-  });
 
-  it("should navigate to 'employed-from-outside-or-inside-uk' if there are 'Yes', 'No' and Don't know  answered", async () => {
-    const { component, fixture, getByText, routerSpy, internationalRecruitmentService } = await setup([
-      'canEditWorker',
-    ]);
+    it("should navigate to 'employed-from-outside-or-inside-uk' if there are 'Yes', 'No' and Don't know  answered", async () => {
+      const { component, fixture, getByText, routerSpy, internationalRecruitmentService } = await setup([
+        'canEditWorker',
+      ]);
 
-    const yes0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
-    const dontKnow1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
-    const no2 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-2-1"]');
+      const yes0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+      const dontKnow1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
+      const no2 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-2-1"]');
 
-    const continueButton = getByText('Continue');
+      const continueButton = getByText('Continue');
 
-    const internationalRecruitmentServiceSpy = spyOn(
-      internationalRecruitmentService,
-      'setInternationalRecruitmentWorkerAnswers',
-    ).and.callThrough();
+      const internationalRecruitmentServiceSpy = spyOn(
+        internationalRecruitmentService,
+        'setInternationalRecruitmentWorkerAnswers',
+      ).and.callThrough();
 
-    fireEvent.click(yes0);
-    fireEvent.click(dontKnow1);
-    fireEvent.click(no2);
-    fireEvent.click(continueButton);
-    fixture.detectChanges();
+      fireEvent.click(yes0);
+      fireEvent.click(dontKnow1);
+      fireEvent.click(no2);
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
 
-    expect(routerSpy).toHaveBeenCalledWith(['workplace', component.workplaceUid, 'employed-from-outside-or-inside-uk']);
-    expect(internationalRecruitmentServiceSpy).toHaveBeenCalled();
-  });
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', component.workplaceUid, 'employed-from-outside-or-inside-uk']);
+      expect(internationalRecruitmentServiceSpy).toHaveBeenCalled();
+    });
 
-  it("should navigate to the home page if there are only 'No' or Don't know answered", async () => {
-    const { fixture, getByText, routerSpy, alertServiceSpy, establishmentServiceSpy } = await setup(['canEditWorker']);
+    it("should navigate to the home page if there are only 'No' or Don't know answered", async () => {
+      const { fixture, getByText, routerSpy, alertServiceSpy, establishmentServiceSpy } = await setup(['canEditWorker']);
 
-    const no0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
-    const dontKnow1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
-    const continueButton = getByText('Continue');
+      const no0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
+      const dontKnow1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
+      const continueButton = getByText('Continue');
 
-    fireEvent.click(no0);
-    fireEvent.click(dontKnow1);
-    fireEvent.click(continueButton);
-    fixture.detectChanges();
+      fireEvent.click(no0);
+      fireEvent.click(dontKnow1);
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
 
-    expect(establishmentServiceSpy).toHaveBeenCalled();
-    expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'home' });
-    expect(alertServiceSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'Health and Care Worker visa information saved',
+      expect(establishmentServiceSpy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'home' });
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Health and Care Worker visa information saved',
+      });
+    });
+
+    it("should navigate to the home page if no answers have been selected", async () => {
+      const { fixture, getByText, routerSpy, alertServiceSpy, establishmentServiceSpy } = await setup(['canEditWorker']);
+
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'home' });
+      expect(alertServiceSpy).not.toHaveBeenCalled();
     });
   });
+
 });
