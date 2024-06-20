@@ -28,6 +28,7 @@ import { RegulatedByCqcComponent } from '../create-account/workplace/regulated-b
 import { WorkplaceNotFoundComponent } from '../create-account/workplace/workplace-not-found/workplace-not-found.component';
 import { AboutUsRegistrationComponent } from './about-us/about-us.component';
 import { CreateAccountComponent } from './create-account/create-account.component';
+import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
 
 const routes: Routes = [
   {
@@ -169,6 +170,12 @@ const routes: Routes = [
         data: { title: 'Select Main Service' },
       },
       {
+        path: 'parent-workplace-accounts',
+        component: ParentWorkplaceAccounts,
+        canActivate: [RegisterGuard],
+        data: { title: 'Parent Workplace Accounts' },
+      },
+      {
         path: 'add-total-staff',
         component: AddTotalStaffComponent,
         canActivate: [RegisterGuard],
@@ -240,6 +247,12 @@ const routes: Routes = [
     component: SelectMainServiceComponent,
     canActivate: [RegisterGuard],
     data: { title: 'Select Main Service' },
+  },
+  {
+    path: 'parent-workplace-accounts',
+    component: ParentWorkplaceAccounts,
+    canActivate: [RegisterGuard],
+    data: { title: 'Parent Workplace Accounts' },
   },
   {
     path: 'add-total-staff',

@@ -1,9 +1,30 @@
 <div tabindex="-1" #top class="govuk-util__no-focus">
   <a class="govuk-skip-link" href="#main-content" (click)="skip($event)">Skip to main content</a>
-  <app-header [standAloneAccount]="standAloneAccount"></app-header>
+  <app-header [showNotificationsLink]="standAloneAccount || parentAccount || subsAccount"></app-header>
 
-  <ng-container *ngIf="standAloneAccount && newHomeDesignFlag && !isAdminSection; else otherView">
-    <app-stand-alone-account [dashboardView]="dashboardView"></app-stand-alone-account>
+  <ng-container
+    *ngIf="
+      (standAloneAccount && newHomeDesignFlag && !isAdminSection) ||
+        (parentAccount && newHomeDesignParentFlag && !isAdminSection) ||
+        (subsAccount && newHomeDesignParentFlag && !isAdminSection);
+      else otherView
+    "
+  >
+    <div *ngIf="parentAccount || viewingSubsidiaryWorkplace">
+      <app-navigate-to-workplace-dropdown [maxChildWorkplacesForDropdown]="31"></app-navigate-to-workplace-dropdown>
+    </div>
+    <app-stand-alone-account
+      *ngIf="!viewingSubsidiaryWorkplace"
+      [dashboardView]="dashboardView"
+      data-testid="stand-alone-account"
+    >
+    </app-stand-alone-account>
+    <app-subsidiary-account
+      *ngIf="viewingSubsidiaryWorkplace"
+      [dashboardView]="dashboardView"
+      data-testid="subsidiary-account"
+    >
+    </app-subsidiary-account>
   </ng-container>
   <ng-template #otherView>
     <div

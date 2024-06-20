@@ -38,6 +38,7 @@ describe('PublicPageComponent', () => {
     });
 
     const component = fixture.componentInstance;
+
     return {
       component,
       fixture,
@@ -61,13 +62,23 @@ describe('PublicPageComponent', () => {
     expect(getByText(pages.data[0].content)).toBeTruthy();
   });
 
-  it('should not display return to home button when returnToHomeButton set to false in routing', async () => {
-    const { queryByText } = await setup();
-    expect(queryByText('Return to home')).toBeFalsy();
-  });
+  describe('Return to home button', async () => {
+    it('should not display when returnToHomeButton set to false in routing', async () => {
+      const { queryByText } = await setup();
+      expect(queryByText('Return to home')).toBeFalsy();
+    });
 
-  it('should display return to home button when returnToHomeButton set to true in routing', async () => {
-    const { queryByText } = await setup(true);
-    expect(queryByText('Return to home')).toBeTruthy();
+    it('should display when returnToHomeButton set to true in routing', async () => {
+      const { queryByText } = await setup(true);
+      expect(queryByText('Return to home')).toBeTruthy();
+    });
+
+    it('should have href for dashboard', async () => {
+      const { queryByText } = await setup(true);
+
+      const returnToHomeButton = queryByText('Return to home');
+
+      expect(returnToHomeButton.getAttribute('href')).toBe('/dashboard');
+    });
   });
 });

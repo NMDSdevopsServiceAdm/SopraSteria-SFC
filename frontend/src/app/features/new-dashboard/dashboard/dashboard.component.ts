@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { BenchmarksResponse } from '@core/model/benchmarks.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -30,6 +30,9 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
   public tilesData: BenchmarksResponse;
   public newDataAreaFlag: boolean;
   public canSeeNewDataArea: boolean;
+  public isParent: boolean;
+  @Input() isStandAloneAccount: boolean;
+  @Input() isSubsAccount: boolean;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,7 +49,9 @@ export class NewDashboardComponent implements OnInit, OnDestroy {
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.workplace = this.establishmentService.primaryWorkplace;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
-    this.tilesData = this.benchmarksService.benchmarksData;
+    this.tilesData = this.benchmarksService.benchmarksData.newBenchmarks;
+
+    this.isParent = this.workplace?.isParent;
 
     this.authService.isOnAdminScreen = false;
     this.subscriptions.add(

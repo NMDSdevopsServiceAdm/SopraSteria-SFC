@@ -22,8 +22,8 @@ export class TailoredSeminarsComponent implements OnInit {
 
   ngOnInit(): void {
     this.pages = this.route.snapshot.data.pages?.data[0];
-    this.workplaceName = this.establishmentService.primaryWorkplace.name;
-    this.workplaceID = this.establishmentService.primaryWorkplace.nmdsId;
+    this.workplaceName = this.establishmentService.establishment.name;
+    this.workplaceID = this.establishmentService.establishment.nmdsId;
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
   }
 }

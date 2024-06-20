@@ -284,7 +284,11 @@ export const allRankingsData = allRankingsResponseBuilder();
 
 @Injectable()
 export class MockBenchmarksService extends BenchmarksServiceBase {
-  benchmarksData: any;
+  benchmarksData: any = {
+    ...benchmarksData,
+    newBenchmarks: benchmarksData,
+    oldBenchmarks: benchmarksData
+  };
   rankingsData: any;
   setReturnTo(returnTo: URLStructure) {
     throw new Error('Method not implemented.');
@@ -299,10 +303,6 @@ export class MockBenchmarksService extends BenchmarksServiceBase {
     return returnTo;
   }
 
-  // public getTileData(establishmentUid, requiredTiles): Observable<BenchmarksResponse> {
-  //   return of(benchmarksData);
-  // }
-
   public getAllRankingData(establishmentUid): Observable<AllRankingsResponse> {
     return of(allRankingsData);
   }
@@ -310,8 +310,4 @@ export class MockBenchmarksService extends BenchmarksServiceBase {
   public postBenchmarkTabUsage(establishmentUid: number) {
     return of(null);
   }
-
-  // public get benchmarksData(): BenchmarksResponse {
-  //   return benchmarksData;
-  // }
 }

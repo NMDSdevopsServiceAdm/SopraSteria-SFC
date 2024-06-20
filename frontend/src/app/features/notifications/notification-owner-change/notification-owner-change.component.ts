@@ -16,6 +16,7 @@ const OWNERSHIP_REJECTED = 'OWNERCHANGEREJECTED';
 @Component({
   selector: 'app-notification-owner-change',
   templateUrl: './notification-owner-change.component.html',
+  styleUrls: ['../notification/notification.component.scss'],
   providers: [DialogService, Overlay],
 })
 export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
@@ -31,6 +32,8 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
   public ownerShipRequestedTo: string;
   public isSubWorkplace: boolean;
   private ownerShipRequestedToUid: string;
+  public ownerShipRequestedFromPostCode: string;
+  public ownerShipRequestedToPostCode: string;
 
   constructor(
     private route: ActivatedRoute,
@@ -61,18 +64,24 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
       requestedOwnerType,
       subEstablishmentName,
       subEstablishmentUid,
+      subPostCode,
       parentEstablishmentName,
       parentEstablishmentUid,
+      parentPostCode,
     } = this.notification.typeContent;
 
     if (requestedOwnerType === 'Workplace') {
       this.ownerShipRequestedFrom = parentEstablishmentName;
       this.ownerShipRequestedTo = subEstablishmentName;
       this.ownerShipRequestedToUid = subEstablishmentUid;
+      this.ownerShipRequestedFromPostCode = parentPostCode;
+      this.ownerShipRequestedToPostCode = subPostCode;
     } else {
       this.ownerShipRequestedFrom = subEstablishmentName;
       this.ownerShipRequestedTo = parentEstablishmentName;
       this.ownerShipRequestedToUid = parentEstablishmentUid;
+      this.ownerShipRequestedFromPostCode = subPostCode;
+      this.ownerShipRequestedToPostCode = parentPostCode;
     }
   }
 
@@ -124,7 +133,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
                   }
                 });
                 this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-                  this.notificationsService.notifications$.next(notify.notifications);
+                  this.notificationsService.notifications = notify.notifications;
                 });
               }
             },
@@ -167,7 +176,7 @@ export class NotificationOwnerChangeComponent implements OnInit, OnDestroy {
           (request) => {
             if (request) {
               this.notificationsService.getAllNotifications(this.workplace.uid).subscribe((notify) => {
-                this.notificationsService.notifications$.next(notify.notifications);
+                this.notificationsService.notifications = notify.notifications;
               });
               this.router.navigate(['/dashboard']);
               this.alertService.addAlert({

@@ -4,9 +4,11 @@ import { ActivatedRoute, NavigationEnd, Router, RouterEvent, RouterModule } from
 import { RouterTestingModule } from '@angular/router/testing';
 import { ArticlesService } from '@core/services/articles.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockArticlesService } from '@core/test-utils/MockArticlesService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -19,12 +21,13 @@ describe('ArticleComponent', () => {
   const articles = MockArticlesService.articlesFactory();
 
   async function setup() {
-    const { fixture, getByText } = await render(ArticleComponent, {
+    const { fixture, getByText} = await render(ArticleComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: ArticlesService, useClass: MockArticlesService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
@@ -42,8 +45,7 @@ describe('ArticleComponent', () => {
 
     const injector = getTestBed();
     const event = new NavigationEnd(42, '/', '/');
-    ((injector.inject(Router).events as unknown) as Subject<RouterEvent>).next(event);
-
+    (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
     const component = fixture.componentInstance;
     return {
       component,
@@ -62,8 +64,23 @@ describe('ArticleComponent', () => {
     expect(getByText(articles.data[0].title)).toBeTruthy();
   });
 
+  it('should display name of the workplace', async () => {
+    const { getByText, component } = await setup();
+    const workplaceName = component.workplace.name;
+
+    expect(getByText(workplaceName)).toBeTruthy();
+  });
+
   it('should display content of article', async () => {
     const { getByText } = await setup();
     expect(getByText(articles.data[0].content)).toBeTruthy();
+  });
+
+  it('should navigate back to home tab', async () => {
+    const { getByText} = await setup();
+
+    const returnToHome = getByText('Return to home', { exact: false });
+
+    expect(returnToHome.getAttribute('href')).toBe('/dashboard');
   });
 });

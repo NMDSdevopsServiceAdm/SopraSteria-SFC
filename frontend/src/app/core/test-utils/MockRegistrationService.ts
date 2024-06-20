@@ -87,6 +87,7 @@ export class MockRegistrationService extends RegistrationService {
   });
 
   public selectedWorkplaceService$: BehaviorSubject<Service> = new BehaviorSubject(null);
+  public headOfficeServices$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public locationAddresses$: BehaviorSubject<Array<LocationAddress>> = new BehaviorSubject(
     lessThanFiveLocationAddresses,
   );
@@ -139,6 +140,8 @@ export class MockRegistrationServiceWithMainService extends MockRegistrationServ
     other: true,
     otherName: 'Hello!',
   });
+
+  public headOfficeServices$: BehaviorSubject<boolean> = new BehaviorSubject(true);
 
   public totalStaff$: BehaviorSubject<any> = new BehaviorSubject('4');
 

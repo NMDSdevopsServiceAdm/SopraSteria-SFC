@@ -8,7 +8,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 
 import { BenchmarksResolver } from './benchmarks.resolver';
 
-xdescribe('BenchmarksResollver', () => {
+xdescribe('BenchmarksResolver', () => {
   function setup() {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],

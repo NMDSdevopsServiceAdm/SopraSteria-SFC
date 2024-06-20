@@ -9,18 +9,26 @@ import { ServiceUnavailableComponent } from '@core/components/error/service-unav
 import { FooterComponent } from '@core/components/footer/footer.component';
 import { HeaderComponent } from '@core/components/header/header.component';
 import { StandAloneAccountComponent } from '@core/components/standAloneAccount/standAloneAccount.component';
+import { SubsidiaryAccountComponent } from '@core/components/subsidiaryAccount/subsidiaryAccount.component';
+import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory';
 import { AuthGuard } from '@core/guards/auth/auth.guard';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { CountryService } from '@core/services/country.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { EthnicityService } from '@core/services/ethnicity.service';
@@ -38,10 +46,8 @@ import { TrainingService } from '@core/services/training.service';
 import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { TailoredSeminarsComponent } from '@features/benefits-bundle/benefit-tailored-seminars/benefit-tailored-seminars.component';
-import { BenefitsBundleComponent } from '@features/benefits-bundle/benefits-bundle.component';
-import { BenefitsTrainingDiscountsComponent } from '@features/benefits-bundle/benefits-training-discounts/benefits-training-discounts.component';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
+import { ParentWorkplaceAccounts } from '@features/create-account/workplace/parent-workplace-accounts/parent-workplace-accounts.component';
 import { SelectMainServiceComponent } from '@features/create-account/workplace/select-main-service/select-main-service.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
@@ -54,16 +60,15 @@ import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-tab/benchmarks-tab.component';
-import { NewComparisonGroupHeaderComponent } from '@features/new-dashboard/benchmarks-tab/comparison-group-header/comparison-group-header.component';
+import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
-import { CardComponent } from '@features/new-dashboard/home-tab/card/card.component';
 import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
-import { SummarySectionComponent } from '@features/new-dashboard/home-tab/summary-section/summary-section.component';
+import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
+import { ParentHomeTabComponent } from '@features/new-dashboard/parent-home-tab/parent-home-tab.component';
+import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { NewStaffTabComponent } from '@features/new-dashboard/staff-tab/staff-tab.component';
-import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
 import { NewTrainingTabComponent } from '@features/new-dashboard/training-tab/training-tab.component';
 import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/workplace-tab.component';
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
@@ -78,19 +83,14 @@ import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { BenefitAccordionComponent } from './features/benefits-bundle/benefit-accordion/benefit-accordion.component';
-import { BenefitsELearningComponent } from './features/benefits-bundle/benefits-elearning/benefits-elearning.component';
 import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { BenchmarksServiceFactory } from '@core/factory/BenchmarksServiceFactory';
-import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
-import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 
 @NgModule({
   declarations: [
@@ -106,6 +106,7 @@ import { InternationalRecruitmentService } from '@core/services/international-re
     ForgotYourPasswordEditComponent,
     HeaderComponent,
     HomeTabComponent,
+    ParentHomeTabComponent,
     LoginComponent,
     LogoutComponent,
     MigratedUserTermsConditionsComponent,
@@ -117,24 +118,20 @@ import { InternationalRecruitmentService } from '@core/services/international-re
     SatisfactionSurveyComponent,
     StaffMismatchBannerComponent,
     SelectMainServiceComponent,
-    BenefitsBundleComponent,
-    BenefitAccordionComponent,
-    BenefitsTrainingDiscountsComponent,
-    BenefitsELearningComponent,
-    TailoredSeminarsComponent,
     StandAloneAccountComponent,
+    SubsidiaryAccountComponent,
     DashboardWrapperComponent,
     NewDashboardComponent,
     NewHomeTabComponent,
     NewWorkplaceTabComponent,
     NewStaffTabComponent,
     NewTrainingTabComponent,
-    NewBenchmarksTabComponent,
-    NewTrainingLinkPanelComponent,
-    NewComparisonGroupHeaderComponent,
-    CardComponent,
-    SummarySectionComponent,
     StaffBasicRecord,
+    BecomeAParentComponent,
+    RemoveLinkToParentComponent,
+    LinkToParentComponent,
+    ParentWorkplaceAccounts,
+    DeleteWorkplaceComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
@@ -179,6 +176,7 @@ import { InternationalRecruitmentService } from '@core/services/international-re
     WindowRef,
     WorkerService,
     InternationalRecruitmentService,
+    PreviousRouteService,
     { provide: WindowToken, useFactory: windowProvider },
     {
       provide: HTTP_INTERCEPTORS,
@@ -204,6 +202,8 @@ import { InternationalRecruitmentService } from '@core/services/international-re
     RankingsResolver,
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
+    GetMissingCqcLocationsResolver,
+    WorkplaceResolver,
   ],
   bootstrap: [AppComponent],
 })
