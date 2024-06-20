@@ -208,7 +208,52 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       ]);
     });
 
-    it('should call updateWorkers with database value of selected answers and healthAndCareVisa value when answer given for all workers', async () => {
+    it('should call updateWorkers without employedFromOutsideUk when no answer provided before submitting', async () => {
+      const workers = pluralWorkers();
+
+      const { component, getByText, updateWorkersSpy } = await setup(workers);
+
+      const saveButton = getByText('Save information');
+
+      fireEvent.click(saveButton);
+
+      expect(updateWorkersSpy).toHaveBeenCalledWith(component.workplaceUid, [
+        {
+          uid: workers[0].uid,
+          healthAndCareVisa: 'Yes',
+        },
+        {
+          uid: workers[1].uid,
+          healthAndCareVisa: 'Yes',
+        },
+      ]);
+    });
+
+    it('should call updateWorkers without employedFromOutsideUk for unanswered worker and with employedFromOutsideUk for answered worker', async () => {
+      const workers = pluralWorkers();
+
+      const { fixture, component, getByText, updateWorkersSpy } = await setup(workers);
+
+      const insideTheUkWorker2 = fixture.nativeElement.querySelector('input[id="workers-insideOutsideUk-1-1"]');
+      const saveButton = getByText('Save information');
+
+      fireEvent.click(insideTheUkWorker2);
+      fireEvent.click(saveButton);
+
+      expect(updateWorkersSpy).toHaveBeenCalledWith(component.workplaceUid, [
+        {
+          uid: workers[0].uid,
+          healthAndCareVisa: 'Yes',
+        },
+        {
+          uid: workers[1].uid,
+          healthAndCareVisa: 'Yes',
+          employedFromOutsideUk: 'No',
+        },
+      ]);
+    });
+
+    it('should include workers who do not have H and C visas in IR service in call to updateWorkers without employedFromOutsideUk', async () => {
       const workers = pluralWorkersWithWorkersWithoutHealthCareVisa();
 
       const { component, fixture, getByText, updateWorkersSpy } = await setup(workers);
@@ -235,12 +280,10 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
         {
           uid: workers[2].uid,
           healthAndCareVisa: 'No',
-          employedFromOutsideUk: null,
         },
         {
           uid: 'def123',
           healthAndCareVisa: "Don't know",
-          employedFromOutsideUk: null,
         },
       ]);
     });
@@ -264,39 +307,39 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
       });
     });
 
-    it('should not call updateWorkers and display error message with worker name when answer not given for single worker', async () => {
-      const workers = singleWorker();
+    // it('should not call updateWorkers and display error message with worker name when answer not given for single worker', async () => {
+    //   const workers = singleWorker();
 
-      const { fixture, getByText, updateWorkersSpy } = await setup(workers);
+    //   const { fixture, getByText, updateWorkersSpy } = await setup(workers);
 
-      const saveButton = getByText('Save information');
+    //   const saveButton = getByText('Save information');
 
-      fireEvent.click(saveButton);
-      fixture.detectChanges();
+    //   fireEvent.click(saveButton);
+    //   fixture.detectChanges();
 
-      const errorMessage = `Select where your organisation employed ${workers[0].name} from`;
+    //   const errorMessage = `Select where your organisation employed ${workers[0].name} from`;
 
-      expect(updateWorkersSpy).not.toHaveBeenCalled();
-      expect(getByText(errorMessage)).toBeTruthy();
-    });
+    //   expect(updateWorkersSpy).not.toHaveBeenCalled();
+    //   expect(getByText(errorMessage)).toBeTruthy();
+    // });
 
-    it('should not call updateWorkers and display error message for each worker answer not given for', async () => {
-      const workers = pluralWorkers();
+    // it('should not call updateWorkers and display error message for each worker answer not given for', async () => {
+    //   const workers = pluralWorkers();
 
-      const { fixture, getByText, updateWorkersSpy } = await setup(workers);
+    //   const { fixture, getByText, updateWorkersSpy } = await setup(workers);
 
-      const saveButton = getByText('Save information');
+    //   const saveButton = getByText('Save information');
 
-      fireEvent.click(saveButton);
-      fixture.detectChanges();
+    //   fireEvent.click(saveButton);
+    //   fixture.detectChanges();
 
-      const errorMessageWorker1 = `Select where your organisation employed ${workers[0].name} from`;
-      const errorMessageWorker2 = `Select where your organisation employed ${workers[1].name} from`;
+    //   const errorMessageWorker1 = `Select where your organisation employed ${workers[0].name} from`;
+    //   const errorMessageWorker2 = `Select where your organisation employed ${workers[1].name} from`;
 
-      expect(updateWorkersSpy).not.toHaveBeenCalled();
-      expect(getByText(errorMessageWorker1)).toBeTruthy();
-      expect(getByText(errorMessageWorker2)).toBeTruthy();
-    });
+    //   expect(updateWorkersSpy).not.toHaveBeenCalled();
+    //   expect(getByText(errorMessageWorker1)).toBeTruthy();
+    //   expect(getByText(errorMessageWorker2)).toBeTruthy();
+    // });
   });
 
   describe('Pluralisation of title question', () => {

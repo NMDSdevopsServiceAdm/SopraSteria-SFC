@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
@@ -62,7 +62,6 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     this.workersWhichDontHaveHealthAndCareVisas = allWorkers.workersWhichDontHaveHealthAndCareVisas;
 
     this.setUpFormData();
-    this.setupFormErrorsMap();
   }
 
   ngAfterViewInit() {
@@ -95,10 +94,6 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
 
   public onSubmit(): void {
     this.submitted = true;
-    if (this.form.invalid) {
-      this.errorSummaryService.scrollToErrorSummary();
-      return;
-    }
 
     this.establishmentService.updateWorkers(this.workplaceUid, this.workersWithUpdatedFields()).subscribe(
       () => this.onSubmitSuccess(),
@@ -106,24 +101,10 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
     );
   }
 
-  protected setupFormErrorsMap(): void {
-    this.workers.controls.forEach((_, index) => {
-      this.formErrorsMap.push({
-        item: `workers.insideOrOutsideUk.${index}`,
-        type: [
-          {
-            name: 'required',
-            message: `Select where your organisation employed ${this.workersWithHealthAndCareVisas[index].name} from`,
-          },
-        ],
-      });
-    });
-  }
-
   private workersWithUpdatedFields(): Array<any> {
     return [...this.workersWithHealthAndCareVisas, ...this.workersWhichDontHaveHealthAndCareVisas].map((worker) => {
       return {
-        employedFromOutsideUk: worker.employedFromOutsideUk,
+        ...(worker.employedFromOutsideUk !== null ? { employedFromOutsideUk: worker.employedFromOutsideUk } : {}),
         healthAndCareVisa: worker.healthAndCareVisa,
         uid: worker.uid,
       };
@@ -138,7 +119,7 @@ export class EmployedFromOutsideUkMultipleStaffComponent implements OnInit {
 
   private createFormGroupForWorker(): FormGroup {
     return this.formBuilder.group({
-      insideOrOutsideUk: [null, { validators: Validators.required, updateOn: 'submit' }],
+      insideOrOutsideUk: null,
     });
   }
 
