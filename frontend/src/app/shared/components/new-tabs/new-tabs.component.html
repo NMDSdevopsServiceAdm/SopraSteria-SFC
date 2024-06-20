@@ -1,7 +1,8 @@
 <div data-module="tabs">
   <ul role="tablist" #tablist class="govuk-tabs__list asc-tabs-bar" data-cy="tab-list">
     <ng-container *ngFor="let tab of tabs; let i = index">
-      <li class="govuk-tabs__list-item" [class.asc-active]="tab.active">
+      <li [ngClass]="{'govuk-subsidiary-tabs__list-item': isParentViewingSub, 'govuk-standalone-tabs__list-item': !isParentViewingSub}"
+        [class.asc-active]="tab.active">
         <a
           id="tab_{{ tab.slug }}"
           class="govuk-tabs__tab asc-tab"

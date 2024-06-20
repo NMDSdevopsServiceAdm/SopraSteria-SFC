@@ -375,12 +375,12 @@ describe('StaffDetailsComponent', () => {
       expect(setAddStaffRecordInProgressSpy).toHaveBeenCalledWith(true);
     });
 
-    it('should return the user to the workplace home page when clicking cancel', async () => {
-      const { component, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup();
+    it('should return the user to the staff records tab when clicking cancel', async () => {
+      const { getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup();
 
       userEvent.click(getByText('Cancel'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'exit', save: false });
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
         fragment: 'staff-records',
       });
       expect(updateWorkerSpy).not.toHaveBeenCalled();

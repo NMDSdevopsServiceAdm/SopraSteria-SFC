@@ -1,5 +1,10 @@
-<ng-container *ngIf="newDashboard">
-  <app-new-dashboard-header [tab]="'benchmarks'" data-html2canvas-ignore></app-new-dashboard-header>
+<ng-container *ngIf="newDashboard && showBanner">
+  <app-new-dashboard-header
+    [tab]="'benchmarks'"
+    [workplace]="workplace"
+    data-testid="newDashboardHeader"
+    data-html2canvas-ignore
+  ></app-new-dashboard-header>
 </ng-container>
 
 <div [ngClass]="{ 'govuk-width-container': newDashboard, 'govuk-!-margin-top-7': newDashboard }">

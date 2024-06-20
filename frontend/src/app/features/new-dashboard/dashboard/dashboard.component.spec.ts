@@ -58,6 +58,9 @@ describe('NewDashboardComponent', () => {
           },
         },
       ],
+      componentProperties: {
+        isParent: false,
+      },
       schemas: [NO_ERRORS_SCHEMA],
     });
 
@@ -78,9 +81,19 @@ describe('NewDashboardComponent', () => {
 
   describe('Home tab', () => {
     it('should show the home tab when the selected tab is the home tab', async () => {
-      const { getByTestId } = await setup();
+      const { component, getByTestId } = await setup();
+
+      component.isParent = false;
 
       expect(getByTestId('home-tab')).toBeTruthy();
+    });
+
+    it('should show the parent home tab when the selected tab is the home tab and they are a parent', async () => {
+      const { component, getByTestId } = await setup();
+
+      component.isParent = true;
+
+      expect(getByTestId('parentHomeTab')).toBeTruthy();
     });
   });
 

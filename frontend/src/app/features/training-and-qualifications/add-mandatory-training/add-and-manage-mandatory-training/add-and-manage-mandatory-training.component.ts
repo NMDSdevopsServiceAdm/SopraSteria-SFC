@@ -6,6 +6,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -24,12 +25,11 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private router: Router,
     public establishmentService: EstablishmentService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(
-      this.establishmentService.isOwnWorkplace() ? JourneyType.MANDATORY_TRAINING : JourneyType.ALL_WORKPLACES,
-    );
+    this.breadcrumbService.show(this.getBreadcrumbsJourney());
     this.establishment = this.route.parent.snapshot.data.establishment;
     this.subscriptions.add(
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((trainings) => {
@@ -52,5 +52,11 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
       'add-and-manage-mandatory-training',
       'add-new-mandatory-training',
     ]);
+  }
+
+  public getBreadcrumbsJourney(): JourneyType {
+    return this.establishmentService.isOwnWorkplace() || this.parentSubsidiaryViewService.getViewingSubAsParent()
+      ? JourneyType.MANDATORY_TRAINING
+      : JourneyType.ALL_WORKPLACES;
   }
 }
