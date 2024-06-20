@@ -143,11 +143,6 @@ const routes: Routes = [
         },
       },
       {
-        path: 'employed-from-outside-or-inside-uk',
-        component: EmployedFromOutsideUkMultipleStaffComponent,
-        data: { title: 'Employed from Outside the UK' },
-      },
-      {
         path: 'regulated-by-cqc',
         component: RegulatedByCqcComponent,
         canActivate: [CheckPermissionsGuard],
@@ -387,6 +382,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditWorker'],
           title: 'Health And Care Visa',
+        },
+      },
+      {
+        path: 'employed-from-outside-or-inside-uk',
+        component: EmployedFromOutsideUkMultipleStaffComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Employed from Outside the UK',
         },
       },
       {
