@@ -9,14 +9,10 @@ const getAllWorkersNationalityAndBritishCitizenship = async (req, res) => {
   try {
     const allWorkers = await models.worker.getAllWorkersNationalityAndBritishCitizenship(establishmentId);
 
-    const filterWorkers = allWorkers.filter(
-      (worker) =>
-        (worker.NationalityValue === 'Other' && ['No', "Don't know", null].includes(worker.BritishCitizenshipValue)) ||
-        (worker.NationalityValue === "Don't know" && worker.BritishCitizenshipValue === 'No'),
-    );
+    const filteredWorkers = filterWorkersWhoRequireInternationalRecruitmentAnswers(allWorkers);
 
     res.status(200).send({
-      workers: filterWorkers.map((worker) => {
+      workers: filteredWorkers.map((worker) => {
         return {
           uid: worker.uid,
           name: worker.NameOrIdValue,
@@ -29,24 +25,29 @@ const getAllWorkersNationalityAndBritishCitizenship = async (req, res) => {
     });
   } catch (err) {
     console.error('worker::GET:total - failed', err);
-    return res.status(500).send('Failed to get total workers for establishment having id: ' + establishmentId);
+    return res.status(500).send('Failed to get total workers for workplace with id: ' + establishmentId);
   }
 };
 
 const getNoOfWorkersWhoRequireInternationalRecruitmentAnswers = async function (req, res) {
-  try {
-    const allWorkers = await models.worker.getAllWorkersNationalityAndBritishCitizenship(req.establishmentId);
-    const filteredWorkers = allWorkers.filter(
-      (worker) =>
-        ((worker.NationalityValue === 'Other' && ['No', "Don't know", null].includes(worker.BritishCitizenshipValue)) ||
-          (worker.NationalityValue === "Don't know" && worker.BritishCitizenshipValue === 'No')) &&
-        worker.HealthAndCareVisaValue === null,
-    );
+  const establishmentId = req.establishmentId;
 
-    return res.status(200).send({ noOfWorkersWhoRequireAnswer: filteredWorkers.length });
+  try {
+    const allWorkers = await models.worker.getAllWorkersNationalityAndBritishCitizenship(establishmentId);
+    const filteredWorkers = filterWorkersWhoRequireInternationalRecruitmentAnswers(allWorkers);
+
+    return res.status(200).send({ noOfWorkersWhoRequireAnswers: filteredWorkers.length });
   } catch (err) {
-    return res.status(500).send();
+    return res.status(500).send('Failed to get total workers for workplace with id: ' + establishmentId);
   }
+};
+
+const filterWorkersWhoRequireInternationalRecruitmentAnswers = (workers) => {
+  return workers.filter(
+    (worker) =>
+      (worker.NationalityValue === 'Other' && ['No', "Don't know", null].includes(worker.BritishCitizenshipValue)) ||
+      (worker.NationalityValue === "Don't know" && worker.BritishCitizenshipValue === 'No'),
+  );
 };
 
 router.route('/').get(hasPermission('canViewWorker'), getAllWorkersNationalityAndBritishCitizenship);

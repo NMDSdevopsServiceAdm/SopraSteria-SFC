@@ -74,17 +74,6 @@ describe('internationalRecruitmentRoute', async () => {
     };
   };
 
-  const workerWithHealthAndCareVisaAlreadyAnswered = () => {
-    return {
-      uid: 'asd-2412',
-      NameOrIdValue: 'Test Worker 7',
-      NationalityValue: 'Other',
-      BritishCitizenshipValue: 'No',
-      HealthAndCareVisaValue: 'Yes',
-      EmployedFromOutsideUkValue: null,
-    };
-  };
-
   const workers = () => [
     workerWhoDoesNotHaveCitizenshipAndNationalityKnown(),
     workerWhoDoesNotHaveCitizenshipAndNationalityNotKnown(),
@@ -206,7 +195,7 @@ describe('internationalRecruitmentRoute', async () => {
 
       await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
 
-      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswer: 0 });
+      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswers: 0 });
     });
 
     it('should return 0 when workers do not require answers for international recruitment', async () => {
@@ -219,20 +208,7 @@ describe('internationalRecruitmentRoute', async () => {
 
       await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
 
-      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswer: 0 });
-    });
-
-    it('should return 0 when valid worker already answered health and care visa question', async () => {
-      const req = httpMocks.createRequest(request);
-      const res = httpMocks.createResponse();
-
-      sinon
-        .stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship')
-        .returns([workerWithHealthAndCareVisaAlreadyAnswered()]);
-
-      await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
-
-      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswer: 0 });
+      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswers: 0 });
     });
 
     it('should return the number of workers who require answer and have not answered yet (4)', async () => {
@@ -243,7 +219,7 @@ describe('internationalRecruitmentRoute', async () => {
 
       await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
 
-      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswer: 4 });
+      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswers: 4 });
     });
 
     it('should return a 500 status when call is unsuccessful', async () => {
