@@ -15,9 +15,9 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
 
-import { EmployedFromOutsideUkMultipleStaffComponent } from './employed-from-outside-uk-existing-workers.component';
+import { EmployedFromOutsideUkExistingWorkersComponent } from './employed-from-outside-uk-existing-workers.component';
 
-describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
+describe('EmployedFromOutsideUkExistingWorkersComponent', () => {
   const pluralWorkers = () => [
     {
       id: 123,
@@ -65,7 +65,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
 
   async function setup(workers = pluralWorkers()) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
-      EmployedFromOutsideUkMultipleStaffComponent,
+      EmployedFromOutsideUkExistingWorkersComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
@@ -117,7 +117,7 @@ describe('EmployedFromOutsideUkMultipleStaffComponent', () => {
     };
   }
 
-  it('should render an EmployedFromOutsideUkMultipleStaffComponent', async () => {
+  it('should render an EmployedFromOutsideUkExistingWorkersComponent', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
