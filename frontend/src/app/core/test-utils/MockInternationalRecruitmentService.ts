@@ -1,10 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Worker, WorkersResponse } from '@core/model/worker.model';
-import {
-  InternationalRecruitmentService,
-  internationalRecruitmentWorkersResponse,
-} from '@core/services/international-recruitment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { Observable, of } from 'rxjs';
 
 const internationalRecruitmentWorkers = [
@@ -59,11 +55,13 @@ export const getSingleWorkerNationalityAndBritishCitizenshipResponse = {
 @Injectable({ providedIn: 'root' })
 export class MockInternationalRecruitmentService extends InternationalRecruitmentService {
   private _singleWorker: boolean = false;
+  private _workerAnswers: any;
 
-  public static factory(singleWorker = false) {
+  public static factory(singleWorker = false, workerAnswers = {}) {
     return (httpClient: HttpClient) => {
       const service = new MockInternationalRecruitmentService(httpClient);
       service._singleWorker = singleWorker;
+      service._workerAnswers = workerAnswers;
       return service;
     };
   }
@@ -73,5 +71,9 @@ export class MockInternationalRecruitmentService extends InternationalRecruitmen
       return of(getSingleWorkerNationalityAndBritishCitizenshipResponse);
     }
     return of(getAllWorkersNationalityAndBritishCitizenshipResponse);
+  }
+
+  getInternationalRecruitmentWorkerAnswers() {
+    return this._workerAnswers;
   }
 }

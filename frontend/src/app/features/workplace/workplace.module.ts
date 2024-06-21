@@ -35,6 +35,7 @@ import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EmployedFromOutsideUkExistingWorkersComponent } from './employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
 import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
@@ -124,6 +125,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
     PensionsComponent,
+    EmployedFromOutsideUkExistingWorkersComponent,
     HealthAndCareVisaExistingWorkers,
     ChangeDataOwnerComponent,
   ],
