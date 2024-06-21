@@ -388,6 +388,30 @@ describe('Summary section', () => {
         const staffRecordsRow = getByTestId('staff-records-row');
         expect(within(staffRecordsRow).queryByText(scenario.message)).toBeTruthy();
       });
+
+      it(`should navigate to health and care visa page when "${scenario.message}" link clicked`, async () => {
+        const { getByText, routerSpy } = await setup(
+          false,
+          Establishment,
+          Establishment.numberOfStaff,
+          {},
+          [dayjs()],
+          [workerBuilder()] as Worker[],
+          true,
+          true,
+          false,
+          scenario.noOfWorkers,
+        );
+
+        const healthAndCareVisaPageLink = getByText(scenario.message);
+        fireEvent.click(healthAndCareVisaPageLink);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          Establishment.uid,
+          'health-and-care-visa-existing-workers',
+        ]);
+      });
     });
 
     it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and and workplace created date is less than 12 month ', async () => {

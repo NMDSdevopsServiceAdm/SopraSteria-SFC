@@ -119,6 +119,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[1].message = `${
         this.noOfWorkersWhoRequireInternationalRecruitment === 1 ? 'Is this worker' : 'Are these workers'
       } on a Health and Care Worker visa?`;
+      this.sections[1].route = ['/workplace', this.workplace.uid, 'health-and-care-visa-existing-workers'];
     } else if (
       dayjs() >= afterWorkplaceCreated &&
       this.workplace.numberOfStaff > 10 &&
