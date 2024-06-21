@@ -1,62 +1,97 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 const httpMocks = require('node-mocks-http');
 const models = require('../../../../models/index');
 const {
   getAllWorkersNationalityAndBritishCitizenship,
+  getNoOfWorkersWhoRequireInternationalRecruitmentAnswers,
 } = require('../../../../routes/establishments/internationalRecruitment');
 
 describe('internationalRecruitmentRoute', async () => {
-  const workers = [
-    {
+  const workerWhoDoesNotHaveCitizenshipAndNationalityKnown = () => {
+    return {
       uid: 'asd-54',
       NameOrIdValue: 'Test Worker 1',
       NationalityValue: 'Other',
       BritishCitizenshipValue: 'No',
       HealthAndCareVisaValue: null,
       EmployedFromOutsideUkValue: null,
-    },
-    {
+    };
+  };
+
+  const workerWhoDoesNotHaveCitizenshipAndNationalityNotKnown = () => {
+    return {
       uid: 'asd-89',
       NameOrIdValue: 'Test Worker 2',
       NationalityValue: "Don't know",
       BritishCitizenshipValue: 'No',
       HealthAndCareVisaValue: null,
       EmployedFromOutsideUkValue: null,
-    },
-    {
+    };
+  };
+
+  const workerFromOtherNationWithBritishCitizenship = () => {
+    return {
       uid: 'asd-835',
       NameOrIdValue: 'Test Worker 3',
       NationalityValue: 'Other',
       BritishCitizenshipValue: 'Yes',
       HealthAndCareVisaValue: null,
       EmployedFromOutsideUkValue: null,
-    },
-    {
+    };
+  };
+
+  const britishWorker = () => {
+    return {
       uid: 'asd-3466',
       NameOrIdValue: 'Test Worker 4',
       NationalityValue: 'British',
       BritishCitizenshipValue: null,
       HealthAndCareVisaValue: null,
       EmployedFromOutsideUkValue: null,
-    },
-    {
+    };
+  };
+
+  const workerWithOtherNationalityAndBritishCitizenshipUnknown = () => {
+    return {
       uid: 'asd-5477',
       NameOrIdValue: 'Test Worker 5',
       NationalityValue: 'Other',
       BritishCitizenshipValue: "Don't know",
       HealthAndCareVisaValue: null,
       EmployedFromOutsideUkValue: null,
-    },
-    {
+    };
+  };
+
+  const workerWithOtherNationalityAndOtherQuestionsUnanswered = () => {
+    return {
       uid: 'asd-2466',
       NameOrIdValue: 'Test Worker 6',
       NationalityValue: 'Other',
       BritishCitizenshipValue: null,
       HealthAndCareVisaValue: null,
       EmployedFromOutsideUkValue: null,
-    },
+    };
+  };
+
+  const workerWithHealthAndCareVisaAlreadyAnswered = () => {
+    return {
+      uid: 'asd-2412',
+      NameOrIdValue: 'Test Worker 7',
+      NationalityValue: 'Other',
+      BritishCitizenshipValue: 'No',
+      HealthAndCareVisaValue: 'Yes',
+      EmployedFromOutsideUkValue: null,
+    };
+  };
+
+  const workers = () => [
+    workerWhoDoesNotHaveCitizenshipAndNationalityKnown(),
+    workerWhoDoesNotHaveCitizenshipAndNationalityNotKnown(),
+    workerFromOtherNationWithBritishCitizenship(),
+    britishWorker(),
+    workerWithOtherNationalityAndBritishCitizenshipUnknown(),
+    workerWithOtherNationalityAndOtherQuestionsUnanswered(),
   ];
 
   const filteredWorkers = [
@@ -98,46 +133,128 @@ describe('internationalRecruitmentRoute', async () => {
     sinon.restore();
   });
 
-  const request = {
-    method: 'GET',
-    url: `/api/establishment/some-uuid/internationalRecruitment`,
-    params: {
+  describe('getAllWorkersNationalityAndBritishCitizenship', () => {
+    const request = {
+      method: 'GET',
+      url: `/api/establishment/some-uuid/internationalRecruitment`,
+      params: {
+        establishmentId: 'some-uuid',
+      },
       establishmentId: 'some-uuid',
-    },
-    establishmentId: 'some-uuid',
-  };
+    };
 
-  it('should return a 200 status when call is successful', async () => {
-    const req = httpMocks.createRequest(request);
-    const res = httpMocks.createResponse();
+    it('should return a 200 status when call is successful', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
 
-    sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').returns(workers);
+      sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').returns(workers());
 
-    await getAllWorkersNationalityAndBritishCitizenship(req, res);
+      await getAllWorkersNationalityAndBritishCitizenship(req, res);
 
-    expect(res.statusCode).to.deep.equal(200);
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return the filtered list of workers', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').returns(workers());
+
+      await getAllWorkersNationalityAndBritishCitizenship(req, res);
+
+      expect(res._getData()).to.deep.equal({ workers: filteredWorkers });
+    });
+
+    it('should return a 500 status when call is unsuccessful', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').throws();
+
+      await getAllWorkersNationalityAndBritishCitizenship(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
   });
 
-  it('should return the filtered list of workers', async () => {
-    const req = httpMocks.createRequest(request);
-    const res = httpMocks.createResponse();
+  describe('getNoOfWorkersWhoRequireInternationalRecruitmentAnswers', () => {
+    const request = {
+      method: 'GET',
+      url: `/api/establishment/some-uuid/internationalRecruitment/noOfWorkersWhoRequireInternationalRecruitmentAnswers`,
+      params: {
+        establishmentId: 'some-uuid',
+      },
+      establishmentId: 'some-uuid',
+    };
 
-    sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').returns(workers);
+    it('should return a 200 status when call is successful', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
 
-    await getAllWorkersNationalityAndBritishCitizenship(req, res);
+      sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').returns(workers());
 
-    expect(res._getData()).to.deep.equal({ workers: filteredWorkers });
-  });
+      await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
 
-  it('should return a 500 status when call is unsuccessful', async () => {
-    const req = httpMocks.createRequest(request);
-    const res = httpMocks.createResponse();
+      expect(res.statusCode).to.deep.equal(200);
+    });
 
-    sinon.restore();
-    sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').throws();
+    it('should return 0 when no workers', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
 
-    await getAllWorkersNationalityAndBritishCitizenship(req, res);
+      sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').returns([]);
 
-    expect(res.statusCode).to.deep.equal(500);
+      await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
+
+      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswer: 0 });
+    });
+
+    it('should return 0 when workers do not require answers for international recruitment', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      sinon
+        .stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship')
+        .returns([britishWorker(), workerFromOtherNationWithBritishCitizenship()]);
+
+      await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
+
+      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswer: 0 });
+    });
+
+    it('should return 0 when valid worker already answered health and care visa question', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      sinon
+        .stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship')
+        .returns([workerWithHealthAndCareVisaAlreadyAnswered()]);
+
+      await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
+
+      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswer: 0 });
+    });
+
+    it('should return the number of workers who require answer and have not answered yet (4)', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').returns(workers());
+
+      await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
+
+      expect(res._getData()).to.deep.equal({ noOfWorkersWhoRequireAnswer: 4 });
+    });
+
+    it('should return a 500 status when call is unsuccessful', async () => {
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      sinon.stub(models.worker, 'getAllWorkersNationalityAndBritishCitizenship').throws();
+
+      await getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(req, res);
+
+      expect(res.statusCode).to.deep.equal(500);
+    });
   });
 });

@@ -33,7 +33,28 @@ const getAllWorkersNationalityAndBritishCitizenship = async (req, res) => {
   }
 };
 
+const getNoOfWorkersWhoRequireInternationalRecruitmentAnswers = async function (req, res) {
+  try {
+    const allWorkers = await models.worker.getAllWorkersNationalityAndBritishCitizenship(req.establishmentId);
+    const filteredWorkers = allWorkers.filter(
+      (worker) =>
+        ((worker.NationalityValue === 'Other' && ['No', "Don't know", null].includes(worker.BritishCitizenshipValue)) ||
+          (worker.NationalityValue === "Don't know" && worker.BritishCitizenshipValue === 'No')) &&
+        worker.HealthAndCareVisaValue === null,
+    );
+
+    return res.status(200).send({ noOfWorkersWhoRequireAnswer: filteredWorkers.length });
+  } catch (err) {
+    return res.status(500).send();
+  }
+};
+
 router.route('/').get(hasPermission('canViewWorker'), getAllWorkersNationalityAndBritishCitizenship);
+router
+  .route('/noOfWorkersWhoRequireInternationalRecruitmentAnswers')
+  .get(hasPermission('canViewWorker'), getNoOfWorkersWhoRequireInternationalRecruitmentAnswers);
 
 module.exports = router;
 module.exports.getAllWorkersNationalityAndBritishCitizenship = getAllWorkersNationalityAndBritishCitizenship;
+module.exports.getNoOfWorkersWhoRequireInternationalRecruitmentAnswers =
+  getNoOfWorkersWhoRequireInternationalRecruitmentAnswers;
