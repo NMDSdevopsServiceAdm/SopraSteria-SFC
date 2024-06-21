@@ -24,6 +24,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() showMissingCqcMessage: boolean;
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
+  @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -114,6 +115,10 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[1].message = 'You can start to add your staff records now';
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
+    } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
+      this.sections[1].message = `${
+        this.noOfWorkersWhoRequireInternationalRecruitment === 1 ? 'Is this worker' : 'Are these workers'
+      } on a Health and Care Worker visa?`;
     } else if (
       dayjs() >= afterWorkplaceCreated &&
       this.workplace.numberOfStaff > 10 &&
