@@ -1,10 +1,10 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Worker } from '@core/model/worker.model';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 
 import { InternationalRecruitmentService } from './international-recruitment.service';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
-import { Worker } from '@core/model/worker.model';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('InternationalRecruitmentService', () => {
   let service: InternationalRecruitmentService;
