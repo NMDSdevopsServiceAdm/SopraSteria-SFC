@@ -16,11 +16,10 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { Establishment as MockEstablishment } from '../../../../../mockdata/establishment';
 import { NewTrainingLinkPanelComponent } from './training-link-panel.component';
 
 describe('NewTrainingLinkPanelComponent', () => {
-  async function setup(totalRecords = 6, canEditEstablishment = true) {
+  async function setup(totalRecords = 6, canEditEstablishment = true, isParent = false) {
     const { fixture, getByText, queryByText } = await render(NewTrainingLinkPanelComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -40,7 +39,10 @@ describe('NewTrainingLinkPanelComponent', () => {
         },
       ],
       componentProperties: {
-        workplace: MockEstablishment as Establishment,
+        workplace: {
+          uid: 'testuid123',
+          isParent,
+        } as Establishment,
         workers: [
           {
             trainingCount: 1,
@@ -52,8 +54,11 @@ describe('NewTrainingLinkPanelComponent', () => {
     });
 
     const component = fixture.componentInstance;
+    const reportService = TestBed.inject(ReportService);
 
-    return { component, fixture, getByText, queryByText };
+    const saveFileSpy = spyOn(component, 'saveFile').and.returnValue(null);
+
+    return { component, fixture, getByText, queryByText, saveFileSpy, reportService };
   }
 
   it('should render a TrainingLinkPanelComponent', async () => {
@@ -93,16 +98,43 @@ describe('NewTrainingLinkPanelComponent', () => {
     });
 
     it('should call getTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
-      const { component, fixture, getByText } = await setup();
+      const { component, getByText, saveFileSpy, reportService } = await setup();
 
-      const reportService = TestBed.inject(ReportService);
       const reportServiceSpy = spyOn(reportService, 'getTrainingAndQualificationsReport').and.returnValue(of(null));
-      const saveFileSpy = spyOn(component, 'saveFile').and.returnValue(null);
 
       const downloadTrainingButton = getByText('Download training report');
 
       downloadTrainingButton.click();
-      fixture.detectChanges();
+
+      expect(reportServiceSpy).toHaveBeenCalledWith(component.establishmentUid);
+      expect(saveFileSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Parent training and quals report', () => {
+    it('should be visible when workplace is parent', async () => {
+      const { getByText } = await setup(6, true, true);
+
+      const downloadTrainingButton = getByText('Download parent training report');
+      expect(downloadTrainingButton).toBeTruthy();
+    });
+
+    it('should not be visible when workplace is not a parent', async () => {
+      const { queryByText } = await setup(6, true, false);
+
+      const downloadTrainingButton = queryByText('Download parent training report');
+      expect(downloadTrainingButton).toBeFalsy();
+    });
+
+    it('should call getParentTrainingAndQualificationsReport with establishment uid when Download training report is clicked', async () => {
+      const { component, getByText, saveFileSpy, reportService } = await setup(6, true, true);
+
+      const reportServiceSpy = spyOn(reportService, 'getParentTrainingAndQualificationsReport').and.returnValue(
+        of(null),
+      );
+
+      const downloadTrainingButton = getByText('Download parent training report');
+      downloadTrainingButton.click();
 
       expect(reportServiceSpy).toHaveBeenCalledWith(component.establishmentUid);
       expect(saveFileSpy).toHaveBeenCalled();

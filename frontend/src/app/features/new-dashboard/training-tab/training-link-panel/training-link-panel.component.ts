@@ -47,8 +47,18 @@ export class NewTrainingLinkPanelComponent implements OnInit, OnDestroy {
     );
   }
 
+  public downloadParentTrainingReport(event: Event): void {
+    event.preventDefault();
+    this.subscriptions.add(
+      this.reportService.getParentTrainingAndQualificationsReport(this.establishmentUid).subscribe(
+        (response) => this.saveFile(response),
+        (error) => console.error(error),
+      ),
+    );
+  }
+
   //set content type and save file
-  public saveFile(response: HttpResponse<Blob>) {
+  public saveFile(response: HttpResponse<Blob>): void {
     const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
     const header = response.headers.get('content-disposition');
     const filenameMatches = header && header.match(filenameRegEx);
