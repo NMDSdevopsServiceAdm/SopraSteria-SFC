@@ -1,14 +1,17 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
+import { of } from 'rxjs';
 
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from './no-of-workers-who-require-international-recruitment-answers.resolver';
 
 describe('GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver', () => {
-  const establishmentUid = 'abc12345';
-  const setup = () => {
+  const establishmentIdInService = 'abc12345';
+
+  const setup = (idInParams = null) => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
       providers: [
@@ -16,8 +19,13 @@ describe('GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver', () =
         {
           provide: EstablishmentService,
           useValue: {
-            establishment: { uid: establishmentUid },
+            establishment: { uid: establishmentIdInService },
+            establishmentId: establishmentIdInService,
           },
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: { snapshot: { paramMap: convertToParamMap({ establishmentuid: idInParams }) } },
         },
         InternationalRecruitmentService,
       ],
@@ -25,8 +33,14 @@ describe('GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver', () =
 
     const resolver = TestBed.inject(GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver);
     const internationalRecruitmentService = TestBed.inject(InternationalRecruitmentService);
+    const route = TestBed.inject(ActivatedRoute);
 
-    return { resolver, internationalRecruitmentService };
+    const getNoOfWorkersWhoRequireInternationalRecruitmentAnswersSpy = spyOn(
+      internationalRecruitmentService,
+      'getNoOfWorkersWhoRequireInternationalRecruitmentAnswers',
+    ).and.returnValue(of(null));
+
+    return { resolver, getNoOfWorkersWhoRequireInternationalRecruitmentAnswersSpy, route };
   };
 
   it('should create', async () => {
@@ -34,14 +48,20 @@ describe('GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver', () =
     expect(resolver).toBeTruthy();
   });
 
-  it('should call getNoOfWorkersWhoRequireInternationalRecruitmentAnswers with establishment uid', async () => {
-    const { resolver, internationalRecruitmentService } = await setup();
-    const getNoOfWorkersWhoRequireInternationalRecruitmentAnswersSpy = spyOn(
-      internationalRecruitmentService,
-      'getNoOfWorkersWhoRequireInternationalRecruitmentAnswers',
-    ).and.callThrough();
-    resolver.resolve();
+  it('should call getNoOfWorkersWhoRequireInternationalRecruitmentAnswers with uid in establishment service when no uid in params', () => {
+    const { resolver, route, getNoOfWorkersWhoRequireInternationalRecruitmentAnswersSpy } = setup();
 
-    expect(getNoOfWorkersWhoRequireInternationalRecruitmentAnswersSpy).toHaveBeenCalledWith(establishmentUid);
+    resolver.resolve(route.snapshot);
+
+    expect(getNoOfWorkersWhoRequireInternationalRecruitmentAnswersSpy).toHaveBeenCalledWith(establishmentIdInService);
+  });
+
+  it('should call getNoOfWorkersWhoRequireInternationalRecruitmentAnswers with uid from params when it exists', () => {
+    const uidInParams = 'abc13019432432423432532432';
+    const { resolver, route, getNoOfWorkersWhoRequireInternationalRecruitmentAnswersSpy } = setup(uidInParams);
+
+    resolver.resolve(route.snapshot);
+
+    expect(getNoOfWorkersWhoRequireInternationalRecruitmentAnswersSpy).toHaveBeenCalledWith(uidInParams);
   });
 });
