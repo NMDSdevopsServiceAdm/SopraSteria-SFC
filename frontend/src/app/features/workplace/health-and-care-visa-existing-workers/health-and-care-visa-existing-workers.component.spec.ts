@@ -330,4 +330,24 @@ describe('HealthAndCareVisaExistingWorkers', () => {
     });
   });
 
+  fit("should show worker name if they've navigated back from inside or outside uk page", async () => {
+    const { getByText, fixture, internationalRecruitmentService } = await setup(['canEditWorker']);
+    const internationalRecruitmentServiceSpy = spyOn(
+      internationalRecruitmentService,
+      'getInternationalRecruitmentWorkerAnswers',
+    ).and.callThrough();
+
+    const yes = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+    const no = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
+    const dontKnow = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-2"]');
+
+    const workerName = getByText('Trevor Lane');
+
+    expect(workerName).toBeTruthy();
+    expect(internationalRecruitmentServiceSpy).toHaveBeenCalled();
+    expect(yes.checked).toBeTruthy();
+    expect(no.checked).toBeFalsy();
+    expect(dontKnow.checked).toBeFalsy();
+  });
+
 });
