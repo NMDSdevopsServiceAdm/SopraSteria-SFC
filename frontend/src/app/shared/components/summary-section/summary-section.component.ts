@@ -185,9 +185,10 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   }
 
   private showInternationalRecruitmentMessage(): void {
-    this.sections[1].message = `${
-      this.noOfWorkersWhoRequireInternationalRecruitment === 1 ? 'Is this worker' : 'Are these workers'
-    } on a Health and Care Worker visa?`;
+    const singularQuestion = 'Is this worker on a Health and Care Worker visa?';
+    const pluralQuestion = 'Are these workers on Health and Care Worker visas?';
+    this.sections[1].message =
+      this.noOfWorkersWhoRequireInternationalRecruitment === 1 ? singularQuestion : pluralQuestion;
     this.sections[1].route = ['/workplace', this.workplace.uid, 'health-and-care-visa-existing-workers'];
   }
 

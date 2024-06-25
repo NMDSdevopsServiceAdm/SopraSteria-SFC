@@ -369,7 +369,7 @@ describe('Summary section', () => {
 
     [
       { noOfWorkers: 1, message: 'Is this worker on a Health and Care Worker visa?' },
-      { noOfWorkers: 2, message: 'Are these workers on a Health and Care Worker visa?' },
+      { noOfWorkers: 2, message: 'Are these workers on Health and Care Worker visas?' },
     ].forEach((scenario) => {
       it(`should show "${scenario.message}" message when noOfWorkersWhoRequireInternationalRecruitment is ${scenario.noOfWorkers}`, async () => {
         const { getByTestId } = await setup(
