@@ -13,10 +13,10 @@
       </div>
     </ng-container>
   </div>
-  <div class="govuk-grid-column-one-third">
+  <div class="govuk-grid-column-one-third govuk-!-padding-left-0">
     <ng-container *ngIf="totalRecords">
       <a
-        class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+        class="govuk-list govuk__flex govuk__align-items-center"
         role="button"
         draggable="false"
         href="/download/{{ now | date: 'yyyy-MM-dd' }}-training-report.xls"
@@ -28,7 +28,7 @@
       </a>
       <ng-container *ngIf="isParent">
         <a
-          class="govuk-list govuk-list--inline govuk-list govuk__flex govuk__align-items-center"
+          class="govuk-list govuk__flex govuk__align-items-center"
           role="button"
           draggable="false"
           href="/download/{{ now | date: 'yyyy-MM-dd' }}-parent-training-report.xls"
