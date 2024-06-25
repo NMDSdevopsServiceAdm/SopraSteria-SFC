@@ -57,7 +57,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     private alertService: AlertService,
   ) {
     this.form = this.formBuilder.group({
-      healthAndCareVisaRadioList: this.formBuilder.array([]),
+      healthAndCareVisaRadioList: this.formBuilder.group({}),
     });
 
   }
@@ -72,12 +72,16 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   get healthAndCareVisaRadioList() {
-    return this.form.get('healthAndCareVisaRadioList') as FormArray;
+    return this.form.get('healthAndCareVisaRadioList') as FormGroup;
+  }
+
+  get healthAndCareVisaRadioListValues() {
+    return Object.values(this.healthAndCareVisaRadioList.controls);
   }
 
   initialiseForm(): void {
     for(let i = 0; i < this.workers.length; i++) {
-      this.healthAndCareVisaRadioList.push(this.createFormGroupForWorker());
+      this.healthAndCareVisaRadioList.addControl(this.workers[i].uid, this.createFormGroupForWorker());
     }
   }
 
@@ -125,17 +129,12 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     if(updatedWorkersResponse?.healthAndCareVisaWorkerAnswers) {
       this.updatedWorkers = updatedWorkersResponse.healthAndCareVisaWorkerAnswers;
     }
-    this.healthAndCareVisaRadioList.controls[0].setValue({ healthAndCareVisa: `Don't know` });
 
-    // if(this.updatedWorkers) {
-    //   for(let worker of this.updatedWorkers) {
-    //     console.log(worker);
-    //     const x = this.healthAndCareVisaRadioList.controls[worker.uid].get('0');
-    //     console.log(x);
-    //     x.patchValue(true);
-    //     // const controlToUpdate = this.healthAndCareVisaRadioList.controls[worker.uid].filter(x => x.value = worker.healthAndCareVisa)//patchValue(worker.healthAndCareVisa);
-    //   }
-    // }
+    if(this.updatedWorkers) {
+      for(let worker of this.updatedWorkers) {
+        this.healthAndCareVisaRadioList.controls[worker.uid].setValue({ healthAndCareVisa: worker.healthAndCareVisa });
+      }
+    }
   }
 
   private setBackLink(): void {
@@ -200,6 +199,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   public updateHasWorkersWithHealthAndCareVisa(updatedWorkers) {
+    console.log(updatedWorkers);
     this.hasWorkersWithHealthAndCareVisa = updatedWorkers.some((worker) => worker.healthAndCareVisa === 'Yes');
   }
 
