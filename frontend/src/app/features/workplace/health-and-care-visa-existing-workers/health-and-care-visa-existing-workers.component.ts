@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormArray, FormGroup, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -42,6 +42,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   public updatedWorkers: any = [];
   public workersHealthAndCareVisaAnswersToSave = [];
   formGroupRow: any;
+  @ViewChild('formEl') formEl: ElementRef;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -55,14 +56,8 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     private internationalRecruitmentService: InternationalRecruitmentService,
     private alertService: AlertService,
   ) {
-    this.formGroupRow = this.formBuilder.array([
-      { tag: 'Yes', value: 'Yes' },
-      { tag: 'No', value: 'No' },
-      { tag: 'I do not know', value: `Don't know` },
-    ]);
-
     this.form = this.formBuilder.group({
-      healthAndCareVisaRadioList: this.formBuilder.group({}),
+      healthAndCareVisaRadioList: this.formBuilder.array([]),
     });
 
   }
@@ -77,18 +72,21 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   get healthAndCareVisaRadioList() {
-    return this.form.get('healthAndCareVisaRadioList') as FormGroup;
-  }
-  get healthAndCareVisaRadioListKeys() {
-    return Object.keys(this.healthAndCareVisaRadioList.controls);
+    return this.form.get('healthAndCareVisaRadioList') as FormArray;
   }
 
-  initialiseForm() {
+  initialiseForm(): void {
     for(let i = 0; i < this.workers.length; i++) {
-      this.healthAndCareVisaRadioList.addControl(this.workers[i].uid, this.formGroupRow);
+      this.healthAndCareVisaRadioList.push(this.createFormGroupForWorker());
     }
-    console.log(this.form);
   }
+
+  private createFormGroupForWorker(): FormGroup {
+    return this.formBuilder.group({
+      healthAndCareVisa: null,
+    });
+  }
+
 
   setupServerErrorsMap() {
     this.serverErrorsMap = [
@@ -122,14 +120,22 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     }
   }
 
-  prefillForm() {
-    this.updatedWorkers = this.internationalRecruitmentService.getInternationalRecruitmentWorkerAnswers();
-    if(this.updatedWorkers) {
-      for(let worker of this.updatedWorkers) {
-        const currentWorker = this.workers.filter(x => x.uid = worker.uid)[0];
-        this.healthAndCareVisaRadioList.controls[worker.uid].patchValue(currentWorker.healthAndCareVisa);
-      }
+  prefillForm(): void {
+    const updatedWorkersResponse = this.internationalRecruitmentService.getInternationalRecruitmentWorkerAnswers();
+    if(updatedWorkersResponse?.healthAndCareVisaWorkerAnswers) {
+      this.updatedWorkers = updatedWorkersResponse.healthAndCareVisaWorkerAnswers;
     }
+    this.healthAndCareVisaRadioList.controls[0].setValue({ healthAndCareVisa: `Don't know` });
+
+    // if(this.updatedWorkers) {
+    //   for(let worker of this.updatedWorkers) {
+    //     console.log(worker);
+    //     const x = this.healthAndCareVisaRadioList.controls[worker.uid].get('0');
+    //     console.log(x);
+    //     x.patchValue(true);
+    //     // const controlToUpdate = this.healthAndCareVisaRadioList.controls[worker.uid].filter(x => x.value = worker.healthAndCareVisa)//patchValue(worker.healthAndCareVisa);
+    //   }
+    // }
   }
 
   private setBackLink(): void {

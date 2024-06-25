@@ -37,7 +37,7 @@
               ></th>
               <td class="govuk-table__cell"></td>
             </tr>
-            <tr class="govuk-table__row" *ngFor="let key of healthAndCareVisaRadioListKeys; let i = index">
+            <tr class="govuk-table__row" *ngFor="let worker of healthAndCareVisaRadioList.controls; let i = index">
               <th
                 scope="row"
                 class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third"
@@ -50,7 +50,7 @@
               <td class="govuk-table__cell">
                 <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
                   <div
-                    *ngFor="let answer of healthAndCareVisaRadioList.controls[key].controls; let j = index"
+                    *ngFor="let answer of healthCareAndVisaAnswers; let j = index"
                     class="govuk-radios__item govuk-!-margin-left-2 govuk-!-margin-bottom-0"
                   >
                     <input
@@ -58,11 +58,12 @@
                       name="healthAndCareVisa-{{ i }}"
                       class="govuk-radios__input"
                       type="radio"
-                      [value]="answer.value.value"
+                      [value]="answer.value"
+                      [checked]="worker.get('healthAndCareVisa').value === answer.value"
                       (change)="radioChange(i, j)"
                     />
                     <label class="govuk-label govuk-radios__label" for="healthAndCareVisa-{{ i }}-{{ j }}">
-                      {{ answer.value.tag }}
+                      {{ answer.tag }}
                     </label>
                   </div>
                 </div>
