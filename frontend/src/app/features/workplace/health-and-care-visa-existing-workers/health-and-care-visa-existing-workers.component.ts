@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormGroup, UntypedFormBuilder } from '@angular/forms';
+import { AbstractControl, FormArray, FormGroup, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
@@ -62,7 +62,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
 
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.workplaceUid = this.establishmentService.establishment.uid;
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
@@ -71,11 +71,11 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     this.setBackLink();
   }
 
-  get healthAndCareVisaRadioList() {
+  get healthAndCareVisaRadioList(): FormGroup {
     return this.form.get('healthAndCareVisaRadioList') as FormGroup;
   }
 
-  get healthAndCareVisaRadioListValues() {
+  get healthAndCareVisaRadioListValues(): AbstractControl[] {
     return Object.values(this.healthAndCareVisaRadioList.controls);
   }
 
@@ -90,7 +90,6 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
       healthAndCareVisa: null,
     });
   }
-
 
   setupServerErrorsMap() {
     this.serverErrorsMap = [
@@ -126,11 +125,9 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
 
   prefillForm(): void {
     const updatedWorkersResponse = this.internationalRecruitmentService.getInternationalRecruitmentWorkerAnswers();
-    if(updatedWorkersResponse?.healthAndCareVisaWorkerAnswers) {
+    if(updatedWorkersResponse?.workplaceUid === this.workplaceUid && updatedWorkersResponse?.healthAndCareVisaWorkerAnswers) {
       this.updatedWorkers = updatedWorkersResponse.healthAndCareVisaWorkerAnswers;
-    }
 
-    if(this.updatedWorkers) {
       for(let worker of this.updatedWorkers) {
         this.healthAndCareVisaRadioList.controls[worker.uid].setValue({ healthAndCareVisa: worker.healthAndCareVisa });
       }
@@ -169,9 +166,9 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     }
   }
 
-  public getWorkerRecordPath(event: Event, worker: Worker) {
+  public navigateToStaffRecordSummary(event: Event, workerUid: Worker) {
     event.preventDefault();
-    const path = ['/workplace', this.workplaceUid, 'staff-record', worker.uid, 'staff-record-summary'];
+    const path = ['/workplace', this.workplaceUid, 'staff-record', workerUid, 'staff-record-summary'];
     this.router.navigate(path);
   }
 
@@ -198,8 +195,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     }
   }
 
-  public updateHasWorkersWithHealthAndCareVisa(updatedWorkers) {
-    console.log(updatedWorkers);
+  public updateHasWorkersWithHealthAndCareVisa(updatedWorkers): void {
     this.hasWorkersWithHealthAndCareVisa = updatedWorkers.some((worker) => worker.healthAndCareVisa === 'Yes');
   }
 
@@ -219,12 +215,12 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     this.router.navigate(['workplace', this.workplaceUid, 'employed-from-outside-or-inside-uk']);
   }
 
-  onSubmitError(error) {
+  onSubmitError(error): void {
     this.errorSummaryService.scrollToErrorSummary();
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
   }
 
-  public navigateToStaffRecords(event: Event) {
+  public navigateToStaffRecords(event: Event): void {
     event.preventDefault();
     this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
   }
