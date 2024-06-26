@@ -101,6 +101,14 @@ describe('EmployedFromOutsideUkExistingWorkersComponent', () => {
     const backService = injector.inject(BackService) as BackService;
     const backLinkSpy = spyOn(backService, 'setBackLink');
 
+    const internationalRecruitmentService = injector.inject(
+      InternationalRecruitmentService,
+    ) as InternationalRecruitmentService;
+    const setInternationalRecruitmentWorkerAnswersSpy = spyOn(
+      internationalRecruitmentService,
+      'setInternationalRecruitmentWorkerAnswers',
+    );
+
     return {
       component,
       fixture,
@@ -114,6 +122,7 @@ describe('EmployedFromOutsideUkExistingWorkersComponent', () => {
       updateWorkersSpy,
       queryByText,
       backLinkSpy,
+      setInternationalRecruitmentWorkerAnswersSpy,
     };
   }
 
@@ -306,6 +315,15 @@ describe('EmployedFromOutsideUkExistingWorkersComponent', () => {
         type: 'success',
         message: 'Health and Care  Worker visa information saved',
       });
+    });
+
+    it('should reset the international recruitment answers in the service on submit', async () => {
+      const { getByText, setInternationalRecruitmentWorkerAnswersSpy } = await setup();
+
+      const saveButton = getByText('Save information');
+      fireEvent.click(saveButton);
+
+      expect(setInternationalRecruitmentWorkerAnswersSpy).toHaveBeenCalledWith(null);
     });
 
     describe('On server error, ', () => {
