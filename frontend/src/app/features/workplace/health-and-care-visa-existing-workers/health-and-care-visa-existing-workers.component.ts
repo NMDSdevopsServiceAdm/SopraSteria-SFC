@@ -1,16 +1,15 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, FormGroup, UntypedFormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
-import { BackLinkService } from '@core/services/backLink.service';
+import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -29,7 +28,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
 
   public form: FormGroup;
   public healthCareAndVisaWorkersList;
-  public returnUrl: URLStructure = { url: ['/dashboard'] };
+  public returnUrl: URLStructure = { url: ['/dashboard'], fragment: 'home' };
   public workplaceUid: string;
   public workers: any = [];
   public canViewWorker = false;
@@ -41,16 +40,13 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   public submitted: boolean;
   public updatedWorkers: any = [];
   public workersHealthAndCareVisaAnswersToSave = [];
-  formGroupRow: any;
   @ViewChild('formEl') formEl: ElementRef;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
-    private route: ActivatedRoute,
-    private backLinkService: BackLinkService,
+    private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
-    private workerService: WorkerService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private internationalRecruitmentService: InternationalRecruitmentService,
@@ -137,7 +133,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   private setBackLink(): void {
-    this.backLinkService.showBackLink();
+    this.backService.setBackLink(this.returnUrl);
   }
 
   private setPluralisation(): void {
@@ -191,7 +187,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
       this.navigateToEmployedFromOutsideOrInsideUk();
     } else {
       this.establishmentService.updateWorkers(this.workplaceUid, this.workersHealthAndCareVisaAnswersToSave).subscribe(
-        (response) => this.navigateToHomeWithSuccessAlert(),
+        () => this.navigateToHomeWithSuccessAlert(),
         (error) => this.onSubmitError(error),
       );
     }
