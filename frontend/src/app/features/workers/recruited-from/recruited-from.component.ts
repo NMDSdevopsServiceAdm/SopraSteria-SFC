@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -15,6 +15,8 @@ import { QuestionComponent } from '../question/question.component';
 })
 export class RecruitedFromComponent extends QuestionComponent {
   public availableRecruitments: RecruitmentResponse[];
+  public doNotKnowValue = 'I do not know';
+  public doNotKnowId = 99;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -29,22 +31,12 @@ export class RecruitedFromComponent extends QuestionComponent {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
-      recruitmentKnown: null,
       recruitedFromId: null,
     });
   }
 
   init() {
-    this.subscriptions.add(
-      this.form.get('recruitmentKnown').valueChanges.subscribe((val) => {
-        this.form.get('recruitedFromId').clearValidators();
-        if (val === 'Yes') {
-          this.form.get('recruitedFromId').setValidators(Validators.required);
-        }
-
-        this.form.get('recruitedFromId').updateValueAndValidity();
-      }),
-    );
+    this.getAndSetRecruitedFromData();
 
     this.subscriptions.add(
       this.form.get('recruitedFromId').valueChanges.subscribe(() => {
@@ -52,45 +44,23 @@ export class RecruitedFromComponent extends QuestionComponent {
       }),
     );
 
-    this.subscriptions.add(
-      this.recruitmentService.getRecruitedFrom().subscribe((res) => (this.availableRecruitments = res)),
-    );
-
     if (this.worker.recruitedFrom) {
       const { value, from } = this.worker.recruitedFrom;
-      this.form.patchValue({
-        recruitmentKnown: value,
-        recruitedFromId: from ? from.recruitedFromId : null,
-      });
+      this.patchFormValue(value, from);
     }
-
     this.next = this.getRoutePath('adult-social-care-started');
   }
 
-  setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'recruitedFromId',
-        type: [
-          {
-            name: 'required',
-            message: 'Select where they were recruited from',
-          },
-        ],
-      },
-    ];
-  }
-
   generateUpdateProps() {
-    const { recruitedFromId, recruitmentKnown } = this.form.value;
+    const { recruitedFromId } = this.form.value;
 
-    if (!recruitmentKnown) {
+    if (!recruitedFromId) {
       return null;
     }
 
     return {
       recruitedFrom: {
-        value: recruitmentKnown,
+        value: this.getRecruitmentKnownValue(recruitedFromId),
         ...(recruitedFromId && {
           from: {
             recruitedFromId: parseInt(recruitedFromId, 10),
@@ -98,5 +68,33 @@ export class RecruitedFromComponent extends QuestionComponent {
         }),
       },
     };
+  }
+
+  public getRecruitmentKnownValue(value): string {
+    return value === this.doNotKnowId ? 'No' : 'Yes';
+  }
+
+  public patchFormValue(value, from): void {
+    if (value === 'No') {
+      this.form.patchValue({
+        recruitedFromId: this.doNotKnowId,
+      });
+    } else if (value === 'Yes') {
+      this.form.patchValue({
+        recruitedFromId: from.recruitedFromId,
+      });
+    }
+  }
+
+  public async getAndSetRecruitedFromData(): Promise<void> {
+    this.subscriptions.add(
+      this.recruitmentService.getRecruitedFrom().subscribe((res) => {
+        this.availableRecruitments = res.concat([{ from: this.doNotKnowValue, id: this.doNotKnowId }]);
+      }),
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
