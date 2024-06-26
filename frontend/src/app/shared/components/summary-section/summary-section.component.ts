@@ -24,6 +24,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() showMissingCqcMessage: boolean;
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
+  @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -114,6 +115,8 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.sections[1].message = 'You can start to add your staff records now';
     } else if (this.workplace.numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin()) {
       this.sections[1].message = 'Staff records added does not match staff total';
+    } else if (this.noOfWorkersWhoRequireInternationalRecruitment > 0) {
+      this.showInternationalRecruitmentMessage();
     } else if (
       dayjs() >= afterWorkplaceCreated &&
       this.workplace.numberOfStaff > 10 &&
@@ -179,6 +182,14 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     const workerLatestCreatedDate = new Date(Math.max(...this.workersCreatedDate));
     const afterWorkerCreated = dayjs(workerLatestCreatedDate).add(12, 'M');
     return afterWorkerCreated;
+  }
+
+  private showInternationalRecruitmentMessage(): void {
+    const singularQuestion = 'Is this worker on a Health and Care Worker visa?';
+    const pluralQuestion = 'Are these workers on Health and Care Worker visas?';
+    this.sections[1].message =
+      this.noOfWorkersWhoRequireInternationalRecruitment === 1 ? singularQuestion : pluralQuestion;
+    this.sections[1].route = ['/workplace', this.workplace.uid, 'health-and-care-visa-existing-workers'];
   }
 
   public getOtherWorkplacesSummaryMessage(): void {

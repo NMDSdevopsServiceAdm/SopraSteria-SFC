@@ -5,6 +5,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
@@ -54,6 +55,7 @@ import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-wo
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
+    GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
   ],
 })
 export class SubsidiaryModule {}
