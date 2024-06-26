@@ -84,9 +84,17 @@ export class InternationalRecruitmentService {
     return worker.nationality?.value === "Don't know" && worker.britishCitizenship === 'No';
   }
 
-  public getAllWorkersNationalityAndBritishCitizenship(establishmentuid): Observable<any> {
+  public getAllWorkersNationalityAndBritishCitizenship(establishmentUid): Observable<any> {
     return this.http
-      .get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/internationalRecruitment`)
+      .get<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/internationalRecruitment`)
+      .pipe(map((data) => data));
+  }
+
+  public getNoOfWorkersWhoRequireInternationalRecruitmentAnswers(establishmentUid): Observable<any> {
+    return this.http
+      .get<any>(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentUid}/internationalRecruitment/noOfWorkersWhoRequireInternationalRecruitmentAnswers`,
+      )
       .pipe(map((data) => data));
   }
 }

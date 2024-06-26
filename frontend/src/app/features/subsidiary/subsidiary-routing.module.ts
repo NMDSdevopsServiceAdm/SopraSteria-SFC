@@ -10,6 +10,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
@@ -122,6 +123,7 @@ const routes: Routes = [
       rankingsResolver: RankingsResolver,
       usefulLinksPay: UsefulLinkPayResolver,
       usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+      noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     },
     children: [
       {
