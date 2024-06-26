@@ -127,7 +127,11 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
       this.updatedWorkers = updatedWorkersResponse.healthAndCareVisaWorkerAnswers;
 
       for (let worker of this.updatedWorkers) {
-        this.healthAndCareVisaRadioList.controls[worker.uid].setValue({ healthAndCareVisa: worker.healthAndCareVisa });
+        if (this.healthAndCareVisaRadioList.controls[worker.uid]) {
+          this.healthAndCareVisaRadioList.controls[worker.uid].setValue({
+            healthAndCareVisa: worker.healthAndCareVisa,
+          });
+        }
       }
     }
   }
