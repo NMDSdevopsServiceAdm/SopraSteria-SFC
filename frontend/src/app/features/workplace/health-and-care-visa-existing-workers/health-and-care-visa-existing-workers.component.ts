@@ -1,18 +1,18 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, FormArray, FormGroup, UntypedFormBuilder } from '@angular/forms';
+import { AbstractControl, FormGroup, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { WorkerService } from '@core/services/worker.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { URLStructure } from '@core/model/url.model';
-import { take } from 'rxjs/operators';
 import { Worker } from '@core/model/worker.model';
-import { Subscription } from 'rxjs';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-health-and-care-visa-existing-workers',
@@ -59,7 +59,6 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       healthAndCareVisaRadioList: this.formBuilder.group({}),
     });
-
   }
 
   ngOnInit(): void {
@@ -80,7 +79,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   initialiseForm(): void {
-    for(let i = 0; i < this.workers.length; i++) {
+    for (let i = 0; i < this.workers.length; i++) {
       this.healthAndCareVisaRadioList.addControl(this.workers[i].uid, this.createFormGroupForWorker());
     }
   }
@@ -125,10 +124,13 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
 
   prefillForm(): void {
     const updatedWorkersResponse = this.internationalRecruitmentService.getInternationalRecruitmentWorkerAnswers();
-    if(updatedWorkersResponse?.workplaceUid === this.workplaceUid && updatedWorkersResponse?.healthAndCareVisaWorkerAnswers) {
+    if (
+      updatedWorkersResponse?.workplaceUid === this.workplaceUid &&
+      updatedWorkersResponse?.healthAndCareVisaWorkerAnswers
+    ) {
       this.updatedWorkers = updatedWorkersResponse.healthAndCareVisaWorkerAnswers;
 
-      for(let worker of this.updatedWorkers) {
+      for (let worker of this.updatedWorkers) {
         this.healthAndCareVisaRadioList.controls[worker.uid].setValue({ healthAndCareVisa: worker.healthAndCareVisa });
       }
     }
@@ -176,7 +178,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     this.updateHasWorkersWithHealthAndCareVisa(this.updatedWorkers);
     this.submitted = true;
 
-    if(this.updatedWorkers.length === 0) {
+    if (this.updatedWorkers.length === 0) {
       this.navigateToHome();
       return;
     }
@@ -204,10 +206,11 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   public navigateToHomeWithSuccessAlert(): void {
-    this.navigateToHome();
-    this.alertService.addAlert({
-      type: 'success',
-      message: 'Health and Care Worker visa information saved',
+    this.router.navigate(['dashboard'], { fragment: 'home' }).then(() => {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Health and Care Worker visa information saved',
+      });
     });
   }
 
