@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { Observable, of } from 'rxjs';
 
-const internationalRecruitmentWorkers = [
+export const internationalRecruitmentWorkers = () => [
   {
     uid: 'a431',
     name: 'Joy Wood',
@@ -34,7 +34,7 @@ const internationalRecruitmentWorkers = [
   },
 ];
 
-const singleInternationalRecruitmentWorker = [
+export const singleInternationalRecruitmentWorker = () => [
   {
     uid: 'a4314',
     name: 'Trevor Lane',
@@ -45,11 +45,11 @@ const singleInternationalRecruitmentWorker = [
 ];
 
 export const getAllWorkersNationalityAndBritishCitizenshipResponse = {
-  workers: internationalRecruitmentWorkers,
+  workers: internationalRecruitmentWorkers(),
 };
 
 export const getSingleWorkerNationalityAndBritishCitizenshipResponse = {
-  workers: singleInternationalRecruitmentWorker,
+  workers: singleInternationalRecruitmentWorker(),
 };
 
 @Injectable({ providedIn: 'root' })
