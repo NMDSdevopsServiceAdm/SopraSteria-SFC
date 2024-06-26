@@ -29,7 +29,7 @@ export class MockTrainingService extends TrainingService {
 
   public getAllMandatoryTrainings(): Observable<allMandatoryTrainingCategories> {
     return of({
-      allJobRolesCount: 29,
+      allJobRolesCount: 37,
       lastUpdated: new Date(),
       mandatoryTraining: [
         {
@@ -51,6 +51,46 @@ export class MockTrainingService extends TrainingService {
           selectedJobRoles: true,
           jobs: [
             {
+              id: 39,
+              title: 'Other (not directly involved in providing care)',
+            },
+            {
+              id: 38,
+              title: 'Other (not directly involved in providing care)',
+            },
+            {
+              id: 37,
+              title: 'Other (not directly involved in providing care)',
+            },
+            {
+              id: 36,
+              title: 'Other (not directly involved in providing care)',
+            },
+            {
+              id: 35,
+              title: 'IT and digital support',
+            },
+            {
+              id: 34,
+              title: 'Data governance manager',
+            },
+            {
+              id: 33,
+              title: 'Data analyst',
+            },
+            {
+              id: 32,
+              title: 'Team leader',
+            },
+            {
+              id: 31,
+              title: 'Learning and development lead',
+            },
+            {
+              id: 30,
+              title: 'Deputy manager',
+            },
+            {
               id: 21,
               title: 'Other (not directly involved in providing care)',
             },
@@ -58,10 +98,10 @@ export class MockTrainingService extends TrainingService {
               id: 20,
               title: 'Other (directly involved in providing care)',
             },
-            {
-              id: 29,
-              title: 'Technician',
-            },
+            // {
+            //   id: 29,
+            //   title: 'Technician',
+            // },
             {
               id: 28,
               title: 'Supervisor',
@@ -130,10 +170,10 @@ export class MockTrainingService extends TrainingService {
               id: 10,
               title: 'Care worker',
             },
-            {
-              id: 9,
-              title: 'Care navigator',
-            },
+            // {
+            //   id: 9,
+            //   title: 'Care navigator',
+            // },
             {
               id: 8,
               title: 'Care coordinator',
