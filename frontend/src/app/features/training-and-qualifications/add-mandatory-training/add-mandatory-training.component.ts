@@ -190,7 +190,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     this.form.patchValue({
       trainingCategory: this.preExistingTraining.trainingCategoryId,
       allOrSelectedJobRoles:
-        this.preExistingTraining.jobs.length === 29
+        this.preExistingTraining.jobs.length === 37
           ? mandatoryTrainingJobOption.all
           : mandatoryTrainingJobOption.selected,
       selectedJobRoles: this.prefillJobRoles(),
@@ -198,7 +198,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   }
 
   protected prefillJobRoles() {
-    return this.preExistingTraining.jobs.length === 29
+    return this.preExistingTraining.jobs.length === 37
       ? null
       : this.preExistingTraining.jobs.forEach((job) => {
           this.selectedJobRolesArray.push(this.createVacancyControl(job.id));
@@ -268,7 +268,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       }
       this.selectedJobRolesArray.reset([], { emitEvent: false });
     } else if (this.renderAsEditMandatoryTraining) {
-      this.preExistingTraining.jobs.length === 29 ? this.addVacancy() : this.prefillJobRoles();
+      this.preExistingTraining.jobs.length === 37 ? this.addVacancy() : this.prefillJobRoles();
     } else {
       this.addVacancy();
     }
