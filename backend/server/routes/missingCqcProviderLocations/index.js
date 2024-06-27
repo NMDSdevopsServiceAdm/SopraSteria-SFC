@@ -19,6 +19,9 @@ const missingCqcProviderLocations = async (req, res) => {
   };
 
   try {
+    const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
+    result.childWorkplacesCount = await childWorkplaces.rows.length;
+
     if (establishmentId) {
       const parentApproval = await models.Approvals.findbyEstablishmentId(establishmentId, 'BecomeAParent', 'Approved');
 
@@ -28,10 +31,6 @@ const missingCqcProviderLocations = async (req, res) => {
 
     if (locationId) {
       let CQCProviderData = await CQCDataAPI.getCQCProviderData(locationId);
-
-      const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
-
-      result.childWorkplacesCount = await childWorkplaces.rows.length;
 
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
 
