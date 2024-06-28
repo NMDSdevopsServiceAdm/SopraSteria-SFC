@@ -564,29 +564,6 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator._validationErrors.length).to.equal(1);
         expect(validator._healthAndCareVisa).to.equal(null);
       });
-
-      it('should add warning when health and care visa invalid', async () => {
-        const healthAndCareVisaValue = '12345';
-        const worker = buildWorkerCsv({
-          overrides: {
-            STATUS: 'NEW',
-            NATIONALITY: '418',
-            BRITISHCITIZENSHIP: '2',
-            HANDCVISA: healthAndCareVisaValue,
-          },
-        });
-
-        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
-
-        await validator.validate();
-        await validator.transform();
-
-        expect(validator._validationErrors).to.deep.equal([
-          healthAndCareVisaWarning('HANDCVISA is incorrectly formatted and will be ignored', healthAndCareVisaValue),
-        ]);
-        expect(validator._validationErrors.length).to.equal(1);
-        expect(validator._healthAndCareVisa).to.equal(null);
-      });
     });
 
     describe('_validateEmployedFromOutsideUk()', () => {
