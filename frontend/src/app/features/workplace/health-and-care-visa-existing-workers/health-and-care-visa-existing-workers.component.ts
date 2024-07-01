@@ -229,6 +229,9 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    if (!this.submitted) {
+      this.internationalRecruitmentService.setInternationalRecruitmentWorkerAnswers(null);
+    }
     this.subscriptions.unsubscribe();
   }
 }
