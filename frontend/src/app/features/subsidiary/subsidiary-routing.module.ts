@@ -240,9 +240,6 @@ const routes: Routes = [
         path: 'health-and-care-visa-existing-workers',
         component: HealthAndCareVisaExistingWorkers,
         canActivate: [CheckPermissionsGuard],
-        resolve: {
-          workers: WorkersResolver,
-        },
         data: {
           permissions: ['canEditWorker'],
           title: 'Health And Care Visa',
@@ -484,18 +481,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Check Answers',
-        },
-      },
-      {
-        path: 'health-and-care-visa-existing-workers',
-        component: HealthAndCareVisaExistingWorkers,
-        canActivate: [CheckPermissionsGuard],
-        resolve: {
-          workers: WorkersResolver,
-        },
-        data: {
-          permissions: ['canEditWorker'],
-          title: 'Health And Care Visa',
         },
       },
       {
