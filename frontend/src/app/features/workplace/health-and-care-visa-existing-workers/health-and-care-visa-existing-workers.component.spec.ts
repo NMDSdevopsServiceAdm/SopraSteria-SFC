@@ -1,29 +1,33 @@
-import { fireEvent, render } from '@testing-library/angular';
-import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers.component';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { Router } from '@angular/router';
-import { DetailsComponent } from '@shared/components/details/details.component';
-import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { getTestBed } from '@angular/core/testing';
-import { SharedModule } from '@shared/shared.module';
-import { SubmitExitButtonsComponent } from '@shared/components/submit-exit-buttons/submit-exit-buttons.component';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
-import { MockInternationalRecruitmentService } from '@core/test-utils/MockInternationalRecruitmentService';
-import { WindowRef } from '@core/services/window.ref';
-import { AlertService } from '@core/services/alert.service';
-import { PermissionType } from '@core/model/permissions.model';
 import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { PermissionType } from '@core/model/permissions.model';
+import { AlertService } from '@core/services/alert.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import {
+  MockInternationalRecruitmentService,
+  singleInternationalRecruitmentWorker,
+} from '@core/test-utils/MockInternationalRecruitmentService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { DetailsComponent } from '@shared/components/details/details.component';
+import { SubmitExitButtonsComponent } from '@shared/components/submit-exit-buttons/submit-exit-buttons.component';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
+import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers.component';
+
 describe('HealthAndCareVisaExistingWorkers', () => {
-  async function setup(permissions = [], singleWorker = false) {
+  async function setup(permissions = [], singleWorker = false, prefilledWorkers = null) {
     const { fixture, getByText, getByTestId, getByRole, queryByText } = await render(HealthAndCareVisaExistingWorkers, {
       imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule, SharedModule],
       declarations: [DetailsComponent, SubmitExitButtonsComponent],
@@ -46,7 +50,10 @@ describe('HealthAndCareVisaExistingWorkers', () => {
         },
         {
           provide: InternationalRecruitmentService,
-          useFactory: MockInternationalRecruitmentService.factory(singleWorker),
+          useFactory: MockInternationalRecruitmentService.factory(singleWorker, {
+            workplaceUid: 'mocked-uid',
+            healthAndCareVisaWorkerAnswers: prefilledWorkers,
+          }),
         },
       ],
     });
@@ -65,6 +72,15 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       InternationalRecruitmentService,
     ) as InternationalRecruitmentService;
 
+    const getAllWorkersNationalityAndBritishCitizenshipSpy = spyOn(
+      internationalRecruitmentService,
+      'getAllWorkersNationalityAndBritishCitizenship',
+    ).and.callThrough();
+    const setInternationalRecruitmentWorkerAnswersSpy = spyOn(
+      internationalRecruitmentService,
+      'setInternationalRecruitmentWorkerAnswers',
+    ).and.callThrough();
+
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
@@ -76,7 +92,8 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       getByRole,
       queryByText,
       routerSpy,
-      internationalRecruitmentService,
+      getAllWorkersNationalityAndBritishCitizenshipSpy,
+      setInternationalRecruitmentWorkerAnswersSpy,
       alertServiceSpy,
       establishmentServiceSpy,
     };
@@ -123,19 +140,14 @@ describe('HealthAndCareVisaExistingWorkers', () => {
   });
 
   it('should call getAllWorkersNationalityAndBritishCitizenship', async () => {
-    const { component, fixture, internationalRecruitmentService } = await setup(['canEditWorker']);
-
-    const internationalRecruitmentServiceSpy = spyOn(
-      internationalRecruitmentService,
-      'getAllWorkersNationalityAndBritishCitizenship',
-    ).and.callThrough();
+    const { component, fixture, getAllWorkersNationalityAndBritishCitizenshipSpy } = await setup(['canEditWorker']);
 
     component.canEditWorker = true;
 
     component.ngOnInit();
     fixture.detectChanges();
 
-    expect(internationalRecruitmentServiceSpy).toHaveBeenCalledWith(component.workplaceUid);
+    expect(getAllWorkersNationalityAndBritishCitizenshipSpy).toHaveBeenCalledWith(component.workplaceUid);
   });
 
   it("should not show the worker name if they don't have permissions", async () => {
@@ -177,12 +189,12 @@ describe('HealthAndCareVisaExistingWorkers', () => {
     expect(continueButton).toBeTruthy();
   });
 
-  it('should show the cancel link', async () => {
+  it('should show a cancel link with ref for home page', async () => {
     const { getByText } = await setup();
 
     const cancelLink = getByText('Cancel');
 
-    expect(cancelLink).toBeTruthy();
+    expect(cancelLink.getAttribute('href')).toEqual('/dashboard#home');
   });
 
   it('should not show anything selected when you land on the page', async () => {
@@ -244,18 +256,13 @@ describe('HealthAndCareVisaExistingWorkers', () => {
 
   describe('navigation', () => {
     it("should navigate to 'employed-from-outside-or-inside-uk' if there only 'Yes' answered", async () => {
-      const { component, fixture, getByText, routerSpy, internationalRecruitmentService } = await setup([
+      const { component, fixture, getByText, routerSpy, setInternationalRecruitmentWorkerAnswersSpy } = await setup([
         'canEditWorker',
       ]);
 
       const yes0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
       const yes1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
       const continueButton = getByText('Continue');
-
-      const internationalRecruitmentServiceSpy = spyOn(
-        internationalRecruitmentService,
-        'setInternationalRecruitmentWorkerAnswers',
-      ).and.callThrough();
 
       fireEvent.click(yes0);
       fireEvent.click(yes1);
@@ -267,53 +274,112 @@ describe('HealthAndCareVisaExistingWorkers', () => {
         component.workplaceUid,
         'employed-from-outside-or-inside-uk',
       ]);
-      expect(internationalRecruitmentServiceSpy).toHaveBeenCalled();
+      expect(setInternationalRecruitmentWorkerAnswersSpy).toHaveBeenCalled();
+    });
+
+    it("should navigate to 'employed-from-outside-or-inside-uk' if there are 'Yes', 'No' and Don't know  answered", async () => {
+      const { component, fixture, getByText, routerSpy, setInternationalRecruitmentWorkerAnswersSpy } = await setup([
+        'canEditWorker',
+      ]);
+
+      const yes0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+      const dontKnow1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
+      const no2 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-2-1"]');
+
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(yes0);
+      fireEvent.click(dontKnow1);
+      fireEvent.click(no2);
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        'workplace',
+        component.workplaceUid,
+        'employed-from-outside-or-inside-uk',
+      ]);
+      expect(setInternationalRecruitmentWorkerAnswersSpy).toHaveBeenCalled();
+    });
+
+    it("should navigate to the home page if there are only 'No' or Don't know answered", async () => {
+      const { fixture, getByText, routerSpy, alertServiceSpy, establishmentServiceSpy } = await setup([
+        'canEditWorker',
+      ]);
+
+      const no0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
+      const dontKnow1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(no0);
+      fireEvent.click(dontKnow1);
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(establishmentServiceSpy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'home' });
+
+      fixture.whenStable().then(() => {
+        expect(alertServiceSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Health and Care Worker visa information saved',
+        });
+      });
+    });
+
+    it('should navigate to the home page if no answers have been selected', async () => {
+      const { fixture, getByText, routerSpy, alertServiceSpy, establishmentServiceSpy } = await setup([
+        'canEditWorker',
+      ]);
+
+      const continueButton = getByText('Continue');
+
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'home' });
+      expect(alertServiceSpy).not.toHaveBeenCalled();
     });
   });
 
-  it("should navigate to 'employed-from-outside-or-inside-uk' if there are 'Yes', 'No' and Don't know  answered", async () => {
-    const { component, fixture, getByText, routerSpy, internationalRecruitmentService } = await setup([
-      'canEditWorker',
-    ]);
+  describe('When data in international recruitment service after navigating back from inside or outside uk page, ', () => {
+    const expectRadioButtonToBePrefilled = (fixture, radioIndex: number) => {
+      const yes = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+      const no = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
+      const dontKnow = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-2"]');
+      const radioButtons = [yes, no, dontKnow];
 
-    const yes0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
-    const dontKnow1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
-    const no2 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-2-1"]');
+      radioButtons.forEach((radio, index) => {
+        radioIndex === index ? expect(radio.checked).toBeTruthy() : expect(radio.checked).toBeFalsy();
+      });
+    };
 
-    const continueButton = getByText('Continue');
+    it('should prefill Yes for worker when worker has healthAndCareVisa set to Yes', async () => {
+      const singleWorker = singleInternationalRecruitmentWorker();
+      singleWorker[0].healthAndCareVisa = 'Yes';
 
-    const internationalRecruitmentServiceSpy = spyOn(
-      internationalRecruitmentService,
-      'setInternationalRecruitmentWorkerAnswers',
-    ).and.callThrough();
+      const { fixture } = await setup(['canEditWorker'], true, singleWorker);
 
-    fireEvent.click(yes0);
-    fireEvent.click(dontKnow1);
-    fireEvent.click(no2);
-    fireEvent.click(continueButton);
-    fixture.detectChanges();
+      expectRadioButtonToBePrefilled(fixture, 0);
+    });
 
-    expect(routerSpy).toHaveBeenCalledWith(['workplace', component.workplaceUid, 'employed-from-outside-or-inside-uk']);
-    expect(internationalRecruitmentServiceSpy).toHaveBeenCalled();
-  });
+    it('should prefill No for worker when worker has healthAndCareVisa set to No', async () => {
+      const singleWorker = singleInternationalRecruitmentWorker();
+      singleWorker[0].healthAndCareVisa = 'No';
 
-  it("should navigate to the home page if there are only 'No' or Don't know answered", async () => {
-    const { fixture, getByText, routerSpy, alertServiceSpy, establishmentServiceSpy } = await setup(['canEditWorker']);
+      const { fixture } = await setup(['canEditWorker'], true, singleWorker);
 
-    const no0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-1"]');
-    const dontKnow1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
-    const continueButton = getByText('Continue');
+      expectRadioButtonToBePrefilled(fixture, 1);
+    });
 
-    fireEvent.click(no0);
-    fireEvent.click(dontKnow1);
-    fireEvent.click(continueButton);
-    fixture.detectChanges();
+    it("should prefill Don't know when worker has healthAndCareVisa set to Don't know", async () => {
+      const singleWorker = singleInternationalRecruitmentWorker();
+      singleWorker[0].healthAndCareVisa = "Don't know";
 
-    expect(establishmentServiceSpy).toHaveBeenCalled();
-    expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'home' });
-    expect(alertServiceSpy).toHaveBeenCalledWith({
-      type: 'success',
-      message: 'Health and Care Worker visa information saved',
+      const { fixture } = await setup(['canEditWorker'], true, singleWorker);
+
+      expectRadioButtonToBePrefilled(fixture, 2);
     });
   });
 });

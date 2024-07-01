@@ -20,8 +20,8 @@
         </app-details>
         <p class="govuk-!-padding-bottom-2">
           You can also answer this question for each worker listed by going to
-          <a href="#" class="govuk-link" (click)="navigateToStaffRecords($event)">staff records</a> and selecting them
-          from there or by adding the information in a bulk upload.
+          <a href="#" class="govuk-link govuk__nowrap" (click)="navigateToStaffRecords($event)">staff records</a>
+          and selecting them from there or by adding the information in a bulk upload.
         </p>
       </div>
     </div>
@@ -30,28 +30,26 @@
         <table class="govuk-table">
           <tbody class="govuk-table__body">
             <tr class="govuk-table__row">
-              <th
-                scope="row"
-                class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third"
-                style="vertical-align: middle"
-              ></th>
+              <th scope="row" class="govuk-table__header govuk-!-width-one-third" style="vertical-align: middle">
+                Name or ID number
+              </th>
               <td class="govuk-table__cell"></td>
             </tr>
-            <tr class="govuk-table__row" *ngFor="let worker of workers; let i = index">
+            <tr class="govuk-table__row" *ngFor="let worker of healthAndCareVisaRadioListValues; let i = index">
               <th
                 scope="row"
                 class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-third"
                 style="vertical-align: middle"
               >
-                <a href="#" (click)="getWorkerRecordPath($event, worker)">
-                  {{ worker.name }}
+                <a href="#" (click)="navigateToStaffRecordSummary($event, workers[i].uid)">
+                  {{ workers[i].name }}
                 </a>
               </th>
               <td class="govuk-table__cell">
-                <div class="govuk-radios govuk-radios--inline" data-module="govuk-radios">
+                <div class="govuk-radios govuk-radios--inline asc-inline-radio-buttons" data-module="govuk-radios">
                   <div
                     *ngFor="let answer of healthCareAndVisaAnswers; let j = index"
-                    class="govuk-radios__item govuk-!-margin-left-2 govuk-!-margin-bottom-0"
+                    class="govuk-radios__item govuk-!-margin-bottom-0 asc-radios-with-spacing"
                   >
                     <input
                       id="healthAndCareVisa-{{ i }}-{{ j }}"
@@ -59,6 +57,7 @@
                       class="govuk-radios__input"
                       type="radio"
                       [value]="answer.value"
+                      [checked]="worker.get('healthAndCareVisa').value === answer.value"
                       (change)="radioChange(i, j)"
                     />
                     <label class="govuk-label govuk-radios__label" for="healthAndCareVisa-{{ i }}-{{ j }}">
@@ -73,6 +72,5 @@
       </div>
     </div>
   </fieldset>
-  <!-- <app-submit-button [callToAction]="'Continue'"></app-submit-button> -->
   <app-submit-exit-buttons [cta]="'Continue'" [return]="returnUrl" [exit]="'Cancel'"></app-submit-exit-buttons>
 </form>

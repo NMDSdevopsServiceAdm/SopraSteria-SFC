@@ -1,6 +1,6 @@
 <app-new-dashboard-header tab="home" [workplace]="workplace"></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
-  <ng-container *ngIf="newHomeDesignParentFlag && isParentApprovedBannerViewed === false">
+  <ng-container *ngIf="isParentApprovedBannerViewed === false; else standardAlert">
     <app-alert
       data-testid="parentApprovedBanner"
       [linkTextForAlert]="'What you can do as a parent workplace'"
@@ -8,6 +8,9 @@
       [noFloatRight]="true"
     ></app-alert>
   </ng-container>
+  <ng-template #standardAlert>
+    <app-alert></app-alert>
+  </ng-template>
 </div>
 <app-summary-section
   *ngIf="canViewListOfWorkers"

@@ -31,11 +31,9 @@
           <table class="govuk-table">
             <tbody class="govuk-table__body">
               <tr class="govuk-table__row">
-                <th
-                  scope="row"
-                  class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-quarter"
-                  style="vertical-align: middle"
-                ></th>
+                <th scope="row" class="govuk-table__header govuk-!-width-one-third" style="vertical-align: middle">
+                  Name or ID number
+                </th>
                 <td class="govuk-table__cell"></td>
               </tr>
               <tr class="govuk-table__row" *ngFor="let worker of workers.controls; let i = index" [formGroupName]="i">

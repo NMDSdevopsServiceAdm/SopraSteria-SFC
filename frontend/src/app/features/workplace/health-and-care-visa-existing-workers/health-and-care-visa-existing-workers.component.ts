@@ -1,18 +1,17 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup, UntypedFormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { BackLinkService } from '@core/services/backLink.service';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AbstractControl, FormGroup, UntypedFormBuilder } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ErrorDefinition } from '@core/model/errorSummary.model';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { WorkerService } from '@core/services/worker.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { URLStructure } from '@core/model/url.model';
-import { take } from 'rxjs/operators';
 import { Worker } from '@core/model/worker.model';
-import { Subscription } from 'rxjs';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { AlertService } from '@core/services/alert.service';
+import { BackService } from '@core/services/back.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { Subscription } from 'rxjs';
+import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-health-and-care-visa-existing-workers',
@@ -29,7 +28,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
 
   public form: FormGroup;
   public healthCareAndVisaWorkersList;
-  public returnUrl: URLStructure = { url: ['/dashboard'] };
+  public returnUrl: URLStructure = { url: ['/dashboard'], fragment: 'home' };
   public workplaceUid: string;
   public workers: any = [];
   public canViewWorker = false;
@@ -41,31 +40,50 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   public submitted: boolean;
   public updatedWorkers: any = [];
   public workersHealthAndCareVisaAnswersToSave = [];
+  @ViewChild('formEl') formEl: ElementRef;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
-    private route: ActivatedRoute,
-    private backLinkService: BackLinkService,
+    private backService: BackService,
     private errorSummaryService: ErrorSummaryService,
-    private workerService: WorkerService,
     private establishmentService: EstablishmentService,
     private permissionsService: PermissionsService,
     private internationalRecruitmentService: InternationalRecruitmentService,
     private alertService: AlertService,
   ) {
     this.form = this.formBuilder.group({
-      healthCareAndVisaRadioList: this.formBuilder.array([]),
+      healthAndCareVisaRadioList: this.formBuilder.group({}),
     });
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.workplaceUid = this.establishmentService.establishment.uid;
-
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.getWorkers();
     this.setPluralisation();
+    this.setBackLink();
+  }
+
+  get healthAndCareVisaRadioList(): FormGroup {
+    return this.form.get('healthAndCareVisaRadioList') as FormGroup;
+  }
+
+  get healthAndCareVisaRadioListValues(): AbstractControl[] {
+    return Object.values(this.healthAndCareVisaRadioList.controls);
+  }
+
+  initialiseForm(): void {
+    for (let i = 0; i < this.workers.length; i++) {
+      this.healthAndCareVisaRadioList.addControl(this.workers[i].uid, this.createFormGroupForWorker());
+    }
+  }
+
+  private createFormGroupForWorker(): FormGroup {
+    return this.formBuilder.group({
+      healthAndCareVisa: null,
+    });
   }
 
   setupServerErrorsMap() {
@@ -93,9 +111,33 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
           .pipe(take(1))
           .subscribe(({ workers }) => {
             this.workers = workers;
+            this.initialiseForm();
+            this.prefillForm();
           }),
       );
     }
+  }
+
+  prefillForm(): void {
+    const updatedWorkersResponse = this.internationalRecruitmentService.getInternationalRecruitmentWorkerAnswers();
+    if (
+      updatedWorkersResponse?.workplaceUid === this.workplaceUid &&
+      updatedWorkersResponse?.healthAndCareVisaWorkerAnswers
+    ) {
+      this.updatedWorkers = updatedWorkersResponse.healthAndCareVisaWorkerAnswers;
+
+      for (let worker of this.updatedWorkers) {
+        if (this.healthAndCareVisaRadioList.controls[worker.uid]) {
+          this.healthAndCareVisaRadioList.controls[worker.uid].setValue({
+            healthAndCareVisa: worker.healthAndCareVisa,
+          });
+        }
+      }
+    }
+  }
+
+  private setBackLink(): void {
+    this.backService.setBackLink(this.returnUrl);
   }
 
   private setPluralisation(): void {
@@ -126,15 +168,20 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     }
   }
 
-  public getWorkerRecordPath(event: Event, worker: Worker) {
+  public navigateToStaffRecordSummary(event: Event, workerUid: Worker) {
     event.preventDefault();
-    const path = ['/workplace', this.workplaceUid, 'staff-record', worker.uid, 'staff-record-summary'];
+    const path = ['/workplace', this.workplaceUid, 'staff-record', workerUid, 'staff-record-summary'];
     this.router.navigate(path);
   }
 
   public onSubmit(): void {
     this.updateHasWorkersWithHealthAndCareVisa(this.updatedWorkers);
     this.submitted = true;
+
+    if (this.updatedWorkers.length === 0) {
+      this.navigateToHome();
+      return;
+    }
 
     if (this.hasWorkersWithHealthAndCareVisa) {
       this.internationalRecruitmentService.setInternationalRecruitmentWorkerAnswers({
@@ -144,21 +191,26 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
       this.navigateToEmployedFromOutsideOrInsideUk();
     } else {
       this.establishmentService.updateWorkers(this.workplaceUid, this.workersHealthAndCareVisaAnswersToSave).subscribe(
-        (response) => this.navigateToHome(),
+        () => this.navigateToHomeWithSuccessAlert(),
         (error) => this.onSubmitError(error),
       );
     }
   }
 
-  public updateHasWorkersWithHealthAndCareVisa(updatedWorkers) {
+  public updateHasWorkersWithHealthAndCareVisa(updatedWorkers): void {
     this.hasWorkersWithHealthAndCareVisa = updatedWorkers.some((worker) => worker.healthAndCareVisa === 'Yes');
   }
 
   public navigateToHome(): void {
     this.router.navigate(['dashboard'], { fragment: 'home' });
-    this.alertService.addAlert({
-      type: 'success',
-      message: 'Health and Care Worker visa information saved',
+  }
+
+  public navigateToHomeWithSuccessAlert(): void {
+    this.router.navigate(['dashboard'], { fragment: 'home' }).then(() => {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Health and Care Worker visa information saved',
+      });
     });
   }
 
@@ -166,17 +218,20 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     this.router.navigate(['workplace', this.workplaceUid, 'employed-from-outside-or-inside-uk']);
   }
 
-  onSubmitError(error) {
+  onSubmitError(error): void {
     this.errorSummaryService.scrollToErrorSummary();
     this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
   }
 
-  public navigateToStaffRecords(event: Event) {
+  public navigateToStaffRecords(event: Event): void {
     event.preventDefault();
     this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
   }
 
   ngOnDestroy(): void {
+    if (!this.submitted) {
+      this.internationalRecruitmentService.setInternationalRecruitmentWorkerAnswers(null);
+    }
     this.subscriptions.unsubscribe();
   }
 }

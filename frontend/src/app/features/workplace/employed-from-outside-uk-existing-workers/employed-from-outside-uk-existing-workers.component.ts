@@ -140,6 +140,7 @@ export class EmployedFromOutsideUkExistingWorkersComponent implements OnInit {
   }
 
   private onSubmitSuccess(): void {
+    this.internationalRecruitmentService.setInternationalRecruitmentWorkerAnswers(null);
     this.router.navigate(['/dashboard'], { fragment: 'home' }).then(() => {
       this.alertService.addAlert({
         type: 'success',
