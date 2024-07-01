@@ -16,8 +16,9 @@ const {
 describe('server/routes/establishments/missingCqcProviderLocations', async () => {
   describe('get missingCqcProviderLocations', async () => {
     const locationId = '1-2003';
-
     const cqcLocationIds = ['1-12427547986', '1-2043158439', '1-5310224737'];
+
+    let request;
 
     beforeEach(() => {
       sinon.stub(CQCDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
@@ -26,6 +27,17 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           locationIds: cqcLocationIds,
         };
       });
+
+      request = {
+        method: 'GET',
+        url: `/api/missingCqcProviderLocations`,
+        params: {},
+        query: {
+          locationId: locationId,
+          establishmentUid: 'some-uuid',
+          establishmentId: 2,
+        },
+      };
     });
 
     afterEach(async () => {
@@ -33,7 +45,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
     });
 
     const childWorkplaces = {
-      count: 2,
+      count: 3,
       rows: [
         {
           uid: '23a455',
@@ -51,17 +63,6 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           locationId: '1-53',
         },
       ],
-    };
-
-    const request = {
-      method: 'GET',
-      url: `/api/missingCqcProviderLocations`,
-      params: {},
-      query: {
-        locationId: locationId,
-        establishmentUid: 'some-uuid',
-        establishmentId: 2,
-      },
     };
 
     it('should return a 200 status when call is successful', async () => {
@@ -93,6 +94,34 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
         },
         childWorkplacesCount: 3,
       };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await missingCqcProviderLocations(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return childWorkplaceCount and parent approval info with empty fields for CQC when no locationId', async () => {
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
+        updatedAt: moment(moment().subtract(21, 'days')),
+      });
+
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
+
+      const expectedResult = {
+        showMissingCqcMessage: false,
+        weeksSinceParentApproval: 3,
+        missingCqcLocations: {
+          count: 0,
+          missingCqcLocationIds: [],
+        },
+        childWorkplacesCount: 3,
+      };
+
+      request.query.locationId = null;
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
