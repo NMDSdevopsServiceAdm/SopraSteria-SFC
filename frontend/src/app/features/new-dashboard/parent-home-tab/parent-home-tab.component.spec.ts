@@ -49,6 +49,7 @@ describe('ParentHomeTabComponent', () => {
     establishment = Establishment,
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
+    permissions = [],
   ) => {
     const { fixture, queryAllByText, getByText, queryByText, getByTestId, queryByTestId } = await render(
       ParentHomeTabComponent,
@@ -62,7 +63,7 @@ describe('ParentHomeTabComponent', () => {
           },
           {
             provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(),
+            useFactory: MockPermissionsService.factory(permissions),
             deps: [HttpClient, Router, UserService],
           },
           {
@@ -104,7 +105,7 @@ describe('ParentHomeTabComponent', () => {
             ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
             : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
           canRunLocalAuthorityReport: false,
-          article: {slug: ''}
+          article: { slug: '' },
         },
         schemas: [NO_ERRORS_SCHEMA],
       },
@@ -257,13 +258,24 @@ describe('ParentHomeTabComponent', () => {
       expect(benefitsBundleLink.getAttribute('href')).toBe('/benefits-bundle');
     });
 
-    it('should show a card with a link that takes you to the bulk upload page', async () => {
-      const { getByText } = await setup();
+    it('should show a card with a link to bulk upload page when user has canBulkUpload permission', async () => {
+      const { queryByTestId } = await setup(false, Establishment, true, 9, ['canBulkUpload']);
 
-      const bulkUploadLink = getByText('Bulk upload your data');
+      const bulkUploadLink = queryByTestId('bulkUploadLink');
 
       expect(bulkUploadLink).toBeTruthy();
+      expect(bulkUploadLink.innerHTML).toBe('Bulk upload your data');
       expect(bulkUploadLink.getAttribute('href')).toBe('/bulk-upload');
+    });
+
+    it('should show the bulk upload card without a link when user does not have canBulkUpload permission', async () => {
+      const { getByText, queryByTestId } = await setup();
+
+      const bulkUploadText = getByText('Bulk upload your data');
+      const bulkUploadLink = queryByTestId('bulkUploadLink');
+
+      expect(bulkUploadText).toBeTruthy();
+      expect(bulkUploadLink).toBeFalsy();
     });
 
     it('should show a card with a link that takes you to the wdf page', async () => {
