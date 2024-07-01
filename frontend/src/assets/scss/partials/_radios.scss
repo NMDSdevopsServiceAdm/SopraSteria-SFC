@@ -7,7 +7,10 @@
 .asc-inline-radio-buttons .govuk-radios__item {
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Align items within each .govuk-radios__item to the right */
+}
+
+.asc-inline-radio-buttons .asc-radios-with-spacing {
+  margin-right: 140px;
 }
 
 .asc-inline-radio-buttons .govuk-radios__item:last-child {

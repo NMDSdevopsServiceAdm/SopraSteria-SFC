@@ -20,8 +20,8 @@
         </app-details>
         <p class="govuk-!-padding-bottom-2">
           You can also answer this question for each worker listed by going to
-          <a href="#" class="govuk-link" (click)="navigateToStaffRecords($event)">staff records</a> and selecting them
-          from there or by adding the information in a bulk upload.
+          <a href="#" class="govuk-link govuk__nowrap" (click)="navigateToStaffRecords($event)">staff records</a>
+          and selecting them from there or by adding the information in a bulk upload.
         </p>
       </div>
     </div>
@@ -51,7 +51,7 @@
                 <div class="govuk-radios govuk-radios--inline asc-inline-radio-buttons" data-module="govuk-radios">
                   <div
                     *ngFor="let answer of healthCareAndVisaAnswers; let j = index"
-                    class="govuk-radios__item govuk-!-margin-left-4 govuk-!-margin-bottom-0"
+                    class="govuk-radios__item govuk-!-margin-bottom-0 asc-radios-with-spacing"
                   >
                     <input
                       id="healthAndCareVisa-{{ i }}-{{ j }}"
@@ -74,6 +74,5 @@
       </div>
     </div>
   </fieldset>
-  <!-- <app-submit-button [callToAction]="'Continue'"></app-submit-button> -->
   <app-submit-exit-buttons [cta]="'Continue'" [return]="returnUrl" [exit]="'Cancel'"></app-submit-exit-buttons>
 </form>
