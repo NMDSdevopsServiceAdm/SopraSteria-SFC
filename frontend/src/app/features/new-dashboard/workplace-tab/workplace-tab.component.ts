@@ -1,4 +1,5 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -27,13 +28,14 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private alertService: AlertService,
     private tabsService: TabsService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.WORKPLACE_TAB);
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
-    this.showCqcDetailsBanner = this.establishmentService.checkCQCDetailsBanner;
+    this.showCqcDetailsBanner = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch;
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {

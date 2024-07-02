@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
 import { Roles } from '@core/model/roles.enum';
@@ -33,6 +33,7 @@ const MockWindow = {
     },
   },
 };
+
 describe('NewWorkplaceTabComponent', () => {
   const setup = async (
     permissions = ['canEditEstablishment'],
@@ -60,10 +61,9 @@ describe('NewWorkplaceTabComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
+          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(),
           deps: [HttpClient],
         },
-
         {
           provide: WindowRef,
           useClass: WindowRef,
@@ -78,6 +78,16 @@ describe('NewWorkplaceTabComponent', () => {
           provide: AuthService,
           useFactory: MockAuthService.factory(true, isAdmin),
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                cqcStatusCheck: { cqcStatusMatch: checkCqcDetails },
+              },
+            },
+          },
         },
         { provide: WindowToken, useValue: MockWindow },
       ],
@@ -133,10 +143,16 @@ describe('NewWorkplaceTabComponent', () => {
       expect(queryByText('Start to add more details about your workplace')).toBeFalsy();
     });
 
-    it('should show the check cqc details banner when checkCQCDetails is true', async () => {
+    it('should show the check cqc details banner when checkCQCDetails is true in route data', async () => {
       const { getByTestId } = await setup(['canEditEstablishment'], true);
 
       expect(getByTestId('check-cqc-details-banner')).toBeTruthy();
+    });
+
+    it('should not show the check cqc details banner when checkCQCDetails is false in route data', async () => {
+      const { queryByTestId } = await setup(['canEditEstablishment'], false);
+
+      expect(queryByTestId('check-cqc-details-banner')).toBeFalsy();
     });
 
     it('should not show the check cqc details banner when there are not the correct permissions', async () => {
