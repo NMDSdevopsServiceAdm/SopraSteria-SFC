@@ -330,7 +330,9 @@ class Worker extends EntityValidator {
   }
 
   get employedFromOutsideUk() {
-    return this._properties.get('EmployedFromOutsideUk') ? this._properties.get('EmployedFromOutsideUk').property : null;
+    return this._properties.get('EmployedFromOutsideUk')
+      ? this._properties.get('EmployedFromOutsideUk').property
+      : null;
   }
 
   // takes the given JSON document and creates a Worker's set of extendable properties
@@ -370,6 +372,11 @@ class Worker extends EntityValidator {
       if (document.nationality && document.nationality.value === 'British') {
         delete document.nationality.other;
         document.britishCitizenship = null;
+      }
+
+      // Remove employed from outside UK if they don't have health and care visa
+      if (document.healthAndCareVisa && document.healthAndCareVisa !== 'Yes') {
+        document.employedFromOutsideUk = null;
       }
 
       // Remove year arrived if born in the UK or setting to Don't know
