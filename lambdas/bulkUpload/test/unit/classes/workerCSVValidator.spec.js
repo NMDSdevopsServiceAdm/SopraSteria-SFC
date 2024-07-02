@@ -433,11 +433,30 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         { buNumber: '2', mapping: 'No' },
         { buNumber: '999', mapping: "Don't know" },
       ].forEach((answer) => {
-        it(`should not add warning when valid (${answer.buNumber}) health and care visa provided and worker does not have British citizenship`, async () => {
+        it(`should not add warning when valid (${answer.buNumber}) health and care visa provided and worker from other nation and unknown citizenship`, async () => {
           const worker = buildWorkerCsv({
             overrides: {
               STATUS: 'NEW',
               NATIONALITY: '418',
+              BRITISHCITIZENSHIP: '999',
+              HANDCVISA: answer.buNumber,
+            },
+          });
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          await validator.validate();
+          await validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([]);
+          expect(validator._validationErrors.length).to.equal(0);
+        });
+
+        it(`should not add warning when valid (${answer.buNumber}) health and care visa provided, worker does not have British citizenship and don't know nationality`, async () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              NATIONALITY: '998',
               BRITISHCITIZENSHIP: '2',
               HANDCVISA: answer.buNumber,
             },

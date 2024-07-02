@@ -1075,12 +1075,18 @@ class WorkerCsvValidator {
   }
 
   _shouldNotAnswerHealthAndCareVisaQuestion() {
+    const dontKnow = 998;
+    const british = 826;
+    const yes = 1;
+    const no = 2;
+
     const nationality = parseInt(this._currentLine.NATIONALITY, 10);
     const britishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP, 10);
 
     const isWorkerFromOtherNationWithUnknownCitizenship =
-      nationality !== 826 && nationality !== 999 && britishCitizenship !== 1;
-    const isWorkerWithoutBritishCitizenshipAndUnknownNationality = nationality === 999 && britishCitizenship === 2;
+      nationality && nationality !== british && nationality !== dontKnow && britishCitizenship !== yes;
+    const isWorkerWithoutBritishCitizenshipAndUnknownNationality =
+      nationality === dontKnow && britishCitizenship === no;
 
     return !isWorkerFromOtherNationWithUnknownCitizenship && !isWorkerWithoutBritishCitizenshipAndUnknownNationality;
   }
