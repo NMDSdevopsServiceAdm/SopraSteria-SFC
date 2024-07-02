@@ -62,15 +62,6 @@ const getCategoryTraining = async (req, res) => {
 
     const { id: establishmentId } = await models.establishment.findByUid(establishmentUid);
 
-    const mandatoryTraining = await models.MandatoryTraining.checkIfTrainingCategoryIsMandatory(
-      establishmentId,
-      trainingCategoryId,
-    );
-
-    const isMandatory = mandatoryTraining.length > 0;
-
-    const jobIds = isMandatory && mandatoryTraining.map((training) => training.jobFK);
-
     const {
       count: trainingCount,
       rows: training,
@@ -82,11 +73,9 @@ const getCategoryTraining = async (req, res) => {
       pageIndex && +pageIndex,
       sortBy,
       searchTerm,
-      isMandatory,
-      jobIds,
     );
 
-    return res.status(200).json({ training, trainingCount, category: category.category, isMandatory });
+    return res.status(200).json({ training, trainingCount, category: category.category });
   } catch (error) {
     console.error(error);
     return res.status(500).send();
