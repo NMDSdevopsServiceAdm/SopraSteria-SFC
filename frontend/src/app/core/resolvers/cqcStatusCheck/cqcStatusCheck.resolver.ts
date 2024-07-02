@@ -13,7 +13,7 @@ export class CqcStatusCheckResolver implements Resolve<any> {
   constructor(private establishmentService: EstablishmentService) {}
 
   resolve(): Observable<CQCRegistrationStatusResponse> {
-    const { locationId, postcode, mainService } = this.establishmentService.primaryWorkplace;
+    const { locationId, postcode, mainService } = this.establishmentService.establishment;
 
     if (locationId) {
       return this.establishmentService
