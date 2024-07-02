@@ -282,6 +282,38 @@ describe('Worker Class', () => {
         expect(countryOfBirthWorker).to.deep.equal(true);
       });
     });
+
+    describe('Resetting employedFromOutsideUk', () => {
+      it('should set employedFromOutsideUk to null when healthAndCareVisa set to No', async () => {
+        const document = {
+          healthAndCareVisa: 'No',
+        };
+
+        await worker.load(document);
+
+        expect(document).to.deep.equal({ healthAndCareVisa: 'No', employedFromOutsideUk: null });
+      });
+
+      it("should set employedFromOutsideUk to null when healthAndCareVisa set to Don't know'", async () => {
+        const document = {
+          healthAndCareVisa: "Don't know",
+        };
+
+        await worker.load(document);
+
+        expect(document).to.deep.equal({ healthAndCareVisa: "Don't know", employedFromOutsideUk: null });
+      });
+
+      it("should not set employedFromOutsideUk when healthAndCareVisa set to Yes'", async () => {
+        const document = {
+          healthAndCareVisa: 'Yes',
+        };
+
+        await worker.load(document);
+
+        expect(document).to.deep.equal({ healthAndCareVisa: 'Yes' });
+      });
+    });
   });
 
   describe('setWdfProperties()', async () => {

@@ -14,7 +14,7 @@ exports.EmployedFromOutsideUkProperty = class EmployedFromOutsideUkProperty exte
 
   // concrete implementations
   async restoreFromJson(document) {
-    if (document.employedFromOutsideUk) {
+    if (document.employedFromOutsideUk || document.employedFromOutsideUk === null) {
       if (EMPLOYED_FROM_INSIDE_UK_TYPE.includes(document.employedFromOutsideUk)) {
         this.property = document.employedFromOutsideUk;
       } else {
