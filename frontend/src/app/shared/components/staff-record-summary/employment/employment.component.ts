@@ -10,6 +10,7 @@ import dayjs from 'dayjs';
 import isNumber from 'lodash/isNumber';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 @Component({
   selector: 'app-employment',
@@ -27,8 +28,16 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     wdfConfirmFieldsService: WdfConfirmFieldsService,
     route: ActivatedRoute,
     ethnicityService: EthnicityService,
+    internationalRecruitmentService: InternationalRecruitmentService,
   ) {
-    super(permissionsService, workerService, wdfConfirmFieldsService, route, ethnicityService);
+    super(
+      permissionsService,
+      workerService,
+      wdfConfirmFieldsService,
+      route,
+      ethnicityService,
+      internationalRecruitmentService,
+    );
   }
 
   isNumber(number: number) {
@@ -60,5 +69,19 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
 
   get mainStartDate() {
     return dayjs(this.worker.mainJobStartDate).format('D MMMM YYYY');
+  }
+
+  get displayHealthAndCareVisa() {
+    return this.internationalRecruitmentService.shouldSeeInternationalRecruitmentQuestions(this.worker);
+  }
+
+  get displayEmployedFromOutsideOrInsideUk() {
+    return this.worker.healthAndCareVisa === 'Yes';
+  }
+
+  get displayEmployedFromOutsideOrInsideUkValue() {
+    return this.internationalRecruitmentService.getEmployedFromOutsideUkStaffRecordValue(
+      this.worker.employedFromOutsideUk,
+    );
   }
 }

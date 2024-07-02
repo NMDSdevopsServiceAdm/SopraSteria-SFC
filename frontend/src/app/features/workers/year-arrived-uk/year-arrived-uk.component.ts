@@ -5,6 +5,7 @@ import { INT_PATTERN } from '@core/constants/constants';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
@@ -17,8 +18,6 @@ import { QuestionComponent } from '../question/question.component';
 export class YearArrivedUkComponent extends QuestionComponent {
   public intPattern = INT_PATTERN.toString();
   public section = 'Personal details';
-  private mainJobStartDatePath: string[];
-  public insideYearArrivedUkMiniFlow: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -28,6 +27,7 @@ export class YearArrivedUkComponent extends QuestionComponent {
     protected errorSummaryService: ErrorSummaryService,
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
+    protected internationalRecruitmentService: InternationalRecruitmentService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
@@ -40,7 +40,9 @@ export class YearArrivedUkComponent extends QuestionComponent {
   }
 
   init() {
-    this.next = this.getRoutePath('main-job-start-date');
+    this.next = this.internationalRecruitmentService.shouldSeeInternationalRecruitmentQuestions(this.worker)
+      ? this.getRoutePath('health-and-care-visa')
+      : this.getRoutePath('main-job-start-date');
 
     this.setupFormValidation();
     if (this.worker.yearArrived) {
