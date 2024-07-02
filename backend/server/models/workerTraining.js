@@ -107,19 +107,15 @@ module.exports = function (sequelize, DataTypes) {
     pageIndex = 0,
     sortBy = '',
     searchTerm = '',
-    isMandatory,
-    jobIds,
   ) {
     const addSearchToCount = searchTerm ? `AND "worker"."NameOrIdValue" ILIKE '%${searchTerm}%'` : '';
-    const joinTypeOnCount = isMandatory ? 'RIGHT OUTER JOIN' : 'INNER JOIN';
-    const jobIdsWithMandatoryTraining = isMandatory ? `AND "worker->mainJob"."JobID" IN (${jobIds})` : '';
 
     const count = await sequelize.query(`
         SELECT count("worker"."ID") AS "count"
           FROM "cqc"."WorkerTraining" AS "workerTraining"
-          ${joinTypeOnCount} "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}'
+          INNER JOIN "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}'
           LEFT OUTER JOIN "cqc"."Job" AS "worker->mainJob" ON "worker"."MainJobFKValue" = "worker->mainJob"."JobID"
-          WHERE "worker"."EstablishmentFK" = '${establishmentId}' AND "worker"."Archived" = false ${addSearchToCount} ${jobIdsWithMandatoryTraining};
+          WHERE "worker"."EstablishmentFK" = '${establishmentId}' AND "worker"."Archived" = false ${addSearchToCount};
     `);
 
     const category = await sequelize.models.workerTrainingCategories.findOne({
@@ -215,7 +211,6 @@ module.exports = function (sequelize, DataTypes) {
         '$worker.EstablishmentFK$': establishmentId,
         '$worker.Archived$': false,
         ...(searchTerm ? { '$worker.NameOrIdValue$': { [Op.iLike]: `%${searchTerm}%` } } : {}),
-        ...(jobIds && { '$worker.mainJob.JobID$': { [Op.in]: jobIds } }),
       },
       include: [
         {
@@ -226,7 +221,7 @@ module.exports = function (sequelize, DataTypes) {
             col1: sequelize.where(sequelize.col('workerTraining.WorkerFK'), '=', sequelize.col('worker.ID')),
             col2: sequelize.where(sequelize.col('workerTraining.CategoryFK'), '=', trainingCategoryId),
           },
-          right: isMandatory,
+          right: true,
           include: [
             {
               model: sequelize.models.job,
