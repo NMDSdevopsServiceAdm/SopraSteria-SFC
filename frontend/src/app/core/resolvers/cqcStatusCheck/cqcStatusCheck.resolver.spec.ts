@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 
@@ -32,12 +33,19 @@ describe('CqcStatusCheckResolver', () => {
 
   it('should call getCQCRegistrationStatus', async () => {
     const { resolver, establishmentService } = await setup();
+    const establishment = {
+      locationId: '1-11111111',
+      postcode: 'ABC123',
+      mainService: { name: 'Care' },
+    } as Establishment;
+
+    spyOnProperty(establishmentService, 'establishment').and.returnValue(establishment);
     const getCqcRegistrationStatusSpy = spyOn(establishmentService, 'getCQCRegistrationStatus').and.callThrough();
     resolver.resolve();
 
-    expect(getCqcRegistrationStatusSpy).toHaveBeenCalledWith('1-11111111', {
-      postcode: 'AB1 2CD',
-      mainService: 'Care',
+    expect(getCqcRegistrationStatusSpy).toHaveBeenCalledWith(establishment.locationId, {
+      postcode: establishment.postcode,
+      mainService: establishment.mainService.name,
     });
   });
 });
