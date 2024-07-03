@@ -24,7 +24,7 @@ import { render } from '@testing-library/angular';
 
 import { Establishment } from '../../../../mockdata/establishment';
 import { NewDashboardHeaderComponent } from '../../../shared/components/new-dashboard-header/dashboard-header.component';
-import { NewWorkplaceTabComponent } from './workplace-tab.component';
+import { ViewSubsidiaryWorkplaceComponent } from './view-subsidiary-workplace.component';
 
 const MockWindow = {
   dataLayer: {
@@ -34,68 +34,67 @@ const MockWindow = {
   },
 };
 
-describe('NewWorkplaceTabComponent', () => {
+describe('ViewSubsidiaryWorkplaceComponent', () => {
   const setup = async (
     permissions = ['canEditEstablishment'],
     cqcStatusMatch = true,
     establishment = Establishment,
-    isAdmin = true,
-    subsidiaries = 0,
   ) => {
-    const role = isAdmin ? Roles.Admin : Roles.Edit;
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceTabComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      providers: [
-        {
-          provide: FeatureFlagsService,
-          useClass: MockFeatureFlagsService,
-        },
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
-          deps: [HttpClient, Router, UserService],
-        },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
-        },
-        {
-          provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(),
-          deps: [HttpClient],
-        },
-        {
-          provide: WindowRef,
-          useClass: WindowRef,
-        },
+    const role = Roles.Edit;
+    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(
+      ViewSubsidiaryWorkplaceComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        providers: [
+          {
+            provide: FeatureFlagsService,
+            useClass: MockFeatureFlagsService,
+          },
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(permissions as PermissionType[]),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: BreadcrumbService,
+            useClass: MockBreadcrumbService,
+          },
+          {
+            provide: EstablishmentService,
+            useFactory: MockEstablishmentServiceCheckCQCDetails.factory(),
+            deps: [HttpClient],
+          },
+          {
+            provide: WindowRef,
+            useClass: WindowRef,
+          },
 
-        {
-          provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, role),
-          deps: [HttpClient],
-        },
-        {
-          provide: AuthService,
-          useFactory: MockAuthService.factory(true, isAdmin),
-          deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {
-                cqcStatusCheck: { cqcStatusMatch },
+          {
+            provide: UserService,
+            useFactory: MockUserService.factory(0, role),
+            deps: [HttpClient],
+          },
+          {
+            provide: AuthService,
+            useFactory: MockAuthService.factory(true, false),
+            deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                data: {
+                  cqcStatusCheck: { cqcStatusMatch },
+                  establishment,
+                },
               },
             },
           },
-        },
-        { provide: WindowToken, useValue: MockWindow },
-      ],
-      componentProperties: {
-        workplace: establishment,
+          { provide: WindowToken, useValue: MockWindow },
+        ],
+        declarations: [NewDashboardHeaderComponent],
       },
-      declarations: [NewDashboardHeaderComponent],
-    });
+    );
 
     const component = fixture.componentInstance;
 
@@ -111,12 +110,6 @@ describe('NewWorkplaceTabComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
-  });
-
-  it('should render the workplace summary component', async () => {
-    const { getByTestId } = await setup();
-
-    expect(getByTestId('workplace-summary')).toBeTruthy();
   });
 
   describe('banners', () => {
