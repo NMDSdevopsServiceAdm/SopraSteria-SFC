@@ -125,6 +125,7 @@ const routes: Routes = [
       usefulLinksPay: UsefulLinkPayResolver,
       usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
       noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
+      cqcStatusCheck: CqcStatusCheckResolver,
     },
     children: [
       {
@@ -167,9 +168,6 @@ const routes: Routes = [
         path: 'workplace',
         component: ViewSubsidiaryWorkplaceComponent,
         data: { title: 'Workplace' },
-        resolve: {
-          cqcStatusCheck: CqcStatusCheckResolver,
-        },
       },
       {
         path: 'delete-workplace',

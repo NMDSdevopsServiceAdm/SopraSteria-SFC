@@ -15,7 +15,7 @@ import { TabsService } from '@core/services/tabs.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
-import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -40,7 +40,7 @@ const MockWindow = {
 
 describe('ViewSubsidiaryHomeComponent', () => {
   const setup = async (
-    checkCqcDetails = false,
+    cqcStatusMatch = true,
     establishment = Establishment,
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
@@ -89,6 +89,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
                     trainingCounts: {} as TrainingCounts,
                     workersNotCompleted: [],
                   },
+                  cqcStatusCheck: { cqcStatusMatch },
                 },
               },
               queryParams: of({ view: null }),
@@ -97,8 +98,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
           },
           {
             provide: EstablishmentService,
-            useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
-            deps: [HttpClient],
+            useClass: MockEstablishmentService,
           },
           { provide: WindowToken, useValue: MockWindow },
         ],
@@ -334,7 +334,7 @@ describe('ViewSubsidiaryHomeComponent', () => {
 
       it('should show a warning link which should navigate to the workplace tab', async () => {
         const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-        const { getByText, tabsServiceSpy } = await setup(true, establishment);
+        const { getByText, tabsServiceSpy } = await setup(false, establishment);
 
         const link = getByText('Add more details to your workplace');
 
