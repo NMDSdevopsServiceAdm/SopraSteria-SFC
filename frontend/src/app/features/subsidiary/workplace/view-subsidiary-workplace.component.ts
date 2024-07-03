@@ -35,7 +35,7 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
     this.workplace = this.route.snapshot.data.establishment;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
-    this.showCqcDetailsBanner = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch;
+    this.showCqcDetailsBanner = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
   }
 
