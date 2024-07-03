@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { provideRouter, Router, RouterModule } from '@angular/router';
@@ -6,7 +5,7 @@ import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
-import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
@@ -28,8 +27,7 @@ describe('Summary section', () => {
         },
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(overrides.checkCqcDetails ?? false),
-          deps: [HttpClient],
+          useClass: MockEstablishmentService,
         },
         provideRouter([]),
       ],
@@ -55,6 +53,7 @@ describe('Summary section', () => {
           overrides.noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered ?? 0,
         noOfWorkersWithDelegatedHealthcareUnanswered: overrides.noOfWorkersWithDelegatedHealthcareUnanswered ?? 0,
         workplacesNeedAttention: overrides.workplacesNeedAttention ?? false,
+        showCheckCqcDetails: overrides.checkCqcDetails ?? false
       },
     });
 

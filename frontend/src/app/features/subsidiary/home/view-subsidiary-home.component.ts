@@ -67,6 +67,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public noOfWorkersWhoRequireInternationalRecruitment: number;
   public noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
   public noOfWorkersWithDelegatedHealthcareUnanswered: number;
+  public showCheckCqcDetails: boolean;
 
   constructor(
     private userService: UserService,
@@ -93,6 +94,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.noOfWorkersWithDelegatedHealthcareUnanswered =
       this.route.snapshot.data.noOfWorkersWhoRequireCarriesOutDelegatedHealthCareActivitiesAnswer?.noOfWorkersWhoRequiresAnswer;
 
+    this.showCheckCqcDetails = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();
