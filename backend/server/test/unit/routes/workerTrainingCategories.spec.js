@@ -261,6 +261,7 @@ describe('workerTrainingCategories', () => {
 
       const expectedResponse = {
         category: category.category,
+        isMandatory: false,
         trainingCount: 3,
         training: trainingArr,
       };
@@ -300,6 +301,7 @@ describe('workerTrainingCategories', () => {
 
       const expectedResponse = {
         category: category.category,
+        isMandatory: true,
         trainingCount: 4,
         training: trainingArr,
       };

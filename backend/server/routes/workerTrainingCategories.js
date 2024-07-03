@@ -62,6 +62,13 @@ const getCategoryTraining = async (req, res) => {
 
     const { id: establishmentId } = await models.establishment.findByUid(establishmentUid);
 
+    const mandatoryTraining = await models.MandatoryTraining.checkIfTrainingCategoryIsMandatory(
+      establishmentId,
+      trainingCategoryId,
+    );
+
+    const isMandatory = mandatoryTraining.length > 0;
+
     const {
       count: trainingCount,
       rows: training,
@@ -75,7 +82,7 @@ const getCategoryTraining = async (req, res) => {
       searchTerm,
     );
 
-    return res.status(200).json({ training, trainingCount, category: category.category });
+    return res.status(200).json({ training, trainingCount, category: category.category, isMandatory });
   } catch (error) {
     console.error(error);
     return res.status(500).send();
