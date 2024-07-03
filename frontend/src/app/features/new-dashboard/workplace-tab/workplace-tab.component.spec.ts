@@ -37,7 +37,7 @@ const MockWindow = {
 describe('NewWorkplaceTabComponent', () => {
   const setup = async (
     permissions = ['canEditEstablishment'],
-    checkCqcDetails = false,
+    cqcStatusMatch = true,
     establishment = Establishment,
     isAdmin = true,
     subsidiaries = 0,
@@ -84,7 +84,7 @@ describe('NewWorkplaceTabComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                cqcStatusCheck: { cqcStatusMatch: checkCqcDetails },
+                cqcStatusCheck: { cqcStatusMatch },
               },
             },
           },
@@ -143,14 +143,14 @@ describe('NewWorkplaceTabComponent', () => {
       expect(queryByText('Start to add more details about your workplace')).toBeFalsy();
     });
 
-    it('should show the check cqc details banner when checkCQCDetails is true in route data', async () => {
-      const { getByTestId } = await setup(['canEditEstablishment'], true);
+    it('should show the check cqc details banner when cqcStatusMatch is false in route data', async () => {
+      const { getByTestId } = await setup(['canEditEstablishment'], false);
 
       expect(getByTestId('check-cqc-details-banner')).toBeTruthy();
     });
 
-    it('should not show the check cqc details banner when checkCQCDetails is false in route data', async () => {
-      const { queryByTestId } = await setup(['canEditEstablishment'], false);
+    it('should not show the check cqc details banner when cqcStatusMatch is true in route data', async () => {
+      const { queryByTestId } = await setup(['canEditEstablishment'], true);
 
       expect(queryByTestId('check-cqc-details-banner')).toBeFalsy();
     });
