@@ -35,7 +35,7 @@ export class NewWorkplaceTabComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.WORKPLACE_TAB);
     this.canEditEstablishment = this.permissionsService.can(this.workplace?.uid, 'canEditEstablishment');
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
-    this.showCqcDetailsBanner = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch;
+    this.showCqcDetailsBanner = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
   }
 
   public navigateToTab(event: Event, selectedTab: string): void {
