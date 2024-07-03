@@ -30,6 +30,7 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
   @Input() noOfWorkersWithCareWorkforcePathwayCategoryRoleUnanswered: number;
   @Input() workplacesNeedAttention: boolean;
+  @Input() showCheckCqcDetails: boolean;
 
   public sections: Section[] = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -106,12 +107,16 @@ export class SummarySectionComponent implements OnInit, OnDestroy {
       this.sections[0].route = ['/workplace', this.workplace.uid, 'care-workforce-pathway-awareness'];
       this.careWorkforcePathwayLinkDisplaying = true;
       this.sections[0].showMessageAsText = !this.canEditEstablishment;
-    } else if (this.establishmentService.checkCQCDetailsBanner) {
+    } else if (this.showCheckCqcDetails) {
       this.sections[0].message = 'You need to check your CQC details';
     } else if (numberOfStaff === undefined || numberOfStaff === null) {
       this.sections[0].message = `You've not added your total number of staff`;
       this.sections[0].redFlag = true;
-    } else if (numberOfStaff !== this.workerCount && this.afterEightWeeksFromFirstLogin() && this.canViewListOfWorkers) {
+    } else if (
+      numberOfStaff !== this.workerCount &&
+      this.afterEightWeeksFromFirstLogin() &&
+      this.canViewListOfWorkers
+    ) {
       this.sections[0].message = 'Staff total does not match staff records added';
     } else if (!vacancies && !leavers && !starters) {
       this.sections[0].message = `You've not added any vacancy and turnover data`;
