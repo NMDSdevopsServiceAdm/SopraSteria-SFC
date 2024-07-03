@@ -17,7 +17,7 @@ import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockArticlesService } from '@core/test-utils/MockArticlesService';
-import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -45,7 +45,7 @@ describe('ParentHomeTabComponent', () => {
   const articles = MockArticlesService.articlesFactory();
 
   const setup = async (
-    checkCqcDetails = false,
+    cqcStatusMatch = true,
     establishment = Establishment,
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
@@ -83,6 +83,7 @@ describe('ParentHomeTabComponent', () => {
                     trainingCounts: {} as TrainingCounts,
                     workersNotCompleted: [],
                   },
+                  cqcStatusCheck: { cqcStatusMatch },
                 },
               },
               queryParams: of({ view: null }),
@@ -91,8 +92,7 @@ describe('ParentHomeTabComponent', () => {
           },
           {
             provide: EstablishmentService,
-            useFactory: MockEstablishmentServiceCheckCQCDetails.factory(checkCqcDetails),
-            deps: [HttpClient],
+            useClass: MockEstablishmentService,
           },
           { provide: ArticlesService, useClass: MockArticlesService },
           { provide: WindowToken, useValue: MockWindow },
@@ -104,7 +104,7 @@ describe('ParentHomeTabComponent', () => {
             ? { workplaces: noOfWorkplaces, staff: 4, localAuthority: 'Test LA' }
             : ({ workplaces: 0, staff: 0, localAuthority: 'Test LA' } as Meta),
           canRunLocalAuthorityReport: false,
-          article: {slug: ''}
+          article: { slug: '' },
         },
         schemas: [NO_ERRORS_SCHEMA],
       },
@@ -332,7 +332,7 @@ describe('ParentHomeTabComponent', () => {
 
       it('should show a warning link which should navigate to the workplace tab', async () => {
         const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-        const { component, fixture, getByText, tabsServiceSpy } = await setup(true, establishment);
+        const { component, fixture, getByText, tabsServiceSpy } = await setup(false, establishment);
 
         component.canViewListOfWorkers = true;
         component.canViewEstablishment = true;
@@ -343,6 +343,16 @@ describe('ParentHomeTabComponent', () => {
 
         expect(link).toBeTruthy();
         expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
+      });
+
+      it('should show a CQC message when showAddWorkplaceDetailsBanner is false and cqcStatusMatch is false', async () => {
+        const { component, fixture, getByText } = await setup(false);
+
+        component.canViewListOfWorkers = true;
+        component.canViewEstablishment = true;
+        fixture.detectChanges();
+
+        expect(getByText('You need to check your CQC details')).toBeTruthy();
       });
     });
 

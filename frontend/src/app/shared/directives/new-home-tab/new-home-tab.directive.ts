@@ -84,6 +84,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public workplacesCount: number;
   public isParentSubsidiaryView: boolean;
   public article: Article;
+  public showCheckCqcDetails: boolean;
 
   constructor(
     private userService: UserService,
@@ -106,6 +107,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
+    this.showCheckCqcDetails = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
 
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.workplace.showAddWorkplaceDetailsBanner;
