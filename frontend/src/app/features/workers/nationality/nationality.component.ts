@@ -92,8 +92,17 @@ export class NationalityComponent extends QuestionComponent {
   generateUpdateProps() {
     const { nationalityName, nationalityKnown } = this.form.controls;
 
+    let extraFields = {};
+
     if (this.worker && nationalityKnown.value === 'British') {
       this.worker.britishCitizenship = null;
+      this.worker.healthAndCareVisa = null;
+      this.worker.employedFromOutsideUk = null;
+      extraFields = {
+        britishCitizenship: null,
+        healthAndCareVisa: null,
+        employedFromOutsideUk: null,
+      };
     }
 
     return nationalityKnown.value
@@ -106,6 +115,7 @@ export class NationalityComponent extends QuestionComponent {
               },
             }),
           },
+          ...extraFields,
         }
       : null;
   }
