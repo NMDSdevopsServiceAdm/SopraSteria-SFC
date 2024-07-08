@@ -283,6 +283,61 @@ describe('Worker Class', () => {
       });
     });
 
+    describe('Resetting healthAndCareVisa', () => {
+      it('should set healthAndCareVisa and employedFromOutsideUk to null when nationality is set to British', async () => {
+        const document = {
+          nationality: {
+            value: 'British',
+          },
+        };
+
+        await worker.load(document);
+
+        expect(document).to.deep.equal({
+          nationality: {
+            value: 'British',
+          },
+          britishCitizenship: null,
+          healthAndCareVisa: null,
+          employedFromOutsideUk: null,
+        });
+      });
+
+      it('should set healthAndCareVisa and employedFromOutsideUk to null when britishCitizenship is set to Yes', async () => {
+        const document = {
+          britishCitizenship: 'Yes',
+        };
+
+        await worker.load(document);
+
+        expect(document).to.deep.equal({
+          britishCitizenship: 'Yes',
+          healthAndCareVisa: null,
+          employedFromOutsideUk: null,
+        });
+      });
+
+      it("should set healthAndCareVisa and employedFromOutsideUk to null when nationality is set to Don't know britishCitizenship is set to Don't know", async () => {
+        const document = {
+          nationality: {
+            value: "Don't know",
+          },
+          britishCitizenship: "Don't know",
+        };
+
+        await worker.load(document);
+
+        expect(document).to.deep.equal({
+          nationality: {
+            value: "Don't know",
+          },
+          britishCitizenship: "Don't know",
+          healthAndCareVisa: null,
+          employedFromOutsideUk: null,
+        });
+      });
+    });
+
     describe('Resetting employedFromOutsideUk', () => {
       it('should set employedFromOutsideUk to null when healthAndCareVisa set to No', async () => {
         const document = {

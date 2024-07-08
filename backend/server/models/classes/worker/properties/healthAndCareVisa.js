@@ -14,7 +14,7 @@ exports.HealthAndCareVisaProperty = class HealthAndCareVisaProperty extends Chan
 
   // concrete implementations
   async restoreFromJson(document) {
-    if (document.healthAndCareVisa) {
+    if (document.healthAndCareVisa || document.healthAndCareVisa === null) {
       if (HEALTH_AND_CARE_VISA_TYPE.includes(document.healthAndCareVisa)) {
         this.property = document.healthAndCareVisa;
       } else {

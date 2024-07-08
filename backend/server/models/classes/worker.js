@@ -374,6 +374,18 @@ class Worker extends EntityValidator {
         document.britishCitizenship = null;
       }
 
+      // Remove health and care visa and employed from outside UK if they are British or have a British citizenship
+      if (
+        (document.nationality && document.nationality.value === 'British') ||
+        (document.britishCitizenship && document.britishCitizenship === 'Yes') ||
+        (document.nationality &&
+          document.nationality.value === "Don't know" &&
+          document.britishCitizenship === "Don't know")
+      ) {
+        document.healthAndCareVisa = null;
+        document.employedFromOutsideUk = null;
+      }
+
       // Remove employed from outside UK if they don't have health and care visa
       if (document.healthAndCareVisa && document.healthAndCareVisa !== 'Yes') {
         document.employedFromOutsideUk = null;
