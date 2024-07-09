@@ -51,7 +51,7 @@ describe('validateWorkerUnderNationalInsuranceMaximum', () => {
     });
 
     it('should return true when only one occurence of worker with hours above NI maximum', async () => {
-      const workers = [{ hours: { averageHours: 68 }, niNumber: 'ABC' }];
+      const workers = [{ hours: { averageHours: 78 }, niNumber: 'ABC' }];
 
       expect(worksOverNationalInsuranceMaximum(worker, workers)).to.be.true;
     });

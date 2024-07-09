@@ -18,7 +18,7 @@ const worksOverNationalInsuranceMaximum = (thisWorker, workers) => {
     return sum;
   }, 0);
 
-  return workerTotalHours > 65;
+  return workerTotalHours > 75;
 };
 
 const validateWorkerUnderNationalInsuranceMaximum = (thisWorker, myWorkers, csvWorkerSchemaErrors) => {
