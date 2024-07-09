@@ -112,39 +112,58 @@ export class WorkerService {
 
   getWorker(workplaceUid: string, workerId: string, wdf: boolean = false): Observable<Worker> {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
-    return this.http.get<Worker>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}`, { params });
+    return this.http.get<Worker>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}`,
+      { params },
+    );
   }
 
   public getAllWorkers(establishmentuid: string, queryParams?: Params): Observable<WorkersResponse> {
     return this.http
-      .get<WorkersResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/worker`, { params: queryParams || {} })
+      .get<WorkersResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/worker`, {
+        params: queryParams || {},
+      })
       .pipe(map((data) => data));
   }
 
   public getTotalStaffRecords(establishmentuid: string): Observable<number> {
     return this.http
-      .get<TotalStaffRecordsResponse>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/worker/total`)
+      .get<TotalStaffRecordsResponse>(
+        `${environment.appRunnerEndpoint}/api/establishment/${establishmentuid}/worker/total`,
+      )
       .pipe(map((response) => response.total));
   }
 
   getLeaveReasons() {
-    return this.http.get<LeaveReasonsResponse>(`${environment.appRunnerEndpoint}/api/worker/leaveReasons`).pipe(map((r) => r.reasons));
+    return this.http
+      .get<LeaveReasonsResponse>(`${environment.appRunnerEndpoint}/api/worker/leaveReasons`)
+      .pipe(map((r) => r.reasons));
   }
 
   createWorker(workplaceUid: string, props) {
-    return this.http.post<WorkerEditResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker`, props);
+    return this.http.post<WorkerEditResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker`,
+      props,
+    );
   }
 
   updateWorker(workplaceUid: string, workerId: string, props) {
-    return this.http.put<WorkerEditResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}`, props);
+    return this.http.put<WorkerEditResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}`,
+      props,
+    );
   }
 
   deleteWorker(workplaceUid: string, workerId: string, reason?: any) {
-    return this.http.request<any>('delete', `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}`, {
-      ...(reason && {
-        body: reason,
-      }),
-    });
+    return this.http.request<any>(
+      'delete',
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}`,
+      {
+        ...(reason && {
+          body: reason,
+        }),
+      },
+    );
   }
 
   getAvailableQualifcations(workplaceUid: string, workerId: string, type: QualificationType) {
@@ -175,11 +194,15 @@ export class WorkerService {
   }
 
   deleteQualification(workplaceUid: string, workerId: string, qualificationId: string) {
-    return this.http.delete(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`);
+    return this.http.delete(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification/${qualificationId}`,
+    );
   }
 
   getQualifications(workplaceUid: string, workerId: string) {
-    return this.http.get<QualificationsResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification`);
+    return this.http.get<QualificationsResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification`,
+    );
   }
 
   getQualification(workplaceUid: string, workerId: string, qualificationId: string) {
@@ -189,10 +212,13 @@ export class WorkerService {
   }
 
   createMultipleTrainingRecords(workplaceUid: string, workerUids: string[], record: TrainingRecordRequest) {
-    return this.http.post<MultipleTrainingResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/multiple-training`, {
-      trainingRecord: record,
-      workerUids,
-    });
+    return this.http.post<MultipleTrainingResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/multiple-training`,
+      {
+        trainingRecord: record,
+        workerUids,
+      },
+    );
   }
 
   createTrainingRecord(workplaceUid: string, workerId: string, record: TrainingRecordRequest) {
@@ -215,11 +241,15 @@ export class WorkerService {
   }
 
   deleteTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {
-    return this.http.delete(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`);
+    return this.http.delete(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`,
+    );
   }
 
   getTrainingRecords(workplaceUid: string, workerId: string) {
-    return this.http.get<TrainingResponse>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training`);
+    return this.http.get<TrainingResponse>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training`,
+    );
   }
 
   getAllTrainingAndQualificationRecords(
@@ -232,7 +262,9 @@ export class WorkerService {
   }
 
   getTrainingRecord(workplaceUid: string, workerId: string, trainingRecordId: string) {
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`);
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`,
+    );
   }
 
   setCreateStaffResponse(success: number) {
