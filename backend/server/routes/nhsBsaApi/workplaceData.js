@@ -51,8 +51,6 @@ const nhsBsaApi = async (req, res) => {
 };
 
 const workplaceObject = async (workplace) => {
-  const wdfEligible = await wdfData(workplace.id, WdfCalculator.effectiveDate);
-
   return {
     workplaceId: workplace.nmdsId,
     workplaceName: workplace.NameValue,
@@ -66,8 +64,16 @@ const workplaceObject = async (workplace) => {
     numberOfWorkplaceStaff: workplace.NumberOfStaffValue,
     serviceName: workplace.mainService.name,
     serviceCategory: workplace.mainService.category,
-    ...wdfEligible,
+    eligibilityPercentage: calculatePercentageOfWorkersEligible(workplace.workers),
+    eligibilityDate: workplace.overallWdfEligibility,
+    isEligible: workplaceIsEligible(workplace),
   };
+};
+
+const workplaceIsEligible = (workplace) => {
+  return workplace.overallWdfEligibility && workplace.overallWdfEligibility.getTime() > WdfCalculator.effectiveDate
+    ? true
+    : false;
 };
 
 const subsidiariesList = async (establishmentId) => {
@@ -90,33 +96,16 @@ const parentWorkplace = async (parentId) => {
   return await workplaceObject(parentWorkplace);
 };
 
-const wdfData = async (workplaceId, effectiveFrom) => {
-  const reportData = await models.sequelize.query(
-    `SELECT * FROM cqc.wdfsummaryreport(:givenEffectiveDate) WHERE "EstablishmentID" = '${workplaceId}'`,
-    {
-      replacements: {
-        givenEffectiveDate: effectiveFrom,
-      },
-      type: models.sequelize.QueryTypes.SELECT,
-    },
-  );
+const calculatePercentageOfWorkersEligible = (workers) => {
+  const numberOfWorkers = workers?.length;
 
-  const wdfMeeting = reportData.find((workplace) => workplace.EstablishmentID === workplaceId);
-  if (wdfMeeting) {
-    const percentageEligibleWorkers =
-      wdfMeeting.WorkerCount > 0 ? Math.floor((wdfMeeting.WorkerCompletedCount / wdfMeeting.WorkerCount) * 100) : 0;
+  if (!numberOfWorkers) return 0;
+  const numberOfEligibleWorkers = workers.filter((worker) => worker.get('WdfEligible')).length;
 
-    return {
-      eligibilityPercentage: percentageEligibleWorkers,
-      eligibilityDate: wdfMeeting.OverallWdfEligibility,
-      isEligible:
-        wdfMeeting.OverallWdfEligibility && wdfMeeting.OverallWdfEligibility.getTime() > effectiveFrom ? true : false,
-    };
-  }
+  return Math.floor((numberOfEligibleWorkers / numberOfWorkers) * 100);
 };
 
 router.route('/:workplaceId').get(authLimiter, authorization.isAuthorised, nhsBsaApi);
 module.exports = router;
 module.exports.nhsBsaApi = nhsBsaApi;
 module.exports.subsidiariesList = subsidiariesList;
-module.exports.wdfData = wdfData;
