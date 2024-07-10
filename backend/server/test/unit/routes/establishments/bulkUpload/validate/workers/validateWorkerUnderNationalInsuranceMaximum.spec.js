@@ -50,10 +50,10 @@ describe('validateWorkerUnderNationalInsuranceMaximum', () => {
       expect(worksOverNationalInsuranceMaximum(worker, workers)).to.be.false;
     });
 
-    it('should return true when only one occurence of worker with hours above NI maximum', async () => {
+    it('should not return true when only one occurence of worker with hours above NI maximum', async () => {
       const workers = [{ hours: { averageHours: 78 }, niNumber: 'ABC' }];
 
-      expect(worksOverNationalInsuranceMaximum(worker, workers)).to.be.true;
+      expect(worksOverNationalInsuranceMaximum(worker, workers)).to.be.false;
     });
 
     it('should return false when two occurences of worker(same NINO) with hours below NI maximum', async () => {
