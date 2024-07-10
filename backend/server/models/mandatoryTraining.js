@@ -1,3 +1,5 @@
+const { QueryTypes } = require("sequelize");
+
 module.exports = function (sequelize, DataTypes) {
   const MandatoryTraining = sequelize.define(
     'MandatoryTraining',
@@ -79,6 +81,31 @@ module.exports = function (sequelize, DataTypes) {
       },
     });
   };
+
+  MandatoryTraining.getWorkersWithMandatoryTraining = async function(establishmentId, trainingCategoryId) {
+
+    const result = await sequelize.query(`
+        SELECT w."ID" AS "WorkerId", w."WorkerUID" AS "WorkerUid", w."NameOrIdValue" AS "NameOrIdValue", j."JobName" AS "JobName", j."JobID" AS "JobFK", mt."ID" AS "MandatoryTrainingId", w."EstablishmentFK" AS "EstablishmentFK1", mt."TrainingCategoryFK", mt."JobFK"
+        FROM cqc."MandatoryTraining" mt
+        RIGHT OUTER JOIN cqc."Worker" w ON mt."EstablishmentFK" = w."EstablishmentFK" AND mt."JobFK" = w."MainJobFKValue"
+        LEFT OUTER JOIN cqc."Job" j ON w."MainJobFKValue" = j."JobID"
+        WHERE w."EstablishmentFK" = ${establishmentId} AND "TrainingCategoryFK" = ${trainingCategoryId}
+      `, { type: QueryTypes.SELECT});
+
+    const response = result.map(x => ({
+      worker: {
+        id: x.WorkerId,
+        uid: x.WorkerUid,
+        NameOrIdValue: x.NameOrIdValue,
+        mainJob: {
+          id: x.JobFK,
+          title: x.JobName
+        },
+      }
+    }));
+
+    return response;
+  }
 
   return MandatoryTraining;
 };

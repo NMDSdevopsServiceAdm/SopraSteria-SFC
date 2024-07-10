@@ -1,7 +1,5 @@
 /* jshint indent: 2 */
-
 const moment = require('moment');
-const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
   const WorkerTraining = sequelize.define(
@@ -110,12 +108,16 @@ module.exports = function (sequelize, DataTypes) {
   ) {
     const addSearchToCount = searchTerm ? `AND "worker"."NameOrIdValue" ILIKE '%${searchTerm}%'` : '';
 
+    // Get count of training by category
     const count = await sequelize.query(`
-        SELECT count("worker"."ID") AS "count"
-          FROM "cqc"."WorkerTraining" AS "workerTraining"
-          INNER JOIN "cqc"."Worker" AS "worker" ON "workerTraining"."WorkerFK" = "worker"."ID" AND "workerTraining"."CategoryFK" = '${trainingCategoryId}'
-          LEFT OUTER JOIN "cqc"."Job" AS "worker->mainJob" ON "worker"."MainJobFKValue" = "worker->mainJob"."JobID"
-          WHERE "worker"."EstablishmentFK" = '${establishmentId}' AND "worker"."Archived" = false ${addSearchToCount};
+        SELECT count("w"."ID") AS "count"
+          FROM cqc."Worker" w
+          LEFT OUTER JOIN cqc."MandatoryTraining" mt ON w."MainJobFKValue" = mt."JobFK"
+          LEFT OUTER JOIN cqc."WorkerTraining" wt	ON w."ID" = wt."WorkerFK"
+          WHERE w."EstablishmentFK" = '${establishmentId}'
+          AND (mt."TrainingCategoryFK" = '${trainingCategoryId}' OR wt."CategoryFK" = '${trainingCategoryId}')
+          AND w."Archived" = false
+          ${addSearchToCount}
     `);
 
     const category = await sequelize.models.workerTrainingCategories.findOne({
@@ -205,36 +207,73 @@ module.exports = function (sequelize, DataTypes) {
       ],
     }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
 
-    const response = await this.findAll({
+    const trainingResponse = await this.findAll({
       attributes: trainingAttributes,
       where: {
         '$worker.EstablishmentFK$': establishmentId,
-        '$worker.Archived$': false,
-        ...(searchTerm ? { '$worker.NameOrIdValue$': { [Op.iLike]: `%${searchTerm}%` } } : {}),
+        categoryFk: trainingCategoryId
       },
       include: [
         {
           model: sequelize.models.worker,
           as: 'worker',
           attributes: ['id', 'uid', 'NameOrIdValue'],
-          on: {
-            col1: sequelize.where(sequelize.col('workerTraining.WorkerFK'), '=', sequelize.col('worker.ID')),
-            col2: sequelize.where(sequelize.col('workerTraining.CategoryFK'), '=', trainingCategoryId),
-          },
           right: true,
           include: [
             {
               model: sequelize.models.job,
               as: 'mainJob',
               attributes: ['title', 'id'],
-            },
-          ],
+            }
+          ]
         },
       ],
-
       order,
       ...(limit ? pagination : {}),
+      raw: true,
+      nest: true,
     });
+
+    const mandatoryTraining = await sequelize.models.MandatoryTraining.getWorkersWithMandatoryTraining(establishmentId, trainingCategoryId);
+
+    let response = [];
+
+    const calculateStatus = (expires) => {
+      const expiryDate = new Date(expires);
+      if(expiryDate > currentDate && expiryDate > expiresSoon) return 'Expires soon';
+      if(expires < currentDate) return 'Expired';
+      return 'OK';
+    }
+
+    for (var i = trainingResponse.length - 1; i >= 0; i--) {
+      for (var j = mandatoryTraining.length - 1; j >= 0; j--) {
+        // if we have a
+        if(trainingResponse[i].worker.uid === mandatoryTraining[j].worker.uid) {
+          response.push({
+            ...trainingResponse[i],
+            status: calculateStatus(trainingResponse[i].expires),
+          });
+          trainingResponse.splice(i, 1);
+          mandatoryTraining.splice(j, 1);
+        }
+      }
+    }
+
+    // Add remaining worker training rows
+    for (let trainingRow of trainingResponse) {
+      response.push({
+        ...trainingRow,
+        status: calculateStatus(trainingRow.expires),
+      })
+    };
+
+    // Add remaining mandatory training rows
+    for (let mandatoryTrainingRow of mandatoryTraining) {
+      response.push({
+        ...mandatoryTrainingRow,
+        status: 'Missing',
+      })
+    };
 
     return { count: +count[0][0].count, rows: response, category };
   };
