@@ -2366,11 +2366,11 @@ module.exports = function (sequelize, DataTypes) {
     'dataOwner',
     'NumberOfStaffValue',
     'parentId',
+    'OverallWdfEligibility',
   ];
 
   Establishment.getNhsBsaApiDataByWorkplaceId = async function (where) {
     return await this.findOne({
-      nhsBsaAttributes,
       as: 'establishment',
 
       where: {
@@ -2383,6 +2383,15 @@ module.exports = function (sequelize, DataTypes) {
           as: 'mainService',
           attributes: ['name', 'category'],
           required: true,
+        },
+        {
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['WdfEligible', 'LastWdfEligibility'],
+          where: {
+            archived: false,
+          },
+          required: false,
         },
       ],
     });
