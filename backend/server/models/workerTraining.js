@@ -196,6 +196,7 @@ module.exports = function (sequelize, DataTypes) {
       SELECT count(COALESCE(w1."WorkerUID1", w2."WorkerUID2")) AS "count"
       ${from}
       ${addSearchToCount}
+      LIMIT ${pagination.limit} OFFSET ${pagination.offset}
     `);
 
     const order = {
