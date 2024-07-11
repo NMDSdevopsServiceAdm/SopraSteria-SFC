@@ -189,7 +189,7 @@ module.exports = function (sequelize, DataTypes) {
             WHERE w."EstablishmentFK" = ${establishmentId} AND wt."CategoryFK" = ${trainingCategoryId}
             AND w."Archived" = false
             ) w2
-          ON w1."WorkerUID1" = w2."WorkerUID2"`
+          ON w1."WorkerUID1" = w2."WorkerUID2"`;
 
     // Get count of training by category
     const count = await sequelize.query(`
@@ -198,26 +198,32 @@ module.exports = function (sequelize, DataTypes) {
       ${addSearchToCount}
     `);
 
-    const order = {
-      staffNameAsc: [['worker', 'NameOrIdValue', 'ASC']],
-      trainingExpired: [
-        [sequelize.literal('"sortByExpired"'), 'DESC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-      trainingExpiringSoon: [
-        [sequelize.literal('"sortByExpiresSoon"'), 'DESC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-      trainingMissing: [
-        [sequelize.literal('"sortByMissing"'), 'DESC'],
-        ['worker', 'NameOrIdValue', 'ASC'],
-      ],
-    }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
+    const order = () => {
+      let specificSort;
+      const baseSort = '"NameOrIdValue" ASC';
+      switch(sortBy) {
+        case 'staffNameAsc':
+          specificSort = ''
+          break;
+        case 'trainingExpired':
+          specificSort = '"sortByExpired" DESC,';
+          break;
+        case 'trainingExpiringSoon':
+          specificSort = '"sortByExpiresSoon" DESC,';
+          break;
+        case 'trainingMissing':
+          specificSort = '"sortByMissing" DESC,';
+          break;
+        default: specificSort = '';
+      };
+      return `${specificSort} ${baseSort}`
+  }
 
     const trainingResponse = await sequelize.query(`
       ${select}
       ${from}
       ${addSearchToCount}
+      ORDER BY ${order()}
       LIMIT ${pagination.limit} OFFSET ${pagination.offset}`, {type: QueryTypes.SELECT});
 
     const response = trainingResponse.map(training => ({
