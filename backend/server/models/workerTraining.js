@@ -191,12 +191,11 @@ module.exports = function (sequelize, DataTypes) {
             ) w2
           ON w1."WorkerUID1" = w2."WorkerUID2"`
 
-        // Get count of training by category
+    // Get count of training by category
     const count = await sequelize.query(`
       SELECT count(COALESCE(w1."WorkerUID1", w2."WorkerUID2")) AS "count"
       ${from}
       ${addSearchToCount}
-      LIMIT ${pagination.limit} OFFSET ${pagination.offset}
     `);
 
     const order = {
@@ -216,7 +215,10 @@ module.exports = function (sequelize, DataTypes) {
     }[sortBy] || [['worker', 'NameOrIdValue', 'ASC']];
 
     const trainingResponse = await sequelize.query(`
-      ${select} ${from}`, {type: QueryTypes.SELECT});
+      ${select}
+      ${from}
+      ${addSearchToCount}
+      LIMIT ${pagination.limit} OFFSET ${pagination.offset}`, {type: QueryTypes.SELECT});
 
     const response = trainingResponse.map(training => ({
       id: training.id,
