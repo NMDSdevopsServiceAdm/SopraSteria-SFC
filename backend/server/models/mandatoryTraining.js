@@ -1,5 +1,3 @@
-const { QueryTypes } = require("sequelize");
-
 module.exports = function (sequelize, DataTypes) {
   const MandatoryTraining = sequelize.define(
     'MandatoryTraining',
