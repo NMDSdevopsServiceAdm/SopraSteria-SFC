@@ -5,8 +5,19 @@ updates:
     schedule:
       interval: weekly
       day: friday
-    open-pull-requests-limit: 10
-    target-branch: test
+    open-pull-requests-limit: 5
+    target-branch: main
+    # groups:
+    #   security-updates:
+    #     applies-to: security-updates
+    #     update-types:
+    #     - "minor"
+    #     - "patch"
+    #   version-updates:
+    #     applies-to: version-updates
+    #     update-types:
+    #     - "minor"
+    #     - "patch"
     ignore:
       - dependency-name: cheerio
         versions:
