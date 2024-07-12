@@ -83,7 +83,7 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
       });
     });
 
-    it('should return subsidiaries as an array formatted in the same way as a standalone', async () => {
+    it('should return subsidiaries as an array formatted in the same way as a standalone when is parent', async () => {
       result.isParent = true;
 
       sinon.stub(models.establishment, 'getNhsBsaApiDataByWorkplaceId').returns(result);
@@ -92,6 +92,7 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
       await nhsBsaApi(req, res);
       const response = res._getJSONData();
 
+      expect(response.workplaceData.isParent).to.equal(true);
       expect(response.workplaceData.subsidiaries).to.deep.equal([
         {
           workplaceId: 'J1001845',
@@ -109,12 +110,36 @@ describe('server/routes/nhsBsaApi/workplaceData.js', () => {
       ]);
     });
 
+    it('should return parent data formatted in the same way as a standalone when workplace has parent ID', async () => {
+      result.parentId = 'J1001845';
+
+      sinon.stub(models.establishment, 'getNhsBsaApiDataByWorkplaceId').returns(result);
+      sinon.stub(models.establishment, 'getNhsBsaApiDataForParent').returns(result);
+
+      await nhsBsaApi(req, res);
+      const response = res._getJSONData();
+
+      expect(response.workplaceData.parentWorkplace).to.deep.equal({
+        workplaceId: 'J1001845',
+        workplaceName: 'SKILLS FOR CARE',
+        dataOwner: 'Workplace',
+        workplaceAddress: { firstLine: 'WEST GATE', town: 'LEEDS', postCode: 'LS1 2RP' },
+        locationId: null,
+        numberOfWorkplaceStaff: 2,
+        serviceName: 'Domiciliary care services',
+        serviceCategory: 'Adult domiciliary',
+        eligibilityPercentage: 0,
+        eligibilityDate: '2021-05-13T09:27:34.471Z',
+        isEligible: false,
+      });
+    });
+
     it('should return 404 when workplace is not found', async () => {
       sinon.stub(models.establishment, 'getNhsBsaApiDataByWorkplaceId').returns(null);
       await nhsBsaApi(req, res);
 
       expect(res.statusCode).to.deep.equal(404);
-      expect(res._getJSONData()).to.deep.equal({ error: 'Can not find this Id.' });
+      expect(res._getJSONData()).to.deep.equal({ error: 'Cannot find this Id.' });
     });
 
     it('should return 500 when an error is thrown', async () => {

@@ -10,29 +10,29 @@ const nhsBsaApi = async (req, res) => {
   const workplaceId = req.params.workplaceId;
 
   try {
-    const workplaceDetail = await models.establishment.getNhsBsaApiDataByWorkplaceId(workplaceId);
-    if (!workplaceDetail) return res.status(404).json({ error: 'Can not find this Id.' });
+    const workplace = await models.establishment.getNhsBsaApiDataByWorkplaceId(workplaceId);
+    if (!workplace) return res.status(404).json({ error: 'Cannot find this Id.' });
 
-    const isParent = workplaceDetail.isParent;
-    const establishmentId = workplaceDetail.id;
-    const parentId = workplaceDetail.parentId;
+    const isParent = workplace.isParent;
+    const establishmentId = workplace.id;
+    const parentId = workplace.parentId;
 
     let workplaceData = null;
 
     if (isParent) {
       workplaceData = {
-        isParent: workplaceDetail.isParent,
-        workplaceDetails: await workplaceObject(workplaceDetail),
+        isParent,
+        workplaceDetails: await workplaceObject(workplace),
         subsidiaries: await subsidiariesList(establishmentId),
       };
     } else if (parentId) {
       workplaceData = {
-        workplaceDetails: await workplaceObject(workplaceDetail),
+        workplaceDetails: await workplaceObject(workplace),
         parentWorkplace: await parentWorkplace(parentId),
       };
     } else {
       workplaceData = {
-        workplaceDetails: await workplaceObject(workplaceDetail),
+        workplaceDetails: await workplaceObject(workplace),
       };
     }
 
@@ -84,10 +84,7 @@ const subsidiariesList = async (parentId) => {
 };
 
 const parentWorkplace = async (parentId) => {
-  const where = {
-    id: parentId,
-  };
-  const parentWorkplace = await models.establishment.getNhsBsaApiDataByWorkplaceId(where);
+  const parentWorkplace = await models.establishment.getNhsBsaApiDataForParent(parentId);
 
   return await workplaceObject(parentWorkplace);
 };

@@ -2385,6 +2385,10 @@ module.exports = function (sequelize, DataTypes) {
     return await this.findOne(nhsBsaApiQuery({ nmdsId: workplaceId }));
   };
 
+  Establishment.getNhsBsaApiDataForParent = async function (workplaceId) {
+    return await this.findOne(nhsBsaApiQuery({ id: workplaceId }));
+  };
+
   Establishment.getNhsBsaApiDataForSubs = async function (parentId) {
     return await this.findAll(nhsBsaApiQuery({ parentId }));
   };
