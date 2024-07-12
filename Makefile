@@ -19,8 +19,10 @@ test-be:
 	npm run server:test:unit --prefix backend
 
 db-migrate:
-	cd backend && export NODE_ENV=localhost & \
-	cd backend && npm run db:migrate
+	cd backend && export NODE_ENV=localhost && npm run db:migrate
+
+db-migrate-undo:
+	cd backend && export NODE_ENV=localhost && npm run db:migrate:undo
 
 run-e2e-server:
 	cd backend && export NODE_ENV=e2etest && npm run db:migrate && npm run dev-start & \
@@ -28,7 +30,3 @@ run-e2e-server:
 
 test-e2e:
 	npx cypress run
-	cd backend && export NODE_ENV=localhost && npm run db:migrate
-
-db-migrate-undo:
-	cd backend && export NODE_ENV=localhost && npm run db:migrate:undo
