@@ -72,7 +72,6 @@ export class EstablishmentService {
   private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-  private _checkCQCDetailsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
@@ -144,7 +143,6 @@ export class EstablishmentService {
     this._establishment$.next(establishment);
     if (this.primaryWorkplace && establishment.uid === this.primaryWorkplace.uid) {
       this.setPrimaryWorkplace(this.establishment);
-      this.setCheckCQCDetailsBanner(false);
     }
   }
 
@@ -154,7 +152,6 @@ export class EstablishmentService {
     this._inStaffRecruitmentFlow = false;
     this.standAloneAccount = false;
     this.setPrimaryWorkplace(null);
-    this.setCheckCQCDetailsBanner(false);
   }
 
   public get establishmentId() {
@@ -194,18 +191,6 @@ export class EstablishmentService {
   public setReturnTo(returnTo: URLStructure): void {
     localStorage.setItem('returnTo', JSON.stringify(returnTo));
     this.returnTo$.next(returnTo);
-  }
-
-  public get checkCQCDetailsBanner$(): Observable<boolean> {
-    return this._checkCQCDetailsBanner$.asObservable();
-  }
-
-  public get checkCQCDetailsBanner(): boolean {
-    return this._checkCQCDetailsBanner$.value;
-  }
-
-  public setCheckCQCDetailsBanner(data: boolean) {
-    this._checkCQCDetailsBanner$.next(data);
   }
 
   public get inStaffRecruitmentFlow() {

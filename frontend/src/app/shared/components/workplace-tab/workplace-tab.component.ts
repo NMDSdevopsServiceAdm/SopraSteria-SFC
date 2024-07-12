@@ -19,7 +19,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
 
   public updateWorkplaceAlert: boolean;
   public locationId: string;
-  public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
+  public showCQCDetailsBanner: boolean;
   public showSharingPermissionsBanner: boolean;
 
   constructor(
@@ -36,31 +36,7 @@ export class WorkplaceTabComponent implements OnInit, OnDestroy {
       this.workplace.showAddWorkplaceDetailsBanner &&
       this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
 
-    if (this.workplace.locationId) {
-      this.setCheckCQCDetailsBannerInEstablishmentService();
-    }
-    this.getShowCQCDetailsBanner();
-  }
-
-  private getShowCQCDetailsBanner(): void {
-    this.subscriptions.add(
-      this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
-        this.showCQCDetailsBanner = showBanner;
-      }),
-    );
-  }
-
-  private setCheckCQCDetailsBannerInEstablishmentService(): void {
-    this.subscriptions.add(
-      this.establishmentService
-        .getCQCRegistrationStatus(this.workplace.locationId, {
-          postcode: this.workplace.postcode,
-          mainService: this.workplace.mainService.name,
-        })
-        .subscribe((response) => {
-          this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
-        }),
-    );
+    this.showCQCDetailsBanner = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
   }
 
   public navigateToShareDataPage(e: Event): void {
