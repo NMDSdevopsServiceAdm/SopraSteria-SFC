@@ -7,17 +7,15 @@ updates:
       day: friday
     open-pull-requests-limit: 5
     target-branch: main
-    # groups:
-    #   security-updates:
-    #     applies-to: security-updates
-    #     update-types:
-    #     - "minor"
-    #     - "patch"
-    #   version-updates:
-    #     applies-to: version-updates
-    #     update-types:
-    #     - "minor"
-    #     - "patch"
+    groups:
+      patch-security-updates:
+        applies-to: security-updates
+        update-types:
+        - "patch"
+      patch-version-updates:
+        applies-to: version-updates
+        update-types:
+        - "patch"
     ignore:
       - dependency-name: cheerio
         versions:
