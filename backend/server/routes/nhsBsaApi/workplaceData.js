@@ -9,12 +9,8 @@ const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculato
 const nhsBsaApi = async (req, res) => {
   const workplaceId = req.params.workplaceId;
 
-  const where = {
-    nmdsId: workplaceId,
-  };
-
   try {
-    const workplaceDetail = await models.establishment.getNhsBsaApiDataByWorkplaceId(where);
+    const workplaceDetail = await models.establishment.getNhsBsaApiDataByWorkplaceId(workplaceId);
     if (!workplaceDetail) return res.status(404).json({ error: 'Can not find this Id.' });
 
     const isParent = workplaceDetail.isParent;
@@ -76,8 +72,8 @@ const workplaceIsEligible = (workplace) => {
     : false;
 };
 
-const subsidiariesList = async (establishmentId) => {
-  const subs = await models.establishment.getNhsBsaApiDataForSubs(establishmentId);
+const subsidiariesList = async (parentId) => {
+  const subs = await models.establishment.getNhsBsaApiDataForSubs(parentId);
 
   const subsidiaries = await Promise.all(
     subs.map(async (workplace) => {
