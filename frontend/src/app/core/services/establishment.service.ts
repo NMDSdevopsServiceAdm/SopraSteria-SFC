@@ -1,7 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, isDevMode } from '@angular/core';
 import { Params } from '@angular/router';
-import { CareWorkforcePathwayUse, UpdateCareWorkforcePathwayUsePayload } from '@core/model/care-workforce-pathway.model';
+import {
+  CareWorkforcePathwayUse,
+  UpdateCareWorkforcePathwayUsePayload,
+} from '@core/model/care-workforce-pathway.model';
 import {
   adminMoveWorkplace,
   CancelOwnerShip,
@@ -73,11 +76,11 @@ export class EstablishmentService {
   private _establishment$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
   private returnTo$ = new BehaviorSubject<URLStructure>(null);
   private _primaryWorkplace$: BehaviorSubject<Establishment> = new BehaviorSubject<Establishment>(null);
-  private _checkCQCDetailsBanner$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
   public previousEstablishmentId: string;
   public isSameLoggedInUser: boolean;
   public mainServiceCQC: boolean = null;
   private _employerTypeHasValue: boolean = null;
+  private _inStaffRecruitmentFlow: boolean;
   private _standAloneAccount$: boolean;
   private _checkForChildWorkplaceChanges$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
 
@@ -144,7 +147,6 @@ export class EstablishmentService {
     this._establishment$.next(establishment);
     if (this.primaryWorkplace && establishment.uid === this.primaryWorkplace.uid) {
       this.setPrimaryWorkplace(this.establishment);
-      this.setCheckCQCDetailsBanner(false);
     }
   }
 
@@ -153,7 +155,6 @@ export class EstablishmentService {
     this._establishment$.next(null);
     this.standAloneAccount = false;
     this.setPrimaryWorkplace(null);
-    this.setCheckCQCDetailsBanner(false);
   }
 
   public get establishmentId() {
@@ -205,16 +206,25 @@ export class EstablishmentService {
     );
   }
 
-  public get checkCQCDetailsBanner$(): Observable<boolean> {
-    return this._checkCQCDetailsBanner$.asObservable();
+  public get inStaffRecruitmentFlow() {
+    if (this._inStaffRecruitmentFlow) {
+      return this._inStaffRecruitmentFlow;
+    }
+
+    const inStaffRecruitmentFlow = localStorage.getItem('inStaffRecruitmentFlow');
+
+    if (inStaffRecruitmentFlow) {
+      this._inStaffRecruitmentFlow = JSON.parse(inStaffRecruitmentFlow);
+    } else if (isDevMode() && !this._inStaffRecruitmentFlow) {
+      throw new TypeError('No value for inRecruitmentFlow in local storage!');
+    }
+
+    return this._inStaffRecruitmentFlow;
   }
 
-  public get checkCQCDetailsBanner(): boolean {
-    return this._checkCQCDetailsBanner$.value;
-  }
-
-  public setCheckCQCDetailsBanner(data: boolean) {
-    this._checkCQCDetailsBanner$.next(data);
+  public setInStaffRecruitmentFlow(data: boolean) {
+    this._inStaffRecruitmentFlow = data;
+    localStorage.setItem('inStaffRecruitmentFlow', data.toString());
   }
 
   getEstablishment(id: string, wdf: boolean = false) {
