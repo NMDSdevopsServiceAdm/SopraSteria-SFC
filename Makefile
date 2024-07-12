@@ -28,3 +28,7 @@ run-e2e-server:
 
 test-e2e:
 	npx cypress run
+	cd backend && export NODE_ENV=localhost && npm run db:migrate
+
+db-migrate-undo:
+	cd backend && export NODE_ENV=localhost && npm run db:migrate:undo
