@@ -48,6 +48,8 @@ describe('HealthAndCareVisaComponent', () => {
     const router = injector.inject(Router) as Router;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
     return {
       component,
@@ -59,6 +61,7 @@ describe('HealthAndCareVisaComponent', () => {
       getByTestId,
       queryByTestId,
       routerSpy,
+      updateWorkerSpy,
     };
   }
 
@@ -332,6 +335,46 @@ describe('HealthAndCareVisaComponent', () => {
         fireEvent.click(cancelButton);
 
         expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+      });
+    });
+  });
+
+  describe('onSubmit', () => {
+    it('should update the worker with healthAndCareVisa set to Yes when Yes selected', async () => {
+      const { component, fixture, updateWorkerSpy, getByText, getByLabelText } = await setup(false);
+
+      const radioButtonYes = getByLabelText('Yes');
+      fireEvent.click(radioButtonYes);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        healthAndCareVisa: 'Yes',
+      });
+    });
+  });
+
+  [
+    { serviceValue: 'No', databaseValue: 'No' },
+    { serviceValue: 'I do not know', databaseValue: "Don't know" },
+  ].forEach((answer) => {
+    it(`should update the worker with healthAndCareVisa as ${answer.databaseValue} and employedFromOutsideUk set to null when ${answer.serviceValue} selected`, async () => {
+      const { component, fixture, updateWorkerSpy, getByText, getByLabelText } = await setup(false);
+
+      const radioButton = getByLabelText(answer.serviceValue);
+      fireEvent.click(radioButton);
+
+      fixture.detectChanges();
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        healthAndCareVisa: answer.databaseValue,
+        employedFromOutsideUk: null,
       });
     });
   });

@@ -31,12 +31,18 @@
     <div class="govuk-grid-column-full govuk-!-padding-left-2 govuk-!-padding-right-2">
       <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/bulk-upload.svg'">
-          <a
-            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-            routerLink="/bulk-upload"
-            href="#"
-            >Bulk upload your data</a
-          >
+          <ng-container *ngIf="canBulkUpload; else noLink">
+            <a
+              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+              routerLink="/bulk-upload"
+              href="#"
+              data-testid="bulkUploadLink"
+              >Bulk upload your data</a
+            >
+          </ng-container>
+          <ng-template #noLink>
+            <p class="govuk-!-font-size-19 govuk-!-font-weight-bold">Bulk upload your data</p>
+          </ng-template>
           <p class="govuk-!-margin-top-5">
             Add all your workplace data into ASC-WDS without the need to add it manually.
           </p></app-card

@@ -1,10 +1,13 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Worker } from '@core/model/worker.model';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -12,13 +15,14 @@ import userEvent from '@testing-library/user-event';
 import { YearArrivedUkComponent } from './year-arrived-uk.component';
 
 describe('YearArrivedUkComponent', () => {
-  async function setup(insideFlow = true) {
+  async function setup(insideFlow = true, workerFields = {}) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       YearArrivedUkComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
         providers: [
           UntypedFormBuilder,
+          InternationalRecruitmentService,
           {
             provide: ActivatedRoute,
             useValue: {
@@ -39,7 +43,8 @@ describe('YearArrivedUkComponent', () => {
 
           {
             provide: WorkerService,
-            useClass: MockWorkerServiceWithUpdateWorker,
+            useFactory: MockWorkerServiceWithUpdateWorker.factory({ ...workerBuilder(), ...workerFields } as Worker),
+            deps: [HttpClient],
           },
         ],
       },
@@ -101,46 +106,69 @@ describe('YearArrivedUkComponent', () => {
     });
   });
 
-  describe('navigation', () => {
-    it('should navigate to health-and-care-visa page when submitting from flow', async () => {
-      const { component, routerSpy, getByText } = await setup();
+  describe('should navigate to ', () => {
+    ['Save and continue', 'Skip this question'].forEach((button) => {
+      it(`health-and-care-visa page when other nationality, British citizenship not known and '${button}' clicked`, async () => {
+        const workerFields = {
+          nationality: { value: 'Other' },
+          britishCitizenship: 'No',
+        };
 
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
+        const { component, fixture, getByText, getByLabelText, routerSpy } = await setup(true, workerFields);
 
-      const saveButton = getByText('Save and continue');
-      fireEvent.click(saveButton);
+        fireEvent.click(getByText(button));
+        fixture.detectChanges();
 
-      expect(getByText('Save and continue')).toBeTruthy();
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'health-and-care-visa',
+        ]);
+      });
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'health-and-care-visa',
-      ]);
+      it(`health-and-care-visa page when worker nationality not known and not British citizen and '${button}' clicked`, async () => {
+        const workerFields = {
+          nationality: { value: "Don't know" },
+          britishCitizenship: 'No',
+        };
+
+        const { component, fixture, getByText, routerSpy } = await setup(true, workerFields);
+
+        fireEvent.click(getByText(button));
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.workplace.uid,
+          'staff-record',
+          component.worker.uid,
+          'health-and-care-visa',
+        ]);
+      });
     });
 
-    it('should navigate to health-and-care-visa page when skipping the question in the flow', async () => {
-      const { component, routerSpy, getByText } = await setup();
+    ['Save and continue', 'Skip this question'].forEach((button) => {
+      it(`main-job-start-date page when in flow, should not see health and care visa page and '${button}' clicked`, async () => {
+        const { component, routerSpy, getByText } = await setup();
 
-      const workerId = component.worker.uid;
-      const workplaceId = component.workplace.uid;
+        const workerId = component.worker.uid;
+        const workplaceId = component.workplace.uid;
 
-      const link = getByText('Skip this question');
-      fireEvent.click(link);
+        fireEvent.click(getByText(button));
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceId,
-        'staff-record',
-        workerId,
-        'health-and-care-visa',
-      ]);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          workplaceId,
+          'staff-record',
+          workerId,
+          'main-job-start-date',
+        ]);
+      });
     });
 
-    it('should navigate to staff-summary-page page when pressing view this staff record', async () => {
+    it('staff-summary-page page when pressing view this staff record', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -158,7 +186,7 @@ describe('YearArrivedUkComponent', () => {
       ]);
     });
 
-    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+    it('staff-summary-page page when pressing save and return', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -176,7 +204,7 @@ describe('YearArrivedUkComponent', () => {
       ]);
     });
 
-    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+    it('staff-summary-page page when pressing cancel', async () => {
       const { component, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
@@ -194,7 +222,7 @@ describe('YearArrivedUkComponent', () => {
       ]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
+    it('wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
       const { component, routerSpy, getByText, fixture, router } = await setup(false);
       spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
       component.returnUrl = undefined;
@@ -208,7 +236,7 @@ describe('YearArrivedUkComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
 
-    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+    it('wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
       const { component, routerSpy, getByText, fixture, router } = await setup(false);
       spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
       component.returnUrl = undefined;

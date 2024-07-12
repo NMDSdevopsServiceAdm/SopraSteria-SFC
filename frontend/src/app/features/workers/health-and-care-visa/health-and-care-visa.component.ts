@@ -51,9 +51,15 @@ export class HealthAndCareVisaComponent extends QuestionComponent {
     if (!healthAndCareVisa) {
       return null;
     }
+    let extraFields = {};
+    if (healthAndCareVisa !== 'Yes') {
+      this.worker.employedFromOutsideUk = null;
+      extraFields = { employedFromOutsideUk: null };
+    }
 
     return {
       healthAndCareVisa,
+      ...extraFields,
     };
   }
 
