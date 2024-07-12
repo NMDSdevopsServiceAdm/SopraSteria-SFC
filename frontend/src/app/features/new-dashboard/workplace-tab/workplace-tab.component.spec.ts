@@ -14,7 +14,7 @@ import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentServiceCheckCQCDetails } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
@@ -61,8 +61,7 @@ describe('NewWorkplaceTabComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceCheckCQCDetails.factory(),
-          deps: [HttpClient],
+          useClass: MockEstablishmentService,
         },
         {
           provide: WindowRef,
