@@ -24,10 +24,13 @@ db-migrate:
 db-migrate-undo:
 	cd backend && export NODE_ENV=localhost && npm run db:migrate:undo
 
-run-e2e-server:
-	cd backend && export NODE_ENV=e2etest && npm run db:migrate & \
-	cd backend && npm run dev-start & \
-	(cd frontend && export NODE_ENV=e2etest && npm run build:watch)
+.PHONY: db-migrate-e2e
+db-migrate-e2e:
+	cd backend && export NODE_ENV=e2etest && npm run db:migrate
+
+run-e2e-server: db-migrate-e2e
+	cd backend && export NODE_ENV=e2etest && npm run dev-start & \
+	cd frontend && export NODE_ENV=e2etest && npm run build:watch
 
 test-e2e:
 	npx cypress run
