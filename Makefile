@@ -25,7 +25,8 @@ db-migrate-undo:
 	cd backend && export NODE_ENV=localhost && npm run db:migrate:undo
 
 run-e2e-server:
-	cd backend && export NODE_ENV=e2etest && npm run db:migrate && npm run dev-start & \
+	cd backend && export NODE_ENV=e2etest && npm run db:migrate & \
+	cd backend && npm run dev-start & \
 	(cd frontend && export NODE_ENV=e2etest && npm run build:watch)
 
 test-e2e:
