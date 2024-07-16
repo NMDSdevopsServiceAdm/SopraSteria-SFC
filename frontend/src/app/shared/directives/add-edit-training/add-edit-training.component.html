@@ -10,7 +10,7 @@
             {{ title }}
           </h1>
         </legend>
-        <p class="govuk-body" *ngIf="showWorkerCount">
+        <!-- <p class="govuk-body" *ngIf="showWorkerCount">
           <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
           <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
         </p>
@@ -25,8 +25,8 @@
               [class.govuk-select--error]="submitted && form.get('category').invalid"
               [formControlName]="'category'"
               id="category"
-              name="category"
               data-testid="trainingSelect"
+              name="category"
             >
               <option [ngValue]="null">Select the training category</option>
               <option *ngFor="let category of categories" [value]="category.id">
@@ -167,7 +167,7 @@
               {{ remainingCharacterCount >= 0 ? 'remaining' : 'too many' }}
             </ng-container>
           </span>
-        </div>
+        </div> -->
       </fieldset>
     </div>
     <div class="govuk-grid-column-one-third govuk-!-margin-top-6">

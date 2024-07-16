@@ -4,6 +4,7 @@ const transformTrainingCategories = function (givenCategories) {
       id: thisCategory.id,
       seq: thisCategory.seq,
       category: thisCategory.category,
+      trainingCategoryGroup: thisCategory.trainingCategoryGroup,
     };
   });
 };

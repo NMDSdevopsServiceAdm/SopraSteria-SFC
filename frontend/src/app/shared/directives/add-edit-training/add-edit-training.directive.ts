@@ -4,7 +4,7 @@ import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } fr
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment } from '@core/model/establishment.model';
+import { Category, Establishment } from '@core/model/establishment.model';
 import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -14,6 +14,7 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
+import { forEach } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive({})
@@ -23,6 +24,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public submitted = false;
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
+  // TODO: Add a defined type to this
+  public trainingGroups: any;
   public trainingRecordId: string;
   public trainingCategory: { id: number; category: string };
   public worker: Worker;
@@ -65,6 +68,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
+    console.log(this.categories);
     this.setupFormErrorsMap();
   }
 
@@ -130,7 +134,29 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         (categories) => {
           if (categories) {
             this.categories = categories;
+            // Get an array of the training groups
+            let groupMap = new Map(
+              categories.filter(x => x.trainingCategoryGroup !== null).map((x) => {
+                return [JSON.stringify(x.trainingCategoryGroup), x.trainingCategoryGroup];
+              })
+            );
+            let groups = Array.from(groupMap.values());
+            // create a new object from the groups array and populate each group with the appropriate training categories
+            this.trainingGroups = {};
+            for(const group of groups) {
+              const tempArray = [];
+              categories.map(x => { if(x.trainingCategoryGroup === group) {
+                tempArray.push({
+                  category: x.category,
+                  id: x.id,
+                  seq: x.seq,
+                })
+              };
+              this.trainingGroups[group] = tempArray;
+              });
+            }
           }
+          console.log(this.trainingGroups);
         },
         (error) => {
           console.error(error.error);

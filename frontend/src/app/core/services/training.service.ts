@@ -19,6 +19,7 @@ export class TrainingService {
   constructor(private http: HttpClient) {}
 
   getCategories(): Observable<TrainingCategory[]> {
+    console.log('************* HIT GET CATEGORIES ***********');
     return this.http
       .get<TrainingCategoryResponse>(`${environment.appRunnerEndpoint}/api/trainingCategories`)
       .pipe(map((res) => res.trainingCategories));
