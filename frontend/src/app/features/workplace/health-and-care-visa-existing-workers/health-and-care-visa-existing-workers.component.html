@@ -72,5 +72,9 @@
       </div>
     </div>
   </fieldset>
-  <app-submit-exit-buttons [cta]="'Continue'" [return]="returnUrl" [exit]="'Cancel'"></app-submit-exit-buttons>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-three-quarters">
+      <app-submit-exit-buttons [cta]="'Continue'" [return]="returnUrl" [exit]="'Cancel'"></app-submit-exit-buttons>
+    </div>
+  </div>
 </form>
