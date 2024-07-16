@@ -62,7 +62,6 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.getWorkers();
-    this.setPluralisation();
     this.setBackLink();
   }
 
@@ -111,6 +110,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
           .pipe(take(1))
           .subscribe(({ workers }) => {
             this.workers = workers;
+            this.setPluralisation();
             this.initialiseForm();
             this.prefillForm();
           }),
