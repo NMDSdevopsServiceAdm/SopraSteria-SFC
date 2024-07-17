@@ -15,6 +15,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import {
   MockInternationalRecruitmentService,
   singleInternationalRecruitmentWorker,
+  internationalRecruitmentWorkers,
 } from '@core/test-utils/MockInternationalRecruitmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
@@ -25,9 +26,18 @@ import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers.component';
+import { PreviousRouteService } from '@core/services/previous-route.service';
+import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
+
+let outsideOrInsideUkUrl = `/workplace/mocked-uid/employed-from-outside-or-inside-uk`;
 
 describe('HealthAndCareVisaExistingWorkers', () => {
-  async function setup(permissions = [], singleWorker = false, prefilledWorkers = null) {
+  async function setup(
+    permissions = [],
+    singleWorker = false,
+    prefilledWorkers = null,
+    previousUrl = '/dashboard#home',
+  ) {
     const { fixture, getByText, getByTestId, getByRole, queryByText } = await render(HealthAndCareVisaExistingWorkers, {
       imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule, SharedModule],
       declarations: [DetailsComponent, SubmitExitButtonsComponent],
@@ -55,6 +65,11 @@ describe('HealthAndCareVisaExistingWorkers', () => {
             healthAndCareVisaWorkerAnswers: prefilledWorkers,
           }),
         },
+        {
+          provide: PreviousRouteService,
+          useFactory: MockPreviousRouteService.factory(previousUrl),
+          deps: [Router],
+        },
       ],
     });
 
@@ -81,6 +96,11 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       'setInternationalRecruitmentWorkerAnswers',
     ).and.callThrough();
 
+    const getInternationalRecruitmentWorkerAnswersSpy = spyOn(
+      internationalRecruitmentService,
+      'getInternationalRecruitmentWorkerAnswers',
+    ).and.callThrough();
+
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
@@ -96,6 +116,7 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       setInternationalRecruitmentWorkerAnswersSpy,
       alertServiceSpy,
       establishmentServiceSpy,
+      getInternationalRecruitmentWorkerAnswersSpy,
     };
   }
 
@@ -260,12 +281,12 @@ describe('HealthAndCareVisaExistingWorkers', () => {
         'canEditWorker',
       ]);
 
-      const yes0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
-      const yes1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
+      const yes1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-0"]');
+      const yes2 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-2-0"]');
       const continueButton = getByText('Continue');
 
-      fireEvent.click(yes0);
       fireEvent.click(yes1);
+      fireEvent.click(yes2);
       fireEvent.click(continueButton);
       fixture.detectChanges();
 
@@ -282,15 +303,16 @@ describe('HealthAndCareVisaExistingWorkers', () => {
         'canEditWorker',
       ]);
 
-      const yes0 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-0-0"]');
+      const yes3 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-3-0"]');
       const dontKnow1 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-1-2"]');
       const no2 = fixture.nativeElement.querySelector('input[id="healthAndCareVisa-2-1"]');
 
       const continueButton = getByText('Continue');
 
-      fireEvent.click(yes0);
+      fireEvent.click(yes3);
       fireEvent.click(dontKnow1);
       fireEvent.click(no2);
+
       fireEvent.click(continueButton);
       fixture.detectChanges();
 
@@ -359,7 +381,7 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       const singleWorker = singleInternationalRecruitmentWorker();
       singleWorker[0].healthAndCareVisa = 'Yes';
 
-      const { fixture } = await setup(['canEditWorker'], true, singleWorker);
+      const { fixture } = await setup(['canEditWorker'], true, singleWorker, outsideOrInsideUkUrl);
 
       expectRadioButtonToBePrefilled(fixture, 0);
     });
@@ -368,7 +390,7 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       const singleWorker = singleInternationalRecruitmentWorker();
       singleWorker[0].healthAndCareVisa = 'No';
 
-      const { fixture } = await setup(['canEditWorker'], true, singleWorker);
+      const { fixture } = await setup(['canEditWorker'], true, singleWorker, outsideOrInsideUkUrl);
 
       expectRadioButtonToBePrefilled(fixture, 1);
     });
@@ -377,9 +399,47 @@ describe('HealthAndCareVisaExistingWorkers', () => {
       const singleWorker = singleInternationalRecruitmentWorker();
       singleWorker[0].healthAndCareVisa = "Don't know";
 
-      const { fixture } = await setup(['canEditWorker'], true, singleWorker);
+      const { fixture } = await setup(['canEditWorker'], true, singleWorker, outsideOrInsideUkUrl);
 
       expectRadioButtonToBePrefilled(fixture, 2);
+    });
+  });
+
+  describe('When coming from another page', () => {
+    it('should set values if the previous page was not outside or inside uk', async () => {
+      const multipleWorkers = internationalRecruitmentWorkers();
+      const { component, fixture, getInternationalRecruitmentWorkerAnswersSpy } = await setup(
+        ['canEditWorker'],
+        false,
+        multipleWorkers,
+        outsideOrInsideUkUrl,
+      );
+      component.canEditWorker = true;
+      component.ngOnInit();
+      fixture.detectChanges();
+      expect(getInternationalRecruitmentWorkerAnswersSpy).toHaveBeenCalled();
+      let formValues = component.form.value.healthAndCareVisaRadioList;
+      multipleWorkers.forEach((worker, index) => {
+        if (formValues[multipleWorkers[index].uid].healthAndCareVisa !== null) {
+          expect(formValues[multipleWorkers[index].uid].healthAndCareVisa).toBeTruthy();
+        }
+      });
+    });
+    it('should not set values if the previous page was not outside or inside uk', async () => {
+      const multipleWorkers = internationalRecruitmentWorkers();
+      const { component, fixture, getInternationalRecruitmentWorkerAnswersSpy } = await setup(
+        ['canEditWorker'],
+        false,
+        multipleWorkers,
+      );
+      component.canEditWorker = true;
+      component.ngOnInit();
+      fixture.detectChanges();
+      expect(getInternationalRecruitmentWorkerAnswersSpy).not.toHaveBeenCalled();
+      let formValues = component.form.value.healthAndCareVisaRadioList;
+      multipleWorkers.forEach((worker, index) => {
+        expect(formValues[multipleWorkers[index].uid].healthAndCareVisa).toBeFalsy();
+      });
     });
   });
 });

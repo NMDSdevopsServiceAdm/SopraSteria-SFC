@@ -10,6 +10,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -41,6 +42,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   public updatedWorkers: any = [];
   public workersHealthAndCareVisaAnswersToSave = [];
   @ViewChild('formEl') formEl: ElementRef;
+  public isFromOutsideOrInsideUKPage: boolean;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -51,6 +53,7 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private internationalRecruitmentService: InternationalRecruitmentService,
     private alertService: AlertService,
+    private previousRouteService: PreviousRouteService,
   ) {
     this.form = this.formBuilder.group({
       healthAndCareVisaRadioList: this.formBuilder.group({}),
@@ -71,6 +74,14 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
 
   get healthAndCareVisaRadioListValues(): AbstractControl[] {
     return Object.values(this.healthAndCareVisaRadioList.controls);
+  }
+
+  public checkPreviousRoute(): boolean {
+    const previousPageUrl = this.previousRouteService.getPreviousUrl();
+    if (previousPageUrl.includes('employed-from-outside-or-inside-uk')) {
+      return true;
+    }
+    return false;
   }
 
   initialiseForm(): void {
@@ -119,18 +130,22 @@ export class HealthAndCareVisaExistingWorkers implements OnInit, OnDestroy {
   }
 
   prefillForm(): void {
-    const updatedWorkersResponse = this.internationalRecruitmentService.getInternationalRecruitmentWorkerAnswers();
-    if (
-      updatedWorkersResponse?.workplaceUid === this.workplaceUid &&
-      updatedWorkersResponse?.healthAndCareVisaWorkerAnswers
-    ) {
-      this.updatedWorkers = updatedWorkersResponse.healthAndCareVisaWorkerAnswers;
+    this.isFromOutsideOrInsideUKPage = this.checkPreviousRoute();
+    if (this.isFromOutsideOrInsideUKPage) {
+      const updatedWorkersResponse = this.internationalRecruitmentService.getInternationalRecruitmentWorkerAnswers();
 
-      for (let worker of this.updatedWorkers) {
-        if (this.healthAndCareVisaRadioList.controls[worker.uid]) {
-          this.healthAndCareVisaRadioList.controls[worker.uid].setValue({
-            healthAndCareVisa: worker.healthAndCareVisa,
-          });
+      if (
+        updatedWorkersResponse?.workplaceUid === this.workplaceUid &&
+        updatedWorkersResponse?.healthAndCareVisaWorkerAnswers
+      ) {
+        this.updatedWorkers = updatedWorkersResponse.healthAndCareVisaWorkerAnswers;
+
+        for (let worker of this.updatedWorkers) {
+          if (this.healthAndCareVisaRadioList.controls[worker.uid]) {
+            this.healthAndCareVisaRadioList.controls[worker.uid].setValue({
+              healthAndCareVisa: worker.healthAndCareVisa,
+            });
+          }
         }
       }
     }
