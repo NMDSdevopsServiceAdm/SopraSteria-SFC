@@ -9,7 +9,8 @@ export const internationalRecruitmentWorkers = () => [
     name: 'Joy Wood',
     nationality: 'Other',
     britishCitizenship: 'No',
-    healthAndCareVisaValue: 'Yes',
+    healthAndCareVisa: 'Yes',
+    //healthAndCareVisaValue: 'Yes',
   },
   {
     uid: 'a432',
