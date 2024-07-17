@@ -10,7 +10,6 @@ export const internationalRecruitmentWorkers = () => [
     nationality: 'Other',
     britishCitizenship: 'No',
     healthAndCareVisa: 'Yes',
-    //healthAndCareVisaValue: 'Yes',
   },
   {
     uid: 'a432',
