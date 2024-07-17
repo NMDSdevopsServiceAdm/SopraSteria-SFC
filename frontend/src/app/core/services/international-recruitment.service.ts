@@ -11,7 +11,7 @@ export interface internationalRecruitmentWorkersResponse {
   name: string;
   nationality: string;
   britishCitizenship: string;
-  healthAndCareVisaValue: string;
+  healthAndCareVisa: string;
 }
 
 @Injectable()
