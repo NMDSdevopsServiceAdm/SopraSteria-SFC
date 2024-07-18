@@ -162,30 +162,31 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onSubmit(): void {
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    console.log(this.form.controls.category.value);
+    // this.submitted = true;
+    // this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    if (!this.form.valid) {
-      this.errorSummaryService.scrollToErrorSummary();
-      return;
-    }
+    // if (!this.form.valid) {
+    //   this.errorSummaryService.scrollToErrorSummary();
+    //   return;
+    // }
 
-    const { title, category, accredited, completed, expires, notes } = this.form.controls;
-    const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
-    const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
+    // const { title, category, accredited, completed, expires, notes } = this.form.controls;
+    // const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
+    // const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
 
-    const record: TrainingRecordRequest = {
-      trainingCategory: {
-        id: parseInt(category.value),
-      },
-      title: title.value,
-      accredited: accredited.value,
-      completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
-      expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
-      notes: notes.value,
-    };
+    // const record: TrainingRecordRequest = {
+    //   trainingCategory: {
+    //     id: parseInt(category.value),
+    //   },
+    //   title: title.value,
+    //   accredited: accredited.value,
+    //   completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
+    //   expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
+    //   notes: notes.value,
+    // };
 
-    this.submit(record);
+    // this.submit(record);
   }
 
   dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs {

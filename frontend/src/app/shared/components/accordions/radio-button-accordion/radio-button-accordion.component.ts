@@ -14,34 +14,33 @@ import { init } from '@sentry/browser';
   ]
 })
 export class RadioButtonAccordionComponent implements ControlValueAccessor {
-
   @Input() title: string;
   @Input() formControlName: string;
   @Input() items: any[];
-  // @Input() selectedValue: number;
-  // @Input() formControlName: string;
-  @Output() selectedValueChange = new EventEmitter<number>();
 
   @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
 
+  accordion = {
+    open: false
+  };
 
-  @Input('value') _selectedValue = null;
+  @Input('value') _value = null;
   onChange: any = () => {};
   onTouched: any = () => {};
 
-  get selectedValue() {
-    return this._selectedValue;
+  get value() {
+    return this._value;
   }
 
-  set selectedValue(val) {
-    this._selectedValue = val;
+  set value(val) {
+    this._value = val;
     this.onChange(val);
     this.onTouched();
   }
 
   writeValue(value): void {
     if(value) {
-      this.selectedValue = value;
+      this.value = value;
     }
   }
   registerOnChange(fn: any): void {
@@ -51,11 +50,11 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  public selectionChanged(): void {
-
+  onClick(val: number) {
+    this.value = val;
   }
 
   public emitToggle(): void {
-    this.toggleEmitter.emit();
+    this.accordion.open = !this.accordion.open;
   }
 }

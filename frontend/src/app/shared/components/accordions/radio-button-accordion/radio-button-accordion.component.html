@@ -1,6 +1,6 @@
 <div
   class="govuk-accordion__section"
-  [class]="'govuk-accordion__section--expanded'"
+  [class]="{ 'govuk-accordion__section--expanded': accordion.open }"
 >
   <div class="govuk-accordion__section-header" (click)="emitToggle()">
     <h2 class="govuk-accordion__section-heading">
@@ -8,6 +8,9 @@
     </h2>
     <span class="govuk-accordion__icon" aria-hidden="true"></span>
   </div>
+  <div
+  class="govuk-accordion__section-content"
+  >
   <div class="govuk-radios">
     <div *ngFor="let item of items">
       <div class="govuk-radios__item">
@@ -17,9 +20,11 @@
           [name]="formControlName"
           type="radio"
           [value]="item.id"
+          (click)="onClick(item.id)"
         />
         <label for="{{formControlName}}-{{ item.id }}" class="govuk-label govuk-radios__label">{{ item.text }}</label>
       </div>
     </div>
+  </div>
   </div>
 </div>
