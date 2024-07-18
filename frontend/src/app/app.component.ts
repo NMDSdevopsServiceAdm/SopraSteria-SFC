@@ -9,6 +9,7 @@ import { IdleService } from '@core/services/idle.service';
 import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { TabsService } from '@core/services/tabs.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
 
@@ -22,7 +23,11 @@ export class AppComponent implements OnInit {
   public dashboardView = false;
   public standAloneAccount = false;
   public newHomeDesignFlag: boolean;
+  public newHomeDesignParentFlag: boolean;
   public newDataAreaFlag: boolean;
+  public parentAccount: boolean;
+  public subsAccount: boolean;
+  public viewingSubsidiaryWorkplace: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -36,6 +41,7 @@ export class AppComponent implements OnInit {
     private featureFlagsService: FeatureFlagsService,
     private establishmentService: EstablishmentService,
     private tabsService: TabsService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {
     this.nestedRoutesService.routes$.subscribe((routes) => {
       if (routes) {
@@ -56,11 +62,19 @@ export class AppComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.featureFlagsService.start();
+
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
       this.isAdminSection = nav.url.includes('sfcadmin');
-      this.dashboardView = nav.url.includes('dashboard') || nav.url === '/';
+      this.dashboardView =
+        nav.url.includes('dashboard') ||
+        nav.url === '/' ||
+        this.parentSubsidiaryViewService.getViewingSubAsParentDashboard(nav.url);
+
       if (nav.url === '/') this.tabsService.selectedTab = 'home';
       this.standAloneAccount = this.establishmentService.standAloneAccount;
+      this.parentAccount = this.establishmentService.primaryWorkplace?.isParent;
+      this.subsAccount = this.establishmentService.primaryWorkplace?.parentName ? true : false;
+      this.viewingSubsidiaryWorkplace = nav.url.includes('subsidiary');
 
       window.scrollTo(0, 0);
       if (document.activeElement && document.activeElement !== document.body) {
@@ -89,6 +103,12 @@ export class AppComponent implements OnInit {
     await this.featureFlagsService.configCatClient.forceRefreshAsync();
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
+
+    this.newHomeDesignParentFlag = await this.featureFlagsService.configCatClient.getValueAsync(
+      'homePageNewDesignParent',
+      false,
+    );
+    this.featureFlagsService.newHomeDesignParentFlag = this.newHomeDesignParentFlag;
 
     this.newDataAreaFlag = await this.featureFlagsService.configCatClient.getValueAsync('newBenchmarksDataArea', false);
     this.featureFlagsService.newBenchmarksDataArea = this.newDataAreaFlag;

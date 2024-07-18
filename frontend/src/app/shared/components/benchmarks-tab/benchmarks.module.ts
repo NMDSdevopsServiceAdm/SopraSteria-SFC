@@ -2,6 +2,10 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { NewBenchmarksTabComponent } from '@features/new-dashboard/benchmarks-tab/benchmarks-tab.component';
+import {
+  NewComparisonGroupHeaderComponent,
+} from '@features/new-dashboard/benchmarks-tab/comparison-group-header/comparison-group-header.component';
 import { FormatMoneyPipe } from '@shared/pipes/format-money.pipe';
 import { FormatPercentPipe } from '@shared/pipes/format-percent.pipe';
 import { SharedModule } from '@shared/shared.module';
@@ -32,6 +36,8 @@ import { BenchmarksRankingsComponent } from './rankings/rankings.component';
     RankingContentComponent,
     FormatMoneyPipe,
     FormatPercentPipe,
+    NewBenchmarksTabComponent,
+    NewComparisonGroupHeaderComponent,
   ],
   exports: [
     BenchmarksAboutTheDataComponent,
@@ -45,6 +51,8 @@ import { BenchmarksRankingsComponent } from './rankings/rankings.component';
     RankingContentComponent,
     FormatMoneyPipe,
     FormatPercentPipe,
+    NewBenchmarksTabComponent,
+    NewComparisonGroupHeaderComponent,
   ],
   providers: [],
 })

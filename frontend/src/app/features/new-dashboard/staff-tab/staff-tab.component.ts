@@ -2,6 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -22,6 +23,7 @@ export class NewStaffTabComponent implements OnInit, OnDestroy {
     private permissionsService: PermissionsService,
     private workerService: WorkerService,
     private breadcrumbService: BreadcrumbService,
+    private alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
@@ -30,7 +32,9 @@ export class NewStaffTabComponent implements OnInit, OnDestroy {
     this.breadcrumbService.show(JourneyType.STAFF_RECORDS_TAB);
   }
 
+
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();
+    this.alertService.removeAlert();
   }
 }

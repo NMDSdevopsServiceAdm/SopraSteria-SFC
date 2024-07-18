@@ -3,6 +3,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,14 +14,8 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import {
-  EditUser,
-  MockUserService,
-  nonPrimaryEditUser,
-  primaryEditUser,
-  ReadUser,
-  readUser,
-} from '@core/test-utils/MockUserService';
+import { MockUserService, nonPrimaryEditUser, primaryEditUser, readUser } from '@core/test-utils/MockUserService';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import { of } from 'rxjs';
@@ -90,6 +86,7 @@ describe('UserAccountViewComponent', () => {
     const injector = getTestBed();
     const permissionsService = injector.inject(PermissionsService) as PermissionsService;
     const userService = injector.inject(UserService) as UserService;
+    const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService) as ParentSubsidiaryViewService;
     const component = fixture.componentInstance;
 
     const router = injector.inject(Router) as Router;
@@ -105,6 +102,7 @@ describe('UserAccountViewComponent', () => {
       getByText,
       getByTestId,
       queryByText,
+      parentSubsidiaryViewService,
     };
   }
 
@@ -287,5 +285,27 @@ describe('UserAccountViewComponent', () => {
 
     expect(deleteButton).toBeTruthy();
     expect(routerSpy.calls.mostRecent().args[0]).toEqual(['select-primary-user-delete']);
+  });
+
+  describe('getBreadcrumbsJourney', () => {
+    it('should return subsidiary journey when viewing sub as parent', async () => {
+      const { component, parentSubsidiaryViewService } = await setup();
+      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.SUBSIDIARY);
+    });
+
+    it('should return my workplace journey when return does not have fragment set', async () => {
+      const { component, fixture } = await setup();
+      component.return = { fragment: null } as URLStructure;
+      fixture.detectChanges();
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MY_WORKPLACE);
+    });
+
+    it('should return all workplaces journey when return has fragment', async () => {
+      const { component } = await setup();
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
+    });
   });
 });

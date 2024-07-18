@@ -48,7 +48,7 @@
                 data-testid="singleUserNotification"
             /></a>
           </li>
-          <li *ngIf="!isOnAdminScreen && standAloneAccount" class="govuk-header__navigation-item">
+          <li *ngIf="!isOnAdminScreen && showNotificationsLink" class="govuk-header__navigation-item">
             <a class="govuk-header__link" [routerLink]="['/notifications']">Notifications</a>
             <img
               src="/assets/images/flag-orange.svg"

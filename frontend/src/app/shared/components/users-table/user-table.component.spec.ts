@@ -18,7 +18,7 @@ describe('UserTableComponent', () => {
   const permissionTypes = getUserPermissionsTypes(true);
 
   const setup = async (admin = false, canViewUser = true) => {
-    const { fixture, getByText, getByTestId, queryByText, queryAllByText } = await render(UserTableComponent, {
+    const { fixture, getByText, getByTestId, queryByText, queryAllByText, queryByTestId, queryAllByTestId } = await render(UserTableComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       componentProperties: {
         workplace: !admin && Establishment,
@@ -30,7 +30,7 @@ describe('UserTableComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getByTestId, queryByText, queryAllByText };
+    return { component, fixture, getByText, getByTestId, queryByText, queryAllByText, queryByTestId,queryAllByTestId };
   };
 
   it('should render a User Account Summary Workplace Component', async () => {
@@ -92,6 +92,26 @@ describe('UserTableComponent', () => {
       const user = getByText(adminUser.fullname);
       expect(user.getAttribute('href')).toEqual(`/sfcadmin/users/${adminUser.uid}`);
     });
+  });
+
+  it('should show the users full name as a link with the correct href when the canViewUser permissions is true', async () => {
+    const { component, queryAllByTestId } = await setup();
+    const usernameLink = queryAllByTestId('username-link')[0];
+
+    const establishmentId = component.workplace.uid;
+    const userId = component.users[0].uid;
+
+    expect(usernameLink).toBeTruthy();
+    expect(usernameLink.getAttribute('href')).toEqual(`/workplace/${establishmentId}/user/${userId}`);
+  });
+
+  it('should show the users fullname not as a link when the canViewUser permission is false', async () => {
+    const { component, queryByTestId, getByText } = await setup(false, false);
+
+    const fullname = component.users[0].fullname;
+
+    expect(queryByTestId('username-link')).toBeFalsy();
+    expect(getByText(fullname)).toBeTruthy();
   });
 
   describe('Permissions column', () => {

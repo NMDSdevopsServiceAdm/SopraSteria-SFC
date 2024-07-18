@@ -22,7 +22,7 @@ export class BenefitsTrainingDiscountsComponent implements OnInit {
 
   ngOnInit(): void {
     this.pages = this.route.snapshot.data.pages?.data[0];
-    this.workplaceName = this.establishmentService.primaryWorkplace.name;
+    this.workplaceName = this.establishmentService.establishment.name;
     this.breadcrumbService.show(JourneyType.BENEFITS_BUNDLE);
   }
 }

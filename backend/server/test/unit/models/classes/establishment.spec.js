@@ -25,5 +25,14 @@ describe('Establishment Class', () => {
       expect(cqc.shareWith.cqc).to.equal(true);
       expect(CQCEst).to.deep.equal(true);
     });
+
+    it('should return parent name and postcode', async () => {
+      const parent = { parentName: 'Parent Est', parentPostcode: 'LE5 1AA' };
+      const parentEst = await establishment.load(parent);
+
+      expect(parent.parentName).to.equal('Parent Est');
+      expect(parent.parentPostcode).to.equal('LE5 1AA');
+      expect(parentEst).to.deep.equal(true);
+    });
   });
 });

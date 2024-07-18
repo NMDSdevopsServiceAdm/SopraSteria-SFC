@@ -7,6 +7,21 @@
           data-testid="column-one"
         >
           <ng-container *ngIf="tab === 'home'; else otherTab">
+            <ng-container *ngIf="isParent && !isParentSubsidiaryView">
+              <span class="govuk-caption-xl" data-testid="parentLabel">Parent</span>
+            </ng-container>
+
+            <span
+              *ngIf="workplace?.parentName && !isParentSubsidiaryView"
+              class="govuk-caption-xl"
+              data-testid="parentNameLabel"
+              >{{ workplace?.parentName }}</span
+            >
+
+            <span *ngIf="isParentSubsidiaryView" class="govuk-caption-xl" data-testid="selectedWorkplaceLabel"
+              >Selected workplace</span
+            >
+
             <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
               {{ workplace?.name }}
             </h1>
@@ -34,17 +49,22 @@
             <ng-container *ngSwitchCase="'home'">
               <div class="govuk-util__float-right" *ngIf="tab === 'home'" data-testid="contact-info">
                 <div
-                  *ngIf="workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING'"
+                  *ngIf="
+                    (workplace && canDeleteEstablishment && subsidiaryCount < 1 && workplace.ustatus != 'PENDING') ||
+                    (canDeleteEstablishment && isParentSubsidiaryView)
+                  "
                 >
-                  <button
-                    class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0"
-                    (click)="onDeleteWorkplace($event)"
+                  <a
+                    data-testid="delete-workplace"
+                    href="#"
+                    class="govuk-button govuk-button--link govuk__flex govuk__align-items-center govuk-!-padding-left-0 govuk-!-margin-bottom-2"
+                    (click)="navigateToDeleteWorkplace($event)"
                   >
                     <img src="/assets/images/bin.svg" alt="" />
                     <span class="govuk-!-margin-left-1">
-                      Delete <span class="govuk-visually-hidden">{{ workplace.name }}</span> Workplace
+                      Delete <span class="govuk-visually-hidden">{{ workplace?.name }}</span> workplace
                     </span>
-                  </button>
+                  </a>
                 </div>
 
                 <h2 class="govuk-heading-s govuk-!-margin-bottom-0">Contact Skills for Care</h2>

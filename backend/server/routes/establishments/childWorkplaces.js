@@ -5,13 +5,14 @@ const Authorization = require('../../utils/security/isAuthenticated');
 
 const getChildWorkplaces = async (req, res) => {
   try {
-    const { itemsPerPage, pageIndex, searchTerm } = req.query;
+    const { itemsPerPage, pageIndex, searchTerm, getPendingWorkplaces } = req.query;
 
     const childWorkplaces = await models.establishment.getChildWorkplaces(
       req.params.id,
       itemsPerPage ? +itemsPerPage : undefined,
       pageIndex ? +pageIndex : undefined,
       searchTerm,
+      convertToBoolean(getPendingWorkplaces),
     );
 
     const activeWorkplaceCount = childWorkplaces.count - childWorkplaces.pendingCount;
@@ -40,8 +41,13 @@ const formatChildWorkplaces = (childWorkplaces) => {
       uid: workplace.uid,
       updated: workplace.updated,
       ustatus: workplace.ustatus,
+      postcode: workplace.postcode,
     };
   });
+};
+
+const convertToBoolean = (getPendingWorkplaces) => {
+  return getPendingWorkplaces === 'false' ? false : true;
 };
 
 router.route('/').get(Authorization.isAuthorised, getChildWorkplaces);

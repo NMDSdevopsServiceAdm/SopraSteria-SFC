@@ -29,6 +29,7 @@ export abstract class WorkplaceInterfaceService {
   public manuallyEnteredWorkplaceName$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   public useDifferentLocationIdOrPostcode$: BehaviorSubject<boolean> = new BehaviorSubject(null);
   public typeOfEmployer$: BehaviorSubject<EmployerType> = new BehaviorSubject(null);
+  public headOfficeServices$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(protected http: HttpClient) {}
 
@@ -62,5 +63,6 @@ export abstract class WorkplaceInterfaceService {
     this.manuallyEnteredWorkplaceName$.next(false);
     this.useDifferentLocationIdOrPostcode$.next(null);
     this.typeOfEmployer$.next(null);
+    this.headOfficeServices$.next(false);
   }
 }

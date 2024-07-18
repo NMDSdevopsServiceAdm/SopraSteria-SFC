@@ -49,9 +49,6 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    const alertMessage = history.state?.alertMessage;
-    alertMessage && this.showAlert(alertMessage);
-
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.breadcrumbService.show(JourneyType.TRAINING_AND_QUALIFICATIONS_TAB);
@@ -62,13 +59,6 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
 
     this.getAllTrainingByCategory();
     this.trainingTotals();
-  }
-
-  private showAlert(message: string): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
   }
 
   private getAllTrainingByCategory(): void {
@@ -108,5 +98,6 @@ export class NewTrainingTabComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.breadcrumbService.removeRoutes();
     this.subscriptions.unsubscribe();
+    this.alertService.removeAlert();
   }
 }
