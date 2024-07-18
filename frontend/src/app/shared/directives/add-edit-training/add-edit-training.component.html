@@ -10,6 +10,10 @@
             {{ title }}
           </h1>
         </legend>
+
+        <div *ngFor="let group of groupNames">
+          <app-radio-button-accordion formControlName="category" [title]="group" [items]="trainingGroups[group]"></app-radio-button-accordion>
+        </div>
         <!-- <p class="govuk-body" *ngIf="showWorkerCount">
           <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
           <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>

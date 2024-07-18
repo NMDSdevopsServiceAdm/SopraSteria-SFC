@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -25,7 +25,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
   // TODO: Add a defined type to this
+  public groupNames: string[];
   public trainingGroups: any;
+  public selectedTrainingCategoryId: number;
   public trainingRecordId: string;
   public trainingCategory: { id: number; category: string };
   public worker: Worker;
@@ -43,8 +45,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public remainingCharacterCount: number = this.notesMaxLength;
   public notesValue = '';
 
+  trainingCategoriesControl = new FormControl();
+
   constructor(
-    protected formBuilder: UntypedFormBuilder,
+    protected formBuilder: FormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
     protected backLinkService: BackLinkService,
@@ -68,7 +72,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
-    console.log(this.categories);
     this.setupFormErrorsMap();
   }
 
@@ -96,36 +99,10 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
-        title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
         category: [null, Validators.required],
-        accredited: null,
-        completed: this.formBuilder.group({
-          day: null,
-          month: null,
-          year: null,
-        }),
-        expires: this.formBuilder.group({
-          day: null,
-          month: null,
-          year: null,
-        }),
-        notes: [null, Validators.maxLength(this.notesMaxLength)],
       },
       { updateOn: 'submit' },
     );
-
-    const minDate = dayjs().subtract(100, 'years');
-
-    this.form
-      .get('completed')
-      .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(minDate)]);
-    this.form
-      .get('expires')
-      .setValidators([
-        DateValidator.dateValid(),
-        DateValidator.min(minDate),
-        DateValidator.beforeStartDate('completed', true, true),
-      ]);
   }
 
   private getCategories(): void {
@@ -140,14 +117,14 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
                 return [JSON.stringify(x.trainingCategoryGroup), x.trainingCategoryGroup];
               })
             );
-            let groups = Array.from(groupMap.values());
+            this.groupNames = Array.from(groupMap.values());
             // create a new object from the groups array and populate each group with the appropriate training categories
             this.trainingGroups = {};
-            for(const group of groups) {
+            for(const group of this.groupNames) {
               const tempArray = [];
               categories.map(x => { if(x.trainingCategoryGroup === group) {
                 tempArray.push({
-                  category: x.category,
+                  text: x.category,
                   id: x.id,
                   seq: x.seq,
                 })
@@ -176,62 +153,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
           },
         ],
       },
-      {
-        item: 'title',
-        type: [
-          {
-            name: 'minlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
-          },
-          {
-            name: 'maxlength',
-            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
-          },
-        ],
-      },
-      {
-        item: 'completed',
-        type: [
-          {
-            name: 'dateValid',
-            message: 'Date completed must be a valid date',
-          },
-          {
-            name: 'todayOrBefore',
-            message: 'Date completed must be before today',
-          },
-          {
-            name: 'dateMin',
-            message: 'Date completed cannot be more than 100 years ago',
-          },
-        ],
-      },
-      {
-        item: 'expires',
-        type: [
-          {
-            name: 'dateValid',
-            message: 'Expiry date must be a valid date',
-          },
-          {
-            name: 'dateMin',
-            message: 'Expiry date cannot be more than 100 years ago',
-          },
-          {
-            name: 'beforeStartDate',
-            message: 'Expiry date must be after date completed',
-          },
-        ],
-      },
-      {
-        item: 'notes',
-        type: [
-          {
-            name: 'maxlength',
-            message: `Notes must be ${this.notesMaxLength} characters or fewer`,
-          },
-        ],
-      },
     ];
   }
 
@@ -241,9 +162,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onSubmit(): void {
-    this.form.get('completed').updateValueAndValidity();
-    this.form.get('expires').updateValueAndValidity();
-
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
