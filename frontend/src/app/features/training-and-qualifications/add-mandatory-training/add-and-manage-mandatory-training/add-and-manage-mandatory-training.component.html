@@ -48,7 +48,10 @@
     </tr>
   </thead>
   <ng-container>
-    <tbody class="govuk-table__body" *ngFor="let records of existingMandatoryTrainings.mandatoryTraining">
+    <tbody
+      class="govuk-table__body"
+      *ngFor="let records of existingMandatoryTrainings.mandatoryTraining; let i = index"
+    >
       <tr class="govuk-table__row govuk-util__vertical-align-top">
         <td class="govuk-table__cell" [attr.data-testid]="'category-' + records.category">
           <a [routerLink]="[records.trainingCategoryId, 'edit-mandatory-training']">
@@ -57,10 +60,21 @@
         </td>
 
         <td class="govuk-table__cell">
-          <ng-container *ngIf="records.jobs.length > 28">
+          <ng-container
+            *ngIf="
+              records.jobs.length === allJobsLength ||
+              (mandatoryTrainingHasDuplicateJobRoles[i][records.trainingCategoryId].hasPreviousAllJobsLength &&
+                mandatoryTrainingHasDuplicateJobRoles[i][records.trainingCategoryId].hasDuplicates)
+            "
+          >
             <span data-testid="titleAll">{{ 'All' }}</span>
           </ng-container>
-          <ng-container *ngIf="records.jobs.length < 29">
+          <ng-container
+            *ngIf="
+              records.jobs.length < allJobsLength &&
+              !mandatoryTrainingHasDuplicateJobRoles[i][records.trainingCategoryId].hasPreviousAllJobsLength
+            "
+          >
             <div data-testid="titleJob" *ngFor="let job of records.jobs">{{ job.title }}</div>
           </ng-container>
         </td>
