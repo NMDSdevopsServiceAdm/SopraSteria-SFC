@@ -73,6 +73,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setBackLink();
     this.getCategories();
     this.setupFormErrorsMap();
+    console.log(this.trainingGroups);
   }
 
   ngAfterViewInit(): void {
@@ -119,18 +120,27 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
             );
             this.groupNames = Array.from(groupMap.values());
             // create a new object from the groups array and populate each group with the appropriate training categories
-            this.trainingGroups = {};
+            this.trainingGroups = [];
             for(const group of this.groupNames) {
-              const tempArray = [];
+              let currentTrainingGroup = {
+                title: group,
+                descriptionText: '',
+                items: []
+              };
+
+              const categoryArray = [];
               categories.map(x => { if(x.trainingCategoryGroup === group) {
-                tempArray.push({
-                  text: x.category,
+                categoryArray.push({
+                  label: x.category,
                   id: x.id,
                   seq: x.seq,
                 })
               };
-              this.trainingGroups[group] = tempArray;
-              });
+            });
+
+              currentTrainingGroup.items = categoryArray;
+              this.trainingGroups.push(currentTrainingGroup);
+
             }
           }
           console.log(this.trainingGroups);

@@ -17,12 +17,12 @@
         <input
           class="govuk-radios__input"
           id="{{formControlName}}-{{ item.id }}"
-          [name]="formControlName"
+          [name]="formControlName ? formControlName : controlName"
           type="radio"
           [value]="item.id"
           (click)="onClick(item.id)"
         />
-        <label for="{{formControlName}}-{{ item.id }}" class="govuk-label govuk-radios__label">{{ item.text }}</label>
+        <label for="{{formControlName}}-{{ item.id }}" class="govuk-label govuk-radios__label">{{ item.label }}</label>
       </div>
     </div>
   </div>

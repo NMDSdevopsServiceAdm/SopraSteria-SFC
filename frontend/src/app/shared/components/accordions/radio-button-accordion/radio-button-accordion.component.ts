@@ -15,13 +15,18 @@ import { init } from '@sentry/browser';
 })
 export class RadioButtonAccordionComponent implements ControlValueAccessor {
   @Input() title: string;
-  @Input() formControlName: string;
-  @Input() items: any[];
+  @Input() formControlName?: string;
+  @Input() controlName?: string;
+  @Input() items: {
+    id: number;
+    label: string;
+  }
+  @Input() open?: boolean;
 
   @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
 
   accordion = {
-    open: false
+    open: this.open !== undefined ? this.open : false,
   };
 
   @Input('value') _value = null;
@@ -43,9 +48,11 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
       this.value = value;
     }
   }
+
   registerOnChange(fn: any): void {
     this.onChange = fn;
   }
+
   registerOnTouched(fn: any): void {
     this.onTouched = fn;
   }
@@ -55,6 +62,12 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   }
 
   public emitToggle(): void {
-    this.accordion.open = !this.accordion.open;
+    console.log('***** TOGGLE *****');
+    this.toggleEmitter.emit();
+
+    console.log(this.accordion.open);
+    if(this.open === undefined) {
+      this.accordion.open = !this.accordion.open;
+    }
   }
 }
