@@ -27,6 +27,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
 
   _open: boolean;
   @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
+  @Output() selectedValueEmitter: EventEmitter<number> = new EventEmitter();
 
   @Input('value') _value = null;
   onChange: any = () => {};
@@ -43,6 +44,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   set value(val) {
     this._value = val;
     this.onChange(val);
+    this.selectedValueEmitter.emit(val);
     this.onTouched();
   }
 

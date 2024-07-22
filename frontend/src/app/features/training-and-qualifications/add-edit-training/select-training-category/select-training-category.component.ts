@@ -34,7 +34,7 @@ export class SelectTrainingCategoryComponent implements OnInit{
   }
 
   public onSubmit() {
-
+    console.log(this.form);
   }
 
   public onCancel(event: any) {
