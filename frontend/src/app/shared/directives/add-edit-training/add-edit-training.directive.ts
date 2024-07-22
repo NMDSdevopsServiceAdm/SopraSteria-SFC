@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormControl, UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Category, Establishment } from '@core/model/establishment.model';
+import { Establishment } from '@core/model/establishment.model';
 import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -14,7 +14,6 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
-import { forEach } from 'lodash';
 import { Subscription } from 'rxjs';
 
 @Directive({})
@@ -24,10 +23,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public submitted = false;
   public categories: TrainingCategory[];
   public trainingRecord: TrainingRecord;
-  // TODO: Add a defined type to this
-  public groupNames: string[];
-  public trainingGroups: any;
-  public selectedTrainingCategoryId: number;
   public trainingRecordId: string;
   public trainingCategory: { id: number; category: string };
   public worker: Worker;
@@ -45,10 +40,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public remainingCharacterCount: number = this.notesMaxLength;
   public notesValue = '';
 
-  trainingCategoriesControl = new FormControl();
-
   constructor(
-    protected formBuilder: FormBuilder,
+    protected formBuilder: UntypedFormBuilder,
     protected route: ActivatedRoute,
     protected router: Router,
     protected backLinkService: BackLinkService,
@@ -73,7 +66,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.setBackLink();
     this.getCategories();
     this.setupFormErrorsMap();
-    console.log(this.trainingGroups);
   }
 
   ngAfterViewInit(): void {
@@ -100,10 +92,36 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
+        title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
         category: [null, Validators.required],
+        accredited: null,
+        completed: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+        expires: this.formBuilder.group({
+          day: null,
+          month: null,
+          year: null,
+        }),
+        notes: [null, Validators.maxLength(this.notesMaxLength)],
       },
       { updateOn: 'submit' },
     );
+
+    const minDate = dayjs().subtract(100, 'years');
+
+    this.form
+      .get('completed')
+      .setValidators([DateValidator.dateValid(), DateValidator.todayOrBefore(), DateValidator.min(minDate)]);
+    this.form
+      .get('expires')
+      .setValidators([
+        DateValidator.dateValid(),
+        DateValidator.min(minDate),
+        DateValidator.beforeStartDate('completed', true, true),
+      ]);
   }
 
   private getCategories(): void {
@@ -112,38 +130,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         (categories) => {
           if (categories) {
             this.categories = categories;
-            // Get an array of the training groups
-            let groupMap = new Map(
-              categories.filter(x => x.trainingCategoryGroup !== null).map((x) => {
-                return [JSON.stringify(x.trainingCategoryGroup), x.trainingCategoryGroup];
-              })
-            );
-            this.groupNames = Array.from(groupMap.values());
-            // create a new object from the groups array and populate each group with the appropriate training categories
-            this.trainingGroups = [];
-            for(const group of this.groupNames) {
-              let currentTrainingGroup = {
-                title: group,
-                descriptionText: '',
-                items: []
-              };
-
-              const categoryArray = [];
-              categories.map(x => { if(x.trainingCategoryGroup === group) {
-                categoryArray.push({
-                  label: x.category,
-                  id: x.id,
-                  seq: x.seq,
-                })
-              };
-            });
-
-              currentTrainingGroup.items = categoryArray;
-              this.trainingGroups.push(currentTrainingGroup);
-
-            }
           }
-          console.log(this.trainingGroups);
         },
         (error) => {
           console.error(error.error);
@@ -163,6 +150,62 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
           },
         ],
       },
+      {
+        item: 'title',
+        type: [
+          {
+            name: 'minlength',
+            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
+          },
+          {
+            name: 'maxlength',
+            message: `Training name must be between ${this.titleMinLength} and ${this.titleMaxLength} characters`,
+          },
+        ],
+      },
+      {
+        item: 'completed',
+        type: [
+          {
+            name: 'dateValid',
+            message: 'Date completed must be a valid date',
+          },
+          {
+            name: 'todayOrBefore',
+            message: 'Date completed must be before today',
+          },
+          {
+            name: 'dateMin',
+            message: 'Date completed cannot be more than 100 years ago',
+          },
+        ],
+      },
+      {
+        item: 'expires',
+        type: [
+          {
+            name: 'dateValid',
+            message: 'Expiry date must be a valid date',
+          },
+          {
+            name: 'dateMin',
+            message: 'Expiry date cannot be more than 100 years ago',
+          },
+          {
+            name: 'beforeStartDate',
+            message: 'Expiry date must be after date completed',
+          },
+        ],
+      },
+      {
+        item: 'notes',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Notes must be ${this.notesMaxLength} characters or fewer`,
+          },
+        ],
+      },
     ];
   }
 
@@ -172,31 +215,33 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onSubmit(): void {
-    console.log(this.form.controls.category.value);
-    // this.submitted = true;
-    // this.errorSummaryService.syncFormErrorsEvent.next(true);
+    this.form.get('completed').updateValueAndValidity();
+    this.form.get('expires').updateValueAndValidity();
 
-    // if (!this.form.valid) {
-    //   this.errorSummaryService.scrollToErrorSummary();
-    //   return;
-    // }
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
 
-    // const { title, category, accredited, completed, expires, notes } = this.form.controls;
-    // const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
-    // const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
+    if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
 
-    // const record: TrainingRecordRequest = {
-    //   trainingCategory: {
-    //     id: parseInt(category.value),
-    //   },
-    //   title: title.value,
-    //   accredited: accredited.value,
-    //   completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
-    //   expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
-    //   notes: notes.value,
-    // };
+    const { title, category, accredited, completed, expires, notes } = this.form.controls;
+    const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
+    const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
 
-    // this.submit(record);
+    const record: TrainingRecordRequest = {
+      trainingCategory: {
+        id: parseInt(category.value),
+      },
+      title: title.value,
+      accredited: accredited.value,
+      completed: completedDate ? completedDate.format(DATE_PARSE_FORMAT) : null,
+      expires: expiresDate ? expiresDate.format(DATE_PARSE_FORMAT) : null,
+      notes: notes.value,
+    };
+
+    this.submit(record);
   }
 
   dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs {

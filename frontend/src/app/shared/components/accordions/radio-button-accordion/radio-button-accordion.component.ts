@@ -28,16 +28,16 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   _open: boolean;
   @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
 
-  accordion = {
-    open: this.open !== undefined ? this.open : false,
-  };
-
   @Input('value') _value = null;
   onChange: any = () => {};
   onTouched: any = () => {};
 
   get value() {
     return this._value;
+  }
+
+  get open() {
+    return this._open;
   }
 
   set value(val) {
@@ -67,9 +67,8 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   public emitToggle(): void {
     this.toggleEmitter.emit();
 
-    console.log(this.accordion.open);
     if(this.open === undefined) {
-      this.accordion.open = !this.accordion.open;
+      this.open = !this.open;
     }
   }
 }
