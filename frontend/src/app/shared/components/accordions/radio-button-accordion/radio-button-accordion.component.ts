@@ -65,7 +65,6 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   }
 
   public emitToggle(): void {
-    console.log('***** TOGGLE *****');
     this.toggleEmitter.emit();
 
     console.log(this.accordion.open);
