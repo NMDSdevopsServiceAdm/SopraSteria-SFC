@@ -21,8 +21,11 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
     id: number;
     label: string;
   }
-  @Input() open?: boolean;
+  @Input() set open(isOpen: boolean) {
+    this._open = isOpen !== undefined ? isOpen : false;
+  }
 
+  _open: boolean;
   @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
 
   accordion = {

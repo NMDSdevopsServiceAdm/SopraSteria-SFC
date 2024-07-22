@@ -49,9 +49,7 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
   }[];
 
   public toggleAccordion(index: number): void {
-    console.log('*** TOGGLE RECEIVED ***');
     this.accordions[index].open = !this.accordions[index].open;
-    console.log(index);
     this.accordions.forEach((x) => {if(x.index != index) x.open = false});
   }
 
