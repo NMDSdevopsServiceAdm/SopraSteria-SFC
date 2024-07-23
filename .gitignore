@@ -57,9 +57,7 @@ Thumbs.db
 fecoverage
 
 # localhost config variations
-/server/config/localhost.*.yaml
-/server/config/localhost-*.yaml
-/server/config/localhost.yaml
+backend/server/config/localhost.yaml
 
 // nodemon localisations
 nodemon.json
