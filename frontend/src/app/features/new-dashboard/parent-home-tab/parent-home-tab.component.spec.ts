@@ -308,33 +308,15 @@ describe('ParentHomeTabComponent', () => {
 
   describe('summary', () => {
     it('should show summary box', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.canViewListOfWorkers = true;
-      fixture.detectChanges();
+      const { getByTestId } = await setup();
 
       const summaryBox = getByTestId('summaryBox');
-
       expect(summaryBox).toBeTruthy();
-    });
-
-    it('should not show the summary section if the user does not have the correct permissions', async () => {
-      const { component, fixture, queryByTestId } = await setup();
-
-      component.canViewListOfWorkers = false;
-      fixture.detectChanges();
-
-      const summaryBox = queryByTestId('summaryBox');
-      expect(summaryBox).toBeFalsy();
     });
 
     describe('workplace summary section', () => {
       it('should take you to the workplace tab when clicking the workplace link', async () => {
-        const { component, fixture, getByText, tabsServiceSpy } = await setup();
-
-        component.canViewListOfWorkers = true;
-        component.canViewEstablishment = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup(false, Establishment, true, 9, ['canViewEstablishment']);
 
         const workplaceLink = getByText('Workplace');
         fireEvent.click(workplaceLink);
@@ -342,13 +324,9 @@ describe('ParentHomeTabComponent', () => {
         expect(tabsServiceSpy).toHaveBeenCalledWith('workplace');
       });
 
-      it('should show a warning link which should navigate to the workplace tab', async () => {
+      it('should show a warning link which should navigate to the workplace tab when showAddWorkplaceDetailsBanner is true for workplace', async () => {
         const establishment = { ...Establishment, showAddWorkplaceDetailsBanner: true };
-        const { component, fixture, getByText, tabsServiceSpy } = await setup(true, establishment);
-
-        component.canViewListOfWorkers = true;
-        component.canViewEstablishment = true;
-        fixture.detectChanges();
+        const { getByText, tabsServiceSpy } = await setup(false, establishment, true, 9, ['canViewEstablishment']);
 
         const link = getByText('Add more details to your workplace');
         fireEvent.click(link);
@@ -359,30 +337,42 @@ describe('ParentHomeTabComponent', () => {
     });
 
     describe('staff records summary section', () => {
-      it('should show staff records link and take you to the staff records tab', async () => {
-        const { component, fixture, getByText, tabsServiceSpy } = await setup();
-
-        component.canViewListOfWorkers = true;
-        fixture.detectChanges();
+      it('should show staff records link and take you to the staff records tab if user has canViewListOfWorkers permission', async () => {
+        const { getByText, tabsServiceSpy } = await setup(false, Establishment, true, 9, ['canViewListOfWorkers']);
 
         const staffRecordsLink = getByText('Staff records');
         fireEvent.click(staffRecordsLink);
 
         expect(tabsServiceSpy).toHaveBeenCalledWith('staff-records');
       });
+
+      it('should show staff records as text if user does not have canViewListOfWorkers permission', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
+
+        const staffRecordsLink = getByText('Staff records');
+        fireEvent.click(staffRecordsLink);
+
+        expect(tabsServiceSpy).not.toHaveBeenCalledWith('staff-records');
+      });
     });
 
     describe('training and qualifications summary section', () => {
-      it('should show training and qualifications link that take you the training and qualifications tab', async () => {
-        const { component, fixture, getByText, tabsServiceSpy } = await setup();
-
-        component.canViewListOfWorkers = true;
-        fixture.detectChanges();
+      it('should show training and qualifications link that take you the training and qualifications tab if user has canViewListOfWorkers permission', async () => {
+        const { getByText, tabsServiceSpy } = await setup(false, Establishment, true, 9, ['canViewListOfWorkers']);
 
         const trainingAndQualificationsLink = getByText('Training and qualifications');
         fireEvent.click(trainingAndQualificationsLink);
 
         expect(tabsServiceSpy).toHaveBeenCalledWith('training-and-qualifications');
+      });
+
+      it('should show training and qualifications as text if user does not have canViewListOfWorkers permission', async () => {
+        const { getByText, tabsServiceSpy } = await setup();
+
+        const trainingAndQualificationsLink = getByText('Training and qualifications');
+        fireEvent.click(trainingAndQualificationsLink);
+
+        expect(tabsServiceSpy).not.toHaveBeenCalledWith('training-and-qualifications');
       });
     });
   });
