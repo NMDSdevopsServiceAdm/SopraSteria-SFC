@@ -4,12 +4,13 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Worker } from '@core/model/worker.model';
 import { Subscription } from 'rxjs';
+import { TrainingCategory } from '@core/model/training.model';
 
 @Component({
   selector: 'app-select-training-category',
   templateUrl: './select-training-category.component.html',
 })
-export class SelectTrainingCategoryComponent implements OnInit{
+export class SelectTrainingCategoryComponent implements OnInit {
   public form: FormGroup;
   section: any;
   worker: Worker;
@@ -17,7 +18,7 @@ export class SelectTrainingCategoryComponent implements OnInit{
   trainingGroups: any;
   groupNames: string[];
   public subscriptions: Subscription = new Subscription();
-  categories: import("/Users/jonathan.hardy/Code/SopraSteria-SFC/frontend/src/app/core/model/training.model").TrainingCategory[];
+  categories: TrainingCategory[];
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -37,9 +38,7 @@ export class SelectTrainingCategoryComponent implements OnInit{
     console.log(this.form);
   }
 
-  public onCancel(event: any) {
-
-  }
+  public onCancel(event: any) {}
 
   protected setSectionHeading(): void {
     this.section = this.worker.nameOrId;
@@ -53,33 +52,35 @@ export class SelectTrainingCategoryComponent implements OnInit{
             this.categories = categories;
             // Get an array of the training groups
             let groupMap = new Map(
-              categories.filter(x => x.trainingCategoryGroup !== null).map((x) => {
-                return [JSON.stringify(x.trainingCategoryGroup), x.trainingCategoryGroup];
-              })
+              categories
+                .filter((x) => x.trainingCategoryGroup !== null)
+                .map((x) => {
+                  return [JSON.stringify(x.trainingCategoryGroup), x.trainingCategoryGroup];
+                }),
             );
             this.groupNames = Array.from(groupMap.values());
             // create a new object from the groups array and populate each group with the appropriate training categories
             this.trainingGroups = [];
-            for(const group of this.groupNames) {
+            for (const group of this.groupNames) {
               let currentTrainingGroup = {
                 title: group,
                 descriptionText: '',
-                items: []
+                items: [],
               };
 
               const categoryArray = [];
-              categories.map(x => { if(x.trainingCategoryGroup === group) {
-                categoryArray.push({
-                  label: x.category,
-                  id: x.id,
-                  seq: x.seq,
-                })
-              };
-            });
+              categories.map((x) => {
+                if (x.trainingCategoryGroup === group) {
+                  categoryArray.push({
+                    label: x.category,
+                    id: x.id,
+                    seq: x.seq,
+                  });
+                }
+              });
 
               currentTrainingGroup.items = categoryArray;
               this.trainingGroups.push(currentTrainingGroup);
-
             }
           }
           console.log(this.trainingGroups);
@@ -94,7 +95,7 @@ export class SelectTrainingCategoryComponent implements OnInit{
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
-        category: [null]
+        category: [null],
       },
       { updateOn: 'submit' },
     );

@@ -139,7 +139,7 @@ describe('AddEditTrainingComponent', () => {
       const trainingRecordId = null;
       const { getByText } = await setup(trainingRecordId);
 
-      expect(getByText('Add training record details')).toBeTruthy();
+      expect(getByText('Select the category that best matches the training taken')).toBeTruthy();
     });
 
     it('should render the Training details title, when there is a training record id', async () => {
@@ -308,7 +308,8 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should call the createTrainingRecord function if adding a new training record, and navigate away from page', async () => {
-      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy, alertServiceSpy } = await setup(null);
+      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy, alertServiceSpy } =
+        await setup(null);
 
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
@@ -357,7 +358,6 @@ describe('AddEditTrainingComponent', () => {
           message: 'Training record added',
         });
       });
-
     });
   });
 

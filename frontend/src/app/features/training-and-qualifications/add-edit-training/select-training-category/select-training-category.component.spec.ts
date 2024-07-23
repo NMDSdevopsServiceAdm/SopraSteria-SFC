@@ -1,16 +1,27 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { SelectTrainingCategoryComponent } from './select-training-category.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { WorkerService } from '@core/services/worker.service';
+import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 
 describe('SelectTrainingCategoryComponent', () => {
   let component: SelectTrainingCategoryComponent;
   let fixture: ComponentFixture<SelectTrainingCategoryComponent>;
 
+  const worker = workerBuilder();
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SelectTrainingCategoryComponent ]
-    })
-    .compileComponents();
+      declarations: [SelectTrainingCategoryComponent],
+      imports: [HttpClientTestingModule],
+      providers: [
+        {
+          provide: WorkerService,
+          useValue: { worker },
+        },
+      ],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(SelectTrainingCategoryComponent);
     component = fixture.componentInstance;

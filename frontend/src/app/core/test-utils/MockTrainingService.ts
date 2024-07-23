@@ -22,8 +22,8 @@ export class MockTrainingService extends TrainingService {
   public selectedTraining = null;
   getCategories(): Observable<TrainingCategory[]> {
     return of([
-      { id: 1, seq: 10, category: 'Activity provision/Well-being' },
-      { id: 2, seq: 20, category: 'Autism' },
+      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
     ]);
   }
 
