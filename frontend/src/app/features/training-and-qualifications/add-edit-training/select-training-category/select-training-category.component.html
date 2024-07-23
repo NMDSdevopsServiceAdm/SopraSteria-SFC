@@ -8,14 +8,15 @@
             {{ title }}
           </h1>
         </legend>
-        <app-grouped-radio-button-accordion formControlName="category" [accordions]="trainingGroups" ></app-grouped-radio-button-accordion>
+        <app-grouped-radio-button-accordion
+          formControlName="category"
+          [accordions]="trainingGroups"
+        ></app-grouped-radio-button-accordion>
       </fieldset>
     </div>
   </div>
   <div class="govuk-button-group">
-    <button type="submit" class="govuk-button govuk-!-margin-right-9">
-      Continue
-    </button>
+    <button type="submit" class="govuk-button govuk-!-margin-right-9">Continue</button>
 
     <a
       class="govuk-button govuk-button--link govuk-!-margin-left-9"

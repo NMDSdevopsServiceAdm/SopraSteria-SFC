@@ -4,6 +4,7 @@ import { SelectTrainingCategoryComponent } from './select-training-category.comp
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { By } from '@angular/platform-browser';
 
 describe('SelectTrainingCategoryComponent', () => {
   let component: SelectTrainingCategoryComponent;
@@ -30,5 +31,10 @@ describe('SelectTrainingCategoryComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should show the worker name as the section heading', () => {
+    const sectionHeading = fixture.debugElement.query(By.css('[data-testid="section-heading"]')).nativeElement;
+    expect(sectionHeading.textContent).toContain(component.worker.nameOrId);
   });
 });

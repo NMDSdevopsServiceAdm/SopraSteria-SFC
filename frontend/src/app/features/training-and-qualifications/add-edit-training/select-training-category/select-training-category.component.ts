@@ -5,6 +5,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { Worker } from '@core/model/worker.model';
 import { Subscription } from 'rxjs';
 import { TrainingCategory } from '@core/model/training.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-select-training-category',
@@ -19,11 +20,13 @@ export class SelectTrainingCategoryComponent implements OnInit {
   groupNames: string[];
   public subscriptions: Subscription = new Subscription();
   categories: TrainingCategory[];
+  public submitted: boolean = false;
 
   constructor(
     protected formBuilder: FormBuilder,
     protected trainingService: TrainingService,
     protected workerService: WorkerService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -36,6 +39,10 @@ export class SelectTrainingCategoryComponent implements OnInit {
 
   public onSubmit() {
     console.log(this.form);
+    this.submitted = true;
+    if (this.form.valid) {
+      this.trainingService.setTrainingCategorySelectedForTrainingRecord(this.form.value);
+    }
   }
 
   public onCancel(event: any) {}

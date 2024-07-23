@@ -30,7 +30,9 @@ describe('TrainingService', () => {
     it('should call the endpoint for getting training by status', async () => {
       service.getAllTrainingByStatus('mock-uid', 'expired').subscribe();
 
-      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/mock-uid/trainingAndQualifications/expired`);
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/establishment/mock-uid/trainingAndQualifications/expired`,
+      );
       expect(req.request.method).toBe('GET');
     });
   });
@@ -39,8 +41,16 @@ describe('TrainingService', () => {
     it('should call the endpoint for getting missing mandatory training', async () => {
       service.getMissingMandatoryTraining('mock-uid').subscribe();
 
-      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/mock-uid/trainingAndQualifications/missing-training`);
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/establishment/mock-uid/trainingAndQualifications/missing-training`,
+      );
       expect(req.request.method).toBe('GET');
     });
+  });
+
+  it('should return the training category selected for training record', () => {
+    service.setTrainingCategorySelectedForTrainingRecord({ category: 1 });
+
+    expect(service.getTrainingCategorySelectedForTrainingRecord()).toEqual({ category: 1 });
   });
 });
