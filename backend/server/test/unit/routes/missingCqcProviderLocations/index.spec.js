@@ -10,7 +10,7 @@ const {
   getWeeksSinceParentApproval,
   getChildWorkplacesLocationIds,
   findMissingCqcLocationIds,
-  checkMissingWorkplacesAndParentApprovalRule,
+  hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval,
 } = require('../../../../routes/missingCqcProviderLocations');
 
 describe('server/routes/establishments/missingCqcProviderLocations', async () => {
@@ -230,28 +230,40 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
 
       expect(missingCqcLocationIds).to.deep.equal(expectedResult);
     });
+  });
 
-    describe('checkMissingWorkplacesAndParentApprovalRule', () => {
-      it('should return true', async () => {
-        const weeksSinceParentApproval = 8;
-        const missingCqcLocationsCount = 6;
-        const showMissingCqcMessage = await checkMissingWorkplacesAndParentApprovalRule(
-          weeksSinceParentApproval,
-          missingCqcLocationsCount,
-        );
+  describe('hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval', () => {
+    it('should return true if 8 weeks or more since parent approval and more than 5 missing CQC locations', async () => {
+      const weeksSinceParentApproval = 8;
+      const missingCqcLocationsCount = 6;
+      const showMissingCqcMessage = await hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
+        weeksSinceParentApproval,
+        missingCqcLocationsCount,
+      );
 
-        expect(showMissingCqcMessage).to.equal(true);
-      });
-      it('should return false', async () => {
-        const weeksSinceParentApproval = 3;
-        const missingCqcLocationsCount = 4;
-        const showMissingCqcMessage = await checkMissingWorkplacesAndParentApprovalRule(
-          weeksSinceParentApproval,
-          missingCqcLocationsCount,
-        );
+      expect(showMissingCqcMessage).to.equal(true);
+    });
 
-        expect(showMissingCqcMessage).to.equal(false);
-      });
+    it('should return false if under 8 weeks since parent approval', async () => {
+      const weeksSinceParentApproval = 7;
+      const missingCqcLocationsCount = 6;
+      const showMissingCqcMessage = await hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
+        weeksSinceParentApproval,
+        missingCqcLocationsCount,
+      );
+
+      expect(showMissingCqcMessage).to.equal(false);
+    });
+
+    it('should return false if fewer than 6 missing CQC locations', async () => {
+      const weeksSinceParentApproval = 12;
+      const missingCqcLocationsCount = 5;
+      const showMissingCqcMessage = await hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
+        weeksSinceParentApproval,
+        missingCqcLocationsCount,
+      );
+
+      expect(showMissingCqcMessage).to.equal(false);
     });
   });
 });

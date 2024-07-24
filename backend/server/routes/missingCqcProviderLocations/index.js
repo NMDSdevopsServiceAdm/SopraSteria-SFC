@@ -20,7 +20,7 @@ const missingCqcProviderLocations = async (req, res) => {
 
   try {
     const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
-    result.childWorkplacesCount = await childWorkplaces.rows.length;
+    result.childWorkplacesCount = childWorkplaces.rows.length;
 
     if (establishmentId) {
       const parentApproval = await models.Approvals.findbyEstablishmentId(establishmentId, 'BecomeAParent', 'Approved');
@@ -39,7 +39,7 @@ const missingCqcProviderLocations = async (req, res) => {
         childWorkplacesLocationIds,
       );
 
-      result.showMissingCqcMessage = await checkMissingWorkplacesAndParentApprovalRule(
+      result.showMissingCqcMessage = hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
         weeksSinceParentApproval,
         missingCqcLocations.count,
       );
@@ -89,11 +89,8 @@ const findMissingCqcLocationIds = async (cqcLocationIds, childWorkplacesLocation
   return missingCqcLocations;
 };
 
-const checkMissingWorkplacesAndParentApprovalRule = async (weeksSinceParentApproval, missingCqcLocationsCount) => {
-  if (weeksSinceParentApproval >= 8 && missingCqcLocationsCount > 5) {
-    return true;
-  }
-  return false;
+const hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval = (weeksSinceParentApproval, missingCqcLocationsCount) => {
+  return weeksSinceParentApproval >= 8 && missingCqcLocationsCount > 5;
 };
 
 router.route('/').get(Authorization.isAuthorised, missingCqcProviderLocations);
@@ -103,4 +100,5 @@ module.exports.missingCqcProviderLocations = missingCqcProviderLocations;
 module.exports.getWeeksSinceParentApproval = getWeeksSinceParentApproval;
 module.exports.getChildWorkplacesLocationIds = getChildWorkplacesLocationIds;
 module.exports.findMissingCqcLocationIds = findMissingCqcLocationIds;
-module.exports.checkMissingWorkplacesAndParentApprovalRule = checkMissingWorkplacesAndParentApprovalRule;
+module.exports.hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval =
+  hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval;
