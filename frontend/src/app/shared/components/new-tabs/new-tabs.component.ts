@@ -37,24 +37,43 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
     this.selectedTabSubscription();
     this.setTabOnInit();
-    this.trackRouterEventsToSetTabInSubView();
+    this.trackRouterEventsToSetTab();
   }
 
-  private trackRouterEventsToSetTabInSubView(): void {
+  private trackRouterEventsToSetTab(): void {
     this.subscriptions.add(
       this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((route: NavigationEnd) => {
         if (this.isParentViewingSub) {
-          const tabInUrl = this.getTabSlugFromNavigationEvent(route);
+          const tabInUrl = this.getTabSlugFromSubsidiaryUrl(route);
 
           if (tabInUrl) {
             this.tabsService.selectedTab = tabInUrl.slug;
+          }
+        } else {
+          const tabInUrl = this.getTabSlugFromMainDashboardUrl(route);
+          if (tabInUrl && this.tabs[this.currentTab].slug !== tabInUrl) {
+            this.tabsService.selectedTab = tabInUrl;
           }
         }
       }),
     );
   }
 
-  public getTabSlugFromNavigationEvent(route: NavigationEnd) {
+  public getTabSlugFromMainDashboardUrl(route: NavigationEnd): string {
+    const url = route.urlAfterRedirects;
+
+    const hashIndex = url.indexOf('#');
+    if (hashIndex !== -1 && hashIndex < url.length - 1) {
+      const urlWithoutFragment = url.substring(0, hashIndex);
+      if (!urlWithoutFragment.includes('dashboard')) return null;
+
+      const tabSlug = url.substring(hashIndex + 1);
+      return this.tabs.find((tab) => tab.slug === tabSlug) ? tabSlug : null;
+    }
+    return null;
+  }
+
+  public getTabSlugFromSubsidiaryUrl(route: NavigationEnd) {
     const urlArray = route.urlAfterRedirects.split('/').filter((section) => section.length > 0);
     if (urlArray.length > 2) {
       return this.tabs.find((tab) => urlArray[2] === tab.slug);

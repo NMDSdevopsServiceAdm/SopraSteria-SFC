@@ -2,10 +2,10 @@ const expect = require('chai').expect;
 const sinon = require('sinon');
 const moment = require('moment');
 
-const dbmodels = require('../../../../../server/models');
+const dbmodels = require('../../../../../backend/server/models');
 sinon.stub(dbmodels.status, 'ready').value(false);
 const TrainingCsvValidator = require('../../../classes/trainingCSVValidator').TrainingCsvValidator;
-const mappings = require('../../../../../reference/BUDIMappings').mappings;
+const mappings = require('../../../../../backend/reference/BUDIMappings').mappings;
 
 describe('trainingCSVValidator', () => {
   describe('Validation', () => {

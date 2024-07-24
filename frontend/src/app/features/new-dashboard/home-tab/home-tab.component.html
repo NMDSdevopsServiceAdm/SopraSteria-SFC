@@ -1,8 +1,6 @@
 <app-new-dashboard-header tab="home" [workplace]="workplace"></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
-  <ng-container *ngIf="newHomeDesignParentFlag || newHomeDesignParentFlag">
-    <app-alert></app-alert>
-  </ng-container>
+  <app-alert></app-alert>
   <app-summary-section
     [canViewListOfWorkers]="canViewListOfWorkers"
     [workplace]="workplace"
@@ -13,6 +11,7 @@
     [(navigateToTab)]="navigateToTab"
     [canViewEstablishment]="canViewEstablishment"
     [showCheckCqcDetails]="showCheckCqcDetails"
+    [noOfWorkersWhoRequireInternationalRecruitment]="noOfWorkersWhoRequireInternationalRecruitment"
   ></app-summary-section>
 </div>
 <div class="govuk-width-container govuk-!-margin-top-7">

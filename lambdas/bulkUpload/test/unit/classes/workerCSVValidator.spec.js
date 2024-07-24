@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 const moment = require('moment');
 const WorkerCsvValidator = require('../../../classes/workerCSVValidator').WorkerCsvValidator;
 const { build } = require('@jackfranklin/test-data-bot');
-const mappings = require('../../../../../reference/BUDIMappings').mappings;
+const mappings = require('../../../../../backend/reference/BUDIMappings').mappings;
 
 const buildWorkerCsv = build('WorkerCSV', {
   fields: {
@@ -20,7 +20,9 @@ const buildWorkerCsv = build('WorkerCSV', {
     EMPLSTATUS: '1',
     ETHNICITY: '41',
     GENDER: '1',
+    HANDCVISA: '',
     HOURLYRATE: '',
+    INOUTUK: '',
     LOCALESTID: 'MARMA',
     MAINJOBROLE: '4',
     MAINJRDESC: '',
@@ -409,6 +411,298 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         expect(validator._validationErrors).to.deep.equal([]);
         expect(validator._validationErrors.length).to.equal(0);
+      });
+    });
+
+    describe('_validateHealthAndCareVisa()', () => {
+      const healthAndCareVisaWarning = (warning, source) => {
+        return {
+          column: 'HANDCVISA',
+          lineNumber: 2,
+          name: 'MARMA',
+          source,
+          warnCode: WorkerCsvValidator.HANDCVISA_WARNING,
+          warnType: 'HANDCVISA_WARNING',
+          warning,
+          worker: '3',
+        };
+      };
+
+      [
+        { buNumber: '1', mapping: 'Yes' },
+        { buNumber: '2', mapping: 'No' },
+        { buNumber: '999', mapping: "Don't know" },
+      ].forEach((answer) => {
+        it(`should not add warning when valid (${answer.buNumber}) health and care visa provided and worker from other nation and unknown citizenship`, async () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              NATIONALITY: '418',
+              BRITISHCITIZENSHIP: '999',
+              HANDCVISA: answer.buNumber,
+            },
+          });
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          await validator.validate();
+          await validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([]);
+          expect(validator._validationErrors.length).to.equal(0);
+        });
+
+        it(`should not add warning when valid (${answer.buNumber}) health and care visa provided, worker does not have British citizenship and don't know nationality`, async () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              NATIONALITY: '998',
+              BRITISHCITIZENSHIP: '2',
+              HANDCVISA: answer.buNumber,
+            },
+          });
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          await validator.validate();
+          await validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([]);
+          expect(validator._validationErrors.length).to.equal(0);
+        });
+
+        it(`should set healthAndCareVisa field with database mapping (${answer.mapping}) when valid (${answer.buNumber}) health and care visa provided and worker does not have British citizenship`, async () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              NATIONALITY: '418',
+              BRITISHCITIZENSHIP: '2',
+              HANDCVISA: answer.buNumber,
+            },
+          });
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          await validator.validate();
+          await validator.transform();
+
+          expect(validator._healthAndCareVisa).to.equal(answer.mapping);
+        });
+      });
+
+      it('should add warning when health and care visa provided but worker has British citizenship', async () => {
+        const healthAndCareVisaValue = '1';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '418',
+            BRITISHCITIZENSHIP: '1',
+            HANDCVISA: healthAndCareVisaValue,
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          healthAndCareVisaWarning(
+            'HANDCVISA not required when worker is British or has British citizenship',
+            healthAndCareVisaValue,
+          ),
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._healthAndCareVisa).to.equal(null);
+      });
+
+      it('should add warning when health and care visa provided but worker is British', async () => {
+        const healthAndCareVisaValue = '1';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '826', // British code
+            BRITISHCITIZENSHIP: '',
+            HANDCVISA: healthAndCareVisaValue,
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          healthAndCareVisaWarning(
+            'HANDCVISA not required when worker is British or has British citizenship',
+            healthAndCareVisaValue,
+          ),
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._healthAndCareVisa).to.equal(null);
+      });
+
+      it('should add warning when health and care visa invalid', async () => {
+        const healthAndCareVisaValue = '12345';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '418',
+            BRITISHCITIZENSHIP: '2',
+            HANDCVISA: healthAndCareVisaValue,
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          healthAndCareVisaWarning('HANDCVISA is incorrectly formatted and will be ignored', healthAndCareVisaValue),
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._healthAndCareVisa).to.equal(null);
+      });
+    });
+
+    describe('_validateEmployedFromOutsideUk()', () => {
+      const employedFromOutsideUkWarning = (warning, source) => {
+        return {
+          column: 'INOUTUK',
+          lineNumber: 2,
+          name: 'MARMA',
+          source,
+          warnCode: WorkerCsvValidator.INOUTUK_WARNING,
+          warnType: 'INOUTUK_WARNING',
+          warning,
+          worker: '3',
+        };
+      };
+
+      [
+        { buNumber: '1', mapping: 'Yes' },
+        { buNumber: '2', mapping: 'No' },
+        { buNumber: '999', mapping: "Don't know" },
+      ].forEach((answer) => {
+        it(`should not add warning when health and care visa is Yes (1) and valid value for INOUTUK (${answer.buNumber})`, async () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              NATIONALITY: '418',
+              BRITISHCITIZENSHIP: '2',
+              HANDCVISA: '1',
+              INOUTUK: answer.buNumber,
+            },
+          });
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          await validator.validate();
+          await validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([]);
+          expect(validator._validationErrors.length).to.equal(0);
+        });
+
+        it(`should set employedFromOutsideUk field with database mapping (${answer.mapping}) when health and care visa Yes and valid value for INOUTUK (${answer.buNumber})`, async () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              NATIONALITY: '418',
+              BRITISHCITIZENSHIP: '2',
+              HANDCVISA: '1',
+              INOUTUK: answer.buNumber,
+            },
+          });
+
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          await validator.validate();
+          await validator.transform();
+
+          expect(validator._employedFromOutsideUk).to.equal(answer.mapping);
+        });
+      });
+
+      it('should add warning when health and care visa is not Yes (No - 2) and INOUTUK is filled in', async () => {
+        const employedFromOutsideUkValue = '2';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '418',
+            BRITISHCITIZENSHIP: '2',
+            HANDCVISA: '2',
+            INOUTUK: employedFromOutsideUkValue,
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          employedFromOutsideUkWarning(
+            'INOUTUK not required when worker does not have a Health and Care visa',
+            employedFromOutsideUkValue,
+          ),
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._employedFromOutsideUk).to.equal(null);
+      });
+
+      it('should add warning when employed from inside or outside is invalid value', async () => {
+        const employedFromOutsideUkValue = '12345';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '418',
+            BRITISHCITIZENSHIP: '2',
+            HANDCVISA: '1',
+            INOUTUK: employedFromOutsideUkValue,
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([
+          employedFromOutsideUkWarning(
+            'INOUTUK is incorrectly formatted and will be ignored',
+            employedFromOutsideUkValue,
+          ),
+        ]);
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._employedFromOutsideUk).to.equal(null);
+      });
+
+      it('should add warning when health and care visa is Yes(1) but invalid and INOUTUK is filled in', async () => {
+        const employedFromOutsideUkValue = '2';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            NATIONALITY: '826', // British code
+            HANDCVISA: '1',
+            INOUTUK: employedFromOutsideUkValue,
+          },
+        });
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        await validator.validate();
+        await validator.transform();
+
+        expect(validator._validationErrors[1]).to.deep.equal(
+          employedFromOutsideUkWarning(
+            'INOUTUK not required when worker does not have a Health and Care visa',
+            employedFromOutsideUkValue,
+          ),
+        );
+        expect(validator._validationErrors.length).to.equal(2);
+        expect(validator._employedFromOutsideUk).to.equal(null);
       });
     });
 

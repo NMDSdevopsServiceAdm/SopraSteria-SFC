@@ -16,8 +16,8 @@ import { render } from '@testing-library/angular';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training.component';
 
-describe('NewTrainingComponent', () => {
-  async function setup(isOwnWorkplace = true) {
+describe('AddAndManageMandatoryTrainingComponent', () => {
+  async function setup(isOwnWorkplace = true, duplicateJobRoles = false) {
     const { getByText, getByLabelText, getByTestId, fixture } = await render(AddAndManageMandatoryTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -32,7 +32,7 @@ describe('NewTrainingComponent', () => {
         },
         {
           provide: TrainingService,
-          useClass: MockTrainingService,
+          useFactory: MockTrainingService.factory(duplicateJobRoles),
         },
         {
           provide: EstablishmentService,
@@ -121,7 +121,7 @@ describe('NewTrainingComponent', () => {
   });
 
   describe('mandatory training table records', () => {
-    it('should render a category  name for each training record category', async () => {
+    it('should render a category name for each training record category', async () => {
       const { getByTestId } = await setup();
 
       const coshCategory = getByTestId('category-Coshh');
@@ -136,6 +136,26 @@ describe('NewTrainingComponent', () => {
       const coshCategory = getByTestId('titleAll');
 
       const autismCategory = getByTestId('titleJob');
+      expect(coshCategory.textContent).toContain('All');
+      expect(autismCategory.textContent).toContain('Activities worker, coordinator');
+    });
+
+    it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
+      const { getByTestId } = await setup(true, true);
+
+      const coshCategory = getByTestId('titleAll');
+      const autismCategory = getByTestId('titleJob');
+
+      expect(coshCategory.textContent).toContain('All');
+      expect(autismCategory.textContent).toContain('Activities worker, coordinator');
+    });
+
+    it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
+      const { getByTestId } = await setup(true, true);
+
+      const coshCategory = getByTestId('titleAll');
+      const autismCategory = getByTestId('titleJob');
+
       expect(coshCategory.textContent).toContain('All');
       expect(autismCategory.textContent).toContain('Activities worker, coordinator');
     });

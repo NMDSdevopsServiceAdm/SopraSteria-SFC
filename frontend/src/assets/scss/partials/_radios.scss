@@ -1,0 +1,23 @@
+/* Override the default GOV.UK inline radio styling for right alignment */
+.asc-inline-radio-buttons {
+  display: flex;
+  justify-content: flex-end; /* Align the whole group to the right */
+}
+
+.asc-inline-radio-buttons .govuk-radios__item {
+  display: flex;
+  align-items: center;
+}
+
+.asc-inline-radio-buttons .asc-radios-with-spacing {
+  margin-right: 140px;
+}
+
+.asc-inline-radio-buttons .govuk-radios__item:last-child {
+  margin-right: 0;
+}
+
+.asc-inline-radio-buttons .govuk-radios__label {
+  vertical-align: middle;
+  padding: 5px 0px 5px 10px;
+}

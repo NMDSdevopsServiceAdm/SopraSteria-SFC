@@ -16,6 +16,8 @@ const workerHeaders = [
   'DISABLED',
   'CARECERT',
   'RECSOURCE',
+  'HANDCVISA',
+  'INOUTUK',
   'STARTDATE',
   'STARTINSECT',
   'APPRENTICE',
@@ -42,5 +44,9 @@ const workerHeaders = [
   'QUALACH03NOTES',
 ];
 
+const workerHeadersWithoutCHGUNIQUEWRKIDasArray = workerHeaders.filter((header) => header !== 'CHGUNIQUEWRKID');
+
 exports.workerHeadersWithCHGUNIQUEWRKID = workerHeaders.join(',');
 exports.workerHeadersWithoutCHGUNIQUEWRKID = workerHeaders.filter((header) => header !== 'CHGUNIQUEWRKID').join(',');
+exports.getWorkerColumnIndex = (columnName) =>
+  workerHeadersWithoutCHGUNIQUEWRKIDasArray.findIndex((header) => header === columnName);

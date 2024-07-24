@@ -46,8 +46,10 @@ describe('BritishCitizenshipComponent', () => {
 
     const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
+    const workerService = injector.inject(WorkerService);
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const workerServiceSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
     return {
       component,
@@ -58,6 +60,7 @@ describe('BritishCitizenshipComponent', () => {
       queryByTestId,
       getByLabelText,
       getByTestId,
+      workerServiceSpy,
     };
   }
 
@@ -214,6 +217,44 @@ describe('BritishCitizenshipComponent', () => {
       fireEvent.click(skipButton);
 
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+  });
+
+  describe('onSubmit', () => {
+    it('should update the worker with healthAndCare and employedFromOutsideUk set to null when "Yes" is selected', async () => {
+      const { component, getByLabelText, getByText, fixture, workerServiceSpy } = await setup(false);
+
+      fireEvent.click(getByLabelText('Yes'));
+      fireEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({ britishCitizenship: 'Yes' });
+
+      expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        britishCitizenship: 'Yes',
+        healthAndCareVisa: null,
+        employedFromOutsideUk: null,
+      });
+    });
+
+    it('should update the worker with healthAndCare and employedFromOutsideUk set to null when "Don\'t know" is selected and nationality is set as "Don\'t know" is ', async () => {
+      const { component, getByLabelText, getByText, fixture, workerServiceSpy } = await setup(false);
+
+      component.worker.nationality.value = "Don't know";
+
+      fireEvent.click(getByLabelText('I do not know'));
+      fireEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({ britishCitizenship: "Don't know" });
+
+      expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        britishCitizenship: "Don't know",
+        healthAndCareVisa: null,
+        employedFromOutsideUk: null,
+      });
     });
   });
 });

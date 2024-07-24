@@ -48,9 +48,21 @@ export class BritishCitizenshipComponent extends QuestionComponent {
 
   generateUpdateProps() {
     const { britishCitizenship } = this.form.value;
+
+    let extraFields = {};
+    if (
+      (this.worker && britishCitizenship === 'Yes') ||
+      (this.worker && britishCitizenship === "Don't know" && this.worker.nationality.value === "Don't know")
+    ) {
+      this.worker.healthAndCareVisa = null;
+      this.worker.employedFromOutsideUk = null;
+      extraFields = { healthAndCareVisa: null, employedFromOutsideUk: null };
+    }
+
     return britishCitizenship
       ? {
           britishCitizenship,
+          ...extraFields,
         }
       : null;
   }

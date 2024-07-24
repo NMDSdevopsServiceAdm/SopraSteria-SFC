@@ -325,6 +325,16 @@ class Worker extends EntityValidator {
     return this._properties.get('NurseSpecialisms') ? this._properties.get('NurseSpecialisms').property : null;
   }
 
+  get healthAndCareVisa() {
+    return this._properties.get('HealthAndCareVisa') ? this._properties.get('HealthAndCareVisa').property : null;
+  }
+
+  get employedFromOutsideUk() {
+    return this._properties.get('EmployedFromOutsideUk')
+      ? this._properties.get('EmployedFromOutsideUk').property
+      : null;
+  }
+
   // takes the given JSON document and creates a Worker's set of extendable properties
   // Returns true if the resulting Worker is valid; otherwise false
   async load(document, associatedEntities = false, bulkUploadCompletion = false) {
@@ -362,6 +372,23 @@ class Worker extends EntityValidator {
       if (document.nationality && document.nationality.value === 'British') {
         delete document.nationality.other;
         document.britishCitizenship = null;
+      }
+
+      // Remove health and care visa and employed from outside UK if they are British or have a British citizenship
+      if (
+        (document.nationality && document.nationality.value === 'British') ||
+        (document.britishCitizenship && document.britishCitizenship === 'Yes') ||
+        (document.nationality &&
+          document.nationality.value === "Don't know" &&
+          document.britishCitizenship === "Don't know")
+      ) {
+        document.healthAndCareVisa = null;
+        document.employedFromOutsideUk = null;
+      }
+
+      // Remove employed from outside UK if they don't have health and care visa
+      if (document.healthAndCareVisa && document.healthAndCareVisa !== 'Yes') {
+        document.employedFromOutsideUk = null;
       }
 
       // Remove year arrived if born in the UK or setting to Don't know

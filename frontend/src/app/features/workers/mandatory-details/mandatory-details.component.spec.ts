@@ -22,6 +22,7 @@ import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { MandatoryDetailsComponent } from './mandatory-details.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('MandatoryDetailsComponent', () => {
   const setup = async (canEditWorker = true, primaryUid = 123) => {
@@ -37,6 +38,7 @@ describe('MandatoryDetailsComponent', () => {
         ProgressBarComponent,
       ],
       providers: [
+        InternationalRecruitmentService,
         {
           provide: WindowRef,
           useValue: WindowRef,

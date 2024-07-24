@@ -21,12 +21,14 @@ import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('StaffRecordSummaryComponent', () => {
   const setup = async () => {
     const { fixture, getByText, queryByText, getAllByText } = await render(StaffRecordSummaryComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
       providers: [
+        InternationalRecruitmentService,
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(['canEditWorker']),

@@ -17,6 +17,7 @@ import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatus
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
@@ -26,6 +27,7 @@ import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver'
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
+import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AuthInterceptor } from '@core/services/auth-interceptor';
 import { BackService } from '@core/services/back.service';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
@@ -35,10 +37,12 @@ import { EthnicityService } from '@core/services/ethnicity.service';
 import { FeedbackService } from '@core/services/feedback.service';
 import { HttpErrorHandler } from '@core/services/http-error-handler.service';
 import { HttpInterceptor } from '@core/services/http-interceptor';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { JobService } from '@core/services/job.service';
 import { LocationService } from '@core/services/location.service';
 import { MessageService } from '@core/services/message.service';
 import { NationalityService } from '@core/services/nationality.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { RecruitmentService } from '@core/services/recruitment.service';
 import { RegistrationService } from '@core/services/registration.service';
@@ -63,6 +67,7 @@ import { LogoutComponent } from '@features/logout/logout.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
+import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { NewHomeTabComponent } from '@features/new-dashboard/home-tab/home-tab.component';
 import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
 import { ParentHomeTabComponent } from '@features/new-dashboard/parent-home-tab/parent-home-tab.component';
@@ -87,9 +92,6 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { PreviousRouteService } from '@core/services/previous-route.service';
-import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
-import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 
 @NgModule({
   declarations: [
@@ -174,6 +176,7 @@ import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workpla
     TrainingService,
     WindowRef,
     WorkerService,
+    InternationalRecruitmentService,
     PreviousRouteService,
     { provide: WindowToken, useFactory: windowProvider },
     {
@@ -202,6 +205,7 @@ import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workpla
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
     WorkplaceResolver,
+    GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
   ],
   bootstrap: [AppComponent],
 })

@@ -11,6 +11,7 @@ import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatus
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { RankingsResolver } from '@core/resolvers/rankings.resolver';
 import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
@@ -33,6 +34,8 @@ import { CreateUserAccountComponent } from '@features/workplace/create-user-acco
 import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from '@features/workplace/delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-workplace.component';
+import { EmployedFromOutsideUkExistingWorkersComponent } from '@features/workplace/employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
+import { HealthAndCareVisaExistingWorkers } from '@features/workplace/health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 import { LeaversComponent } from '@features/workplace/leavers/leavers.component';
 import { NumberOfInterviewsComponent } from '@features/workplace/number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
@@ -122,6 +125,7 @@ const routes: Routes = [
       usefulLinksPay: UsefulLinkPayResolver,
       usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
       cqcStatusCheck: CqcStatusCheckResolver,
+      noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     },
     children: [
       {
@@ -232,6 +236,24 @@ const routes: Routes = [
         component: StaffRecruitmentStartComponent,
         data: {
           title: 'Staff Recruitment Start',
+        },
+      },
+      {
+        path: 'health-and-care-visa-existing-workers',
+        component: HealthAndCareVisaExistingWorkers,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Health And Care Visa',
+        },
+      },
+      {
+        path: 'employed-from-outside-or-inside-uk',
+        component: EmployedFromOutsideUkExistingWorkersComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Employed from Outside the UK',
         },
       },
       {
