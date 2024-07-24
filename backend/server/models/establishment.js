@@ -2125,7 +2125,7 @@ module.exports = function (sequelize, DataTypes) {
     limit = 0,
     pageIndex = 0,
     searchTerm = '',
-    getPendingWorkplaces,
+    getPendingWorkplaces = false,
   ) {
     const offset = pageIndex * limit;
     let ustatus;

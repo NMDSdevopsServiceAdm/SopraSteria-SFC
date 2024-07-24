@@ -9,9 +9,7 @@ const missingCqcProviderLocations = async (req, res) => {
   const locationId = req.query.locationId;
   const establishmentUid = req.query.establishmentUid;
   const establishmentId = req.query.establishmentId;
-  const itemsPerPage = 50;
-  const pageIndex = 0;
-  let weeksSinceParentApproval = 0;
+  let weeksSinceParentApproval = null;
 
   const result = {
     weeksSinceParentApproval: null,
@@ -19,7 +17,7 @@ const missingCqcProviderLocations = async (req, res) => {
   };
 
   try {
-    const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
+    const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid);
     result.childWorkplacesCount = childWorkplaces.count;
 
     if (establishmentId) {
@@ -50,9 +48,7 @@ const missingCqcProviderLocations = async (req, res) => {
       result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
     }
   } catch (error) {
-    console.error('CQC Provider API Error: ', error);
     result.showMissingCqcMessage = false;
-
     result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
   }
   return res.status(200).send(result);
