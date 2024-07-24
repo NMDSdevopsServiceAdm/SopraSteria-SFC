@@ -14,18 +14,18 @@ const missingCqcProviderLocations = async (req, res) => {
   let weeksSinceParentApproval = 0;
 
   const result = {
-    weeksSinceParentApproval: 0,
+    weeksSinceParentApproval: null,
     childWorkplacesCount: 0,
   };
 
   try {
     const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
-    result.childWorkplacesCount = childWorkplaces.rows.length;
+    result.childWorkplacesCount = childWorkplaces.count;
 
     if (establishmentId) {
       const parentApproval = await models.Approvals.findbyEstablishmentId(establishmentId, 'BecomeAParent', 'Approved');
 
-      weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+      weeksSinceParentApproval = getWeeksSinceParentApproval(parentApproval);
       result.weeksSinceParentApproval = weeksSinceParentApproval;
     }
 
@@ -58,7 +58,9 @@ const missingCqcProviderLocations = async (req, res) => {
   return res.status(200).send(result);
 };
 
-const getWeeksSinceParentApproval = async (parentApproval) => {
+const getWeeksSinceParentApproval = (parentApproval) => {
+  if (!parentApproval) return null;
+
   const dateNow = moment();
   let dateOfParentApproval = moment(parentApproval.updatedAt);
   return dateNow.diff(dateOfParentApproval, 'weeks');

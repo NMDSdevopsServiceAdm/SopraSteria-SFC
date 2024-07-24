@@ -160,6 +160,33 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       expect(res.statusCode).to.deep.equal(200);
     });
 
+    it('should return weeksSinceParentApproval as null and all fields set to empty values when is not parent', async () => {
+      sinon.restore();
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns({ rows: [], count: 0 });
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns(null);
+      sinon.stub(CQCDataAPI, 'getCQCProviderData').returns(null);
+
+      request.locationId = null;
+
+      const expectedResult = {
+        showMissingCqcMessage: false,
+        weeksSinceParentApproval: null,
+        missingCqcLocations: {
+          count: 0,
+          missingCqcLocationIds: [],
+        },
+        childWorkplacesCount: 0,
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await missingCqcProviderLocations(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
     it('should return false for showMissingCqcMessage and missingCqcLocations with an empty array if invalid locationid format sent', async () => {
       const request = {
         method: 'GET',
@@ -199,20 +226,6 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       expect(res.statusCode).to.deep.equal(200);
     });
 
-    it('should return the difference in weeks', async () => {
-      const parentApproval = {
-        ID: 1,
-        UUID: 'some-uuid',
-        EstablishmentID: 105,
-        Status: 'Approved',
-        updatedAt: moment(moment().subtract(21, 'days')),
-      };
-
-      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
-
-      expect(weeksSinceParentApproval).to.equal(3);
-    });
-
     it('should return an array of child workplaces location ids', async () => {
       const expectedResult = ['1-123', '1-53'];
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
@@ -229,6 +242,48 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       const missingCqcLocationIds = await findMissingCqcLocationIds(cqcLocationIds, childWorkplacesLocationIds);
 
       expect(missingCqcLocationIds).to.deep.equal(expectedResult);
+    });
+  });
+
+  describe('getWeeksSinceParentApproval', () => {
+    let parentApproval;
+    beforeEach(() => {
+      parentApproval = {
+        ID: 1,
+        UUID: 'some-uuid',
+        EstablishmentID: 105,
+        Status: 'Approved',
+        updatedAt: moment(moment().subtract(21, 'days')),
+      };
+    });
+    it('should return 3 when 21 days between updatedAt date and current date', async () => {
+      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+
+      expect(weeksSinceParentApproval).to.equal(3);
+    });
+
+    it('should return 0 when 6 days between updatedAt date and current date', async () => {
+      parentApproval.updatedAt = moment(moment().subtract(6, 'days'));
+
+      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+
+      expect(weeksSinceParentApproval).to.equal(0);
+    });
+
+    it('should return 1 when 13 days between updatedAt date and current date', async () => {
+      parentApproval.updatedAt = moment(moment().subtract(13, 'days'));
+
+      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+
+      expect(weeksSinceParentApproval).to.equal(1);
+    });
+
+    it('should return null when parentApproval is null', async () => {
+      parentApproval = null;
+
+      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+
+      expect(weeksSinceParentApproval).to.equal(null);
     });
   });
 
