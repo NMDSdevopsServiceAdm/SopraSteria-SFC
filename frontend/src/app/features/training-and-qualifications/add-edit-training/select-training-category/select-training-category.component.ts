@@ -5,7 +5,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { Worker } from '@core/model/worker.model';
 import { Subscription } from 'rxjs';
 import { TrainingCategory } from '@core/model/training.model';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
   selector: 'app-select-training-category',
@@ -21,10 +21,13 @@ export class SelectTrainingCategoryComponent implements OnInit {
   public subscriptions: Subscription = new Subscription();
   categories: TrainingCategory[];
   public submitted: boolean = false;
+  establishmentuid: any;
+  workerId: any;
 
   constructor(
     protected formBuilder: FormBuilder,
     protected trainingService: TrainingService,
+    protected route: ActivatedRoute,
     protected workerService: WorkerService,
     private router: Router,
   ) {}
@@ -35,7 +38,13 @@ export class SelectTrainingCategoryComponent implements OnInit {
     this.setSectionHeading();
     this.getCategories();
     this.setupForm();
-  }
+    this.route.params.subscribe((params) => {
+      if (params) {
+        this.establishmentuid = params.establishmentuid;
+        this.workerId = params.id;
+      }
+  })
+}
 
   public onSubmit() {
     console.log(this.form);
@@ -43,6 +52,7 @@ export class SelectTrainingCategoryComponent implements OnInit {
     if (this.form.valid) {
       this.trainingService.setTrainingCategorySelectedForTrainingRecord(this.form.value);
     }
+    this.router.navigate([`workplace/${this.establishmentuid}/training-and-qualifications-record/${this.workerId}/add-training/details`]);
   }
 
   public onCancel(event: any) {}
