@@ -23,6 +23,7 @@ export class SelectTrainingCategoryComponent implements OnInit {
   public submitted: boolean = false;
   establishmentuid: any;
   workerId: any;
+  otherCategory: any;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -100,7 +101,8 @@ export class SelectTrainingCategoryComponent implements OnInit {
               this.trainingGroups.push(currentTrainingGroup);
             }
           }
-          console.log(this.trainingGroups);
+          this.otherCategory = categories.filter((category) => category.trainingCategoryGroup === null)[0];
+          console.log(this.otherCategory);
         },
         (error) => {
           console.error(error.error);
