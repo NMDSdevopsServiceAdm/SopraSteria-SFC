@@ -22,6 +22,7 @@ export class WhyCreateAccountComponent implements OnInit {
     'To record and manage staff records',
     'To benchmark our workplace against others',
     'To help us understand our workforce better',
+    'To get access to the Adult Social Care Training and Development Fund',
     'Other',
   ];
   public form: UntypedFormGroup;

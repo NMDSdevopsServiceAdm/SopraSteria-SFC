@@ -1,6 +1,6 @@
 <app-new-dashboard-header tab="home" [workplace]="workplace"></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-margin-top-7">
-  <ng-container *ngIf="newHomeDesignParentFlag && isParentApprovedBannerViewed === false">
+  <ng-container *ngIf="isParentApprovedBannerViewed === false; else standardAlert">
     <app-alert
       data-testid="parentApprovedBanner"
       [linkTextForAlert]="'What you can do as a parent workplace'"
@@ -8,9 +8,11 @@
       [noFloatRight]="true"
     ></app-alert>
   </ng-container>
+  <ng-template #standardAlert>
+    <app-alert></app-alert>
+  </ng-template>
 </div>
 <app-summary-section
-  *ngIf="canViewListOfWorkers"
   [workplace]="workplace"
   [workerCount]="workerCount"
   [workersCreatedDate]="workersCreatedDate"
@@ -21,18 +23,25 @@
   [canViewEstablishment]="canViewEstablishment"
   [showMissingCqcMessage]="showMissingCqcMessage"
   [workplacesCount]="workplacesCount"
+  [noOfWorkersWhoRequireInternationalRecruitment]="noOfWorkersWhoRequireInternationalRecruitment"
 ></app-summary-section>
 <div class="govuk-width-container govuk-!-margin-top-7">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-padding-left-2 govuk-!-padding-right-2">
       <div class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/bulk-upload.svg'">
-          <a
-            class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
-            routerLink="/bulk-upload"
-            href="#"
-            >Bulk upload your data</a
-          >
+          <ng-container *ngIf="canBulkUpload; else noLink">
+            <a
+              class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
+              routerLink="/bulk-upload"
+              href="#"
+              data-testid="bulkUploadLink"
+              >Bulk upload your data</a
+            >
+          </ng-container>
+          <ng-template #noLink>
+            <p class="govuk-!-font-size-19 govuk-!-font-weight-bold">Bulk upload your data</p>
+          </ng-template>
           <p class="govuk-!-margin-top-5">
             Add all your workplace data into ASC-WDS without the need to add it manually.
           </p></app-card

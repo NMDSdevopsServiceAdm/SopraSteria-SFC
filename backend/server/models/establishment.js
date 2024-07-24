@@ -1481,6 +1481,8 @@ module.exports = function (sequelize, DataTypes) {
             'DisabilityValue',
             'CareCertificateValue',
             'RecruitedFromValue',
+            'HealthAndCareVisaValue',
+            'EmployedFromOutsideUkValue',
             'MainJobStartDateValue',
             'SocialCareStartDateValue',
             'SocialCareStartDateYear',

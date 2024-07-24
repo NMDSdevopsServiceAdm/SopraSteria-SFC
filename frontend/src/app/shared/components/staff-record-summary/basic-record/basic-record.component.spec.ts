@@ -13,6 +13,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { BasicRecordComponent } from './basic-record.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('BasicRecordComponent', () => {
   async function setup(mandatoryDetailsPage = false) {
@@ -20,6 +21,7 @@ describe('BasicRecordComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [SummaryRecordChangeComponent],
       providers: [
+        InternationalRecruitmentService,
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(['canEditWorker']),

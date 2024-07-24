@@ -359,6 +359,32 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"EthnicityFKChangedBy"',
       },
+      EmployedFromOutsideUkValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"EmployedFromOutsideUkValue"',
+      },
+      EmployedFromOutsideUkSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"EmployedFromOutsideUkSavedAt"',
+      },
+      EmployedFromOutsideUkChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"EmployedFromOutsideUkChangedAt"',
+      },
+      EmployedFromOutsideUkSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"EmployedFromOutsideUkSavedBy"',
+      },
+      EmployedFromOutsideUkChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"EmployedFromOutsideUkChangedBy"',
+      },
       NationalityValue: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -741,6 +767,32 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.TEXT,
         allowNull: true,
         field: '"CareCertificateChangedBy"',
+      },
+      HealthAndCareVisaValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"HealthAndCareVisaValue"',
+      },
+      HealthAndCareVisaSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"HealthAndCareVisaSavedAt"',
+      },
+      HealthAndCareVisaChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"HealthAndCareVisaChangedAt"',
+      },
+      HealthAndCareVisaSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"HealthAndCareVisaSavedBy"',
+      },
+      HealthAndCareVisaChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"HealthAndCareVisaChangedBy"',
       },
       ApprenticeshipTrainingValue: {
         type: DataTypes.ENUM,
@@ -1289,6 +1341,26 @@ module.exports = function (sequelize, DataTypes) {
           ],
         },
       ],
+    });
+  };
+
+  Worker.getAllWorkersNationalityAndBritishCitizenship = async function (establishmentId) {
+    return await this.findAll({
+      attributes: [
+        'id',
+        'uid',
+        'NameOrIdValue',
+        'NationalityValue',
+        'BritishCitizenshipValue',
+        'HealthAndCareVisaValue',
+        'EmployedFromOutsideUkValue',
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        HealthAndCareVisaValue: null,
+      },
+      order: [['NameOrIdValue', 'ASC']],
     });
   };
 
