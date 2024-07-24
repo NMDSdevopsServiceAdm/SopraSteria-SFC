@@ -2,6 +2,7 @@ export interface TrainingCategory {
   id: number;
   seq: number;
   category: string;
+  trainingCategoryGroup: string;
 }
 
 export interface TrainingCategoryResponse {

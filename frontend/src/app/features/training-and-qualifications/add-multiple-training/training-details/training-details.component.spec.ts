@@ -116,8 +116,8 @@ describe('MultipleTrainingDetailsComponent', () => {
   it('should show a dropdown with the correct categories in', async () => {
     const { component } = await setup();
     expect(component.categories).toEqual([
-      { id: 1, seq: 10, category: 'Activity provision/Well-being' },
-      { id: 2, seq: 20, category: 'Autism' },
+      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
     ]);
   });
 
