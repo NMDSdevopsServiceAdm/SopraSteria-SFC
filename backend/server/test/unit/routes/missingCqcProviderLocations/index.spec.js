@@ -134,7 +134,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
 
     it('should return false for showMissingCqcMessage and missingCqcLocations with an empty array if CQCDataAPI has an error', async () => {
       sinon.restore();
-
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });
@@ -148,7 +148,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           count: 0,
           missingCqcLocationIds: [],
         },
-        childWorkplacesCount: 0,
+        childWorkplacesCount: 3,
       };
 
       const req = httpMocks.createRequest(request);
@@ -172,6 +172,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       };
 
       sinon.restore();
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });
@@ -186,7 +187,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           count: 0,
           missingCqcLocationIds: [],
         },
-        childWorkplacesCount: 0,
+        childWorkplacesCount: 3,
       };
 
       const req = httpMocks.createRequest(request);
