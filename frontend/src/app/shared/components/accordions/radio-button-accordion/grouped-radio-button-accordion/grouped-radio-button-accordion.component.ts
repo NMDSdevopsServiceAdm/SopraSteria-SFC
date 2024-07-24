@@ -34,7 +34,6 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
           index: value.indexOf(x)
         }
       });
-      console.log(this._accordions);
     }
 
   get accordions() {
@@ -48,10 +47,31 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
     }];
   }[];
 
-  public toggleAccordion(index: number): void {
-    this.accordions[index].open = !this.accordions[index].open;
-    this.accordions.forEach((x) => {if(x.index != index) x.open = false});
-    console.log(this.accordions);
+  public openAll(): void {
+    this.accordions.forEach((x) =>x.open = true);
+  }
+
+  public closeAll() {
+    this.accordions.forEach((x) => x.open = false);
+  }
+
+  public toggleAll(): void {
+    if(this.accordions.some(x => x.open !== true)) {
+      this.openAll();
+    } else {
+      this.closeAll();
+    }
+  }
+
+  public get toggleText() {
+    if(this.accordions.some(x => x.open !== true)) {
+      return 'Open all';
+    }
+    return 'Close all';
+  }
+
+  public toggleAccordion(index) {
+   this.accordions[index].open = !this._accordions[index].open;
   }
 
   @Input('value') _value = null;
