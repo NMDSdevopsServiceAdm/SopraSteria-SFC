@@ -9,29 +9,26 @@ const missingCqcProviderLocations = async (req, res) => {
   const locationId = req.query.locationId;
   const establishmentUid = req.query.establishmentUid;
   const establishmentId = req.query.establishmentId;
-  const itemsPerPage = 50;
-  const pageIndex = 0;
-  let weeksSinceParentApproval = 0;
+  let weeksSinceParentApproval = null;
 
   const result = {
-    weeksSinceParentApproval: 0,
+    weeksSinceParentApproval: null,
     childWorkplacesCount: 0,
   };
 
   try {
+    const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid);
+    result.childWorkplacesCount = childWorkplaces.count;
+
     if (establishmentId) {
       const parentApproval = await models.Approvals.findbyEstablishmentId(establishmentId, 'BecomeAParent', 'Approved');
 
-      weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+      weeksSinceParentApproval = getWeeksSinceParentApproval(parentApproval);
       result.weeksSinceParentApproval = weeksSinceParentApproval;
     }
 
     if (locationId) {
       let CQCProviderData = await CQCDataAPI.getCQCProviderData(locationId);
-
-      const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid, itemsPerPage, pageIndex);
-
-      result.childWorkplacesCount = await childWorkplaces.rows.length;
 
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
 
@@ -40,7 +37,7 @@ const missingCqcProviderLocations = async (req, res) => {
         childWorkplacesLocationIds,
       );
 
-      result.showMissingCqcMessage = await checkMissingWorkplacesAndParentApprovalRule(
+      result.showMissingCqcMessage = hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
         weeksSinceParentApproval,
         missingCqcLocations.count,
       );
@@ -51,15 +48,15 @@ const missingCqcProviderLocations = async (req, res) => {
       result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
     }
   } catch (error) {
-    console.error('CQC Provider API Error: ', error);
     result.showMissingCqcMessage = false;
-
     result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
   }
   return res.status(200).send(result);
 };
 
-const getWeeksSinceParentApproval = async (parentApproval) => {
+const getWeeksSinceParentApproval = (parentApproval) => {
+  if (!parentApproval) return null;
+
   const dateNow = moment();
   let dateOfParentApproval = moment(parentApproval.updatedAt);
   return dateNow.diff(dateOfParentApproval, 'weeks');
@@ -90,11 +87,8 @@ const findMissingCqcLocationIds = async (cqcLocationIds, childWorkplacesLocation
   return missingCqcLocations;
 };
 
-const checkMissingWorkplacesAndParentApprovalRule = async (weeksSinceParentApproval, missingCqcLocationsCount) => {
-  if (weeksSinceParentApproval >= 8 && missingCqcLocationsCount > 5) {
-    return true;
-  }
-  return false;
+const hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval = (weeksSinceParentApproval, missingCqcLocationsCount) => {
+  return weeksSinceParentApproval >= 8 && missingCqcLocationsCount > 5;
 };
 
 router.route('/').get(Authorization.isAuthorised, missingCqcProviderLocations);
@@ -104,4 +98,5 @@ module.exports.missingCqcProviderLocations = missingCqcProviderLocations;
 module.exports.getWeeksSinceParentApproval = getWeeksSinceParentApproval;
 module.exports.getChildWorkplacesLocationIds = getChildWorkplacesLocationIds;
 module.exports.findMissingCqcLocationIds = findMissingCqcLocationIds;
-module.exports.checkMissingWorkplacesAndParentApprovalRule = checkMissingWorkplacesAndParentApprovalRule;
+module.exports.hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval =
+  hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval;
