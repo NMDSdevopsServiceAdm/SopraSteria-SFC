@@ -10,8 +10,8 @@ import { init } from '@sentry/browser';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => RadioButtonAccordionComponent),
       multi: true,
-    }
-  ]
+    },
+  ],
 })
 export class RadioButtonAccordionComponent implements ControlValueAccessor {
   @Input() title: string;
@@ -20,7 +20,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   @Input() items: {
     id: number;
     label: string;
-  }
+  };
   @Input() set open(isOpen: boolean) {
     this._open = isOpen !== undefined ? isOpen : false;
   }
@@ -49,7 +49,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   }
 
   writeValue(value): void {
-    if(value) {
+    if (value) {
       this.value = value;
     }
   }
@@ -62,14 +62,14 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  onClick(val: number) {
-    this.value = val;
+  onClick(val: any) {
+    this.value = { id: val.id, label: val.label };
   }
 
   public emitToggle(): void {
     this.toggleEmitter.emit();
 
-    if(this.open === undefined) {
+    if (this.open === undefined) {
       this.open = !this.open;
     }
   }
