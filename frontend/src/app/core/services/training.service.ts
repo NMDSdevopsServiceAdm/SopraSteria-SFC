@@ -43,12 +43,6 @@ export class TrainingService {
     );
   }
 
-  getCategoryById(categoryId): Observable<TrainingCategory[]> {
-    return this.http
-      .get<TrainingCategoryResponse>(`${environment.appRunnerEndpoint}/api/trainingCategories/${categoryId}`)
-      .pipe(map((res) => res.trainingCategories));
-  }
-
   public deleteCategoryById(establishmentId, categoryId) {
     return this.http.delete(
       `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mandatoryTraining/${categoryId}`,
@@ -107,6 +101,9 @@ export class TrainingService {
     return this._trainingCategorySelectedForTrainingRecord;
   }
   public setTrainingCategorySelectedForTrainingRecord(trainingCategory: any) {
-    this._trainingCategorySelectedForTrainingRecord = { id: trainingCategory.id, category: trainingCategory.label };
+    this._trainingCategorySelectedForTrainingRecord = {
+      id: trainingCategory.category.id,
+      category: trainingCategory.category.label,
+    };
   }
 }
