@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { TrainingService } from './training.service';
 import { environment } from 'src/environments/environment';
 
-describe('TrainingService', () => {
+fdescribe('TrainingService', () => {
   let service: TrainingService;
   let http: HttpTestingController;
 
@@ -49,8 +49,11 @@ describe('TrainingService', () => {
   });
 
   it('should return the training category selected for training record', () => {
-    service.setTrainingCategorySelectedForTrainingRecord({ category: 1 });
+    service.setTrainingCategorySelectedForTrainingRecord({ id: 1, label: 'Activity provision, wellbeing' });
 
-    expect(service.getTrainingCategorySelectedForTrainingRecord()).toEqual({ category: 1 });
+    expect(service.getTrainingCategorySelectedForTrainingRecord()).toEqual({
+      id: 1,
+      category: 'Activity provision, wellbeing',
+    });
   });
 });

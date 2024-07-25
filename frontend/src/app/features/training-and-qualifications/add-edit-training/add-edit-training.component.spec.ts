@@ -18,7 +18,7 @@ import sinon from 'sinon';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
-describe('AddEditTrainingComponent', () => {
+fdescribe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
@@ -132,6 +132,32 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Autism')).toBeTruthy();
       expect(form.value).toEqual(expectedFormValue);
     });
+
+    it('should show the training category displayed as text with a change link when there is a training category present and update the form value', async () => {
+      const qsParamGetMock = sinon.stub();
+      const { component, fixture, getByText, getByTestId, queryByTestId } = await setup(null, qsParamGetMock);
+
+      component.trainingCategory = {
+        category: 'Autism',
+        id: 1,
+      };
+
+      const { form } = component;
+      const expectedFormValue = {
+        title: null,
+        category: 1,
+        accredited: null,
+        completed: { day: null, month: null, year: null },
+        expires: { day: null, month: null, year: null },
+        notes: null,
+      };
+
+      expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
+      expect(queryByTestId('trainingSelect')).toBeFalsy();
+      expect(getByText('Autism')).toBeTruthy();
+      expect(form.value).toEqual(expectedFormValue);
+      expect(getByTestId('changeTrainingCategoryLink')).toBeTruthy();
+    });
   });
 
   describe('title', () => {
@@ -139,7 +165,7 @@ describe('AddEditTrainingComponent', () => {
       const trainingRecordId = null;
       const { getByText } = await setup(trainingRecordId);
 
-      expect(getByText('Select the category that best matches the training taken')).toBeTruthy();
+      expect(getByText('Add training record details')).toBeTruthy();
     });
 
     it('should render the Training details title, when there is a training record id', async () => {

@@ -55,7 +55,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   public setTitle(): void {
-    this.title = this.trainingRecordId ? 'Training record details' : 'Select the category that best matches the training taken';
+    this.title = this.trainingRecordId ? 'Training record details' : 'Add training record details';
   }
 
   protected setSectionHeading(): void {
