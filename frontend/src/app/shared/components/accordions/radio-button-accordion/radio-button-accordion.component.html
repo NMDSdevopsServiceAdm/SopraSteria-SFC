@@ -1,30 +1,27 @@
-<div
-  class="govuk-accordion__section"
-  [class]="{ 'govuk-accordion__section--expanded': open }"
->
+<div class="govuk-accordion__section" [class]="{ 'govuk-accordion__section--expanded': open }">
   <div class="govuk-accordion__section-header" (click)="emitToggle()">
     <h2 class="govuk-accordion__section-heading">
       <span class="asc-small-accordion-heading">{{ title }} </span>
     </h2>
     <span class="govuk-accordion__icon" aria-hidden="true"></span>
   </div>
-  <div
-  class="govuk-accordion__section-content"
-  >
-  <div class="govuk-radios">
-    <div *ngFor="let item of items">
-      <div class="govuk-radios__item">
-        <input
-          class="govuk-radios__input"
-          id="{{formControlName}}-{{ item.id }}"
-          [name]="formControlName ? formControlName : controlName"
-          type="radio"
-          [value]="item.id"
-          (click)="onClick(item.id)"
-        />
-        <label for="{{formControlName}}-{{ item.id }}" class="govuk-label govuk-radios__label">{{ item.label }}</label>
+  <div class="govuk-accordion__section-content">
+    <div class="govuk-radios">
+      <div *ngFor="let item of items">
+        <div class="govuk-radios__item">
+          <input
+            class="govuk-radios__input"
+            id="{{ formControlName }}-{{ item.id }}"
+            [name]="formControlName ? formControlName : controlName"
+            type="radio"
+            [value]="item"
+            (click)="onClick(item)"
+          />
+          <label for="{{ formControlName }}-{{ item.id }}" class="govuk-label govuk-radios__label">{{
+            item.label
+          }}</label>
+        </div>
       </div>
     </div>
-  </div>
   </div>
 </div>
