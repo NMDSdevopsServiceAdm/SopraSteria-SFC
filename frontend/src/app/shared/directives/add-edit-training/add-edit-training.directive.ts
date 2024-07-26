@@ -71,17 +71,15 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  public checkForCategoryId() {
-    console.log(this.trainingService.getTrainingCategorySelectedForTrainingRecord());
-    console.log(this.route.snapshot.queryParamMap);
-    //const selectedCategoryId = this.trainingService.getTrainingCategorySelectedForTrainingRecord();
+  public checkForCategoryId(): void {
+    const selectedCategoryId = this.trainingService.getTrainingCategorySelectedForTrainingRecord();
+
     if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
       this.trainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
+    } else if (selectedCategoryId) {
+      this.trainingCategory = selectedCategoryId;
+      this.showChangeLink = true;
     }
-    // else {
-    //   this.trainingCategory = { id: 1, category: 'Activity provision, wellbeing' };
-    //   this.showChangeLink = true;
-    // }
   }
 
   public handleOnInput(event: Event) {

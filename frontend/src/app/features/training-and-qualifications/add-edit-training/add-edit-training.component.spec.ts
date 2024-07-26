@@ -18,7 +18,7 @@ import sinon from 'sinon';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
 
-fdescribe('AddEditTrainingComponent', () => {
+describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
@@ -30,7 +30,7 @@ fdescribe('AddEditTrainingComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               snapshot: {
-                params: { trainingRecordId },
+                params: { trainingRecordId, establishmentuid: '24', id: 2 },
                 queryParamMap: {
                   get: qsParamGetMock,
                 },
@@ -66,6 +66,8 @@ fdescribe('AddEditTrainingComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+
     return {
       component,
       fixture,
@@ -80,6 +82,7 @@ fdescribe('AddEditTrainingComponent', () => {
       createSpy,
       workerService,
       alertServiceSpy,
+      trainingService,
     };
   }
 
@@ -134,13 +137,17 @@ fdescribe('AddEditTrainingComponent', () => {
     });
 
     it('should show the training category displayed as text with a change link when there is a training category present and update the form value', async () => {
-      const qsParamGetMock = sinon.stub();
-      const { component, fixture, getByText, getByTestId, queryByTestId } = await setup(null, qsParamGetMock);
+      const { component, fixture, getByText, getByTestId, queryByTestId, trainingService } = await setup(null);
 
-      component.trainingCategory = {
-        category: 'Autism',
-        id: 1,
-      };
+      const trainingServiceSpy = spyOn(trainingService, 'getTrainingCategorySelectedForTrainingRecord').and.returnValue(
+        {
+          category: 'Autism',
+          id: 1,
+        },
+      );
+
+      component.ngOnInit();
+      fixture.detectChanges();
 
       const { form } = component;
       const expectedFormValue = {
@@ -157,6 +164,7 @@ fdescribe('AddEditTrainingComponent', () => {
       expect(getByText('Autism')).toBeTruthy();
       expect(form.value).toEqual(expectedFormValue);
       expect(getByTestId('changeTrainingCategoryLink')).toBeTruthy();
+      expect(trainingServiceSpy).toHaveBeenCalled();
     });
   });
 
@@ -385,6 +393,35 @@ fdescribe('AddEditTrainingComponent', () => {
         });
       });
     });
+
+    it('should reset the training category selected for training record in the service on submit', async () => {
+      const { component, fixture, getByText, getByTestId, getByLabelText, trainingService, routerSpy } = await setup(
+        null,
+      );
+
+      spyOn(trainingService, 'getTrainingCategorySelectedForTrainingRecord').and.returnValue({
+        category: 'Autism',
+        id: 1,
+      });
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      component.previousUrl = ['/goToPreviousUrl'];
+      fixture.detectChanges();
+
+      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.click(getByLabelText('No'));
+
+      const trainingServiceSpy = spyOn(trainingService, 'clearTrainingCategorySelectedForTrainingRecord');
+      fireEvent.click(getByText('Save record'));
+      fixture.detectChanges();
+
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+      expect(trainingServiceSpy).toHaveBeenCalled();
+    });
   });
 
   describe('errors', () => {
@@ -602,5 +639,17 @@ fdescribe('AddEditTrainingComponent', () => {
         expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
       });
     });
+  });
+
+  it('should redirect to the add training select category on page refresh', async () => {
+    const { component, fixture, getByText, getByTestId, getByLabelText, trainingService, routerSpy } = await setup(
+      null,
+    );
+
+    component.ngOnInit();
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training`,
+    ]);
   });
 });
