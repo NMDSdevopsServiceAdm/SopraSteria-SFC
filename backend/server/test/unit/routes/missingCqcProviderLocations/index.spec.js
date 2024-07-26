@@ -15,7 +15,7 @@ const {
 
 describe('server/routes/establishments/missingCqcProviderLocations', async () => {
   describe('get missingCqcProviderLocations', async () => {
-    const locationId = '1-2003';
+    const provId = '1-2003';
     const cqcLocationIds = ['1-12427547986', '1-2043158439', '1-5310224737'];
 
     let request;
@@ -23,7 +23,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
     beforeEach(() => {
       sinon.stub(CQCDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
         return {
-          providerId: locationId,
+          providerId: provId,
           locationIds: cqcLocationIds,
         };
       });
@@ -33,7 +33,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
         url: `/api/missingCqcProviderLocations`,
         params: {},
         query: {
-          locationId: locationId,
+          provId: provId,
           establishmentUid: 'some-uuid',
           establishmentId: 2,
         },
@@ -104,7 +104,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       expect(res.statusCode).to.deep.equal(200);
     });
 
-    it('should return childWorkplaceCount and parent approval info with empty fields for CQC when no locationId', async () => {
+    it('should return childWorkplaceCount and parent approval info with empty fields for CQC when no provId in query', async () => {
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });
@@ -121,7 +121,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
         childWorkplacesCount: 3,
       };
 
-      request.query.locationId = null;
+      request.query.provId = null;
 
       const req = httpMocks.createRequest(request);
       const res = httpMocks.createResponse();
@@ -192,7 +192,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
         method: 'GET',
         url: `/api/missingCqcProviderLocations`,
         query: {
-          locationId: '1-locationId',
+          provId: '1-provId',
           establishmentUid: 'some-uuid',
           establishmentId: 2,
         },

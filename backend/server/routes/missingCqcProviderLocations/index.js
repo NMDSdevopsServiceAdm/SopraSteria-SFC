@@ -6,7 +6,7 @@ const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
 
 const missingCqcProviderLocations = async (req, res) => {
-  const locationId = req.query.locationId;
+  const provId = req.query.provId;
   const establishmentUid = req.query.establishmentUid;
   const establishmentId = req.query.establishmentId;
   let weeksSinceParentApproval = null;
@@ -27,8 +27,8 @@ const missingCqcProviderLocations = async (req, res) => {
       result.weeksSinceParentApproval = weeksSinceParentApproval;
     }
 
-    if (locationId) {
-      let CQCProviderData = await CQCDataAPI.getCQCProviderData(locationId);
+    if (provId && provId != 'null' && weeksSinceParentApproval) {
+      let CQCProviderData = await CQCDataAPI.getCQCProviderData(provId);
 
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
 
