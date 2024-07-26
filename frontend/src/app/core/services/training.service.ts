@@ -97,13 +97,20 @@ export class TrainingService {
     this.resetSelectedTraining();
   }
 
-  public getTrainingCategorySelectedForTrainingRecord() {
+  public getTrainingCategorySelectedForTrainingRecord(): any {
     return this._trainingCategorySelectedForTrainingRecord;
   }
+
   public setTrainingCategorySelectedForTrainingRecord(trainingCategory: any) {
-    this._trainingCategorySelectedForTrainingRecord = {
-      id: trainingCategory.category.id,
-      category: trainingCategory.category.label,
-    };
+    if (trainingCategory?.category) {
+      this._trainingCategorySelectedForTrainingRecord = {
+        id: trainingCategory.category?.id,
+        category: trainingCategory.category?.label,
+      };
+    }
+  }
+
+  public clearTrainingCategorySelectedForTrainingRecord(): void {
+    this._trainingCategorySelectedForTrainingRecord = null;
   }
 }

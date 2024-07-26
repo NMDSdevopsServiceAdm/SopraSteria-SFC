@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { TrainingService } from './training.service';
 import { environment } from 'src/environments/environment';
 
-fdescribe('TrainingService', () => {
+describe('TrainingService', () => {
   let service: TrainingService;
   let http: HttpTestingController;
 
@@ -48,12 +48,32 @@ fdescribe('TrainingService', () => {
     });
   });
 
-  it('should return the training category selected for training record', () => {
-    service.setTrainingCategorySelectedForTrainingRecord({ id: 1, label: 'Activity provision, wellbeing' });
+  describe('trainingCategorySelectedForTrainingRecord', () => {
+    it('should not set trainingCategorySelectedForTrainingRecord if the incorrect object is sent', () => {
+      service.setTrainingCategorySelectedForTrainingRecord({ record: 'type' });
 
-    expect(service.getTrainingCategorySelectedForTrainingRecord()).toEqual({
-      id: 1,
-      category: 'Activity provision, wellbeing',
+      expect(service.getTrainingCategorySelectedForTrainingRecord()).toBeNull();
+    });
+
+    it('should return the training category selected for training record', () => {
+      service.setTrainingCategorySelectedForTrainingRecord({
+        category: { id: 1, label: 'Activity provision, wellbeing' },
+      });
+
+      expect(service.getTrainingCategorySelectedForTrainingRecord()).toEqual({
+        id: 1,
+        category: 'Activity provision, wellbeing',
+      });
+    });
+
+    it('should clear trainingCategorySelectedForTrainingRecord', () => {
+      service.setTrainingCategorySelectedForTrainingRecord({
+        category: { id: 1, label: 'Activity provision, wellbeing' },
+      });
+
+      service.clearTrainingCategorySelectedForTrainingRecord();
+
+      expect(service.getTrainingCategorySelectedForTrainingRecord()).toBeNull();
     });
   });
 });
