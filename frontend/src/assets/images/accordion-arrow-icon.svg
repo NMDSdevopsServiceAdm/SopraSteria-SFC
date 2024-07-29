@@ -3,7 +3,7 @@
     <title>Blue accordion arrow</title>
     <g id="accordion-arrow" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
         <circle id="Oval" stroke="#4C2C92" stroke-width="1" cx="11" cy="11" r="10"></circle>
-        <path d="M8, 10.5 L11,13.5" id="Stroke-6" stroke="#4C2C92" stroke-width="2" stroke-linecap="square"></path>
-        <path d="M14, 10.5 L11,13.5" id="Stroke-6" stroke="#4C2C92" stroke-width="2" stroke-linecap="square"></path>
+        <path d="M8, 10 L11,13" id="Stroke-6" stroke="#4C2C92" stroke-width="2" stroke-linecap="square"></path>
+        <path d="M14, 10 L11,13" id="Stroke-6" stroke="#4C2C92" stroke-width="2" stroke-linecap="square"></path>
     </g>
 </svg>

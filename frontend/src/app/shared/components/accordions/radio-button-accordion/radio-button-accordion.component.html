@@ -4,7 +4,7 @@
       <span class="asc-small-accordion-heading">{{ title }} </span>
     </h2>
     <span class="govuk-grid-column-one-quarter-from-desktop govuk-!-padding-top-1" style="width: 15%">
-        <img src="/assets/images/accordion-arrow-icon.svg" alt="" />
+        <img [class]="{ 'arrow-button' : open }" src="/assets/images/accordion-arrow-icon.svg" alt="" />
     </span>
   </div>
   <div class="govuk-accordion__section-content">
