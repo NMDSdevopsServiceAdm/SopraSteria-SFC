@@ -51,7 +51,7 @@ export class SelectMainServiceCqcComponent extends Question {
 
     if (this.form.valid) {
       this.establishmentService.mainServiceCQC = this.form.get('cqc').value;
-      this.router.navigate(['/workplace', this.establishmentService.establishmentId, 'main-service']);
+      this.router.navigate(['/workplace', this.establishment.uid, 'main-service']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

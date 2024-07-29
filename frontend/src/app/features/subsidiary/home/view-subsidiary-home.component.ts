@@ -64,6 +64,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public locationId: string;
   public workplacesCount: number;
   public tilesData: BenchmarksResponse;
+  public showCheckCqcDetails: boolean;
   public noOfWorkersWhoRequireInternationalRecruitment: number;
 
   constructor(
@@ -83,6 +84,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.workerCount = this.route.snapshot.data.workers?.workerCount;
     this.trainingCounts = this.route.snapshot.data.workers?.trainingCounts;
     this.workersNotCompleted = this.route.snapshot.data.workers?.workersNotCompleted;
+    this.showCheckCqcDetails = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
     this.noOfWorkersWhoRequireInternationalRecruitment =
       this.route.snapshot.data.noOfWorkersWhoRequireInternationalRecruitment?.noOfWorkersWhoRequireAnswers;
 

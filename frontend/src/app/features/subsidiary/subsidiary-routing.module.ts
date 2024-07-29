@@ -7,6 +7,7 @@ import { CheckPermissionsGuard } from '@core/guards/permissions/check-permission
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
+import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
@@ -123,6 +124,7 @@ const routes: Routes = [
       rankingsResolver: RankingsResolver,
       usefulLinksPay: UsefulLinkPayResolver,
       usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+      cqcStatusCheck: CqcStatusCheckResolver,
       noOfWorkersWhoRequireInternationalRecruitment: GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     },
     children: [

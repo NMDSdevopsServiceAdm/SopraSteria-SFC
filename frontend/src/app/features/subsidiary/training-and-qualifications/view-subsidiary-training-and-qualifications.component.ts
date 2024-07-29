@@ -56,7 +56,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
   ) {}
 
   ngOnInit(): void {
-    this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
 
     this.workers = this.route.snapshot.data.workers?.workers;
@@ -86,7 +85,7 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
       this.trainingTotals();
     }
   }
-  
+
   public getParentPermissions(): void {
     const parentUid = this.workplace.parentUid;
 
