@@ -11,6 +11,7 @@ const workers = [workerBuilder(), workerBuilder()];
 export class MockTrainingService extends TrainingService {
   public selectedStaff = [];
   public _mockTrainingOrQualificationPreviouslySelected: string = null;
+  public _mockTrainingCategorySelectedForTrainingRecord: any = null;
 
   public get trainingOrQualificationPreviouslySelected() {
     return null;
@@ -19,6 +20,7 @@ export class MockTrainingService extends TrainingService {
   public set trainingOrQualificationPreviouslySelected(value: string) {
     this._mockTrainingOrQualificationPreviouslySelected = value;
   }
+
   public selectedTraining = null;
   getCategories(): Observable<TrainingCategory[]> {
     return of([
@@ -175,6 +177,14 @@ export class MockTrainingService extends TrainingService {
 
   public deleteCategoryById(establishmentId, categoryId) {
     return of({});
+  }
+
+  public getTrainingCategorySelectedForTrainingRecord(): any {
+    return this._mockTrainingCategorySelectedForTrainingRecord;
+  }
+
+  public clearTrainingCategorySelectedForTrainingRecord(): void {
+    this._mockTrainingCategorySelectedForTrainingRecord = null;
   }
 }
 

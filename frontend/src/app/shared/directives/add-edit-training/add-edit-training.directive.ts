@@ -39,6 +39,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public showWorkerCount = false;
   public remainingCharacterCount: number = this.notesMaxLength;
   public notesValue = '';
+  public showChangeLink: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -53,9 +54,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
-      this.trainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
-    }
+    this.checkForCategoryId();
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
     this.init();
@@ -70,6 +69,17 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  public checkForCategoryId(): void {
+    const selectedCategoryId = this.trainingService.getTrainingCategorySelectedForTrainingRecord();
+
+    if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
+      this.trainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
+    } else if (selectedCategoryId) {
+      this.trainingCategory = selectedCategoryId;
+      this.showChangeLink = true;
+    }
   }
 
   public handleOnInput(event: Event) {

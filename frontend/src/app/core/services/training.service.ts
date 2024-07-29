@@ -7,6 +7,15 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
+interface Category {
+  id: number;
+  category: string;
+}
+
+interface SelectedTrainingCategory {
+  category: { id: number; label: string };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -15,7 +24,7 @@ export class TrainingService {
   public selectedStaff: Worker[] = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
-  private _trainingCategorySelectedForTrainingRecord: {};
+  private _trainingCategorySelectedForTrainingRecord: Category = null;
 
   constructor(private http: HttpClient) {}
 
@@ -41,12 +50,6 @@ export class TrainingService {
         params: queryParams,
       },
     );
-  }
-
-  getCategoryById(categoryId): Observable<TrainingCategory[]> {
-    return this.http
-      .get<TrainingCategoryResponse>(`${environment.appRunnerEndpoint}/api/trainingCategories/${categoryId}`)
-      .pipe(map((res) => res.trainingCategories));
   }
 
   public deleteCategoryById(establishmentId, categoryId) {
@@ -103,10 +106,20 @@ export class TrainingService {
     this.resetSelectedTraining();
   }
 
-  public getTrainingCategorySelectedForTrainingRecord() {
+  public getTrainingCategorySelectedForTrainingRecord(): Category {
     return this._trainingCategorySelectedForTrainingRecord;
   }
-  public setTrainingCategorySelectedForTrainingRecord(trainingCategoryId: {}) {
-    this._trainingCategorySelectedForTrainingRecord = trainingCategoryId;
+
+  public setTrainingCategorySelectedForTrainingRecord(trainingCategory: SelectedTrainingCategory) {
+    if (trainingCategory?.category) {
+      this._trainingCategorySelectedForTrainingRecord = {
+        id: trainingCategory.category?.id,
+        category: trainingCategory.category?.label,
+      };
+    }
+  }
+
+  public clearTrainingCategorySelectedForTrainingRecord(): void {
+    this._trainingCategorySelectedForTrainingRecord = null;
   }
 }

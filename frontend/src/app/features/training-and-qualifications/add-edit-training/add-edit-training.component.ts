@@ -17,6 +17,8 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public category: string;
+  public establishmentUid: string;
+  public workerId: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -52,10 +54,20 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         category: this.trainingCategory.id,
       });
     }
+
+    this.establishmentUid = this.route.snapshot.params?.establishmentuid;
+    this.workerId = this.route.snapshot.params?.id;
+
+    if (!this.trainingCategory) {
+      this.router.navigate([
+        `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training`,
+      ]);
+      return;
+    }
   }
 
   public setTitle(): void {
-    this.title = this.trainingRecordId ? 'Training record details' : 'Select the category that best matches the training taken';
+    this.title = this.trainingRecordId ? 'Training record details' : 'Add training record details';
   }
 
   protected setSectionHeading(): void {
@@ -127,6 +139,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
+    this.trainingService.clearTrainingCategorySelectedForTrainingRecord();
     const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
 
     this.router.navigate(this.previousUrl).then(() => {

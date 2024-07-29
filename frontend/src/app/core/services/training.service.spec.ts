@@ -48,9 +48,26 @@ describe('TrainingService', () => {
     });
   });
 
-  it('should return the training category selected for training record', () => {
-    service.setTrainingCategorySelectedForTrainingRecord({ category: 1 });
+  describe('trainingCategorySelectedForTrainingRecord', () => {
+    it('should return the training category selected for training record', () => {
+      service.setTrainingCategorySelectedForTrainingRecord({
+        category: { id: 1, label: 'Activity provision, wellbeing' },
+      });
 
-    expect(service.getTrainingCategorySelectedForTrainingRecord()).toEqual({ category: 1 });
+      expect(service.getTrainingCategorySelectedForTrainingRecord()).toEqual({
+        id: 1,
+        category: 'Activity provision, wellbeing',
+      });
+    });
+
+    it('should clear trainingCategorySelectedForTrainingRecord', () => {
+      service.setTrainingCategorySelectedForTrainingRecord({
+        category: { id: 1, label: 'Activity provision, wellbeing' },
+      });
+
+      service.clearTrainingCategorySelectedForTrainingRecord();
+
+      expect(service.getTrainingCategorySelectedForTrainingRecord()).toBeNull();
+    });
   });
 });
