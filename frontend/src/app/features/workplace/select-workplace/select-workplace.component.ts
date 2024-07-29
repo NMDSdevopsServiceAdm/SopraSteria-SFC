@@ -31,8 +31,8 @@ export class SelectWorkplaceComponent extends SelectWorkplaceDirective {
   }
 
   protected init(): void {
-    this.flow = `workplace/${this.establishmentService.establishmentId}`;
     this.workplace = this.establishmentService.establishment;
+    this.flow = `workplace/${this.workplace.uid}`;
     this.back = `${this.flow}/regulated-by-cqc`;
     !this.locationAddresses && this.redirect();
     this.isCQCLocationUpdate = true;
