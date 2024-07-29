@@ -5,6 +5,7 @@ import { init } from '@sentry/browser';
 @Component({
   selector: 'app-radio-button-accordion',
   templateUrl: './radio-button-accordion.component.html',
+  styleUrls: ['./radio-button-accordion.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
