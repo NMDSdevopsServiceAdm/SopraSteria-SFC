@@ -13,7 +13,6 @@ module.exports = {
           LEFT JOIN cqc."Approvals" a ON e."EstablishmentID" = a."EstablishmentID"
           JOIN cqc."User" u ON e."EstablishmentID" = u."EstablishmentID"
             WHERE a."EstablishmentID" IS NULL AND e."IsParent" = true
-            AND e."IsRegulated" = true
             AND e."Archived" = false
             AND u."IsPrimary" = true
             AND u."Archived" = false;
