@@ -408,16 +408,12 @@ describe('AddEditTrainingComponent', () => {
       fixture.detectChanges();
 
       component.previousUrl = ['/goToPreviousUrl'];
-      fixture.detectChanges();
 
       userEvent.type(getByLabelText('Training name'), 'Some training');
       userEvent.click(getByLabelText('No'));
 
       const trainingServiceSpy = spyOn(trainingService, 'clearTrainingCategorySelectedForTrainingRecord');
       fireEvent.click(getByText('Save record'));
-      fixture.detectChanges();
-
-      fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       expect(trainingServiceSpy).toHaveBeenCalled();

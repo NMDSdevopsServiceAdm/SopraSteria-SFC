@@ -7,9 +7,13 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
-interface SelectedTrainingCategory {
+interface Category {
   id: number;
   category: string;
+}
+
+interface SelectedTrainingCategory {
+  category: { id: number; label: string };
 }
 
 @Injectable({
@@ -20,7 +24,7 @@ export class TrainingService {
   public selectedStaff: Worker[] = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
-  private _trainingCategorySelectedForTrainingRecord: SelectedTrainingCategory = null;
+  private _trainingCategorySelectedForTrainingRecord: Category = null;
 
   constructor(private http: HttpClient) {}
 
@@ -102,11 +106,11 @@ export class TrainingService {
     this.resetSelectedTraining();
   }
 
-  public getTrainingCategorySelectedForTrainingRecord(): SelectedTrainingCategory {
+  public getTrainingCategorySelectedForTrainingRecord(): Category {
     return this._trainingCategorySelectedForTrainingRecord;
   }
 
-  public setTrainingCategorySelectedForTrainingRecord(trainingCategory: any): void {
+  public setTrainingCategorySelectedForTrainingRecord(trainingCategory: SelectedTrainingCategory) {
     if (trainingCategory?.category) {
       this._trainingCategorySelectedForTrainingRecord = {
         id: trainingCategory.category?.id,

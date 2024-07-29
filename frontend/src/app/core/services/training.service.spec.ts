@@ -49,12 +49,6 @@ describe('TrainingService', () => {
   });
 
   describe('trainingCategorySelectedForTrainingRecord', () => {
-    it('should not set trainingCategorySelectedForTrainingRecord if the incorrect object is sent', () => {
-      service.setTrainingCategorySelectedForTrainingRecord({ record: 'type' });
-
-      expect(service.getTrainingCategorySelectedForTrainingRecord()).toBeNull();
-    });
-
     it('should return the training category selected for training record', () => {
       service.setTrainingCategorySelectedForTrainingRecord({
         category: { id: 1, label: 'Activity provision, wellbeing' },
