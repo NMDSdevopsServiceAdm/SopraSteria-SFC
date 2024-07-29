@@ -39,7 +39,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public showWorkerCount = false;
   public remainingCharacterCount: number = this.notesMaxLength;
   public notesValue = '';
-  public showChangeLink: boolean;
+  public showChangeLink: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
