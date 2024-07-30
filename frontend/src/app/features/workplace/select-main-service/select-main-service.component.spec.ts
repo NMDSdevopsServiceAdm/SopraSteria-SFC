@@ -10,7 +10,7 @@ import { render } from '@testing-library/angular';
 
 describe('SelectMainServiceComponent', () => {
   async function setup() {
-    const component = await render(SelectMainServiceComponent, {
+    const { fixture, getByText } = await render(SelectMainServiceComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
@@ -20,8 +20,11 @@ describe('SelectMainServiceComponent', () => {
       ],
     });
 
+    const component = fixture.componentInstance;
+
     return {
       component,
+      getByText,
     };
   }
 
@@ -32,7 +35,14 @@ describe('SelectMainServiceComponent', () => {
   });
 
   it('should render a subheading of Services', async () => {
-    const { component } = await setup();
-    expect(component.getByText('Services')).toBeTruthy();
+    const { getByText } = await setup();
+    expect(getByText('Services')).toBeTruthy();
+  });
+
+  it('should have cancel link with href back to dashboard', async () => {
+    const { getByText } = await setup();
+
+    const cancelLink = getByText('Cancel');
+    expect(cancelLink.getAttribute('href')).toEqual('/dashboard');
   });
 });
