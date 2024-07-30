@@ -3,8 +3,11 @@
     <h2 class="govuk-accordion__section-heading">
       <span class="asc-small-accordion-heading">{{ title }} </span>
     </h2>
+    <div>
+      {{ description }}
+    </div>
     <span>
-        <img [class]="{ 'arrow-button' : open }" src="/assets/images/accordion-arrow-icon.svg" alt="" />
+        <img [class]="{ 'arrow-button' : open }" src="/assets/images/accordion-arrow-icon.svg" alt=""/> {{ buttonText }}
     </span>
   </div>
   <div class="govuk-accordion__section-content">

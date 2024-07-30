@@ -16,6 +16,7 @@ import { init } from '@sentry/browser';
 })
 export class RadioButtonAccordionComponent implements ControlValueAccessor {
   @Input() title: string;
+  @Input() description?: string;
   @Input() formControlName?: string;
   @Input() controlName?: string;
   @Input() items: {
@@ -33,6 +34,13 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
 
   get value() {
     return this._value;
+  }
+
+  public get buttonText() {
+    if(this.open) {
+      return 'Hide';
+    }
+    return 'Show';
   }
 
   set value(val) {

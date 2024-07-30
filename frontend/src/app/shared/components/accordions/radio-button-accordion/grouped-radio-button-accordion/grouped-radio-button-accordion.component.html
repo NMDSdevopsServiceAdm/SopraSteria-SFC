@@ -1,4 +1,4 @@
 <button type="button" class="govuk-button govuk-!-margin-right-9" (click)="toggleAll()">{{ toggleText }}</button>
 <div *ngFor="let accordion of accordions">
-    <app-radio-button-accordion [controlName]="formControlName" [title]="accordion.title" [items]="accordion.items" [open]="accordion.open" (toggleEmitter)="toggleAccordion(accordion.index)" (selectedValueEmitter)="onClick($event)"></app-radio-button-accordion>
+    <app-radio-button-accordion [controlName]="formControlName" [title]="accordion.title" [description]="accordion.descriptionText" [items]="accordion.items" [open]="accordion.open" (toggleEmitter)="toggleAccordion(accordion.index)" (selectedValueEmitter)="onClick($event)"></app-radio-button-accordion>
 </div>
