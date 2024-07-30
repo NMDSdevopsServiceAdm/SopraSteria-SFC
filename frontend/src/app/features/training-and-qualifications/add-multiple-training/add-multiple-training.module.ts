@@ -10,6 +10,7 @@ import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training/co
 import { SelectStaffComponent } from './select-staff/select-staff.component';
 import { SelectedStaffPanelComponent } from './selected-staff-panel/selected-staff-panel.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
+import { SelectTrainingCategoryMultipleComponent } from './select-training-category-multiple/select-training-category-multiple.component';
 
 @NgModule({
   imports: [
@@ -26,6 +27,7 @@ import { MultipleTrainingDetailsComponent } from './training-details/training-de
     SelectedStaffPanelComponent,
     SelectStaffErrorSummaryComponent,
     ConfirmMultipleTrainingComponent,
+    SelectTrainingCategoryMultipleComponent,
   ],
   providers: [],
 })
