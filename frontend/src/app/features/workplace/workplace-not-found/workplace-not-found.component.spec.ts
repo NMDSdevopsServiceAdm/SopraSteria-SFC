@@ -1,22 +1,29 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { SelectMainServiceComponent } from '@features/workplace/select-main-service/select-main-service.component';
+import { LocationService } from '@core/services/location.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-describe('SelectMainServiceComponent', () => {
+import { WorkplaceNotFoundComponent } from './workplace-not-found.component';
+
+describe('WorkplaceNotFoundComponent', () => {
+  const workplaceUid = 'abc131355543435';
+
   async function setup() {
-    const { fixture, getByText } = await render(SelectMainServiceComponent, {
+    const { fixture, getByText } = await render(WorkplaceNotFoundComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
+        UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useValue: {
+            establishment: { uid: workplaceUid },
+          },
         },
+        LocationService,
       ],
     });
 
@@ -24,25 +31,21 @@ describe('SelectMainServiceComponent', () => {
 
     return {
       component,
+      fixture,
       getByText,
     };
   }
 
-  it('should render', async () => {
+  it('should render a WorkplaceNotFoundComponent', async () => {
     const { component } = await setup();
-
     expect(component).toBeTruthy();
   });
 
-  it('should render a subheading of Services', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Services')).toBeTruthy();
-  });
-
-  it('should have cancel link with href back to dashboard', async () => {
+  it('should show a go back link with workplace uid in url', async () => {
     const { getByText } = await setup();
 
-    const cancelLink = getByText('Cancel');
-    expect(cancelLink.getAttribute('href')).toEqual('/dashboard');
+    const link = getByText('go back and try again');
+
+    expect(link.getAttribute('href')).toEqual(`/workplace/${workplaceUid}/regulated-by-cqc`);
   });
 });
