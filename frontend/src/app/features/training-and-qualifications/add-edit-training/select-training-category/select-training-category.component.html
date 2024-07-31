@@ -12,6 +12,17 @@
           formControlName="category"
           [accordions]="trainingGroups"
         ></app-grouped-radio-button-accordion>
+        <div class="govuk-checkboxes">
+          <div class="govuk-checkboxes__item">
+            <input type="radio"
+              name="category"
+              class="govuk-checkboxes__input"
+              id="otherCheckbox"
+              [value]="otherCategory"
+            />
+            <label for="otherCheckbox" class="govuk-label govuk-checkboxes__label">The training is not in any of these categories</label>
+          </div>
+        </div>
       </fieldset>
     </div>
   </div>

@@ -23,6 +23,15 @@ export class SelectTrainingCategoryComponent implements OnInit {
   public submitted: boolean = false;
   establishmentuid: any;
   workerId: any;
+  otherCategory: any;
+
+  private exampleText = {
+    "Care skills and knowledge": "'duty of care', 'safeguarding adults'",
+    "IT, digital and data in the workplace": "'online safety and security', 'working with digital technology'",
+    "Specific conditions and disabilities": "'dementia care', 'Oliver McGowan Mandatory Training'",
+    "Health and safety in the workplace": "'fire safety', 'first aid'",
+    "Staff development": "'communication', 'equality and diversity'"
+  };
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -77,36 +86,44 @@ export class SelectTrainingCategoryComponent implements OnInit {
             );
             this.groupNames = Array.from(groupMap.values());
             // create a new object from the groups array and populate each group with the appropriate training categories
-            this.trainingGroups = [];
-            for (const group of this.groupNames) {
-              let currentTrainingGroup = {
-                title: group,
-                descriptionText: '',
-                items: [],
-              };
-
-              const categoryArray = [];
-              categories.map((x) => {
-                if (x.trainingCategoryGroup === group) {
-                  categoryArray.push({
-                    label: x.category,
-                    id: x.id,
-                    seq: x.seq,
-                  });
-                }
-              });
-
-              currentTrainingGroup.items = categoryArray;
-              this.trainingGroups.push(currentTrainingGroup);
-            }
+            this.initialiseTrainingGroups(categories);
           }
-          console.log(this.trainingGroups);
+          this.otherCategory = categories.filter((category) => category.trainingCategoryGroup === null)[0];
+          console.log(this.otherCategory);
         },
         (error) => {
           console.error(error.error);
         },
       ),
     );
+  }
+
+  private initialiseTrainingGroups(trainingCategories) {
+    this.trainingGroups = [];
+    for (const group of this.groupNames) {
+      let currentTrainingGroup = {
+        title: group,
+        descriptionText: '',
+        items: [],
+      };
+      const categoryArray = [];
+      trainingCategories.map((x) => {
+        if (x.trainingCategoryGroup === group) {
+          categoryArray.push({
+            label: x.category,
+            id: x.id,
+            seq: x.seq,
+          });
+        }
+      });
+      currentTrainingGroup.items = categoryArray;
+      currentTrainingGroup.descriptionText = this.getTrainingGroupDescription(currentTrainingGroup);
+      this.trainingGroups.push(currentTrainingGroup);
+    }
+  }
+
+  private getTrainingGroupDescription(trainingGroup) {
+    return `Training like ${this.exampleText[trainingGroup.title]}`
   }
 
   private setupForm(): void {

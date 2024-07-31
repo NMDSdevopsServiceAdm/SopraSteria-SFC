@@ -5,6 +5,7 @@ import { init } from '@sentry/browser';
 @Component({
   selector: 'app-radio-button-accordion',
   templateUrl: './radio-button-accordion.component.html',
+  styleUrls: ['./radio-button-accordion.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -15,17 +16,15 @@ import { init } from '@sentry/browser';
 })
 export class RadioButtonAccordionComponent implements ControlValueAccessor {
   @Input() title: string;
+  @Input() description?: string;
   @Input() formControlName?: string;
   @Input() controlName?: string;
   @Input() items: {
     id: number;
     label: string;
   };
-  @Input() set open(isOpen: boolean) {
-    this._open = isOpen !== undefined ? isOpen : false;
-  }
+  @Input() open: boolean;
 
-  _open: boolean;
   @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
   @Output() selectedValueEmitter: EventEmitter<number> = new EventEmitter();
 
@@ -37,8 +36,11 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
     return this._value;
   }
 
-  get open() {
-    return this._open;
+  public get buttonText() {
+    if(this.open) {
+      return 'Hide';
+    }
+    return 'Show';
   }
 
   set value(val) {
@@ -67,10 +69,8 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   }
 
   public emitToggle(): void {
+    const currentStatus = this.open;
     this.toggleEmitter.emit();
-
-    if (this.open === undefined) {
-      this.open = !this.open;
-    }
+    this.open = !currentStatus;
   }
 }
