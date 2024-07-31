@@ -42,14 +42,14 @@ describe('RadioButtonAccordionComponent', () => {
     });
 
     it('should display the title', async () => {
-      const { component, getByTestId, getByText } = await setup();
+      const { getByTestId } = await setup();
 
       const title = getByTestId('title');
       expect(title.textContent).toBe('Test Accordion');
     });
 
     it('should display the description', async () => {
-      const { component, getByTestId, getByText } = await setup();
+      const { getByTestId } = await setup();
 
       const description = getByTestId('description');
       expect(description.textContent).toBe('A Description');
@@ -57,7 +57,7 @@ describe('RadioButtonAccordionComponent', () => {
 
     describe('should display the correct amount of radio buttons:', async () => {
       it('2', async () => {
-        const { component, getAllByTestId } = await setup();
+        const { getAllByTestId } = await setup();
         const radioButtons = getAllByTestId('radioButton');
         expect(radioButtons.length).toBe(2);
       });
@@ -82,7 +82,7 @@ describe('RadioButtonAccordionComponent', () => {
           },
         ];
 
-        const { component, getAllByTestId } = await setup({items: radioArray});
+        const { getAllByTestId } = await setup({items: radioArray});
 
         const radioButtons = getAllByTestId('radioButton');
         expect(radioButtons.length).toBe(4);
@@ -90,14 +90,14 @@ describe('RadioButtonAccordionComponent', () => {
     });
 
     it('should be closed', async () => {
-      const { component, getByTestId, getByText } = await setup();
+      const { getByTestId } = await setup();
 
       const accordion = getByTestId('accordion');
       expect(accordion.classList).not.toContain('govuk-accordion__section--expanded');
     });
 
     it('should open when clicked', async () => {
-      const { component, fixture, getByTestId, getByText } = await setup();
+      const { fixture, getByTestId } = await setup();
 
       const showHideButton = getByTestId('showHideButton');
       fireEvent.click(showHideButton);
