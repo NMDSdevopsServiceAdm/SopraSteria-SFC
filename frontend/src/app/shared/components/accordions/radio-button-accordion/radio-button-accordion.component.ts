@@ -22,7 +22,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   @Input() items: {
     id: number;
     label: string;
-  };
+  }[];
   @Input() open: boolean;
 
   @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
