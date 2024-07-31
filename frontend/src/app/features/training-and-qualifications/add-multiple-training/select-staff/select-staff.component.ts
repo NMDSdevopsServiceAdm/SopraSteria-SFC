@@ -177,7 +177,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   }
 
   private getNextRoute(): string {
-    return this.accessedFromSummary ? 'confirm-training' : 'training-details';
+    return this.accessedFromSummary ? 'confirm-training' : 'select-training-category';
   }
 
   handleSearch(searchTerm: string): void {

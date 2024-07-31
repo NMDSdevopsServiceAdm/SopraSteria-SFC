@@ -1,15 +1,28 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-7">
-      <span class="govuk-caption-l">Add multiple records</span>
-      <h1 class="govuk-fieldset__heading">Select the category that best matches the training taken</h1>
-    </legend>
+<!-- <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary> -->
 
-    <div class="govuk-button-group">
-      <button class="govuk-button govuk-!-margin-right-9" type="button" (click)="onSubmit()">Continue</button>
-      <a role="button" href="#" class="govuk-button govuk-button--link govuk-!-margin-left-9" (click)="onCancel($event)"
-        >Cancel</a
-      >
+<form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-7">
+        <span class="govuk-caption-l">Add multiple records</span>
+        <h1 class="govuk-fieldset__heading">Select the category that best matches the training taken</h1>
+      </legend>
+
+      <!-- <app-grouped-radio-button-accordion
+      formControlName="category"
+      [accordions]="trainingGroups"
+    ></app-grouped-radio-button-accordion> -->
+
+      <div class="govuk-button-group">
+        <button class="govuk-button govuk-!-margin-right-9" type="button" (click)="onSubmit()">Continue</button>
+        <a
+          role="button"
+          href="#"
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          (click)="onCancel($event)"
+          >Cancel</a
+        >
+      </div>
     </div>
   </div>
-</div>
+</form>
