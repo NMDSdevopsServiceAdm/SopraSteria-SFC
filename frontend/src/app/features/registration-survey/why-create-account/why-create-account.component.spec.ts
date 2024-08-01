@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { RegistrationSurveyService } from '@core/services/registration-survey.service';
 import { SharedModule } from '@shared/shared.module';
@@ -18,11 +19,14 @@ describe('WhyCreateAccountComponent', () => {
     const component = fixture.componentInstance;
 
     const injector = getTestBed();
-    const registrationSurveyService = injector.inject(RegistrationSurveyService);
 
+    const registrationSurveyService = injector.inject(RegistrationSurveyService);
     const registrationSurveyServiceSpy = spyOn(registrationSurveyService, 'updatewhyCreateAccountState');
 
-    return { fixture, component, getByText, registrationSurveyServiceSpy };
+    const router = injector.inject(Router);
+    const routerSpy = spyOn(router, 'navigate');
+
+    return { fixture, component, getByText, registrationSurveyServiceSpy, routerSpy };
   }
 
   it('should create', async () => {
@@ -52,15 +56,15 @@ describe('WhyCreateAccountComponent', () => {
     const { getByText, registrationSurveyServiceSpy } = await setup();
 
     const benefitsCheckboxText = 'To get access to the Benefits Bundle';
-    const fundCheckboxText = 'To get access to the Adult Social Care Training and Development Fund';
+    const manageStaffRecordsText = 'To record and manage staff records';
 
     fireEvent.click(getByText(benefitsCheckboxText));
-    fireEvent.click(getByText(fundCheckboxText));
+    fireEvent.click(getByText(manageStaffRecordsText));
 
     const nextQuestionButton = getByText('Next question');
     fireEvent.click(nextQuestionButton);
 
-    expect(registrationSurveyServiceSpy).toHaveBeenCalledWith([benefitsCheckboxText, fundCheckboxText]);
+    expect(registrationSurveyServiceSpy).toHaveBeenCalledWith([benefitsCheckboxText, manageStaffRecordsText]);
   });
 
   it('should call updatewhyCreateAccountState in registration service with empty array when no checkboxes selected', async () => {
@@ -73,9 +77,11 @@ describe('WhyCreateAccountComponent', () => {
   });
 
   it('should navigate to the next question', async () => {
-    const component = await setup();
+    const { getByText, routerSpy } = await setup();
 
-    const nextPage = component.fixture.componentInstance.nextPage;
-    expect(nextPage.url).toEqual(['/registration-survey', 'how-did-you-hear-about']);
+    const nextQuestionButton = getByText('Next question');
+    fireEvent.click(nextQuestionButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/registration-survey', 'how-did-you-hear-about']);
   });
 });
