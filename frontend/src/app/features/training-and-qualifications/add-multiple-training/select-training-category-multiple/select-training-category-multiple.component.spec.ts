@@ -3,19 +3,49 @@ import { SelectTrainingCategoryMultipleComponent } from './select-training-categ
 import { getTestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TrainingService } from '@core/services/training.service';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
-import { Router } from '@angular/router';
+import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { SharedModule } from '@shared/shared.module';
+import { RouterTestingModule } from '@angular/router/testing';
+import { WindowRef } from '@core/services/window.ref';
+import { FormBuilder } from '@angular/forms';
+import { WorkerService } from '@core/services/worker.service';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 
-fdescribe('SelectTrainingCategoryMultipleComponent', () => {
-  async function setup() {
-    const { fixture, getByText } = await render(SelectTrainingCategoryMultipleComponent, {
-      imports: [HttpClientTestingModule],
+describe('SelectTrainingCategoryMultipleComponent', () => {
+  async function setup(prefill = false) {
+    const { fixture, getByText, getAllByText } = await render(SelectTrainingCategoryMultipleComponent, {
+      imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
+      declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
         BackLinkService,
+        ErrorSummaryService,
+        WindowRef,
+        FormBuilder,
+        {
+          provide: WorkerService,
+          useClass: MockWorkerService,
+        },
         {
           provide: TrainingService,
-          useClass: MockTrainingService,
+          useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                establishment: {
+                  uid: '43-t74',
+                },
+              },
+            },
+          },
         },
       ],
     });
@@ -26,24 +56,27 @@ fdescribe('SelectTrainingCategoryMultipleComponent', () => {
     const trainingService = injector.inject(TrainingService) as TrainingService;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     const trainingServiceSpy = spyOn(trainingService, 'resetSelectedStaff').and.callThrough();
 
     return {
       component,
       fixture,
       getByText,
+      getAllByText,
       routerSpy,
+      trainingService,
       trainingServiceSpy,
     };
   }
 
   it('should create', async () => {
-    const { component } = await setup();
+    const { component } = await setup(true);
     expect(component).toBeTruthy();
   });
 
   it('should show the page caption', async () => {
-    const { getByText } = await setup();
+    const { getByText } = await setup(true);
 
     const caption = getByText('Add multiple records');
 
@@ -51,7 +84,7 @@ fdescribe('SelectTrainingCategoryMultipleComponent', () => {
   });
 
   it('should show the page heading', async () => {
-    const { getByText } = await setup();
+    const { getByText } = await setup(true);
 
     const heading = getByText('Select the category that best matches the training taken');
 
@@ -59,7 +92,7 @@ fdescribe('SelectTrainingCategoryMultipleComponent', () => {
   });
 
   it('should show the continue button', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup(true);
 
     const button = getByText('Continue');
 
@@ -67,7 +100,7 @@ fdescribe('SelectTrainingCategoryMultipleComponent', () => {
   });
 
   it('should show the cancel link', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup(true);
 
     const cancelLink = getByText('Cancel');
 
@@ -75,7 +108,7 @@ fdescribe('SelectTrainingCategoryMultipleComponent', () => {
   });
 
   it('should reset selected staff in training service and navigate to dashboard after clicking Cancel', async () => {
-    const { getByText, fixture, routerSpy, trainingServiceSpy } = await setup();
+    const { getByText, fixture, routerSpy, trainingServiceSpy } = await setup(true);
 
     const cancelLink = getByText('Cancel');
     fireEvent.click(cancelLink);
@@ -83,5 +116,60 @@ fdescribe('SelectTrainingCategoryMultipleComponent', () => {
 
     expect(trainingServiceSpy).toHaveBeenCalled();
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+  });
+
+  it('should show a dropdown with the correct categories in', async () => {
+    const { component } = await setup(true);
+    expect(component.categories).toEqual([
+      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+    ]);
+  });
+
+  //to work on
+  // it('should return to the select staff page if there is no selected staff', async () => {
+  //   const { component, fixture, routerSpy } = await setup();
+
+  //   fixture.detectChanges();
+  //   component.ngOnInit();
+
+  //   expect(routerSpy).toHaveBeenCalledOnceWith([
+  //     'workplace',
+  //     component.establishmentUid,
+  //     'add-multiple-training',
+  //     'select-staff',
+  //   ]);
+  // });
+
+  it('should call the training service and navigate to the details page', async () => {
+    const { getByText, fixture, component, routerSpy, trainingService } = await setup(true);
+
+    const trainingServiceSpy = spyOn(trainingService, 'setTrainingCategorySelectedForTrainingRecord').and.callThrough();
+
+    const openAllLinkLink = getByText('Open all');
+    fireEvent.click(openAllLinkLink);
+
+    const autismCategory = getByText('Autism');
+    fireEvent.click(autismCategory);
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(trainingServiceSpy).toHaveBeenCalled();
+    expect(routerSpy).toHaveBeenCalled();
+  });
+
+  it('should show an error when no training category selected', async () => {
+    const { component, getByText, fixture, getAllByText } = await setup(true);
+    component.form.markAsDirty();
+    component.form.get('category').setValue(null);
+    component.form.get('category').markAsDirty();
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    expect(component.form.invalid).toBeTruthy();
+    expect(getAllByText('Select the training category').length).toEqual(1);
   });
 });

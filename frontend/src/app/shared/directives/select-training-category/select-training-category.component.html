@@ -1,0 +1,46 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit($event)" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-7">
+        <span class="govuk-caption-l">{{ section }}</span>
+        <h1 class="govuk-fieldset__heading">{{ title }}</h1>
+      </legend>
+
+      <app-grouped-radio-button-accordion
+        formControlName="category"
+        [accordions]="trainingGroups"
+      ></app-grouped-radio-button-accordion>
+
+      <div class="govuk-checkboxes">
+        <div class="govuk-checkboxes__item">
+          <input
+            type="radio"
+            name="category"
+            formControlName="category"
+            class="govuk-checkboxes__input"
+            id="otherCheckbox"
+            [value]="otherCategory"
+          />
+          <label for="otherCheckbox" class="govuk-label govuk-checkboxes__label"
+            >The training is not in any of these categories</label
+          >
+        </div>
+      </div>
+
+      <div class="govuk-button-group">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9" data-module="govuk-button">
+          {{ buttonText }}
+        </button>
+        <a
+          role="button"
+          href="#"
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          (click)="onCancel($event)"
+          >Cancel</a
+        >
+      </div>
+    </div>
+  </div>
+</form>

@@ -23,6 +23,11 @@ const selectTrainingCategoryRoute = {
   data: { title: 'Select training category' },
 };
 
+const selectTrainingCategoryRouteWithGuard = {
+  ...selectTrainingCategoryRoute,
+  canActivate: [AddMultipleTrainingInProgressGuard],
+};
+
 const trainingDetailsRoute = {
   path: 'training-details',
   component: MultipleTrainingDetailsComponent,
@@ -38,7 +43,7 @@ const trainingDetailsRouteWithGuard = {
 
 const routes: Routes = [
   selectStaffRoute,
-  selectTrainingCategoryRoute,
+  selectTrainingCategoryRouteWithGuard,
   trainingDetailsRouteWithGuard,
   {
     path: 'confirm-training',

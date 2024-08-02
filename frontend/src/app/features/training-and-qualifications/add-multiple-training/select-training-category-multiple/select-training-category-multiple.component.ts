@@ -1,119 +1,70 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingService } from '@core/services/training.service';
-import { Subscription } from 'rxjs';
+import { SelectTrainingCategoryDirective } from '@shared/directives/select-training-category/select-training-category.directive';
+import { WorkerService } from '@core/services/worker.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
   selector: 'app-select-training-category-multiple',
-  templateUrl: './select-training-category-multiple.component.html',
+  templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
 })
-export class SelectTrainingCategoryMultipleComponent implements OnInit {
-  public trainingCategories: any;
-  public trainingGroups = [];
-  public selectedStaff;
-  public subscriptions: Subscription = new Subscription();
-  public form;
-  public formErrorsMap;
-  public submitted: boolean = false;
+export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCategoryDirective implements OnInit {
+  public selectedStaff = [];
+  public accessedFromSummary = false;
 
   constructor(
-    private trainingService: TrainingService,
-    private router: Router,
-    public backLinkService: BackLinkService,
-    private formBuilder: FormBuilder,
-  ) {}
+    protected formBuilder: FormBuilder,
+    protected trainingService: TrainingService,
+    protected router: Router,
+    protected backLinkService: BackLinkService,
+    protected workerService: WorkerService,
+    protected route: ActivatedRoute,
+    protected errorSummaryService: ErrorSummaryService,
+  ) {
+    super(formBuilder, trainingService, router, backLinkService, workerService, route, errorSummaryService);
+  }
 
-  ngOnInit(): void {
+  init(): void {
+    this.checkForSelectedStaff();
+  }
+
+  public checkForSelectedStaff(): void {
     this.selectedStaff = this.trainingService.selectedStaff;
-    console.log(this.selectedStaff);
-    this.setBackLink();
-    this.getCategories();
-  }
-
-  public setBackLink(): void {
-    this.backLinkService.showBackLink();
-  }
-
-  public setupCategories(categories) {
-    // loop through categories
-    // look at training category group
-    // if group is there push category into group items array without group name
-    // else create new group and push category without group name
-
-    for (let i = 0; i < categories.length; i++) {
-      if (this.trainingGroups.includes(categories[i].trainingCategoryGroup)) {
-        // this.trainingGroups[categories[i].trainingCategoryGroup].items.push({
-        //   id: categories[i].id,
-        //   label: categories[i].category,
-        //   seq: categories[i].seq,
-        // });
-        console.log('group is here');
-      } else {
-        console.log('create group');
-        this.trainingGroups.push({
-          descriptionText: '',
-          items: [],
-          title: this.trainingGroups[categories[i].trainingCategoryGroup],
-        });
-        // this.trainingGroups[categories[i].trainingCategoryGroup] =
-
-        // this.trainingGroups[categories[i].trainingCategoryGroup].items.push({
-        //   id: categories[i].id,
-        //   label: categories[i].category,
-        //   seq: categories[i].seq,
-        // });
-      }
+    if (!this.selectedStaff || this.selectedStaff.length === 0) {
+      this.trainingService.resetState();
+      this.router.navigate(['workplace', this.establishmentUid, 'add-multiple-training', 'select-staff']);
     }
-    console.log(this.trainingGroups);
-
-    // {
-    //   groupname: {
-    //     descriptionText: "",
-    //     items: [{
-    //       id: 1,
-    //       label: "Care",
-    //       seq: 0
-    //     }]
-    //   }
-    // }
   }
 
-  public getCategories() {
-    this.subscriptions.add(
-      this.trainingService.getCategories().subscribe(
-        (categories) => {
-          if (categories) {
-            this.trainingCategories = categories;
-            console.log(this.trainingCategories);
-            this.setupCategories(categories);
-          }
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      ),
-    );
+  protected setTitle(): void {
+    this.title = 'Select the category that best matches the training taken';
   }
 
-  public onSubmit() {
-    console.log('submit');
+  protected setSectionHeading(): void {
+    this.section = 'Add multiple records';
+  }
+
+  protected setButtonText(): void {
+    this.buttonText = 'Continue';
   }
 
   public onCancel(event: Event) {
     event.preventDefault();
-
-    this.trainingService.resetSelectedStaff();
+    this.trainingService.resetState();
     this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
 
-  private setupForm(): void {
-    this.form = this.formBuilder.group(
-      {
-        category: [null],
-      },
-      { updateOn: 'submit' },
-    );
+  private getNextRoute(): string {
+    return this.accessedFromSummary ? 'confirm-training' : 'training-details';
+  }
+
+  protected submit(selectedCategory): void {
+    this.trainingService.setTrainingCategorySelectedForTrainingRecord(selectedCategory);
+    const nextRoute = this.getNextRoute();
+    this.trainingService.addMultipleTrainingInProgress$.next(true);
+    this.router.navigate(['workplace', this.establishmentUid, 'add-multiple-training', nextRoute]);
   }
 }
