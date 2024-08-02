@@ -1,4 +1,5 @@
-<a class="govuk-!-margin-right-9" (click)="toggleAll()"> <img [class]="{ 'flip-on-x' : showAll }" src="/assets/images/accordion-arrow-icon.svg" alt=""/>{{ toggleText }}</a>
-<div *ngFor="let accordion of accordions">
-    <app-radio-button-accordion [controlName]="formControlName" [title]="accordion.title" [description]="accordion.descriptionText" [items]="accordion.items" [open]="accordion.open" (toggleEmitter)="toggleAccordion(accordion.index)" (selectedValueEmitter)="onClick($event)"></app-radio-button-accordion>
+<div class="govuk-accordion" data-module="govuk-accordion">
+    <div *ngFor="let accordion of accordions">
+        <app-radio-button-accordion [controlName]="formControlName" [title]="accordion.title" [description]="accordion.descriptionText" [items]="accordion.items" [open]="accordion.open" (toggleEmitter)="toggleAccordion(accordion.index)" (selectedValueEmitter)="onClick($event)"></app-radio-button-accordion>
+    </div>
 </div>

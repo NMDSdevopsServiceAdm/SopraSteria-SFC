@@ -1,11 +1,10 @@
-<div class="govuk-accordion__section" [class]="{ 'govuk-accordion__section--expanded': open }" data-testid="accordion">
+
+<div class="govuk-accordion__section govuk-!-padding-bottom-3" [class]="{ 'govuk-accordion__section--expanded': open }" data-testid="accordion">
   <div class="govuk-accordion__section-header" (click)="emitToggle()">
-    <h2 class="govuk-accordion__section-heading">
-      <span class="asc-small-accordion-heading" data-testid="title">{{ title }}</span>
+    <h2 class="govuk-accordion__section-heading" data-testid="title">
+      <span class="govuk-accordion__section-button">{{title}}</span>
     </h2>
-    <div data-testid="description">{{ description }}</div>
-    <span>
-        <img [class]="{ 'flip-on-x' : open }" src="/assets/images/accordion-arrow-icon.svg" alt="" data-testid="showHideButton"/>{{ buttonText }}</span>
+    <div class="govuk-accordion__section-summary" data-testid="description">{{ description }}</div>
   </div>
   <div class="govuk-accordion__section-content">
     <div class="govuk-radios">
