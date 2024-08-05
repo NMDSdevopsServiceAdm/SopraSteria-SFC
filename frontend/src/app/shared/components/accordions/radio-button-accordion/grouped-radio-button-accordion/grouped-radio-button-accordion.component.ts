@@ -71,8 +71,10 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
 
   public get toggleText() {
     if(this.accordions.some(x => x.open !== true)) {
+      this.showAll = false;
       return `Show all ${this.textShowHideAll}`;
     }
+    this.showAll = true;
     return `Hide all ${this.textShowHideAll}`;
   }
 
