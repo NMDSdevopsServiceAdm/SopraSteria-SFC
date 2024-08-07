@@ -20,9 +20,9 @@
         </button>
       </h2>
     </div>
-    <div class="govuk-accordion__section-content" id="accordion-with-summary-sections-content-1" >
+    <div class="govuk-accordion__section-content govuk-!-padding-top-0 govuk-!-padding-bottom-7" id="accordion-with-summary-sections-content-1" >
       <div class="govuk-radios">
-        <div *ngFor="let item of items">
+        <ng-container *ngFor="let item of items">
           <div class="govuk-radios__item" data-testid="radioButton">
             <input
               class="govuk-radios__input"
@@ -36,7 +36,7 @@
               item.label
             }}</label>
           </div>
-        </div>
+        </ng-container>
       </div>
     </div>
   </div>

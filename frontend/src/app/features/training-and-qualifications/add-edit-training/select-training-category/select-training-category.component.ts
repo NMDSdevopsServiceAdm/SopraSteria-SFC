@@ -19,7 +19,6 @@ export class SelectTrainingCategoryComponent implements OnInit {
   trainingGroups: any;
   groupNames: string[];
   public subscriptions: Subscription = new Subscription();
-  categories: TrainingCategory[];
   public submitted: boolean = false;
   establishmentuid: any;
   workerId: any;
@@ -27,9 +26,9 @@ export class SelectTrainingCategoryComponent implements OnInit {
 
   private exampleText = {
     "Care skills and knowledge": "'duty of care', 'safeguarding adults'",
+    "Health and safety in the workplace": "'fire safety', 'first aid'",
     "IT, digital and data in the workplace": "'online safety and security', 'working with digital technology'",
     "Specific conditions and disabilities": "'dementia care', 'Oliver McGowan Mandatory Training'",
-    "Health and safety in the workplace": "'fire safety', 'first aid'",
     "Staff development": "'communication', 'equality and diversity'"
   };
 
@@ -75,27 +74,30 @@ export class SelectTrainingCategoryComponent implements OnInit {
       this.trainingService.getCategories().subscribe(
         (categories) => {
           if (categories) {
-            this.categories = categories;
             // Get an array of the training groups
-            let groupMap = new Map(
-              categories
-                .filter((x) => x.trainingCategoryGroup !== null)
-                .map((x) => {
-                  return [JSON.stringify(x.trainingCategoryGroup), x.trainingCategoryGroup];
-                }),
-            );
-            this.groupNames = Array.from(groupMap.values());
+            this.groupNames = this.getTrainingGroupNames(categories);
+
             // create a new object from the groups array and populate each group with the appropriate training categories
             this.initialiseTrainingGroups(categories);
+            this.otherCategory = categories.filter((category) => category.trainingCategoryGroup === null)[0];
           }
-          this.otherCategory = categories.filter((category) => category.trainingCategoryGroup === null)[0];
-          console.log(this.otherCategory);
         },
         (error) => {
           console.error(error.error);
         },
       ),
     );
+  }
+
+  private getTrainingGroupNames(categories): any[] {
+    let groupMap = new Map(
+      categories
+        .filter((x) => x.trainingCategoryGroup !== null)
+        .map((x) => {
+          return [JSON.stringify(x.trainingCategoryGroup), x.trainingCategoryGroup];
+        }),
+    );
+    return Array.from(groupMap.values()).sort();
   }
 
   private initialiseTrainingGroups(trainingCategories) {
