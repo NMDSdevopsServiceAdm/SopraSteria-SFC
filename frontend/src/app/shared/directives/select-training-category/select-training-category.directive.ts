@@ -153,14 +153,14 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
 
     let categoryIdSelected = this.form.value.category;
 
-    let categoryLabel = this.categories.filter((category) => {
+    let selectedCategory = this.categories.filter((category) => {
       if (category.id === categoryIdSelected) {
-        return category.category;
+        return category;
       }
     });
 
     if (this.form.valid) {
-      this.submit({ category: { id: categoryIdSelected, label: categoryLabel } });
+      this.submit(selectedCategory[0]);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
       return;

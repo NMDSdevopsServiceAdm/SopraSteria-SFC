@@ -140,10 +140,7 @@ describe('AddEditTrainingComponent', () => {
       const { component, fixture, getByText, getByTestId, queryByTestId, trainingService } = await setup(null);
 
       const trainingServiceSpy = spyOn(trainingService, 'getTrainingCategorySelectedForTrainingRecord').and.returnValue(
-        {
-          category: 'Autism',
-          id: 1,
-        },
+        { id: 1, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
       );
 
       component.ngOnInit();
@@ -400,8 +397,10 @@ describe('AddEditTrainingComponent', () => {
       );
 
       spyOn(trainingService, 'getTrainingCategorySelectedForTrainingRecord').and.returnValue({
+        id: 2,
+        seq: 20,
         category: 'Autism',
-        id: 1,
+        trainingCategoryGroup: 'Specific conditions and disabilities',
       });
 
       component.ngOnInit();
