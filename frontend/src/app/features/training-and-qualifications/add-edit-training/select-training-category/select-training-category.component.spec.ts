@@ -45,6 +45,4 @@ describe('SelectTrainingCategoryComponent', () => {
     const sectionHeading = fixture.debugElement.query(By.css('[data-testid="section-heading"]')).nativeElement;
     expect(sectionHeading.textContent).toContain(component.worker.nameOrId);
   });
-
-  it('should ')
 });
