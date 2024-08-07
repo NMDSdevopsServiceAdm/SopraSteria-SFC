@@ -19,6 +19,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   public showWorkerCount = true;
   public workerCount: number = this.trainingService.selectedStaff.length;
   private accessedFromSummary = false;
+  public multipleTrainingDetails: boolean = true;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

@@ -10,10 +10,26 @@
             {{ title }}
           </h1>
         </legend>
-        <p class="govuk-body" *ngIf="showWorkerCount">
-          <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
-          <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
-        </p>
+        <div class="govuk-body" *ngIf="showWorkerCount" data-testid="numberOfStaffSelected">
+          <span class="govuk-util__block govuk-!-font-weight-bold">Number of staff selected</span>
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-three-quarters">
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-half">
+                  <p>{{ workerCount }}</p>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                  <p>
+                    <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
+          <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a> -->
+        </div>
         <ng-container *ngIf="!trainingCategory && !trainingRecordId; else noDropdown">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
             <label class="govuk-label" for="category"> Training category </label>
@@ -36,19 +52,42 @@
           </div>
         </ng-container>
         <ng-template #noDropdown>
-          <p class="govuk-body govuk-!-margin-bottom-6" data-testid="trainingCategoryDisplay">
-            <span class="govuk-util__block"><b>Training category</b></span>
-            <span class="govuk-util__block govuk-!-margin-top-2"
-              >{{ category }}
-              <a
-                *ngIf="showChangeLink"
-                data-testid="changeTrainingCategoryLink"
-                class="govuk-link--no-visited-state govuk-!-margin-left-4"
-                [routerLink]="['..']"
-                >Change</a
-              >
-            </span>
-          </p>
+          <ng-container *ngIf="multipleTrainingDetails; else singleRecord">
+            <div class="govuk-body" data-testid="">
+              <span class="govuk-util__block govuk-!-font-weight-bold">Training category</span>
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-three-quarters">
+                  <div class="govuk-grid-row">
+                    <div class="govuk-grid-column-one-half">
+                      <p>{{ category }}</p>
+                    </div>
+                    <div class="govuk-grid-column-one-half">
+                      <p>
+                        <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-training-category']"
+                          >Change</a
+                        >
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </ng-container>
+          <ng-template #singleRecord>
+            <p class="govuk-body govuk-!-margin-bottom-6" data-testid="trainingCategoryDisplay">
+              <span class="govuk-util__block"><b>Training category</b></span>
+              <span class="govuk-util__block govuk-!-margin-top-2"
+                >{{ category }}
+                <a
+                  *ngIf="showChangeLink"
+                  data-testid="changeTrainingCategoryLink"
+                  class="govuk-link--no-visited-state govuk-!-margin-left-4"
+                  [routerLink]="['..']"
+                  >Change</a
+                >
+              </span>
+            </p>
+          </ng-template>
         </ng-template>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('title').invalid">
