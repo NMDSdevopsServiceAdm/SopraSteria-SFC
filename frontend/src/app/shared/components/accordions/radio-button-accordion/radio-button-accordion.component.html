@@ -7,7 +7,7 @@
       {{ description }}
     </div>
     <span>
-        <img [class]="{ 'arrow-button' : open }" src="/assets/images/accordion-arrow-icon.svg" alt=""/> {{ buttonText }}
+      <img [class]="{ 'arrow-button': open }" src="/assets/images/accordion-arrow-icon.svg" alt="" /> {{ buttonText }}
     </span>
   </div>
   <div class="govuk-accordion__section-content">
@@ -19,8 +19,9 @@
             id="{{ formControlName }}-{{ item.id }}"
             [name]="formControlName ? formControlName : controlName"
             type="radio"
-            [value]="item"
-            (click)="onClick(item)"
+            [value]="item.id"
+            [checked]="preFilledId === item.id"
+            (click)="onClick(item.id)"
           />
           <label for="{{ formControlName }}-{{ item.id }}" class="govuk-label govuk-radios__label">{{
             item.label

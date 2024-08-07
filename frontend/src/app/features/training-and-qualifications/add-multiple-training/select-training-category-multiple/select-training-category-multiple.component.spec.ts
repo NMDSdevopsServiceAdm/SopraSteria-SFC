@@ -16,10 +16,14 @@ import { FormBuilder } from '@angular/forms';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { Establishment } from '@core/model/establishment.model';
 
 describe('SelectTrainingCategoryMultipleComponent', () => {
   async function setup(prefill = false) {
-    const { fixture, getByText, getAllByText } = await render(SelectTrainingCategoryMultipleComponent, {
+    const establishment = establishmentBuilder() as Establishment;
+    const { fixture, getByText, getAllByText, getByTestId } = await render(SelectTrainingCategoryMultipleComponent, {
       imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
       declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
@@ -32,6 +36,10 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
           useClass: MockWorkerService,
         },
         {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
           provide: TrainingService,
           useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
         },
@@ -40,9 +48,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                establishment: {
-                  uid: '43-t74',
-                },
+                establishment: establishment,
               },
             },
           },
@@ -64,6 +70,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
       fixture,
       getByText,
       getAllByText,
+      getByTestId,
       routerSpy,
       trainingService,
       trainingServiceSpy,
@@ -118,28 +125,29 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
   });
 
-  it('should show a dropdown with the correct categories in', async () => {
-    const { component } = await setup(true);
+  it('should show an accordian with the correct categories in', async () => {
+    const { component, getByTestId } = await setup(true);
     expect(component.categories).toEqual([
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
       { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+      { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
+    expect(getByTestId('accordian')).toBeTruthy();
   });
 
-  //to work on
-  // it('should return to the select staff page if there is no selected staff', async () => {
-  //   const { component, fixture, routerSpy } = await setup();
+  it('should return to the select staff page if there is no selected staff', async () => {
+    const { component, fixture, routerSpy } = await setup();
 
-  //   fixture.detectChanges();
-  //   component.ngOnInit();
+    fixture.detectChanges();
+    component.ngOnInit();
 
-  //   expect(routerSpy).toHaveBeenCalledOnceWith([
-  //     'workplace',
-  //     component.establishmentUid,
-  //     'add-multiple-training',
-  //     'select-staff',
-  //   ]);
-  // });
+    expect(routerSpy).toHaveBeenCalledOnceWith([
+      'workplace',
+      component.establishmentUid,
+      'add-multiple-training',
+      'select-staff',
+    ]);
+  });
 
   it('should call the training service and navigate to the details page', async () => {
     const { getByText, fixture, component, routerSpy, trainingService } = await setup(true);

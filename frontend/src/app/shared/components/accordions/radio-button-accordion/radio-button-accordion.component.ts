@@ -24,6 +24,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
     label: string;
   };
   @Input() open: boolean;
+  @Input() preFilledId: number;
 
   @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
   @Output() selectedValueEmitter: EventEmitter<number> = new EventEmitter();
@@ -37,7 +38,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   }
 
   public get buttonText() {
-    if(this.open) {
+    if (this.open) {
       return 'Hide';
     }
     return 'Show';
@@ -65,7 +66,8 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   }
 
   onClick(val: any) {
-    this.value = { id: val.id, label: val.label };
+    this.value = val;
+    //this.value = { id: val.id, label: val.label };
   }
 
   public emitToggle(): void {

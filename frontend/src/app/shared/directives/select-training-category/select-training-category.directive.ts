@@ -6,6 +6,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { TrainingCategory } from '@core/model/training.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -28,6 +29,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   workerId: any;
   public formErrorsMap: Array<ErrorDetails>;
   public previousUrl: string[];
+  public preFilledId: number;
 
   private exampleText = {
     'Care skills and knowledge': "'duty of care', 'safeguarding adults'",
@@ -45,6 +47,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     protected workerService: WorkerService,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
+    protected establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
@@ -55,16 +58,24 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     this.setButtonText();
     this.setBackLink();
     this.getCategories();
+    this.prefillForm();
 
-    this.prefill();
-    this.establishmentUid = this.route.snapshot.data.establishment.uid;
     this.setupFormErrorsMap();
-    this.previousUrl = [localStorage.getItem('previousUrl')];
+
+    //this.establishmentUid = this.route.snapshot.data.establishment.uid;
   }
 
   protected init(): void {}
 
-  protected prefill(): void {}
+  protected prefillForm(): void {
+    let selectedCategory = this.trainingService.getTrainingCategorySelectedForTrainingRecord();
+
+    if (selectedCategory !== null) {
+      this.form.setValue({ category: selectedCategory?.id });
+      this.preFilledId = selectedCategory?.id;
+      this.form.get('category').updateValueAndValidity();
+    }
+  }
 
   protected submit(selectedCategory: any): void {}
 
@@ -96,10 +107,8 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
           let other = categories.filter((category) => category.trainingCategoryGroup === null)[0];
 
           this.otherCategory = {
-            catgory: {
-              id: other.id,
-              label: other.category,
-            },
+            id: other.id,
+            label: other.category,
           };
         },
         (error) => {
@@ -142,8 +151,16 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
+    let categoryIdSelected = this.form.value.category;
+
+    let categoryLabel = this.categories.filter((category) => {
+      if (category.id === categoryIdSelected) {
+        return category.category;
+      }
+    });
+
     if (this.form.valid) {
-      this.submit(this.form.value);
+      this.submit({ category: { id: categoryIdSelected, label: categoryLabel } });
     } else {
       this.errorSummaryService.scrollToErrorSummary();
       return;

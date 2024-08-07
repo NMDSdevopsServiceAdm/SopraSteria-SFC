@@ -11,6 +11,8 @@
       <app-grouped-radio-button-accordion
         formControlName="category"
         [accordions]="trainingGroups"
+        [preFilledId]="preFilledId"
+        data-testid="accordian"
       ></app-grouped-radio-button-accordion>
 
       <div class="govuk-checkboxes">
@@ -21,7 +23,7 @@
             formControlName="category"
             class="govuk-checkboxes__input"
             id="otherCheckbox"
-            [value]="otherCategory"
+            [value]="otherCategory.id"
           />
           <label for="otherCheckbox" class="govuk-label govuk-checkboxes__label"
             >The training is not in any of these categories</label

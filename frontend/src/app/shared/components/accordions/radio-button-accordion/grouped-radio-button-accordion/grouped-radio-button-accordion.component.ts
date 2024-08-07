@@ -10,53 +10,63 @@ import { init } from '@sentry/browser';
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => GroupedRadioButtonAccordionComponent),
       multi: true,
-    }
-  ]
+    },
+  ],
 })
 export class GroupedRadioButtonAccordionComponent implements ControlValueAccessor {
   @Input() formControlName: string;
-  @Input() set accordions(value:
+  @Input() set accordions(
+    value: {
+      title: string;
+      descriptionText: string;
+      open: boolean;
+      index: number;
+      items: [
         {
-            title: string;
-            descriptionText: string;
-            open: boolean;
-            index: number;
-            items: [{
-                id: number;
-                label: string;
-            }];
-        }[]
-    ) {
-      this._accordions = value.map(x => {
-        return {
-          ...x,
-          open: false,
-          index: value.indexOf(x)
-        }
-      });
-    }
+          id: number;
+          label: string;
+        },
+      ];
+    }[],
+  ) {
+    this._accordions = value.map((x) => {
+      return {
+        ...x,
+        open: false,
+        index: value.indexOf(x),
+      };
+    });
+  }
+
+  @Input() preFilledId: number;
 
   get accordions() {
     return this._accordions;
   }
 
   private _accordions: {
-    open: boolean; title: string; descriptionText: string; index: number, items: [{
-      id: number;
-      label: string;
-    }];
+    open: boolean;
+    title: string;
+    descriptionText: string;
+    index: number;
+    items: [
+      {
+        id: number;
+        label: string;
+      },
+    ];
   }[];
 
   public openAll(): void {
-    this.accordions.forEach((x) =>x.open = true);
+    this.accordions.forEach((x) => (x.open = true));
   }
 
   public closeAll() {
-    this.accordions.forEach((x) => x.open = false);
+    this.accordions.forEach((x) => (x.open = false));
   }
 
   public toggleAll(): void {
-    if(this.accordions.some(x => x.open !== true)) {
+    if (this.accordions.some((x) => x.open !== true)) {
       this.openAll();
     } else {
       this.closeAll();
@@ -64,14 +74,14 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
   }
 
   public get toggleText() {
-    if(this.accordions.some(x => x.open !== true)) {
+    if (this.accordions.some((x) => x.open !== true)) {
       return 'Open all';
     }
     return 'Close all';
   }
 
   public toggleAccordion(index) {
-   this.accordions[index].open = !this._accordions[index].open;
+    this.accordions[index].open = !this._accordions[index].open;
   }
 
   @Input('value') _value = null;
@@ -89,7 +99,7 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
   }
 
   writeValue(value): void {
-    if(value) {
+    if (value) {
       this.value = value;
     }
   }
