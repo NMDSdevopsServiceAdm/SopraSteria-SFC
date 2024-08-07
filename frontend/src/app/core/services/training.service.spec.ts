@@ -51,18 +51,26 @@ describe('TrainingService', () => {
   describe('trainingCategorySelectedForTrainingRecord', () => {
     it('should return the training category selected for training record', () => {
       service.setTrainingCategorySelectedForTrainingRecord({
-        category: { id: 1, label: 'Activity provision, wellbeing' },
+        id: 1,
+        category: 'Activity provision, wellbeing',
+        seq: 0,
+        trainingCategoryGroup: 'Care skills and knowledge',
       });
 
       expect(service.getTrainingCategorySelectedForTrainingRecord()).toEqual({
         id: 1,
         category: 'Activity provision, wellbeing',
+        seq: 0,
+        trainingCategoryGroup: 'Care skills and knowledge',
       });
     });
 
     it('should clear trainingCategorySelectedForTrainingRecord', () => {
       service.setTrainingCategorySelectedForTrainingRecord({
-        category: { id: 1, label: 'Activity provision, wellbeing' },
+        id: 1,
+        category: 'Activity provision, wellbeing',
+        seq: 0,
+        trainingCategoryGroup: 'Care skills and knowledge',
       });
 
       service.clearTrainingCategorySelectedForTrainingRecord();
