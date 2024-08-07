@@ -53,6 +53,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
 import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 
 const routes: Routes = [
   {
@@ -295,6 +296,9 @@ const routes: Routes = [
                 path:'',
                 component: SelectTrainingCategoryComponent,
                 data: { title: 'Add Training' },
+                resolve: {
+                  trainingCategories: TrainingCategoriesResolver,
+                }
               },
               {
                 path: 'details',
@@ -549,6 +553,9 @@ const routes: Routes = [
             path:'',
             component: SelectTrainingCategoryComponent,
             data: { title: 'Add Training' },
+            resolve: {
+              trainingCategories: TrainingCategoriesResolver,
+            }
           },
           {
             path: 'details',

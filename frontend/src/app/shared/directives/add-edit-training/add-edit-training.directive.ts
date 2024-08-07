@@ -10,6 +10,7 @@ import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
@@ -47,6 +48,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
+    protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
   ) {}
@@ -126,7 +128,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   private getCategories(): void {
     this.subscriptions.add(
-      this.trainingService.getCategories().subscribe(
+      this.trainingCategoryService.getCategories().subscribe(
         (categories) => {
           if (categories) {
             this.categories = categories;

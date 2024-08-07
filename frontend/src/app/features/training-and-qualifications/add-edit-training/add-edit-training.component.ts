@@ -10,6 +10,7 @@ import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -25,6 +26,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
+    protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
   ) {
@@ -35,6 +37,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       backLinkService,
       errorSummaryService,
       trainingService,
+      trainingCategoryService,
       workerService,
       alertService,
     );

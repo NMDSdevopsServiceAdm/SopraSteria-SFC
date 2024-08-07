@@ -14,7 +14,7 @@ import { init } from '@sentry/browser';
     }
   ]
 })
-export class GroupedRadioButtonAccordionComponent implements ControlValueAccessor {
+export class GroupedRadioButtonAccordionComponent implements ControlValueAccessor, OnInit{
   @Input() formControlName: string;
   @Input() textShowHideAll?: string;
   @Input() set accordions(value:
@@ -51,18 +51,22 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
     }];
   }[];
 
-  public openAll(): void {
+  ngOnInit(): void {
+    this.showAll = false;
+  }
+
+  private openAll(): void {
     this.showAll = true;
     this.accordions.forEach((x) =>x.open = true);
   }
 
-  public closeAll() {
+  private closeAll() {
     this.showAll = false;
     this.accordions.forEach((x) => x.open = false);
   }
 
   public toggleAll(): void {
-    if(this.accordions.some(x => x.open !== true)) {
+    if(this.accordions?.some(x => x.open !== true)) {
       this.openAll();
     } else {
       this.closeAll();
@@ -70,12 +74,12 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
   }
 
   public get toggleText() {
-    if(this.accordions.some(x => x.open !== true)) {
-      this.showAll = false;
-      return `Show all ${this.textShowHideAll}`;
+    if(this.accordions?.some(x => x.open === true)) {
+      this.showAll = true;
+      return `Hide all ${this.textShowHideAll}`;
     }
-    this.showAll = true;
-    return `Hide all ${this.textShowHideAll}`;
+    this.showAll = false;
+    return `Show all ${this.textShowHideAll}`;
   }
 
   public toggleAccordion(index) {

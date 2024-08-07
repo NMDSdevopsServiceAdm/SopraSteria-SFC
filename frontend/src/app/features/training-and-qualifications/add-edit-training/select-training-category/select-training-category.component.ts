@@ -6,6 +6,7 @@ import { Worker } from '@core/model/worker.model';
 import { Subscription } from 'rxjs';
 import { TrainingCategory } from '@core/model/training.model';
 import { ActivatedRoute, Router } from '@angular/router';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 
 @Component({
   selector: 'app-select-training-category',
@@ -24,7 +25,7 @@ export class SelectTrainingCategoryComponent implements OnInit {
   workerId: any;
   otherCategory: any;
 
-  private exampleText = {
+  private summaryText = {
     "Care skills and knowledge": "'duty of care', 'safeguarding adults'",
     "Health and safety in the workplace": "'fire safety', 'first aid'",
     "IT, digital and data in the workplace": "'online safety and security', 'working with digital technology'",
@@ -70,39 +71,14 @@ export class SelectTrainingCategoryComponent implements OnInit {
   }
 
   private getCategories(): void {
-    this.subscriptions.add(
-      this.trainingService.getCategories().subscribe(
-        (categories) => {
-          if (categories) {
-            // Get an array of the training groups
-            this.groupNames = this.getTrainingGroupNames(categories);
-
-            // create a new object from the groups array and populate each group with the appropriate training categories
-            this.initialiseTrainingGroups(categories);
-            this.otherCategory = categories.filter((category) => category.trainingCategoryGroup === null)[0];
-          }
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      ),
-    );
+    const categories = this.route.snapshot.data.trainingCategories;
+    this.sortCategoriesByTrainingGroup(categories);
+    this.otherCategory = categories.filter((category) => category.trainingCategoryGroup === null)[0];
   }
 
-  private getTrainingGroupNames(categories): any[] {
-    let groupMap = new Map(
-      categories
-        .filter((x) => x.trainingCategoryGroup !== null)
-        .map((x) => {
-          return [JSON.stringify(x.trainingCategoryGroup), x.trainingCategoryGroup];
-        }),
-    );
-    return Array.from(groupMap.values()).sort();
-  }
-
-  private initialiseTrainingGroups(trainingCategories) {
+  private sortCategoriesByTrainingGroup(trainingCategories) {
     this.trainingGroups = [];
-    for (const group of this.groupNames) {
+    for (const group of Object.keys(this.summaryText)) {
       let currentTrainingGroup = {
         title: group,
         descriptionText: '',
@@ -119,13 +95,13 @@ export class SelectTrainingCategoryComponent implements OnInit {
         }
       });
       currentTrainingGroup.items = categoryArray;
-      currentTrainingGroup.descriptionText = this.getTrainingGroupDescription(currentTrainingGroup);
+      currentTrainingGroup.descriptionText = this.getTrainingGroupSummary(currentTrainingGroup);
       this.trainingGroups.push(currentTrainingGroup);
     }
   }
 
-  private getTrainingGroupDescription(trainingGroup) {
-    return `Training like ${this.exampleText[trainingGroup.title]}`
+  private getTrainingGroupSummary(trainingGroup) {
+    return `Training like ${this.summaryText[trainingGroup.title]}`
   }
 
   private setupForm(): void {
