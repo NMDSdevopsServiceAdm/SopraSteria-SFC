@@ -28,12 +28,6 @@ export class TrainingService {
 
   constructor(private http: HttpClient) {}
 
-  getCategories(): Observable<TrainingCategory[]> {
-    return this.http
-      .get<TrainingCategoryResponse>(`${environment.appRunnerEndpoint}/api/trainingCategories`)
-      .pipe(map((res) => res.trainingCategories));
-  }
-
   getAllTrainingByStatus(workplaceUid: string, status: string, queryParams?: Params): Observable<any> {
     return this.http.get<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`,

@@ -5,6 +5,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { By } from '@angular/platform-browser';
+import { ActivatedRoute, convertToParamMap } from '@angular/router';
+import { BehaviorSubject } from 'rxjs';
 
 describe('SelectTrainingCategoryComponent', () => {
   let component: SelectTrainingCategoryComponent;
@@ -21,6 +23,12 @@ describe('SelectTrainingCategoryComponent', () => {
           provide: WorkerService,
           useValue: { worker },
         },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            params: new BehaviorSubject({establishmentuid: 'mock-uid', id: 'mock-id'})
+          }
+        }
       ],
     }).compileComponents();
 
