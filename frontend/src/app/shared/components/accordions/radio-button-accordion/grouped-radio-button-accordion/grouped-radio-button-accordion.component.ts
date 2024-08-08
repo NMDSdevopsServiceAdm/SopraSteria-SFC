@@ -5,6 +5,7 @@ import { init } from '@sentry/browser';
 @Component({
   selector: 'app-grouped-radio-button-accordion',
   templateUrl: './grouped-radio-button-accordion.component.html',
+  styleUrls: ['../radio-button-accordion.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -13,8 +14,9 @@ import { init } from '@sentry/browser';
     },
   ],
 })
-export class GroupedRadioButtonAccordionComponent implements ControlValueAccessor {
+export class GroupedRadioButtonAccordionComponent implements ControlValueAccessor, OnInit {
   @Input() formControlName: string;
+  @Input() textShowHideAll?: string;
   @Input() set accordions(
     value: {
       title: string;
@@ -38,7 +40,8 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
     });
   }
 
-  @Input() preFilledId: number;
+  showAll: boolean;
+  toggleText: string;
 
   get accordions() {
     return this._accordions;
@@ -57,31 +60,42 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
     ];
   }[];
 
-  public openAll(): void {
+  ngOnInit(): void {
+    this.showAll = false;
+    this.updateToggleAlltext();
+  }
+
+  private openAll(): void {
+    this.showAll = true;
     this.accordions.forEach((x) => (x.open = true));
   }
 
-  public closeAll() {
+  private closeAll() {
+    this.showAll = false;
     this.accordions.forEach((x) => (x.open = false));
   }
 
   public toggleAll(): void {
-    if (this.accordions.some((x) => x.open !== true)) {
+    if (this.accordions?.some((x) => x.open !== true)) {
       this.openAll();
     } else {
       this.closeAll();
     }
   }
 
-  public get toggleText() {
-    if (this.accordions.some((x) => x.open !== true)) {
-      return 'Open all';
+  private updateToggleAlltext() {
+    if (this.accordions?.every((x) => x.open === true)) {
+      this.toggleText = `Hide all ${this.textShowHideAll}`;
+      this.showAll = true;
+    } else {
+      this.toggleText = `Show all ${this.textShowHideAll}`;
+      this.showAll = false;
     }
-    return 'Close all';
   }
 
   public toggleAccordion(index) {
     this.accordions[index].open = !this._accordions[index].open;
+    this.updateToggleAlltext();
   }
 
   @Input('value') _value = null;
