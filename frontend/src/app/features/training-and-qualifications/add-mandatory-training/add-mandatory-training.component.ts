@@ -11,6 +11,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
@@ -51,6 +52,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   constructor(
     protected backLinkService: BackLinkService,
     private trainingService: TrainingService,
+    private trainingCategoryService: TrainingCategoryService,
     protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
@@ -86,7 +88,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
 
   private getAllTrainingCategories(): void {
     this.subscriptions.add(
-      this.trainingService
+      this.trainingCategoryService
         .getCategories()
         .pipe(take(1))
         .subscribe((trainings) => {

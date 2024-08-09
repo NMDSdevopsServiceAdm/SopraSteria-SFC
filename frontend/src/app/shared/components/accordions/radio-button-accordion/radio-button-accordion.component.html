@@ -1,19 +1,42 @@
-<div class="govuk-accordion__section" [class]="{ 'govuk-accordion__section--expanded': open }">
-  <div class="govuk-accordion__section-header" (click)="emitToggle()">
-    <h2 class="govuk-accordion__section-heading">
-      <span class="asc-small-accordion-heading">{{ title }} </span>
+<div class="govuk-accordion__section" data-testid="accordion" [class]="{ 'govuk-accordion__section--expanded': open }">
+  <div class="govuk-accordion__section-header">
+    <h2 class="govuk-accordion__section-heading" data-testid="title">
+      <button
+        type="button"
+        (click)="emitToggle()"
+        aria-controls="accordion-default-content-4"
+        class="govuk-accordion__section-button"
+        aria-expanded="false"
+      >
+        <span class="govuk-accordion__section-heading-text" id="accordion-default-heading-4">
+          <span class="govuk-accordion__section-heading-text-focus">{{ title }}</span>
+        </span>
+        <span class="govuk-hidden govuk-accordion__section-heading-divider"></span>
+        <span
+          class="govuk-accordion__section-summary govuk-body"
+          id="accordion-with-summary-sections-summary-1"
+          data-testid="description"
+          >{{ description }}</span
+        >
+        <span class="govuk-accordion__section-toggle" data-nosnippet="">
+          <span class="govuk-accordion__section-toggle-focus">
+            <span
+              class="govuk-accordion-nav__chevron"
+              [class]="{ 'govuk-accordion-nav__chevron--up': open, 'govuk-accordion-nav__chevron--down': !open }"
+            ></span>
+            <span class="govuk-accordion__section-toggle-text" data-testid="showHideButton">{{ buttonText }}</span>
+          </span>
+        </span>
+      </button>
     </h2>
-    <div>
-      {{ description }}
-    </div>
-    <span>
-      <img [class]="{ 'arrow-button': open }" src="/assets/images/accordion-arrow-icon.svg" alt="" /> {{ buttonText }}
-    </span>
   </div>
-  <div class="govuk-accordion__section-content">
+  <div
+    class="govuk-accordion__section-content govuk-!-padding-top-0 govuk-!-padding-bottom-7"
+    id="accordion-with-summary-sections-content-1"
+  >
     <div class="govuk-radios">
-      <div *ngFor="let item of items">
-        <div class="govuk-radios__item">
+      <ng-container *ngFor="let item of items">
+        <div class="govuk-radios__item" data-testid="radioButton">
           <input
             class="govuk-radios__input"
             id="{{ formControlName }}-{{ item.id }}"
@@ -27,7 +50,7 @@
             item.label
           }}</label>
         </div>
-      </div>
+      </ng-container>
     </div>
   </div>
 </div>

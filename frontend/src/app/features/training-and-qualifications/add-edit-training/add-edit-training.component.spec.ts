@@ -17,6 +17,7 @@ import { of } from 'rxjs';
 import sinon from 'sinon';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
+import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -41,6 +42,7 @@ describe('AddEditTrainingComponent', () => {
                     establishment: {
                       uid: '1',
                     },
+                    trainingCategories: trainingCategories,
                   },
                 },
               },

@@ -10,6 +10,8 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { AddEditTrainingDirective } from '../../../../shared/directives/add-edit-training/add-edit-training.directive';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -28,6 +30,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     public trainingService: TrainingService,
+    protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
     private establishmentService: EstablishmentService,
@@ -39,6 +42,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
       backLinkService,
       errorSummaryService,
       trainingService,
+      trainingCategoryService,
       workerService,
       alertService,
     );

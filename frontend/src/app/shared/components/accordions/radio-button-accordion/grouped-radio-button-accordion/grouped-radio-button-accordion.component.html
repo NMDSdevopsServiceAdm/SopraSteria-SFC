@@ -1,13 +1,23 @@
-<button type="button" class="govuk-button govuk-!-margin-right-9" (click)="toggleAll()">{{ toggleText }}</button>
-<div *ngFor="let accordion of accordions">
-  <app-radio-button-accordion
-    [controlName]="formControlName"
-    [title]="accordion.title"
-    [description]="accordion.descriptionText"
-    [items]="accordion.items"
-    [open]="accordion.open"
-    (toggleEmitter)="toggleAccordion(accordion.index)"
-    (selectedValueEmitter)="onClick($event)"
-    [preFilledId]="preFilledId"
-  ></app-radio-button-accordion>
+<div class="govuk-accordion" data-module="govuk-accordion">
+  <div class="govuk-accordion__controls">
+    <button type="button" (click)="toggleAll()" class="govuk-accordion__show-all" aria-expanded="false">
+      <span
+        class="govuk-accordion-nav__chevron"
+        [class]="{ 'govuk-accordion-nav__chevron--up': showAll, 'govuk-accordion-nav__chevron--down': !showAll }"
+      ></span>
+      <span class="govuk-accordion__show-all-text">{{ toggleText }}</span>
+    </button>
+  </div>
+  <div *ngFor="let accordion of accordions">
+    <app-radio-button-accordion
+      [controlName]="formControlName"
+      [title]="accordion.title"
+      [description]="accordion.descriptionText"
+      [items]="accordion.items"
+      [open]="accordion.open"
+      (toggleEmitter)="toggleAccordion(accordion.index)"
+      (selectedValueEmitter)="onClick($event)"
+      [preFilledId]="preFilledId"
+    ></app-radio-button-accordion>
+  </div>
 </div>

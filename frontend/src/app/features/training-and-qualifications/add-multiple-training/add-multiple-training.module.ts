@@ -11,6 +11,7 @@ import { SelectStaffComponent } from './select-staff/select-staff.component';
 import { SelectedStaffPanelComponent } from './selected-staff-panel/selected-staff-panel.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
 import { SelectTrainingCategoryMultipleComponent } from './select-training-category-multiple/select-training-category-multiple.component';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 
 @NgModule({
   imports: [
@@ -29,6 +30,6 @@ import { SelectTrainingCategoryMultipleComponent } from './select-training-categ
     ConfirmMultipleTrainingComponent,
     SelectTrainingCategoryMultipleComponent,
   ],
-  providers: [],
+  providers: [TrainingCategoriesResolver],
 })
 export class AddMultipleTrainingModule {}

@@ -22,7 +22,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   @Input() items: {
     id: number;
     label: string;
-  };
+  }[];
   @Input() open: boolean;
   @Input() preFilledId: number;
 
@@ -67,7 +67,6 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
 
   onClick(val: any) {
     this.value = val;
-    //this.value = { id: val.id, label: val.label };
   }
 
   public emitToggle(): void {
