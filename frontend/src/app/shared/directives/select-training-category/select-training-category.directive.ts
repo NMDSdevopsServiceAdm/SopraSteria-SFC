@@ -3,10 +3,9 @@ import { AfterViewInit, Directive, ElementRef, OnInit, ViewChild } from '@angula
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { TrainingCategory } from '@core/model/training.model';
+import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
@@ -20,22 +19,21 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   public title: string;
   public section: string;
   public buttonText: string;
-  trainingGroups: any;
-  groupNames: string[];
-  categories: TrainingCategory[];
-  otherCategory: any;
-  worker: Worker;
+  public trainingGroups: any;
+  public categories;
+  public otherCategory: any;
+  public worker: Worker;
   public establishmentUid: string;
-  workerId: any;
+  public workerId: any;
   public formErrorsMap: Array<ErrorDetails>;
   public previousUrl: string[];
   public preFilledId: number;
 
-  private exampleText = {
+  private summaryText = {
     'Care skills and knowledge': "'duty of care', 'safeguarding adults'",
+    'Health and safety in the workplace': "'fire safety', 'first aid'",
     'IT, digital and data in the workplace': "'online safety and security', 'working with digital technology'",
     'Specific conditions and disabilities': "'dementia care', 'Oliver McGowan Mandatory Training'",
-    'Health and safety in the workplace': "'fire safety', 'first aid'",
     'Staff development': "'communication', 'equality and diversity'",
   };
 
@@ -47,17 +45,15 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     protected workerService: WorkerService,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
     this.init();
-    this.setupForm();
     this.setTitle();
     this.setSectionHeading();
-    this.setButtonText();
     this.setBackLink();
     this.getCategories();
+    this.setupForm();
     this.prefillForm();
 
     this.setupFormErrorsMap();
@@ -79,48 +75,21 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
 
   protected submit(selectedCategory: any): void {}
 
-  protected setTitle(): void {}
+  protected setTitle(): void {
+    this.title = 'Select the category that best matches the training taken';
+  }
 
   protected setSectionHeading(): void {}
 
-  protected setButtonText(): void {}
-
   private getCategories(): void {
-    this.subscriptions.add(
-      this.trainingService.getCategories().subscribe(
-        (categories) => {
-          if (categories) {
-            this.categories = categories;
-            // Get an array of the training groups
-            let groupMap = new Map(
-              categories
-                .filter((x) => x.trainingCategoryGroup !== null)
-                .map((x) => {
-                  return [JSON.stringify(x.trainingCategoryGroup), x.trainingCategoryGroup];
-                }),
-            );
-            this.groupNames = Array.from(groupMap.values());
-            // create a new object from the groups array and populate each group with the appropriate training categories
-            this.initialiseTrainingGroups(categories);
-          }
-
-          let other = categories.filter((category) => category.trainingCategoryGroup === null)[0];
-
-          this.otherCategory = {
-            id: other.id,
-            label: other.category,
-          };
-        },
-        (error) => {
-          console.error(error.error);
-        },
-      ),
-    );
+    this.categories = this.route.snapshot.data.trainingCategories;
+    this.sortCategoriesByTrainingGroup(this.categories);
+    this.otherCategory = this.categories.filter((category) => category.trainingCategoryGroup === null)[0];
   }
 
-  private initialiseTrainingGroups(trainingCategories) {
+  private sortCategoriesByTrainingGroup(trainingCategories) {
     this.trainingGroups = [];
-    for (const group of this.groupNames) {
+    for (const group of Object.keys(this.summaryText)) {
       let currentTrainingGroup = {
         title: group,
         descriptionText: '',
@@ -137,7 +106,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
         }
       });
       currentTrainingGroup.items = categoryArray;
-      currentTrainingGroup.descriptionText = this.getTrainingGroupDescription(currentTrainingGroup);
+      currentTrainingGroup.descriptionText = this.getTrainingGroupSummary(currentTrainingGroup);
       this.trainingGroups.push(currentTrainingGroup);
     }
   }
@@ -173,8 +142,8 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     this.backLinkService.showBackLink();
   }
 
-  private getTrainingGroupDescription(trainingGroup) {
-    return `Training like ${this.exampleText[trainingGroup.title]}`;
+  private getTrainingGroupSummary(trainingGroup) {
+    return `Training like ${this.summaryText[trainingGroup.title]}`;
   }
 
   private setupForm(): void {

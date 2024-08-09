@@ -3,10 +3,9 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingService } from '@core/services/training.service';
-import { SelectTrainingCategoryDirective } from '@shared/directives/select-training-category/select-training-category.directive';
+import { SelectTrainingCategoryDirective } from '../../../../shared/directives/select-training-category/select-training-category.directive';
 import { WorkerService } from '@core/services/worker.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
   selector: 'app-select-training-category-multiple',
@@ -24,18 +23,8 @@ export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCateg
     protected workerService: WorkerService,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
-    protected establishmentService: EstablishmentService,
   ) {
-    super(
-      formBuilder,
-      trainingService,
-      router,
-      backLinkService,
-      workerService,
-      route,
-      errorSummaryService,
-      establishmentService,
-    );
+    super(formBuilder, trainingService, router, backLinkService, workerService, route, errorSummaryService);
   }
 
   init(): void {
@@ -52,16 +41,8 @@ export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCateg
     }
   }
 
-  protected setTitle(): void {
-    this.title = 'Select the category that best matches the training taken';
-  }
-
   protected setSectionHeading(): void {
     this.section = 'Add multiple records';
-  }
-
-  protected setButtonText(): void {
-    this.buttonText = 'Continue';
   }
 
   public onCancel(event: Event) {

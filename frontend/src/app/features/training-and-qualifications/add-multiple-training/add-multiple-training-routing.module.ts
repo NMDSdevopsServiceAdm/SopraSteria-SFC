@@ -7,6 +7,7 @@ import { ConfirmMultipleTrainingComponent } from './confirm-multiple-training/co
 import { SelectStaffComponent } from './select-staff/select-staff.component';
 import { MultipleTrainingDetailsComponent } from './training-details/training-details.component';
 import { SelectTrainingCategoryMultipleComponent } from './select-training-category-multiple/select-training-category-multiple.component';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 
 const selectStaffRoute = {
   path: 'select-staff',
@@ -21,6 +22,9 @@ const selectTrainingCategoryRoute = {
   path: 'select-training-category',
   component: SelectTrainingCategoryMultipleComponent,
   data: { title: 'Select training category' },
+  resolve: {
+    trainingCategories: TrainingCategoriesResolver,
+  },
 };
 
 const selectTrainingCategoryRouteWithGuard = {

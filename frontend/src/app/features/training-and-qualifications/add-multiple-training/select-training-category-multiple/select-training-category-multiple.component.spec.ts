@@ -16,9 +16,9 @@ import { FormBuilder } from '@angular/forms';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { Establishment } from '@core/model/establishment.model';
+import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('SelectTrainingCategoryMultipleComponent', () => {
   async function setup(prefill = false) {
@@ -36,10 +36,6 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
           useClass: MockWorkerService,
         },
         {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
-        {
           provide: TrainingService,
           useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
         },
@@ -49,6 +45,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
             snapshot: {
               data: {
                 establishment: establishment,
+                trainingCategories: trainingCategories,
               },
             },
           },
@@ -150,11 +147,11 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
   });
 
   it('should call the training service and navigate to the details page', async () => {
-    const { getByText, fixture, component, routerSpy, trainingService } = await setup(true);
+    const { getByText, routerSpy, trainingService } = await setup(true);
 
     const trainingServiceSpy = spyOn(trainingService, 'setTrainingCategorySelectedForTrainingRecord').and.callThrough();
 
-    const openAllLinkLink = getByText('Open all');
+    const openAllLinkLink = getByText('Show all categories');
     fireEvent.click(openAllLinkLink);
 
     const autismCategory = getByText('Autism');
