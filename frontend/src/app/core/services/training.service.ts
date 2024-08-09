@@ -89,6 +89,7 @@ export class TrainingService {
     this.addMultipleTrainingInProgress$.next(false);
     this.resetSelectedStaff();
     this.resetSelectedTraining();
+    this.clearTrainingCategorySelectedForTrainingRecord();
   }
 
   public getTrainingCategorySelectedForTrainingRecord(): TrainingCategory {
