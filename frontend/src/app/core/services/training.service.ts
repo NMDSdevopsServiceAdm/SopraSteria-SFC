@@ -96,7 +96,6 @@ export class TrainingService {
   }
 
   public setTrainingCategorySelectedForTrainingRecord(trainingCategory: TrainingCategory) {
-    console.log(trainingCategory);
     if (trainingCategory) {
       this._trainingCategorySelectedForTrainingRecord = trainingCategory;
     }
