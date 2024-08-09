@@ -67,7 +67,6 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
 
   onClick(val: any) {
     this.value = val;
-    //this.value = { id: val.id, label: val.label };
   }
 
   public emitToggle(): void {

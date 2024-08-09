@@ -15,6 +15,7 @@ import { init } from '@sentry/browser';
   ],
 })
 export class GroupedRadioButtonAccordionComponent implements ControlValueAccessor, OnInit {
+  @Input() preFilledId: number;
   @Input() formControlName: string;
   @Input() textShowHideAll?: string;
   @Input() set accordions(

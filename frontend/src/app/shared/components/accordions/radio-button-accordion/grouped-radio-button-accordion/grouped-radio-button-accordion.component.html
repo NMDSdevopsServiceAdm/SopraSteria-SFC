@@ -17,6 +17,7 @@
       [open]="accordion.open"
       (toggleEmitter)="toggleAccordion(accordion.index)"
       (selectedValueEmitter)="onClick($event)"
+      [preFilledId]="preFilledId"
     ></app-radio-button-accordion>
   </div>
 </div>
