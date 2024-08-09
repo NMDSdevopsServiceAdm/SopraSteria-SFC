@@ -41,6 +41,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public remainingCharacterCount: number = this.notesMaxLength;
   public notesValue = '';
   public showChangeLink: boolean = false;
+  public multipleTrainingDetails: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -74,12 +75,11 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public checkForCategoryId(): void {
-    const selectedCategoryId = this.trainingService.getTrainingCategorySelectedForTrainingRecord();
-
+    const selectedCategory = this.trainingService.getTrainingCategorySelectedForTrainingRecord();
     if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
       this.trainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
-    } else if (selectedCategoryId) {
-      this.trainingCategory = selectedCategoryId;
+    } else if (selectedCategory) {
+      this.trainingCategory = { id: selectedCategory.id, category: selectedCategory.category };
       this.showChangeLink = true;
     }
   }
@@ -105,7 +105,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-        category: [null, Validators.required],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
@@ -153,15 +152,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
-      {
-        item: 'category',
-        type: [
-          {
-            name: 'required',
-            message: 'Select the training category',
-          },
-        ],
-      },
       {
         item: 'title',
         type: [
@@ -238,13 +228,15 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
       return;
     }
 
-    const { title, category, accredited, completed, expires, notes } = this.form.controls;
+    const trainingCategorySelected = this.trainingCategory;
+
+    const { title, accredited, completed, expires, notes } = this.form.controls;
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
     const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
-        id: parseInt(category.value),
+        id: trainingCategorySelected.id,
       },
       title: title.value,
       accredited: accredited.value,

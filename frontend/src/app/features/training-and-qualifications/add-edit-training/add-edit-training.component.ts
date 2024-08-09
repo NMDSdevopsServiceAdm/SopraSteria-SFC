@@ -61,7 +61,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.establishmentUid = this.route.snapshot.params?.establishmentuid;
     this.workerId = this.route.snapshot.params?.id;
 
-    if (!this.trainingCategory) {
+    if (!this.trainingCategory && !this.trainingRecordId) {
       this.router.navigate([
         `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training`,
       ]);
@@ -87,14 +87,14 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         (trainingRecord) => {
           if (trainingRecord) {
             this.trainingRecord = trainingRecord;
-            this.category = this.trainingRecord.trainingCategory.category;
+            this.trainingCategory = this.trainingRecord.trainingCategory;
+
             const completed = this.trainingRecord.completed
               ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)
               : null;
             const expires = this.trainingRecord.expires ? dayjs(this.trainingRecord.expires, DATE_PARSE_FORMAT) : null;
             this.form.patchValue({
               title: this.trainingRecord.title,
-              category: this.trainingRecord.trainingCategory.id,
               accredited: this.trainingRecord.accredited,
               ...(completed && {
                 completed: {

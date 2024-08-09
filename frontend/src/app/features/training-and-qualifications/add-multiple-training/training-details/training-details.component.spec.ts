@@ -36,6 +36,7 @@ describe('MultipleTrainingDetailsComponent', () => {
         providers: [
           WindowRef,
           { provide: EstablishmentService, useClass: MockEstablishmentService },
+          { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
           {
             provide: ActivatedRoute,
             useValue: new MockActivatedRoute({
@@ -132,8 +133,12 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { component, getByText, getByLabelText, getByTestId, fixture, updateSelectedTrainingSpy, spy } =
       await setup();
 
-    const categoryOption = component.categories[0].id.toString();
-    userEvent.selectOptions(getByLabelText('Training category'), categoryOption);
+    component.trainingCategory = {
+      id: component.categories[0].id,
+      category: component.categories[0].category,
+    };
+    fixture.detectChanges();
+
     userEvent.type(getByLabelText('Training name'), 'Training');
     userEvent.click(getByLabelText('Yes'));
     const completedDate = getByTestId('completedDate');
@@ -169,6 +174,11 @@ describe('MultipleTrainingDetailsComponent', () => {
 
   it('should navigate to the confirm training page when page has been accessed from that page and pressing Save and return', async () => {
     const { component, fixture, getByText, updateSelectedTrainingSpy, spy } = await setup(true, true);
+
+    component.trainingCategory = {
+      id: component.categories[0].id,
+      category: component.categories[0].category,
+    };
 
     const button = getByText('Save and return');
     fireEvent.click(button);
@@ -214,13 +224,11 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { component } = await setup(false, true);
 
     const form = component.form;
-    const { trainingCategory, title, accredited, completed, expires, notes } =
-      component.trainingService.selectedTraining;
+    const { title, accredited, completed, expires, notes } = component.trainingService.selectedTraining;
     const completedArr = completed.split('-');
     const expiresArr = expires.split('-');
 
     expect(form.value).toEqual({
-      category: trainingCategory.id,
       title,
       accredited,
       completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
@@ -230,18 +238,6 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   describe('errors', () => {
-    it('should show an error when no training category selected', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      component.form.get('category').setValue(null);
-      component.form.get('category').markAsDirty();
-      const finishButton = getByText('Continue');
-      fireEvent.click(finishButton);
-      fixture.detectChanges();
-      expect(component.form.invalid).toBeTruthy();
-      expect(getAllByText('Select the training category').length).toEqual(3);
-    });
-
     it('should show an error when training name less than 3 characters', async () => {
       const { component, getByText, fixture, getAllByText } = await setup();
       component.form.markAsDirty();
