@@ -111,4 +111,8 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
       this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
     }
   }
+
+  public setIsSelectStaffChange(): void {
+    this.trainingService.setIsSelectStaffChange(true);
+  }
 }

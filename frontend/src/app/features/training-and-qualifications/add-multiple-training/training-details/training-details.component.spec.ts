@@ -85,6 +85,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.callThrough();
     const trainingSpy = spyOn(trainingService, 'resetState').and.callThrough();
     const updateSelectedTrainingSpy = spyOn(trainingService, 'updateSelectedTraining');
+    const setIsSelectStaffChangeSpy = spyOn(trainingService, 'setIsSelectStaffChange');
 
     return {
       component,
@@ -98,6 +99,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       trainingService,
       trainingSpy,
       updateSelectedTrainingSpy,
+      setIsSelectStaffChangeSpy,
     };
   }
 
@@ -354,6 +356,49 @@ describe('MultipleTrainingDetailsComponent', () => {
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
+    });
+  });
+
+  describe('change links', () => {
+    it('should display a change link for number of staff selected', async () => {
+      const { getByTestId } = await setup(false, true);
+
+      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
+
+      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
+
+      expect(numberOfStaffSelected).toBeTruthy();
+      expect(changeStaffSelectedLink).toBeTruthy();
+    });
+
+    it('should display a change link for training category selected', async () => {
+      const { component, fixture, getByTestId } = await setup(false, true);
+
+      component.trainingCategory = {
+        id: component.categories[0].id,
+        category: component.categories[0].category,
+      };
+
+      fixture.detectChanges();
+
+      const trainingCategoryDisplay = getByTestId('trainingCategoryDisplay');
+
+      const changeTrainingCaegorySelectedLink = within(trainingCategoryDisplay).getByText('Change');
+
+      expect(trainingCategoryDisplay).toBeTruthy();
+      expect(changeTrainingCaegorySelectedLink).toBeTruthy();
+    });
+
+    it('should call setIsSelectStaffChange when change is clicked for staff', async () => {
+      const { component, fixture, setIsSelectStaffChangeSpy, getByTestId } = await setup(false, true);
+
+      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
+
+      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
+
+      fireEvent.click(changeStaffSelectedLink);
+
+      expect(setIsSelectStaffChangeSpy).toHaveBeenCalledWith(true);
     });
   });
 });

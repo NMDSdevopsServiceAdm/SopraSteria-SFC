@@ -20,7 +20,12 @@
                 </div>
                 <div class="govuk-grid-column-one-half">
                   <p>
-                    <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
+                    <a
+                      class="govuk-link govuk-!-margin-left-4"
+                      [routerLink]="['..', 'select-staff']"
+                      (click)="setIsSelectStaffChange()"
+                      >Change</a
+                    >
                   </p>
                 </div>
               </div>
@@ -29,7 +34,7 @@
         </div>
 
         <ng-container *ngIf="multipleTrainingDetails; else singleRecord">
-          <div class="govuk-body" data-testid="">
+          <div class="govuk-body" data-testid="trainingCategoryDisplay">
             <span class="govuk-util__block govuk-!-font-weight-bold">Training category</span>
             <div class="govuk-grid-row">
               <div class="govuk-grid-column-three-quarters">
