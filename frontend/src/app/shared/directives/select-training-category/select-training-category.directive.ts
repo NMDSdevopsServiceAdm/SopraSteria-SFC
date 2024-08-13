@@ -57,8 +57,6 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     this.prefillForm();
 
     this.setupFormErrorsMap();
-
-    //this.establishmentUid = this.route.snapshot.data.establishment.uid;
   }
 
   protected init(): void {}
