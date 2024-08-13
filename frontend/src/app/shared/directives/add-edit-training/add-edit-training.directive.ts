@@ -285,6 +285,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   public onCancel(event: Event): void {
     event.preventDefault();
+    this.trainingService.clearTrainingCategorySelectedForTrainingRecord();
     if (this.previousUrl?.length) {
       this.router.navigate(this.previousUrl);
     } else {

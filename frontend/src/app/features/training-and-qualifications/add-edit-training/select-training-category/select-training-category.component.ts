@@ -1,19 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
-import { Worker } from '@core/model/worker.model';
-import { Subscription } from 'rxjs';
-import { TrainingCategory } from '@core/model/training.model';
 import { ActivatedRoute, Router } from '@angular/router';
-import { TrainingCategoryService } from '@core/services/training-category.service';
 import { SelectTrainingCategoryDirective } from '@shared/directives/select-training-category/select-training-category.directive';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 
 @Component({
   selector: 'app-select-training-category',
-  // templateUrl: './select-training-category.component.html',
   templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
 })
 export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirective implements OnInit {
@@ -41,7 +36,6 @@ export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirec
 
   protected submit(selectedCategory): void {
     this.trainingService.setTrainingCategorySelectedForTrainingRecord(selectedCategory);
-    //}
     this.router.navigate([
       `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training/details`,
     ]);
@@ -49,6 +43,7 @@ export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirec
 
   public onCancel(event: any) {
     event.preventDefault();
+    this.trainingService.clearTrainingCategorySelectedForTrainingRecord();
     this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
 
