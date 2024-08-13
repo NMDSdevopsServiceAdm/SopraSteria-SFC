@@ -64,6 +64,7 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
   ngOnInit(): void {
     this.showAll = false;
     this.updateToggleAlltext();
+    this.toggleAccordionOfPrefilledRadioButton();
   }
 
   private openAll(): void {
@@ -129,5 +130,18 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
 
   onClick(val: number) {
     this.value = val;
+  }
+
+  public toggleAccordionOfPrefilledRadioButton() {
+    if (this.preFilledId) {
+      for (let i = 0; i < this.accordions.length; i++) {
+        for (let j = 0; j < this.accordions[i].items.length; j++) {
+          if (this.accordions[i].items[j].id === this.preFilledId) {
+            this.accordions[i].open = true;
+            return;
+          }
+        }
+      }
+    }
   }
 }
