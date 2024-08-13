@@ -18,6 +18,7 @@ import sinon from 'sinon';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -52,6 +53,7 @@ describe('AddEditTrainingComponent', () => {
           ErrorSummaryService,
           { provide: TrainingService, useClass: MockTrainingService },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+          { provide: TrainingCategoryService, useClass: MockTrainingService },
         ],
       },
     );
