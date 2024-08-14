@@ -16,7 +16,7 @@ export class TrainingService {
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
   private _trainingCategorySelectedForTrainingRecord: TrainingCategory = null;
-  public isSelectStaffChange: boolean = null;
+  public updatingSelectedStaffForMultipleTraining: boolean = null;
 
   constructor(private http: HttpClient) {}
 
@@ -107,15 +107,15 @@ export class TrainingService {
     this._trainingCategorySelectedForTrainingRecord = null;
   }
 
-  public setIsSelectStaffChange(value: boolean): void {
-    this.isSelectStaffChange = value;
+  public setUpdatingSelectedStaffForMultipleTraining(value: boolean): void {
+    this.updatingSelectedStaffForMultipleTraining = value;
   }
 
-  public getIsSelectStaffChange(): boolean {
-    return this.isSelectStaffChange;
+  public getUpdatingSelectedStaffForMultipleTraining(): boolean {
+    return this.updatingSelectedStaffForMultipleTraining;
   }
 
-  public clearIsSelectStaffChange(): void {
-    this.isSelectStaffChange = null;
+  public clearUpdatingSelectedStaffForMultipleTraining(): void {
+    this.updatingSelectedStaffForMultipleTraining = null;
   }
 }

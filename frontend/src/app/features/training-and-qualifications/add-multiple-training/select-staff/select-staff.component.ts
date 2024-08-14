@@ -62,7 +62,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     this.setBackLink();
     this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
     this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
-    this.isChangeStaffSelected = this.trainingService.getIsSelectStaffChange();
+    this.isChangeStaffSelected = this.trainingService.getUpdatingSelectedStaffForMultipleTraining();
   }
 
   ngAfterViewInit(): void {
@@ -171,7 +171,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
       this.updateSelectedStaff();
       this.trainingService.addMultipleTrainingInProgress$.next(true);
       if (this.isChangeStaffSelected) {
-        this.trainingService.clearIsSelectStaffChange();
+        this.trainingService.clearUpdatingSelectedStaffForMultipleTraining();
         this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
       } else {
         const nextRoute = this.getNextRoute();

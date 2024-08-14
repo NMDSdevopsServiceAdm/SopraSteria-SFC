@@ -85,7 +85,10 @@ describe('MultipleTrainingDetailsComponent', () => {
     const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.callThrough();
     const trainingSpy = spyOn(trainingService, 'resetState').and.callThrough();
     const updateSelectedTrainingSpy = spyOn(trainingService, 'updateSelectedTraining');
-    const setIsSelectStaffChangeSpy = spyOn(trainingService, 'setIsSelectStaffChange');
+    const setUpdatingSelectedStaffForMultipleTrainingSpy = spyOn(
+      trainingService,
+      'setUpdatingSelectedStaffForMultipleTraining',
+    );
 
     return {
       component,
@@ -99,7 +102,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       trainingService,
       trainingSpy,
       updateSelectedTrainingSpy,
-      setIsSelectStaffChangeSpy,
+      setUpdatingSelectedStaffForMultipleTrainingSpy,
     };
   }
 
@@ -390,7 +393,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
 
     it('should call setIsSelectStaffChange when change is clicked for staff', async () => {
-      const { component, fixture, setIsSelectStaffChangeSpy, getByTestId } = await setup(false, true);
+      const { setUpdatingSelectedStaffForMultipleTrainingSpy, getByTestId } = await setup(false, true);
 
       const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
 
@@ -398,7 +401,7 @@ describe('MultipleTrainingDetailsComponent', () => {
 
       fireEvent.click(changeStaffSelectedLink);
 
-      expect(setIsSelectStaffChangeSpy).toHaveBeenCalledWith(true);
+      expect(setUpdatingSelectedStaffForMultipleTrainingSpy).toHaveBeenCalledWith(true);
     });
   });
 });

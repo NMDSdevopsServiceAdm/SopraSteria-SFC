@@ -81,21 +81,21 @@ describe('TrainingService', () => {
 
   describe('isSelectStaffChange', () => {
     it('sets isSelectStaffChange when true is passed', async () => {
-      service.setIsSelectStaffChange(true);
+      service.setUpdatingSelectedStaffForMultipleTraining(true);
 
-      expect(service.getIsSelectStaffChange()).toEqual(true);
+      expect(service.getUpdatingSelectedStaffForMultipleTraining()).toEqual(true);
     });
 
     it('sets isSelectStaffChange when false is passed', async () => {
-      service.setIsSelectStaffChange(false);
+      service.setUpdatingSelectedStaffForMultipleTraining(false);
 
-      expect(service.getIsSelectStaffChange()).toEqual(false);
+      expect(service.getUpdatingSelectedStaffForMultipleTraining()).toEqual(false);
     });
 
     it('clears isSelectStaffChange', async () => {
-      service.clearIsSelectStaffChange();
+      service.clearUpdatingSelectedStaffForMultipleTraining();
 
-      expect(service.getIsSelectStaffChange()).toBe(null);
+      expect(service.getUpdatingSelectedStaffForMultipleTraining()).toBe(null);
     });
   });
 });

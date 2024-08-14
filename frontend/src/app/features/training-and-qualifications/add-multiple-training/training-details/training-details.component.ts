@@ -113,6 +113,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   }
 
   public setIsSelectStaffChange(): void {
-    this.trainingService.setIsSelectStaffChange(true);
+    this.trainingService.setUpdatingSelectedStaffForMultipleTraining(true);
   }
 }

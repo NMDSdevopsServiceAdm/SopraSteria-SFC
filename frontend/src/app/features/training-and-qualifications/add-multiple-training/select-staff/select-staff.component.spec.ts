@@ -86,7 +86,10 @@ describe('SelectStaffComponent', () => {
     const updateSelectedStaffSpy = spyOn(trainingService, 'updateSelectedStaff');
     const workerSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
     const searchSpy = spyOn(component, 'handleSearch').and.callThrough();
-    const clearIsSelectStaffChangeSpy = spyOn(trainingService, 'clearIsSelectStaffChange').and.callThrough();
+    const clearUpdatingSelectedStaffForMultipleTrainingSpy = spyOn(
+      trainingService,
+      'clearUpdatingSelectedStaffForMultipleTraining',
+    ).and.callThrough();
 
     return {
       component,
@@ -106,7 +109,7 @@ describe('SelectStaffComponent', () => {
       workerSpy,
       searchSpy,
       workers,
-      clearIsSelectStaffChangeSpy,
+      clearUpdatingSelectedStaffForMultipleTrainingSpy,
     };
   }
 
@@ -455,7 +458,8 @@ describe('SelectStaffComponent', () => {
     });
 
     it('should navigate to the select training category page when pressing continue', async () => {
-      const { component, fixture, getByText, spy, workers, clearIsSelectStaffChangeSpy } = await setup();
+      const { component, fixture, getByText, spy, workers, clearUpdatingSelectedStaffForMultipleTrainingSpy } =
+        await setup();
 
       component.paginatedWorkers = workers;
       fixture.detectChanges();
@@ -474,13 +478,14 @@ describe('SelectStaffComponent', () => {
         'add-multiple-training',
         'select-training-category',
       ]);
-      expect(clearIsSelectStaffChangeSpy).not.toHaveBeenCalled();
+      expect(clearUpdatingSelectedStaffForMultipleTrainingSpy).not.toHaveBeenCalled();
     });
 
     it('should navigate to the training details page when pressing continue and isChangeStaffSelected is true', async () => {
-      const { component, fixture, getByText, spy, workers, clearIsSelectStaffChangeSpy } = await setup();
+      const { component, fixture, getByText, spy, workers, clearUpdatingSelectedStaffForMultipleTrainingSpy } =
+        await setup();
 
-      component.trainingService.setIsSelectStaffChange(true);
+      component.trainingService.setUpdatingSelectedStaffForMultipleTraining(true);
       component.ngOnInit();
 
       component.paginatedWorkers = workers;
@@ -500,7 +505,7 @@ describe('SelectStaffComponent', () => {
         'add-multiple-training',
         'training-details',
       ]);
-      expect(clearIsSelectStaffChangeSpy).toHaveBeenCalled();
+      expect(clearUpdatingSelectedStaffForMultipleTrainingSpy).toHaveBeenCalled();
     });
 
     it('should return an error if no staff have been selected', async () => {
