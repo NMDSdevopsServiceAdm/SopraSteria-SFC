@@ -32,11 +32,11 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
       ];
     }[],
   ) {
-    this._accordions = value.map((x) => {
+    this._accordions = value.map((x, index) => {
       return {
         ...x,
         open: false,
-        index: value.indexOf(x),
+        index: index,
       };
     });
   }

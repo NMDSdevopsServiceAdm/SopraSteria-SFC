@@ -1,13 +1,12 @@
 import { SharedModule } from '@shared/shared.module';
 import { RadioButtonAccordionComponent } from './radio-button-accordion.component';
-import { FormControlName } from '@angular/forms';
-import { fireEvent, getAllByTestId, getByText, render } from '@testing-library/angular';
-import exp from 'constants';
+import { FormsModule } from '@angular/forms';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 describe('RadioButtonAccordionComponent', () => {
   async function setup(props?: { title?; description?; formControlName?; items? }) {
     const { fixture, getAllByTestId, getByTestId, getByText } = await render(RadioButtonAccordionComponent, {
-      imports: [SharedModule],
+      imports: [SharedModule, FormsModule],
       providers: [],
       componentProperties: {
         title: props?.title ? props.title : 'Test Accordion',
@@ -105,6 +104,23 @@ describe('RadioButtonAccordionComponent', () => {
     fixture.detectChanges();
 
     const accordion = getByTestId('accordion');
+    expect(accordion.classList).toContain('govuk-accordion__section--expanded');
+  });
+
+  it('should prefill the radio button', async () => {
+    const { component, fixture, getByTestId } = await setup();
+
+    component.preFilledId = 2;
+    component.open = true;
+    fixture.detectChanges();
+
+    const radioBtn = fixture.nativeElement.querySelector('input[id="testAccordion-2"]');
+    const showHideButton = within(getByTestId('showHideButton'));
+    const hideButton = showHideButton.getByText('Hide');
+    const accordion = getByTestId('accordion');
+
+    expect(radioBtn.checked).toBeTruthy();
+    expect(hideButton).toBeTruthy();
     expect(accordion.classList).toContain('govuk-accordion__section--expanded');
   });
 });

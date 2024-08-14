@@ -128,7 +128,7 @@ describe('SelectTrainingCategoryComponent', () => {
   });
 
   it('should call the training service and navigate to the details page', async () => {
-    const { getByText, routerSpy, trainingService } = await setup(true);
+    const { component, getByText, routerSpy, trainingService } = await setup(true);
 
     const trainingServiceSpy = spyOn(trainingService, 'setTrainingCategorySelectedForTrainingRecord').and.callThrough();
 
@@ -141,8 +141,15 @@ describe('SelectTrainingCategoryComponent', () => {
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(trainingServiceSpy).toHaveBeenCalled();
-    expect(routerSpy).toHaveBeenCalled();
+    expect(trainingServiceSpy).toHaveBeenCalledWith({
+      id: 2,
+      seq: 20,
+      category: 'Autism',
+      trainingCategoryGroup: 'Specific conditions and disabilities',
+    });
+    expect(routerSpy).toHaveBeenCalledWith([
+      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training/details`,
+    ]);
   });
 
   it('should show an error when no training category selected', async () => {
