@@ -36,6 +36,8 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     'Specific conditions and disabilities': "'dementia care', 'Oliver McGowan Mandatory Training'",
     'Staff development': "'communication', 'equality and diversity'",
   };
+  accessedFromSummary: boolean;
+  submitButtonText: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -55,7 +57,8 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     this.getCategories();
     this.setupForm();
     this.prefillForm();
-
+    this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
+    this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
     this.setupFormErrorsMap();
   }
 

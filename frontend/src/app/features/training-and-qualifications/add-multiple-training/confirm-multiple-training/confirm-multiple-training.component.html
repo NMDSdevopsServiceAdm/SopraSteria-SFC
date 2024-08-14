@@ -57,6 +57,14 @@
             <ng-container *ngIf="i === 0">
               <dd class="govuk-summary-list__actions">
                 <app-summary-record-change
+                  [link]="getRoutePath('select-training-category')"
+                  [hasData]="true"
+                ></app-summary-record-change>
+              </dd>
+            </ng-container>
+            <ng-container *ngIf="i === 1">
+              <dd class="govuk-summary-list__actions">
+                <app-summary-record-change
                   [link]="getRoutePath('training-details')"
                   [hasData]="true"
                 ></app-summary-record-change>

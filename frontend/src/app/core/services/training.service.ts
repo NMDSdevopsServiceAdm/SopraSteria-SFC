@@ -15,7 +15,6 @@ export class TrainingService {
   public selectedStaff: Worker[] = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
-  private _trainingCategorySelectedForTrainingRecord: TrainingCategory = null;
   public updatingSelectedStaffForMultipleTraining: boolean = null;
 
   constructor(private http: HttpClient) {}
@@ -94,17 +93,23 @@ export class TrainingService {
   }
 
   public getTrainingCategorySelectedForTrainingRecord(): TrainingCategory {
-    return this._trainingCategorySelectedForTrainingRecord;
+    return this.selectedTraining?.trainingCategory ?? null;
   }
 
   public setTrainingCategorySelectedForTrainingRecord(trainingCategory: TrainingCategory) {
     if (trainingCategory) {
-      this._trainingCategorySelectedForTrainingRecord = trainingCategory;
+      if (this.selectedTraining) {
+        this.selectedTraining.trainingCategory = trainingCategory;
+      } else {
+        this.selectedTraining = { trainingCategory };
+      }
     }
   }
 
   public clearTrainingCategorySelectedForTrainingRecord(): void {
-    this._trainingCategorySelectedForTrainingRecord = null;
+    if ('trainingCategory' in this.selectedTraining) {
+      this.selectedTraining.trainingCategory = null;
+    }
   }
 
   public setUpdatingSelectedStaffForMultipleTraining(value: boolean): void {

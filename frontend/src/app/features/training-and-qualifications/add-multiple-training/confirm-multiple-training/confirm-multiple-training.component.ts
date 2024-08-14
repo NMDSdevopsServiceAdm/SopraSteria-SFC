@@ -40,6 +40,7 @@ export class ConfirmMultipleTrainingComponent implements OnInit {
 
   private convertTrainingRecord(): void {
     const training = this.trainingService.selectedTraining;
+
     this.trainingRecords = [
       { key: 'Training category', value: training.trainingCategory.category },
       { key: 'Training name', value: training.title ? training.title : '-' },

@@ -14,6 +14,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCategoryDirective implements OnInit {
   public selectedStaff = [];
   public accessedFromSummary = false;
+  submitButtonText: string;
 
   constructor(
     protected formBuilder: FormBuilder,
