@@ -261,12 +261,12 @@ describe('NewTabsComponent', () => {
     });
   });
 
-  describe('getTabSlugFromNavigationEvent', async () => {
+  describe('getTabSlugFromSubsidiaryUrl', async () => {
     it(`should return correct tab when third section of url is the tab slug`, async () => {
       const { component } = await setup(true, []);
       component.tabs.forEach((tab) => {
         const url = `/subsidiary/test-uid/${tab.slug}`;
-        const result = component.getTabSlugFromNavigationEvent(new NavigationEnd(0, url, url));
+        const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, url, url));
 
         expect(result).toEqual(tab);
       });
@@ -275,7 +275,7 @@ describe('NewTabsComponent', () => {
     it('should return nothing when no tab slug in the navigation event url', async () => {
       const { component } = await setup(true, []);
 
-      const result = component.getTabSlugFromNavigationEvent(new NavigationEnd(0, 'test-url.com', 'test-url.com'));
+      const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, 'test-url.com', 'test-url.com'));
 
       expect(result).toBeFalsy();
     });
@@ -283,7 +283,7 @@ describe('NewTabsComponent', () => {
     it('should return nothing when workplace in url but in wrong section', async () => {
       const { component } = await setup(true, []);
       const url = '/subsidiary/workplace/test-uid/main-service-cqc';
-      const result = component.getTabSlugFromNavigationEvent(new NavigationEnd(0, url, url));
+      const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, url, url));
 
       expect(result).toBeFalsy();
     });
@@ -291,7 +291,37 @@ describe('NewTabsComponent', () => {
     it('should return nothing when url has fewer than 3 sections', async () => {
       const { component } = await setup(true, []);
       const url = '/subsidiary/benefits-bundle';
-      const result = component.getTabSlugFromNavigationEvent(new NavigationEnd(0, url, url));
+      const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, url, url));
+
+      expect(result).toBeFalsy();
+    });
+  });
+
+  describe('getTabSlugFromMainDashboardUrl', async () => {
+    it(`should return tab slug when slug is in list of tabs`, async () => {
+      const { component } = await setup(true, []);
+      component.tabs.forEach((tab) => {
+        const url = `/dashboard#${tab.slug}`;
+        const result = component.getTabSlugFromMainDashboardUrl(new NavigationEnd(0, url, url));
+
+        expect(result).toEqual(tab.slug);
+      });
+    });
+
+    it('should return nothing when unexpected tab slug in the navigation event url', async () => {
+      const { component } = await setup(true, []);
+
+      const url = `/dashboard#invalidSlug`;
+      const result = component.getTabSlugFromMainDashboardUrl(new NavigationEnd(0, url, url));
+
+      expect(result).toBeFalsy();
+    });
+
+    it('should return nothing when main url is not dashboard', async () => {
+      const { component } = await setup(true, []);
+
+      const url = `/invalidUrl#home`;
+      const result = component.getTabSlugFromMainDashboardUrl(new NavigationEnd(0, url, url));
 
       expect(result).toBeFalsy();
     });

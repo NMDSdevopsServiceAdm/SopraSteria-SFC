@@ -17,6 +17,7 @@ import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatus
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
@@ -204,6 +205,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     UsefulLinkRecruitmentResolver,
     GetMissingCqcLocationsResolver,
     WorkplaceResolver,
+    GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
   ],
   bootstrap: [AppComponent],
 })

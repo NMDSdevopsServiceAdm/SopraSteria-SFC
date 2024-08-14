@@ -15,6 +15,7 @@ import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatus
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
@@ -33,12 +34,12 @@ import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
+import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
 import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
-import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 
 const routes: Routes = [
@@ -151,6 +152,8 @@ const routes: Routes = [
           rankings: RankingsResolver,
           usefulLinksPay: UsefulLinkPayResolver,
           usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+          noOfWorkersWhoRequireInternationalRecruitment:
+            GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },
