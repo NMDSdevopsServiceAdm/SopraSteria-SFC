@@ -78,4 +78,24 @@ describe('TrainingService', () => {
       expect(service.getTrainingCategorySelectedForTrainingRecord()).toBeNull();
     });
   });
+
+  describe('isSelectStaffChange', () => {
+    it('sets isSelectStaffChange when true is passed', async () => {
+      service.setUpdatingSelectedStaffForMultipleTraining(true);
+
+      expect(service.getUpdatingSelectedStaffForMultipleTraining()).toEqual(true);
+    });
+
+    it('sets isSelectStaffChange when false is passed', async () => {
+      service.setUpdatingSelectedStaffForMultipleTraining(false);
+
+      expect(service.getUpdatingSelectedStaffForMultipleTraining()).toEqual(false);
+    });
+
+    it('clears isSelectStaffChange', async () => {
+      service.clearUpdatingSelectedStaffForMultipleTraining();
+
+      expect(service.getUpdatingSelectedStaffForMultipleTraining()).toBe(null);
+    });
+  });
 });

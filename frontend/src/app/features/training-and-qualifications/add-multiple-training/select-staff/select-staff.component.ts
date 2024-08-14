@@ -39,6 +39,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   public submitButtonText: string;
   public accessedFromSummary = false;
   public selectedWorkers: string[] = [];
+  public isChangeStaffSelected: boolean;
 
   constructor(
     public backLinkService: BackLinkService,
@@ -61,6 +62,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     this.setBackLink();
     this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
     this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
+    this.isChangeStaffSelected = this.trainingService.getUpdatingSelectedStaffForMultipleTraining();
   }
 
   ngAfterViewInit(): void {
@@ -167,9 +169,14 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
 
     if (this.selectedWorkers.length > 0) {
       this.updateSelectedStaff();
-      const nextRoute = this.getNextRoute();
       this.trainingService.addMultipleTrainingInProgress$.next(true);
-      this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', nextRoute]);
+      if (this.isChangeStaffSelected) {
+        this.trainingService.clearUpdatingSelectedStaffForMultipleTraining();
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
+      } else {
+        const nextRoute = this.getNextRoute();
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', nextRoute]);
+      }
     } else {
       this.error = true;
       this.errorSummaryService.scrollToErrorSummary();

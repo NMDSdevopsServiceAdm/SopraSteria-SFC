@@ -17,7 +17,7 @@ import { of } from 'rxjs';
 import sinon from 'sinon';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
-import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 
 describe('AddEditTrainingComponent', () => {
@@ -33,9 +33,6 @@ describe('AddEditTrainingComponent', () => {
             useValue: {
               snapshot: {
                 params: { trainingRecordId, establishmentuid: '24', id: 2 },
-                queryParamMap: {
-                  get: qsParamGetMock,
-                },
               },
               parent: {
                 snapshot: {
@@ -53,7 +50,7 @@ describe('AddEditTrainingComponent', () => {
           ErrorSummaryService,
           { provide: TrainingService, useClass: MockTrainingService },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
-          { provide: TrainingCategoryService, useClass: MockTrainingService },
+          { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
         ],
       },
     );
@@ -101,13 +98,6 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('Training category select/display', async () => {
-    it('should show the training category select box when there is no training category is present', async () => {
-      const { getByTestId, queryByTestId } = await setup(null);
-
-      expect(getByTestId('trainingSelect')).toBeTruthy();
-      expect(queryByTestId('trainingCategoryDisplay')).toBeFalsy();
-    });
-
     it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
       const qsParamGetMock = sinon.stub();
       const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
@@ -117,7 +107,7 @@ describe('AddEditTrainingComponent', () => {
 
       component.trainingCategory = {
         category: 'Autism',
-        id: 1,
+        id: 2,
       };
 
       spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
@@ -127,7 +117,6 @@ describe('AddEditTrainingComponent', () => {
       const { form } = component;
       const expectedFormValue = {
         title: null,
-        category: 1,
         accredited: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
@@ -135,7 +124,6 @@ describe('AddEditTrainingComponent', () => {
       };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
-      expect(queryByTestId('trainingSelect')).toBeFalsy();
       expect(getByText('Autism')).toBeTruthy();
       expect(form.value).toEqual(expectedFormValue);
     });
@@ -153,7 +141,6 @@ describe('AddEditTrainingComponent', () => {
       const { form } = component;
       const expectedFormValue = {
         title: null,
-        category: 1,
         accredited: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
@@ -161,7 +148,6 @@ describe('AddEditTrainingComponent', () => {
       };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
-      expect(queryByTestId('trainingSelect')).toBeFalsy();
       expect(getByText('Autism')).toBeTruthy();
       expect(form.value).toEqual(expectedFormValue);
       expect(getByTestId('changeTrainingCategoryLink')).toBeTruthy();
@@ -193,7 +179,6 @@ describe('AddEditTrainingComponent', () => {
       const { form, workplace, worker, trainingRecordId } = component;
       const expectedFormValue = {
         title: 'Communication Training 1',
-        category: 1,
         accredited: 'Yes',
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
@@ -212,7 +197,6 @@ describe('AddEditTrainingComponent', () => {
 
       const expectedFormValue = {
         title: null,
-        category: null,
         accredited: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
@@ -280,6 +264,7 @@ describe('AddEditTrainingComponent', () => {
         component.worker.uid,
         'training',
         component.trainingRecordId,
+        { trainingCategory: JSON.stringify(component.trainingCategory) },
         'delete',
       ]);
     });
@@ -309,7 +294,6 @@ describe('AddEditTrainingComponent', () => {
 
       const expectedFormValue = {
         title: 'Communication Training 1',
-        category: 1,
         accredited: 'Yes',
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
@@ -349,7 +333,11 @@ describe('AddEditTrainingComponent', () => {
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
 
-      userEvent.selectOptions(getByLabelText('Training category'), `${component.categories[0].id}`);
+      component.trainingCategory = {
+        id: component.categories[0].id,
+        category: component.categories[0].category,
+      };
+
       userEvent.type(getByLabelText('Training name'), 'Some training');
       userEvent.click(getByLabelText('Yes'));
       const completedDate = getByTestId('completedDate');
@@ -367,7 +355,6 @@ describe('AddEditTrainingComponent', () => {
 
       const expectedFormValue = {
         title: 'Some training',
-        category: '1',
         accredited: 'Yes',
         completed: { day: 10, month: 4, year: 2020 },
         expires: { day: 10, month: 4, year: 2022 },
@@ -424,20 +411,6 @@ describe('AddEditTrainingComponent', () => {
   });
 
   describe('errors', () => {
-    describe('category errors', () => {
-      it('should show an error message if a category is not selected', async () => {
-        const { component, fixture, getByText, getAllByText } = await setup(null);
-
-        component.previousUrl = ['/goToPreviousUrl'];
-        fixture.detectChanges();
-
-        fireEvent.click(getByText('Save record'));
-        fixture.detectChanges();
-
-        expect(getAllByText('Select the training category').length).toEqual(3);
-      });
-    });
-
     describe('title errors', () => {
       it('should show an error message if the title is less than 3 characters long', async () => {
         const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
