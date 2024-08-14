@@ -470,7 +470,7 @@ export class EstablishmentService {
   public getMissingCqcLocations(requestParams): Observable<any> {
     let params = new HttpParams();
 
-    params = params.set('locationId', `${requestParams.locationId}`);
+    params = params.set('provId', `${requestParams.provId}`);
     params = params.set('establishmentUid', `${requestParams.uid}`);
     params = params.set('establishmentId', `${requestParams.id}`);
 

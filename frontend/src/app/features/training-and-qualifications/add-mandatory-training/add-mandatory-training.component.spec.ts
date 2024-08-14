@@ -21,7 +21,7 @@ import { TrainingCategoryService } from '@core/services/training-category.servic
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('AddMandatoryTrainingComponent', () => {
-  async function setup(renderAsEditMandatoryTraining = false, trainingCategoryId = '9') {
+  async function setup(renderAsEditMandatoryTraining = false, trainingCategoryId = '9', hasDuplicateJobRoles = false) {
     const { getByText, getByLabelText, getAllByLabelText, getAllByText, queryByText, fixture } = await render(
       AddMandatoryTrainingComponent,
       {
@@ -41,7 +41,7 @@ describe('AddMandatoryTrainingComponent', () => {
           },
           {
             provide: TrainingService,
-            useClass: MockTrainingService,
+            useFactory: MockTrainingService.factory(hasDuplicateJobRoles),
           },
           {
             provide: TrainingCategoryService,
@@ -137,7 +137,15 @@ describe('AddMandatoryTrainingComponent', () => {
       expect(component.form.value.selectedJobRoles).toEqual([]);
     });
 
-    it('should prefill the training category and all job roles when a mandatory training with all job roles is selected', async () => {
+    it('should prefill the training category and all job roles when a mandatory training with all job roles has duplicates and previous all job length', async () => {
+      const { component } = await setup(true, '9', true);
+
+      expect(component.form.value.trainingCategory).toEqual(9);
+      expect(component.form.value.allOrSelectedJobRoles).toEqual('all');
+      expect(component.form.value.selectedJobRoles).toEqual([]);
+    });
+
+    it('should prefill the training category and job roles when a mandatory training with only selected job roles', async () => {
       const { component } = await setup(true, '123');
 
       expect(component.form.value.trainingCategory).toEqual(123);
@@ -492,6 +500,19 @@ describe('AddMandatoryTrainingComponent', () => {
         component.establishment.uid,
         'add-and-manage-mandatory-training',
       ]);
+    });
+  });
+
+  it('should update the mandatory training with all job roles when it has duplicates and previous all job length', async () => {
+    const { component, createAndUpdateMandatoryTrainingSpy } = await setup(true, '9', true);
+    component.ngOnInit();
+    expect(component.form.value.allOrSelectedJobRoles).toEqual('all');
+
+    expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(component.establishment.uid, {
+      previousTrainingCategoryId: 9,
+      trainingCategoryId: 9,
+      allJobRoles: true,
+      jobs: [],
     });
   });
 });

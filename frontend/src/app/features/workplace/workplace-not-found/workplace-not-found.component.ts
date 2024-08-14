@@ -23,13 +23,13 @@ export class WorkplaceNotFoundComponent extends WorkplaceNotFound {
     protected locationService: LocationService,
     protected router: Router,
     protected backService: BackService,
-    private establishmentService: EstablishmentService
+    private establishmentService: EstablishmentService,
   ) {
     super(formBuilder, backService, errorSummaryService, locationService, router);
   }
   protected init(): void {
-    this.flow = `workplace/${this.establishmentService.establishmentId}`;
     this.workplace = this.establishmentService.establishment;
+    this.flow = `workplace/${this.workplace.uid}`;
     this.setBackLink();
   }
 

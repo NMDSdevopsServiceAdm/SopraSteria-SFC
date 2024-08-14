@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { PermissionType } from '@core/model/permissions.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -17,13 +18,13 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
 describe('NewWorkplaceSummaryComponent', () => {
-  const setup = async (shareWith = null) => {
+  const setup = async (shareWith = null, permissions = ['canEditEstablishment'] as PermissionType[]) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canEditEstablishment']),
+          useFactory: MockPermissionsService.factory(permissions),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -288,12 +289,11 @@ describe('NewWorkplaceSummaryComponent', () => {
         );
       });
 
-      it('should render correct warning messge, with link that navigates and conditional classes if the number of staff is more than the number of staff records and it had been more than 8 weeks since first login', async () => {
-        const { component, fixture, getByTestId } = await setup();
+      it('should render correct warning message, with View staff records link and conditional classes if no of staff is more than no of staff records and more than 8 weeks since first login', async () => {
+        const { component, fixture, getByTestId } = await setup(null, ['canEditEstablishment', 'canViewListOfWorkers']);
 
         const date = new Date();
         date.setDate(date.getDate() - 1);
-        component.canEditEstablishment = true;
         component.workplace.eightWeeksFromFirstLogin = date.toString();
         component.workplace.numberOfStaff = 10;
         component.workerCount = 9;
@@ -302,7 +302,6 @@ describe('NewWorkplaceSummaryComponent', () => {
 
         const numberOfStaffRow = getByTestId('numberOfStaff');
         const link = within(numberOfStaffRow).getByText('View staff records');
-        fireEvent.click(link);
 
         expect(within(numberOfStaffRow).getByText(`You've more staff than staff records`)).toBeTruthy();
         expect(link).toBeTruthy();
@@ -313,12 +312,29 @@ describe('NewWorkplaceSummaryComponent', () => {
         );
       });
 
-      it('should render correct warning messge, with link that navigates if the number of staff is less than the number of staff records and it had been more than 8 weeks since first login', async () => {
+      it('should render correct warning message, without View staff records link if no of staff is more than no of staff records and more than 8 weeks since first login but no canViewListOfWorkers permission', async () => {
         const { component, fixture, getByTestId } = await setup();
 
         const date = new Date();
         date.setDate(date.getDate() - 1);
-        component.canEditEstablishment = true;
+        component.workplace.eightWeeksFromFirstLogin = date.toString();
+        component.workplace.numberOfStaff = 10;
+        component.workerCount = 9;
+        component.checkNumberOfStaffErrorsAndWarnings();
+        fixture.detectChanges();
+
+        const numberOfStaffRow = getByTestId('numberOfStaff');
+        const link = within(numberOfStaffRow).queryByText('View staff records');
+
+        expect(within(numberOfStaffRow).getByText(`You've more staff than staff records`)).toBeTruthy();
+        expect(link).toBeFalsy();
+      });
+
+      it('should render correct warning message, with link that navigates if the number of staff is less than the number of staff records and it had been more than 8 weeks since first login', async () => {
+        const { component, fixture, getByTestId } = await setup(null, ['canEditEstablishment', 'canViewListOfWorkers']);
+
+        const date = new Date();
+        date.setDate(date.getDate() - 1);
         component.workplace.numberOfStaff = 1;
         component.workplace.eightWeeksFromFirstLogin = date.toString();
         component.workerCount = 4;

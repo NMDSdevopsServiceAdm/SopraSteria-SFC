@@ -160,6 +160,7 @@ export interface Establishment {
   careWorkersCashLoyaltyForFirstTwoYears?: string;
   sickPay?: string;
   isParentApprovedBannerViewed?: boolean;
+  provId?: string;
 }
 
 export interface UpdateJobsRequest {

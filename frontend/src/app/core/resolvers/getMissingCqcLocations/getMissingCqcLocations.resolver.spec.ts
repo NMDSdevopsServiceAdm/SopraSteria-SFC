@@ -1,13 +1,18 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
-import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { of } from 'rxjs';
 
 import { GetMissingCqcLocationsResolver } from './getMissingCqcLocations.resolver';
 
 describe('GetMissingCqcLocationsResolver', () => {
+  const mockWorkplace = {
+    provId: '1-11111111',
+    uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
+    id: 1234,
+  };
+
   const setup = () => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule, RouterTestingModule.withRoutes([])],
@@ -15,16 +20,19 @@ describe('GetMissingCqcLocationsResolver', () => {
         GetMissingCqcLocationsResolver,
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useValue: {
+            primaryWorkplace: mockWorkplace,
+            async getMissingCqcLocations() {
+              of(null);
+            },
+          },
         },
       ],
     });
     const resolver = TestBed.inject(GetMissingCqcLocationsResolver);
-    const route = TestBed.inject(ActivatedRoute);
-
     const establishmentService = TestBed.inject(EstablishmentService);
 
-    return { resolver, route, establishmentService };
+    return { resolver, establishmentService };
   };
 
   it('should be created', async () => {
@@ -33,14 +41,14 @@ describe('GetMissingCqcLocationsResolver', () => {
   });
 
   it('should call getMissingCqcLocations', async () => {
-    const { resolver, route, establishmentService } = await setup();
-    const getMissingCqcLocationsSpy = spyOn(establishmentService, 'getMissingCqcLocations').and.callThrough();
-    resolver.resolve(route.snapshot);
+    const { resolver, establishmentService } = await setup();
+    const getMissingCqcLocationsSpy = spyOn(establishmentService, 'getMissingCqcLocations').and.returnValue(of(null));
+    resolver.resolve();
 
     expect(getMissingCqcLocationsSpy).toHaveBeenCalledWith({
-      locationId: '1-11111111',
-      uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
-      id: 0,
+      provId: mockWorkplace.provId,
+      uid: mockWorkplace.uid,
+      id: mockWorkplace.id,
     });
   });
 });

@@ -30,6 +30,9 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   public filteredTrainingCategories: TrainingCategory[];
   private subscriptions: Subscription = new Subscription();
   public jobs: Job[] = [];
+  public allJobsLength: Number;
+  public previousAllJobsLength = [29, 31, 32];
+  public hasDuplicateJobRoles: boolean;
   public filteredJobs: Array<Job[]> = [];
   public trainings: TrainingCategory[] = [];
   public establishment: Establishment;
@@ -95,6 +98,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
           this.trainings = this.filterTrainingCategories(trainings);
           if (this.renderAsEditMandatoryTraining) {
             this.prefill();
+            this.updateMandatoryTrainingWithPreviousAllJobsRecordLength();
           }
         }),
     );
@@ -124,7 +128,10 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       this.jobService
         .getJobs()
         .pipe(take(1))
-        .subscribe((jobs) => (this.jobs = jobs)),
+        .subscribe((jobs) => {
+          this.allJobsLength = jobs.length;
+          this.jobs = jobs;
+        }),
     );
   }
 
@@ -188,11 +195,37 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     });
   }
 
+  public checkDuplicateJobRoles(preExistingTrainingJobsDuplicates): boolean {
+    for (let i = 0; i < preExistingTrainingJobsDuplicates.length; i++) {
+      for (let j = i + 1; j < preExistingTrainingJobsDuplicates.length; j++) {
+        if (preExistingTrainingJobsDuplicates[i].id === preExistingTrainingJobsDuplicates[j].id) {
+          return true;
+        }
+      }
+    }
+  }
+
+  public filterPreExistingTrainingJobsDuplicates(preExistingTrainingJobs) {
+    if (preExistingTrainingJobs > 1) {
+      let filtered = preExistingTrainingJobs.filter(
+        (obj1, index, arr) =>
+          arr.findIndex((obj2) => {
+            obj2.id === obj1.id;
+          }) === index,
+      );
+      return filtered;
+    } else {
+      return preExistingTrainingJobs;
+    }
+  }
+
   public prefill(): void {
     this.form.patchValue({
       trainingCategory: this.preExistingTraining.trainingCategoryId,
       allOrSelectedJobRoles:
-        this.preExistingTraining.jobs.length === 29
+        this.preExistingTraining.jobs.length === this.allJobsLength ||
+        (this.previousAllJobsLength.includes(this.preExistingTraining.jobs.length) &&
+          this.checkDuplicateJobRoles(this.preExistingTraining.jobs))
           ? mandatoryTrainingJobOption.all
           : mandatoryTrainingJobOption.selected,
       selectedJobRoles: this.prefillJobRoles(),
@@ -200,9 +233,12 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
   }
 
   protected prefillJobRoles() {
-    return this.preExistingTraining.jobs.length === 29
+    let filteredPreExistingTrainingJobs = this.filterPreExistingTrainingJobsDuplicates(this.preExistingTraining.jobs);
+    return this.preExistingTraining.jobs.length === this.allJobsLength ||
+      (this.previousAllJobsLength.includes(this.preExistingTraining.jobs.length) &&
+        this.checkDuplicateJobRoles(this.preExistingTraining.jobs))
       ? null
-      : this.preExistingTraining.jobs.forEach((job) => {
+      : filteredPreExistingTrainingJobs.forEach((job) => {
           this.selectedJobRolesArray.push(this.createVacancyControl(job.id));
         });
   }
@@ -270,9 +306,31 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       }
       this.selectedJobRolesArray.reset([], { emitEvent: false });
     } else if (this.renderAsEditMandatoryTraining) {
-      this.preExistingTraining.jobs.length === 29 ? this.addVacancy() : this.prefillJobRoles();
+      this.preExistingTraining.jobs.length === this.allJobsLength ||
+      (this.previousAllJobsLength.includes(this.preExistingTraining.jobs.length) &&
+        this.checkDuplicateJobRoles(this.preExistingTraining.jobs))
+        ? this.addVacancy()
+        : this.prefillJobRoles();
     } else {
       this.addVacancy();
+    }
+  }
+
+  public updateMandatoryTrainingWithPreviousAllJobsRecordLength(): void {
+    const props = this.generateUpdateProps();
+
+    if (
+      this.previousAllJobsLength.includes(this.preExistingTraining.jobs.length) &&
+      this.checkDuplicateJobRoles(this.preExistingTraining.jobs)
+    ) {
+      this.subscriptions.add(
+        this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
+          () => {},
+          (error) => {
+            console.error(error.error.message);
+          },
+        ),
+      );
     }
   }
 
