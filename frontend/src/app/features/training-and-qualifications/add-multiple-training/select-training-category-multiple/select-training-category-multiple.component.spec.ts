@@ -1,5 +1,5 @@
 import { fireEvent, render } from '@testing-library/angular';
-import { BehaviorSubject } from 'rxjs';
+import { SelectTrainingCategoryMultipleComponent } from './select-training-category-multiple.component';
 import { getTestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TrainingService } from '@core/services/training.service';
@@ -12,26 +12,20 @@ import { RadioButtonAccordionComponent } from '@shared/components/accordions/rad
 import { SharedModule } from '@shared/shared.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { WindowRef } from '@core/services/window.ref';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder } from '@angular/forms';
 import { WorkerService } from '@core/services/worker.service';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { Establishment } from '@core/model/establishment.model';
-import { SelectTrainingCategoryComponent } from './select-training-category.component';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 
-describe('SelectTrainingCategoryComponent', () => {
+describe('SelectTrainingCategoryMultipleComponent', () => {
   async function setup(prefill = false) {
     const establishment = establishmentBuilder() as Establishment;
-    const worker = workerBuilder();
-
-    const { fixture, getByText, getAllByText, getByTestId } = await render(SelectTrainingCategoryComponent, {
-      imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
-      declarations: [
-        SelectTrainingCategoryComponent,
-        GroupedRadioButtonAccordionComponent,
-        RadioButtonAccordionComponent,
-      ],
+    const { fixture, getByText, getAllByText, getByTestId } = await render(SelectTrainingCategoryMultipleComponent, {
+      imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
+      declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
         BackLinkService,
         ErrorSummaryService,
@@ -39,7 +33,7 @@ describe('SelectTrainingCategoryComponent', () => {
         FormBuilder,
         {
           provide: WorkerService,
-          useValue: { worker },
+          useClass: MockWorkerService,
         },
         {
           provide: TrainingService,
@@ -48,7 +42,6 @@ describe('SelectTrainingCategoryComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            params: new BehaviorSubject({ establishmentuid: 'mock-uid', id: 'mock-id' }),
             snapshot: {
               data: {
                 establishment: establishment,
@@ -86,11 +79,12 @@ describe('SelectTrainingCategoryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the worker name as the section heading', async () => {
-    const { component, getByTestId } = await setup(true);
-    const sectionHeading = getByTestId('section-heading');
+  it('should show the page caption', async () => {
+    const { getByText } = await setup(true);
 
-    expect(sectionHeading.textContent).toContain(component.worker.nameOrId);
+    const caption = getByText('Add multiple records');
+
+    expect(caption).toBeTruthy();
   });
 
   it('should show the page heading', async () => {
@@ -117,6 +111,17 @@ describe('SelectTrainingCategoryComponent', () => {
     expect(cancelLink).toBeTruthy();
   });
 
+  it('should reset selected staff in training service and navigate to dashboard after clicking Cancel', async () => {
+    const { getByText, fixture, routerSpy, trainingServiceSpy } = await setup(true);
+
+    const cancelLink = getByText('Cancel');
+    fireEvent.click(cancelLink);
+    fixture.detectChanges();
+
+    expect(trainingServiceSpy).toHaveBeenCalled();
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+  });
+
   it('should show an accordian with the correct categories in', async () => {
     const { component, getByTestId } = await setup(true);
     expect(component.categories).toEqual([
@@ -125,6 +130,20 @@ describe('SelectTrainingCategoryComponent', () => {
       { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
     expect(getByTestId('accordian')).toBeTruthy();
+  });
+
+  it('should return to the select staff page if there is no selected staff', async () => {
+    const { component, fixture, routerSpy } = await setup();
+
+    fixture.detectChanges();
+    component.ngOnInit();
+
+    expect(routerSpy).toHaveBeenCalledOnceWith([
+      'workplace',
+      component.establishmentUid,
+      'add-multiple-training',
+      'select-staff',
+    ]);
   });
 
   it('should call the training service and navigate to the details page', async () => {
@@ -148,7 +167,10 @@ describe('SelectTrainingCategoryComponent', () => {
       trainingCategoryGroup: 'Specific conditions and disabilities',
     });
     expect(routerSpy).toHaveBeenCalledWith([
-      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training/details`,
+      'workplace',
+      component.establishmentUid,
+      'add-multiple-training',
+      'training-details',
     ]);
   });
 

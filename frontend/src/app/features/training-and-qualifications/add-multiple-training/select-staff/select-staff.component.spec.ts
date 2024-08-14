@@ -452,7 +452,7 @@ describe('SelectStaffComponent', () => {
       expect(updateSelectedStaffSpy).toHaveBeenCalledWith([workers[0]]);
     });
 
-    it('should navigate to the training details page when pressing continue', async () => {
+    it('should navigate to the select training category page when pressing continue', async () => {
       const { component, fixture, getByText, spy, workers } = await setup();
 
       component.paginatedWorkers = workers;
@@ -470,7 +470,7 @@ describe('SelectStaffComponent', () => {
         'workplace',
         component.workplaceUid,
         'add-multiple-training',
-        'training-details',
+        'select-training-category',
       ]);
     });
 

@@ -17,6 +17,8 @@ import { fireEvent, getByText, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { DeleteMandatoryTrainingCategoryComponent } from './delete-mandatory-training-category.component';
+import { TrainingCategoryService } from '@core/services/training-category.service';
+import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('DeleteMandatoryTrainingCategoryComponent', () => {
   const pages = MockPagesService.pagesFactory();
@@ -40,6 +42,10 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
         {
           provide: TrainingService,
           useClass: MockTrainingService,
+        },
+        {
+          provide: TrainingCategoryService,
+          useClass: MockTrainingCategoryService,
         },
         {
           provide: ActivatedRoute,

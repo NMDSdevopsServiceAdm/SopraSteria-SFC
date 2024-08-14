@@ -17,6 +17,8 @@ import { of } from 'rxjs';
 import sinon from 'sinon';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
+import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -41,6 +43,7 @@ describe('AddEditTrainingComponent', () => {
                     establishment: {
                       uid: '1',
                     },
+                    trainingCategories: trainingCategories,
                   },
                 },
               },
@@ -50,6 +53,7 @@ describe('AddEditTrainingComponent', () => {
           ErrorSummaryService,
           { provide: TrainingService, useClass: MockTrainingService },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+          { provide: TrainingCategoryService, useClass: MockTrainingService },
         ],
       },
     );
@@ -140,10 +144,7 @@ describe('AddEditTrainingComponent', () => {
       const { component, fixture, getByText, getByTestId, queryByTestId, trainingService } = await setup(null);
 
       const trainingServiceSpy = spyOn(trainingService, 'getTrainingCategorySelectedForTrainingRecord').and.returnValue(
-        {
-          category: 'Autism',
-          id: 1,
-        },
+        { id: 1, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
       );
 
       component.ngOnInit();
@@ -400,8 +401,10 @@ describe('AddEditTrainingComponent', () => {
       );
 
       spyOn(trainingService, 'getTrainingCategorySelectedForTrainingRecord').and.returnValue({
+        id: 2,
+        seq: 20,
         category: 'Autism',
-        id: 1,
+        trainingCategoryGroup: 'Specific conditions and disabilities',
       });
 
       component.ngOnInit();

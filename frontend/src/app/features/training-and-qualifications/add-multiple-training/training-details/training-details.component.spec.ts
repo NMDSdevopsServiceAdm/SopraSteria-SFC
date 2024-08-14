@@ -19,6 +19,8 @@ import sinon from 'sinon';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
+import { TrainingCategoryService } from '@core/services/training-category.service';
+import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('MultipleTrainingDetailsComponent', () => {
   async function setup(
@@ -64,6 +66,10 @@ describe('MultipleTrainingDetailsComponent', () => {
             useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
           },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+          {
+            provide: TrainingCategoryService,
+            useClass: MockTrainingCategoryService,
+          },
         ],
       },
     );
@@ -118,6 +124,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     expect(component.categories).toEqual([
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
       { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+      { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
   });
 

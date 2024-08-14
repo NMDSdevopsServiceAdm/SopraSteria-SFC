@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { TrainingRecordCategories } from '@core/model/training.model';
+import { TrainingCategory, TrainingRecordCategories } from '@core/model/training.model';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { Observable, of } from 'rxjs';
 
@@ -74,6 +74,12 @@ export const missingTrainingBuilder = () => {
     },
   });
 };
+
+export const trainingCategories = [
+  { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+  { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+  { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
+];
 
 @Injectable()
 export class MockTrainingCategoryService extends TrainingCategoryService {
@@ -157,6 +163,14 @@ export class MockTrainingCategoryService extends TrainingCategoryService {
         ],
         isMandatory: false,
       },
+    ]);
+  }
+
+  getCategories(): Observable<TrainingCategory[]> {
+    return of([
+      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+      { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
   }
 }

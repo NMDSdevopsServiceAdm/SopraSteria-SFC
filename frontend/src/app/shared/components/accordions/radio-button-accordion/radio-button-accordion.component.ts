@@ -1,6 +1,5 @@
-import { Component, EventEmitter, forwardRef, Input, OnInit, Output } from '@angular/core';
-import { ControlValueAccessor, FormControl, FormGroup, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { init } from '@sentry/browser';
+import { Component, EventEmitter, forwardRef, Input, Output } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-radio-button-accordion',
@@ -24,6 +23,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
     label: string;
   }[];
   @Input() open: boolean;
+  @Input() preFilledId: number;
 
   @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
   @Output() selectedValueEmitter: EventEmitter<number> = new EventEmitter();
@@ -37,7 +37,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   }
 
   public get buttonText() {
-    if(this.open) {
+    if (this.open) {
       return 'Hide';
     }
     return 'Show';
@@ -65,7 +65,7 @@ export class RadioButtonAccordionComponent implements ControlValueAccessor {
   }
 
   onClick(val: any) {
-    this.value = { id: val.id, label: val.label };
+    this.value = val;
   }
 
   public emitToggle(): void {

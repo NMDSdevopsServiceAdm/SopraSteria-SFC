@@ -7,15 +7,6 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
-interface Category {
-  id: number;
-  category: string;
-}
-
-interface SelectedTrainingCategory {
-  category: { id: number; label: string };
-}
-
 @Injectable({
   providedIn: 'root',
 })
@@ -24,7 +15,7 @@ export class TrainingService {
   public selectedStaff: Worker[] = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
-  private _trainingCategorySelectedForTrainingRecord: Category = null;
+  private _trainingCategorySelectedForTrainingRecord: TrainingCategory = null;
 
   constructor(private http: HttpClient) {}
 
@@ -98,18 +89,16 @@ export class TrainingService {
     this.addMultipleTrainingInProgress$.next(false);
     this.resetSelectedStaff();
     this.resetSelectedTraining();
+    this.clearTrainingCategorySelectedForTrainingRecord();
   }
 
-  public getTrainingCategorySelectedForTrainingRecord(): Category {
+  public getTrainingCategorySelectedForTrainingRecord(): TrainingCategory {
     return this._trainingCategorySelectedForTrainingRecord;
   }
 
-  public setTrainingCategorySelectedForTrainingRecord(trainingCategory: SelectedTrainingCategory) {
-    if (trainingCategory?.category) {
-      this._trainingCategorySelectedForTrainingRecord = {
-        id: trainingCategory.category?.id,
-        category: trainingCategory.category?.label,
-      };
+  public setTrainingCategorySelectedForTrainingRecord(trainingCategory: TrainingCategory) {
+    if (trainingCategory) {
+      this._trainingCategorySelectedForTrainingRecord = trainingCategory;
     }
   }
 

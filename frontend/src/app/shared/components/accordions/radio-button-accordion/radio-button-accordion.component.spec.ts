@@ -1,109 +1,126 @@
-import { SharedModule } from '@shared/shared.module'
-import { RadioButtonAccordionComponent } from './radio-button-accordion.component'
-import { FormControlName } from '@angular/forms'
-import { fireEvent, getAllByTestId, getByText, render } from '@testing-library/angular';
-import exp from 'constants';
-
+import { SharedModule } from '@shared/shared.module';
+import { RadioButtonAccordionComponent } from './radio-button-accordion.component';
+import { FormsModule } from '@angular/forms';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 describe('RadioButtonAccordionComponent', () => {
-  async function setup(props?: {title?, description?, formControlName?, items?}) {
+  async function setup(props?: { title?; description?; formControlName?; items? }) {
     const { fixture, getAllByTestId, getByTestId, getByText } = await render(RadioButtonAccordionComponent, {
-        imports: [SharedModule],
-        providers: [],
-        componentProperties: {
-            title: props?.title ? props.title : 'Test Accordion',
-            description: props?.description ? props.description : 'A Description',
-            formControlName: props?.formControlName ? props.formControlName :'testAccordion',
-            items: props?.items ? props.items : [
-                {
-                    id: 1,
-                    label: 'option 1'
-                },
-                {
-                    id: 2,
-                    label: 'option 2'
-                }
-            ]
+      imports: [SharedModule, FormsModule],
+      providers: [],
+      componentProperties: {
+        title: props?.title ? props.title : 'Test Accordion',
+        description: props?.description ? props.description : 'A Description',
+        formControlName: props?.formControlName ? props.formControlName : 'testAccordion',
+        items: props?.items
+          ? props.items
+          : [
+              {
+                id: 1,
+                label: 'option 1',
+              },
+              {
+                id: 2,
+                label: 'option 2',
+              },
+            ],
+      },
+    });
+    const component = fixture.componentInstance;
+    return {
+      component,
+      fixture,
+      getAllByTestId,
+      getByTestId,
+      getByText,
+    };
+  }
+
+  it('should render', async () => {
+    const { component } = await setup();
+    expect(component).toBeTruthy();
+  });
+
+  it('should display the title', async () => {
+    const { getByTestId } = await setup();
+
+    const title = getByTestId('title');
+    expect(title.textContent).toContain('Test Accordion');
+  });
+
+  it('should display the description', async () => {
+    const { getByTestId } = await setup();
+
+    const description = getByTestId('description');
+    expect(description.textContent).toBe('A Description');
+  });
+
+  describe('should display the correct amount of radio buttons:', async () => {
+    it('2', async () => {
+      const { getAllByTestId } = await setup();
+      const radioButtons = getAllByTestId('radioButton');
+      expect(radioButtons.length).toBe(2);
+    });
+
+    it('4', async () => {
+      const radioArray = [
+        {
+          id: 1,
+          label: '1',
         },
-      });
-      const component = fixture.componentInstance;
-      return {
-          component,
-          fixture,
-          getAllByTestId,
-          getByTestId,
-          getByText,
-      }
-    }
+        {
+          id: 2,
+          label: '2',
+        },
+        {
+          id: 3,
+          label: '3',
+        },
+        {
+          id: 4,
+          label: '4',
+        },
+      ];
 
-    it('should render', async () => {
-      const { component } = await setup();
-      expect(component).toBeTruthy();
+      const { getAllByTestId } = await setup({ items: radioArray });
+
+      const radioButtons = getAllByTestId('radioButton');
+      expect(radioButtons.length).toBe(4);
     });
+  });
 
-    it('should display the title', async () => {
-      const { getByTestId } = await setup();
+  it('should be closed', async () => {
+    const { getByTestId } = await setup();
 
-      const title = getByTestId('title');
-      expect(title.textContent).toBe('Test Accordion');
-    });
+    const accordion = getByTestId('accordion');
+    expect(accordion.classList).not.toContain('govuk-accordion__section--expanded');
+  });
 
-    it('should display the description', async () => {
-      const { getByTestId } = await setup();
+  it('should open when clicked', async () => {
+    const { fixture, getByTestId } = await setup();
 
-      const description = getByTestId('description');
-      expect(description.textContent).toBe('A Description');
-    });
+    const showHideButton = getByTestId('showHideButton');
+    fireEvent.click(showHideButton);
+    fixture.detectChanges();
 
-    describe('should display the correct amount of radio buttons:', async () => {
-      it('2', async () => {
-        const { getAllByTestId } = await setup();
-        const radioButtons = getAllByTestId('radioButton');
-        expect(radioButtons.length).toBe(2);
-      });
+    const accordion = getByTestId('accordion');
+    expect(accordion.classList).toContain('govuk-accordion__section--expanded');
+  });
 
-      it('4', async () => {
-        const radioArray = [
-          {
-            id: 1,
-            label: '1'
-          },
-          {
-            id: 2,
-            label: '2'
-          },
-          {
-            id: 3,
-            label: '3'
-          },
-          {
-            id: 4,
-            label: '4'
-          },
-        ];
+  it('should prefill the radio button', async () => {
+    const { component, fixture, getByTestId } = await setup();
 
-        const { getAllByTestId } = await setup({items: radioArray});
+    component.preFilledId = 2;
+    component.open = true;
+    fixture.detectChanges();
 
-        const radioButtons = getAllByTestId('radioButton');
-        expect(radioButtons.length).toBe(4);
-      });
-    });
+    const radioBtn = fixture.nativeElement.querySelector('input[id="testAccordion-2"]');
+    const showHideButton = within(getByTestId('showHideButton'));
+    const hideButton = showHideButton.getByText('Hide');
+    const accordion = getByTestId('accordion');
 
-    it('should be closed', async () => {
-      const { getByTestId } = await setup();
-
-      const accordion = getByTestId('accordion');
-      expect(accordion.classList).not.toContain('govuk-accordion__section--expanded');
-    });
-
-    it('should open when clicked', async () => {
-      const { fixture, getByTestId } = await setup();
-
-      const showHideButton = getByTestId('showHideButton');
-      fireEvent.click(showHideButton);
-      fixture.detectChanges();
-
-      const accordion = getByTestId('accordion');
-      expect(accordion.classList).toContain('govuk-accordion__section--expanded');
-    });
-  })
+    expect(radioBtn.checked).toBeTruthy();
+    expect(hideButton).toBeTruthy();
+    expect(accordion.classList).toContain('govuk-accordion__section--expanded');
+  });
+});
