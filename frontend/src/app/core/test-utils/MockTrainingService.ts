@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
 import { TrainingService } from '@core/services/training.service';
 import { Observable, of } from 'rxjs';
+
 import { AllJobs, JobsWithDuplicates } from '../../../mockdata/jobs';
 import { workerBuilder } from './MockWorkerService';
 
