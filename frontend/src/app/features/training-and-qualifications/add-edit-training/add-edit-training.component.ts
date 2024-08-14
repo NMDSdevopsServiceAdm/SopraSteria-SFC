@@ -10,6 +10,7 @@ import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -17,6 +18,8 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public category: string;
+  public establishmentUid: string;
+  public workerId: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -25,6 +28,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
+    protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
   ) {
@@ -35,6 +39,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       backLinkService,
       errorSummaryService,
       trainingService,
+      trainingCategoryService,
       workerService,
       alertService,
     );
@@ -51,6 +56,16 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       this.form.patchValue({
         category: this.trainingCategory.id,
       });
+    }
+
+    this.establishmentUid = this.route.snapshot.params?.establishmentuid;
+    this.workerId = this.route.snapshot.params?.id;
+
+    if (!this.trainingCategory && !this.trainingRecordId) {
+      this.router.navigate([
+        `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training`,
+      ]);
+      return;
     }
   }
 
@@ -72,14 +87,14 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         (trainingRecord) => {
           if (trainingRecord) {
             this.trainingRecord = trainingRecord;
-            this.category = this.trainingRecord.trainingCategory.category;
+            this.trainingCategory = this.trainingRecord.trainingCategory;
+
             const completed = this.trainingRecord.completed
               ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)
               : null;
             const expires = this.trainingRecord.expires ? dayjs(this.trainingRecord.expires, DATE_PARSE_FORMAT) : null;
             this.form.patchValue({
               title: this.trainingRecord.title,
-              category: this.trainingRecord.trainingCategory.id,
               accredited: this.trainingRecord.accredited,
               ...(completed && {
                 completed: {
@@ -127,6 +142,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
+    this.trainingService.clearTrainingCategorySelectedForTrainingRecord();
     const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
 
     this.router.navigate(this.previousUrl).then(() => {

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
 import { TrainingService } from '@core/services/training.service';
 import { Observable, of } from 'rxjs';
+
 import { AllJobs, JobsWithDuplicates } from '../../../mockdata/jobs';
 import { workerBuilder } from './MockWorkerService';
 
@@ -12,6 +13,7 @@ export class MockTrainingService extends TrainingService {
   public selectedStaff = [];
   public _mockTrainingOrQualificationPreviouslySelected: string = null;
   private _duplicateJobRoles: boolean = false;
+  public _mockTrainingCategorySelectedForTrainingRecord: any = null;
 
   public get trainingOrQualificationPreviouslySelected() {
     return null;
@@ -28,11 +30,13 @@ export class MockTrainingService extends TrainingService {
   public set trainingOrQualificationPreviouslySelected(value: string) {
     this._mockTrainingOrQualificationPreviouslySelected = value;
   }
+
   public selectedTraining = null;
   getCategories(): Observable<TrainingCategory[]> {
     return of([
-      { id: 1, seq: 10, category: 'Activity provision/Well-being' },
-      { id: 2, seq: 20, category: 'Autism' },
+      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+      { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
   }
 
@@ -67,6 +71,14 @@ export class MockTrainingService extends TrainingService {
 
   public deleteCategoryById(establishmentId, categoryId) {
     return of({});
+  }
+
+  public getTrainingCategorySelectedForTrainingRecord(): any {
+    return this._mockTrainingCategorySelectedForTrainingRecord;
+  }
+
+  public clearTrainingCategorySelectedForTrainingRecord(): void {
+    this._mockTrainingCategorySelectedForTrainingRecord = null;
   }
 }
 

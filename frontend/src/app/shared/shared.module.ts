@@ -119,6 +119,8 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { RadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { GroupedRadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -201,6 +203,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    RadioButtonAccordionComponent,
+    GroupedRadioButtonAccordionComponent,
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,
@@ -316,6 +320,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    RadioButtonAccordionComponent,
+    GroupedRadioButtonAccordionComponent,
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,

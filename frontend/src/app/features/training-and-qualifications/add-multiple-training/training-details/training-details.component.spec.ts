@@ -19,6 +19,8 @@ import sinon from 'sinon';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
+import { TrainingCategoryService } from '@core/services/training-category.service';
+import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('MultipleTrainingDetailsComponent', () => {
   async function setup(
@@ -34,6 +36,7 @@ describe('MultipleTrainingDetailsComponent', () => {
         providers: [
           WindowRef,
           { provide: EstablishmentService, useClass: MockEstablishmentService },
+          { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
           {
             provide: ActivatedRoute,
             useValue: new MockActivatedRoute({
@@ -41,9 +44,6 @@ describe('MultipleTrainingDetailsComponent', () => {
                 params: { trainingRecordId: '1' },
                 parent: {
                   url: [{ path: accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
-                },
-                queryParamMap: {
-                  get: qsParamGetMock,
                 },
               },
               parent: {
@@ -64,6 +64,10 @@ describe('MultipleTrainingDetailsComponent', () => {
             useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
           },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+          {
+            provide: TrainingCategoryService,
+            useClass: MockTrainingCategoryService,
+          },
         ],
       },
     );
@@ -78,6 +82,10 @@ describe('MultipleTrainingDetailsComponent', () => {
     const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.callThrough();
     const trainingSpy = spyOn(trainingService, 'resetState').and.callThrough();
     const updateSelectedTrainingSpy = spyOn(trainingService, 'updateSelectedTraining');
+    const setUpdatingSelectedStaffForMultipleTrainingSpy = spyOn(
+      trainingService,
+      'setUpdatingSelectedStaffForMultipleTraining',
+    );
 
     return {
       component,
@@ -91,6 +99,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       trainingService,
       trainingSpy,
       updateSelectedTrainingSpy,
+      setUpdatingSelectedStaffForMultipleTrainingSpy,
     };
   }
 
@@ -116,8 +125,9 @@ describe('MultipleTrainingDetailsComponent', () => {
   it('should show a dropdown with the correct categories in', async () => {
     const { component } = await setup();
     expect(component.categories).toEqual([
-      { id: 1, seq: 10, category: 'Activity provision/Well-being' },
-      { id: 2, seq: 20, category: 'Autism' },
+      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+      { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
   });
 
@@ -125,8 +135,12 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { component, getByText, getByLabelText, getByTestId, fixture, updateSelectedTrainingSpy, spy } =
       await setup();
 
-    const categoryOption = component.categories[0].id.toString();
-    userEvent.selectOptions(getByLabelText('Training category'), categoryOption);
+    component.trainingCategory = {
+      id: component.categories[0].id,
+      category: component.categories[0].category,
+    };
+    fixture.detectChanges();
+
     userEvent.type(getByLabelText('Training name'), 'Training');
     userEvent.click(getByLabelText('Yes'));
     const completedDate = getByTestId('completedDate');
@@ -162,6 +176,11 @@ describe('MultipleTrainingDetailsComponent', () => {
 
   it('should navigate to the confirm training page when page has been accessed from that page and pressing Save and return', async () => {
     const { component, fixture, getByText, updateSelectedTrainingSpy, spy } = await setup(true, true);
+
+    component.trainingCategory = {
+      id: component.categories[0].id,
+      category: component.categories[0].category,
+    };
 
     const button = getByText('Save and return');
     fireEvent.click(button);
@@ -207,13 +226,11 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { component } = await setup(false, true);
 
     const form = component.form;
-    const { trainingCategory, title, accredited, completed, expires, notes } =
-      component.trainingService.selectedTraining;
+    const { title, accredited, completed, expires, notes } = component.trainingService.selectedTraining;
     const completedArr = completed.split('-');
     const expiresArr = expires.split('-');
 
     expect(form.value).toEqual({
-      category: trainingCategory.id,
       title,
       accredited,
       completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
@@ -223,18 +240,6 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   describe('errors', () => {
-    it('should show an error when no training category selected', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      component.form.get('category').setValue(null);
-      component.form.get('category').markAsDirty();
-      const finishButton = getByText('Continue');
-      fireEvent.click(finishButton);
-      fixture.detectChanges();
-      expect(component.form.invalid).toBeTruthy();
-      expect(getAllByText('Select the training category').length).toEqual(3);
-    });
-
     it('should show an error when training name less than 3 characters', async () => {
       const { component, getByText, fixture, getAllByText } = await setup();
       component.form.markAsDirty();
@@ -351,6 +356,49 @@ describe('MultipleTrainingDetailsComponent', () => {
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
+    });
+  });
+
+  describe('change links', () => {
+    it('should display a change link for number of staff selected', async () => {
+      const { getByTestId } = await setup(false, true);
+
+      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
+
+      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
+
+      expect(numberOfStaffSelected).toBeTruthy();
+      expect(changeStaffSelectedLink).toBeTruthy();
+    });
+
+    it('should display a change link for training category selected', async () => {
+      const { component, fixture, getByTestId } = await setup(false, true);
+
+      component.trainingCategory = {
+        id: component.categories[0].id,
+        category: component.categories[0].category,
+      };
+
+      fixture.detectChanges();
+
+      const trainingCategoryDisplay = getByTestId('trainingCategoryDisplay');
+
+      const changeTrainingCaegorySelectedLink = within(trainingCategoryDisplay).getByText('Change');
+
+      expect(trainingCategoryDisplay).toBeTruthy();
+      expect(changeTrainingCaegorySelectedLink).toBeTruthy();
+    });
+
+    it('should call setIsSelectStaffChange when change is clicked for staff', async () => {
+      const { setUpdatingSelectedStaffForMultipleTrainingSpy, getByTestId } = await setup(false, true);
+
+      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
+
+      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
+
+      fireEvent.click(changeStaffSelectedLink);
+
+      expect(setUpdatingSelectedStaffForMultipleTrainingSpy).toHaveBeenCalledWith(true);
     });
   });
 });

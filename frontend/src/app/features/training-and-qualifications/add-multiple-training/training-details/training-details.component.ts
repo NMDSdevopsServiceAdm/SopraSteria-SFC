@@ -8,8 +8,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
-
 import { AddEditTrainingDirective } from '../../../../shared/directives/add-edit-training/add-edit-training.directive';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -19,6 +19,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   public showWorkerCount = true;
   public workerCount: number = this.trainingService.selectedStaff.length;
   private accessedFromSummary = false;
+  public category: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -27,6 +28,7 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     public trainingService: TrainingService,
+    protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
     private establishmentService: EstablishmentService,
@@ -38,14 +40,20 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
       backLinkService,
       errorSummaryService,
       trainingService,
+      trainingCategoryService,
       workerService,
       alertService,
     );
   }
 
   protected init(): void {
+    this.multipleTrainingDetails = true;
     this.previousUrl = ['/dashboard'];
     this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
+
+    if (this.trainingCategory) {
+      this.category = this.trainingCategory.category;
+    }
   }
 
   protected setSection(): void {
@@ -91,7 +99,6 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
   protected submit(record: TrainingRecordRequest): void {
     const trainingCategory = this.categories.find((category) => category.id === record.trainingCategory.id);
     this.trainingService.updateSelectedTraining({ ...record, trainingCategory });
-
     this.router.navigate(['workplace', this.workplace.uid, 'add-multiple-training', 'confirm-training']);
   }
 
@@ -103,5 +110,9 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
       this.trainingService.resetState();
       this.router.navigate(this.previousUrl, { fragment: 'training-and-qualifications' });
     }
+  }
+
+  public setIsSelectStaffChange(): void {
+    this.trainingService.setUpdatingSelectedStaffForMultipleTraining(true);
   }
 }

@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
@@ -52,6 +52,8 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
+import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 
 const routes: Routes = [
   {
@@ -289,8 +291,21 @@ const routes: Routes = [
           },
           {
             path: 'add-training',
-            component: AddEditTrainingComponent,
-            data: { title: 'Add Training' },
+            children: [
+              {
+                path:'',
+                component: SelectTrainingCategoryComponent,
+                data: { title: 'Add Training' },
+                resolve: {
+                  trainingCategories: TrainingCategoriesResolver,
+                }
+              },
+              {
+                path: 'details',
+                component: AddEditTrainingComponent,
+                data: { title: 'Add Training' },
+              }
+            ]
           },
           {
             path: 'training/:trainingRecordId',
@@ -533,8 +548,21 @@ const routes: Routes = [
       },
       {
         path: 'add-training',
-        component: AddEditTrainingComponent,
-        data: { title: 'Add Training' },
+        children: [
+          {
+            path:'',
+            component: SelectTrainingCategoryComponent,
+            data: { title: 'Add Training' },
+            resolve: {
+              trainingCategories: TrainingCategoriesResolver,
+            }
+          },
+          {
+            path: 'details',
+            component: AddEditTrainingComponent,
+            data: { title: 'Add Training' },
+          }
+        ]
       },
       {
         path: 'training/:trainingRecordId',
