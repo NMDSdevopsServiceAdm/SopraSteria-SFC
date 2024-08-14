@@ -6,7 +6,7 @@ import { Component, ElementRef, Input, ViewChild } from '@angular/core';
   styleUrls: ['./new-training-and-qualifications-record-summary.component.scss'],
 })
 export class NewTrainingAndQualificationsRecordSummaryComponent {
-  @Input() trainingCounts: number;
+  @Input() trainingCount: number;
   @Input() qualificationsCount: number;
   @ViewChild('content') public content: ElementRef;
 }
