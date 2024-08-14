@@ -76,9 +76,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   public checkForCategoryId(): void {
     const selectedCategory = this.trainingService.getTrainingCategorySelectedForTrainingRecord();
-    if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
-      this.trainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
-    } else if (selectedCategory) {
+    if (selectedCategory) {
       this.trainingCategory = { id: selectedCategory.id, category: selectedCategory.category };
       this.showChangeLink = true;
     }

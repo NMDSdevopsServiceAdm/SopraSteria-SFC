@@ -33,9 +33,6 @@ describe('AddEditTrainingComponent', () => {
             useValue: {
               snapshot: {
                 params: { trainingRecordId, establishmentuid: '24', id: 2 },
-                queryParamMap: {
-                  get: qsParamGetMock,
-                },
               },
               parent: {
                 snapshot: {

@@ -45,9 +45,6 @@ describe('MultipleTrainingDetailsComponent', () => {
                 parent: {
                   url: [{ path: accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
                 },
-                queryParamMap: {
-                  get: qsParamGetMock,
-                },
               },
               parent: {
                 snapshot: {
