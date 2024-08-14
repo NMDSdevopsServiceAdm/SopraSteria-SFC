@@ -6,7 +6,7 @@
         (click)="emitToggle()"
         aria-controls="accordion-default-content"
         class="govuk-accordion__section-button"
-        aria-expanded="false"
+        [attr.aria-expanded]="open"
         data-testid="showHideButton"
       >
         <span class="govuk-accordion__section-heading-text">
