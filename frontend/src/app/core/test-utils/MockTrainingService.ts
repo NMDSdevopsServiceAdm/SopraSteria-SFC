@@ -12,8 +12,8 @@ const workers = [workerBuilder(), workerBuilder()];
 export class MockTrainingService extends TrainingService {
   public selectedStaff = [];
   public _mockTrainingOrQualificationPreviouslySelected: string = null;
-  private _duplicateJobRoles: boolean = false;
   public _mockTrainingCategorySelectedForTrainingRecord: any = null;
+  private _duplicateJobRoles: boolean = false;
 
   public get trainingOrQualificationPreviouslySelected() {
     return null;
