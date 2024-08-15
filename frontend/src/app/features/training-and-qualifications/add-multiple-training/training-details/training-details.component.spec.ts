@@ -29,7 +29,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     isPrimaryWorkplace = true,
     qsParamGetMock = sinon.fake(),
   ) {
-    const { fixture, getByText, getAllByText, getByTestId, getByLabelText } = await render(
+    const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByTestId } = await render(
       MultipleTrainingDetailsComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
@@ -100,6 +100,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       trainingSpy,
       updateSelectedTrainingSpy,
       setUpdatingSelectedStaffForMultipleTrainingSpy,
+      queryByTestId,
     };
   }
 
@@ -371,7 +372,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(changeStaffSelectedLink).toBeTruthy();
     });
 
-    it('should display a change link for training category selected', async () => {
+    it('should display a change link for training category selected if not accessed from summary page', async () => {
       const { component, fixture, getByTestId } = await setup(false, true);
 
       component.trainingCategory = {
@@ -387,6 +388,16 @@ describe('MultipleTrainingDetailsComponent', () => {
 
       expect(trainingCategoryDisplay).toBeTruthy();
       expect(changeTrainingCaegorySelectedLink).toBeTruthy();
+    });
+
+    it('should not display the number of staff and training category if accessed from summary page', async () => {
+      const { queryByTestId } = await setup(true, true);
+
+      const numberOfStaffSelected = queryByTestId('numberOfStaffSelected');
+      const trainingCategoryDisplay = queryByTestId('trainingCategoryDisplay');
+
+      expect(numberOfStaffSelected).toBeFalsy();
+      expect(trainingCategoryDisplay).toBeFalsy();
     });
 
     it('should call setIsSelectStaffChange when change is clicked for staff', async () => {
