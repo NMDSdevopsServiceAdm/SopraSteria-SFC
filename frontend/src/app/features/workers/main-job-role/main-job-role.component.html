@@ -16,6 +16,17 @@
           [preFilledId]="preFilledId"
           data-testid="accordian"
         ></app-grouped-radio-button-accordion>
+
+        <app-submit-button
+          [summaryContinue]="summaryContinue"
+          [callToAction]="submitTitle"
+          [recordSummary]="false"
+          [canExit]="canExit"
+          [return]="editFlow"
+          [isExistingStaffRecord]="!!worker"
+          (clicked)="setSubmitAction($event)"
+        >
+        </app-submit-button>
       </fieldset>
     </div>
   </div>

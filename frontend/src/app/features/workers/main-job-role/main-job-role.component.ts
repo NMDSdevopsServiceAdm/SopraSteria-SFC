@@ -18,7 +18,11 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   public jobsAvailable: Job[] = [];
   public jobGroups = [];
   public preFilledId: number;
-  //public submitTitle: 'Save'
+  public submitTitle: string;
+  public canExit = true;
+  public editFlow: boolean;
+  public inMandatoryDetailsFlow: boolean;
+  public summaryContinue: boolean;
 
   private summaryText = {
     'Care providing roles': 'care worker, community support, support worker',
@@ -49,14 +53,21 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   }
 
   init(): void {
+    this.setSubmitTitle();
     this.getJobs();
     this.prefillForm();
-    console.log(this.worker);
+    this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
+    this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
+    this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
   }
 
   private getJobs(): void {
     this.jobsAvailable = this.route.snapshot.data.jobs;
     this.sortJobsByJobGroup(this.jobsAvailable);
+  }
+
+  public setSubmitTitle(): void {
+    this.submitTitle = 'Save';
   }
 
   private prefillForm(): void {
@@ -92,7 +103,5 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
       currentJobGroup.descriptionText = this.getTrainingGroupSummary(currentJobGroup);
       this.jobGroups.push(currentJobGroup);
     }
-
-    console.log(this.jobGroups);
   }
 }
