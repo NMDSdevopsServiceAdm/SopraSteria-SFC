@@ -38,6 +38,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public section: string;
   public buttonText: string;
   public showWorkerCount = false;
+  public showCategory: boolean;
   public remainingCharacterCount: number = this.notesMaxLength;
   public notesValue = '';
   public showChangeLink: boolean = false;

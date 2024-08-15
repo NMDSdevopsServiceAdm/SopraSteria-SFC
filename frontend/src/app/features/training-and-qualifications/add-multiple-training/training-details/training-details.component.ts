@@ -17,6 +17,7 @@ import { TrainingCategoryService } from '@core/services/training-category.servic
 })
 export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public showWorkerCount = true;
+  public showCategory = true;
   public workerCount: number = this.trainingService.selectedStaff.length;
   private accessedFromSummary = false;
   public category: string;
@@ -54,6 +55,8 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
     if (this.trainingCategory) {
       this.category = this.trainingCategory.category;
     }
+
+    this.checkAccessFromSummaryAndHideElements();
   }
 
   protected setSection(): void {
@@ -94,6 +97,13 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
 
   protected setButtonText(): void {
     this.buttonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
+  }
+
+  protected checkAccessFromSummaryAndHideElements(): void {
+    if (this.accessedFromSummary) {
+      this.showWorkerCount = false;
+      this.showCategory = false;
+    }
   }
 
   protected submit(record: TrainingRecordRequest): void {
