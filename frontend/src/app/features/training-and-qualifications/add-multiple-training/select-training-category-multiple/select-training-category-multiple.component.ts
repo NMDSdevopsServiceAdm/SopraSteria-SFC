@@ -30,6 +30,8 @@ export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCateg
 
   init(): void {
     this.checkForSelectedStaff();
+    this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
+    this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
   }
 
   public checkForSelectedStaff(): void {
