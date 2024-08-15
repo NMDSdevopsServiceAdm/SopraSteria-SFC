@@ -107,7 +107,7 @@ export class TrainingService {
   }
 
   public clearTrainingCategorySelectedForTrainingRecord(): void {
-    if ('trainingCategory' in this.selectedTraining) {
+    if (this?.selectedTraining?.trainingCategory) {
       this.selectedTraining.trainingCategory = null;
     }
   }
