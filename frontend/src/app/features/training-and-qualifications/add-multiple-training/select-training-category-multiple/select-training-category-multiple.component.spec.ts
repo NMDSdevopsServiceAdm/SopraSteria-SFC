@@ -160,7 +160,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
   it('should call the training service and navigate to the details page when it is not accessed from the confirm training page', async () => {
     const { component, getByText, routerSpy, trainingService } = await setup(true);
 
-    const trainingServiceSpy = spyOn(trainingService, 'setTrainingCategorySelectedForTrainingRecord').and.callThrough();
+    const trainingServiceSpy = spyOn(trainingService, 'setSelectedTrainingCategory').and.callThrough();
 
     const openAllLinkLink = getByText('Show all categories');
     fireEvent.click(openAllLinkLink);
@@ -188,7 +188,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
   it('should navigate back to the confirm training page when it is accessed from the confirm training page', async () => {
     const { component, getByText, routerSpy, trainingService } = await setup(true, true);
 
-    const trainingServiceSpy = spyOn(trainingService, 'setTrainingCategorySelectedForTrainingRecord').and.callThrough();
+    const trainingServiceSpy = spyOn(trainingService, 'setSelectedTrainingCategory').and.callThrough();
 
     const openAllLinkLink = getByText('Show all categories');
     fireEvent.click(openAllLinkLink);

@@ -62,9 +62,9 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   protected init(): void {}
 
   protected prefillForm(): void {
-    let selectedCategory = this.trainingService.getTrainingCategorySelectedForTrainingRecord();
+    let selectedCategory = this.trainingService.selectedTraining?.trainingCategory;
 
-    if (selectedCategory !== null) {
+    if (selectedCategory) {
       this.form.setValue({ category: selectedCategory?.id });
       this.preFilledId = selectedCategory?.id;
       this.form.get('category').updateValueAndValidity();

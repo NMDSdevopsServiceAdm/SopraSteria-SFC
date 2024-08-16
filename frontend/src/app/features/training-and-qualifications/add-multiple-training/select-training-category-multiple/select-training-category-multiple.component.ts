@@ -59,7 +59,7 @@ export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCateg
   }
 
   protected submit(selectedCategory): void {
-    this.trainingService.setTrainingCategorySelectedForTrainingRecord(selectedCategory);
+    this.trainingService.setSelectedTrainingCategory(selectedCategory);
     const nextRoute = this.getNextRoute();
     this.trainingService.addMultipleTrainingInProgress$.next(true);
     this.router.navigate(['workplace', this.establishmentUid, 'add-multiple-training', nextRoute]);

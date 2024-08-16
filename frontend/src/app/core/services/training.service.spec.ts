@@ -48,34 +48,40 @@ describe('TrainingService', () => {
     });
   });
 
-  describe('trainingCategorySelectedForTrainingRecord', () => {
-    it('should return the training category selected for training record', () => {
-      service.setTrainingCategorySelectedForTrainingRecord({
+  describe('setSelectedTrainingCategory', () => {
+    it('should update the training category selected for training record', () => {
+      service.setSelectedTrainingCategory({
         id: 1,
         category: 'Activity provision, wellbeing',
         seq: 0,
         trainingCategoryGroup: 'Care skills and knowledge',
       });
 
-      expect(service.getTrainingCategorySelectedForTrainingRecord()).toEqual({
-        id: 1,
-        category: 'Activity provision, wellbeing',
-        seq: 0,
-        trainingCategoryGroup: 'Care skills and knowledge',
-      });
+      expect(service.selectedTraining).toEqual(
+        jasmine.objectContaining({
+          trainingCategory: {
+            id: 1,
+            category: 'Activity provision, wellbeing',
+            seq: 0,
+            trainingCategoryGroup: 'Care skills and knowledge',
+          },
+        }),
+      );
     });
+  });
 
-    it('should clear trainingCategorySelectedForTrainingRecord', () => {
-      service.setTrainingCategorySelectedForTrainingRecord({
+  describe('clearSelectedTrainingCategory', () => {
+    it('should clear the training category selected for training record', () => {
+      service.setSelectedTrainingCategory({
         id: 1,
         category: 'Activity provision, wellbeing',
         seq: 0,
         trainingCategoryGroup: 'Care skills and knowledge',
       });
 
-      service.clearTrainingCategorySelectedForTrainingRecord();
+      service.clearSelectedTrainingCategory();
 
-      expect(service.getTrainingCategorySelectedForTrainingRecord()).toBeNull();
+      expect(service.selectedTraining.trainingCategory).toBeNull();
     });
   });
 

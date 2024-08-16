@@ -31,7 +31,6 @@ export class MockTrainingService extends TrainingService {
     this._mockTrainingOrQualificationPreviouslySelected = value;
   }
 
-  public selectedTraining = null;
   getCategories(): Observable<TrainingCategory[]> {
     return of([
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
@@ -72,20 +71,12 @@ export class MockTrainingService extends TrainingService {
   public deleteCategoryById(establishmentId, categoryId) {
     return of({});
   }
-
-  public getTrainingCategorySelectedForTrainingRecord(): any {
-    return this._mockTrainingCategorySelectedForTrainingRecord;
-  }
-
-  public clearTrainingCategorySelectedForTrainingRecord(): void {
-    this._mockTrainingCategorySelectedForTrainingRecord = null;
-  }
 }
 
 @Injectable()
 export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService {
   public selectedStaff = workers;
-  public selectedTraining = {
+  protected _selectedTraining = {
     accredited: 'Yes',
     trainingCategory: { id: 1, seq: 3, category: 'Category' },
     completed: '2020-01-01',
@@ -102,7 +93,7 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     return (http: HttpClient) => {
       const service = new MockTrainingServiceWithPreselectedStaff(http);
       if (incompleteTraining) {
-        service.selectedTraining = { ...service.selectedTraining, completed: null, expires: null, notes: null };
+        service._selectedTraining = { ...service._selectedTraining, completed: null, expires: null, notes: null };
       }
       return service;
     };

@@ -35,7 +35,7 @@ export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirec
   }
 
   protected submit(selectedCategory): void {
-    this.trainingService.setTrainingCategorySelectedForTrainingRecord(selectedCategory);
+    this.trainingService.setSelectedTrainingCategory(selectedCategory);
     this.router.navigate([
       `workplace/${this.establishmentUid}/training-and-qualifications-record/${this.workerId}/add-training/details`,
     ]);
@@ -43,7 +43,7 @@ export class SelectTrainingCategoryComponent extends SelectTrainingCategoryDirec
 
   public onCancel(event: any) {
     event.preventDefault();
-    this.trainingService.clearTrainingCategorySelectedForTrainingRecord();
+    this.trainingService.clearSelectedTrainingCategory();
     this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
 
