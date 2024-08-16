@@ -57,16 +57,12 @@ describe('TrainingService', () => {
         trainingCategoryGroup: 'Care skills and knowledge',
       });
 
-      expect(service.selectedTraining).toEqual(
-        jasmine.objectContaining({
-          trainingCategory: {
-            id: 1,
-            category: 'Activity provision, wellbeing',
-            seq: 0,
-            trainingCategoryGroup: 'Care skills and knowledge',
-          },
-        }),
-      );
+      expect(service.selectedTraining.trainingCategory).toEqual({
+        id: 1,
+        category: 'Activity provision, wellbeing',
+        seq: 0,
+        trainingCategoryGroup: 'Care skills and knowledge',
+      });
     });
   });
 
