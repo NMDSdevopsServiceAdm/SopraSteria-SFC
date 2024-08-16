@@ -7,8 +7,6 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { AlertService } from '@core/services/alert.service';
-import { JobService } from '@core/services/job.service';
 
 @Component({
   selector: 'app-main-job-role.component',
@@ -18,7 +16,6 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   public jobsAvailable: Job[] = [];
   public jobGroups = [];
   public preFilledId: number;
-  public submitTitle: string;
   public canExit = true;
   public editFlow: boolean;
   public inMandatoryDetailsFlow: boolean;
@@ -40,7 +37,6 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     protected errorSummaryService: ErrorSummaryService,
     public workerService: WorkerService,
     protected establishmentService: EstablishmentService,
-    protected alertService: AlertService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
@@ -53,12 +49,12 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   }
 
   init(): void {
-    this.setSubmitTitle();
-    this.getJobs();
-    this.prefillForm();
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
     this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
     this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
+
+    this.getJobs();
+    this.prefillForm();
   }
 
   private getJobs(): void {
@@ -66,15 +62,12 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     this.sortJobsByJobGroup(this.jobsAvailable);
   }
 
-  public setSubmitTitle(): void {
-    this.submitTitle = 'Save';
-  }
-
   private prefillForm(): void {
     let savedMainJob = this.worker.mainJob;
     if (savedMainJob) {
       this.form.setValue({ mainJob: savedMainJob.jobId });
       this.preFilledId = savedMainJob.jobId;
+      this.form.get('mainJob').updateValueAndValidity();
     }
   }
 
@@ -103,5 +96,27 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
       currentJobGroup.descriptionText = this.getTrainingGroupSummary(currentJobGroup);
       this.jobGroups.push(currentJobGroup);
     }
+  }
+
+  generateUpdateProps() {
+    const { mainJob } = this.form.controls;
+
+    const props = {
+      mainJob: {
+        jobId: mainJob.value,
+      },
+    };
+
+    if (this.worker && mainJob.value !== 23) {
+      this.worker.registeredNurse = null;
+      if (this.worker.nurseSpecialism) {
+        this.worker.nurseSpecialism.specialism = null;
+      }
+    }
+    return props;
+  }
+
+  protected onSuccess(): void {
+    this.router.navigate(this.returnUrl);
   }
 }

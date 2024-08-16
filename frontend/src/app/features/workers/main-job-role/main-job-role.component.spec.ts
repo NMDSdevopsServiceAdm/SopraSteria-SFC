@@ -1,23 +1,26 @@
-import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { render } from '@testing-library/angular';
 import { MainJobRoleComponent } from './main-job-role.component';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { SubmitButtonComponent } from '@shared/components/submit-button/submit-button.component';
-import { ErrorSummaryComponent } from '@shared/components/error-summary/error-summary.component';
 import { ProgressBarComponent } from '@shared/components/progress-bar/progress-bar.component';
-import { QuestionComponent } from '../question/question.component';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { WindowRef } from '@core/services/window.ref';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { HttpClient } from '@angular/common/http';
+import { UserService } from '@core/services/user.service';
+import { MockUserService } from '@core/test-utils/MockUserService';
+import { Roles } from '@core/model/roles.enum';
+import userEvent from '@testing-library/user-event';
 
-fdescribe('MainJobRoleComponent', () => {
-  const setup = async (insideFlow = true, returnToMandatoryDetails = false, prefill = false) => {
+describe('MainJobRoleComponent', () => {
+  async function setup(insideFlow = true, returnToMandatoryDetails = false, prefill = false) {
     let path;
     if (returnToMandatoryDetails) {
       path = 'mandatory-details';
@@ -26,7 +29,7 @@ fdescribe('MainJobRoleComponent', () => {
     } else {
       path = 'staff-record-summary';
     }
-    const { fixture, getByText, getByTestId } = await render(MainJobRoleComponent, {
+    const { fixture, getByText, getByTestId, getByLabelText } = await render(MainJobRoleComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       declarations: [ProgressBarComponent],
       schemas: [NO_ERRORS_SCHEMA],
@@ -34,8 +37,18 @@ fdescribe('MainJobRoleComponent', () => {
         UntypedFormBuilder,
         WindowRef,
         {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(),
+          deps: [HttpClient, Router, UserService],
+        },
+        {
+          provide: UserService,
+          useFactory: MockUserService.factory(0, Roles.Admin),
+          deps: [HttpClient],
+        },
+        {
           provide: WorkerService,
-          uuseClass: MockWorkerServiceWithUpdateWorker,
+          useClass: MockWorkerServiceWithUpdateWorker,
         },
         {
           provide: ActivatedRoute,
@@ -52,7 +65,18 @@ fdescribe('MainJobRoleComponent', () => {
             snapshot: {
               params: {},
               data: {
-                jobs: [],
+                jobs: [
+                  {
+                    id: 4,
+                    jobRoleGroup: 'Professional and related roles',
+                    title: 'Allied health professional (not occupational therapist)',
+                  },
+                  {
+                    id: 10,
+                    jobRoleGroup: 'Care providing roles',
+                    title: 'Care worker',
+                  },
+                ],
               },
             },
           },
@@ -74,11 +98,12 @@ fdescribe('MainJobRoleComponent', () => {
       fixture,
       getByTestId,
       getByText,
+      getByLabelText,
       routerSpy,
       updateWorkerSpy,
       submitSpy,
     };
-  };
+  }
 
   it('should render MainJobRole', async () => {
     const { component } = await setup();
@@ -91,16 +116,49 @@ fdescribe('MainJobRoleComponent', () => {
     expect(getByText('Mandatory information')).toBeTruthy();
   });
 
-  it(`should render the 'Update their main job role' heading when accessed from mandatory details page`, async () => {
-    const { getByText } = await setup(false, true);
+  describe('heading', () => {
+    it(`should render the 'Select their main job role' heading when inside the flow but not accessed from mandatory details page`, async () => {
+      const { component, fixture, getByText } = await setup();
+      component.worker = null;
+      fixture.detectChanges();
 
-    expect(getByText('Update their main job role')).toBeTruthy();
+      expect(getByText('Select their main job role')).toBeTruthy();
+    });
+
+    it(`should render the 'Update their main job role' heading when accessed from mandatory details page`, async () => {
+      const { getByText } = await setup(false, true);
+
+      expect(getByText('Update their main job role')).toBeTruthy();
+    });
+
+    it(`should render the 'Update their main job role' heading when outside flow`, async () => {
+      const { getByText } = await setup(false);
+
+      expect(getByText('Update their main job role')).toBeTruthy();
+    });
   });
 
   it('should show the accordion', async () => {
     const { getByTestId } = await setup(false, true);
 
     expect(getByTestId('accordian')).toBeTruthy();
+  });
+
+  it('should show the accordion headings', async () => {
+    const { getByText } = await setup(false, true);
+
+    expect(getByText('Care providing roles')).toBeTruthy();
+    expect(getByText('Professional and related roles')).toBeTruthy();
+  });
+
+  it('should prefill the form when editing the job role', async () => {
+    const { component, fixture } = await setup(false, false);
+
+    component.worker.mainJob = { jobId: 4, other: null };
+    fixture.detectChanges();
+    component.init();
+
+    expect(component.form.value).toEqual({ mainJob: 4 });
   });
 
   describe('submit buttons', () => {
@@ -112,21 +170,46 @@ fdescribe('MainJobRoleComponent', () => {
         expect(getByText('Cancel')).toBeTruthy();
       });
     });
+
+    it('should return the user to the staff records tab when clicking cancel', async () => {
+      const { getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup();
+
+      userEvent.click(getByText('Cancel'));
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'exit', save: false });
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
+        fragment: 'staff-records',
+      });
+      expect(updateWorkerSpy).not.toHaveBeenCalled();
+    });
+
+    it(`should call submit the edited data and navigate to the the staff record summary page when 'Save' is clicked outside of mandatory details flow`, async () => {
+      const { component, fixture, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false, false);
+
+      component.worker.mainJob = { jobId: 4, other: null };
+      fixture.detectChanges();
+      component.init();
+
+      userEvent.click(getByText('Care providing roles'));
+      userEvent.click(getByText('Care worker'));
+      userEvent.click(getByText('Save'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({
+        mainJob: 10,
+      });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        mainJob: { jobId: 10 },
+      });
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        component.workplace.uid,
+        'staff-record',
+        component.worker.uid,
+        'staff-record-summary',
+      ]);
+    });
   });
-
-  // it('should prefill the form when editing the job role', async () => {
-  //   const { component, getByText } = await setup(false, true);
-
-  //   const createWorker = () =>
-  //     workerBuilder({
-  //       overrides: {
-  //         mainJob: {
-  //           jobId: 15,
-  //           title: 'Middle management',
-  //         },
-  //       },
-  //     });
-
-  //component.worker = createWorker()
-  //});
 });
