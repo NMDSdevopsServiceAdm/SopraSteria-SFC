@@ -130,7 +130,7 @@ describe('SelectTrainingCategoryComponent', () => {
   it('should call the training service and navigate to the details page', async () => {
     const { component, getByText, routerSpy, trainingService } = await setup(true);
 
-    const trainingServiceSpy = spyOn(trainingService, 'setTrainingCategorySelectedForTrainingRecord').and.callThrough();
+    const trainingServiceSpy = spyOn(trainingService, 'setSelectedTrainingCategory').and.callThrough();
 
     const openAllLinkLink = getByText('Show all categories');
     fireEvent.click(openAllLinkLink);

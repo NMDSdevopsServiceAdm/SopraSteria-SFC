@@ -142,7 +142,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private onSuccess() {
-    this.trainingService.clearTrainingCategorySelectedForTrainingRecord();
+    this.trainingService.clearSelectedTrainingCategory();
     const message = this.trainingRecordId ? 'Training record updated' : 'Training record added';
 
     this.router.navigate(this.previousUrl).then(() => {

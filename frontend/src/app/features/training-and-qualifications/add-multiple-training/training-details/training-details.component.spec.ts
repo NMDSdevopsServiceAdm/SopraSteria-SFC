@@ -29,7 +29,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     isPrimaryWorkplace = true,
     qsParamGetMock = sinon.fake(),
   ) {
-    const { fixture, getByText, getAllByText, getByTestId, getByLabelText } = await render(
+    const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByTestId } = await render(
       MultipleTrainingDetailsComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
@@ -81,7 +81,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.callThrough();
     const trainingSpy = spyOn(trainingService, 'resetState').and.callThrough();
-    const updateSelectedTrainingSpy = spyOn(trainingService, 'updateSelectedTraining');
+    const setSelectedTrainingSpy = spyOnProperty(trainingService, 'selectedTraining', 'set');
     const setUpdatingSelectedStaffForMultipleTrainingSpy = spyOn(
       trainingService,
       'setUpdatingSelectedStaffForMultipleTraining',
@@ -98,8 +98,9 @@ describe('MultipleTrainingDetailsComponent', () => {
       workerSpy,
       trainingService,
       trainingSpy,
-      updateSelectedTrainingSpy,
+      setSelectedTrainingSpy,
       setUpdatingSelectedStaffForMultipleTrainingSpy,
+      queryByTestId,
     };
   }
 
@@ -132,8 +133,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should store the selected training in training service and navigate to the next page when filling out the form and clicking continue', async () => {
-    const { component, getByText, getByLabelText, getByTestId, fixture, updateSelectedTrainingSpy, spy } =
-      await setup();
+    const { component, getByText, getByLabelText, getByTestId, fixture, setSelectedTrainingSpy, spy } = await setup();
 
     component.trainingCategory = {
       id: component.categories[0].id,
@@ -158,7 +158,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     fixture.detectChanges();
 
     expect(component.form.valid).toBeTruthy();
-    expect(updateSelectedTrainingSpy).toHaveBeenCalledWith({
+    expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
       trainingCategory: component.categories[0],
       title: 'Training',
       accredited: 'Yes',
@@ -175,7 +175,7 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should navigate to the confirm training page when page has been accessed from that page and pressing Save and return', async () => {
-    const { component, fixture, getByText, updateSelectedTrainingSpy, spy } = await setup(true, true);
+    const { component, fixture, getByText, setSelectedTrainingSpy, spy } = await setup(true, true);
 
     component.trainingCategory = {
       id: component.categories[0].id,
@@ -186,7 +186,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     fireEvent.click(button);
     fixture.detectChanges();
 
-    expect(updateSelectedTrainingSpy).toHaveBeenCalledWith({
+    expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
       trainingCategory: component.categories[0],
       title: 'Title',
       accredited: 'Yes',
@@ -371,7 +371,7 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(changeStaffSelectedLink).toBeTruthy();
     });
 
-    it('should display a change link for training category selected', async () => {
+    it('should display a change link for training category selected if not accessed from summary page', async () => {
       const { component, fixture, getByTestId } = await setup(false, true);
 
       component.trainingCategory = {
@@ -387,6 +387,16 @@ describe('MultipleTrainingDetailsComponent', () => {
 
       expect(trainingCategoryDisplay).toBeTruthy();
       expect(changeTrainingCaegorySelectedLink).toBeTruthy();
+    });
+
+    it('should not display the number of staff and training category if accessed from summary page', async () => {
+      const { queryByTestId } = await setup(true, true);
+
+      const numberOfStaffSelected = queryByTestId('numberOfStaffSelected');
+      const trainingCategoryDisplay = queryByTestId('trainingCategoryDisplay');
+
+      expect(numberOfStaffSelected).toBeFalsy();
+      expect(trainingCategoryDisplay).toBeFalsy();
     });
 
     it('should call setIsSelectStaffChange when change is clicked for staff', async () => {

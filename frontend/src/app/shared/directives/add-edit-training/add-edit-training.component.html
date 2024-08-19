@@ -34,7 +34,7 @@
         </div>
 
         <ng-container *ngIf="multipleTrainingDetails; else singleRecord">
-          <div class="govuk-body" data-testid="trainingCategoryDisplay">
+          <div *ngIf="showCategory" class="govuk-body" data-testid="trainingCategoryDisplay">
             <span class="govuk-util__block govuk-!-font-weight-bold">Training category</span>
             <div class="govuk-grid-row">
               <div class="govuk-grid-column-three-quarters">

@@ -38,6 +38,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public section: string;
   public buttonText: string;
   public showWorkerCount = false;
+  public showCategory: boolean;
   public remainingCharacterCount: number = this.notesMaxLength;
   public notesValue = '';
   public showChangeLink: boolean = false;
@@ -75,7 +76,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public checkForCategoryId(): void {
-    const selectedCategory = this.trainingService.getTrainingCategorySelectedForTrainingRecord();
+    const selectedCategory = this.trainingService.selectedTraining?.trainingCategory;
     if (selectedCategory) {
       this.trainingCategory = { id: selectedCategory.id, category: selectedCategory.category };
       this.showChangeLink = true;
@@ -283,7 +284,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   public onCancel(event: Event): void {
     event.preventDefault();
-    this.trainingService.clearTrainingCategorySelectedForTrainingRecord();
+    this.trainingService.clearSelectedTrainingCategory();
     if (this.previousUrl?.length) {
       this.router.navigate(this.previousUrl);
     } else {

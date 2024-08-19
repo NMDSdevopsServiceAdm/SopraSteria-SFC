@@ -131,9 +131,12 @@ describe('AddEditTrainingComponent', () => {
     it('should show the training category displayed as text with a change link when there is a training category present and update the form value', async () => {
       const { component, fixture, getByText, getByTestId, queryByTestId, trainingService } = await setup(null);
 
-      const trainingServiceSpy = spyOn(trainingService, 'getTrainingCategorySelectedForTrainingRecord').and.returnValue(
-        { id: 1, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
-      );
+      trainingService.setSelectedTrainingCategory({
+        id: 1,
+        seq: 20,
+        category: 'Autism',
+        trainingCategoryGroup: 'Specific conditions and disabilities',
+      });
 
       component.ngOnInit();
       fixture.detectChanges();
@@ -151,7 +154,6 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Autism')).toBeTruthy();
       expect(form.value).toEqual(expectedFormValue);
       expect(getByTestId('changeTrainingCategoryLink')).toBeTruthy();
-      expect(trainingServiceSpy).toHaveBeenCalled();
     });
   });
 
@@ -383,11 +385,9 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should reset the training category selected for training record in the service on submit', async () => {
-      const { component, fixture, getByText, getByTestId, getByLabelText, trainingService, routerSpy } = await setup(
-        null,
-      );
+      const { component, fixture, getByText, getByLabelText, trainingService, routerSpy } = await setup(null);
 
-      spyOn(trainingService, 'getTrainingCategorySelectedForTrainingRecord').and.returnValue({
+      trainingService.setSelectedTrainingCategory({
         id: 2,
         seq: 20,
         category: 'Autism',
@@ -402,11 +402,13 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(getByLabelText('Training name'), 'Some training');
       userEvent.click(getByLabelText('No'));
 
-      const trainingServiceSpy = spyOn(trainingService, 'clearTrainingCategorySelectedForTrainingRecord');
+      const trainingServiceSpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
       fireEvent.click(getByText('Save record'));
 
       expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       expect(trainingServiceSpy).toHaveBeenCalled();
+
+      expect(trainingService.selectedTraining.trainingCategory).toBeNull();
     });
   });
 
