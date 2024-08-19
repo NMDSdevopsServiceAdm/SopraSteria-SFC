@@ -66,6 +66,7 @@ import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
+import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -120,6 +121,7 @@ import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.
     DownloadPdfTrainingAndQualificationComponent,
     HealthAndCareVisaComponent,
     EmployedFromOutsideUkComponent,
+    MainJobRoleComponent,
   ],
   providers: [
     DialogService,
