@@ -1,6 +1,6 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form #formEl (ngSubmit)="onSubmit($event)" [formGroup]="form">
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
@@ -33,6 +33,15 @@
           </div>
         </div> -->
       </fieldset>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="!insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar-1"
+          [sections]="staffRecordSections"
+          [currentSection]="'Mandatory information'"
+        ></app-progress-bar>
+      </div>
     </div>
   </div>
   <div class="govuk-button-group">

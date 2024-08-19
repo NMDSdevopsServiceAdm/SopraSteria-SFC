@@ -6,15 +6,17 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
+
+import { EstablishmentService } from '../../../core/services/establishment.service';
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-main-job',
   templateUrl: './main-job.component.html',
 })
-export class MainJobComponent implements OnInit, AfterViewInit {
+export class MainJobComponent extends QuestionComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted: boolean = false;
@@ -43,13 +45,15 @@ export class MainJobComponent implements OnInit, AfterViewInit {
 
   constructor(
     protected formBuilder: FormBuilder,
-    protected trainingService: TrainingService,
     protected router: Router,
     protected backLinkService: BackLinkService,
     protected workerService: WorkerService,
     protected route: ActivatedRoute,
     protected errorSummaryService: ErrorSummaryService,
-  ) {}
+    protected establishmentService: EstablishmentService
+  ) {
+    super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
+  }
 
   ngOnInit(): void {
     this.init();
@@ -81,7 +85,7 @@ export class MainJobComponent implements OnInit, AfterViewInit {
   }
 
   protected submit(selectedJobRole): void {
-    // this.trainingService.setSelectedTrainingCategory(selectedJobRole);
+    // this.workerService(selectedJobRole);
     this.router.navigate([
       `workplace/${this.establishmentUid}/staff-record/create-staff-record/staff-details`,
     ]);
@@ -128,8 +132,7 @@ export class MainJobComponent implements OnInit, AfterViewInit {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  public onSubmit(event: Event): void {
-    event.preventDefault();
+  public onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -168,7 +171,7 @@ export class MainJobComponent implements OnInit, AfterViewInit {
     );
   }
 
-  private setupFormErrorsMap(): void {
+  protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'jobRole',
