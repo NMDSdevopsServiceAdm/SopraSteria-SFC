@@ -14,6 +14,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCategoryDirective implements OnInit {
   public selectedStaff = [];
   public accessedFromSummary = false;
+  submitButtonText: string;
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -29,6 +30,8 @@ export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCateg
 
   init(): void {
     this.checkForSelectedStaff();
+    this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
+    this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
   }
 
   public checkForSelectedStaff(): void {
@@ -56,7 +59,7 @@ export class SelectTrainingCategoryMultipleComponent extends SelectTrainingCateg
   }
 
   protected submit(selectedCategory): void {
-    this.trainingService.setTrainingCategorySelectedForTrainingRecord(selectedCategory);
+    this.trainingService.setSelectedTrainingCategory(selectedCategory);
     const nextRoute = this.getNextRoute();
     this.trainingService.addMultipleTrainingInProgress$.next(true);
     this.router.navigate(['workplace', this.establishmentUid, 'add-multiple-training', nextRoute]);

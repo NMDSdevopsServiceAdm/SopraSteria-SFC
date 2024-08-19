@@ -21,7 +21,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('SelectTrainingCategoryMultipleComponent', () => {
-  async function setup(prefill = false) {
+  async function setup(prefill = false, accessedFromSummary = false) {
     const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, getByTestId } = await render(SelectTrainingCategoryMultipleComponent, {
       imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
@@ -46,6 +46,9 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
               data: {
                 establishment: establishment,
                 trainingCategories: trainingCategories,
+              },
+              parent: {
+                url: [{ path: accessedFromSummary ? 'confirm-training' : 'select-staff' }],
               },
             },
           },
@@ -95,10 +98,18 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
     expect(heading).toBeTruthy();
   });
 
-  it('should show the continue button', async () => {
+  it('should show the continue button when it is not accessed from the confirm training page', async () => {
     const { getByText } = await setup(true);
 
     const button = getByText('Continue');
+
+    expect(button).toBeTruthy();
+  });
+
+  it('should show the save and return button when it is accessed from the confirm training page', async () => {
+    const { getByText } = await setup(true, true);
+
+    const button = getByText('Save and return');
 
     expect(button).toBeTruthy();
   });
@@ -146,10 +157,10 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
     ]);
   });
 
-  it('should call the training service and navigate to the details page', async () => {
+  it('should call the training service and navigate to the details page when it is not accessed from the confirm training page', async () => {
     const { component, getByText, routerSpy, trainingService } = await setup(true);
 
-    const trainingServiceSpy = spyOn(trainingService, 'setTrainingCategorySelectedForTrainingRecord').and.callThrough();
+    const trainingServiceSpy = spyOn(trainingService, 'setSelectedTrainingCategory').and.callThrough();
 
     const openAllLinkLink = getByText('Show all categories');
     fireEvent.click(openAllLinkLink);
@@ -171,6 +182,34 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
       component.establishmentUid,
       'add-multiple-training',
       'training-details',
+    ]);
+  });
+
+  it('should navigate back to the confirm training page when it is accessed from the confirm training page', async () => {
+    const { component, getByText, routerSpy, trainingService } = await setup(true, true);
+
+    const trainingServiceSpy = spyOn(trainingService, 'setSelectedTrainingCategory').and.callThrough();
+
+    const openAllLinkLink = getByText('Show all categories');
+    fireEvent.click(openAllLinkLink);
+
+    const wellbeingCategory = getByText('Activity provision/Well-being');
+    fireEvent.click(wellbeingCategory);
+
+    const saveAndReturnButton = getByText('Save and return');
+    fireEvent.click(saveAndReturnButton);
+
+    expect(trainingServiceSpy).toHaveBeenCalledWith({
+      id: 1,
+      seq: 10,
+      category: 'Activity provision/Well-being',
+      trainingCategoryGroup: 'Care skills and knowledge',
+    });
+    expect(routerSpy).toHaveBeenCalledWith([
+      'workplace',
+      component.establishmentUid,
+      'add-multiple-training',
+      'confirm-training',
     ]);
   });
 

@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import {
+  allMandatoryTrainingCategories,
+  TrainingCategory,
+  TrainingCategoryResponse,
+  SelectedTraining,
+} from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -11,11 +16,10 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class TrainingService {
-  public selectedTraining = null;
+  protected _selectedTraining = null;
   public selectedStaff: Worker[] = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
-  private _trainingCategorySelectedForTrainingRecord: TrainingCategory = null;
   public updatingSelectedStaffForMultipleTraining: boolean = null;
 
   constructor(private http: HttpClient) {}
@@ -52,12 +56,18 @@ export class TrainingService {
     this.selectedStaff = [];
   }
 
-  public updateSelectedTraining(formValue): void {
-    this.selectedTraining = formValue;
+  public get selectedTraining(): SelectedTraining {
+    return this._selectedTraining;
+  }
+
+  public set selectedTraining(selectedTraining: SelectedTraining) {
+    if (selectedTraining) {
+      this._selectedTraining = selectedTraining;
+    }
   }
 
   public resetSelectedTraining(): void {
-    this.selectedTraining = null;
+    this._selectedTraining = null;
   }
 
   //get all mandatory training
@@ -90,21 +100,23 @@ export class TrainingService {
     this.addMultipleTrainingInProgress$.next(false);
     this.resetSelectedStaff();
     this.resetSelectedTraining();
-    this.clearTrainingCategorySelectedForTrainingRecord();
+    this.clearSelectedTrainingCategory();
   }
 
-  public getTrainingCategorySelectedForTrainingRecord(): TrainingCategory {
-    return this._trainingCategorySelectedForTrainingRecord;
-  }
-
-  public setTrainingCategorySelectedForTrainingRecord(trainingCategory: TrainingCategory) {
+  public setSelectedTrainingCategory(trainingCategory: TrainingCategory) {
     if (trainingCategory) {
-      this._trainingCategorySelectedForTrainingRecord = trainingCategory;
+      if (this._selectedTraining) {
+        this._selectedTraining.trainingCategory = trainingCategory;
+      } else {
+        this._selectedTraining = { trainingCategory };
+      }
     }
   }
 
-  public clearTrainingCategorySelectedForTrainingRecord(): void {
-    this._trainingCategorySelectedForTrainingRecord = null;
+  public clearSelectedTrainingCategory(): void {
+    if (this?._selectedTraining?.trainingCategory) {
+      this._selectedTraining.trainingCategory = null;
+    }
   }
 
   public setUpdatingSelectedStaffForMultipleTraining(value: boolean): void {

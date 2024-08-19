@@ -9,6 +9,10 @@ export interface TrainingCategoryResponse {
   trainingCategories: TrainingCategory[];
 }
 
+export interface SelectedTraining extends Omit<TrainingRecordRequest, 'trainingCategory'> {
+  trainingCategory: TrainingCategory;
+}
+
 export interface TrainingRecordRequest {
   trainingCategory: {
     id: number;
