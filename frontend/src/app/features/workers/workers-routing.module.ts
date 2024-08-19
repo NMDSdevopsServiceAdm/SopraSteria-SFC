@@ -83,6 +83,11 @@ const routes: Routes = [
     path: 'create-staff-record',
     children: [
       {
+        path: '',
+        redirectTo: 'main-job',
+        pathMatch: 'full'
+      },
+      {
         path: 'main-job',
         component: MainJobComponent,
         data: { title: 'Main Job' },
