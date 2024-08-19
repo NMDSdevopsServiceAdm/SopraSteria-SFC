@@ -151,14 +151,26 @@ describe('MainJobRoleComponent', () => {
     expect(getByText('Professional and related roles')).toBeTruthy();
   });
 
+  it(`should not prefill the form if there's no main job on the worker`, async () => {
+    const { component, fixture } = await setup();
+
+    component.worker.mainJob = null;
+    const form = component.form;
+    fixture.detectChanges();
+
+    component.init();
+
+    expect(form.value).toEqual({ mainJob: null });
+  });
+
   it('should prefill the form when editing the job role', async () => {
     const { component, fixture } = await setup(false, false);
 
-    component.worker.mainJob = { jobId: 4, other: null };
+    component.worker.mainJob = { jobId: 13, other: null, title: 'First-line manager' };
     fixture.detectChanges();
     component.init();
 
-    expect(component.form.value).toEqual({ mainJob: 4 });
+    expect(component.form.value).toEqual({ mainJob: 13 });
   });
 
   describe('submit buttons', () => {
@@ -185,7 +197,7 @@ describe('MainJobRoleComponent', () => {
     it(`should call submit the edited data and navigate to the the staff record summary page when 'Save' is clicked outside of mandatory details flow`, async () => {
       const { component, fixture, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false, false);
 
-      component.worker.mainJob = { jobId: 4, other: null };
+      component.worker.mainJob = { jobId: 13, other: null, title: 'First-line manager' };
       fixture.detectChanges();
       component.init();
 

@@ -96,7 +96,7 @@ const routes: Routes = [
     path: ':id',
     canActivate: [CheckPermissionsGuard],
     component: EditWorkerComponent,
-    resolve: { worker: WorkerResolver },
+    resolve: { worker: WorkerResolver, jobs: JobsResolver },
     data: {
       permissions: ['canViewWorker'],
     },
@@ -117,7 +117,6 @@ const routes: Routes = [
           {
             path: 'main-job-role',
             component: MainJobRoleComponent,
-            resolve: { jobs: JobsResolver },
             data: { title: 'Main Job Role' },
           },
           {
@@ -361,6 +360,11 @@ const routes: Routes = [
         path: 'staff-details',
         component: StaffDetailsComponent,
         data: { title: 'Staff Details' },
+      },
+      {
+        path: 'main-job-role',
+        component: MainJobRoleComponent,
+        data: { title: 'Main Job Role' },
       },
       {
         path: 'mandatory-details',
