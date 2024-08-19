@@ -61,6 +61,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
+import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MainJobComponent } from './main-job/main-job.component';
 import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
@@ -140,6 +141,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DownloadPdfTrainingAndQualificationComponent,
     HealthAndCareVisaComponent,
     EmployedFromOutsideUkComponent,
+    MainJobRoleComponent,
   ],
   providers: [
     DialogService,

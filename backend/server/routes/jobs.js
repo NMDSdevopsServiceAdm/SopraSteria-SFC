@@ -7,6 +7,7 @@ router.route('/').get(async (req, res) => {
   try {
     let results = await models.job.findAll({
       attributes: ['id', 'title', 'other', 'jobRoleGroup'],
+      attributes: ['id', 'title', 'other', 'jobRoleGroup'],
       order: [['title', 'ASC']],
     });
 
@@ -31,7 +32,7 @@ const formatJobsResponse = (jobs) => {
       id: thisJob.id,
       title: thisJob.title,
       other: thisJob.other ? thisJob.other : undefined,
-      jobRoleGroup: thisJob.jobRoleGroup ? thisJob.jobRoleGroup : undefined
+      jobRoleGroup: thisJob.jobRoleGroup,
     }),
   );
 

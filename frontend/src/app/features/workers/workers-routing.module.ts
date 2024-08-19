@@ -46,6 +46,7 @@ import { GenderComponent } from './gender/gender.component';
 import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
+import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MainJobComponent } from './main-job/main-job.component';
 import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
@@ -124,7 +125,7 @@ const routes: Routes = [
     path: ':id',
     canActivate: [CheckPermissionsGuard],
     component: EditWorkerComponent,
-    resolve: { worker: WorkerResolver },
+    resolve: { worker: WorkerResolver, jobs: JobsResolver },
     data: {
       permissions: ['canViewWorker'],
     },
@@ -141,6 +142,11 @@ const routes: Routes = [
             path: 'staff-details',
             component: StaffDetailsComponent,
             data: { title: 'Staff Details' },
+          },
+          {
+            path: 'main-job-role',
+            component: MainJobRoleComponent,
+            data: { title: 'Main Job Role' },
           },
           {
             path: 'main-job-start-date',
@@ -234,7 +240,7 @@ const routes: Routes = [
           {
             path: 'inside-or-outside-of-uk',
             component: EmployedFromOutsideUkComponent,
-            data: { title: 'Inside or Outside UK'}
+            data: { title: 'Inside or Outside UK' },
           },
           {
             path: 'adult-social-care-started',
@@ -323,19 +329,19 @@ const routes: Routes = [
             path: 'add-training',
             children: [
               {
-                path:'',
+                path: '',
                 component: SelectTrainingCategoryComponent,
                 data: { title: 'Add Training' },
                 resolve: {
                   trainingCategories: TrainingCategoriesResolver,
-                }
+                },
               },
               {
                 path: 'details',
                 component: AddEditTrainingComponent,
                 data: { title: 'Add Training' },
-              }
-            ]
+              },
+            ],
           },
           {
             path: 'training/:trainingRecordId',
@@ -385,6 +391,11 @@ const routes: Routes = [
         data: { title: 'Staff Details' },
       },
       {
+        path: 'main-job-role',
+        component: MainJobRoleComponent,
+        data: { title: 'Main Job Role' },
+      },
+      {
         path: 'mandatory-details',
         children: [
           {
@@ -396,6 +407,11 @@ const routes: Routes = [
             path: 'staff-details',
             component: StaffDetailsComponent,
             data: { title: 'Staff Details' },
+          },
+          {
+            path: 'main-job-role',
+            component: MainJobRoleComponent,
+            data: { title: 'Main Job Role' },
           },
         ],
       },
@@ -491,7 +507,7 @@ const routes: Routes = [
       {
         path: 'inside-or-outside-of-uk',
         component: EmployedFromOutsideUkComponent,
-        data: { title: 'Inside or Outside UK'}
+        data: { title: 'Inside or Outside UK' },
       },
       {
         path: 'adult-social-care-started',
@@ -580,19 +596,19 @@ const routes: Routes = [
         path: 'add-training',
         children: [
           {
-            path:'',
+            path: '',
             component: SelectTrainingCategoryComponent,
             data: { title: 'Add Training' },
             resolve: {
               trainingCategories: TrainingCategoriesResolver,
-            }
+            },
           },
           {
             path: 'details',
             component: AddEditTrainingComponent,
             data: { title: 'Add Training' },
-          }
-        ]
+          },
+        ],
       },
       {
         path: 'training/:trainingRecordId',
