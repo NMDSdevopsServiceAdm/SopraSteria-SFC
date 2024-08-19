@@ -20,7 +20,7 @@ import { Roles } from '@core/model/roles.enum';
 import userEvent from '@testing-library/user-event';
 
 describe('MainJobRoleComponent', () => {
-  async function setup(insideFlow = true, returnToMandatoryDetails = false, prefill = false) {
+  async function setup(insideFlow = true, returnToMandatoryDetails = false) {
     let path;
     if (returnToMandatoryDetails) {
       path = 'mandatory-details';
@@ -175,10 +175,10 @@ describe('MainJobRoleComponent', () => {
 
   describe('submit buttons', () => {
     describe('editing from staff record', () => {
-      it(`should show 'Save' and 'Cancel' buttons when not in mandatory details flow or in the staff record flow`, async () => {
+      it(`should show 'Save and return' and 'Cancel' buttons when not in mandatory details flow or in the staff record flow`, async () => {
         const { getByText } = await setup(false, false);
 
-        expect(getByText('Save')).toBeTruthy();
+        expect(getByText('Save and return')).toBeTruthy();
         expect(getByText('Cancel')).toBeTruthy();
       });
     });
@@ -194,7 +194,7 @@ describe('MainJobRoleComponent', () => {
       expect(updateWorkerSpy).not.toHaveBeenCalled();
     });
 
-    it(`should call submit the edited data and navigate to the the staff record summary page when 'Save' is clicked outside of mandatory details flow`, async () => {
+    it(`should call submit the edited data and navigate to the the staff record summary page when 'Save and return' is clicked outside of mandatory details flow`, async () => {
       const { component, fixture, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(false, false);
 
       component.worker.mainJob = { jobId: 13, other: null, title: 'First-line manager' };
@@ -203,14 +203,14 @@ describe('MainJobRoleComponent', () => {
 
       userEvent.click(getByText('Care providing roles'));
       userEvent.click(getByText('Care worker'));
-      userEvent.click(getByText('Save'));
+      userEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
       const updatedFormData = component.form.value;
       expect(updatedFormData).toEqual({
         mainJob: 10,
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         mainJob: { jobId: 10 },
       });
