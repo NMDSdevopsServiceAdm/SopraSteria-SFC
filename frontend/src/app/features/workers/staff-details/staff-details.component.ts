@@ -32,6 +32,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   private otherJobRoleCharacterLimit = 120;
   public inMandatoryDetailsFlow: boolean;
   public summaryContinue: boolean;
+  previouslySelectedJob: string;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -62,7 +63,19 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
     this.getJobs();
     this.getReturnPath();
+    this.getPreviouslySelectedJobTitle();
     this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
+
+    console.log(this.workerService.selectedMainJobRole, '<--- this.workerService.selectedMainJobRole');
+  }
+
+  private getPreviouslySelectedJobTitle(): void {
+    if (this.workerService.selectedMainJobRole) {
+      this.previouslySelectedJob = this.workerService.selectedMainJobRole.title;
+      this.form.patchValue({
+        mainJob: this.workerService.selectedMainJobRole.id,
+      });
+    }
   }
 
   public setupFormErrorsMap(): void {
