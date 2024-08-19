@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
+import { Job } from '@core/model/job.model';
 import { LocalIdentifiersRequest, LocalIdentifiersResponse } from '@core/model/establishment.model';
 import {
   AvailableQualificationsResponse,
@@ -44,6 +45,8 @@ export class WorkerService {
   public worker$ = this._worker$.asObservable();
   public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
+
+  public selectedMainJobRole: Job;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();

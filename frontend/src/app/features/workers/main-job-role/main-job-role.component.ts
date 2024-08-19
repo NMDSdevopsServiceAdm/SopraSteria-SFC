@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { QuestionComponent } from '../question/question.component';
 import { Job } from '@core/model/job.model';
-import { UntypedFormBuilder } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -20,6 +20,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   public editFlow: boolean;
   public inMandatoryDetailsFlow: boolean;
   public summaryContinue: boolean;
+  public establishmentUid: string;
 
   private summaryText = {
     'Care providing roles': 'care worker, community support, support worker',
@@ -42,7 +43,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
 
     this.form = this.formBuilder.group(
       {
-        mainJob: [null, ''],
+        mainJob: [null, Validators.required],
       },
       { updateOn: 'submit' },
     );
@@ -54,7 +55,15 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
 
     this.getJobs();
-    this.prefillForm();
+    this.route.params.subscribe((params) => {
+      if (params) {
+        this.establishmentUid = params.establishmentuid;
+      }
+    });
+
+    if (this.editFlow) {
+      this.prefillForm();
+    }
   }
 
   private getJobs(): void {
@@ -69,6 +78,11 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
       this.preFilledId = savedMainJob.jobId;
       this.form.get('mainJob').updateValueAndValidity();
     }
+  }
+
+  protected submit(selectedJobRole: Job): void {
+    this.workerService.selectedMainJobRole = selectedJobRole;
+    this.router.navigate([`workplace/${this.establishmentUid}/staff-record/create-staff-record/staff-details`]);
   }
 
   private getTrainingGroupSummary(jobRoleGroup) {
@@ -118,5 +132,45 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
 
   protected onSuccess(): void {
     this.router.navigate(this.returnUrl);
+  }
+
+  public onSubmit(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    const addingNewWorker = !this.worker;
+    if (addingNewWorker) {
+      const { mainJob } = this.form.controls;
+      const selectedJobId: number = mainJob.value;
+
+      let selectedjobRole = this.jobsAvailable.filter((jobRole) => {
+        if (jobRole.id === selectedJobId) {
+          return jobRole;
+        }
+      });
+
+      if (this.form.valid) {
+        this.submit(selectedjobRole[0]);
+      } else {
+        this.errorSummaryService.scrollToErrorSummary();
+        return;
+      }
+    } else {
+      super.onSubmit();
+    }
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'mainJob',
+        type: [
+          {
+            name: 'required',
+            message: 'Select the job role',
+          },
+        ],
+      },
+    ];
   }
 }
