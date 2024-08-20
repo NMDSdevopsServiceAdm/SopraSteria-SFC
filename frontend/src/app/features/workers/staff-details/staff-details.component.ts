@@ -32,7 +32,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   private otherJobRoleCharacterLimit = 120;
   public inMandatoryDetailsFlow: boolean;
   public summaryContinue: boolean;
-  previouslySelectedJob: string;
+  private isAddingNewWorker: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -60,22 +60,11 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
+    this.isAddingNewWorker = !this.worker;
     this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
     this.getJobs();
     this.getReturnPath();
-    this.getPreviouslySelectedJobTitle();
     this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
-
-    console.log(this.workerService.selectedMainJobRole, '<--- this.workerService.selectedMainJobRole');
-  }
-
-  private getPreviouslySelectedJobTitle(): void {
-    if (this.workerService.selectedMainJobRole) {
-      this.previouslySelectedJob = this.workerService.selectedMainJobRole.title;
-      this.form.patchValue({
-        mainJob: this.workerService.selectedMainJobRole.id,
-      });
-    }
   }
 
   public setupFormErrorsMap(): void {
@@ -185,6 +174,32 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       nextRoute.push('nursing-category');
     }
     return nextRoute;
+  }
+
+  public onSubmit(): void {
+    if (this.isAddingNewWorker) {
+      this.submitNewWorkerDetails();
+    } else {
+      super.onSubmit();
+    }
+  }
+
+  private submitNewWorkerDetails(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
+    const { nameOrId, contract } = this.form.controls;
+
+    this.workerService.newWorkerName = nameOrId.value;
+    this.workerService.newWorkerContract = contract.value;
+
+    const currentRoute = this.router.url;
+    const mainJobRoleSelectionPage = currentRoute.replace('staff-details', 'main-job-role');
+
+    this.router.navigate([mainJobRoleSelectionPage]);
   }
 
   protected onSuccess(): void {

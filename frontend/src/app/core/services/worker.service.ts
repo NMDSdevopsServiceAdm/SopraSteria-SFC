@@ -18,6 +18,7 @@ import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { Contracts } from '@core/model/contracts.enum';
 
 export interface Reason {
   id: number;
@@ -46,7 +47,8 @@ export class WorkerService {
   public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
 
-  public selectedMainJobRole: Job;
+  public newWorkerName: string;
+  public newWorkerContract: Contracts;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();

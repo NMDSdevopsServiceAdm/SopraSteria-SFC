@@ -81,7 +81,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   }
 
   protected submit(selectedJobRole: Job): void {
-    this.workerService.selectedMainJobRole = selectedJobRole;
+    // this.workerService.selectedMainJobRole = selectedJobRole;
     this.router.navigate([`workplace/${this.establishmentUid}/staff-record/create-staff-record/staff-details`]);
   }
 
@@ -135,6 +135,11 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   }
 
   public onSubmit(): void {
+    if (!this.submitAction.save) {
+      super.navigate();
+      return;
+    }
+
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 

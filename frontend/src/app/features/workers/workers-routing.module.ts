@@ -74,16 +74,8 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'main-job',
+        redirectTo: 'staff-details',
         pathMatch: 'full',
-      },
-      {
-        path: 'main-job',
-        component: MainJobRoleComponent,
-        data: {
-          permissions: ['canAddWorker'],
-          title: 'Main Job',
-        },
       },
       {
         path: 'staff-details',
@@ -91,6 +83,14 @@ const routes: Routes = [
         data: {
           permissions: ['canAddWorker'],
           title: 'Add a Staff Record',
+        },
+      },
+      {
+        path: 'main-job-role',
+        component: MainJobRoleComponent,
+        data: {
+          permissions: ['canAddWorker'],
+          title: 'Main Job Role',
         },
       },
     ],
