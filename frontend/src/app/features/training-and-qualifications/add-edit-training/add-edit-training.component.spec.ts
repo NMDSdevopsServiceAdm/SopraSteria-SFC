@@ -97,7 +97,7 @@ describe('AddEditTrainingComponent', () => {
     expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
   });
 
-  describe('Training category select/display', async () => {
+  describe('Training category display', async () => {
     it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
       const qsParamGetMock = sinon.stub();
       const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
@@ -154,6 +154,13 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Autism')).toBeTruthy();
       expect(form.value).toEqual(expectedFormValue);
       expect(getByTestId('changeTrainingCategoryLink')).toBeTruthy();
+    });
+
+    it('should show the training category displayed as text when editing an existing training record', async () => {
+      const { getByText, getByTestId } = await setup();
+
+      expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
+      expect(getByText('Communication')).toBeTruthy();
     });
   });
 

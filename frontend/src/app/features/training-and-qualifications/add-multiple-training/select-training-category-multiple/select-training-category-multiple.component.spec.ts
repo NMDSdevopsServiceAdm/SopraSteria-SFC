@@ -19,9 +19,10 @@ import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { Establishment } from '@core/model/establishment.model';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import sinon from 'sinon';
 
 describe('SelectTrainingCategoryMultipleComponent', () => {
-  async function setup(prefill = false, accessedFromSummary = false) {
+  async function setup(prefill = false, accessedFromSummary = false, qsParamGetMock = sinon.stub()) {
     const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, getByTestId } = await render(SelectTrainingCategoryMultipleComponent, {
       imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
@@ -49,6 +50,9 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
               },
               parent: {
                 url: [{ path: accessedFromSummary ? 'confirm-training' : 'select-staff' }],
+              },
+              queryParamMap: {
+                get: qsParamGetMock,
               },
             },
           },
