@@ -51,7 +51,7 @@
       (click)="onButtonClick(summaryActionType, true)"
       [ngClass]="{ additionalHorizontalPadding: summaryContinue }"
     >
-      {{ summaryContinue ? 'Save' : 'Save and return' }}
+      {{ overrideCallToActionLabel ? callToAction : summaryContinue ? 'Save' : 'Save and return' }}
     </button>
 
     <span class="govuk-visually-hidden">or</span>

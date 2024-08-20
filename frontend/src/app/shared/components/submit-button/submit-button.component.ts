@@ -15,6 +15,7 @@ export class SubmitButtonComponent implements OnInit {
   @Input() exitText = 'Cancel';
   @Input() isExistingStaffRecord = true;
   @Input() summaryContinue = false;
+  @Input() overrideCallToActionLabel = false;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
   public summaryActionType = 'return';
 
