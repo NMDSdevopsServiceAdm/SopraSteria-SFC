@@ -72,6 +72,13 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   private prefill(): void {
     this.selectedWorkers = this.trainingService.selectedStaff.map((worker) => worker.uid);
     this.updateSelectAllLinks();
+    this.clearSelectedTrainingCategoryOnPageEntry();
+  }
+
+  private clearSelectedTrainingCategoryOnPageEntry() {
+    if (this.selectedWorkers.length === 0) {
+      this.trainingService.clearSelectedTrainingCategory();
+    }
   }
 
   public getPageOfWorkers(): void {
