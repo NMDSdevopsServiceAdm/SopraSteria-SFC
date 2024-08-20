@@ -182,8 +182,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
     const { nameOrId, contract } = this.form.controls;
 
-    this.workerService.newWorkerName = nameOrId.value;
-    this.workerService.newWorkerContract = contract.value;
+    this.workerService.setNewWorkerMandatoryInfo(nameOrId.value, contract.value);
 
     this.router.navigate(['main-job-role'], { relativeTo: this.route.parent });
   }

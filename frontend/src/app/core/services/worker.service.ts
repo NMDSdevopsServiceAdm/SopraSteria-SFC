@@ -2,7 +2,6 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { Alert } from '@core/model/alert.model';
-import { Job } from '@core/model/job.model';
 import { LocalIdentifiersRequest, LocalIdentifiersResponse } from '@core/model/establishment.model';
 import {
   AvailableQualificationsResponse,
@@ -46,9 +45,7 @@ export class WorkerService {
   public worker$ = this._worker$.asObservable();
   public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
-
-  public newWorkerName: string;
-  public newWorkerContract: Contracts;
+  private _newWorkerMandatoryInfo: { nameOrId: string; contract: Contracts } = null;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
@@ -294,5 +291,17 @@ export class WorkerService {
 
   public getLongTermAbsenceReasons(): Observable<Array<string>> {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/longTermAbsence`).pipe(map((res) => res.reasons));
+  }
+
+  public setNewWorkerMandatoryInfo(nameOrId: string, contract: Contracts): void {
+    this._newWorkerMandatoryInfo = { nameOrId, contract };
+  }
+
+  public get newWorkerMandatoryInfo(): { nameOrId: string; contract: Contracts } {
+    return this._newWorkerMandatoryInfo;
+  }
+
+  public clearNewWorkerMandatoryInfo(): void {
+    this._newWorkerMandatoryInfo = null;
   }
 }

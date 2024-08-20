@@ -22,9 +22,9 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   public editFlow: boolean;
   public inMandatoryDetailsFlow: boolean;
   public summaryContinue: boolean;
-  public callToActionLabel: string;
+  public callToActionLabel: string = 'Save and return';
   private isAddingNewWorker: boolean;
-  private newWorker: {
+  private newWorkerMandantoryInfo: {
     nameOrId: string;
     contract: Contracts;
   };
@@ -72,10 +72,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
 
     if (this.isAddingNewWorker) {
       this.callToActionLabel = 'Save this staff record';
-      this.newWorker = {
-        nameOrId: this.workerService.newWorkerName,
-        contract: this.workerService.newWorkerContract,
-      };
+      this.newWorkerMandantoryInfo = this.workerService.newWorkerMandatoryInfo;
     }
   }
 
@@ -130,7 +127,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     };
 
     if (this.isAddingNewWorker) {
-      props = { ...props, ...this.newWorker };
+      props = { ...props, ...this.newWorkerMandantoryInfo };
     }
 
     if (this.worker && mainJob.value !== 23) {
@@ -163,6 +160,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     if (this.editFlow) {
       this.next = this.determineConditionalRouting();
     } else {
+      this.workerService.clearNewWorkerMandatoryInfo();
       this.next = this.getRoutePath('mandatory-details');
     }
     !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
