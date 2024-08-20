@@ -46,11 +46,10 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     private jobService: JobService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
-
     this.form = this.formBuilder.group(
       {
         nameOrId: [null, Validators.required],
-        mainJob: [null, Validators.required],
+        mainJob: [null, null],
         otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
         contract: [null, Validators.required],
       },
@@ -166,16 +165,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
   }
 
-  private determineConditionalRouting(): string[] {
-    const nextRoute = this.determineBaseRoute();
-    if (this.workerService.hasJobRole(this.worker, 27)) {
-      nextRoute.push('mental-health-professional');
-    } else if (this.workerService.hasJobRole(this.worker, 23)) {
-      nextRoute.push('nursing-category');
-    }
-    return nextRoute;
-  }
-
   public onSubmit(): void {
     if (this.isAddingNewWorker) {
       this.submitNewWorkerDetails();
@@ -196,26 +185,12 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.workerService.newWorkerName = nameOrId.value;
     this.workerService.newWorkerContract = contract.value;
 
-    const currentRoute = this.router.url;
-    const mainJobRoleSelectionPage = currentRoute.replace('staff-details', 'main-job-role');
-
-    this.router.navigate([mainJobRoleSelectionPage]);
+    this.router.navigate(['main-job-role'], { relativeTo: this.route.parent });
   }
 
   protected onSuccess(): void {
     if (this.editFlow) {
-      this.next = this.determineConditionalRouting();
-    } else {
-      this.next = this.getRoutePath('mandatory-details');
+      this.next = this.getRoutePath('staff-record-summary');
     }
-    !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
-  }
-
-  protected addAlert(): void {
-    !this.editFlow &&
-      this.alertService.addAlert({
-        type: 'success',
-        message: 'Staff record saved',
-      });
   }
 }

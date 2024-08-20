@@ -7,6 +7,8 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WorkerService } from '@core/services/worker.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { Contracts } from '@core/model/contracts.enum';
+import { AlertService } from '@core/services/alert.service';
 
 @Component({
   selector: 'app-main-job-role.component',
@@ -20,7 +22,12 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   public editFlow: boolean;
   public inMandatoryDetailsFlow: boolean;
   public summaryContinue: boolean;
-  public establishmentUid: string;
+  public callToActionLabel: string;
+  private isAddingNewWorker: boolean;
+  private newWorker: {
+    nameOrId: string;
+    contract: Contracts;
+  };
 
   private summaryText = {
     'Care providing roles': 'care worker, community support, support worker',
@@ -38,6 +45,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     protected errorSummaryService: ErrorSummaryService,
     public workerService: WorkerService,
     protected establishmentService: EstablishmentService,
+    protected alertService: AlertService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
@@ -53,16 +61,21 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
     this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
     this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
+    this.isAddingNewWorker = !this.worker;
 
     this.getJobs();
-    this.route.params.subscribe((params) => {
-      if (params) {
-        this.establishmentUid = params.establishmentuid;
-      }
-    });
+    this.getReturnPath();
 
     if (this.editFlow) {
       this.prefillForm();
+    }
+
+    if (this.isAddingNewWorker) {
+      this.callToActionLabel = 'Save this staff record';
+      this.newWorker = {
+        nameOrId: this.workerService.newWorkerName,
+        contract: this.workerService.newWorkerContract,
+      };
     }
   }
 
@@ -80,16 +93,11 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     }
   }
 
-  protected submit(selectedJobRole: Job): void {
-    // this.workerService.selectedMainJobRole = selectedJobRole;
-    this.router.navigate([`workplace/${this.establishmentUid}/staff-record/create-staff-record/staff-details`]);
-  }
-
-  private getTrainingGroupSummary(jobRoleGroup) {
+  private getTrainingGroupSummary(jobRoleGroup: { title: string }) {
     return `Jobs like ${this.summaryText[jobRoleGroup.title]}`;
   }
 
-  private sortJobsByJobGroup(jobs) {
+  private sortJobsByJobGroup(jobs: Job[]) {
     for (let group of Object.keys(this.summaryText)) {
       let currentJobGroup = {
         title: group,
@@ -115,11 +123,15 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   generateUpdateProps() {
     const { mainJob } = this.form.controls;
 
-    const props = {
+    let props = {
       mainJob: {
         jobId: mainJob.value,
       },
     };
+
+    if (this.isAddingNewWorker) {
+      props = { ...props, ...this.newWorker };
+    }
 
     if (this.worker && mainJob.value !== 23) {
       this.worker.registeredNurse = null;
@@ -130,39 +142,38 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     return props;
   }
 
-  protected onSuccess(): void {
-    this.router.navigate(this.returnUrl);
-  }
-
-  public onSubmit(): void {
-    if (!this.submitAction.save) {
-      super.navigate();
+  private getReturnPath() {
+    if (this.inMandatoryDetailsFlow) {
+      this.returnUrl = this.getRoutePath('mandatory-details');
       return;
     }
+  }
 
-    this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    const addingNewWorker = !this.worker;
-    if (addingNewWorker) {
-      const { mainJob } = this.form.controls;
-      const selectedJobId: number = mainJob.value;
-
-      let selectedjobRole = this.jobsAvailable.filter((jobRole) => {
-        if (jobRole.id === selectedJobId) {
-          return jobRole;
-        }
-      });
-
-      if (this.form.valid) {
-        this.submit(selectedjobRole[0]);
-      } else {
-        this.errorSummaryService.scrollToErrorSummary();
-        return;
-      }
-    } else {
-      super.onSubmit();
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
+    if (this.workerService.hasJobRole(this.worker, 27)) {
+      nextRoute.push('mental-health-professional');
+    } else if (this.workerService.hasJobRole(this.worker, 23)) {
+      nextRoute.push('nursing-category');
     }
+    return nextRoute;
+  }
+
+  protected onSuccess(): void {
+    if (this.editFlow) {
+      this.next = this.determineConditionalRouting();
+    } else {
+      this.next = this.getRoutePath('mandatory-details');
+    }
+    !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
+  }
+
+  protected addAlert(): void {
+    !this.editFlow &&
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Staff record saved',
+      });
   }
 
   protected setupFormErrorsMap(): void {
