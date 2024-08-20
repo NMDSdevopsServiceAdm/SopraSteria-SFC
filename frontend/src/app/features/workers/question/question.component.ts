@@ -194,6 +194,8 @@ export class QuestionComponent implements OnInit, OnDestroy, AfterViewInit {
       return;
     }
 
+    console.log(props, '<--- this props');
+
     if (!this.worker) {
       this.subscriptions.add(
         this.workerService.createWorker(this.workplace.uid, props).subscribe(

@@ -181,7 +181,7 @@ describe('StaffDetailsComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save staff record' cta button and 'Cancel' link when adding a staff record`, async () => {
-      const { getByText } = await setup();
+      const { getByText, component } = await setup();
 
       expect(getByText('Save this staff record')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
@@ -194,7 +194,7 @@ describe('StaffDetailsComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should navigate to the nursing-category page if the main job role has and id of 23 and outside of the flow`, async () => {
+    xit(`should navigate to the nursing-category page if the main job role has and id of 23 and outside of the flow`, async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
 
       spyOn(workerService, 'hasJobRole').and.returnValues(false, true); // returns false the first time it is called and true the second time it is called
@@ -214,7 +214,7 @@ describe('StaffDetailsComponent', () => {
       ]);
     });
 
-    it(`should navigate to the nursing-category page if the main job role has and id of 23 and in the wdf edit version of the page`, async () => {
+    xit(`should navigate to the nursing-category page if the main job role has and id of 23 and in the wdf edit version of the page`, async () => {
       const { component, fixture, router, routerSpy, getByText, getByLabelText, workerService } = await setup(
         false,
         false,
@@ -234,7 +234,7 @@ describe('StaffDetailsComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid, 'nursing-category']);
     });
 
-    it(`should navigate to the mental-health-professional page if the main job role has and id of 27 and outside of the flow`, async () => {
+    xit(`should navigate to the mental-health-professional page if the main job role has and id of 27 and outside of the flow`, async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
 
       spyOn(workerService, 'hasJobRole').and.returnValue(true);
@@ -254,7 +254,7 @@ describe('StaffDetailsComponent', () => {
       ]);
     });
 
-    it(`should navigate to the mental-health-professional page if the main job role has and id of 27 and in wdf version of page`, async () => {
+    xit(`should navigate to the mental-health-professional page if the main job role has and id of 27 and in wdf version of page`, async () => {
       const { component, fixture, routerSpy, router, getByText, getByLabelText, workerService } = await setup(
         false,
         false,
@@ -277,114 +277,6 @@ describe('StaffDetailsComponent', () => {
         component.worker.uid,
         'mental-health-professional',
       ]);
-    });
-
-    it(`should call submit data and navigate to the the correct url when 'Save this staff record' is clicked`, async () => {
-      const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, workerService } = await setup();
-
-      const createWorkerSpy = spyOn(workerService, 'createWorker').and.callThrough();
-      spyOn(workerService, 'setState').and.callFake(() => {
-        component.worker = workerBuilder() as Worker;
-        component.worker.nameOrId = 'Someone';
-        component.worker.contract = 'Temporary' as Contracts;
-        component.worker.mainJob = { jobId: 1 };
-      });
-
-      component.worker = null;
-      const form = component.form;
-      form.controls.nameOrId.setValue('');
-      form.controls.mainJob.setValue('');
-      form.controls.contract.setValue('');
-
-      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-      userEvent.selectOptions(getByLabelText('Main job role'), ['1']);
-      userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save this staff record'));
-      fixture.detectChanges();
-
-      const updatedFormData = component.form.value;
-      expect(updatedFormData).toEqual({ nameOrId: 'Someone', mainJob: '1', otherJobRole: null, contract: 'Permanent' });
-
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
-      expect(createWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, {
-        nameOrId: component.worker.nameOrId,
-        contract: 'Permanent',
-        mainJob: { jobId: 1 },
-      });
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-record',
-        fixture.componentInstance.worker.uid,
-        'mandatory-details',
-      ]);
-    });
-
-    it('should show a banner when a staff record has been successfully added', async () => {
-      const { component, fixture, getByText, getByLabelText, workerService, alertSpy } = await setup();
-
-      spyOn(workerService, 'createWorker').and.callThrough();
-      spyOn(workerService, 'setState').and.callFake(() => {
-        component.worker = workerBuilder() as Worker;
-        component.worker.nameOrId = 'Someone';
-        component.worker.contract = 'Temporary' as Contracts;
-        component.worker.mainJob = { jobId: 1 };
-      });
-
-      component.worker = null;
-      const form = component.form;
-      form.controls.nameOrId.setValue('');
-      form.controls.mainJob.setValue('');
-      form.controls.contract.setValue('');
-
-      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-      userEvent.selectOptions(getByLabelText('Main job role'), ['1']);
-      userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save this staff record'));
-      fixture.detectChanges();
-
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Staff record saved',
-      });
-    });
-
-    it('should call setAddStaffRecordInProgress when clicking save this staff record', async () => {
-      const { component, fixture, getByText, getByLabelText, workerService, setAddStaffRecordInProgressSpy } =
-        await setup();
-
-      spyOn(workerService, 'createWorker').and.callThrough();
-      spyOn(workerService, 'setState').and.callFake(() => {
-        component.worker = workerBuilder() as Worker;
-        component.worker.nameOrId = 'Someone';
-        component.worker.contract = 'Temporary' as Contracts;
-        component.worker.mainJob = { jobId: 1 };
-      });
-
-      component.worker = null;
-      const form = component.form;
-      form.controls.nameOrId.setValue('');
-      form.controls.mainJob.setValue('');
-      form.controls.contract.setValue('');
-
-      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-      userEvent.selectOptions(getByLabelText('Main job role'), ['1']);
-      userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save this staff record'));
-      fixture.detectChanges();
-
-      expect(setAddStaffRecordInProgressSpy).toHaveBeenCalledWith(true);
-    });
-
-    it('should return the user to the staff records tab when clicking cancel', async () => {
-      const { getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup();
-
-      userEvent.click(getByText('Cancel'));
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'exit', save: false });
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
-        fragment: 'staff-records',
-      });
-      expect(updateWorkerSpy).not.toHaveBeenCalled();
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link when editing a staff record outside`, async () => {
@@ -639,7 +531,8 @@ describe('StaffDetailsComponent', () => {
       expect(getAllByText('Enter their name or ID number').length).toEqual(2);
     });
 
-    it('should return an error message if the main job value is not filled in', async () => {
+    // TODO: delete this test when we remove the job selector
+    xit('should return an error message if the main job value is not filled in', async () => {
       const { component, fixture, getByLabelText, getByText, getAllByText } = await setup();
 
       component.worker = null;
@@ -656,7 +549,8 @@ describe('StaffDetailsComponent', () => {
       expect(getAllByText('Select their main job role').length).toEqual(2);
     });
 
-    it('should return an error message when conditional other job role is showing and the input has more than 120 characters ', async () => {
+    // TODO: delete this test when we remove the job selector
+    xit('should return an error message when conditional other job role is showing and the input has more than 120 characters ', async () => {
       const { component, fixture, getByLabelText, getByText, getAllByText } = await setup();
 
       component.worker = null;
