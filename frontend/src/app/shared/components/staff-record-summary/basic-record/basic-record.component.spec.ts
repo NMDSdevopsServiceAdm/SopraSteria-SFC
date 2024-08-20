@@ -15,7 +15,7 @@ import { render, within } from '@testing-library/angular';
 import { BasicRecordComponent } from './basic-record.component';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
-fdescribe('BasicRecordComponent', () => {
+describe('BasicRecordComponent', () => {
   async function setup(mandatoryDetailsPage = false) {
     const { fixture, getByText, getByTestId } = await render(BasicRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
@@ -54,7 +54,7 @@ fdescribe('BasicRecordComponent', () => {
   it('should render the change link with the staff-record-summary/staff-details url when not on the mandatory details page', async () => {
     const { component, getByText, getByTestId } = await setup();
 
-    const nameSection = within(getByTestId('name-section'));
+    const nameSection = within(getByTestId('name-and-contract-section'));
     const changeLink = nameSection.getByText('Change');
 
     expect(changeLink.getAttribute('href')).toBe(
@@ -76,7 +76,7 @@ fdescribe('BasicRecordComponent', () => {
   it('should render the change link with the mandatory-details/staff-details url when on the mandatory details page', async () => {
     const { component, getByText, getByTestId } = await setup(true);
 
-    const nameSection = within(getByTestId('name-section'));
+    const nameSection = within(getByTestId('name-and-contract-section'));
     const changeLink = nameSection.getByText('Change');
 
     expect(changeLink.getAttribute('href')).toBe(
@@ -84,15 +84,14 @@ fdescribe('BasicRecordComponent', () => {
     );
   });
 
-  // to fix
-  // it('should render the change link with the mandatory-details/main-job-role url when on the mandatory details page', async () => {
-  //   const { component, getByText, getByTestId } = await setup(true);
+  it('should render the change link with the mandatory-details/main-job-role url when on the mandatory details page', async () => {
+    const { component, getByText, getByTestId } = await setup(true);
 
-  //   const mainJobRoleSection = within(getByTestId('main-job-role-section'));
-  //   const changeLink = mainJobRoleSection.getByText('Change');
+    const mainJobRoleSection = within(getByTestId('main-job-role-section'));
+    const changeLink = mainJobRoleSection.getByText('Change');
 
-  //   expect(changeLink.getAttribute('href')).toBe(
-  //     `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/mandatory-details/main-job-role`,
-  //   );
-  // });
+    expect(changeLink.getAttribute('href')).toBe(
+      `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/mandatory-details/main-job-role`,
+    );
+  });
 });

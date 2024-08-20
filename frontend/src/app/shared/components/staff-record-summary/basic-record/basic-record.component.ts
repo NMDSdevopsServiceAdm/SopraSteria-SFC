@@ -13,7 +13,9 @@ export class BasicRecordComponent extends StaffRecordSummaryComponent {
   @Input() public canEditWorker: boolean;
   @Input() public mandatoryDetailsPage = false;
 
-  public getMandatoryDetailsRoute(): Array<string> {
-    return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'mandatory-details', 'staff-details'];
+  public getMandatoryDetailsRoute(path: string): Array<string> {
+    if (path) {
+      return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'mandatory-details', path];
+    }
   }
 }
