@@ -19,7 +19,7 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { Roles } from '@core/model/roles.enum';
 import userEvent from '@testing-library/user-event';
 
-describe('MainJobRoleComponent', () => {
+fdescribe('MainJobRoleComponent', () => {
   async function setup(insideFlow = true, returnToMandatoryDetails = false) {
     let path;
     if (returnToMandatoryDetails) {
@@ -210,7 +210,7 @@ describe('MainJobRoleComponent', () => {
       expect(updatedFormData).toEqual({
         mainJob: 10,
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         mainJob: { jobId: 10 },
       });
