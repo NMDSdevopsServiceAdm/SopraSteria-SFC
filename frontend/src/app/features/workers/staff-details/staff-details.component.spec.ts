@@ -7,7 +7,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
 import { Roles } from '@core/model/roles.enum';
-import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
@@ -192,91 +191,6 @@ describe('StaffDetailsComponent', () => {
 
       expect(getByText('Save')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
-    });
-
-    xit(`should navigate to the nursing-category page if the main job role has and id of 23 and outside of the flow`, async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
-
-      spyOn(workerService, 'hasJobRole').and.returnValues(false, true); // returns false the first time it is called and true the second time it is called
-      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-      userEvent.selectOptions(getByLabelText('Main job role'), ['23']);
-      userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save'));
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-record',
-        component.worker.uid,
-        'staff-record-summary',
-        'nursing-category',
-      ]);
-    });
-
-    xit(`should navigate to the nursing-category page if the main job role has and id of 23 and in the wdf edit version of the page`, async () => {
-      const { component, fixture, router, routerSpy, getByText, getByLabelText, workerService } = await setup(
-        false,
-        false,
-      );
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
-      component.returnUrl = undefined;
-      component.ngOnInit();
-      fixture.detectChanges();
-
-      spyOn(workerService, 'hasJobRole').and.returnValues(false, true); // returns false the first time it is called and true the second time it is called
-      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-      userEvent.selectOptions(getByLabelText('Main job role'), ['23']);
-      userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save'));
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid, 'nursing-category']);
-    });
-
-    xit(`should navigate to the mental-health-professional page if the main job role has and id of 27 and outside of the flow`, async () => {
-      const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
-
-      spyOn(workerService, 'hasJobRole').and.returnValue(true);
-      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-      userEvent.selectOptions(getByLabelText('Main job role'), ['27']);
-      userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save'));
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-record',
-        component.worker.uid,
-        'staff-record-summary',
-        'mental-health-professional',
-      ]);
-    });
-
-    xit(`should navigate to the mental-health-professional page if the main job role has and id of 27 and in wdf version of page`, async () => {
-      const { component, fixture, routerSpy, router, getByText, getByLabelText, workerService } = await setup(
-        false,
-        false,
-      );
-      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
-      component.returnUrl = undefined;
-      component.ngOnInit();
-      fixture.detectChanges();
-
-      spyOn(workerService, 'hasJobRole').and.returnValue(true);
-      userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-      userEvent.selectOptions(getByLabelText('Main job role'), ['27']);
-      userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save'));
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/wdf',
-        'staff-record',
-        component.worker.uid,
-        'mental-health-professional',
-      ]);
     });
 
     it(`should show 'Save and return' cta button and 'Cancel' link when editing a staff record outside`, async () => {
@@ -531,8 +445,7 @@ describe('StaffDetailsComponent', () => {
       expect(getAllByText('Enter their name or ID number').length).toEqual(2);
     });
 
-    // TODO: delete this test when we remove the job selector
-    xit('should return an error message if the main job value is not filled in', async () => {
+    it('should return an error message if the main job value is not filled in', async () => {
       const { component, fixture, getByLabelText, getByText, getAllByText } = await setup();
 
       component.worker = null;
@@ -549,8 +462,7 @@ describe('StaffDetailsComponent', () => {
       expect(getAllByText('Select their main job role').length).toEqual(2);
     });
 
-    // TODO: delete this test when we remove the job selector
-    xit('should return an error message when conditional other job role is showing and the input has more than 120 characters ', async () => {
+    it('should return an error message when conditional other job role is showing and the input has more than 120 characters ', async () => {
       const { component, fixture, getByLabelText, getByText, getAllByText } = await setup();
 
       component.worker = null;

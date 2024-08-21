@@ -49,7 +49,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.form = this.formBuilder.group(
       {
         nameOrId: [null, Validators.required],
-        mainJob: [null, null],
+        mainJob: [null, Validators.required],
         otherJobRole: [null, [Validators.maxLength(this.otherJobRoleCharacterLimit)]],
         contract: [null, Validators.required],
       },
@@ -187,9 +187,17 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.router.navigate(['main-job-role'], { relativeTo: this.route.parent });
   }
 
+  private determineConditionalRouting(): string[] {
+    const nextRoute = this.determineBaseRoute();
+    return nextRoute;
+  }
+
   protected onSuccess(): void {
     if (this.editFlow) {
-      this.next = this.getRoutePath('staff-record-summary');
+      this.next = this.determineConditionalRouting();
+    } else {
+      this.next = this.getRoutePath('mandatory-details');
     }
+    !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
   }
 }

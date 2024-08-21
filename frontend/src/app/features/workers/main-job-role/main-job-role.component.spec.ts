@@ -293,6 +293,16 @@ describe('MainJobRoleComponent', () => {
         });
         expect(updateWorkerSpy).not.toHaveBeenCalled();
       });
+
+      it('should return an error message if user clicked submit without selecting a job role', async () => {
+        const { fixture, getByText } = await setup(true, false, true);
+
+        userEvent.click(getByText('Save this staff record'));
+        fixture.detectChanges();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getByText('Select the job role')).toBeTruthy();
+      });
     });
 
     describe('editing from staff record', () => {
