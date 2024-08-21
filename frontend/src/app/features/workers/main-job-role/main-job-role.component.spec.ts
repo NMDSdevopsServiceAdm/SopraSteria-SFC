@@ -22,8 +22,8 @@ import { Worker } from '@core/model/worker.model';
 import userEvent from '@testing-library/user-event';
 import { AlertService } from '@core/services/alert.service';
 
-fdescribe('MainJobRoleComponent', () => {
-  async function setup(insideFlow = true, returnToMandatoryDetails = false) {
+describe('MainJobRoleComponent', () => {
+  async function setup(insideFlow = true, returnToMandatoryDetails = false, addNewWorker = false) {
     let path;
     if (returnToMandatoryDetails) {
       path = 'mandatory-details';
@@ -109,6 +109,19 @@ fdescribe('MainJobRoleComponent', () => {
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
     const setAddStaffRecordInProgressSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
+
+    if (addNewWorker) {
+      spyOn(workerService, 'setState').and.callFake(() => {
+        component.worker = workerBuilder() as Worker;
+      });
+      spyOnProperty(workerService, 'newWorkerMandatoryInfo').and.returnValue({
+        nameOrId: 'Someone',
+        contract: 'Permanent' as Contracts,
+      });
+      component.worker = null;
+      component.init();
+      fixture.detectChanges();
+    }
 
     return {
       component,
@@ -209,41 +222,22 @@ fdescribe('MainJobRoleComponent', () => {
     });
   });
 
-  fdescribe('submit buttons', () => {
-    fdescribe('adding new staff record', () => {
+  describe('submit buttons', () => {
+    describe('adding new staff record', () => {
       it(`should show 'Save this staff record' cta button and 'Cancel' link`, async () => {
-        const { component, getByText, fixture } = await setup(true, false);
-
-        component.worker = null;
-        component.init();
-        fixture.detectChanges();
+        const { getByText } = await setup(true, false, true);
 
         expect(getByText('Save this staff record')).toBeTruthy();
         expect(getByText('Cancel')).toBeTruthy();
       });
 
-      fit(`should call submit data and navigate to the the correct url when 'Save this staff record' is clicked`, async () => {
-        const { component, fixture, getByText, submitSpy, routerSpy, workerService } = await setup();
+      it(`should call submit data and navigate to the the correct url when 'Save this staff record' is clicked`, async () => {
+        const { component, fixture, getByText, submitSpy, routerSpy, workerService } = await setup(true, false, true);
         const createWorkerSpy = spyOn(workerService, 'createWorker').and.callThrough();
-        spyOn(workerService, 'setState').and.callFake(() => {
-          component.worker = workerBuilder() as Worker;
-          component.worker.nameOrId = 'Someone';
-          component.worker.contract = 'Temporary' as Contracts;
-          component.worker.mainJob = { jobId: 1 };
-        });
-
-        spyOnProperty(workerService, 'newWorkerMandatoryInfo').and.returnValue({
-          nameOrId: 'Someone',
-          contract: 'Permanent' as Contracts,
-        });
-        component.worker = null;
-        component.init();
-        fixture.detectChanges();
 
         userEvent.click(getByText('Care providing roles'));
         userEvent.click(getByText('Care worker'));
         userEvent.click(getByText('Save this staff record'));
-        fixture.detectChanges();
 
         const updatedFormData = component.form.value;
         expect(updatedFormData).toEqual({
@@ -265,28 +259,11 @@ fdescribe('MainJobRoleComponent', () => {
         ]);
       });
 
-      xit('should show a banner when a staff record has been successfully added', async () => {
-        const { component, fixture, getByText, getByLabelText, workerService, alertSpy } = await setup();
-
-        spyOn(workerService, 'createWorker').and.callThrough();
-        // spyOn(workerService, 'setState').and.callFake(() => {
-        //   component.worker = workerBuilder() as Worker;
-        //   component.worker.nameOrId = 'Someone';
-        //   component.worker.contract = 'Temporary' as Contracts;
-        //   component.worker.mainJob = { jobId: 1 };
-        // });
-
-        component.worker = null;
-        const form = component.form;
-        form.controls.nameOrId.setValue('');
-        form.controls.mainJob.setValue('');
-        form.controls.contract.setValue('');
-
-        userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-        userEvent.selectOptions(getByLabelText('Main job role'), ['1']);
-        userEvent.click(getByLabelText('Permanent'));
+      it('should show a banner when a staff record has been successfully added', async () => {
+        const { getByText, alertSpy } = await setup(true, false, true);
+        userEvent.click(getByText('Care providing roles'));
+        userEvent.click(getByText('Care worker'));
         userEvent.click(getByText('Save this staff record'));
-        fixture.detectChanges();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
@@ -294,35 +271,20 @@ fdescribe('MainJobRoleComponent', () => {
         });
       });
 
-      xit('should call setAddStaffRecordInProgress when clicking save this staff record', async () => {
-        const { component, fixture, getByText, getByLabelText, workerService, setAddStaffRecordInProgressSpy } =
-          await setup();
+      it('should call setAddStaffRecordInProgress when clicking save this staff record', async () => {
+        const { getByText, workerService, setAddStaffRecordInProgressSpy } = await setup(true, false, true);
 
         spyOn(workerService, 'createWorker').and.callThrough();
-        // spyOn(workerService, 'setState').and.callFake(() => {
-        //   component.worker = workerBuilder() as Worker;
-        //   component.worker.nameOrId = 'Someone';
-        //   component.worker.contract = 'Temporary' as Contracts;
-        //   component.worker.mainJob = { jobId: 1 };
-        // });
 
-        component.worker = null;
-        const form = component.form;
-        form.controls.nameOrId.setValue('');
-        form.controls.mainJob.setValue('');
-        form.controls.contract.setValue('');
-
-        userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-        userEvent.selectOptions(getByLabelText('Main job role'), ['1']);
-        userEvent.click(getByLabelText('Permanent'));
+        userEvent.click(getByText('Care providing roles'));
+        userEvent.click(getByText('Care worker'));
         userEvent.click(getByText('Save this staff record'));
-        fixture.detectChanges();
 
         expect(setAddStaffRecordInProgressSpy).toHaveBeenCalledWith(true);
       });
 
       it('should return the user to the staff records tab when clicking cancel', async () => {
-        const { getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup();
+        const { getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup(true, false, true);
 
         userEvent.click(getByText('Cancel'));
         expect(submitSpy).toHaveBeenCalledWith({ action: 'exit', save: false });
