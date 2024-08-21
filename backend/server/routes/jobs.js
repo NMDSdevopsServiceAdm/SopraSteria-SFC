@@ -7,7 +7,6 @@ router.route('/').get(async (req, res) => {
   try {
     let results = await models.job.findAll({
       attributes: ['id', 'title', 'other', 'jobRoleGroup'],
-      attributes: ['id', 'title', 'other', 'jobRoleGroup'],
       order: [['title', 'ASC']],
     });
 
