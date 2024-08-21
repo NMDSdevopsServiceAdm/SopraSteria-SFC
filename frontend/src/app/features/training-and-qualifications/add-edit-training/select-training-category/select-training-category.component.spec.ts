@@ -22,7 +22,7 @@ import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesServi
 import sinon from 'sinon';
 
 describe('SelectTrainingCategoryComponent', () => {
-  async function setup(prefill = false, qsParamGetMock = sinon.stub()) {
+  async function setup(prefill = false, qsParamGetMock = sinon.fake()) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
 
@@ -114,7 +114,8 @@ describe('SelectTrainingCategoryComponent', () => {
   });
 
   it('should show the cancel link', async () => {
-    const { getByText } = await setup(true);
+    const { getByText, fixture } = await setup(true);
+    fixture.detectChanges();
 
     const cancelLink = getByText('Cancel');
 
@@ -172,6 +173,16 @@ describe('SelectTrainingCategoryComponent', () => {
 
   it('should pre-fill when adding a record to a mandatory training category', async () => {
     const qsParamGetMock = sinon.stub().returns(JSON.stringify({ id: 2, category: 'Autism' }));
+
+    const { component, fixture } = await setup(false, qsParamGetMock);
+
+    fixture.detectChanges();
+
+    expect(component.form.value).toEqual({ category: 2 });
+  });
+
+  it('should pre-fill when adding a record to a mandatory training category from the training tab', async () => {
+    const qsParamGetMock = sinon.stub().returns(JSON.stringify({ id: '2', category: 'Autism' }));
 
     const { component, fixture } = await setup(false, qsParamGetMock);
 
