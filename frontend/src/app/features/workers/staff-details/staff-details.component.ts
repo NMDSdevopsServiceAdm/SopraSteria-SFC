@@ -166,6 +166,11 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   }
 
   public onSubmit(): void {
+    if (!this.submitAction.save) {
+      this.navigate();
+      return;
+    }
+
     if (this.isAddingNewWorker) {
       this.submitNewWorkerDetails();
     } else {
