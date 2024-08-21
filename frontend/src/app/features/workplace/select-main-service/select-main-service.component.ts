@@ -31,6 +31,7 @@ export class SelectMainServiceComponent extends SelectMainServiceDirective {
     this.workplace = this.establishmentService.establishment;
     this.selectedMainService = this.workplace.mainService;
     this.isWorkPlaceUpdate = true;
+    this.flow = 'dashboard';
   }
 
   protected getServiceCategories() {

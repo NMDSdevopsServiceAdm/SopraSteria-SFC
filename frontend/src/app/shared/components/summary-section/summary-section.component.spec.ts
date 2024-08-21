@@ -28,6 +28,7 @@ describe('Summary section', () => {
     canViewListOfWorkers = true,
     canViewEstablishment = true,
     isParentSubsidiaryView = false,
+    noOfWorkersWhoRequireInternationalRecruitment = 0,
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(SummarySectionComponent, {
       imports: [SharedModule, HttpClientTestingModule, RouterModule, RouterTestingModule],
@@ -57,6 +58,7 @@ describe('Summary section', () => {
         showMissingCqcMessage: false,
         workplacesCount: 0,
         isParentSubsidiaryView,
+        noOfWorkersWhoRequireInternationalRecruitment,
       },
     });
 
@@ -363,6 +365,53 @@ describe('Summary section', () => {
       fixture.detectChanges();
       const staffRecordsRow = getByTestId('staff-records-row');
       expect(within(staffRecordsRow).queryByText('No staff records added in the last 12 months')).toBeFalsy();
+    });
+
+    [
+      { noOfWorkers: 1, message: 'Is this worker on a Health and Care Worker visa?' },
+      { noOfWorkers: 2, message: 'Are these workers on Health and Care Worker visas?' },
+    ].forEach((scenario) => {
+      it(`should show "${scenario.message}" message when noOfWorkersWhoRequireInternationalRecruitment is ${scenario.noOfWorkers}`, async () => {
+        const { getByTestId } = await setup(
+          false,
+          Establishment,
+          Establishment.numberOfStaff,
+          {},
+          [dayjs()],
+          [workerBuilder()] as Worker[],
+          true,
+          true,
+          false,
+          scenario.noOfWorkers,
+        );
+
+        const staffRecordsRow = getByTestId('staff-records-row');
+        expect(within(staffRecordsRow).queryByText(scenario.message)).toBeTruthy();
+      });
+
+      it(`should navigate to health and care visa page when "${scenario.message}" link clicked`, async () => {
+        const { getByText, routerSpy } = await setup(
+          false,
+          Establishment,
+          Establishment.numberOfStaff,
+          {},
+          [dayjs()],
+          [workerBuilder()] as Worker[],
+          true,
+          true,
+          false,
+          scenario.noOfWorkers,
+        );
+
+        const healthAndCareVisaPageLink = getByText(scenario.message);
+        fireEvent.click(healthAndCareVisaPageLink);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          Establishment.uid,
+          'health-and-care-visa-existing-workers',
+        ]);
+      });
     });
 
     it('should not show "No staff records added in the last 12 months" message when stablishment has more than 10 staff  and and workplace created date is less than 12 month ', async () => {

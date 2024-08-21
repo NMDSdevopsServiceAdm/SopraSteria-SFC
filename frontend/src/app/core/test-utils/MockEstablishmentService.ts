@@ -242,6 +242,7 @@ export class MockEstablishmentService extends EstablishmentService {
       updatedBy: '',
       vacancies: undefined,
       locationId: '1-11111111',
+      provId: '1-21232433',
     };
   }
 

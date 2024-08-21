@@ -36,8 +36,6 @@ export class SelectMainServiceCqcComponent extends Question {
         ],
       },
     ];
-
-    this.form.get('cqc'); // If it's stupid but it works, it isn't stupid.
   }
 
   public onSubmit(): void {
@@ -51,7 +49,7 @@ export class SelectMainServiceCqcComponent extends Question {
 
     if (this.form.valid) {
       this.establishmentService.mainServiceCQC = this.form.get('cqc').value;
-      this.router.navigate(['/workplace', this.establishmentService.establishmentId, 'main-service']);
+      this.router.navigate(['/workplace', this.establishment.uid, 'main-service']);
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
