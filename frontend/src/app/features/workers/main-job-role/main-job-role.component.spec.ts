@@ -355,7 +355,7 @@ describe('MainJobRoleComponent', () => {
       ]);
     });
 
-    it(`should navigate to the nursing-category page if the main job role has and id of 23 and outside of the flow`, async () => {
+    it(`should navigate to the nursing-category page if the main job role is Registered nurse and outside of the flow`, async () => {
       const { component, fixture, routerSpy, getByText, workerService } = await setup(false, false);
 
       spyOn(workerService, 'hasJobRole').and.returnValues(false, true);
@@ -374,7 +374,7 @@ describe('MainJobRoleComponent', () => {
       ]);
     });
 
-    it(`should navigate to the nursing-category page if the main job role has and id of 23 and in the wdf edit version of the page`, async () => {
+    it(`should navigate to the nursing-category page if the main job role is Registered nurse and in the wdf edit version of the page`, async () => {
       const { component, fixture, router, routerSpy, getByText, workerService } = await setup(false, false);
       spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
       component.returnUrl = undefined;
@@ -390,7 +390,7 @@ describe('MainJobRoleComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid, 'nursing-category']);
     });
 
-    it(`should navigate to the mental-health-professional page if the main job role has and id of 27 and outside of the flow`, async () => {
+    it(`should navigate to the mental-health-professional page if the main job role is Social worker and outside of the flow`, async () => {
       const { component, fixture, routerSpy, getByText, getByLabelText, workerService } = await setup(false, false);
 
       spyOn(workerService, 'hasJobRole').and.returnValue(true);
@@ -409,7 +409,7 @@ describe('MainJobRoleComponent', () => {
       ]);
     });
 
-    it(`should navigate to the mental-health-professional page if the main job role has and id of 27 and in wdf version of page`, async () => {
+    it(`should navigate to the mental-health-professional page if the main job role is Social worker and in wdf version of page`, async () => {
       const { component, fixture, routerSpy, router, getByText, workerService } = await setup(false, false);
       spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
       component.returnUrl = undefined;
