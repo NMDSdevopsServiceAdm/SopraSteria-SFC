@@ -114,8 +114,7 @@ describe('SelectTrainingCategoryComponent', () => {
   });
 
   it('should show the cancel link', async () => {
-    const { getByText, fixture } = await setup(true);
-    fixture.detectChanges();
+    const { getByText } = await setup(true);
 
     const cancelLink = getByText('Cancel');
 
