@@ -9,7 +9,7 @@ install:
 	npm install --prefix backend
 
 run:
-	(cd backend && npm run dev-start) & \
+	(cd backend && npm run new-start) & \
 	(cd frontend && npm run build:watch)
 
 test-fe:
