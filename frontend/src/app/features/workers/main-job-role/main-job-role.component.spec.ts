@@ -358,7 +358,7 @@ describe('MainJobRoleComponent', () => {
     it(`should navigate to the nursing-category page if the main job role has and id of 23 and outside of the flow`, async () => {
       const { component, fixture, routerSpy, getByText, workerService } = await setup(false, false);
 
-      spyOn(workerService, 'hasJobRole').and.returnValues(false, true); // returns false the first time it is called and true the second time it is called
+      spyOn(workerService, 'hasJobRole').and.returnValues(false, true);
       userEvent.click(getByText('Professional and related roles'));
       userEvent.click(getByText('Registered nurse'));
       userEvent.click(getByText('Save and return'));
@@ -381,7 +381,7 @@ describe('MainJobRoleComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
-      spyOn(workerService, 'hasJobRole').and.returnValues(false, true); // returns false the first time it is called and true the second time it is called
+      spyOn(workerService, 'hasJobRole').and.returnValues(false, true);
       userEvent.click(getByText('Professional and related roles'));
       userEvent.click(getByText('Registered nurse'));
       userEvent.click(getByText('Save and return'));
