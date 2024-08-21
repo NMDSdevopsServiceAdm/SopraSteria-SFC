@@ -180,7 +180,7 @@ describe('StaffDetailsComponent', () => {
 
   describe('submit buttons', () => {
     it(`should show 'Save staff record' cta button and 'Cancel' link when adding a staff record`, async () => {
-      const { getByText, component } = await setup();
+      const { getByText } = await setup();
 
       expect(getByText('Save this staff record')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
