@@ -56,9 +56,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     this.isAddingNewWorker = !this.worker;
     this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
 
-    if (this.worker) {
-      this.prefillForm();
-    }
+    this.prefillFormIfExistingWorkerOrInfoSetInWorkerService();
     this.getReturnPath();
     this.editFlow = this.inMandatoryDetailsFlow || this.wdfEditPageFlag || !this.insideFlow;
   }
@@ -95,11 +93,14 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     };
   }
 
-  prefillForm(): void {
-    this.form.patchValue({
-      nameOrId: this.worker.nameOrId,
-      contract: this.worker.contract,
-    });
+  prefillFormIfExistingWorkerOrInfoSetInWorkerService(): void {
+    const worker = this.worker || this.workerService.newWorkerMandatoryInfo;
+    if (worker) {
+      this.form.patchValue({
+        nameOrId: worker.nameOrId,
+        contract: worker.contract,
+      });
+    }
   }
 
   private getReturnPath() {
@@ -111,6 +112,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   public onSubmit(): void {
     if (!this.submitAction.save) {
+      this.workerService.clearNewWorkerMandatoryInfo();
       this.navigate();
       return;
     }

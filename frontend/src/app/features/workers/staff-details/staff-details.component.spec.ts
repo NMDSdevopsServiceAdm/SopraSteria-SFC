@@ -93,6 +93,7 @@ describe('StaffDetailsComponent', () => {
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
     const setAddStaffRecordInProgressSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
     const setNewWorkerMandatoryInfoSpy = spyOn(workerService, 'setNewWorkerMandatoryInfo').and.callThrough();
+    const clearNewWorkerMandatoryInfoSpy = spyOn(workerService, 'clearNewWorkerMandatoryInfo').and.callThrough();
 
     return {
       component,
@@ -111,6 +112,7 @@ describe('StaffDetailsComponent', () => {
       alertSpy,
       setAddStaffRecordInProgressSpy,
       setNewWorkerMandatoryInfoSpy,
+      clearNewWorkerMandatoryInfoSpy,
     };
   }
 
@@ -173,6 +175,15 @@ describe('StaffDetailsComponent', () => {
       expect(updateWorkerSpy).not.toHaveBeenCalled();
       expect(setNewWorkerMandatoryInfoSpy).toHaveBeenCalledWith(enteredName, 'Temporary' as Contracts);
       expect(routerSpy.calls.mostRecent().args[0]).toEqual(['main-job-role']);
+    });
+
+    it(`should clear mandatory info in worker service after clicking 'Cancel' button when adding a staff record`, async () => {
+      const { fixture, getByText, clearNewWorkerMandatoryInfoSpy } = await setup(true, false, true);
+
+      userEvent.click(getByText('Cancel'));
+      fixture.detectChanges();
+
+      expect(clearNewWorkerMandatoryInfoSpy).toHaveBeenCalled();
     });
 
     it(`should show 'Save' and 'Cancel' buttons when not in mandatory details flow or in the staff record flow`, async () => {
