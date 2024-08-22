@@ -5,7 +5,7 @@ import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { WorkerService } from '@core/services/worker.service';
+import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Contracts } from '@core/model/contracts.enum';
 import { AlertService } from '@core/services/alert.service';
@@ -24,10 +24,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
   public summaryContinue: boolean;
   public callToActionLabel: string = 'Save and return';
   private isAddingNewWorker: boolean;
-  private newWorkerMandantoryInfo: {
-    nameOrId: string;
-    contract: Contracts;
-  };
+  private newWorkerMandantoryInfo: NewWorkerMandatoryInfo;
 
   private summaryText = {
     'Care providing roles': 'care worker, community support, support worker',

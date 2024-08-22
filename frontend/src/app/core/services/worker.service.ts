@@ -32,6 +32,11 @@ interface TotalStaffRecordsResponse {
   total: number;
 }
 
+export interface NewWorkerMandatoryInfo {
+  nameOrId: string;
+  contract: Contracts;
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -45,7 +50,7 @@ export class WorkerService {
   public worker$ = this._worker$.asObservable();
   public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
-  private _newWorkerMandatoryInfo: { nameOrId: string; contract: Contracts } = null;
+  private _newWorkerMandatoryInfo: NewWorkerMandatoryInfo = null;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
@@ -297,7 +302,7 @@ export class WorkerService {
     this._newWorkerMandatoryInfo = { nameOrId, contract };
   }
 
-  public get newWorkerMandatoryInfo(): { nameOrId: string; contract: Contracts } {
+  public get newWorkerMandatoryInfo(): NewWorkerMandatoryInfo {
     return this._newWorkerMandatoryInfo;
   }
 
