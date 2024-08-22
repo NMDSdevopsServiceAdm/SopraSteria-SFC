@@ -228,6 +228,6 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
     fixture.detectChanges();
 
     expect(component.form.invalid).toBeTruthy();
-    expect(getAllByText('Select the training category').length).toEqual(1);
+    expect(getAllByText('Select the training category').length).toEqual(2);
   });
 });
