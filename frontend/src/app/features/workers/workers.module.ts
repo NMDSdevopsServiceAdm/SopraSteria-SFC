@@ -7,6 +7,7 @@ import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-t
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
@@ -39,10 +40,12 @@ import { DeleteTrainingDialogComponent } from './delete-training-dialog/delete-t
 import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worker-dialog.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
+import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
+import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
@@ -64,9 +67,6 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
-import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
-import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -92,6 +92,7 @@ import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
     EthnicityComponent,
     GenderComponent,
     HomePostcodeComponent,
+    MainJobRoleComponent,
     MainJobStartDateComponent,
     MentalHealthProfessionalComponent,
     NationalInsuranceNumberComponent,
@@ -121,7 +122,6 @@ import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
     DownloadPdfTrainingAndQualificationComponent,
     HealthAndCareVisaComponent,
     EmployedFromOutsideUkComponent,
-    MainJobRoleComponent,
   ],
   providers: [
     DialogService,

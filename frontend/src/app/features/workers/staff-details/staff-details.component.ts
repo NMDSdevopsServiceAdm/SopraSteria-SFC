@@ -32,6 +32,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   private otherJobRoleCharacterLimit = 120;
   public inMandatoryDetailsFlow: boolean;
   public summaryContinue: boolean;
+  private isAddingNewWorker: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -45,7 +46,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     private jobService: JobService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
-
     this.form = this.formBuilder.group(
       {
         nameOrId: [null, Validators.required],
@@ -59,6 +59,7 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
 
   init(): void {
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
+    this.isAddingNewWorker = !this.worker;
     this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
     this.getJobs();
     this.getReturnPath();
@@ -164,13 +165,35 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
     }
   }
 
+  public onSubmit(): void {
+    if (!this.submitAction.save) {
+      this.navigate();
+      return;
+    }
+
+    if (this.isAddingNewWorker) {
+      this.submitNewWorkerDetails();
+    } else {
+      super.onSubmit();
+    }
+  }
+
+  private submitNewWorkerDetails(): void {
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+    if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
+    const { nameOrId, contract } = this.form.controls;
+
+    this.workerService.setNewWorkerMandatoryInfo(nameOrId.value, contract.value);
+
+    this.router.navigate(['main-job-role'], { relativeTo: this.route.parent });
+  }
+
   private determineConditionalRouting(): string[] {
     const nextRoute = this.determineBaseRoute();
-    if (this.workerService.hasJobRole(this.worker, 27)) {
-      nextRoute.push('mental-health-professional');
-    } else if (this.workerService.hasJobRole(this.worker, 23)) {
-      nextRoute.push('nursing-category');
-    }
     return nextRoute;
   }
 
@@ -181,13 +204,5 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
       this.next = this.getRoutePath('mandatory-details');
     }
     !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
-  }
-
-  protected addAlert(): void {
-    !this.editFlow &&
-      this.alertService.addAlert({
-        type: 'success',
-        message: 'Staff record saved',
-      });
   }
 }
