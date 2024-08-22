@@ -92,6 +92,7 @@ describe('StaffDetailsComponent', () => {
     const submitSpy = spyOn(component, 'setSubmitAction').and.callThrough();
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
     const setAddStaffRecordInProgressSpy = spyOn(workerService, 'setAddStaffRecordInProgress');
+    const setNewWorkerMandatoryInfoSpy = spyOn(workerService, 'setNewWorkerMandatoryInfo').and.callThrough();
 
     return {
       component,
@@ -109,6 +110,7 @@ describe('StaffDetailsComponent', () => {
       submitSpy,
       alertSpy,
       setAddStaffRecordInProgressSpy,
+      setNewWorkerMandatoryInfoSpy,
     };
   }
 
@@ -158,12 +160,9 @@ describe('StaffDetailsComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should navigate to main-job-role page after clicking 'Continue' cta button when adding a staff record`, async () => {
-      const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
-        true,
-        false,
-        true,
-      );
+    it(`should navigate to main-job-role page and set mandatory info in worker service after clicking 'Continue' cta button when adding a staff record`, async () => {
+      const { fixture, getByText, getByLabelText, routerSpy, updateWorkerSpy, setNewWorkerMandatoryInfoSpy } =
+        await setup(true, false, true);
 
       const enteredName = 'Someone';
       userEvent.type(getByLabelText('Name or ID number'), enteredName);
@@ -171,13 +170,8 @@ describe('StaffDetailsComponent', () => {
       userEvent.click(getByText('Continue'));
       fixture.detectChanges();
 
-      const updatedFormData = component.form.value;
-      expect(updatedFormData).toEqual({
-        nameOrId: enteredName,
-        contract: 'Temporary',
-      });
-
       expect(updateWorkerSpy).not.toHaveBeenCalled();
+      expect(setNewWorkerMandatoryInfoSpy).toHaveBeenCalledWith(enteredName, 'Temporary' as Contracts);
       expect(routerSpy.calls.mostRecent().args[0]).toEqual(['main-job-role']);
     });
 
