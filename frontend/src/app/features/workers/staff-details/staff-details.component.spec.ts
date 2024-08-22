@@ -18,13 +18,18 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { MockWorkerServiceWithNoWorker, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { ProgressBarComponent } from '@shared/components/progress-bar/progress-bar.component';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { getByText, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { StaffDetailsComponent } from './staff-details.component';
 
 describe('StaffDetailsComponent', () => {
-  async function setup(insideFlow = true, returnToMandatoryDetails = false, creatingNewWorker = false) {
+  async function setup(
+    insideFlow = true,
+    returnToMandatoryDetails = false,
+    creatingNewWorker = false,
+    workerInfo = null,
+  ) {
     let path;
     if (returnToMandatoryDetails) {
       path = 'mandatory-details';
@@ -56,7 +61,9 @@ describe('StaffDetailsComponent', () => {
           },
           {
             provide: WorkerService,
-            useClass: creatingNewWorker ? MockWorkerServiceWithNoWorker : MockWorkerServiceWithUpdateWorker,
+            useFactory: creatingNewWorker
+              ? MockWorkerServiceWithNoWorker.factory(workerInfo)
+              : MockWorkerServiceWithUpdateWorker.factory(),
           },
           {
             provide: ActivatedRoute,
@@ -406,6 +413,30 @@ describe('StaffDetailsComponent', () => {
       fixture.detectChanges();
 
       expect(getAllByText('Select the type of contract they have').length).toEqual(2);
+    });
+  });
+
+  describe('Prefilling the form', () => {
+    it(`should prefill the form with mandatory info in worker service if it exists when adding a staff record`, async () => {
+      const mandatoryInfoInService = { nameOrId: 'Someone', contract: 'Temporary' as Contracts };
+
+      const { getByLabelText } = await setup(true, false, true, mandatoryInfoInService);
+
+      const nameOrId = getByLabelText('Name or ID number') as HTMLFormElement;
+      const temporaryContractType = getByLabelText('Temporary') as HTMLFormElement;
+
+      expect(nameOrId.value).toEqual(mandatoryInfoInService.nameOrId);
+      expect(temporaryContractType.checked).toBeTrue();
+    });
+
+    it(`should prefill the form with worker data if existing staff record`, async () => {
+      const { component, getByLabelText } = await setup();
+
+      const nameOrId = getByLabelText('Name or ID number') as HTMLFormElement;
+      const workerContractType = getByLabelText(component.worker.contract) as HTMLFormElement;
+
+      expect(nameOrId.value).toEqual(component.worker.nameOrId);
+      expect(workerContractType.checked).toBeTrue();
     });
   });
 });

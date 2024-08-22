@@ -5,7 +5,7 @@ import { QualificationsByGroup } from '@core/model/qualification.model';
 import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
-import { WorkerService } from '@core/services/worker.service';
+import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
 import { build, fake, oneOf, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
 
@@ -339,7 +339,7 @@ export class MockWorkerService extends WorkerService {
 
 @Injectable()
 export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
-  public static factory(worker: Worker) {
+  public static factory(worker: Worker = null) {
     return (httpClient: HttpClient) => {
       const service = new MockWorkerServiceWithUpdateWorker(httpClient);
       if (worker) {
@@ -361,6 +361,15 @@ export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
 
 @Injectable()
 export class MockWorkerServiceWithNoWorker extends MockWorkerService {
+  public static factory(workerMandatoryInfo: NewWorkerMandatoryInfo = null) {
+    return (httpClient: HttpClient) => {
+      const service = new MockWorkerServiceWithNoWorker(httpClient);
+      if (workerMandatoryInfo) {
+        service.setNewWorkerMandatoryInfo(workerMandatoryInfo.nameOrId, workerMandatoryInfo.contract);
+      }
+      return service;
+    };
+  }
   public get worker() {
     return null;
   }
