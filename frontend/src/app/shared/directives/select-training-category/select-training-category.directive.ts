@@ -28,6 +28,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   public previousUrl: string[];
   public preFilledId: number;
+  public error = false;
 
   private summaryText = {
     'Care skills and knowledge': "'duty of care', 'safeguarding adults'",
@@ -133,6 +134,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     if (this.form.valid) {
       this.submit(selectedCategory[0]);
     } else {
+      this.error = true;
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }

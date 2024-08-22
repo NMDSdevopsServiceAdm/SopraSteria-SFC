@@ -1,6 +1,6 @@
 <app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 
-<form #formEl (ngSubmit)="onSubmit($event)" [formGroup]="form">
+<form #formEl (ngSubmit)="onSubmit($event)" [formGroup]="form" novalidate>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <fieldset class="govuk-fieldset">
@@ -8,33 +8,38 @@
           <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
           <h1 class="govuk-fieldset__heading">{{ title }}</h1>
         </legend>
+        <div [class.govuk-form-group--error]="submitted && error">
+          <p *ngIf="submitted && error" id="category-error" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ formErrorsMap[0].type[0].message }}
+          </p>
+          <app-grouped-radio-button-accordion
+            formControlName="category"
+            [accordions]="trainingGroups"
+            textShowHideAll="categories"
+            [preFilledId]="preFilledId"
+            data-testid="accordian"
+          ></app-grouped-radio-button-accordion>
 
-        <app-grouped-radio-button-accordion
-          formControlName="category"
-          [accordions]="trainingGroups"
-          textShowHideAll="categories"
-          [preFilledId]="preFilledId"
-          data-testid="accordian"
-        ></app-grouped-radio-button-accordion>
-
-        <div class="govuk-checkboxes govuk-!-padding-bottom-6">
-          <div class="govuk-checkboxes__item">
-            <input
-              type="radio"
-              name="category"
-              formControlName="category"
-              class="govuk-checkboxes__input"
-              id="otherCheckbox"
-              [value]="otherCategory.id"
-            />
-            <label for="otherCheckbox" class="govuk-label govuk-checkboxes__label"
-              >The training is not in any of these categories</label
-            >
+          <div class="govuk-checkboxes govuk-!-padding-bottom-6">
+            <div class="govuk-checkboxes__item">
+              <input
+                type="radio"
+                name="category"
+                formControlName="category"
+                class="govuk-checkboxes__input"
+                id="otherCheckbox"
+                [value]="otherCategory.id"
+              />
+              <label for="otherCheckbox" class="govuk-label govuk-checkboxes__label"
+                >The training is not in any of these categories</label
+              >
+            </div>
           </div>
         </div>
       </fieldset>
     </div>
   </div>
+
   <div class="govuk-button-group">
     <button type="submit" class="govuk-button govuk-!-margin-right-9" data-module="govuk-button">
       {{ submitButtonText }}

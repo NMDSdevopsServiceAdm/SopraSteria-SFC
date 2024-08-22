@@ -167,7 +167,7 @@ describe('SelectTrainingCategoryComponent', () => {
     fixture.detectChanges();
 
     expect(component.form.invalid).toBeTruthy();
-    expect(getAllByText('Select the training category').length).toEqual(1);
+    expect(getAllByText('Select the training category').length).toEqual(2);
   });
 
   it('should pre-fill when adding a record to a mandatory training category', async () => {
