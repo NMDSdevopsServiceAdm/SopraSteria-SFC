@@ -90,41 +90,41 @@ describe('BenefitsBundleComponent', () => {
       expect(getByText('5 FREE resources')).toBeTruthy();
     });
 
-    describe('Open all/Close all', () => {
-      it('should show an open all button', async () => {
+    describe('Show all/Hide all', () => {
+      it('should show an Show all button', async () => {
         const { getByText } = await setup();
 
-        expect(getByText('Open all')).toBeTruthy();
+        expect(getByText('Show all')).toBeTruthy();
       });
 
-      it('should change to close all button when clicked', async () => {
+      it('should change to Hide all button when clicked', async () => {
         const { getByText, fixture } = await setup();
 
-        const openAllButton = getByText('Open all');
-        fireEvent.click(openAllButton);
+        const showAllButton = getByText('Show all');
+        fireEvent.click(showAllButton);
 
         fixture.detectChanges();
 
-        expect(getByText('Close all')).toBeTruthy();
+        expect(getByText('Hide all')).toBeTruthy();
       });
 
-      it('should change back to open all button when clicked twice', async () => {
+      it('should change back to Show all button when clicked twice', async () => {
         const { getByText, fixture } = await setup();
 
-        const openAllButton = getByText('Open all');
-        fireEvent.click(openAllButton);
+        const showAllButton = getByText('Show all');
+        fireEvent.click(showAllButton);
 
         fixture.detectChanges();
 
-        const closeAllButton = getByText('Close all');
-        fireEvent.click(closeAllButton);
+        const hideAllButton = getByText('Hide all');
+        fireEvent.click(hideAllButton);
 
         fixture.detectChanges();
 
-        expect(getByText('Open all')).toBeTruthy();
+        expect(getByText('Show all')).toBeTruthy();
       });
 
-      it('should drop all when clicking on the open all link', async () => {
+      it('should drop all when clicking on the Show all link', async () => {
         const { component, fixture, getByTestId, getByText } = await setup();
 
         fixture.detectChanges();
@@ -135,8 +135,8 @@ describe('BenefitsBundleComponent', () => {
           );
         });
 
-        const openAllButton = getByText('Open all');
-        fireEvent.click(openAllButton);
+        const showAllButton = getByText('Show all');
+        fireEvent.click(showAllButton);
 
         component.benefits.map((benefit, index) => {
           expect(getByTestId('accordion-' + index).getAttribute('class')).toContain(
@@ -145,15 +145,15 @@ describe('BenefitsBundleComponent', () => {
         });
       });
 
-      it('should close all when clicking on the close all link', async () => {
+      it('should Hide all when clicking on the Hide all link', async () => {
         const { component, getByTestId, getByText, fixture } = await setup();
 
-        const openAllButton = getByText('Open all');
-        fireEvent.click(openAllButton);
+        const showAllButton = getByText('Show all');
+        fireEvent.click(showAllButton);
         fixture.detectChanges();
 
-        const closeAllButton = getByText('Close all');
-        fireEvent.click(closeAllButton);
+        const hideAllButton = getByText('Hide all');
+        fireEvent.click(hideAllButton);
 
         component.benefits.map((_, index) => {
           expect(getByTestId('accordion-' + index).getAttribute('class')).not.toContain(
@@ -162,7 +162,7 @@ describe('BenefitsBundleComponent', () => {
         });
       });
 
-      it('should toggle button to Close all when all accordions opened individually', async () => {
+      it('should toggle button to Hide all when all accordions Showed individually', async () => {
         const { getByText, fixture } = await setup();
 
         fixture.detectChanges();
@@ -174,19 +174,19 @@ describe('BenefitsBundleComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('Close all')).toBeTruthy();
+        expect(getByText('Hide all')).toBeTruthy();
       });
 
-      it('should toggle button back to Open all when all accordions opened and then one closed', async () => {
+      it('should toggle button back to Show all when all accordions Showed and then one Hided', async () => {
         const { getByText, fixture } = await setup();
 
-        fireEvent.click(getByText('Open all'));
+        fireEvent.click(getByText('Show all'));
         fixture.detectChanges();
 
         fireEvent.click(getByText('10% off all publications in the Skills for Care bookshop'));
         fixture.detectChanges();
 
-        expect(getByText('Open all')).toBeTruthy();
+        expect(getByText('Show all')).toBeTruthy();
       });
     });
   });

@@ -83,7 +83,7 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
     }
   }
 
-  private set showAll(showAll: boolean) {
+  public set showAll(showAll: boolean) {
     this._showAll = showAll;
     this.updateToggleAlltext();
   }
@@ -93,7 +93,6 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
   }
 
   private updateToggleAlltext() {
-    console.log(this.accordions);
     if (this.accordions?.every((x) => x.open === true)) {
       this.toggleText = `Hide all ${this.textShowHideAll}`;
     } else {
