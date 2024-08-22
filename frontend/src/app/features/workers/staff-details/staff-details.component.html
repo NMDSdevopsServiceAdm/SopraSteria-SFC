@@ -26,56 +26,6 @@
             type="text"
           />
         </div>
-        <div
-          class="govuk-form-group"
-          [class.govuk-form-group--error]="
-            submitted && (form.get('mainJob').invalid || form.get('otherJobRole').invalid)
-          "
-        >
-          <label class="govuk-label" for="mainJob"> Main job role </label>
-          <span *ngIf="submitted && form.get('mainJob').errors" id="mainJob-error" class="govuk-error-message">
-            <span class="govuk-visually-hidden">Error:</span>
-            {{ getFormErrorMessage('mainJob', 'required') }}
-          </span>
-          <select
-            class="govuk-select"
-            [class.govuk-select--error]="submitted && form.get('mainJob').invalid"
-            [formControlName]="'mainJob'"
-            id="mainJob"
-            name="mainJob"
-            (change)="selectedJobRole($event.target.value)"
-          >
-            <option [ngValue]="null">Select main job role</option>
-            <option *ngFor="let job of jobsAvailable" [value]="job.id">
-              {{ job.title }}
-            </option>
-          </select>
-
-          <div
-            class="govuk-radios__conditional govuk-!-margin-top-4"
-            [class.govuk-select__conditional--hidden]="!showInputTextforOtherRole"
-          >
-            <label class="govuk-label" for="otherJobRole-conditional"> What is the job role? </label>
-            <span
-              *ngIf="submitted && form.get('otherJobRole').invalid"
-              id="otherJobRole-error"
-              class="govuk-error-message"
-            >
-              <span class="govuk-visually-hidden">Error:</span>
-              {{ getFormErrorMessage('otherJobRole', 'maxlength') }}
-            </span>
-            <input
-              data-testid="other-job-role"
-              class="govuk-input govuk-!-width-two-thirds"
-              [formControlName]="'otherJobRole'"
-              id="otherJobRole-conditional"
-              name="otherJobRole"
-              type="text"
-              aria-describedby="otherJobRole-hint"
-              [class.govuk-select--error]="submitted && form.get('otherJobRole').invalid"
-            />
-          </div>
-        </div>
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('contract').invalid">
           <fieldset class="govuk-fieldset">
@@ -121,7 +71,7 @@
   </div>
   <app-submit-button
     [summaryContinue]="summaryContinue"
-    [callToAction]="submitTitle"
+    [callToAction]="'Continue'"
     [recordSummary]="false"
     [canExit]="canExit"
     [return]="editFlow"

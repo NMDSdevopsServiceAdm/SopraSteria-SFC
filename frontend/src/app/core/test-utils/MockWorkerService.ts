@@ -360,6 +360,15 @@ export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
 }
 
 @Injectable()
+export class MockWorkerServiceWithNoWorker extends MockWorkerService {
+  public get worker() {
+    return null;
+  }
+
+  public worker$ = of(null);
+}
+
+@Injectable()
 export class MockWorkerServiceWithoutReturnUrl extends MockWorkerServiceWithUpdateWorker {
   public static factory(worker: Worker) {
     return (httpClient: HttpClient) => {
