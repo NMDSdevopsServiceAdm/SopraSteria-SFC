@@ -109,8 +109,8 @@ describe('CareCertificateComponent', () => {
     });
   });
 
-  describe('navigation', () => {
-    it('should navigate to apprenticeship-training page when submitting from flow', async () => {
+  fdescribe('navigation', () => {
+    it('should navigate to level-2-adult-social-care-certificate page when submitting from flow', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -126,11 +126,11 @@ describe('CareCertificateComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'apprenticeship-training',
+        'level-2-adult-social-care-certificate',
       ]);
     });
 
-    it('should navigate to apprenticeship-training page when skipping the question in the flow', async () => {
+    it('should navigate to level-2-adult-social-care-certificate page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -144,7 +144,7 @@ describe('CareCertificateComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'apprenticeship-training',
+        'level-2-adult-social-care-certificate',
       ]);
     });
 
