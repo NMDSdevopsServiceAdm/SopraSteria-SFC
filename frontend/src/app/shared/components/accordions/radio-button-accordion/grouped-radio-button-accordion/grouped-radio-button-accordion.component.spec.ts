@@ -65,12 +65,11 @@ describe('GroupedRadioButtonAccordionComponent', () => {
     });
 
     it('should read "Show all" after clicking "Hide All"', async () => {
-      const { fixture, getByTestId } = await setup();
+      const { component, fixture, getByTestId } = await setup();
 
+      component.openAll();
       const showHideAllButton = getByTestId('toggleText');
-      fireEvent.click(showHideAllButton);
-      fixture.detectChanges();
-      expect(showHideAllButton.textContent).toContain('Hide all');
+
       fireEvent.click(showHideAllButton);
       fixture.detectChanges();
       expect(showHideAllButton.textContent).toContain('Show all');

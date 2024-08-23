@@ -61,12 +61,12 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
     this.toggleAccordionOfPrefilledRadioButton();
   }
 
-  private openAll(): void {
+  public openAll(): void {
     this.accordions.forEach((x) => (x.open = true));
     this.showAll = true;
   }
 
-  private hideAll() {
+  public hideAll() {
     this.accordions.forEach((x) => (x.open = false));
     this.showAll = false;
   }
@@ -79,7 +79,7 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
     }
   }
 
-  public set showAll(showAll: boolean) {
+  private set showAll(showAll: boolean) {
     this._showAll = showAll;
     this.updateToggleAlltext();
   }
