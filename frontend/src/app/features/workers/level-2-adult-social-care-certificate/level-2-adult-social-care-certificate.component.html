@@ -1,0 +1,58 @@
+<form [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <h1 class="govuk-fieldset__heading">
+              <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+              Have they completed or started their Level 2 Adult Social Care Certificate?
+            </h1>
+          </legend>
+
+          <div class="govuk-details__text govuk-!-font-size-19 govuk-!-margin-bottom-9">
+            The Level 2 Adult Social Care Certificate qualification, introduced in 2024, is not the same thing as the
+            existing standards based Care Certificate.
+          </div>
+
+          <app-details
+            [title]="'What`s the Level 2 Adult Social Care Certificate?'"
+            data-testid="reveal-whatIsLevel2CC"
+          >
+            <p>
+              The Level 2 Adult Social Care Certificate is a qualification based on the existing Care Certificate
+              standards. It was introduced into the adult social care sector in 2024 as a new qualification for care
+              workers to work towards.
+            </p>
+          </app-details>
+          <div class="govuk-radios">
+            <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'level2AdultSocialCareCertificate'"
+                id="level2AdultSocialCareCertificate-{{ idx }}"
+                name="level2AdultSocialCareCertificate"
+                type="radio"
+                [value]="answer.value"
+              />
+              <label class="govuk-label govuk-radios__label" for="level2AdultSocialCareCertificate-{{ idx }}">
+                {{ answer.tag }}
+              </label>
+            </div>
+          </div>
+        </fieldset>
+      </div>
+    </div>
+    <div class="govuk-grid-column-one-third" *ngIf="insideFlow">
+      <div class="govuk-!-margin-left-8">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="staffRecordSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+
+  <app-submit-button [return]="!insideFlow" (clicked)="setSubmitAction($event)"></app-submit-button>
+</form>
