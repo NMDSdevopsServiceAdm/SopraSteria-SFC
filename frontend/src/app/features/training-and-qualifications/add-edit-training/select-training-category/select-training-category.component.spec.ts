@@ -19,9 +19,10 @@ import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService'
 import { Establishment } from '@core/model/establishment.model';
 import { SelectTrainingCategoryComponent } from './select-training-category.component';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import sinon from 'sinon';
 
 describe('SelectTrainingCategoryComponent', () => {
-  async function setup(prefill = false) {
+  async function setup(prefill = false, qsParamGetMock = sinon.fake()) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
 
@@ -53,6 +54,9 @@ describe('SelectTrainingCategoryComponent', () => {
               data: {
                 establishment: establishment,
                 trainingCategories: trainingCategories,
+              },
+              queryParamMap: {
+                get: qsParamGetMock,
               },
             },
           },
@@ -163,6 +167,32 @@ describe('SelectTrainingCategoryComponent', () => {
     fixture.detectChanges();
 
     expect(component.form.invalid).toBeTruthy();
-    expect(getAllByText('Select the training category').length).toEqual(1);
+    expect(getAllByText('Select the training category').length).toEqual(2);
+  });
+
+  it('should pre-fill when adding a record to a mandatory training category', async () => {
+    const qsParamGetMock = sinon.stub().returns(JSON.stringify({ id: 2, category: 'Autism' }));
+
+    const { component, fixture } = await setup(false, qsParamGetMock);
+
+    fixture.detectChanges();
+
+    expect(component.form.value).toEqual({ category: 2 });
+  });
+
+  it('should pre-fill when adding a record to a mandatory training category from the training tab', async () => {
+    const qsParamGetMock = sinon.stub().returns(JSON.stringify({ id: '2', category: 'Autism' }));
+
+    const { component, fixture } = await setup(false, qsParamGetMock);
+
+    fixture.detectChanges();
+
+    expect(component.form.value).toEqual({ category: 2 });
+  });
+
+  it('should pre-fill if there is a selected category', async () => {
+    const { component } = await setup(true);
+
+    expect(component.form.value).toEqual({ category: 1 });
   });
 });
