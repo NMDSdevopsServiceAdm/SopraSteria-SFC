@@ -109,7 +109,7 @@ describe('CareCertificateComponent', () => {
     });
   });
 
-  fdescribe('navigation', () => {
+  describe('navigation', () => {
     it('should navigate to level-2-adult-social-care-certificate page when submitting from flow', async () => {
       const { component, routerSpy, getByText } = await setup();
 
