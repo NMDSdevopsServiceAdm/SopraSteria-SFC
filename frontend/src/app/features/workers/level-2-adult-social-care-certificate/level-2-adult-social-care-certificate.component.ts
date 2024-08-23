@@ -33,6 +33,11 @@ export class Level2AdultSocialCareCertificateComponent extends QuestionComponent
 
     this.form = this.formBuilder.group({
       level2AdultSocialCareCertificate: null,
+      level2AdultSocialCareCertificateYearAchieved: null,
     });
+  }
+
+  init() {
+    this.next = this.getRoutePath('apprenticeship-training');
   }
 }

@@ -25,18 +25,65 @@
               workers to work towards.
             </p>
           </app-details>
-          <div class="govuk-radios">
-            <div *ngFor="let answer of answersAvailable; let idx = index" class="govuk-radios__item">
+          <div class="govuk-radios govuk-radios--conditional" data-module="govuk-radios">
+            <div class="govuk-radios__item">
               <input
                 class="govuk-radios__input"
                 [formControlName]="'level2AdultSocialCareCertificate'"
-                id="level2AdultSocialCareCertificate-{{ idx }}"
+                id="level2AdultSocialCareCertificate-yesCompleted"
                 name="level2AdultSocialCareCertificate"
                 type="radio"
-                [value]="answer.value"
+                [value]="answersAvailable[0].value"
+                data-aria-controls="conditional-certification-achieved"
               />
-              <label class="govuk-label govuk-radios__label" for="level2AdultSocialCareCertificate-{{ idx }}">
-                {{ answer.tag }}
+              <label class="govuk-label govuk-radios__label" for="level2AdultSocialCareCertificate-yesCompleted">
+                {{ answersAvailable[0].tag }}
+              </label>
+            </div>
+
+            <div
+              class="govuk-radios__conditional"
+              [class.govuk-radios__conditional--hidden]="
+                form.get('level2AdultSocialCareCertificate').value !== 'Yes, completed'
+              "
+              id="certification-achieved"
+            >
+              <div class="govuk-form-group">
+                <label class="govuk-label" for="level2AdultSocialCareCertificate-year-achieved"> Year achieved </label>
+                <input
+                  class="govuk-input govuk-date-input__input govuk-input--width-4"
+                  [formControlName]="'level2AdultSocialCareCertificateYearAchieved'"
+                  id="level2AdultSocialCareCertificate-year-achieved"
+                  name="level2AdultSocialCareCertificate-year-achieved"
+                  type="number"
+                />
+              </div>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'level2AdultSocialCareCertificate'"
+                id="level2AdultSocialCareCertificate-yesStarted"
+                name="level2AdultSocialCareCertificate"
+                type="radio"
+                [value]="answersAvailable[1].value"
+              />
+              <label class="govuk-label govuk-radios__label" for="level2AdultSocialCareCertificate-yesStarted">
+                {{ answersAvailable[1].tag }}
+              </label>
+            </div>
+            <div class="govuk-radios__item">
+              <input
+                class="govuk-radios__input"
+                [formControlName]="'level2AdultSocialCareCertificate'"
+                id="level2AdultSocialCareCertificate-no"
+                name="level2AdultSocialCareCertificate"
+                type="radio"
+                [value]="answersAvailable[2].value"
+                data-aria-controls="conditional-no"
+              />
+              <label class="govuk-label govuk-radios__label" for="level2AdultSocialCareCertificate-no">
+                {{ answersAvailable[2].tag }}
               </label>
             </div>
           </div>

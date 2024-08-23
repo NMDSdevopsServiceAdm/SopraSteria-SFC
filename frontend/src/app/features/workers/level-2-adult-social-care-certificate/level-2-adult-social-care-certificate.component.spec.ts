@@ -1,17 +1,18 @@
 import { getTestBed } from '@angular/core/testing';
-import { render } from '@testing-library/angular';
-import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate.component';
+import { fireEvent, render } from '@testing-library/angular';
 import { SharedModule } from '@shared/shared.module';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate.component';
+
 fdescribe('Level2AdultSocialCareCertificateComponent', () => {
   async function setup(insideFlow = true) {
-    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
+    const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       Level2AdultSocialCareCertificateComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -46,6 +47,10 @@ fdescribe('Level2AdultSocialCareCertificateComponent', () => {
 
     const component = fixture.componentInstance;
 
+    const router = injector.inject(Router) as Router;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       component,
       fixture,
@@ -54,6 +59,9 @@ fdescribe('Level2AdultSocialCareCertificateComponent', () => {
       getByLabelText,
       getByTestId,
       queryByTestId,
+      queryByText,
+      router,
+      routerSpy,
     };
   }
 
@@ -124,5 +132,178 @@ fdescribe('Level2AdultSocialCareCertificateComponent', () => {
 
       expect(queryByTestId('progress-bar')).toBeFalsy();
     });
+  });
+
+  describe('year achieved input', () => {
+    describe('should not show', () => {
+      it('when the page is loaded', async () => {
+        const { fixture } = await setup();
+
+        const yearAchievedInput = fixture.nativeElement.querySelector('div[id="certification-achieved"]');
+
+        expect(yearAchievedInput.getAttribute('class')).toContain('hidden');
+      });
+
+      it('when "Yes, started" is clicked', async () => {
+        const { fixture, getByLabelText } = await setup();
+
+        const yesStartedRadioButton = getByLabelText('Yes, started');
+
+        fireEvent.click(yesStartedRadioButton);
+        fixture.detectChanges();
+
+        const yearAchievedInput = fixture.nativeElement.querySelector('div[id="certification-achieved"]');
+
+        expect(yearAchievedInput.getAttribute('class')).toContain('hidden');
+      });
+
+      it('when "no" is clicked', async () => {
+        const { fixture, getByLabelText } = await setup();
+
+        const noRadioButton = getByLabelText('No');
+
+        fireEvent.click(noRadioButton);
+        fixture.detectChanges();
+
+        const yearAchievedInput = fixture.nativeElement.querySelector('div[id="certification-achieved"]');
+
+        expect(yearAchievedInput.getAttribute('class')).toContain('hidden');
+      });
+    });
+
+    it('should show when "yes, completed" is clicked', async () => {
+      const { fixture, getByLabelText } = await setup();
+
+      const yesCompletedRadioButton = getByLabelText('Yes, completed');
+
+      fireEvent.click(yesCompletedRadioButton);
+      fixture.detectChanges();
+
+      const yearAchievedInput = fixture.nativeElement.querySelector('div[id="certification-achieved"]');
+
+      expect(yearAchievedInput.getAttribute('class')).not.toContain('hidden');
+    });
+  });
+
+  describe('navigation', () => {
+    // it('should navigate to apprenticeship-training page when submitting from flow', async () => {
+    //   const { component, routerSpy, getByText } = await setup();
+
+    //   const workerId = component.worker.uid;
+    //   const workplaceId = component.workplace.uid;
+
+    //   const saveButton = getByText('Save and continue');
+    //   fireEvent.click(saveButton);
+
+    //   expect(getByText('Save and continue')).toBeTruthy();
+
+    //   expect(routerSpy).toHaveBeenCalledWith([
+    //     '/workplace',
+    //     workplaceId,
+    //     'staff-record',
+    //     workerId,
+    //     'apprenticeship-training',
+    //   ]);
+    // });
+
+    // it('should navigate to apprenticeship-training page when skipping the question in the flow', async () => {
+    //   const { component, routerSpy, getByText } = await setup();
+
+    //   const workerId = component.worker.uid;
+    //   const workplaceId = component.workplace.uid;
+
+    //   const link = getByText('Skip this question');
+    //   fireEvent.click(link);
+
+    //   expect(routerSpy).toHaveBeenCalledWith([
+    //     '/workplace',
+    //     workplaceId,
+    //     'staff-record',
+    //     workerId,
+    //     'apprenticeship-training',
+    //   ]);
+    // });
+
+    // it('should navigate to staff-summary-page page when pressing view this staff record', async () => {
+    //   const { component, routerSpy, getByText } = await setup();
+
+    //   const workerId = component.worker.uid;
+    //   const workplaceId = component.workplace.uid;
+
+    //   const link = getByText('View this staff record');
+    //   fireEvent.click(link);
+
+    //   expect(routerSpy).toHaveBeenCalledWith([
+    //     '/workplace',
+    //     workplaceId,
+    //     'staff-record',
+    //     workerId,
+    //     'staff-record-summary',
+    //   ]);
+    // });
+
+    // it('should navigate to staff-summary-page page when pressing save and return', async () => {
+    //   const { component, routerSpy, getByText } = await setup(false);
+
+    //   const workerId = component.worker.uid;
+    //   const workplaceId = component.workplace.uid;
+
+    //   const saveButton = getByText('Save and return');
+    //   fireEvent.click(saveButton);
+
+    //   expect(routerSpy).toHaveBeenCalledWith([
+    //     '/workplace',
+    //     workplaceId,
+    //     'staff-record',
+    //     workerId,
+    //     'staff-record-summary',
+    //   ]);
+    // });
+
+    it('should navigate to staff-summary-page page when pressing cancel', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
+
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
+
+      const link = getByText('Cancel');
+      fireEvent.click(link);
+
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
+
+    // it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
+    //   const { component, router, fixture, routerSpy, getByText } = await setup(false);
+    //   spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    //   component.returnUrl = undefined;
+    //   component.ngOnInit();
+    //   fixture.detectChanges();
+    //   const workerId = component.worker.uid;
+
+    //   const saveButton = getByText('Save and return');
+    //   fireEvent.click(saveButton);
+
+    //   expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    // });
+
+    // it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+    //   const { component, router, fixture, routerSpy, getByText } = await setup(false);
+    //   spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+    //   component.returnUrl = undefined;
+    //   component.ngOnInit();
+    //   fixture.detectChanges();
+    //   const workerId = component.worker.uid;
+
+    //   const link = getByText('Cancel');
+    //   fireEvent.click(link);
+
+    //   expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    // });
   });
 });
