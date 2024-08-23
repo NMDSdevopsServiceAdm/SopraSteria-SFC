@@ -90,6 +90,7 @@ describe('SelectStaffComponent', () => {
       trainingService,
       'clearUpdatingSelectedStaffForMultipleTraining',
     ).and.callThrough();
+    const clearSelectedTrainingCategorySpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
 
     return {
       component,
@@ -110,6 +111,7 @@ describe('SelectStaffComponent', () => {
       searchSpy,
       workers,
       clearUpdatingSelectedStaffForMultipleTrainingSpy,
+      clearSelectedTrainingCategorySpy,
     };
   }
 
@@ -598,5 +600,13 @@ describe('SelectStaffComponent', () => {
       expect(trainingSpy).not.toHaveBeenCalled();
       expect(spy.calls.mostRecent().args[0]).toEqual(['../']);
     });
+  });
+
+  it('should call trainingService if there are no selected workers when landing on the page', async () => {
+    const { component, clearSelectedTrainingCategorySpy } = await setup();
+
+    component.ngOnInit();
+
+    expect(clearSelectedTrainingCategorySpy).toHaveBeenCalled();
   });
 });

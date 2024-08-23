@@ -28,6 +28,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   public previousUrl: string[];
   public preFilledId: number;
+  public error = false;
 
   private summaryText = {
     'Care skills and knowledge': "'duty of care', 'safeguarding adults'",
@@ -64,11 +65,16 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   protected prefillForm(): void {
     let selectedCategory = this.trainingService.selectedTraining?.trainingCategory;
 
-    if (selectedCategory) {
+    if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
+      const mandatoryTrainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
+      let categoryId = parseInt(mandatoryTrainingCategory.id, 10);
+      this.form.setValue({ category: categoryId });
+      this.preFilledId = categoryId;
+    } else if (selectedCategory) {
       this.form.setValue({ category: selectedCategory?.id });
       this.preFilledId = selectedCategory?.id;
-      this.form.get('category').updateValueAndValidity();
     }
+    this.form.get('category').updateValueAndValidity();
   }
 
   protected submit(selectedCategory: any): void {}
@@ -129,6 +135,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     if (this.form.valid) {
       this.submit(selectedCategory[0]);
     } else {
+      this.error = true;
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }

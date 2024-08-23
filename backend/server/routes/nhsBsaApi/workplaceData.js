@@ -9,34 +9,30 @@ const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculato
 const nhsBsaApi = async (req, res) => {
   const workplaceId = req.params.workplaceId;
 
-  const where = {
-    nmdsId: workplaceId,
-  };
-
   try {
-    const workplaceDetail = await models.establishment.getNhsBsaApiDataByWorkplaceId(where);
-    if (!workplaceDetail) return res.status(404).json({ error: 'Can not find this Id.' });
+    const workplace = await models.establishment.getNhsBsaApiDataByWorkplaceId(workplaceId);
+    if (!workplace) return res.status(404).json({ error: 'Cannot find this Id.' });
 
-    const isParent = workplaceDetail.isParent;
-    const establishmentId = workplaceDetail.id;
-    const parentId = workplaceDetail.parentId;
+    const isParent = workplace.isParent;
+    const establishmentId = workplace.id;
+    const parentId = workplace.parentId;
 
     let workplaceData = null;
 
     if (isParent) {
       workplaceData = {
-        isParent: workplaceDetail.isParent,
-        workplaceDetails: await workplaceObject(workplaceDetail),
+        isParent,
+        workplaceDetails: await workplaceObject(workplace),
         subsidiaries: await subsidiariesList(establishmentId),
       };
     } else if (parentId) {
       workplaceData = {
-        workplaceDetails: await workplaceObject(workplaceDetail),
+        workplaceDetails: await workplaceObject(workplace),
         parentWorkplace: await parentWorkplace(parentId),
       };
     } else {
       workplaceData = {
-        workplaceDetails: await workplaceObject(workplaceDetail),
+        workplaceDetails: await workplaceObject(workplace),
       };
     }
 
@@ -51,8 +47,6 @@ const nhsBsaApi = async (req, res) => {
 };
 
 const workplaceObject = async (workplace) => {
-  const wdfEligible = await wdfData(workplace.id, WdfCalculator.effectiveDate);
-
   return {
     workplaceId: workplace.nmdsId,
     workplaceName: workplace.NameValue,
@@ -66,12 +60,20 @@ const workplaceObject = async (workplace) => {
     numberOfWorkplaceStaff: workplace.NumberOfStaffValue,
     serviceName: workplace.mainService.name,
     serviceCategory: workplace.mainService.category,
-    ...wdfEligible,
+    eligibilityPercentage: calculatePercentageOfWorkersEligible(workplace.workers),
+    eligibilityDate: workplace.overallWdfEligibility,
+    isEligible: workplaceIsEligible(workplace),
   };
 };
 
-const subsidiariesList = async (establishmentId) => {
-  const subs = await models.establishment.getNhsBsaApiDataForSubs(establishmentId);
+const workplaceIsEligible = (workplace) => {
+  return workplace.overallWdfEligibility && workplace.overallWdfEligibility.getTime() > WdfCalculator.effectiveDate
+    ? true
+    : false;
+};
+
+const subsidiariesList = async (parentId) => {
+  const subs = await models.establishment.getNhsBsaApiDataForSubs(parentId);
 
   const subsidiaries = await Promise.all(
     subs.map(async (workplace) => {
@@ -82,41 +84,21 @@ const subsidiariesList = async (establishmentId) => {
 };
 
 const parentWorkplace = async (parentId) => {
-  const where = {
-    id: parentId,
-  };
-  const parentWorkplace = await models.establishment.getNhsBsaApiDataByWorkplaceId(where);
+  const parentWorkplace = await models.establishment.getNhsBsaApiDataForParent(parentId);
 
   return await workplaceObject(parentWorkplace);
 };
 
-const wdfData = async (workplaceId, effectiveFrom) => {
-  const reportData = await models.sequelize.query(
-    `SELECT * FROM cqc.wdfsummaryreport(:givenEffectiveDate) WHERE "EstablishmentID" = '${workplaceId}'`,
-    {
-      replacements: {
-        givenEffectiveDate: effectiveFrom,
-      },
-      type: models.sequelize.QueryTypes.SELECT,
-    },
-  );
+const calculatePercentageOfWorkersEligible = (workers) => {
+  const numberOfWorkers = workers?.length;
 
-  const wdfMeeting = reportData.find((workplace) => workplace.EstablishmentID === workplaceId);
-  if (wdfMeeting) {
-    const percentageEligibleWorkers =
-      wdfMeeting.WorkerCount > 0 ? Math.floor((wdfMeeting.WorkerCompletedCount / wdfMeeting.WorkerCount) * 100) : 0;
+  if (!numberOfWorkers) return 0;
+  const numberOfEligibleWorkers = workers.filter((worker) => worker.get('WdfEligible')).length;
 
-    return {
-      eligibilityPercentage: percentageEligibleWorkers,
-      eligibilityDate: wdfMeeting.OverallWdfEligibility,
-      isEligible:
-        wdfMeeting.OverallWdfEligibility && wdfMeeting.OverallWdfEligibility.getTime() > effectiveFrom ? true : false,
-    };
-  }
+  return Math.floor((numberOfEligibleWorkers / numberOfWorkers) * 100);
 };
 
 router.route('/:workplaceId').get(authLimiter, authorization.isAuthorised, nhsBsaApi);
 module.exports = router;
 module.exports.nhsBsaApi = nhsBsaApi;
 module.exports.subsidiariesList = subsidiariesList;
-module.exports.wdfData = wdfData;
