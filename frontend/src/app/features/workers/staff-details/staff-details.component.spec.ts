@@ -170,8 +170,15 @@ describe('StaffDetailsComponent', () => {
     });
 
     it(`should navigate to main-job-role page and set mandatory info in worker service after clicking 'Continue' cta button when adding a staff record`, async () => {
-      const { fixture, getByText, getByLabelText, routerSpy, updateWorkerSpy, setNewWorkerMandatoryInfoSpy } =
-        await setup(true, false, true);
+      const {
+        fixture,
+        getByText,
+        getByLabelText,
+        routerSpy,
+        updateWorkerSpy,
+        setNewWorkerMandatoryInfoSpy,
+        submitSpy,
+      } = await setup(true, false, true);
 
       const enteredName = 'Someone';
       userEvent.type(getByLabelText('Name or ID number'), enteredName);
@@ -180,6 +187,7 @@ describe('StaffDetailsComponent', () => {
       fixture.detectChanges();
 
       expect(updateWorkerSpy).not.toHaveBeenCalled();
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(setNewWorkerMandatoryInfoSpy).toHaveBeenCalledWith(enteredName, 'Temporary' as Contracts);
       expect(routerSpy.calls.mostRecent().args[0]).toEqual(['main-job-role']);
     });
@@ -193,21 +201,21 @@ describe('StaffDetailsComponent', () => {
       expect(clearNewWorkerMandatoryInfoSpy).toHaveBeenCalled();
     });
 
-    it(`should show 'Save' and 'Cancel' buttons when not in mandatory details flow or in the staff record flow`, async () => {
+    it(`should show 'Save and return' and 'Cancel' buttons when not in mandatory details flow or in the staff record flow`, async () => {
       const { getByText } = await setup(false, false);
 
-      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should show 'Save' cta button and 'Cancel' link when editing a staff record outside`, async () => {
+    it(`should show 'Save and return' cta button and 'Cancel' link when editing a staff record outside`, async () => {
       const { getByText } = await setup(false);
 
-      expect(getByText('Save')).toBeTruthy();
+      expect(getByText('Save and return')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it(`should call submit data and navigate to the wdf staff record summary page when 'Save' is clicked in WDF version of the page`, async () => {
+    it(`should call submit data and navigate to the wdf staff record summary page when 'Save and return' is clicked in WDF version of the page`, async () => {
       const { component, router, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } =
         await setup(false, false);
       spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
@@ -216,7 +224,7 @@ describe('StaffDetailsComponent', () => {
       fixture.detectChanges();
 
       userEvent.click(getByLabelText('Temporary'));
-      userEvent.click(getByText('Save'));
+      userEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
       const updatedFormData = component.form.value;
@@ -224,7 +232,7 @@ describe('StaffDetailsComponent', () => {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
@@ -232,13 +240,13 @@ describe('StaffDetailsComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', fixture.componentInstance.worker.uid]);
     });
 
-    it(`should call submit data and navigate to the the staff record summary page when 'Save' is clicked outside of mandatory details flow`, async () => {
+    it(`should call submit data and navigate to the the staff record summary page when 'Save and return' is clicked outside of mandatory details flow`, async () => {
       const { component, fixture, getByText, getByLabelText, submitSpy, routerSpy, updateWorkerSpy } = await setup(
         false,
       );
 
       userEvent.click(getByLabelText('Temporary'));
-      userEvent.click(getByText('Save'));
+      userEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
       const updatedFormData = component.form.value;
@@ -246,7 +254,7 @@ describe('StaffDetailsComponent', () => {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
       });
-      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: true });
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
@@ -297,7 +305,7 @@ describe('StaffDetailsComponent', () => {
       });
 
       userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save'));
+      userEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
       expect(alertSpy).not.toHaveBeenCalled();
@@ -318,13 +326,13 @@ describe('StaffDetailsComponent', () => {
       });
 
       userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save'));
+      userEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
       expect(alertSpy).not.toHaveBeenCalled();
     });
 
-    it('should not call setAddStaffRecordInProgress when clicking save', async () => {
+    it('should not call setAddStaffRecordInProgress when clicking save and return', async () => {
       const { component, fixture, getByText, getByLabelText, workerService, setAddStaffRecordInProgressSpy } =
         await setup(false);
 
@@ -333,7 +341,7 @@ describe('StaffDetailsComponent', () => {
       });
 
       userEvent.click(getByLabelText('Permanent'));
-      userEvent.click(getByText('Save'));
+      userEvent.click(getByText('Save and return'));
       fixture.detectChanges();
       expect(setAddStaffRecordInProgressSpy).not.toHaveBeenCalled();
     });

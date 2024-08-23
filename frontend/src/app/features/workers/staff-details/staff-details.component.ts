@@ -28,7 +28,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   public canExit = true;
   public editFlow: boolean;
   public inMandatoryDetailsFlow: boolean;
-  public summaryContinue: boolean;
   private isAddingNewWorker: boolean;
 
   constructor(
@@ -54,7 +53,6 @@ export class StaffDetailsComponent extends QuestionComponent implements OnInit, 
   init(): void {
     this.inMandatoryDetailsFlow = this.route.parent.snapshot.url[0].path === 'mandatory-details';
     this.isAddingNewWorker = !this.worker;
-    this.summaryContinue = !this.insideFlow && !this.inMandatoryDetailsFlow;
 
     this.prefillFormIfExistingWorkerOrInfoSetInWorkerService();
     this.getReturnPath();
