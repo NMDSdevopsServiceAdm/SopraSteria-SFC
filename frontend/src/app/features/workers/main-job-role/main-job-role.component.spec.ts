@@ -22,7 +22,7 @@ import { Worker } from '@core/model/worker.model';
 import userEvent from '@testing-library/user-event';
 import { AlertService } from '@core/services/alert.service';
 
-fdescribe('MainJobRoleComponent', () => {
+describe('MainJobRoleComponent', () => {
   async function setup(insideFlow = true, returnToMandatoryDetails = false, addNewWorker = false) {
     let path;
     if (returnToMandatoryDetails) {
@@ -180,7 +180,7 @@ fdescribe('MainJobRoleComponent', () => {
   it('should show the accordion', async () => {
     const { getByTestId } = await setup(false, true);
 
-    expect(getByTestId('accordian')).toBeTruthy();
+    expect(getByTestId('groupedAccordion')).toBeTruthy();
   });
 
   it('should show the accordion headings', async () => {
@@ -298,7 +298,7 @@ fdescribe('MainJobRoleComponent', () => {
         expect(updateWorkerSpy).not.toHaveBeenCalled();
       });
 
-      fit('should return an error message if user clicked submit without selecting a job role', async () => {
+      it('should return an error message if user clicked submit without selecting a job role', async () => {
         const { fixture, getByText, getAllByText } = await setup(true, false, true);
 
         userEvent.click(getByText('Save this staff record'));

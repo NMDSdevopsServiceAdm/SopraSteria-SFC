@@ -137,14 +137,14 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
   });
 
-  it('should show an accordian with the correct categories in', async () => {
+  it('should show an accordion with the correct categories in', async () => {
     const { component, getByTestId } = await setup(true);
     expect(component.categories).toEqual([
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
       { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
       { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
-    expect(getByTestId('accordian')).toBeTruthy();
+    expect(getByTestId('groupedAccordion')).toBeTruthy();
   });
 
   it('should return to the select staff page if there is no selected staff', async () => {
