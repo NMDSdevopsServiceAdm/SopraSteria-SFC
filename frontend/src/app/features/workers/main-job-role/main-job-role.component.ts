@@ -7,7 +7,6 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { Contracts } from '@core/model/contracts.enum';
 import { AlertService } from '@core/services/alert.service';
 
 @Component({

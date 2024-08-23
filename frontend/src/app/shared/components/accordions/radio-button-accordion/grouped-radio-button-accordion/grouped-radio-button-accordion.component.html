@@ -10,7 +10,7 @@
       </button>
     </div>
 
-    <p *ngIf="hasError" id="category-error" class="govuk-error-message">
+    <p *ngIf="hasError" id="{{ formControlName }}-error" class="govuk-error-message">
       <span class="govuk-visually-hidden">Error:</span> {{ errorMessage }}
     </p>
     <div *ngFor="let accordion of accordions">

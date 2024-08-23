@@ -32,71 +32,74 @@ describe('MainJobRoleComponent', () => {
     } else {
       path = 'staff-record-summary';
     }
-    const { fixture, getByText, getByTestId, getByLabelText, queryByTestId } = await render(MainJobRoleComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-      declarations: [ProgressBarComponent],
-      schemas: [NO_ERRORS_SCHEMA],
-      providers: [
-        UntypedFormBuilder,
-        AlertService,
-        WindowRef,
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(),
-          deps: [HttpClient, Router, UserService],
-        },
-        {
-          provide: UserService,
-          useFactory: MockUserService.factory(0, Roles.Admin),
-          deps: [HttpClient],
-        },
-        {
-          provide: WorkerService,
-          useClass: MockWorkerServiceWithUpdateWorker,
-        },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            parent: {
+    const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByTestId } = await render(
+      MainJobRoleComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        declarations: [ProgressBarComponent],
+        schemas: [NO_ERRORS_SCHEMA],
+        providers: [
+          UntypedFormBuilder,
+          AlertService,
+          WindowRef,
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: UserService,
+            useFactory: MockUserService.factory(0, Roles.Admin),
+            deps: [HttpClient],
+          },
+          {
+            provide: WorkerService,
+            useClass: MockWorkerServiceWithUpdateWorker,
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              parent: {
+                snapshot: {
+                  url: [{ path }],
+                  data: {
+                    establishment: { uid: 'mocked-uid' },
+                    primaryWorkplace: {},
+                  },
+                },
+              },
               snapshot: {
-                url: [{ path }],
+                params: {},
                 data: {
-                  establishment: { uid: 'mocked-uid' },
-                  primaryWorkplace: {},
+                  jobs: [
+                    {
+                      id: 4,
+                      jobRoleGroup: 'Professional and related roles',
+                      title: 'Allied health professional (not occupational therapist)',
+                    },
+                    {
+                      id: 10,
+                      jobRoleGroup: 'Care providing roles',
+                      title: 'Care worker',
+                    },
+                    {
+                      id: 23,
+                      title: 'Registered nurse',
+                      jobRoleGroup: 'Professional and related roles',
+                    },
+                    {
+                      id: 27,
+                      title: 'Social worker',
+                      jobRoleGroup: 'Professional and related roles',
+                    },
+                  ],
                 },
               },
             },
-            snapshot: {
-              params: {},
-              data: {
-                jobs: [
-                  {
-                    id: 4,
-                    jobRoleGroup: 'Professional and related roles',
-                    title: 'Allied health professional (not occupational therapist)',
-                  },
-                  {
-                    id: 10,
-                    jobRoleGroup: 'Care providing roles',
-                    title: 'Care worker',
-                  },
-                  {
-                    id: 23,
-                    title: 'Registered nurse',
-                    jobRoleGroup: 'Professional and related roles',
-                  },
-                  {
-                    id: 27,
-                    title: 'Social worker',
-                    jobRoleGroup: 'Professional and related roles',
-                  },
-                ],
-              },
-            },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -128,6 +131,7 @@ describe('MainJobRoleComponent', () => {
       fixture,
       getByTestId,
       getByText,
+      getAllByText,
       getByLabelText,
       router,
       routerSpy,
@@ -176,7 +180,7 @@ describe('MainJobRoleComponent', () => {
   it('should show the accordion', async () => {
     const { getByTestId } = await setup(false, true);
 
-    expect(getByTestId('accordian')).toBeTruthy();
+    expect(getByTestId('groupedAccordion')).toBeTruthy();
   });
 
   it('should show the accordion headings', async () => {
@@ -295,13 +299,13 @@ describe('MainJobRoleComponent', () => {
       });
 
       it('should return an error message if user clicked submit without selecting a job role', async () => {
-        const { fixture, getByText } = await setup(true, false, true);
+        const { fixture, getByText, getAllByText } = await setup(true, false, true);
 
         userEvent.click(getByText('Save this staff record'));
         fixture.detectChanges();
 
         expect(getByText('There is a problem')).toBeTruthy();
-        expect(getByText('Select the job role')).toBeTruthy();
+        expect(getAllByText('Select the job role')).toHaveSize(2);
       });
     });
 
