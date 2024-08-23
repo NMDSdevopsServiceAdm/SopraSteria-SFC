@@ -24,12 +24,10 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
       descriptionText: string;
       open: boolean;
       index: number;
-      items: [
-        {
+      items: {
           id: number;
           label: string;
-        },
-      ];
+        }[];
     }[],
   ) {
     this._accordions = value.map((x, index) => {
@@ -52,12 +50,10 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
     title: string;
     descriptionText: string;
     index: number;
-    items: [
-      {
+    items: {
         id: number;
         label: string;
-      },
-    ];
+      }[];
   }[];
 
   ngOnInit(): void {
