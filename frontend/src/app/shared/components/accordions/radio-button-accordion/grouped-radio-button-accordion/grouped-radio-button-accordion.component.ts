@@ -17,6 +17,8 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
   @Input() preFilledId: number;
   @Input() formControlName: string;
   @Input() textShowHideAll?: string;
+  @Input() hasError: boolean = false;
+  @Input() errorMessage: string;
   private _showAll: boolean;
   @Input() set accordions(
     value: {
@@ -59,6 +61,12 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
   ngOnInit(): void {
     this.showAll = false;
     this.toggleAccordionOfPrefilledRadioButton();
+  }
+
+  ngOnChanges(): void {
+    if (this.hasError) {
+      this.openAll();
+    }
   }
 
   public openAll(): void {
