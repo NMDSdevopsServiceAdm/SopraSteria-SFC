@@ -1503,6 +1503,7 @@ module.exports = function (sequelize, DataTypes) {
             'ApprovedMentalHealthWorkerValue',
             'QualificationInSocialCareValue',
             'OtherQualificationsValue',
+            'Level2CareCertificateValue',
           ],
           as: 'workers',
           where: {

@@ -10,7 +10,7 @@ import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerSe
 
 import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate.component';
 
-fdescribe('Level2AdultSocialCareCertificateComponent', () => {
+describe('Level2AdultSocialCareCertificateComponent', () => {
   async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       Level2AdultSocialCareCertificateComponent,

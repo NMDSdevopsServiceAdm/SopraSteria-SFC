@@ -768,6 +768,37 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareCertificateChangedBy"',
       },
+      Level2CareCertificateValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes, completed', 'Yes, started', 'No'],
+        field: '"Level2CareCertificateValue"',
+      },
+      Level2CareCertificateYear: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"Level2CareCertificateYear"',
+      },
+      Level2CareCertificateSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"Level2CareCertificateSavedAt"',
+      },
+      Level2CareCertificateChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"Level2CareCertificateChangedAt"',
+      },
+      Level2CareCertificateSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"Level2CareCertificateSavedBy"',
+      },
+      Level2CareCertificateChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"Level2CareCertificateChangedBy"',
+      },
       HealthAndCareVisaValue: {
         type: DataTypes.ENUM,
         allowNull: true,
