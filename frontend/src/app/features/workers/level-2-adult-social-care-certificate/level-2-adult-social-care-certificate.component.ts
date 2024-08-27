@@ -32,12 +32,34 @@ export class Level2AdultSocialCareCertificateComponent extends QuestionComponent
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
     this.form = this.formBuilder.group({
-      level2AdultSocialCareCertificate: null,
-      level2AdultSocialCareCertificateYearAchieved: null,
+      level2CareCertificate: null,
+      level2CareCertificateYearAchieved: null,
     });
   }
 
   init() {
     this.next = this.getRoutePath('apprenticeship-training');
+
+    if (this.worker.level2CareCertificate && this.worker.level2CareCertificate.value) {
+      this.form.patchValue({
+        level2CareCertificate: this.worker.level2CareCertificate.value,
+        level2CareCertificateYearAchieved: this.worker.level2CareCertificate.year,
+      });
+    }
+  }
+
+  generateUpdateProps() {
+    const { level2CareCertificate, level2CareCertificateYearAchieved } = this.form.value;
+
+    if (!level2CareCertificate) {
+      return null;
+    }
+
+    return {
+      level2CareCertificate: {
+        value: level2CareCertificate,
+        year: level2CareCertificateYearAchieved,
+      },
+    };
   }
 }
