@@ -15,7 +15,7 @@ import { render, within } from '@testing-library/angular';
 import { QualificationsAndTrainingComponent } from './qualifications-and-training.component';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
-fdescribe('QualificationsAndTrainingComponent', () => {
+describe('QualificationsAndTrainingComponent', () => {
   async function setup() {
     const { fixture, getByText } = await render(QualificationsAndTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
