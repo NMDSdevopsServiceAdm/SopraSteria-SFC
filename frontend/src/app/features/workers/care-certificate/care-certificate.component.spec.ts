@@ -10,7 +10,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { CareCertificateComponent } from './care-certificate.component';
 
-fdescribe('CareCertificateComponent', () => {
+describe('CareCertificateComponent', () => {
   async function setup(insideFlow = true) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId } = await render(
       CareCertificateComponent,
