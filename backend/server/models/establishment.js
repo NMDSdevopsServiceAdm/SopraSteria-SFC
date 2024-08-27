@@ -1504,6 +1504,7 @@ module.exports = function (sequelize, DataTypes) {
             'QualificationInSocialCareValue',
             'OtherQualificationsValue',
             'Level2CareCertificateValue',
+            'Level2CareCertificateYear',
           ],
           as: 'workers',
           where: {
