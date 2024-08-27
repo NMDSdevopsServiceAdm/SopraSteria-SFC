@@ -1,26 +1,27 @@
-import { render } from '@testing-library/angular';
-import { MainJobRoleComponent } from './main-job-role.component';
-import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { ProgressBarComponent } from '@shared/components/progress-bar/progress-bar.component';
-import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
-import { WindowRef } from '@core/services/window.ref';
-import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { SharedModule } from '@shared/shared.module';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { getTestBed } from '@angular/core/testing';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { HttpClient } from '@angular/common/http';
-import { UserService } from '@core/services/user.service';
-import { MockUserService } from '@core/test-utils/MockUserService';
-import { Roles } from '@core/model/roles.enum';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
+import { Roles } from '@core/model/roles.enum';
 import { Worker } from '@core/model/worker.model';
-import userEvent from '@testing-library/user-event';
 import { AlertService } from '@core/services/alert.service';
+import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { UserService } from '@core/services/user.service';
+import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockUserService } from '@core/test-utils/MockUserService';
+import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { ProgressBarComponent } from '@shared/components/progress-bar/progress-bar.component';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+
+import { MainJobRoleComponent } from './main-job-role.component';
 
 describe('MainJobRoleComponent', () => {
   async function setup(insideFlow = true, returnToMandatoryDetails = false, addNewWorker = false) {
@@ -432,6 +433,29 @@ describe('MainJobRoleComponent', () => {
         component.worker.uid,
         'mental-health-professional',
       ]);
+    });
+
+    it('should clear the mandatory worker info in the worker service on submit', async () => {
+      const { fixture, getByText, workerService } = await setup();
+
+      const clearWorkerInfoSpy = spyOn(workerService, 'clearNewWorkerMandatoryInfo');
+
+      userEvent.click(getByText('Professional and related roles'));
+      userEvent.click(getByText('Social worker'));
+      userEvent.click(getByText('Save and return'));
+      fixture.detectChanges();
+
+      expect(clearWorkerInfoSpy).toHaveBeenCalled();
+    });
+
+    it('should clear the mandatory worker info in the worker service on click of Cancel', async () => {
+      const { getByText, workerService } = await setup();
+
+      const clearWorkerInfoSpy = spyOn(workerService, 'clearNewWorkerMandatoryInfo');
+
+      userEvent.click(getByText('Cancel'));
+
+      expect(clearWorkerInfoSpy).toHaveBeenCalled();
     });
   });
 });

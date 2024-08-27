@@ -1,13 +1,14 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { QuestionComponent } from '../question/question.component';
-import { Job } from '@core/model/job.model';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Job } from '@core/model/job.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { AlertService } from '@core/services/alert.service';
+import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
+
+import { QuestionComponent } from '../question/question.component';
 
 @Component({
   selector: 'app-main-job-role.component',
@@ -156,7 +157,6 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     if (this.editFlow) {
       this.next = this.determineConditionalRouting();
     } else {
-      this.workerService.clearNewWorkerMandatoryInfo();
       this.next = this.getRoutePath('mandatory-details');
     }
     !this.editFlow && this.workerService.setAddStaffRecordInProgress(true);
@@ -182,5 +182,10 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
         ],
       },
     ];
+  }
+
+  public onSubmit(): void {
+    this.workerService.clearNewWorkerMandatoryInfo();
+    super.onSubmit();
   }
 }
