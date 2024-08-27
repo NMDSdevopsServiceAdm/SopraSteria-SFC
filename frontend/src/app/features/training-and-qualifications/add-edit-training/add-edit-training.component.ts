@@ -87,7 +87,8 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         (trainingRecord) => {
           if (trainingRecord) {
             this.trainingRecord = trainingRecord;
-            this.trainingCategory = this.trainingRecord.trainingCategory;
+            this.category = trainingRecord.trainingCategory.category;
+            this.trainingCategory = trainingRecord.trainingCategory;
 
             const completed = this.trainingRecord.completed
               ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)

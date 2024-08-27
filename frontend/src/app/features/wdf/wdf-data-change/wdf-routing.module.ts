@@ -14,8 +14,10 @@ import { CountryOfBirthComponent } from '@features/workers/country-of-birth/coun
 import { DateOfBirthComponent } from '@features/workers/date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from '@features/workers/days-of-sickness/days-of-sickness.component';
 import { DisabilityComponent } from '@features/workers/disability/disability.component';
+import { EmployedFromOutsideUkComponent } from '@features/workers/employed-from-outside-uk/employed-from-outside-uk.component';
 import { EthnicityComponent } from '@features/workers/ethnicity/ethnicity.component';
 import { GenderComponent } from '@features/workers/gender/gender.component';
+import { HealthAndCareVisaComponent } from '@features/workers/health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from '@features/workers/home-postcode/home-postcode.component';
 import { MainJobStartDateComponent } from '@features/workers/main-job-start-date/main-job-start-date.component';
 import { MentalHealthProfessionalComponent } from '@features/workers/mental-health-professional/mental-health-professional.component';
@@ -160,6 +162,16 @@ const routes: Routes = [
         path: 'recruited-from',
         component: RecruitedFromComponent,
         data: { title: 'Recruited From' },
+      },
+      {
+        path: 'health-and-care-visa',
+        component: HealthAndCareVisaComponent,
+        data: { title: 'Health and Care Visa' },
+      },
+      {
+        path: 'inside-or-outside-of-uk',
+        component: EmployedFromOutsideUkComponent,
+        data: { title: 'Inside or Outside UK' },
       },
       {
         path: 'adult-social-care-started',
@@ -345,6 +357,16 @@ const routes: Routes = [
                 path: 'recruited-from',
                 component: RecruitedFromComponent,
                 data: { title: 'Recruited From' },
+              },
+              {
+                path: 'health-and-care-visa',
+                component: HealthAndCareVisaComponent,
+                data: { title: 'Health and Care Visa' },
+              },
+              {
+                path: 'inside-or-outside-of-uk',
+                component: EmployedFromOutsideUkComponent,
+                data: { title: 'Inside or Outside UK' },
               },
               {
                 path: 'adult-social-care-started',

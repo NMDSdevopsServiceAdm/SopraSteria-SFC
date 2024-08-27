@@ -19,9 +19,10 @@ import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { Establishment } from '@core/model/establishment.model';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import sinon from 'sinon';
 
 describe('SelectTrainingCategoryMultipleComponent', () => {
-  async function setup(prefill = false, accessedFromSummary = false) {
+  async function setup(prefill = false, accessedFromSummary = false, qsParamGetMock = sinon.stub()) {
     const establishment = establishmentBuilder() as Establishment;
     const { fixture, getByText, getAllByText, getByTestId } = await render(SelectTrainingCategoryMultipleComponent, {
       imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
@@ -49,6 +50,9 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
               },
               parent: {
                 url: [{ path: accessedFromSummary ? 'confirm-training' : 'select-staff' }],
+              },
+              queryParamMap: {
+                get: qsParamGetMock,
               },
             },
           },
@@ -133,14 +137,14 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
   });
 
-  it('should show an accordian with the correct categories in', async () => {
+  it('should show an accordion with the correct categories in', async () => {
     const { component, getByTestId } = await setup(true);
     expect(component.categories).toEqual([
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
       { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
       { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
-    expect(getByTestId('accordian')).toBeTruthy();
+    expect(getByTestId('groupedAccordion')).toBeTruthy();
   });
 
   it('should return to the select staff page if there is no selected staff', async () => {
@@ -224,6 +228,6 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
     fixture.detectChanges();
 
     expect(component.form.invalid).toBeTruthy();
-    expect(getAllByText('Select the training category').length).toEqual(1);
+    expect(getAllByText('Select the training category').length).toEqual(2);
   });
 });

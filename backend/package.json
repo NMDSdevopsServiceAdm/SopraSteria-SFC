@@ -2,8 +2,7 @@
   "name": "ng-sfc-v2",
   "version": "0.0.1",
   "scripts": {
-    "dev-start": "npm run api:server",
-    "new-start": "npm run db:migrate:pipeline && npm run api:server",
+    "new-start": "npm run api:server",
     "start": "npm run db:migrate:pipeline && node --max-old-space-size=4096 server.js",
     "build": "node --max_old_space_size=8192 node_modules/@angular/cli/bin/ng build --no-progress",
     "build:clean": "rimraf dist",

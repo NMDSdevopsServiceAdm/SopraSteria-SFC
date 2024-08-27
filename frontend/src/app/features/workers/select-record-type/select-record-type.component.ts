@@ -57,6 +57,14 @@ export class SelectRecordTypeComponent implements OnInit, AfterViewInit {
     if (this.trainingOrQualificationPreviouslySelected) {
       this.prefill(this.getPrefillValue());
     }
+
+    this.clearSelectedTrainingCategoryOnPageEntry();
+  }
+
+  private clearSelectedTrainingCategoryOnPageEntry() {
+    if (!this.trainingOrQualificationPreviouslySelected || this.trainingOrQualificationPreviouslySelected === 'null') {
+      this.trainingService.clearSelectedTrainingCategory();
+    }
   }
 
   private setupForm(): void {
