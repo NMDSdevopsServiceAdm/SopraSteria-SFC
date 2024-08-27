@@ -14,8 +14,11 @@ exports.Level2CareCertificateProperty = class Level2CareCertificateProperty exte
   // concrete implementations
   async restoreFromJson(document) {
     if (document.careCertificate) {
-      if (LEVEL_2_CARE_CERTIFICATE_TYPE.includes(document.level2CareCertificate)) {
-        this.property = document.level2CareCertificate;
+      if (LEVEL_2_CARE_CERTIFICATE_TYPE.includes(document.level2CareCertificate.value)) {
+        this.property = {
+          value: document.level2CareCertificate.value,
+          year: document.level2CareCertificate.year,
+        };
       } else {
         this.property = null;
       }
@@ -23,11 +26,17 @@ exports.Level2CareCertificateProperty = class Level2CareCertificateProperty exte
   }
 
   restorePropertyFromSequelize(document) {
-    return document.Level2CareCertificateValue;
+    let level2CareCertificateDocument = {
+      value: document.Level2CareCertificateValue,
+      year: document.Level2CareCertificateYear,
+    };
+    return level2CareCertificateDocument;
   }
+
   savePropertyToSequelize() {
     return {
-      Level2CareCertificateValue: this.property,
+      Level2CareCertificateValue: this.property.value,
+      Level2CareCertificateYear: this.property.value === 'Yes, completed' ? this.property.year : null,
     };
   }
 
