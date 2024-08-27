@@ -93,11 +93,11 @@ fdescribe('QualificationsAndTrainingComponent', () => {
       const addLink = within(level2CareCertificateSection).getByText('Add');
 
       expect(addLink.getAttribute('href')).toBe(
-        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/level-2-adult-social-care-certificate`,
+        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/level-2-care-certificate`,
       );
     });
 
-    xit('should render Change link with the staff-record-summary/level-2-adult-social-care-certificate url when care certificate is already answered', async () => {
+    it('should render Change link with the staff-record-summary/level-2-adult-social-care-certificate url when care certificate is already answered', async () => {
       const { fixture, component, getByText } = await setup();
 
       component.worker.level2CareCertificate.value = 'Yes, started';
@@ -107,7 +107,7 @@ fdescribe('QualificationsAndTrainingComponent', () => {
       const changeLink = within(level2CareCertificateSection).getByText('Change');
 
       expect(changeLink.getAttribute('href')).toBe(
-        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/level-2-adult-social-care-certificate`,
+        `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/level-2-care-certificate`,
       );
     });
   });
