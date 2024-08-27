@@ -14,7 +14,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class Level2AdultSocialCareCertificateComponent extends QuestionComponent {
   public answersAvailable = [
     { value: 'Yes, completed', tag: 'Yes, completed' },
-    { value: 'Yes, in progress or partially completed', tag: 'Yes, started' },
+    { value: 'Yes, started', tag: 'Yes, started' },
     { value: 'No', tag: 'No' },
   ];
 
