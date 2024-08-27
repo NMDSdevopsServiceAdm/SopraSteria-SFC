@@ -10,7 +10,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { workerWithWdf } from '@core/test-utils/MockWorkerService';
 import { SummaryRecordChangeComponent } from '@shared/components/summary-record-change/summary-record-change.component';
 import { SharedModule } from '@shared/shared.module';
-import { render, getByTestId, within } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { QualificationsAndTrainingComponent } from './qualifications-and-training.component';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
@@ -104,8 +104,10 @@ fdescribe('QualificationsAndTrainingComponent', () => {
       fixture.detectChanges();
 
       const level2CareCertificateSection = getByText('Level 2 Adult Social Care Certificate').parentElement;
+      const currentAnswer = within(level2CareCertificateSection).getByText('Yes, started');
       const changeLink = within(level2CareCertificateSection).getByText('Change');
 
+      expect(currentAnswer).toBeTruthy();
       expect(changeLink.getAttribute('href')).toBe(
         `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/level-2-care-certificate`,
       );

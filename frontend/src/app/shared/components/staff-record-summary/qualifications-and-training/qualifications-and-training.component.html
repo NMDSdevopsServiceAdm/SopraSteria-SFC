@@ -47,37 +47,10 @@
     <dt class="govuk-summary-list__key govuk-!-width-one-half">Level 2 Adult Social Care Certificate</dt>
 
     <dd class="govuk-summary-list__value govuk-!-padding-left-9">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.careCertificate?.value"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        {{ worker.careCertificate || '-' }}
-      </app-summary-record-value>
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.careCertificate?.isEligible === 'Yes' &&
-          !worker.wdf?.careCertificate?.updatedSinceEffectiveDate &&
-          worker.level2CareCertificate?.value !== 'Yes, completed'
-        "
-        [changeLink]="getRoutePath('level-2-care-certificate', wdfView)"
-        (fieldConfirmation)="this.confirmField('level2CareCertificate')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
+      {{ worker.level2CareCertificate?.value || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="
-          !(
-            wdfView &&
-            worker.wdf?.careCertificate.isEligible === 'Yes' &&
-            !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
-            worker.level2CareCertificate?.value !== 'Yes, completed'
-          )
-        "
         [explanationText]="' level 2 adult social care certificate'"
         [link]="getRoutePath('level-2-care-certificate', wdfView)"
         [hasData]="!!worker.level2CareCertificate?.value"
