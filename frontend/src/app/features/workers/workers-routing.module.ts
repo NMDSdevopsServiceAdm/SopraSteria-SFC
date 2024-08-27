@@ -241,7 +241,7 @@ const routes: Routes = [
             data: { title: 'Care Certificate' },
           },
           {
-            path: 'level-2-adult-social-care-certificate',
+            path: 'level-2-care-certificate',
             component: Level2AdultSocialCareCertificateComponent,
             data: { title: 'Level 2 Adult Social Care Certificate' },
           },
@@ -490,7 +490,7 @@ const routes: Routes = [
         data: { title: 'Care Certificate' },
       },
       {
-        path: 'level-2-adult-social-care-certificate',
+        path: 'level-2-care-certificate',
         component: Level2AdultSocialCareCertificateComponent,
         data: { title: 'Level 2 Adult Social Care Certificate' },
       },
