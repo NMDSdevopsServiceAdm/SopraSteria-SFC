@@ -398,7 +398,7 @@ class Worker extends EntityValidator {
       }
 
       // Remove year if level 2 care certificate isn't completed
-      if (document.level2CareCertificate.value !== 'Yes, completed') {
+      if (document.level2CareCertificate && document.level2CareCertificate.value !== 'Yes, completed') {
         document.level2CareCertificate.year = null;
       }
 
