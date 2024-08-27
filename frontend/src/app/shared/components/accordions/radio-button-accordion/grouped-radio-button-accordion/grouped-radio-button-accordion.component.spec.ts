@@ -1,7 +1,8 @@
-import { render } from '@testing-library/angular';
-import { GroupedRadioButtonAccordionComponent } from './grouped-radio-button-accordion.component';
-import { SharedModule } from '@shared/shared.module';
 import { FormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render } from '@testing-library/angular';
+
+import { GroupedRadioButtonAccordionComponent } from './grouped-radio-button-accordion.component';
 
 describe('GroupedRadioButtonAccordionComponent', () => {
   async function setup(props?) {
@@ -39,7 +40,7 @@ describe('GroupedRadioButtonAccordionComponent', () => {
 
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText };
+    return { component, fixture, getByText, getByTestId };
   }
 
   it('should render', async () => {
@@ -62,8 +63,39 @@ describe('GroupedRadioButtonAccordionComponent', () => {
   });
 
   it('open all the accordions when there is an error', async () => {
-    const { component } = await setup({ hasError: true, errorMessage: 'Select the job role' });
+    const { component, fixture } = await setup({ hasError: true, errorMessage: 'Select the job role' });
 
+    component.ngOnChanges();
     expect(component.showAll).toBe(true);
   });
+
+  describe('show/hide all text', async () => {
+    it('should display "Show all" by default', async () => {
+      const { getByTestId } = await setup();
+
+      const showHideAllButton = getByTestId('toggleText');
+      expect(showHideAllButton.textContent).toContain('Show all');
+    });
+
+    it('should read "Hide all" after clicking "Show All"', async () => {
+      const { fixture, getByTestId } = await setup();
+
+      const showHideAllButton = getByTestId('toggleText');
+      fireEvent.click(showHideAllButton);
+      fixture.detectChanges();
+
+      expect(showHideAllButton.textContent).toContain('Hide all');
+    });
+
+    it('should read "Show all" after clicking "Hide All"', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.openAll();
+      const showHideAllButton = getByTestId('toggleText');
+
+      fireEvent.click(showHideAllButton);
+      fixture.detectChanges();
+      expect(showHideAllButton.textContent).toContain('Show all');
+    });
+  })
 });
