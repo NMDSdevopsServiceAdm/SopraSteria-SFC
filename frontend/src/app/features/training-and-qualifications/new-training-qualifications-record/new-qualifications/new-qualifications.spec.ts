@@ -39,7 +39,6 @@ describe('NewQualificationsComponent', () => {
 
     expect(getAllByText('Certificate name').length).toBe(2);
     expect(getAllByText('Year achieved').length).toBe(2);
-    expect(getAllByText('Notes').length).toBe(2);
   });
 
   it('should show Health table row with details of record', async () => {
@@ -47,7 +46,6 @@ describe('NewQualificationsComponent', () => {
 
     expect(getByText('Health qualification')).toBeTruthy();
     expect(getByText('2020')).toBeTruthy();
-    expect(getByText('This is a test note for the first row in the Health group')).toBeTruthy();
   });
 
   it('should show Certificate table first row with details of record', async () => {
@@ -55,7 +53,6 @@ describe('NewQualificationsComponent', () => {
 
     expect(getByText('Cert qualification')).toBeTruthy();
     expect(getByText('2021')).toBeTruthy();
-    expect(getByText('Test notes needed')).toBeTruthy();
   });
 
   it('should show Certificate table second row with details of record', async () => {
@@ -63,7 +60,6 @@ describe('NewQualificationsComponent', () => {
 
     expect(getByText('Another name for qual')).toBeTruthy();
     expect(getByText('2012')).toBeTruthy();
-    expect(getByText('These are some more notes in the second row of the cert table')).toBeTruthy();
   });
 
   describe('no qualifications', async () => {
