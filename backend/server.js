@@ -270,7 +270,7 @@ app.use('/api/country', [refCacheMiddleware.refcache, country]);
 app.use('/api/nationality', [refCacheMiddleware.refcache, nationality]);
 app.use('/api/qualification', [refCacheMiddleware.refcache, qualification]);
 app.use('/api/recruitedFrom', [refCacheMiddleware.refcache, recruitedFrom]);
-app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
+app.use('/api/jobs', [cacheMiddleware.nocache, jobs]);
 app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveReasons]);
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
