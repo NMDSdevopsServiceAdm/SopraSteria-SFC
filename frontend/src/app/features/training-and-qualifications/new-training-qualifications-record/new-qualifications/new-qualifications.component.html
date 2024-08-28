@@ -13,7 +13,6 @@
             <tr class="govuk-table__row">
               <th scope="col" class="govuk-table__header" scope="col" style="width: 30%">Certificate name</th>
               <th scope="col" class="govuk-table__header" scope="col" style="width: 16.5%">Year achieved</th>
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 53.5%">Notes</th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
@@ -34,9 +33,6 @@
                 </ng-template>
               </td>
               <td class="govuk-table__cell">{{ qualificationRecord?.year ? qualificationRecord.year : '-' }}</td>
-              <td class="govuk-table__cell">
-                {{ qualificationRecord?.notes ? qualificationRecord.notes : 'None' }}
-              </td>
             </tr>
           </tbody>
         </table>
