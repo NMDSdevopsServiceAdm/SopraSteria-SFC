@@ -6,12 +6,15 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import { Worker } from '@core/model/worker.model';
+import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 
 import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate.component';
+import { HttpClient } from '@angular/common/http';
 
 describe('Level2AdultSocialCareCertificateComponent', () => {
-  async function setup(insideFlow = true) {
+  const workerFieldsNoLevel2CareCertificate = { level2CareCertificate: { value: null, year: null } };
+  async function setup(insideFlow = true, workerFields = workerFieldsNoLevel2CareCertificate) {
     const { fixture, getByText, getAllByText, getByLabelText, getByTestId, queryByTestId, queryByText } = await render(
       Level2AdultSocialCareCertificateComponent,
       {
@@ -37,7 +40,8 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
           },
           {
             provide: WorkerService,
-            useClass: MockWorkerServiceWithUpdateWorker,
+            useFactory: MockWorkerServiceWithUpdateWorker.factory({ ...workerBuilder(), ...workerFields } as Worker),
+            deps: [HttpClient],
           },
         ],
         declarations: [],
@@ -186,79 +190,79 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
   });
 
   describe('navigation', () => {
-    // it('should navigate to apprenticeship-training page when submitting from flow', async () => {
-    //   const { component, routerSpy, getByText } = await setup();
+    it('should navigate to apprenticeship-training page when submitting from flow', async () => {
+      const { component, routerSpy, getByText } = await setup();
 
-    //   const workerId = component.worker.uid;
-    //   const workplaceId = component.workplace.uid;
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
 
-    //   const saveButton = getByText('Save and continue');
-    //   fireEvent.click(saveButton);
+      const saveButton = getByText('Save and continue');
+      fireEvent.click(saveButton);
 
-    //   expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('Save and continue')).toBeTruthy();
 
-    //   expect(routerSpy).toHaveBeenCalledWith([
-    //     '/workplace',
-    //     workplaceId,
-    //     'staff-record',
-    //     workerId,
-    //     'apprenticeship-training',
-    //   ]);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'apprenticeship-training',
+      ]);
+    });
 
-    // it('should navigate to apprenticeship-training page when skipping the question in the flow', async () => {
-    //   const { component, routerSpy, getByText } = await setup();
+    it('should navigate to apprenticeship-training page when skipping the question in the flow', async () => {
+      const { component, routerSpy, getByText } = await setup();
 
-    //   const workerId = component.worker.uid;
-    //   const workplaceId = component.workplace.uid;
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
 
-    //   const link = getByText('Skip this question');
-    //   fireEvent.click(link);
+      const link = getByText('Skip this question');
+      fireEvent.click(link);
 
-    //   expect(routerSpy).toHaveBeenCalledWith([
-    //     '/workplace',
-    //     workplaceId,
-    //     'staff-record',
-    //     workerId,
-    //     'apprenticeship-training',
-    //   ]);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'apprenticeship-training',
+      ]);
+    });
 
-    // it('should navigate to staff-summary-page page when pressing view this staff record', async () => {
-    //   const { component, routerSpy, getByText } = await setup();
+    it('should navigate to staff-summary-page page when pressing view this staff record', async () => {
+      const { component, routerSpy, getByText } = await setup();
 
-    //   const workerId = component.worker.uid;
-    //   const workplaceId = component.workplace.uid;
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
 
-    //   const link = getByText('View this staff record');
-    //   fireEvent.click(link);
+      const link = getByText('View this staff record');
+      fireEvent.click(link);
 
-    //   expect(routerSpy).toHaveBeenCalledWith([
-    //     '/workplace',
-    //     workplaceId,
-    //     'staff-record',
-    //     workerId,
-    //     'staff-record-summary',
-    //   ]);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
 
-    // it('should navigate to staff-summary-page page when pressing save and return', async () => {
-    //   const { component, routerSpy, getByText } = await setup(false);
+    it('should navigate to staff-summary-page page when pressing save and return', async () => {
+      const { component, routerSpy, getByText } = await setup(false);
 
-    //   const workerId = component.worker.uid;
-    //   const workplaceId = component.workplace.uid;
+      const workerId = component.worker.uid;
+      const workplaceId = component.workplace.uid;
 
-    //   const saveButton = getByText('Save and return');
-    //   fireEvent.click(saveButton);
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
 
-    //   expect(routerSpy).toHaveBeenCalledWith([
-    //     '/workplace',
-    //     workplaceId,
-    //     'staff-record',
-    //     workerId,
-    //     'staff-record-summary',
-    //   ]);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        workplaceId,
+        'staff-record',
+        workerId,
+        'staff-record-summary',
+      ]);
+    });
 
     it('should navigate to staff-summary-page page when pressing cancel', async () => {
       const { component, routerSpy, getByText } = await setup(false);
@@ -278,32 +282,64 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
       ]);
     });
 
-    // it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
-    //   const { component, router, fixture, routerSpy, getByText } = await setup(false);
-    //   spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
-    //   component.returnUrl = undefined;
-    //   component.ngOnInit();
-    //   fixture.detectChanges();
-    //   const workerId = component.worker.uid;
+    it('should navigate to wdf staff-summary-page page when pressing save and return in wdf version of page', async () => {
+      const { component, router, fixture, routerSpy, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
 
-    //   const saveButton = getByText('Save and return');
-    //   fireEvent.click(saveButton);
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
 
-    //   expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
 
-    // it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
-    //   const { component, router, fixture, routerSpy, getByText } = await setup(false);
-    //   spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
-    //   component.returnUrl = undefined;
-    //   component.ngOnInit();
-    //   fixture.detectChanges();
-    //   const workerId = component.worker.uid;
+    it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+      const { component, router, fixture, routerSpy, getByText } = await setup(false);
+      spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+      component.returnUrl = undefined;
+      component.ngOnInit();
+      fixture.detectChanges();
+      const workerId = component.worker.uid;
 
-    //   const link = getByText('Cancel');
-    //   fireEvent.click(link);
+      const link = getByText('Cancel');
+      fireEvent.click(link);
 
-    //   expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
-    // });
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+  });
+
+  describe('pre-fill', () => {
+    it('should only show radio button checked', async () => {
+      const workerFields = { level2CareCertificate: { value: 'No', year: null } };
+      const { component, fixture } = await setup(false, workerFields);
+
+      fixture.detectChanges();
+
+      const form = component.form;
+      const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-no"]');
+      const yearAchievedInput = fixture.nativeElement.querySelector('div[id="certification-achieved"]');
+
+      expect(radioBtn.checked).toBeTruthy();
+      expect(yearAchievedInput.getAttribute('class')).toContain('hidden');
+      expect(form.value).toEqual({ level2CareCertificate: 'No', level2CareCertificateYearAchieved: null });
+    });
+
+    it('should show radio and year input', async () => {
+      const workerFields = { level2CareCertificate: { value: 'Yes, completed', year: 2023 } };
+      const { component, fixture } = await setup(false, workerFields);
+
+      fixture.detectChanges();
+
+      const form = component.form;
+      const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-yesCompleted"]');
+      const yearAchievedInput = fixture.nativeElement.querySelector('div[id="certification-achieved"]');
+
+      expect(radioBtn.checked).toBeTruthy();
+      expect(yearAchievedInput.getAttribute('class')).not.toContain('hidden');
+      expect(form.value).toEqual({ level2CareCertificate: 'Yes, completed', level2CareCertificateYearAchieved: 2023 });
+    });
   });
 });

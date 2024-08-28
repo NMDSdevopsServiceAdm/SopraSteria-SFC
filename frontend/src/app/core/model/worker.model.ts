@@ -68,9 +68,9 @@ export interface Worker {
   };
   annualHourlyPay: WorkerPay;
   careCertificate: string;
-  level2CareCertificate: {
+  level2CareCertificate?: {
     value: string;
-    year: number;
+    year?: number;
   };
   apprenticeshipTraining: string;
   qualificationInSocialCare: string;

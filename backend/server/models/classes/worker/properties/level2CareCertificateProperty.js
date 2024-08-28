@@ -13,7 +13,7 @@ exports.Level2CareCertificateProperty = class Level2CareCertificateProperty exte
 
   // concrete implementations
   async restoreFromJson(document) {
-    if (document.careCertificate) {
+    if (document.level2CareCertificate) {
       if (LEVEL_2_CARE_CERTIFICATE_TYPE.includes(document.level2CareCertificate.value)) {
         this.property = {
           value: document.level2CareCertificate.value,
