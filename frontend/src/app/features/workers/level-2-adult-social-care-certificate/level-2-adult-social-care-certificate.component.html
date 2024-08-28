@@ -15,7 +15,7 @@
             </h1>
           </legend>
 
-          <div class="govuk-details__text govuk-!-font-size-19 govuk-!-margin-bottom-9">
+          <div class="govuk-details__text govuk-!-font-size-19 govuk-!-margin-bottom-7">
             The Level 2 Adult Social Care Certificate qualification, introduced in 2024, is not the same thing as the
             existing standards based Care Certificate.
           </div>
@@ -58,10 +58,6 @@
                   id="level2CareCertificateYearAchieved-error"
                   class="govuk-error-message"
                 >
-                  <ng-container *ngIf="form.get('level2CareCertificateYearAchieved').hasError('required')">
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getFormErrorMessage('level2CareCertificateYearAchieved', 'required') }}
-                  </ng-container>
                   <ng-container *ngIf="form.get('level2CareCertificateYearAchieved').hasError('min')">
                     <span class="govuk-visually-hidden">Error:</span>
                     {{ getFormErrorMessage('level2CareCertificateYearAchieved', 'min') }}

@@ -355,19 +355,19 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
   });
 
   describe('errors', () => {
-    it('should show if a year has not been entered when "Yes, completed" has been selected', async () => {
-      const { component, fixture, getByText, getAllByText } = await setup(false);
+    it('should not show if "Yes, completed" is clicked but no year entered', async () => {
+      const { component, fixture, getByText, queryByText } = await setup(false);
 
       const form = component.form;
       const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-yesCompleted"]');
       const saveButton = getByText('Save and return');
-      const expectedErrorMessage = 'Enter the year';
 
       fireEvent.click(radioBtn);
       fireEvent.click(saveButton);
+      fixture.detectChanges();
 
-      expect(form.invalid).toBeTruthy();
-      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+      expect(form.valid).toBeTruthy();
+      expect(queryByText('There is a problem')).toBeFalsy();
     });
 
     it('should show if the entered year is in the future', async () => {

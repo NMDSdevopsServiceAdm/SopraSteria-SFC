@@ -34,7 +34,7 @@ export class Level2AdultSocialCareCertificateComponent extends QuestionComponent
 
     this.form = this.formBuilder.group({
       level2CareCertificate: null,
-      level2CareCertificateYearAchieved: null,
+      level2CareCertificateYearAchieved: [null, { validators: null, updateOn: 'submit' }],
     });
   }
 
@@ -48,7 +48,7 @@ export class Level2AdultSocialCareCertificateComponent extends QuestionComponent
         if (value === 'Yes, completed') {
           this.form
             .get('level2CareCertificateYearAchieved')
-            .setValidators([Validators.required, Validators.min(2024), Validators.max(dayjs().year())]);
+            .setValidators([Validators.min(2024), Validators.max(dayjs().year())]);
         }
         this.form.get('level2CareCertificateYearAchieved').updateValueAndValidity();
       }),
@@ -82,10 +82,6 @@ export class Level2AdultSocialCareCertificateComponent extends QuestionComponent
       {
         item: 'level2CareCertificateYearAchieved',
         type: [
-          {
-            name: 'required',
-            message: 'Enter the year',
-          },
           {
             name: 'min',
             message: `Year cannot be before 2024`,

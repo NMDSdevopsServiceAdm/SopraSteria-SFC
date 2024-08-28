@@ -28,6 +28,11 @@ exports.Level2CareCertificateProperty = class Level2CareCertificateProperty exte
               value: document.level2CareCertificate.value,
               year: document.level2CareCertificate.year,
             };
+          } else if (!document.level2CareCertificate.year) {
+            this.property = {
+              value: document.level2CareCertificate.value,
+              year: null,
+            };
           } else {
             this.property = null;
           }
