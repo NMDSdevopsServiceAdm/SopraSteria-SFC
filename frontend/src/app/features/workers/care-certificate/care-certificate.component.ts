@@ -37,7 +37,7 @@ export class CareCertificateComponent extends QuestionComponent {
   }
 
   init() {
-    this.next = this.getRoutePath('level-2-adult-social-care-certificate');
+    this.next = this.getRoutePath('level-2-care-certificate');
     if (this.worker.careCertificate) {
       this.prefill();
     }
