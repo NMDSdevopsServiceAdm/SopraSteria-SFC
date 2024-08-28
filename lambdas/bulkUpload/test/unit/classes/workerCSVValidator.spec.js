@@ -1222,5 +1222,29 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator._validationErrors.length).to.equal(1);
       });
     });
+
+    describe('_validateLevel2CareCert', () => {
+      [
+        { l2CareCert: '1', mapping: 'Yes, completed' },
+        { l2CareCert: '2', mapping: 'Yes, started' },
+        { l2CareCert: '3', mapping: 'No' },
+      ].forEach((answer) => {
+        it(`should not add warning when valid (${answer.l2CareCert}) level 2 care certificate value provided`, async () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              L2CARECERT: answer.l2CareCert,
+            },
+          });
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          await validator.validate();
+          await validator.transform();
+
+          expect(validator._validationErrors).to.deep.equal([]);
+          expect(validator._validationErrors.length).to.equal(0);
+        });
+      });
+    });
   });
 });
