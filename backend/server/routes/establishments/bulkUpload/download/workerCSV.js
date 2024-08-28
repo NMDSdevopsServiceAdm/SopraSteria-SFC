@@ -32,7 +32,7 @@ const _convertYesNoDontKnow = (value) => {
 // takes the given Worker entity and writes it out to CSV string (one line)
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
-  //     "CARECERT","RECSOURCE","HANDCVISA","INOUTUK","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
+  //     "CARECERT","L2CARECERT","RECSOURCE","HANDCVISA","INOUTUK","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
   //     "NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
   const columns = [];
 
@@ -174,6 +174,21 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
       break;
   }
   columns.push(careCert);
+
+  // "L2CARECERT"
+  let l2CareCert = '';
+  switch (entity.Level2CareCertificateValue) {
+    case 'Yes, completed':
+      l2CareCert = 1;
+      break;
+    case 'Yes, started':
+      l2CareCert = 2;
+      break;
+    case 'No':
+      l2CareCert = 3;
+      break;
+  }
+  columns.push(l2CareCert);
 
   // "RECSOURCE"
   let recruitmentSource = '';
