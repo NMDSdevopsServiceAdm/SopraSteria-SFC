@@ -13,15 +13,32 @@ exports.Level2CareCertificateProperty = class Level2CareCertificateProperty exte
 
   // concrete implementations
   async restoreFromJson(document) {
+    const yearLevel2CareCertificateIntroduced = 2024;
     if (document.level2CareCertificate) {
       if (LEVEL_2_CARE_CERTIFICATE_TYPE.includes(document.level2CareCertificate.value)) {
-        this.property = {
-          value: document.level2CareCertificate.value,
-          year: document.level2CareCertificate.year,
-        };
-      } else {
-        this.property = null;
+        if (document.level2CareCertificate.value === 'Yes, completed') {
+          const thisYear = new Date().getFullYear();
+          if (
+            document.level2CareCertificate.year &&
+            Number.isInteger(document.level2CareCertificate.year) &&
+            document.level2CareCertificate.year >= yearLevel2CareCertificateIntroduced &&
+            document.level2CareCertificate.year < thisYear + 1
+          ) {
+            this.property = {
+              value: document.level2CareCertificate.value,
+              year: document.level2CareCertificate.year,
+            };
+          } else {
+            this.property = null;
+          }
+        } else {
+          this.property = {
+            value: document.level2CareCertificate.value,
+          };
+        }
       }
+    } else {
+      this.property = null;
     }
   }
 
