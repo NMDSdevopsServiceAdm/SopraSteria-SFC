@@ -11,6 +11,7 @@ const buildWorkerCsv = build('WorkerCSV', {
     AVGHOURS: '',
     BRITISHCITIZENSHIP: '',
     CARECERT: '3',
+    L2CARECERT: '3',
     CONTHOURS: '23',
     COUNTRYOFBIRTH: '826',
     DAYSSICK: '1',
@@ -1223,7 +1224,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
-    describe('_validateLevel2CareCert', () => {
+    describe.only('_validateLevel2CareCert()', () => {
       [
         { l2CareCert: '1', mapping: 'Yes, completed' },
         { l2CareCert: '2', mapping: 'Yes, started' },
@@ -1238,12 +1239,56 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           });
           const validator = new WorkerCsvValidator(worker, 2, null, mappings);
 
-          await validator.validate();
-          await validator.transform();
+          validator.validate();
+          validator.transform();
 
           expect(validator._validationErrors).to.deep.equal([]);
           expect(validator._validationErrors.length).to.equal(0);
         });
+
+        it(`should set level 2 care certificate value field with database mapping (${answer.mapping}) when valid (${answer.l2CareCert}) L2CARECERT provided`, () => {
+          const worker = buildWorkerCsv({
+            overrides: {
+              STATUS: 'NEW',
+              L2CARECERT: answer.l2CareCert,
+            },
+          });
+          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+          validator.validate();
+          validator.transform();
+
+          expect(validator._level2CareCert).to.equal(answer.mapping);
+        });
+      });
+
+      it('should add warning when the L2CARECERT value is invalid', async () => {
+        const invalidLevel2CareCertValue = '12345';
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'NEW',
+            L2CARECERT: invalidLevel2CareCertValue,
+          },
+        });
+        const expectedWarning = {
+          column: 'L2CARECERT',
+          lineNumber: 2,
+          name: 'MARMA',
+          source: '12345',
+          warnCode: WorkerCsvValidator.LEVEL_2_CARE_CERT_WARNING,
+          warnType: 'L2CARECERT_WARNING',
+          warning: 'The code you have entered for L2CARECERT is incorrect and will be ignored',
+          worker: '3',
+        };
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validator._level2CareCert).to.equal(null);
       });
     });
   });

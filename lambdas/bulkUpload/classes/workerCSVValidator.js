@@ -34,6 +34,7 @@ class WorkerCsvValidator {
 
     this._disabled = null;
     this._careCert = null;
+    this._level2CareCert = null;
 
     this._recSource = null;
     this._startDate = null;
@@ -358,6 +359,10 @@ class WorkerCsvValidator {
     return 5580;
   }
 
+  static get LEVEL_2_CARE_CERT_WARNING() {
+    return 5590;
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -436,6 +441,10 @@ class WorkerCsvValidator {
 
   get careCert() {
     return this._careCert;
+  }
+
+  get level2CareCert() {
+    return this._level2CareCert;
   }
 
   get recSource() {
@@ -1212,6 +1221,42 @@ class WorkerCsvValidator {
             break;
           case 3:
             this._careCert = 'Yes, in progress or partially completed';
+            break;
+        }
+        return true;
+      }
+    } else {
+      return true;
+    }
+  }
+
+  _validateLevel2CareCert() {
+    const level2CareCertValues = [1, 2, 3];
+    const myLevel2CareCert = parseInt(this._currentLine.L2CARECERT, 10);
+
+    if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
+      if (isNaN(myLevel2CareCert) || !level2CareCertValues.includes(myLevel2CareCert)) {
+        this._validationErrors.push({
+          worker: this._currentLine.UNIQUEWORKERID,
+          name: this._currentLine.LOCALESTID,
+          lineNumber: this._lineNumber,
+          warnCode: WorkerCsvValidator.LEVEL_2_CARE_CERT_WARNING,
+          warnType: 'L2CARECERT_WARNING',
+          warning: 'The code you have entered for L2CARECERT is incorrect and will be ignored',
+          source: this._currentLine.L2CARECERT,
+          column: 'L2CARECERT',
+        });
+        return false;
+      } else {
+        switch (myLevel2CareCert) {
+          case 1:
+            this._level2CareCert = 'Yes, completed';
+            break;
+          case 2:
+            this._level2CareCert = 'Yes, started';
+            break;
+          case 3:
+            this._level2CareCert = 'No';
             break;
         }
         return true;
@@ -2775,6 +2820,7 @@ class WorkerCsvValidator {
       status = !this._validateEmployedFromOutsideUk() ? false : status;
       status = !this._validateDisabled() ? false : status;
       status = !this._validateCareCert() ? false : status;
+      status = !this._validateLevel2CareCert() ? false : status;
       status = !this._validateRecSource() ? false : status;
       status = !this._validateStartDate() ? false : status;
       status = !this._validateStartInsect() ? false : status;
