@@ -359,7 +359,7 @@ class WorkerCsvValidator {
     return 5580;
   }
 
-  static get LEVEL_2_CARE_CERT_WARNING() {
+  static get L2CARECERT_WARNING() {
     return 5590;
   }
 
@@ -1199,7 +1199,7 @@ class WorkerCsvValidator {
     const myCareCert = parseInt(this._currentLine.CARECERT, 10);
 
     if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
-      if (isNaN(myCareCert) || !careCertValues.includes(parseInt(myCareCert, 10))) {
+      if (isNaN(myCareCert) || !careCertValues.includes(myCareCert)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1236,16 +1236,11 @@ class WorkerCsvValidator {
 
     if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
       if (isNaN(myLevel2CareCert) || !level2CareCertValues.includes(myLevel2CareCert)) {
-        this._validationErrors.push({
-          worker: this._currentLine.UNIQUEWORKERID,
-          name: this._currentLine.LOCALESTID,
-          lineNumber: this._lineNumber,
-          warnCode: WorkerCsvValidator.LEVEL_2_CARE_CERT_WARNING,
-          warnType: 'L2CARECERT_WARNING',
-          warning: 'The code you have entered for L2CARECERT is incorrect and will be ignored',
-          source: this._currentLine.L2CARECERT,
-          column: 'L2CARECERT',
-        });
+        const warning = this._generateWarning(
+          'The code you have entered for L2CARECERT is incorrect and will be ignored',
+          'L2CARECERT',
+        );
+        this._validationErrors.push(warning);
         return false;
       } else {
         switch (myLevel2CareCert) {

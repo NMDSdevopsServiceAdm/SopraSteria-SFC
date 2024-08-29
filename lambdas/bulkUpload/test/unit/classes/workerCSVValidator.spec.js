@@ -1224,7 +1224,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
-    describe.only('_validateLevel2CareCert()', () => {
+    describe('_validateLevel2CareCert()', () => {
       [
         { l2CareCert: '1', mapping: 'Yes, completed' },
         { l2CareCert: '2', mapping: 'Yes, started' },
@@ -1275,7 +1275,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           lineNumber: 2,
           name: 'MARMA',
           source: '12345',
-          warnCode: WorkerCsvValidator.LEVEL_2_CARE_CERT_WARNING,
+          warnCode: WorkerCsvValidator.L2CARECERT_WARNING,
           warnType: 'L2CARECERT_WARNING',
           warning: 'The code you have entered for L2CARECERT is incorrect and will be ignored',
           worker: '3',
