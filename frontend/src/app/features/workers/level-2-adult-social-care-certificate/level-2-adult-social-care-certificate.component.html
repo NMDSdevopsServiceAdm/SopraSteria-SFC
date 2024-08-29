@@ -38,11 +38,11 @@
                 id="level2CareCertificate-yesCompleted"
                 name="level2CareCertificate"
                 type="radio"
-                [value]="answersAvailable[0].value"
+                [value]="answersAvailable[0]"
                 data-aria-controls="conditional-certification-achieved"
               />
               <label class="govuk-label govuk-radios__label" for="level2CareCertificate-yesCompleted">
-                {{ answersAvailable[0].tag }}
+                {{ answersAvailable[0] }}
               </label>
             </div>
 
@@ -83,10 +83,10 @@
                 id="level2CareCertificate-yesStarted"
                 name="level2CareCertificate"
                 type="radio"
-                [value]="answersAvailable[1].value"
+                [value]="answersAvailable[1]"
               />
               <label class="govuk-label govuk-radios__label" for="level2CareCertificate-yesStarted">
-                {{ answersAvailable[1].tag }}
+                {{ answersAvailable[1] }}
               </label>
             </div>
             <div class="govuk-radios__item">
@@ -96,10 +96,10 @@
                 id="level2CareCertificate-no"
                 name="level2CareCertificate"
                 type="radio"
-                [value]="answersAvailable[2].value"
+                [value]="answersAvailable[2]"
               />
               <label class="govuk-label govuk-radios__label" for="level2CareCertificate-no">
-                {{ answersAvailable[2].tag }}
+                {{ answersAvailable[2] }}
               </label>
             </div>
           </div>

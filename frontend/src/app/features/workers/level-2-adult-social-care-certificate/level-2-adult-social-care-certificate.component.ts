@@ -13,11 +13,7 @@ import dayjs from 'dayjs';
   templateUrl: './level-2-adult-social-care-certificate.component.html',
 })
 export class Level2AdultSocialCareCertificateComponent extends QuestionComponent {
-  public answersAvailable = [
-    { value: 'Yes, completed', tag: 'Yes, completed' },
-    { value: 'Yes, started', tag: 'Yes, started' },
-    { value: 'No', tag: 'No' },
-  ];
+  public answersAvailable = ['Yes, completed', 'Yes, started', 'No'];
 
   public section = 'Training and qualifications';
 
