@@ -1728,15 +1728,6 @@ class Worker extends EntityValidator {
         .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 
-    myWdf.level2CareCertificate = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Level2CareCertificate'))
-        ? 'Yes'
-        : 'No',
-      updatedSinceEffectiveDate: this._properties
-        .get('Level2CareCertificate')
-        .toJSON(false, true, WdfCalculator.effectiveDate),
-    };
-
     myWdf.qualificationInSocialCare = {
       isEligible: this._isPropertyWdfBasicEligible(
         effectiveFromEpoch,

@@ -2,13 +2,16 @@
 const ChangePropertyPrototype = require('../../properties/changePrototype').ChangePropertyPrototype;
 
 const LEVEL_2_CARE_CERTIFICATE_TYPE = ['Yes, completed', 'Yes, started', 'No'];
-exports.Level2CareCertificateProperty = class Level2CareCertificateProperty extends ChangePropertyPrototype {
+exports.WorkerLevel2CareCertificateProperty = class WorkerLevel2CareCertificateProperty extends (
+  ChangePropertyPrototype
+) {
   constructor() {
     super('Level2CareCertificate');
+    this._allowNull = true;
   }
 
   static clone() {
-    return new Level2CareCertificateProperty();
+    return new WorkerLevel2CareCertificateProperty();
   }
 
   // concrete implementations

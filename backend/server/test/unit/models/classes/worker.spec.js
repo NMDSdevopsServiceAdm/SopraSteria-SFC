@@ -369,6 +369,68 @@ describe('Worker Class', () => {
         expect(document).to.deep.equal({ healthAndCareVisa: 'Yes' });
       });
     });
+
+    describe('Level 2 care certificate', () => {
+      it('should not set year to null if value is "Yes, completed" and there is a year value', async () => {
+        const document = {
+          level2CareCertificate: {
+            value: 'Yes, completed',
+            year: 2024,
+          },
+        };
+
+        await worker.load(document);
+
+        expect(document.level2CareCertificate).to.deep.equal({
+          value: 'Yes, completed',
+          year: 2024,
+        });
+      });
+
+      it('should not set year to null if value is "Yes, completed" and no year', async () => {
+        const document = {
+          level2CareCertificate: {
+            value: 'Yes, completed',
+          },
+        };
+
+        await worker.load(document);
+
+        expect(document.level2CareCertificate).to.deep.equal({
+          value: 'Yes, completed',
+        });
+      });
+
+      it('should set year to null if value is "Yes, started"', async () => {
+        const document = {
+          level2CareCertificate: {
+            value: 'Yes, started',
+          },
+        };
+
+        await worker.load(document);
+
+        expect(document.level2CareCertificate).to.deep.equal({
+          value: 'Yes, started',
+          year: null,
+        });
+      });
+
+      it('should set year to null if value is "No"', async () => {
+        const document = {
+          level2CareCertificate: {
+            value: 'No',
+          },
+        };
+
+        await worker.load(document);
+
+        expect(document.level2CareCertificate).to.deep.equal({
+          value: 'No',
+          year: null,
+        });
+      });
+    });
   });
 
   describe('setWdfProperties()', async () => {
