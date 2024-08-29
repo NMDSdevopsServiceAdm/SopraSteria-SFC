@@ -19,7 +19,7 @@ exports.WorkerLevel2CareCertificateProperty = class WorkerLevel2CareCertificateP
     const completedInYearSinceLevel2CareCertIntroduced = (year) => {
       const yearLevel2CareCertificateIntroduced = 2024;
       const thisYear = new Date().getFullYear();
-      return year >= yearLevel2CareCertificateIntroduced && document.level2CareCertificate.year < thisYear
+      return year >= yearLevel2CareCertificateIntroduced && document.level2CareCertificate.year <= thisYear
         ? true
         : false;
     };
