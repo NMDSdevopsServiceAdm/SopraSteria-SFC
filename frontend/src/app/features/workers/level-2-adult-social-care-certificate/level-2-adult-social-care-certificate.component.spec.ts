@@ -376,7 +376,7 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
       const form = component.form;
       const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-yesCompleted"]');
       const saveButton = getByText('Save and return');
-      const expectedErrorMessage = 'Year cannot be in the future';
+      const expectedErrorMessage = 'Year achieved cannot be in the future';
       const nextYear = dayjs().year() + 1;
 
       form.get('level2CareCertificateYearAchieved').setValue(nextYear);
@@ -400,7 +400,7 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
       fireEvent.click(radioBtn);
       fireEvent.click(saveButton);
 
-      const expectedErrorMessage = 'Year cannot be before 2024';
+      const expectedErrorMessage = 'Year achieved cannot be before 2024';
 
       expect(form.invalid).toBeTruthy();
       expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);

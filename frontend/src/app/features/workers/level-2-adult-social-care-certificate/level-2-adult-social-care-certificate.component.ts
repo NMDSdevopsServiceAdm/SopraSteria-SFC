@@ -84,11 +84,11 @@ export class Level2AdultSocialCareCertificateComponent extends QuestionComponent
         type: [
           {
             name: 'min',
-            message: `Year cannot be before 2024`,
+            message: `Year achieved cannot be before 2024`,
           },
           {
             name: 'max',
-            message: `Year cannot be in the future`,
+            message: `Year achieved cannot be in the future`,
           },
         ],
       },
