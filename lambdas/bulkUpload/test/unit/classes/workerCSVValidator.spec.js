@@ -66,7 +66,7 @@ const buildWorkerRecord = build('WorkerRecord', {
   },
 });
 
-describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
+describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
   describe('validations', () => {
     describe('days sick', () => {
       it('should emit a warning when days sick not already changed today', async () => {
@@ -1224,11 +1224,12 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
-    describe('_validateLevel2CareCert()', () => {
+    describe.only('_validateLevel2CareCert()', () => {
       [
-        { l2CareCert: '1', mapping: 'Yes, completed' },
-        { l2CareCert: '2', mapping: 'Yes, started' },
-        { l2CareCert: '3', mapping: 'No' },
+        { l2CareCert: '1;', mapping: { value: 'Yes, completed', year: null } },
+        { l2CareCert: '1;2024', mapping: { value: 'Yes, completed', year: 2024 } },
+        { l2CareCert: '2;', mapping: { value: 'Yes, started', year: null } },
+        { l2CareCert: '3;', mapping: { value: 'No', year: null } },
       ].forEach((answer) => {
         it(`should not add warning when valid (${answer.l2CareCert}) level 2 care certificate value provided`, async () => {
           const worker = buildWorkerCsv({
@@ -1258,7 +1259,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           validator.validate();
           validator.transform();
 
-          expect(validator._level2CareCert).to.equal(answer.mapping);
+          expect(validator._level2CareCert).to.deep.equal(answer.mapping);
         });
       });
 

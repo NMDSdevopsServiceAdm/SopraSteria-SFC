@@ -1232,7 +1232,10 @@ class WorkerCsvValidator {
 
   _validateLevel2CareCert() {
     const level2CareCertValues = [1, 2, 3];
-    const myLevel2CareCert = parseInt(this._currentLine.L2CARECERT, 10);
+
+    const [valueString, yearString] = this._currentLine.L2CARECERT.split(';');
+
+    const myLevel2CareCert = parseInt(valueString, 10);
 
     if (this._currentLine.L2CARECERT && this._currentLine.L2CARECERT.length > 0) {
       if (isNaN(myLevel2CareCert) || !level2CareCertValues.includes(myLevel2CareCert)) {
@@ -1248,10 +1251,10 @@ class WorkerCsvValidator {
             this._level2CareCert = 'Yes, completed';
             break;
           case 2:
-            this._level2CareCert = 'Yes, started';
+            this._level2CareCert = { value: 'Yes, started', year: null };
             break;
           case 3:
-            this._level2CareCert = 'No';
+            this._level2CareCert = { value: 'No', year: null };
             break;
         }
         return true;
