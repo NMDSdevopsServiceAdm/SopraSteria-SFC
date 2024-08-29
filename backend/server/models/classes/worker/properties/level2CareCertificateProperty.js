@@ -16,16 +16,21 @@ exports.WorkerLevel2CareCertificateProperty = class WorkerLevel2CareCertificateP
 
   // concrete implementations
   async restoreFromJson(document) {
-    const yearLevel2CareCertificateIntroduced = 2024;
+    const completedInYearSinceLevel2CareCertIntroduced = (year) => {
+      const yearLevel2CareCertificateIntroduced = 2024;
+      const thisYear = new Date().getFullYear();
+      return year >= yearLevel2CareCertificateIntroduced && document.level2CareCertificate.year < thisYear
+        ? true
+        : false;
+    };
+
     if (document.level2CareCertificate) {
       if (LEVEL_2_CARE_CERTIFICATE_TYPE.includes(document.level2CareCertificate.value)) {
         if (document.level2CareCertificate.value === 'Yes, completed') {
-          const thisYear = new Date().getFullYear();
           if (
             document.level2CareCertificate.year &&
             Number.isInteger(document.level2CareCertificate.year) &&
-            document.level2CareCertificate.year >= yearLevel2CareCertificateIntroduced &&
-            document.level2CareCertificate.year < thisYear + 1
+            completedInYearSinceLevel2CareCertIntroduced(document.level2CareCertificate.year)
           ) {
             this.property = {
               value: document.level2CareCertificate.value,
@@ -66,15 +71,18 @@ exports.WorkerLevel2CareCertificateProperty = class WorkerLevel2CareCertificateP
   }
 
   isEqual(currentValue, newValue) {
-    // Level 2 Care Certificate is a simple (enum'd) string
-    return currentValue && newValue && currentValue === newValue;
-  }
-
-  toJSON(withHistory = false, showPropertyHistoryOnly = true, wdfEffectiveDate = false) {
-    if (wdfEffectiveDate) {
-      return this._savedAt ? this._savedAt > wdfEffectiveDate : false;
+    // not a simple (enum'd) string compare; if "Yes, completed", also need to compare the year (just an integer)
+    let yearEqual = false;
+    if (currentValue && newValue && currentValue.value === 'Yes, completed') {
+      if (currentValue.year && newValue.year && currentValue.year === newValue.year) yearEqual = true;
+    } else {
+      yearEqual = true;
     }
 
+    return currentValue && newValue && currentValue.value === newValue.value && yearEqual;
+  }
+
+  toJSON(withHistory = false, showPropertyHistoryOnly = true) {
     if (!withHistory) {
       // simple form
       return {
