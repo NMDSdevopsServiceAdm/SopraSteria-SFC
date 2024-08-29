@@ -1234,7 +1234,7 @@ class WorkerCsvValidator {
     const level2CareCertValues = [1, 2, 3];
     const myLevel2CareCert = parseInt(this._currentLine.L2CARECERT, 10);
 
-    if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
+    if (this._currentLine.L2CARECERT && this._currentLine.L2CARECERT.length > 0) {
       if (isNaN(myLevel2CareCert) || !level2CareCertValues.includes(myLevel2CareCert)) {
         const warning = this._generateWarning(
           'The code you have entered for L2CARECERT is incorrect and will be ignored',
@@ -2899,6 +2899,7 @@ class WorkerCsvValidator {
             value: this._careCert,
           }
         : undefined,
+      level2CareCertificate: this._level2CareCert ? { value: this._level2CareCert } : undefined,
       recruitmentSource: this._recSource ? this._recSource : undefined,
       startDate: this._startDate ? this._startDate.format('DD/MM/YYYY') : undefined,
       startedInSector: this._startInsect ? this._startInsect : undefined,
@@ -2981,7 +2982,7 @@ class WorkerCsvValidator {
       employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
       disability: this._disabled ? this._disabled : undefined,
       careCertificate: this._careCert ? this._careCert : undefined,
-      level2CareCertificate: this._level2CareCert ? this._level2CareCert : undefined,
+      level2CareCertificate: this._level2CareCert ? { value: this._level2CareCert } : undefined,
       apprenticeshipTraining: this._apprentice ? this._apprentice : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
       registeredNurse: this._registeredNurse ? this._registeredNurse : undefined,
