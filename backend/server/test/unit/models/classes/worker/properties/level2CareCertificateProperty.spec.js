@@ -104,7 +104,7 @@ describe('level2CareCertificate Property', () => {
   });
 
   describe('isEqual()', () => {
-    it('should return true if the values are equal', () => {
+    it('should return true if the values are equal and the year is the same', () => {
       const level2CareCertificateProperty = new level2CareCertificatePropertyClass();
 
       const equal = level2CareCertificateProperty.isEqual(
@@ -112,6 +112,56 @@ describe('level2CareCertificate Property', () => {
         level2CareCertificateReturnedValues[1],
       );
       expect(equal).to.deep.equal(true);
+    });
+
+    it('should return true if the values are equal and there is no year', () => {
+      const level2CareCertificateProperty = new level2CareCertificatePropertyClass();
+
+      const equal = level2CareCertificateProperty.isEqual(
+        level2CareCertificateValues[0],
+        level2CareCertificateReturnedValues[0],
+      );
+      expect(equal).to.deep.equal(true);
+    });
+
+    it(`should return true if the values are the same when ${level2CareCertificateValues[2].value}`, () => {
+      const level2CareCertificateProperty = new level2CareCertificatePropertyClass();
+
+      const equal = level2CareCertificateProperty.isEqual(
+        level2CareCertificateValues[2],
+        level2CareCertificateReturnedValues[2],
+      );
+      expect(equal).to.deep.equal(true);
+    });
+
+    it(`should return true if the values are the same when ${level2CareCertificateValues[3].value}`, () => {
+      const level2CareCertificateProperty = new level2CareCertificatePropertyClass();
+
+      const equal = level2CareCertificateProperty.isEqual(
+        level2CareCertificateValues[3],
+        level2CareCertificateReturnedValues[3],
+      );
+      expect(equal).to.deep.equal(true);
+    });
+
+    it(`should return false if the values different (from ${level2CareCertificateValues[0].value} to ${level2CareCertificateReturnedValues[2].value})`, () => {
+      const level2CareCertificateProperty = new level2CareCertificatePropertyClass();
+
+      const equal = level2CareCertificateProperty.isEqual(
+        level2CareCertificateValues[0],
+        level2CareCertificateReturnedValues[2],
+      );
+      expect(equal).to.deep.equal(false);
+    });
+
+    it(`should return false if the values different (from ${level2CareCertificateValues[0].value} to ${level2CareCertificateReturnedValues[3].value})`, () => {
+      const level2CareCertificateProperty = new level2CareCertificatePropertyClass();
+
+      const equal = level2CareCertificateProperty.isEqual(
+        level2CareCertificateValues[0],
+        level2CareCertificateReturnedValues[3],
+      );
+      expect(equal).to.deep.equal(false);
     });
 
     it('should return false when there is a current year is but the new year sent is null', () => {

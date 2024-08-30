@@ -78,14 +78,11 @@ exports.WorkerLevel2CareCertificateProperty = class WorkerLevel2CareCertificateP
   isEqual(currentValue, newValue) {
     // not a simple (enum'd) string compare; if "Yes, completed", also need to compare the year (just an integer)
 
-    let yearEqual = false;
     if (currentValue && newValue && currentValue.value === 'Yes, completed') {
-      if (currentValue.year && newValue.year && currentValue.year === newValue.year) {
-        yearEqual = true;
-        return currentValue && newValue && currentValue.value === newValue.value && yearEqual;
+      if (currentValue.year === newValue.year) {
+        return currentValue.value === newValue.value;
       }
-      yearEqual = false;
-      return currentValue && newValue && currentValue.value === newValue.value && yearEqual;
+      return false;
     }
 
     return currentValue && newValue && currentValue.value === newValue.value;
