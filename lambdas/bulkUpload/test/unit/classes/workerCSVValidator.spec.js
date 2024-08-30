@@ -1225,71 +1225,134 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
     });
 
     describe.only('_validateLevel2CareCert()', () => {
-      [
-        { l2CareCert: '1;', mapping: { value: 'Yes, completed', year: null } },
-        { l2CareCert: '1;2024', mapping: { value: 'Yes, completed', year: 2024 } },
-        { l2CareCert: '2;', mapping: { value: 'Yes, started', year: null } },
-        { l2CareCert: '3;', mapping: { value: 'No', year: null } },
-      ].forEach((answer) => {
-        it(`should not add warning when valid (${answer.l2CareCert}) level 2 care certificate value provided`, async () => {
-          const worker = buildWorkerCsv({
-            overrides: {
-              STATUS: 'NEW',
-              L2CARECERT: answer.l2CareCert,
-            },
+      describe('Valid inputs', () => {
+        [
+          { l2CareCert: '1;', mapping: { value: 'Yes, completed', year: null } },
+          { l2CareCert: '1;2024', mapping: { value: 'Yes, completed', year: 2024 } },
+          { l2CareCert: '2;', mapping: { value: 'Yes, started', year: null } },
+          { l2CareCert: '3;', mapping: { value: 'No', year: null } },
+        ].forEach((answer) => {
+          it(`should not add warning when valid (${answer.l2CareCert}) level 2 care certificate value provided`, async () => {
+            const worker = buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                L2CARECERT: answer.l2CareCert,
+              },
+            });
+            const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+            validator.validate();
+            validator.transform();
+
+            expect(validator._validationErrors).to.deep.equal([]);
+            expect(validator._validationErrors.length).to.equal(0);
           });
-          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
 
-          validator.validate();
-          validator.transform();
+          it(`should set level 2 care certificate value field with database mapping (${JSON.stringify(
+            answer.mapping,
+          )}) when valid (${answer.l2CareCert}) L2CARECERT provided`, () => {
+            const worker = buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                L2CARECERT: answer.l2CareCert,
+              },
+            });
+            const validator = new WorkerCsvValidator(worker, 2, null, mappings);
 
-          expect(validator._validationErrors).to.deep.equal([]);
-          expect(validator._validationErrors.length).to.equal(0);
-        });
+            validator.validate();
+            validator.transform();
 
-        it(`should set level 2 care certificate value field with database mapping (${answer.mapping}) when valid (${answer.l2CareCert}) L2CARECERT provided`, () => {
-          const worker = buildWorkerCsv({
-            overrides: {
-              STATUS: 'NEW',
-              L2CARECERT: answer.l2CareCert,
-            },
+            expect(validator._level2CareCert).to.deep.equal(answer.mapping);
           });
-          const validator = new WorkerCsvValidator(worker, 2, null, mappings);
-
-          validator.validate();
-          validator.transform();
-
-          expect(validator._level2CareCert).to.deep.equal(answer.mapping);
         });
       });
 
-      it('should add warning when the L2CARECERT value is invalid', async () => {
-        const invalidLevel2CareCertValue = '12345';
-        const worker = buildWorkerCsv({
-          overrides: {
-            STATUS: 'NEW',
-            L2CARECERT: invalidLevel2CareCertValue,
-          },
+      describe('Partially accepted inputs', () => {
+        // TODO: warning message about ignoring the year input
+        const testCasesWithInvalidYears = ['1;2000', '1;2023'];
+        testCasesWithInvalidYears.forEach((l2CareCertInput) => {
+          it(`given a valid value but incorrect year: (${l2CareCertInput}), ignore the year`, () => {
+            const expected = { value: 'Yes, completed', year: null };
+
+            const worker = buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                L2CARECERT: l2CareCertInput,
+              },
+            });
+
+            const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+            validator.validate();
+            validator.transform();
+
+            expect(validator._level2CareCert).to.deep.equal(expected);
+          });
         });
-        const expectedWarning = {
-          column: 'L2CARECERT',
-          lineNumber: 2,
-          name: 'MARMA',
-          source: '12345',
-          warnCode: WorkerCsvValidator.L2CARECERT_WARNING,
-          warnType: 'L2CARECERT_WARNING',
-          warning: 'The code you have entered for L2CARECERT is incorrect and will be ignored',
-          worker: '3',
-        };
+      });
+      describe('Invalid inputs', () => {
+        const invalidInputs = ['12345', '12345;2024'];
+        invalidInputs.forEach((invalidLevel2CareCertValue) => {
+          it(`should add warning when the L2CARECERT value is invalid: (${invalidLevel2CareCertValue})`, async () => {
+            const worker = buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                L2CARECERT: invalidLevel2CareCertValue,
+              },
+            });
+            const expectedWarning = {
+              column: 'L2CARECERT',
+              lineNumber: 2,
+              name: 'MARMA',
+              source: invalidLevel2CareCertValue,
+              warnCode: WorkerCsvValidator.L2CARECERT_WARNING,
+              warnType: 'L2CARECERT_WARNING',
+              warning: 'The code you have entered for L2CARECERT is incorrect and will be ignored',
+              worker: '3',
+            };
 
-        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+            const validator = new WorkerCsvValidator(worker, 2, null, mappings);
 
-        validator.validate();
-        validator.transform();
+            validator.validate();
+            validator.transform();
 
-        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
-        expect(validator._validationErrors.length).to.equal(1);
-        expect(validator._level2CareCert).to.equal(null);
+            expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+            expect(validator._validationErrors.length).to.equal(1);
+            expect(validator._level2CareCert).to.equal(null);
+          });
+        });
+
+        const invalidInputsWithYear = ['2;2024', '3;2024', '2;2000', '3;2000'];
+
+        invalidInputsWithYear.forEach((invalidLevel2CareCertValue) => {
+          it(`should add warning and ignore the whole input when option 2 or 3 are given with a year: (${invalidLevel2CareCertValue})`, () => {
+            const worker = buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                L2CARECERT: invalidLevel2CareCertValue,
+              },
+            });
+            const expectedWarning = {
+              column: 'L2CARECERT',
+              lineNumber: 2,
+              name: 'MARMA',
+              source: invalidLevel2CareCertValue,
+              warnCode: WorkerCsvValidator.L2CARECERT_WARNING,
+              warnType: 'L2CARECERT_WARNING',
+              warning: 'Dummy msg: Option 2 or 3 for L2CARECERT cannot have a year, your input will be ignored',
+              worker: '3',
+            };
+
+            const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+            validator.validate();
+            validator.transform();
+
+            expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+            expect(validator._validationErrors.length).to.equal(1);
+            expect(validator._level2CareCert).to.equal(null);
+          });
+        });
       });
     });
   });
