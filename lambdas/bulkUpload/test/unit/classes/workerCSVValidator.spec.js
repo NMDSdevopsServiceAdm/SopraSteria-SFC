@@ -1,5 +1,7 @@
 const expect = require('chai').expect;
+const { before, after } = require('mocha');
 const moment = require('moment');
+const sinon = require('sinon');
 const WorkerCsvValidator = require('../../../classes/workerCSVValidator').WorkerCsvValidator;
 const { build } = require('@jackfranklin/test-data-bot');
 const mappings = require('../../../../../backend/reference/BUDIMappings').mappings;
@@ -1225,12 +1227,25 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
     });
 
     describe.only('_validateLevel2CareCert()', () => {
+      let clock;
+      before(() => {
+        // stub current year as 2025 to test behavior related to year in future
+        clock = sinon.useFakeTimers(new Date(2025, 1, 1));
+      });
+      after(() => {
+        clock.restore();
+      });
+
       describe('Valid inputs', () => {
         [
           { l2CareCert: '1;', mapping: { value: 'Yes, completed', year: null } },
           { l2CareCert: '1;2024', mapping: { value: 'Yes, completed', year: 2024 } },
+          { l2CareCert: '1;2025', mapping: { value: 'Yes, completed', year: 2025 } },
           { l2CareCert: '2;', mapping: { value: 'Yes, started', year: null } },
           { l2CareCert: '3;', mapping: { value: 'No', year: null } },
+          { l2CareCert: '1', mapping: { value: 'Yes, completed', year: null } },
+          { l2CareCert: '2', mapping: { value: 'Yes, started', year: null } },
+          { l2CareCert: '3', mapping: { value: 'No', year: null } },
         ].forEach((answer) => {
           it(`should not add warning when valid (${answer.l2CareCert}) level 2 care certificate value provided`, async () => {
             const worker = buildWorkerCsv({
@@ -1268,9 +1283,20 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
 
       describe('Partially accepted inputs', () => {
-        // TODO: warning message about ignoring the year input
-        const testCasesWithInvalidYears = ['1;2000', '1;2023'];
-        testCasesWithInvalidYears.forEach((l2CareCertInput) => {
+        const warningMessages = {
+          yearBefore2024: 'The year achieved for L2CARECERT cannot be before 2024. The year value will be ignored',
+          yearInFuture: 'The year achieved for L2CARECERT cannot be in the future. The year value will be ignored',
+          otherCase: 'The year achieved for L2CARECERT is invalid. The year value will be ignored',
+        };
+
+        const testCasesWithInvalidYears = [
+          { l2CareCertInput: '1;2000', expectedWarningMessage: warningMessages.yearBefore2024 },
+          { l2CareCertInput: '1;2023', expectedWarningMessage: warningMessages.yearBefore2024 },
+          { l2CareCertInput: '1;2099', expectedWarningMessage: warningMessages.yearInFuture },
+          { l2CareCertInput: '1;2026', expectedWarningMessage: warningMessages.yearInFuture },
+          { l2CareCertInput: '1;abc', expectedWarningMessage: warningMessages.otherCase },
+        ];
+        testCasesWithInvalidYears.forEach(({ l2CareCertInput, expectedWarningMessage }) => {
           it(`given a valid value but incorrect year: (${l2CareCertInput}), ignore the year`, () => {
             const expected = { value: 'Yes, completed', year: null };
 
@@ -1306,7 +1332,7 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
               source: l2CareCertInput,
               warnCode: WorkerCsvValidator.L2CARECERT_WARNING,
               warnType: 'L2CARECERT_WARNING',
-              warning: 'The year achieved for L2CARECERT cannot be before 2024. The year value will be ignored',
+              warning: expectedWarningMessage,
               worker: '3',
             };
 
@@ -1371,7 +1397,7 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
               source: invalidLevel2CareCertInput,
               warnCode: WorkerCsvValidator.L2CARECERT_WARNING,
               warnType: 'L2CARECERT_WARNING',
-              warning: 'Dummy msg: Option 2 or 3 for L2CARECERT cannot have achieved year. Your input will be ignored',
+              warning: 'Option 2 or 3 for L2CARECERT cannot have achieved year. Your input will be ignored',
               worker: '3',
             };
 
