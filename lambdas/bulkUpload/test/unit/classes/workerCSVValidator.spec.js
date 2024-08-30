@@ -1290,6 +1290,7 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           });
         });
       });
+
       describe('Invalid inputs', () => {
         const invalidInputs = ['12345', '12345;2024'];
         invalidInputs.forEach((invalidLevel2CareCertValue) => {

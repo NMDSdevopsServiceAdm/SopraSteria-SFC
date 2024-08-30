@@ -1231,51 +1231,54 @@ class WorkerCsvValidator {
   }
 
   _validateLevel2CareCert() {
-    const level2CareCertValues = [1, 2, 3];
+    const allowedLevel2CareCertValues = [1, 2, 3];
+    const yearLevel2CareCertificateIntroduced = 2024;
+
+    const inputIsEmpty = !(this._currentLine.L2CARECERT && this._currentLine.L2CARECERT.length > 0);
+
+    if (inputIsEmpty) {
+      return true;
+    }
 
     const [valueString, yearString] = this._currentLine.L2CARECERT.split(';');
+    const myLevel2CareCertValue = parseInt(valueString, 10);
+    const inputValueIsInvalid = !allowedLevel2CareCertValues.includes(myLevel2CareCertValue);
 
-    const myLevel2CareCert = parseInt(valueString, 10);
+    if (inputValueIsInvalid) {
+      const warning = this._generateWarning(
+        'The code you have entered for L2CARECERT is incorrect and will be ignored',
+        'L2CARECERT',
+      );
+      this._validationErrors.push(warning);
+      return false;
+    }
 
     const parseAndValidateYear = (yearString) => {
-      const yearLevel2CareCertificateIntroduced = 2024;
       const parsedYear = parseInt(yearString, 10);
 
       return parsedYear >= yearLevel2CareCertificateIntroduced ? parsedYear : null;
     };
+    const myLevel2CareCertYear = parseAndValidateYear(yearString);
 
-    const myLevel2CareCertYear = parseAndValidateYear(yearString); //  parseInt(yearString, 10) || null;
-
-    if (this._currentLine.L2CARECERT && this._currentLine.L2CARECERT.length > 0) {
-      if (isNaN(myLevel2CareCert) || !level2CareCertValues.includes(myLevel2CareCert)) {
-        const warning = this._generateWarning(
-          'The code you have entered for L2CARECERT is incorrect and will be ignored',
-          'L2CARECERT',
-        );
-        this._validationErrors.push(warning);
-        return false;
-      } else if ([2, 3].includes(myLevel2CareCert) && yearString) {
-        const warning = this._generateWarning(
-          'Dummy msg: Option 2 or 3 for L2CARECERT cannot have a year, your input will be ignored',
-          'L2CARECERT',
-        );
-        this._validationErrors.push(warning);
-        return false;
-      } else {
-        switch (myLevel2CareCert) {
-          case 1:
-            this._level2CareCert = { value: 'Yes, completed', year: myLevel2CareCertYear };
-            break;
-          case 2:
-            this._level2CareCert = { value: 'Yes, started', year: null };
-            break;
-          case 3:
-            this._level2CareCert = { value: 'No', year: null };
-            break;
-        }
-        return true;
-      }
+    if ([2, 3].includes(myLevel2CareCertValue) && yearString) {
+      const warning = this._generateWarning(
+        'Dummy msg: Option 2 or 3 for L2CARECERT cannot have a year, your input will be ignored',
+        'L2CARECERT',
+      );
+      this._validationErrors.push(warning);
+      return false;
     } else {
+      switch (myLevel2CareCertValue) {
+        case 1:
+          this._level2CareCert = { value: 'Yes, completed', year: myLevel2CareCertYear };
+          break;
+        case 2:
+          this._level2CareCert = { value: 'Yes, started', year: null };
+          break;
+        case 3:
+          this._level2CareCert = { value: 'No', year: null };
+          break;
+      }
       return true;
     }
   }
