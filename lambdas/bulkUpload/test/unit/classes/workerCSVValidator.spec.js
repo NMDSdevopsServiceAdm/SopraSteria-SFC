@@ -68,7 +68,7 @@ const buildWorkerRecord = build('WorkerRecord', {
   },
 });
 
-describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
+describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
   describe('validations', () => {
     describe('days sick', () => {
       it('should emit a warning when days sick not already changed today', async () => {
@@ -1226,7 +1226,7 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
-    describe.only('_validateLevel2CareCert()', () => {
+    describe('_validateLevel2CareCert()', () => {
       let clock;
       before(() => {
         // stub current year as 2025 to test behavior related to year in future

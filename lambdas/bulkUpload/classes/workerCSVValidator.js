@@ -2945,7 +2945,7 @@ class WorkerCsvValidator {
             value: this._careCert,
           }
         : undefined,
-      level2CareCertificate: this._level2CareCert ? { value: this._level2CareCert } : undefined,
+      level2CareCertificate: this._level2CareCert?.value ? this._level2CareCert : undefined,
       recruitmentSource: this._recSource ? this._recSource : undefined,
       startDate: this._startDate ? this._startDate.format('DD/MM/YYYY') : undefined,
       startedInSector: this._startInsect ? this._startInsect : undefined,
@@ -3028,7 +3028,7 @@ class WorkerCsvValidator {
       employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
       disability: this._disabled ? this._disabled : undefined,
       careCertificate: this._careCert ? this._careCert : undefined,
-      level2CareCertificate: this._level2CareCert ? { value: this._level2CareCert } : undefined,
+      level2CareCertificate: this._level2CareCert?.value ? this._level2CareCert : undefined,
       apprenticeshipTraining: this._apprentice ? this._apprentice : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
       registeredNurse: this._registeredNurse ? this._registeredNurse : undefined,
