@@ -1255,9 +1255,9 @@ class WorkerCsvValidator {
       if (yearString === '' || !yearString) {
         this._level2CareCert = { value: 'Yes, completed', year: null };
         return true;
-      } else {
-        return this._handleLevel2CareCertCompleteWithAchievedYear(yearString);
       }
+
+      return this._handleLevel2CareCertCompleteWithAchievedYear(yearString);
     }
 
     if ([2, 3].includes(myLevel2CareCertValue)) {
@@ -1268,17 +1268,10 @@ class WorkerCsvValidator {
         );
         this._validationErrors.push(warning);
         return false;
-      } else {
-        switch (myLevel2CareCertValue) {
-          case 2:
-            this._level2CareCert = { value: 'Yes, started', year: null };
-            break;
-          case 3:
-            this._level2CareCert = { value: 'No', year: null };
-            break;
-        }
-        return true;
       }
+
+      this._level2CareCert = { value: myLevel2CareCertValue === 2 ? 'Yes, started' : 'No', year: null };
+      return true;
     }
   }
 
