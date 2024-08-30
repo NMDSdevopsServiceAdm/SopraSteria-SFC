@@ -93,9 +93,9 @@ const getCategoryTraining = async (req, res) => {
   }
 };
 
-router.route('/').get([refCacheMiddleware.refcache, getAllTraining]);
-router.route('/:establishmentId/with-training').get([cacheMiddleware.nocache, getTrainingByCategory]);
-router.route('/:establishmentUid/:trainingCategoryId').get([cacheMiddleware.nocache], getCategoryTraining);
+router.route('/').get(getAllTraining);
+router.route('/:establishmentId/with-training').get(getTrainingByCategory);
+router.route('/:establishmentUid/:trainingCategoryId').get(getCategoryTraining);
 
 module.exports = router;
 module.exports.getTrainingByCategory = getTrainingByCategory;

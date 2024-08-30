@@ -17,6 +17,8 @@ import { of } from 'rxjs';
 import sinon from 'sinon';
 
 import { AddEditTrainingComponent } from './add-edit-training.component';
+import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -30,10 +32,7 @@ describe('AddEditTrainingComponent', () => {
             provide: ActivatedRoute,
             useValue: {
               snapshot: {
-                params: { trainingRecordId },
-                queryParamMap: {
-                  get: qsParamGetMock,
-                },
+                params: { trainingRecordId, establishmentuid: '24', id: 2 },
               },
               parent: {
                 snapshot: {
@@ -41,6 +40,7 @@ describe('AddEditTrainingComponent', () => {
                     establishment: {
                       uid: '1',
                     },
+                    trainingCategories: trainingCategories,
                   },
                 },
               },
@@ -50,6 +50,7 @@ describe('AddEditTrainingComponent', () => {
           ErrorSummaryService,
           { provide: TrainingService, useClass: MockTrainingService },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+          { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
         ],
       },
     );
@@ -66,6 +67,8 @@ describe('AddEditTrainingComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+
     return {
       component,
       fixture,
@@ -80,6 +83,7 @@ describe('AddEditTrainingComponent', () => {
       createSpy,
       workerService,
       alertServiceSpy,
+      trainingService,
     };
   }
 
@@ -93,14 +97,7 @@ describe('AddEditTrainingComponent', () => {
     expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
   });
 
-  describe('Training category select/display', async () => {
-    it('should show the training category select box when there is no training category is present', async () => {
-      const { getByTestId, queryByTestId } = await setup(null);
-
-      expect(getByTestId('trainingSelect')).toBeTruthy();
-      expect(queryByTestId('trainingCategoryDisplay')).toBeFalsy();
-    });
-
+  describe('Training category display', async () => {
     it('should show the training category displayed as text when there is a training category present and update the form value', async () => {
       const qsParamGetMock = sinon.stub();
       const { component, fixture, getByText, getByTestId, queryByTestId, workerService } = await setup(
@@ -110,7 +107,7 @@ describe('AddEditTrainingComponent', () => {
 
       component.trainingCategory = {
         category: 'Autism',
-        id: 1,
+        id: 2,
       };
 
       spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));
@@ -120,7 +117,6 @@ describe('AddEditTrainingComponent', () => {
       const { form } = component;
       const expectedFormValue = {
         title: null,
-        category: 1,
         accredited: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
@@ -128,9 +124,43 @@ describe('AddEditTrainingComponent', () => {
       };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
-      expect(queryByTestId('trainingSelect')).toBeFalsy();
       expect(getByText('Autism')).toBeTruthy();
       expect(form.value).toEqual(expectedFormValue);
+    });
+
+    it('should show the training category displayed as text with a change link when there is a training category present and update the form value', async () => {
+      const { component, fixture, getByText, getByTestId, queryByTestId, trainingService } = await setup(null);
+
+      trainingService.setSelectedTrainingCategory({
+        id: 1,
+        seq: 20,
+        category: 'Autism',
+        trainingCategoryGroup: 'Specific conditions and disabilities',
+      });
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const { form } = component;
+      const expectedFormValue = {
+        title: null,
+        accredited: null,
+        completed: { day: null, month: null, year: null },
+        expires: { day: null, month: null, year: null },
+        notes: null,
+      };
+
+      expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
+      expect(getByText('Autism')).toBeTruthy();
+      expect(form.value).toEqual(expectedFormValue);
+      expect(getByTestId('changeTrainingCategoryLink')).toBeTruthy();
+    });
+
+    it('should show the training category displayed as text when editing an existing training record', async () => {
+      const { getByText, getByTestId } = await setup();
+
+      expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
+      expect(getByText('Communication')).toBeTruthy();
     });
   });
 
@@ -158,7 +188,6 @@ describe('AddEditTrainingComponent', () => {
       const { form, workplace, worker, trainingRecordId } = component;
       const expectedFormValue = {
         title: 'Communication Training 1',
-        category: 1,
         accredited: 'Yes',
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
@@ -177,7 +206,6 @@ describe('AddEditTrainingComponent', () => {
 
       const expectedFormValue = {
         title: null,
-        category: null,
         accredited: null,
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
@@ -245,6 +273,7 @@ describe('AddEditTrainingComponent', () => {
         component.worker.uid,
         'training',
         component.trainingRecordId,
+        { trainingCategory: JSON.stringify(component.trainingCategory) },
         'delete',
       ]);
     });
@@ -274,7 +303,6 @@ describe('AddEditTrainingComponent', () => {
 
       const expectedFormValue = {
         title: 'Communication Training 1',
-        category: 1,
         accredited: 'Yes',
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
@@ -308,12 +336,17 @@ describe('AddEditTrainingComponent', () => {
     });
 
     it('should call the createTrainingRecord function if adding a new training record, and navigate away from page', async () => {
-      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy, alertServiceSpy } = await setup(null);
+      const { component, fixture, getByText, getByTestId, getByLabelText, createSpy, routerSpy, alertServiceSpy } =
+        await setup(null);
 
       component.previousUrl = ['/goToPreviousUrl'];
       fixture.detectChanges();
 
-      userEvent.selectOptions(getByLabelText('Training category'), `${component.categories[0].id}`);
+      component.trainingCategory = {
+        id: component.categories[0].id,
+        category: component.categories[0].category,
+      };
+
       userEvent.type(getByLabelText('Training name'), 'Some training');
       userEvent.click(getByLabelText('Yes'));
       const completedDate = getByTestId('completedDate');
@@ -331,7 +364,6 @@ describe('AddEditTrainingComponent', () => {
 
       const expectedFormValue = {
         title: 'Some training',
-        category: '1',
         accredited: 'Yes',
         completed: { day: 10, month: 4, year: 2020 },
         expires: { day: 10, month: 4, year: 2022 },
@@ -357,25 +389,37 @@ describe('AddEditTrainingComponent', () => {
           message: 'Training record added',
         });
       });
+    });
 
+    it('should reset the training category selected for training record in the service on submit', async () => {
+      const { component, fixture, getByText, getByLabelText, trainingService, routerSpy } = await setup(null);
+
+      trainingService.setSelectedTrainingCategory({
+        id: 2,
+        seq: 20,
+        category: 'Autism',
+        trainingCategoryGroup: 'Specific conditions and disabilities',
+      });
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      component.previousUrl = ['/goToPreviousUrl'];
+
+      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.click(getByLabelText('No'));
+
+      const trainingServiceSpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
+      fireEvent.click(getByText('Save record'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+      expect(trainingServiceSpy).toHaveBeenCalled();
+
+      expect(trainingService.selectedTraining.trainingCategory).toBeNull();
     });
   });
 
   describe('errors', () => {
-    describe('category errors', () => {
-      it('should show an error message if a category is not selected', async () => {
-        const { component, fixture, getByText, getAllByText } = await setup(null);
-
-        component.previousUrl = ['/goToPreviousUrl'];
-        fixture.detectChanges();
-
-        fireEvent.click(getByText('Save record'));
-        fixture.detectChanges();
-
-        expect(getAllByText('Select the training category').length).toEqual(3);
-      });
-    });
-
     describe('title errors', () => {
       it('should show an error message if the title is less than 3 characters long', async () => {
         const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
@@ -576,5 +620,17 @@ describe('AddEditTrainingComponent', () => {
         expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
       });
     });
+  });
+
+  it('should redirect to the add training select category on page refresh', async () => {
+    const { component, fixture, getByText, getByTestId, getByLabelText, trainingService, routerSpy } = await setup(
+      null,
+    );
+
+    component.ngOnInit();
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training`,
+    ]);
   });
 });

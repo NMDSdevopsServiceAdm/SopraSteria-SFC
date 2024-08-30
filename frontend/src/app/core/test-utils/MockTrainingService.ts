@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
 import { TrainingService } from '@core/services/training.service';
 import { Observable, of } from 'rxjs';
+
 import { AllJobs, JobsWithDuplicates } from '../../../mockdata/jobs';
 import { workerBuilder } from './MockWorkerService';
 
@@ -11,6 +12,7 @@ const workers = [workerBuilder(), workerBuilder()];
 export class MockTrainingService extends TrainingService {
   public selectedStaff = [];
   public _mockTrainingOrQualificationPreviouslySelected: string = null;
+  public _mockTrainingCategorySelectedForTrainingRecord: any = null;
   private _duplicateJobRoles: boolean = false;
 
   public get trainingOrQualificationPreviouslySelected() {
@@ -28,11 +30,12 @@ export class MockTrainingService extends TrainingService {
   public set trainingOrQualificationPreviouslySelected(value: string) {
     this._mockTrainingOrQualificationPreviouslySelected = value;
   }
-  public selectedTraining = null;
+
   getCategories(): Observable<TrainingCategory[]> {
     return of([
-      { id: 1, seq: 10, category: 'Activity provision/Well-being' },
-      { id: 2, seq: 20, category: 'Autism' },
+      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+      { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
   }
 
@@ -73,7 +76,7 @@ export class MockTrainingService extends TrainingService {
 @Injectable()
 export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService {
   public selectedStaff = workers;
-  public selectedTraining = {
+  protected _selectedTraining = {
     accredited: 'Yes',
     trainingCategory: { id: 1, seq: 3, category: 'Category' },
     completed: '2020-01-01',
@@ -90,7 +93,7 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     return (http: HttpClient) => {
       const service = new MockTrainingServiceWithPreselectedStaff(http);
       if (incompleteTraining) {
-        service.selectedTraining = { ...service.selectedTraining, completed: null, expires: null, notes: null };
+        service._selectedTraining = { ...service._selectedTraining, completed: null, expires: null, notes: null };
       }
       return service;
     };
