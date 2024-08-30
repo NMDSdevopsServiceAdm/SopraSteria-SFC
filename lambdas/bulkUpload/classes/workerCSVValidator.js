@@ -363,6 +363,22 @@ class WorkerCsvValidator {
     return 5590;
   }
 
+  static get L2CARECERT_WARNING_IGNORE_YEAR() {
+    return 5600;
+  }
+
+  static get L2CARECERT_WARNING_YEAR_BEFORE_2024() {
+    return 5610;
+  }
+
+  static get L2CARECERT_WARNING_YEAR_IN_FUTURE() {
+    return 5620;
+  }
+
+  static get L2CARECERT_WARNING_YEAR_INVALID() {
+    return 5630;
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -529,6 +545,19 @@ class WorkerCsvValidator {
       lineNumber: this._lineNumber,
       warnCode: WorkerCsvValidator[warningType],
       warnType: warningType,
+      warning,
+      source: this._currentLine[columnName],
+      column: columnName,
+    };
+  }
+
+  _generateWarningWithType(warning, columnName, warnType) {
+    return {
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+      lineNumber: this._lineNumber,
+      warnCode: WorkerCsvValidator[warnType],
+      warnType: warnType,
       warning,
       source: this._currentLine[columnName],
       column: columnName,
@@ -1262,9 +1291,10 @@ class WorkerCsvValidator {
 
     if ([2, 3].includes(myLevel2CareCertValue)) {
       if (yearString) {
-        const warning = this._generateWarning(
+        const warning = this._generateWarningWithType(
           'Option 2 or 3 for L2CARECERT cannot have achieved year. Your input will be ignored',
           'L2CARECERT',
+          'L2CARECERT_WARNING_IGNORE_YEAR',
         );
         this._validationErrors.push(warning);
         return false;
@@ -1280,18 +1310,22 @@ class WorkerCsvValidator {
     const thisYear = new Date().getFullYear();
     const parsedYear = parseInt(yearString, 10);
     let warningMessage;
+    let warnType;
 
     if (isNaN(parsedYear)) {
       warningMessage = 'The year achieved for L2CARECERT is invalid. The year value will be ignored';
+      warnType = 'L2CARECERT_WARNING_YEAR_INVALID';
     } else if (parsedYear < yearLevel2CareCertificateIntroduced) {
       warningMessage = 'The year achieved for L2CARECERT cannot be before 2024. The year value will be ignored';
+      warnType = 'L2CARECERT_WARNING_YEAR_BEFORE_2024';
     } else if (parsedYear > thisYear) {
       warningMessage = 'The year achieved for L2CARECERT cannot be in the future. The year value will be ignored';
+      warnType = 'L2CARECERT_WARNING_YEAR_IN_FUTURE';
     }
 
     if (warningMessage) {
       this._level2CareCert = { value: 'Yes, completed', year: null };
-      const warning = this._generateWarning(warningMessage, 'L2CARECERT');
+      const warning = this._generateWarningWithType(warningMessage, 'L2CARECERT', warnType);
       this._validationErrors.push(warning);
       return false;
     } else {
