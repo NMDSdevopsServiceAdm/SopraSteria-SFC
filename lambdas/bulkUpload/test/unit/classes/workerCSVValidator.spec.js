@@ -1288,24 +1288,55 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
             expect(validator._level2CareCert).to.deep.equal(expected);
           });
+
+          it('add a warning message about year being invalid', () => {
+            const worker = buildWorkerCsv({
+              overrides: {
+                STATUS: 'NEW',
+                L2CARECERT: l2CareCertInput,
+              },
+            });
+
+            const expectedParsedValue = { value: 'Yes, completed', year: null };
+
+            const expectedWarning = {
+              column: 'L2CARECERT',
+              lineNumber: 2,
+              name: 'MARMA',
+              source: l2CareCertInput,
+              warnCode: WorkerCsvValidator.L2CARECERT_WARNING,
+              warnType: 'L2CARECERT_WARNING',
+              warning: 'The year achieved for L2CARECERT cannot be before 2024. The year value will be ignored',
+              worker: '3',
+            };
+
+            const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+            validator.validate();
+            validator.transform();
+
+            expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+            expect(validator._validationErrors.length).to.equal(1);
+            expect(validator._level2CareCert).to.deep.equal(expectedParsedValue);
+          });
         });
       });
 
       describe('Invalid inputs', () => {
-        const invalidInputs = ['12345', '12345;2024'];
-        invalidInputs.forEach((invalidLevel2CareCertValue) => {
-          it(`should add warning when the L2CARECERT value is invalid: (${invalidLevel2CareCertValue})`, async () => {
+        const invalidInputs = ['12345', '12345;2024', 'abc', 'abc;2024'];
+        invalidInputs.forEach((invalidLevel2CareCertInput) => {
+          it(`should add warning when the L2CARECERT value is invalid: (${invalidLevel2CareCertInput})`, async () => {
             const worker = buildWorkerCsv({
               overrides: {
                 STATUS: 'NEW',
-                L2CARECERT: invalidLevel2CareCertValue,
+                L2CARECERT: invalidLevel2CareCertInput,
               },
             });
             const expectedWarning = {
               column: 'L2CARECERT',
               lineNumber: 2,
               name: 'MARMA',
-              source: invalidLevel2CareCertValue,
+              source: invalidLevel2CareCertInput,
               warnCode: WorkerCsvValidator.L2CARECERT_WARNING,
               warnType: 'L2CARECERT_WARNING',
               warning: 'The code you have entered for L2CARECERT is incorrect and will be ignored',
@@ -1325,22 +1356,22 @@ describe.only('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
 
         const invalidInputsWithYear = ['2;2024', '3;2024', '2;2000', '3;2000'];
 
-        invalidInputsWithYear.forEach((invalidLevel2CareCertValue) => {
-          it(`should add warning and ignore the whole input when option 2 or 3 are given with a year: (${invalidLevel2CareCertValue})`, () => {
+        invalidInputsWithYear.forEach((invalidLevel2CareCertInput) => {
+          it(`should add warning and ignore the whole input when option 2 or 3 are given with achieved year: (${invalidLevel2CareCertInput})`, () => {
             const worker = buildWorkerCsv({
               overrides: {
                 STATUS: 'NEW',
-                L2CARECERT: invalidLevel2CareCertValue,
+                L2CARECERT: invalidLevel2CareCertInput,
               },
             });
             const expectedWarning = {
               column: 'L2CARECERT',
               lineNumber: 2,
               name: 'MARMA',
-              source: invalidLevel2CareCertValue,
+              source: invalidLevel2CareCertInput,
               warnCode: WorkerCsvValidator.L2CARECERT_WARNING,
               warnType: 'L2CARECERT_WARNING',
-              warning: 'Dummy msg: Option 2 or 3 for L2CARECERT cannot have a year, your input will be ignored',
+              warning: 'Dummy msg: Option 2 or 3 for L2CARECERT cannot have achieved year. Your input will be ignored',
               worker: '3',
             };
 
