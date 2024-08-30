@@ -40,6 +40,7 @@ import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
+import { Level2AdultSocialCareCertificateComponent } from '@features/workers/level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 
 const routes: Routes = [
   {
@@ -199,6 +200,11 @@ const routes: Routes = [
         path: 'care-certificate',
         component: CareCertificateComponent,
         data: { title: 'Care Certificate' },
+      },
+      {
+        path: 'level-2-care-certificate',
+        component: Level2AdultSocialCareCertificateComponent,
+        data: { title: 'Level 2 Adult Social Care Certificate' },
       },
       {
         path: 'apprenticeship-training',
@@ -388,6 +394,11 @@ const routes: Routes = [
                 path: 'care-certificate',
                 component: CareCertificateComponent,
                 data: { title: 'Care Certificate' },
+              },
+              {
+                path: 'level-2-care-certificate',
+                component: Level2AdultSocialCareCertificateComponent,
+                data: { title: 'Level 2 Adult Social Care Certificate' },
               },
               {
                 path: 'apprenticeship-training',
