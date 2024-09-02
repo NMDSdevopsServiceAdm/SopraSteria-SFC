@@ -150,6 +150,7 @@ exports.knownHeaders = [
   'YEAROFENTRY',
   'DISABLED',
   'CARECERT',
+  'L2CARECERT',
   'RECSOURCE',
   'HANDCVISA',
   'INOUTUK',
