@@ -179,13 +179,17 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   let l2CareCert = '';
   switch (entity.Level2CareCertificateValue) {
     case 'Yes, completed':
-      l2CareCert = 1;
+      if (entity.Level2CareCertificateYear) {
+        l2CareCert = `1;${entity.Level2CareCertificateYear}`;
+      } else {
+        l2CareCert = '1;';
+      }
       break;
     case 'Yes, started':
-      l2CareCert = 2;
+      l2CareCert = '2;';
       break;
     case 'No':
-      l2CareCert = 3;
+      l2CareCert = '3;';
       break;
   }
   columns.push(l2CareCert);
