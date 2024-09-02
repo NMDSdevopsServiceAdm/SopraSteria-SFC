@@ -1410,7 +1410,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
               source: invalidLevel2CareCertInput,
               warnCode: WorkerCsvValidator.L2CARECERT_WARNING_IGNORE_YEAR,
               warnType: 'L2CARECERT_WARNING_IGNORE_YEAR',
-              warning: 'Option 2 or 3 for L2CARECERT cannot have achieved year. Your input will be ignored',
+              warning: 'Option 2 or 3 for L2CARECERT cannot have achieved year and will be ignored',
               worker: '3',
             };
 

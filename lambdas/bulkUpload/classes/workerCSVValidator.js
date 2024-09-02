@@ -1292,7 +1292,7 @@ class WorkerCsvValidator {
     if ([2, 3].includes(myLevel2CareCertValue)) {
       if (yearString) {
         const warning = this._generateWarningWithType(
-          'Option 2 or 3 for L2CARECERT cannot have achieved year. Your input will be ignored',
+          'Option 2 or 3 for L2CARECERT cannot have achieved year and will be ignored',
           'L2CARECERT',
           'L2CARECERT_WARNING_IGNORE_YEAR',
         );
