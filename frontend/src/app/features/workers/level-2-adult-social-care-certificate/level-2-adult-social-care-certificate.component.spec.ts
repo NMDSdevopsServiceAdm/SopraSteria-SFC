@@ -11,6 +11,7 @@ import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-uti
 
 import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate.component';
 import { HttpClient } from '@angular/common/http';
+import dayjs from 'dayjs';
 
 describe('Level2AdultSocialCareCertificateComponent', () => {
   const workerFieldsNoLevel2CareCertificate = { level2CareCertificate: { value: null, year: null } };
@@ -191,13 +192,16 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
 
   describe('navigation', () => {
     it('should navigate to apprenticeship-training page when submitting from flow', async () => {
-      const { component, routerSpy, getByText } = await setup();
+      const { component, fixture, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
-
+      const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-yesStarted"]');
       const saveButton = getByText('Save and continue');
+
+      fireEvent.click(radioBtn);
       fireEvent.click(saveButton);
+      fixture.detectChanges();
 
       expect(getByText('Save and continue')).toBeTruthy();
 
@@ -247,13 +251,16 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
     });
 
     it('should navigate to staff-summary-page page when pressing save and return', async () => {
-      const { component, routerSpy, getByText } = await setup(false);
+      const { component, fixture, routerSpy, getByText } = await setup(false);
 
       const workerId = component.worker.uid;
       const workplaceId = component.workplace.uid;
-
+      const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-yesStarted"]');
       const saveButton = getByText('Save and return');
+
+      fireEvent.click(radioBtn);
       fireEvent.click(saveButton);
+      fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -290,8 +297,12 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
       fixture.detectChanges();
       const workerId = component.worker.uid;
 
+      const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-yesStarted"]');
       const saveButton = getByText('Save and return');
+
+      fireEvent.click(radioBtn);
       fireEvent.click(saveButton);
+      fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
     });
@@ -340,6 +351,59 @@ describe('Level2AdultSocialCareCertificateComponent', () => {
       expect(radioBtn.checked).toBeTruthy();
       expect(yearAchievedInput.getAttribute('class')).not.toContain('hidden');
       expect(form.value).toEqual({ level2CareCertificate: 'Yes, completed', level2CareCertificateYearAchieved: 2023 });
+    });
+  });
+
+  describe('errors', () => {
+    it('should not show if "Yes, completed" is clicked but no year entered', async () => {
+      const { component, fixture, getByText, queryByText } = await setup(false);
+
+      const form = component.form;
+      const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-yesCompleted"]');
+      const saveButton = getByText('Save and return');
+
+      fireEvent.click(radioBtn);
+      fireEvent.click(saveButton);
+      fixture.detectChanges();
+
+      expect(form.valid).toBeTruthy();
+      expect(queryByText('There is a problem')).toBeFalsy();
+    });
+
+    it('should show if the entered year is in the future', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup(false);
+
+      const form = component.form;
+      const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-yesCompleted"]');
+      const saveButton = getByText('Save and return');
+      const expectedErrorMessage = 'Year achieved cannot be in the future';
+      const nextYear = dayjs().year() + 1;
+
+      form.get('level2CareCertificateYearAchieved').setValue(nextYear);
+      form.markAsDirty();
+      fireEvent.click(radioBtn);
+      fireEvent.click(saveButton);
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
+    });
+
+    it('should error if entered year is before the qualification was introduced', async () => {
+      const { component, fixture, getByText, getAllByText } = await setup(false);
+
+      const form = component.form;
+      const radioBtn = fixture.nativeElement.querySelector('input[id="level2CareCertificate-yesCompleted"]');
+      const saveButton = getByText('Save and return');
+
+      form.get('level2CareCertificateYearAchieved').setValue(2023);
+      form.markAsDirty();
+      fireEvent.click(radioBtn);
+      fireEvent.click(saveButton);
+
+      const expectedErrorMessage = 'Year achieved cannot be before 2024';
+
+      expect(form.invalid).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage, { exact: false }).length).toBe(2);
     });
   });
 });

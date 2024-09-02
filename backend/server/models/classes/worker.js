@@ -397,11 +397,6 @@ class Worker extends EntityValidator {
         document.employedFromOutsideUk = null;
       }
 
-      // Remove year if level 2 care certificate isn't completed
-      if (document.level2CareCertificate && document.level2CareCertificate.value !== 'Yes, completed') {
-        document.level2CareCertificate.year = null;
-      }
-
       // Remove year arrived if born in the UK or setting to Don't know
       if (document.countryOfBirth) {
         if (document.countryOfBirth.value === 'United Kingdom' || document.countryOfBirth.value === "Don't know") {
@@ -1725,15 +1720,6 @@ class Worker extends EntityValidator {
         : 'No',
       updatedSinceEffectiveDate: this._properties
         .get('CareCertificate')
-        .toJSON(false, true, WdfCalculator.effectiveDate),
-    };
-
-    myWdf.level2CareCertificate = {
-      isEligible: this._isPropertyWdfBasicEligible(effectiveFromEpoch, this._properties.get('Level2CareCertificate'))
-        ? 'Yes'
-        : 'No',
-      updatedSinceEffectiveDate: this._properties
-        .get('Level2CareCertificate')
         .toJSON(false, true, WdfCalculator.effectiveDate),
     };
 

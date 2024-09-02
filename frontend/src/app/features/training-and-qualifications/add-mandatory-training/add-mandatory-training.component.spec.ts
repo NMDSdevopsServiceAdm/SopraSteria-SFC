@@ -17,6 +17,8 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
 import { AddMandatoryTrainingModule } from './add-mandatory-training.module';
+import { TrainingCategoryService } from '@core/services/training-category.service';
+import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('AddMandatoryTrainingComponent', () => {
   async function setup(renderAsEditMandatoryTraining = false, trainingCategoryId = '9', hasDuplicateJobRoles = false) {
@@ -40,6 +42,10 @@ describe('AddMandatoryTrainingComponent', () => {
           {
             provide: TrainingService,
             useFactory: MockTrainingService.factory(hasDuplicateJobRoles),
+          },
+          {
+            provide: TrainingCategoryService,
+            useClass: MockTrainingCategoryService,
           },
           {
             provide: JobService,

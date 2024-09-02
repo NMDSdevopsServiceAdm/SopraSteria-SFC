@@ -1,7 +1,12 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div class="govuk-form-group">
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="submitted && form.get('level2CareCertificateYearAchieved').invalid"
+      >
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <h1 class="govuk-fieldset__heading">
@@ -10,7 +15,7 @@
             </h1>
           </legend>
 
-          <div class="govuk-details__text govuk-!-font-size-19 govuk-!-margin-bottom-9">
+          <div class="govuk-details__text govuk-!-font-size-19 govuk-!-margin-bottom-7">
             The Level 2 Adult Social Care Certificate qualification, introduced in 2024, is not the same thing as the
             existing standards based Care Certificate.
           </div>
@@ -33,11 +38,11 @@
                 id="level2CareCertificate-yesCompleted"
                 name="level2CareCertificate"
                 type="radio"
-                [value]="answersAvailable[0].value"
+                [value]="answersAvailable[0]"
                 data-aria-controls="conditional-certification-achieved"
               />
               <label class="govuk-label govuk-radios__label" for="level2CareCertificate-yesCompleted">
-                {{ answersAvailable[0].tag }}
+                {{ answersAvailable[0] }}
               </label>
             </div>
 
@@ -48,6 +53,20 @@
             >
               <div class="govuk-form-group">
                 <label class="govuk-label" for="level2CareCertificate-year-achieved"> Year achieved </label>
+                <span
+                  *ngIf="submitted && form.get('level2CareCertificateYearAchieved').errors"
+                  id="level2CareCertificateYearAchieved-error"
+                  class="govuk-error-message"
+                >
+                  <ng-container *ngIf="form.get('level2CareCertificateYearAchieved').hasError('min')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('level2CareCertificateYearAchieved', 'min') }}
+                  </ng-container>
+                  <ng-container *ngIf="form.get('level2CareCertificateYearAchieved').hasError('max')">
+                    <span class="govuk-visually-hidden">Error:</span>
+                    {{ getFormErrorMessage('level2CareCertificateYearAchieved', 'max') }}
+                  </ng-container>
+                </span>
                 <input
                   class="govuk-input govuk-date-input__input govuk-input--width-4"
                   [formControlName]="'level2CareCertificateYearAchieved'"
@@ -64,10 +83,10 @@
                 id="level2CareCertificate-yesStarted"
                 name="level2CareCertificate"
                 type="radio"
-                [value]="answersAvailable[1].value"
+                [value]="answersAvailable[1]"
               />
               <label class="govuk-label govuk-radios__label" for="level2CareCertificate-yesStarted">
-                {{ answersAvailable[1].tag }}
+                {{ answersAvailable[1] }}
               </label>
             </div>
             <div class="govuk-radios__item">
@@ -77,10 +96,10 @@
                 id="level2CareCertificate-no"
                 name="level2CareCertificate"
                 type="radio"
-                [value]="answersAvailable[2].value"
+                [value]="answersAvailable[2]"
               />
               <label class="govuk-label govuk-radios__label" for="level2CareCertificate-no">
-                {{ answersAvailable[2].tag }}
+                {{ answersAvailable[2] }}
               </label>
             </div>
           </div>
