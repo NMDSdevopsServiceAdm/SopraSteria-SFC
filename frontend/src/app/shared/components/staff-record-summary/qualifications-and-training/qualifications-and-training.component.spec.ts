@@ -16,7 +16,7 @@ import { QualificationsAndTrainingComponent } from './qualifications-and-trainin
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('QualificationsAndTrainingComponent', () => {
-  async function setup() {
+  async function setup(isWdf = false, canEditWorker = true) {
     const { fixture, getByText } = await render(QualificationsAndTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [SummaryRecordChangeComponent],
@@ -24,15 +24,15 @@ describe('QualificationsAndTrainingComponent', () => {
         InternationalRecruitmentService,
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canEditWorker']),
+          useFactory: MockPermissionsService.factory(canEditWorker ? ['canEditWorker'] : []),
           deps: [HttpClient],
         },
       ],
       componentProperties: {
-        canEditWorker: true,
+        canEditWorker: canEditWorker,
         workplace: establishmentBuilder() as Establishment,
         worker: workerWithWdf() as Worker,
-        wdfView: false,
+        wdfView: isWdf,
       },
     });
 
@@ -111,6 +111,46 @@ describe('QualificationsAndTrainingComponent', () => {
       expect(changeLink.getAttribute('href')).toBe(
         `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/level-2-care-certificate`,
       );
+    });
+
+    it('should not render Add or Change link when canEditWorker is false', async () => {
+      const { fixture, component, getByText } = await setup(false, false);
+
+      component.worker.level2CareCertificate.value = 'Yes, started';
+      fixture.detectChanges();
+
+      const level2CareCertificateSection = getByText('Level 2 Adult Social Care Certificate').parentElement;
+      const addLink = within(level2CareCertificateSection).queryByText('Add');
+      const changeLink = within(level2CareCertificateSection).queryByText('Change');
+
+      expect(addLink).toBeFalsy();
+      expect(changeLink).toBeFalsy();
+    });
+
+    describe('wdf version', () => {
+      it('should render Add link to the wdf question page in wdf version of summary page when level 2 care certificate is not answered', async () => {
+        const { fixture, component, getByText } = await setup(true);
+
+        component.worker.level2CareCertificate = null;
+        fixture.detectChanges();
+
+        const level2CareCertificateSection = getByText('Level 2 Adult Social Care Certificate').parentElement;
+        const addLink = within(level2CareCertificateSection).getByText('Add');
+
+        expect(addLink.getAttribute('href')).toBe(`/wdf/staff-record/${component.worker.uid}/level-2-care-certificate`);
+      });
+
+      it('should render Change link to the wdf question page in wdf version of summary page when level 2 care certificate is answered', async () => {
+        const { fixture, component, getByText } = await setup(true);
+
+        component.worker.level2CareCertificate.value = 'Yes, started';
+        fixture.detectChanges();
+
+        const level2CareCertificateSection = getByText('Level 2 Adult Social Care Certificate').parentElement;
+        const addLink = within(level2CareCertificateSection).getByText('Change');
+
+        expect(addLink.getAttribute('href')).toBe(`/wdf/staff-record/${component.worker.uid}/level-2-care-certificate`);
+      });
     });
   });
 });
