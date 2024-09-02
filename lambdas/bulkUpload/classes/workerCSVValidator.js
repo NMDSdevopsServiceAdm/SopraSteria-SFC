@@ -537,21 +537,10 @@ class WorkerCsvValidator {
     return mappings[value] || '';
   }
 
-  _generateWarning(warning, columnName) {
-    const warningType = `${columnName}_WARNING`;
-    return {
-      worker: this._currentLine.UNIQUEWORKERID,
-      name: this._currentLine.LOCALESTID,
-      lineNumber: this._lineNumber,
-      warnCode: WorkerCsvValidator[warningType],
-      warnType: warningType,
-      warning,
-      source: this._currentLine[columnName],
-      column: columnName,
-    };
-  }
-
-  _generateWarningWithType(warning, columnName, warnType) {
+  _generateWarning(warning, columnName, warnType = null) {
+    if (!warnType) {
+      warnType = `${columnName}_WARNING`;
+    }
     return {
       worker: this._currentLine.UNIQUEWORKERID,
       name: this._currentLine.LOCALESTID,
@@ -1291,7 +1280,7 @@ class WorkerCsvValidator {
 
     if ([2, 3].includes(myLevel2CareCertValue)) {
       if (yearString) {
-        const warning = this._generateWarningWithType(
+        const warning = this._generateWarning(
           'Option 2 or 3 for L2CARECERT cannot have achieved year and will be ignored',
           'L2CARECERT',
           'L2CARECERT_WARNING_IGNORE_YEAR',
@@ -1325,7 +1314,7 @@ class WorkerCsvValidator {
 
     if (warningMessage) {
       this._level2CareCert = { value: 'Yes, completed', year: null };
-      const warning = this._generateWarningWithType(warningMessage, 'L2CARECERT', warnType);
+      const warning = this._generateWarning(warningMessage, 'L2CARECERT', warnType);
       this._validationErrors.push(warning);
       return false;
     } else {
