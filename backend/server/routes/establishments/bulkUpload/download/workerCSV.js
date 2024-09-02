@@ -186,10 +186,10 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
       }
       break;
     case 'Yes, started':
-      l2CareCert = '2;';
+      l2CareCert = '2';
       break;
     case 'No':
-      l2CareCert = '3;';
+      l2CareCert = '3';
       break;
   }
   columns.push(l2CareCert);

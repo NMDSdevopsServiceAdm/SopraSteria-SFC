@@ -312,8 +312,8 @@ describe('workerCSV', () => {
         [
           { name: 'Yes, completed', code: '1;' },
           { name: 'Yes, completed', year: 2024, code: '1;2024' },
-          { name: 'Yes, started', code: '2;' },
-          { name: 'No', code: '3;' },
+          { name: 'Yes, started', code: '2' },
+          { name: 'No', code: '3' },
         ].forEach((level2CareCert) => {
           let testName = 'should return the correct code for level 2 care certificate ' + level2CareCert.name;
           if (level2CareCert.year) {
