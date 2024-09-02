@@ -363,20 +363,24 @@ class WorkerCsvValidator {
     return 5590;
   }
 
-  static get L2CARECERT_WARNING_IGNORE_YEAR() {
+  static get L2CARECERT_WARNING_IGNORE_YEAR_FOR_OPTION_2() {
     return 5600;
   }
 
-  static get L2CARECERT_WARNING_YEAR_BEFORE_2024() {
+  static get L2CARECERT_WARNING_IGNORE_YEAR_FOR_OPTION_3() {
     return 5610;
   }
 
-  static get L2CARECERT_WARNING_YEAR_IN_FUTURE() {
+  static get L2CARECERT_WARNING_YEAR_BEFORE_2024() {
     return 5620;
   }
 
-  static get L2CARECERT_WARNING_YEAR_INVALID() {
+  static get L2CARECERT_WARNING_YEAR_IN_FUTURE() {
     return 5630;
+  }
+
+  static get L2CARECERT_WARNING_YEAR_INVALID() {
+    return 5640;
   }
 
   get lineNumber() {
@@ -1281,9 +1285,9 @@ class WorkerCsvValidator {
     if ([2, 3].includes(myLevel2CareCertValue)) {
       if (yearString) {
         const warning = this._generateWarning(
-          'Option 2 or 3 for L2CARECERT cannot have achieved year and will be ignored',
+          `Option ${myLevel2CareCertValue} for L2CARECERT cannot have year achieved and will be ignored`,
           'L2CARECERT',
-          'L2CARECERT_WARNING_IGNORE_YEAR',
+          `L2CARECERT_WARNING_IGNORE_YEAR_FOR_OPTION_${myLevel2CareCertValue}`,
         );
         this._validationErrors.push(warning);
         return false;

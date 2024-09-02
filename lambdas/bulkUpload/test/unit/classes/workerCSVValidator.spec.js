@@ -1396,21 +1396,24 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         const invalidInputsWithYear = ['2;2024', '3;2024', '2;2000', '3;2000'];
 
         invalidInputsWithYear.forEach((invalidLevel2CareCertInput) => {
-          it(`should add warning and ignore the whole input when option 2 or 3 are given with achieved year: (${invalidLevel2CareCertInput})`, () => {
+          it(`should add warning and ignore the whole input when option 2 or 3 are given with year achieved: (${invalidLevel2CareCertInput})`, () => {
+            const optionChosen = invalidLevel2CareCertInput[0];
+
             const worker = buildWorkerCsv({
               overrides: {
                 STATUS: 'NEW',
                 L2CARECERT: invalidLevel2CareCertInput,
               },
             });
+            const expectedWarnType = `L2CARECERT_WARNING_IGNORE_YEAR_FOR_OPTION_${optionChosen}`;
             const expectedWarning = {
               column: 'L2CARECERT',
               lineNumber: 2,
               name: 'MARMA',
               source: invalidLevel2CareCertInput,
-              warnCode: WorkerCsvValidator.L2CARECERT_WARNING_IGNORE_YEAR,
-              warnType: 'L2CARECERT_WARNING_IGNORE_YEAR',
-              warning: 'Option 2 or 3 for L2CARECERT cannot have achieved year and will be ignored',
+              warnCode: WorkerCsvValidator[expectedWarnType],
+              warnType: expectedWarnType,
+              warning: `Option ${optionChosen} for L2CARECERT cannot have year achieved and will be ignored`,
               worker: '3',
             };
 
