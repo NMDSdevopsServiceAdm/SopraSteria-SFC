@@ -21,6 +21,18 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"Category"',
       },
+      trainingCategoryGroup: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: [
+          'Care skills and knowledge',
+          'Health and safety in the workplace',
+          'IT, digital and data in the workplace',
+          'Specific conditions and disabilities',
+          'Staff development'
+        ],
+        field: 'TrainingCategoryGroup',
+      }
     },
     {
       tableName: 'TrainingCategories',

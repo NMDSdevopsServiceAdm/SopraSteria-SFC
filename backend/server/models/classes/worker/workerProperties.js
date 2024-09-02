@@ -49,7 +49,7 @@ const longTermAbsenceProperty = require('./properties/longTermAbsenceProperty').
 const healthAndCareVisaProperty = require('./properties/healthAndCareVisa').HealthAndCareVisaProperty;
 const employedFromOutsideUkProperty = require('./properties/employedFromOutsideUk').EmployedFromOutsideUkProperty;
 const level2CareCertificateProperty =
-  require('./properties/level2CareCertificateProperty').Level2CareCertificateProperty;
+  require('./properties/level2CareCertificateProperty').WorkerLevel2CareCertificateProperty;
 
 class WorkerPropertyManager {
   constructor() {

@@ -140,11 +140,24 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(within(trainingRecordDetails).getByText('No notes added')).toBeTruthy();
     });
 
-    it('should display a change link with the correct href', async () => {
+    it('should display a change link with the correct href at Training category row which navigate to select training category page', async () => {
       const { getByTestId } = await setup();
 
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
-      const changeLink = within(trainingRecordDetails).getByText('Change');
+      const trainingCategoryRow = within(trainingRecordDetails).getByText('Training category').parentElement;
+      const changeLink = within(trainingCategoryRow).getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toEqual(
+        '/workplace/98a83eef-e1e1-49f3-89c5-b1287a3cc8de/add-multiple-training/confirm-training/select-training-category',
+      );
+    });
+
+    it('should display a change link with the correct href at Training name row which navigate to training detail page', async () => {
+      const { getByTestId } = await setup();
+
+      const trainingRecordDetails = getByTestId('trainingRecordDetails');
+      const trainingNameRow = within(trainingRecordDetails).getByText('Training name').parentElement;
+      const changeLink = within(trainingNameRow).getByText('Change');
 
       expect(changeLink.getAttribute('href')).toEqual(
         '/workplace/98a83eef-e1e1-49f3-89c5-b1287a3cc8de/add-multiple-training/confirm-training/training-details',

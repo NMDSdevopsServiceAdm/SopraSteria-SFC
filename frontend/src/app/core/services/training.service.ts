@@ -1,7 +1,12 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { allMandatoryTrainingCategories, TrainingCategory, TrainingCategoryResponse } from '@core/model/training.model';
+import {
+  allMandatoryTrainingCategories,
+  TrainingCategory,
+  TrainingCategoryResponse,
+  SelectedTraining,
+} from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -11,39 +16,36 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class TrainingService {
-  public selectedTraining = null;
+  protected _selectedTraining = null;
   public selectedStaff: Worker[] = [];
   public addMultipleTrainingInProgress$ = new BehaviorSubject<boolean>(false);
   private _trainingOrQualificationPreviouslySelected: string = null;
+  public updatingSelectedStaffForMultipleTraining: boolean = null;
 
   constructor(private http: HttpClient) {}
 
-  getCategories(): Observable<TrainingCategory[]> {
-    return this.http
-      .get<TrainingCategoryResponse>(`${environment.appRunnerEndpoint}/api/trainingCategories`)
-      .pipe(map((res) => res.trainingCategories));
-  }
-
   getAllTrainingByStatus(workplaceUid: string, status: string, queryParams?: Params): Observable<any> {
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`, {
-      params: queryParams,
-    });
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/trainingAndQualifications/${status}`,
+      {
+        params: queryParams,
+      },
+    );
   }
 
   getMissingMandatoryTraining(workplaceUid: string, queryParams?: Params): Observable<any> {
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/trainingAndQualifications/missing-training`, {
-      params: queryParams,
-    });
-  }
-
-  getCategoryById(categoryId): Observable<TrainingCategory[]> {
-    return this.http
-      .get<TrainingCategoryResponse>(`${environment.appRunnerEndpoint}/api/trainingCategories/${categoryId}`)
-      .pipe(map((res) => res.trainingCategories));
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/trainingAndQualifications/missing-training`,
+      {
+        params: queryParams,
+      },
+    );
   }
 
   public deleteCategoryById(establishmentId, categoryId) {
-    return this.http.delete(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mandatoryTraining/${categoryId}`);
+    return this.http.delete(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mandatoryTraining/${categoryId}`,
+    );
   }
 
   public updateSelectedStaff(formValue): void {
@@ -54,17 +56,25 @@ export class TrainingService {
     this.selectedStaff = [];
   }
 
-  public updateSelectedTraining(formValue): void {
-    this.selectedTraining = formValue;
+  public get selectedTraining(): SelectedTraining {
+    return this._selectedTraining;
+  }
+
+  public set selectedTraining(selectedTraining: SelectedTraining) {
+    if (selectedTraining) {
+      this._selectedTraining = selectedTraining;
+    }
   }
 
   public resetSelectedTraining(): void {
-    this.selectedTraining = null;
+    this._selectedTraining = null;
   }
 
   //get all mandatory training
   public getAllMandatoryTrainings(establishmentId): Observable<allMandatoryTrainingCategories> {
-    return this.http.get<allMandatoryTrainingCategories>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mandatoryTraining`);
+    return this.http.get<allMandatoryTrainingCategories>(
+      `${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/mandatoryTraining`,
+    );
   }
 
   public deleteAllMandatoryTraining(establishmentId: number) {
@@ -90,5 +100,34 @@ export class TrainingService {
     this.addMultipleTrainingInProgress$.next(false);
     this.resetSelectedStaff();
     this.resetSelectedTraining();
+    this.clearSelectedTrainingCategory();
+  }
+
+  public setSelectedTrainingCategory(trainingCategory: TrainingCategory) {
+    if (trainingCategory) {
+      if (this._selectedTraining) {
+        this._selectedTraining.trainingCategory = trainingCategory;
+      } else {
+        this._selectedTraining = { trainingCategory };
+      }
+    }
+  }
+
+  public clearSelectedTrainingCategory(): void {
+    if (this?._selectedTraining?.trainingCategory) {
+      this._selectedTraining.trainingCategory = null;
+    }
+  }
+
+  public setUpdatingSelectedStaffForMultipleTraining(value: boolean): void {
+    this.updatingSelectedStaffForMultipleTraining = value;
+  }
+
+  public getUpdatingSelectedStaffForMultipleTraining(): boolean {
+    return this.updatingSelectedStaffForMultipleTraining;
+  }
+
+  public clearUpdatingSelectedStaffForMultipleTraining(): void {
+    this.updatingSelectedStaffForMultipleTraining = null;
   }
 }
