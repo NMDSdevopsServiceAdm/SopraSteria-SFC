@@ -62,7 +62,7 @@
     "exceljs": "^4.2.0",
     "express": "^4.19.2",
     "express-http-proxy": "^1.6.2",
-    "express-rate-limit": "^5.5.1",
+    "express-rate-limit": "^7.4.0",
     "express-sanitizer": "^1.0.6",
     "helmet": "^4.6.0",
     "honeycomb-beeline": "^2.7.0",

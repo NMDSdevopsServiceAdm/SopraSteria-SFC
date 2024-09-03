@@ -1,5 +1,5 @@
 const config = require('../../config/config');
-const RateLimit = require('express-rate-limit');
+const expressRateLimit = require('express-rate-limit');
 const RedisStore = require('rate-limit-redis');
 const isCI = require('is-ci');
 
@@ -20,9 +20,9 @@ const authLimiter = isCI
   ? (req, res, next) => {
       next();
     }
-  : new RateLimit({
+  : expressRateLimit.rateLimit({
       ...rateLimiterConfig,
-      max: 1000,
+      limit: 1000,
       prefix: 'auth:',
     });
 
@@ -30,9 +30,9 @@ const dbLimiter = isCI
   ? (req, res, next) => {
       next();
     }
-  : new RateLimit({
+  : expressRateLimit.rateLimit({
       ...rateLimiterConfig,
-      max: 1000,
+      limit: 1000,
       prefix: 'db:',
     });
 
