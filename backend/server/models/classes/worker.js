@@ -218,6 +218,12 @@ class Worker extends EntityValidator {
     return this._properties.get('CareCertificate') ? this._properties.get('CareCertificate').property : null;
   }
 
+  get level2CareCertificate() {
+    return this._properties.get('Level2CareCertificate')
+      ? this._properties.get('Level2CareCertificate').property
+      : null;
+  }
+
   get approvedMentalHealthWorker() {
     return this._properties.get('ApprovedMentalHealthWorker')
       ? this._properties.get('ApprovedMentalHealthWorker').property
