@@ -1,16 +1,23 @@
 const config = require('../../config/config');
 const expressRateLimit = require('express-rate-limit');
-const RedisStore = require('rate-limit-redis');
+const { RedisStore } = require('rate-limit-redis');
+const RedisClient = require('ioredis');
 const isCI = require('is-ci');
 
-const store = isCI
+const redisClient = new RedisClient(config.get('redis.url'));
+const authStore = isCI
   ? undefined
   : new RedisStore({
-      redisURL: config.get('redis.url'),
+      sendCommand: (...args) => redisClient.call(...args),
+    });
+
+const dbStore = isCI
+  ? undefined
+  : new RedisStore({
+      sendCommand: (...args) => redisClient.call(...args),
     });
 
 const rateLimiterConfig = {
-  store,
   delayMs: 0, // disable delaying - full speed until the max limit is reached
   passIfNotConnected: true,
   windowMs: 5000,
@@ -22,6 +29,7 @@ const authLimiter = isCI
     }
   : expressRateLimit.rateLimit({
       ...rateLimiterConfig,
+      store: authStore,
       limit: 1000,
       prefix: 'auth:',
     });
@@ -32,6 +40,7 @@ const dbLimiter = isCI
     }
   : expressRateLimit.rateLimit({
       ...rateLimiterConfig,
+      store: dbStore,
       limit: 1000,
       prefix: 'db:',
     });

@@ -1,12 +1,14 @@
 const config = require('../../config/config');
 const expressRateLimit = require('express-rate-limit');
-const RedisStore = require('rate-limit-redis');
+const { RedisStore } = require('rate-limit-redis');
+const RedisClient = require('ioredis');
 const isCI = require('is-ci');
 
+const redisClient = new RedisClient(config.get('redis.url'));
 const store = isCI
   ? undefined
   : new RedisStore({
-      redisURL: config.get('redis.url'),
+      sendCommand: (...args) => redisClient.call(...args),
     });
 
 const rateLimiterConfig = {
