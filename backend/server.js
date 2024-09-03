@@ -312,7 +312,7 @@ app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
 });
 
 app.use('*', authLimiter);
-app.set('trust proxy', 1 /* number of proxies between user and server */);
+app.set('trust proxy', 2 /* number of proxies between user and server */);
 
 app.all('*', function (req, res) {
   res.status(404);
