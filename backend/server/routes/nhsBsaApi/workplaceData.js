@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../models');
 const authorization = require('../../utils/middleware/isNHSBSAAuthenticated');
-const { authLimiter } = require('../../utils/middleware/rateLimitingNHSBSAAPI');
+const { authLimiter } = require('../../utils/middleware/rateLimiting');
 // WDF effective date
 const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculator;
 
