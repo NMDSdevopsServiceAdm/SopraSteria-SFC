@@ -14,8 +14,8 @@ module.exports = {
         ],
         "Certificate": [
           { id: 142, code: 319, title: "Falls prevention", level: '2' },
-          { id: 143, code: 320, title: "Nutrition", level: 2 },
-          { id: 144, code: 321, title: "Oral health", level: 2 },
+          { id: 143, code: 320, title: "Nutrition", level: '2' },
+          { id: 144, code: 321, title: "Oral health", level: '2' },
         ],
         "Degree": [
           { id: 145, code: 322, title: "Occupational therapy degree", level: '6' },
