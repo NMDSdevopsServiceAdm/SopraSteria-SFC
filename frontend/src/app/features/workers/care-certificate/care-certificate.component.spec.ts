@@ -78,6 +78,28 @@ describe('CareCertificateComponent', () => {
     expect(getByLabelText('No')).toBeTruthy();
   });
 
+  it('should render a inset text to explain Care Certificate is not the same as L2 CC certificate', async () => {
+    const { getByText } = await setup();
+
+    const explanationText = getByText(
+      'The Care Certificate is not the same thing as the Level 2 Adult Social Care Certificate, introduced in 2024.',
+    );
+
+    expect(explanationText).toBeTruthy();
+  });
+
+  it('should render a reveal text about what is the Care Certification', async () => {
+    const { getByText } = await setup();
+
+    const reveal = getByText('What’s the Care Certificate?');
+    const revealText = getByText(
+      'The Care Certificate is an agreed set of standards that define the knowledge, skills and behaviours expected of specific job roles in the health and social care sectors. It’s made up of the 15 standards that should be covered as part of a robust induction programme.',
+    );
+
+    expect(reveal).toBeTruthy();
+    expect(revealText).toBeTruthy();
+  });
+
   describe('submit buttons', () => {
     it(`should show 'Save and continue' cta button, skip this question and 'View this staff record' link, if a return url is not provided`, async () => {
       const { getByText } = await setup();
@@ -110,7 +132,7 @@ describe('CareCertificateComponent', () => {
   });
 
   describe('navigation', () => {
-    it('should navigate to apprenticeship-training page when submitting from flow', async () => {
+    it('should navigate to level-2-care-certificate page when submitting from flow', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -126,11 +148,11 @@ describe('CareCertificateComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'apprenticeship-training',
+        'level-2-care-certificate',
       ]);
     });
 
-    it('should navigate to apprenticeship-training page when skipping the question in the flow', async () => {
+    it('should navigate to level-2-care-certificate page when skipping the question in the flow', async () => {
       const { component, routerSpy, getByText } = await setup();
 
       const workerId = component.worker.uid;
@@ -144,7 +166,7 @@ describe('CareCertificateComponent', () => {
         workplaceId,
         'staff-record',
         workerId,
-        'apprenticeship-training',
+        'level-2-care-certificate',
       ]);
     });
 
