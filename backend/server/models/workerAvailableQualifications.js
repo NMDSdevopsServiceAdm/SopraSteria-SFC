@@ -22,7 +22,22 @@ module.exports = function(sequelize, DataTypes) {
     title: {
       type: DataTypes.TEXT,
       allowNull: false,
-      field: '"Title"'
+      field: '"Title"',
+      get() {
+        const titleValue = this.getDataValue('title');
+        const levelValue = this.getDataValue('level');
+
+        if (levelValue) {
+          if (titleValue.endsWith(')')) {
+            const sub = titleValue.substring(0, titleValue.length - 1);
+            return `${sub}, level ${levelValue})`;
+          } else {
+            return `${titleValue} (level ${levelValue})`;
+          }
+        }
+
+        return titleValue;
+      }
     },
     level: {
       type: DataTypes.INTEGER,

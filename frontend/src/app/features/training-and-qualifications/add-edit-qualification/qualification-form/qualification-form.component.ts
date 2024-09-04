@@ -41,20 +41,10 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
     this.remainingCharacterCount = this.notesMaxLength;
     this.subscriptions.add(
       this.workerService
-        .getAvailableQualifcations(this.workplace.uid, this.worker.uid, this.type.value as QualificationType)
+        .getAvailableQualifications(this.workplace.uid, this.worker.uid, this.type.value as QualificationType)
         .subscribe(
           (qualifications) => {
             if (qualifications) {
-              for (const qual of qualifications) {
-                if (qual.level) {
-                  if (qual.title.endsWith(')')) {
-                    const sub = qual.title.substring(0, qual.title.length - 1);
-                    qual.title = `${sub}, level ${qual.level})`;
-                  } else {
-                    qual.title = `${qual.title} (level ${qual.level})`;
-                  }
-                }
-              }
               this.qualifications = qualifications;
             }
           },

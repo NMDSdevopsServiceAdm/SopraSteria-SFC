@@ -166,7 +166,7 @@ export class WorkerService {
     );
   }
 
-  getAvailableQualifcations(workplaceUid: string, workerId: string, type: QualificationType) {
+  getAvailableQualifications(workplaceUid: string, workerId: string, type: QualificationType) {
     const params = new HttpParams().append('type', type);
 
     return this.http
