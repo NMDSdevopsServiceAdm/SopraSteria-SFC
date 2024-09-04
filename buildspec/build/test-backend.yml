@@ -9,7 +9,10 @@ phases:
   install:
     runtime-versions:
       nodejs: 18
+  pre-build:
+    commands:
+      - cd lambdas/bulkUpload && npm ci
   build:
     commands:
       - cd backend && npm ci
-      - npm run server:lambda:cover:unit:ci; EXITCODE=$?
+      - npm run server:test:unit
