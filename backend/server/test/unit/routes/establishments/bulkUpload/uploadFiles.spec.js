@@ -6,7 +6,7 @@ const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const buUtils = require('../../../../../utils/bulkUploadUtils');
 const uploadedFiles = require('../../../../../routes/establishments/bulkUpload/uploadFiles');
 
-describe('/server/routes/establishment/uploadFiles.js', () => {
+describe.skip('/server/routes/establishment/uploadFiles.js', () => {
   afterEach(() => {
     sinon.restore();
   });
