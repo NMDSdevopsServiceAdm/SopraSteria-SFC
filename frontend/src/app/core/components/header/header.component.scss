@@ -17,3 +17,9 @@ li {
 header {
   border-top: 30px $govuk-link-colour solid;
 }
+
+header .menu-button {
+  @media only screen and (min-width: 769px) {
+    visibility: hidden;
+  }
+}

@@ -39,6 +39,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   public submitButtonText: string;
   public accessedFromSummary = false;
   public selectedWorkers: string[] = [];
+  public isChangeStaffSelected: boolean;
 
   constructor(
     public backLinkService: BackLinkService,
@@ -61,6 +62,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     this.setBackLink();
     this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
     this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
+    this.isChangeStaffSelected = this.trainingService.getUpdatingSelectedStaffForMultipleTraining();
   }
 
   ngAfterViewInit(): void {
@@ -70,6 +72,13 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   private prefill(): void {
     this.selectedWorkers = this.trainingService.selectedStaff.map((worker) => worker.uid);
     this.updateSelectAllLinks();
+    this.clearSelectedTrainingCategoryOnPageEntry();
+  }
+
+  private clearSelectedTrainingCategoryOnPageEntry() {
+    if (this.selectedWorkers.length === 0) {
+      this.trainingService.clearSelectedTrainingCategory();
+    }
   }
 
   public getPageOfWorkers(): void {
@@ -167,9 +176,14 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
 
     if (this.selectedWorkers.length > 0) {
       this.updateSelectedStaff();
-      const nextRoute = this.getNextRoute();
       this.trainingService.addMultipleTrainingInProgress$.next(true);
-      this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', nextRoute]);
+      if (this.isChangeStaffSelected) {
+        this.trainingService.clearUpdatingSelectedStaffForMultipleTraining();
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
+      } else {
+        const nextRoute = this.getNextRoute();
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', nextRoute]);
+      }
     } else {
       this.error = true;
       this.errorSummaryService.scrollToErrorSummary();
@@ -177,7 +191,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   }
 
   private getNextRoute(): string {
-    return this.accessedFromSummary ? 'confirm-training' : 'training-details';
+    return this.accessedFromSummary ? 'confirm-training' : 'select-training-category';
   }
 
   handleSearch(searchTerm: string): void {

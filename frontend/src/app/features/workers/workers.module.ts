@@ -65,6 +65,8 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -119,6 +121,7 @@ import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/emplo
     DownloadPdfTrainingAndQualificationComponent,
     HealthAndCareVisaComponent,
     EmployedFromOutsideUkComponent,
+    Level2AdultSocialCareCertificateComponent,
   ],
   providers: [
     DialogService,
@@ -126,6 +129,7 @@ import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/emplo
     LongTermAbsenceResolver,
     QualificationResolver,
     QualificationsResolver,
+    TrainingCategoriesResolver,
     TrainingRecordResolver,
     TrainingRecordsResolver,
     TrainingAndQualificationRecordsResolver,

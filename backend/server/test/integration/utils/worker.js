@@ -39,6 +39,7 @@ module.exports.apiWorkerBuilder = build('Worker', {
     YearArrivedValue: oneOf('Yes', 'No', "Don't know"),
     DisabilityValue: oneOf('Yes', 'No', "Don't know", 'Undisclosed'),
     CareCertificateValue: oneOf('Yes, completed', 'No', 'Yes, in progress or partially completed'),
+    Level2CareCertificateValue: oneOf('Yes, completed', 'Yes, started', 'No'),
     RecruitedFromValue: oneOf('Yes', 'No'),
     MainJobStartDateValue: fake((f) => f.helpers.replaceSymbolWithNumber('####-##-##')),
     recruitedFrom: {

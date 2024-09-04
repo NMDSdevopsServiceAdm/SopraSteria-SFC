@@ -86,6 +86,11 @@ describe('SelectStaffComponent', () => {
     const updateSelectedStaffSpy = spyOn(trainingService, 'updateSelectedStaff');
     const workerSpy = spyOn(workerService, 'getAllWorkers').and.callThrough();
     const searchSpy = spyOn(component, 'handleSearch').and.callThrough();
+    const clearUpdatingSelectedStaffForMultipleTrainingSpy = spyOn(
+      trainingService,
+      'clearUpdatingSelectedStaffForMultipleTraining',
+    ).and.callThrough();
+    const clearSelectedTrainingCategorySpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
 
     return {
       component,
@@ -105,6 +110,8 @@ describe('SelectStaffComponent', () => {
       workerSpy,
       searchSpy,
       workers,
+      clearUpdatingSelectedStaffForMultipleTrainingSpy,
+      clearSelectedTrainingCategorySpy,
     };
   }
 
@@ -452,8 +459,36 @@ describe('SelectStaffComponent', () => {
       expect(updateSelectedStaffSpy).toHaveBeenCalledWith([workers[0]]);
     });
 
-    it('should navigate to the training details page when pressing continue', async () => {
-      const { component, fixture, getByText, spy, workers } = await setup();
+    it('should navigate to the select training category page when pressing continue', async () => {
+      const { component, fixture, getByText, spy, workers, clearUpdatingSelectedStaffForMultipleTrainingSpy } =
+        await setup();
+
+      component.paginatedWorkers = workers;
+      fixture.detectChanges();
+
+      const selectAllLink = getByText('Select all');
+      fireEvent.click(selectAllLink);
+      fixture.detectChanges();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(spy).toHaveBeenCalledWith([
+        'workplace',
+        component.workplaceUid,
+        'add-multiple-training',
+        'select-training-category',
+      ]);
+      expect(clearUpdatingSelectedStaffForMultipleTrainingSpy).not.toHaveBeenCalled();
+    });
+
+    it('should navigate to the training details page when pressing continue and isChangeStaffSelected is true', async () => {
+      const { component, fixture, getByText, spy, workers, clearUpdatingSelectedStaffForMultipleTrainingSpy } =
+        await setup();
+
+      component.trainingService.setUpdatingSelectedStaffForMultipleTraining(true);
+      component.ngOnInit();
 
       component.paginatedWorkers = workers;
       fixture.detectChanges();
@@ -472,6 +507,7 @@ describe('SelectStaffComponent', () => {
         'add-multiple-training',
         'training-details',
       ]);
+      expect(clearUpdatingSelectedStaffForMultipleTrainingSpy).toHaveBeenCalled();
     });
 
     it('should return an error if no staff have been selected', async () => {
@@ -564,5 +600,13 @@ describe('SelectStaffComponent', () => {
       expect(trainingSpy).not.toHaveBeenCalled();
       expect(spy.calls.mostRecent().args[0]).toEqual(['../']);
     });
+  });
+
+  it('should call trainingService if there are no selected workers when landing on the page', async () => {
+    const { component, clearSelectedTrainingCategorySpy } = await setup();
+
+    component.ngOnInit();
+
+    expect(clearSelectedTrainingCategorySpy).toHaveBeenCalled();
   });
 });
