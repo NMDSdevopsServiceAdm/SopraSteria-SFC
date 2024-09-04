@@ -9,7 +9,7 @@ phases:
   install:
     runtime-versions:
       nodejs: 18
-  pre-build:
+  pre_build:
     commands:
       - cd lambdas/bulkUpload && npm ci
   build:
