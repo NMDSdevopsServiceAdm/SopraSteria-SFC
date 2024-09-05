@@ -24,8 +24,8 @@ module.exports = {
           { id: 147, code: 153, title: "Any nursing degree", level: '6' },
         ],
         "Other type of qualification": [
-          { id: 148, code: 154, title: "Functional skills in english", level: '1' },
-          { id: 149, code: 155, title: "Functional skills in english", level: '2' },
+          { id: 148, code: 154, title: "Functional skills in English", level: '1' },
+          { id: 149, code: 155, title: "Functional skills in English", level: '2' },
           { id: 150, code: 156, title: "Functional skills in maths", level: '1' },
           { id: 151, code: 157, title: "Functional skills in maths", level: '2' },
         ]
