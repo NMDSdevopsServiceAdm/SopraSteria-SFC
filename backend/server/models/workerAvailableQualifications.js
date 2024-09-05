@@ -1,4 +1,5 @@
 /* jshint indent: 2 */
+const { formatQualificationTitle } = require('../utils/qualificationsUtils');
 
 module.exports = function(sequelize, DataTypes) {
   const WorkerQualifications =  sequelize.define('workerAvailableQualifications', {
@@ -27,16 +28,7 @@ module.exports = function(sequelize, DataTypes) {
         const titleValue = this.getDataValue('title');
         const levelValue = this.getDataValue('level');
 
-        if (levelValue) {
-          if (titleValue.endsWith(')')) {
-            const sub = titleValue.substring(0, titleValue.length - 1);
-            return `${sub}, level ${levelValue})`;
-          } else {
-            return `${titleValue} (level ${levelValue})`;
-          }
-        }
-
-        return titleValue;
+        return formatQualificationTitle(titleValue, levelValue);
       }
     },
     level: {
