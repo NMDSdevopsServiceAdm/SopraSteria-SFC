@@ -31,7 +31,6 @@ const initialiseSecrets = async (region, wallet) => {
         ADMIN_URL: mySecrets.ADMIN_URL,
         DD_API_KEY: mySecrets.DD_API_KEY,
         SENTRY_DSN: mySecrets.SENTRY_DSN,
-        HONEYCOMB_WRITE_KEY: mySecrets.HONEYCOMB_WRITE_KEY,
         SEND_IN_BLUE_KEY: mySecrets.SEND_IN_BLUE_KEY,
         SEND_IN_BLUE_WHITELIST: mySecrets.SEND_IN_BLUE_WHITELIST,
         SEND_EMAILS_SQS_QUEUE: mySecrets.SEND_EMAILS_SQS_QUEUE,
@@ -149,18 +148,6 @@ const sentryDsn = () => {
   }
 };
 
-const honeycombWriteKey = () => {
-  if (myLocalSecrets !== null) {
-    if (!myLocalSecrets.HONEYCOMB_WRITE_KEY) {
-      return '';
-    } else {
-      return myLocalSecrets.HONEYCOMB_WRITE_KEY;
-    }
-  } else {
-    throw new Error('Unknown secrets');
-  }
-};
-
 const sendInBlueKey = () => {
   if (myLocalSecrets !== null) {
     if (!myLocalSecrets.SEND_IN_BLUE_KEY) {
@@ -243,7 +230,6 @@ module.exports.dbAppRootCertificate = dbAppRootCertificate;
 module.exports.adminUrl = adminUrl;
 module.exports.datadogApiKey = datadogApiKey;
 module.exports.sentryDsn = sentryDsn;
-module.exports.honeycombWriteKey = honeycombWriteKey;
 module.exports.sendInBlueKey = sendInBlueKey;
 module.exports.sendInBlueWhitelist = sendInBlueWhitelist;
 module.exports.sendEmailsToSQSQueue = sendEmailsToSQSQueue;
