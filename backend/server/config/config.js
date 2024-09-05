@@ -244,7 +244,6 @@ const config = convict({
         format: String,
         default: 'ADS-WDS-Internal-Admin-App',
       },
-
     },
     nhsBsaSecret: {
       doc: 'The JWT secret for NHSBSA API',
@@ -548,15 +547,6 @@ const config = convict({
       default: 1.0,
     },
   },
-  honeycomb: {
-    write_key: {
-      doc: 'Honeycomb Write Key',
-      format: String,
-      default: 'blank',
-      sensitive: true,
-      env: 'HONEYCOMB_WRITE_KEY',
-    },
-  },
   satisfactionSurvey: {
     timeSpan: {
       doc: 'The amount of time to look back and see whether the survey should be shown',
@@ -696,7 +686,6 @@ if (config.get('aws.secrets.use')) {
     config.set('getAddress.apikey', AWSSecrets.getAddressKey());
     //  config.set('datadog.api_key', AWSSecrets.datadogApiKey()); // Data dog is still work in progress, checking if we really need this
     config.set('sentry.dsn', AWSSecrets.sentryDsn());
-    config.set('honeycomb.write_key', AWSSecrets.honeycombWriteKey());
 
     // Send in Blue
     config.set('sendInBlue.apiKey', AWSSecrets.sendInBlueKey());
