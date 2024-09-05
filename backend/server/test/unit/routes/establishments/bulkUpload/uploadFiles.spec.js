@@ -6,9 +6,17 @@ const S3 = require('../../../../../routes/establishments/bulkUpload/s3');
 const buUtils = require('../../../../../utils/bulkUploadUtils');
 const uploadedFiles = require('../../../../../routes/establishments/bulkUpload/uploadFiles');
 
-describe.skip('/server/routes/establishment/uploadFiles.js', () => {
+describe('/server/routes/establishment/uploadFiles.js', () => {
   afterEach(() => {
     sinon.restore();
+  });
+
+  beforeEach(() => {
+    sinon.stub(S3.s3, 'putObject').returns({
+      promise: async () => {
+        return {};
+      },
+    });
   });
 
   describe('uploadedPut', () => {
@@ -18,12 +26,6 @@ describe.skip('/server/routes/establishment/uploadFiles.js', () => {
     const WorkerFile =
       'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMBER,POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,DISABLED,CARECERT,L2CARECERT,RECSOURCE,HANDCVISA,INOUTUK,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
     const OtherFile = 'Test,This,is,NOT,A,BULK,UPLOAD,FILE';
-
-    sinon.stub(S3.s3, 'putObject').returns({
-      promise: async () => {
-        return {};
-      },
-    });
 
     it('Identifies establishment files', async () => {
       sinon.stub(S3.s3, 'listObjects').returns({
