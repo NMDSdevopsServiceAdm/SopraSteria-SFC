@@ -3,21 +3,6 @@ const Sentry = require('@sentry/node');
 const Tracing = require('@sentry/tracing');
 const Integrations = require('@sentry/integrations');
 
-const beeline = require('honeycomb-beeline')({
-  dataset: config.get('env'),
-  serviceName: 'sfc',
-  sampleRate: 7,
-  express: {
-    userContext: ['id'],
-    parentIdSource: 'X-Honeycomb-Trace',
-    traceIdSource: 'X-Honeycomb-Trace',
-  },
-  presendHook: (ev) => {
-    delete ev.data['db.query'];
-    delete ev.data['db.query_args'];
-  },
-});
-
 var express = require('express');
 
 var path = require('path');
@@ -327,10 +312,6 @@ app.use(function onError(err, req, res, next) {
 });
 
 const startApp = () => {
-  if (config.get('honeycomb.write_key')) {
-    beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
-  }
-
   const listenPort = parseInt(config.get('listen.port'), 10);
   app.set('port', listenPort);
   app.listen(app.get('port'));
