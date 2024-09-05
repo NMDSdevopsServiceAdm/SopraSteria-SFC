@@ -3,7 +3,6 @@ export enum QualificationType {
   Other = 'Any other qualification',
   Certificate = 'Certificate',
   Degree = 'Degree',
-  Assessor = 'Assessor and mentoring',
   Award = 'Award',
   Diploma = 'Diploma',
   Apprenticeship = 'Apprenticeship',
