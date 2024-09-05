@@ -15,7 +15,6 @@ phases:
   build:
     commands:
       - cd frontend
-      - npx puppeteer browsers install chrome
       - npm run test-headless
 
 
