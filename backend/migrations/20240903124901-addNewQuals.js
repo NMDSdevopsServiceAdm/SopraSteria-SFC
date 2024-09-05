@@ -13,6 +13,7 @@ module.exports = {
           { id: 141, code: 147, title: "TAQA internal quality assurance", level: '4' },
         ],
         "Certificate": [
+          { id: 152, code: 158, title: "Level 2 Adult Social Care Certificate"},
           { id: 142, code: 148, title: "Falls prevention", level: '2' },
           { id: 143, code: 149, title: "Nutrition", level: '2' },
           { id: 144, code: 150, title: "Oral health", level: '2' },
@@ -22,7 +23,7 @@ module.exports = {
           { id: 146, code: 152, title: "Physiotherapy degree", level: '6' },
           { id: 147, code: 153, title: "Any nursing degree", level: '6' },
         ],
-        "Any other qualification": [
+        "Other type of qualification": [
           { id: 148, code: 154, title: "Functional skills in english", level: '1' },
           { id: 149, code: 155, title: "Functional skills in english", level: '2' },
           { id: 150, code: 156, title: "Functional skills in maths", level: '1' },
@@ -57,7 +58,7 @@ module.exports = {
          where: {
            id: {
              [Op.gte]: 139,
-             [Op.lte]: 151
+             [Op.lte]: 152
            }
          }
        },

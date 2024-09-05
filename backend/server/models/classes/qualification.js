@@ -21,7 +21,7 @@ const ValidationMessage = require('./validations/validationMessage').ValidationM
 // known qualification types
 const QUALIFICATION_TYPE = [
   'NVQ',
-  'Any other qualification',
+  'Other type of qualification',
   'Certificate',
   'Degree',
   'Assessor and mentoring',
