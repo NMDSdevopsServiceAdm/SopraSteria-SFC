@@ -30,16 +30,16 @@ module.exports = {
         ]
       }
 
-      for (const key of Object.keys(newQuals)) {
-        for (const row of newQuals[key]) {
+      for (const qualificationType of Object.keys(newQuals)) {
+        for (const qualification of newQuals[qualificationType]) {
           await models.workerAvailableQualifications.create(
             {
-              id: row.id,
-              title: row.title,
-              code: row.code,
-              group: key,
-              level: row.level,
-              analysisFileCode: `QL${row.code}ACHQ${row.level}`,
+              id: qualification.id,
+              title: qualification.title,
+              code: qualification.code,
+              group: qualificationType,
+              level: qualification.level,
+              analysisFileCode: `QL${qualification.code}ACHQ${qualification.level}`,
               seq: 0,
               multipleLevels: false,
               socialCareRelevant: false
