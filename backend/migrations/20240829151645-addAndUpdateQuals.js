@@ -32,7 +32,7 @@ module.exports = {
           { id: 8, title: "Awareness of the mental capacity act, 2005" },
           { id: 9, title: "Basic awareness of diabetes" },
           { id: 10, title: "Emergency first aid at work" },
-          { id: 11, title: "Employment Responsibilities and Rights in Health, Social Care, Children and Young People's Settings" },
+          { id: 11, title: "Employment Responsibilities and Rights in Health, Social Care, Children and Young People's settings" },
           { id: 12, title: "Food safety in health and social care, and early years and childcare settings" },
           { id: 13, title: "Introduction to health, social care, and children's and young people's settings" },
           { id: 14, title: "Mental Health Social Work Award (MHSWA)" },
