@@ -2,9 +2,10 @@ const express = require('express');
 const router = express.Router();
 const generateJWT = require('../../utils/security/NHSBSAgenerateJWT');
 const config = require('../../config/config');
+const { nhsBsaApiLimiter } = require('../../utils/middleware/rateLimitingNHSBSAAPI');
 
+router.use('/', nhsBsaApiLimiter);
 router.route('/').get(function (req, res) {
-    
   const authHeader = req.headers && req.headers.nhsbsaapikey;
   const nhsBsaApiKey = config.get('nhsBsaApi.apikey');
 

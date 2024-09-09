@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
-const { authLimiter } = require('../../utils/middleware/rateLimitingNHSBSAAPI');
+const { nhsBsaApiLimiter } = require('../../utils/middleware/rateLimitingNHSBSAAPI');
 
 const nhsBsaApiDocumentation = (req, res) => {
   try {
@@ -17,6 +17,6 @@ const nhsBsaApiDocumentation = (req, res) => {
   }
 };
 
-router.route('/').get(authLimiter, nhsBsaApiDocumentation);
+router.route('/').get(nhsBsaApiLimiter, nhsBsaApiDocumentation);
 module.exports = router;
 module.exports.nhsBsaApiDocumentation = nhsBsaApiDocumentation;
