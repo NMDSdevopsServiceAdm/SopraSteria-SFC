@@ -85,3 +85,6 @@ docker/*.sql
 # Gource
 lib/
 *.ppm
+
+# puppeteer cache
+frontend/.cache

@@ -11,6 +11,14 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
     sinon.restore();
   });
 
+  beforeEach(() => {
+    sinon.stub(S3.s3, 'putObject').returns({
+      promise: async () => {
+        return {};
+      },
+    });
+  });
+
   describe('uploadedPut', () => {
     const TrainingFile = 'LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DATECOMPLETED,EXPIRYDATE,ACCREDITED,NOTES';
     const EstablishmentFile =
@@ -18,12 +26,6 @@ describe('/server/routes/establishment/uploadFiles.js', () => {
     const WorkerFile =
       'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMBER,POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,DISABLED,CARECERT,L2CARECERT,RECSOURCE,HANDCVISA,INOUTUK,STARTDATE,STARTINSECT,APPRENTICE,EMPLSTATUS,ZEROHRCONT,DAYSSICK,SALARYINT,SALARY,HOURLYRATE,MAINJOBROLE,MAINJRDESC,CONTHOURS,AVGHOURS,NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
     const OtherFile = 'Test,This,is,NOT,A,BULK,UPLOAD,FILE';
-
-    sinon.stub(S3.s3, 'putObject').returns({
-      promise: async () => {
-        return {};
-      },
-    });
 
     it('Identifies establishment files', async () => {
       sinon.stub(S3.s3, 'listObjects').returns({
