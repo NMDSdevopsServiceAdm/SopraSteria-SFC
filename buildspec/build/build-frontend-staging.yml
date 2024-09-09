@@ -11,7 +11,8 @@ phases:
   build:
     commands:
       - echo $CODEBUILD_RESOLVED_SOURCE_VERSION > commit_hash.txt
-      - cd backend && npm ci
+      - cd frontend && npm ci
+      - npm run build:test
 
 artifacts:
   files:
