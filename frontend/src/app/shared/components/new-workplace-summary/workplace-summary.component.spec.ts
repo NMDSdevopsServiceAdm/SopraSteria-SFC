@@ -12,7 +12,8 @@ import { UserService } from '@core/services/user.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentWithShareWith,
-  MockEstablishmentServiceCapacity,
+  MockEstablishmentService,
+  MockEstablishmentServiceWithNoCapacities,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
@@ -36,7 +37,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentServiceCapacity.factory(hasQuestions),
+          useClass: hasQuestions ? MockEstablishmentService : MockEstablishmentServiceWithNoCapacities,
         },
         {
           provide: CqcStatusChangeService,
@@ -635,10 +636,10 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(serviceCapacityRow).toBeFalsy();
       });
 
-      it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is false', async () => {
+      it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is true', async () => {
         const { component, fixture, queryByTestId } = await setup(null, ['canEditEstablishment'], false);
 
-        component.workplace.showAddWorkplaceDetailsBanner = false;
+        component.workplace.showAddWorkplaceDetailsBanner = true;
 
         fixture.detectChanges();
 
