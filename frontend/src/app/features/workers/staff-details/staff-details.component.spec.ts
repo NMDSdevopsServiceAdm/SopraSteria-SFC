@@ -157,8 +157,9 @@ describe('StaffDetailsComponent', () => {
   it('should show the conditional input when selecting a job which has an other value of true', async () => {
     const { component, getByLabelText, fixture } = await setup();
 
-    const jobWithDropdown = component.jobsAvailable.findIndex((job) => job.other);
-    userEvent.selectOptions(getByLabelText('Main job role'), [jobWithDropdown.toString()]);
+    const otherJobs = component.jobsAvailable.filter((job) => job.other);
+
+    userEvent.selectOptions(getByLabelText('Main job role'), [otherJobs[0].id.toString()]);
     fixture.detectChanges();
 
     expect(fixture.nativeElement.querySelector('.govuk-select__conditional--hidden')).toBeFalsy();
@@ -375,12 +376,12 @@ describe('StaffDetailsComponent', () => {
       expect(setAddStaffRecordInProgressSpy).toHaveBeenCalledWith(true);
     });
 
-    it('should return the user to the workplace home page when clicking cancel', async () => {
-      const { component, getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup();
+    it('should return the user to the staff records tab when clicking cancel', async () => {
+      const { getByText, submitSpy, routerSpy, updateWorkerSpy } = await setup();
 
       userEvent.click(getByText('Cancel'));
       expect(submitSpy).toHaveBeenCalledWith({ action: 'exit', save: false });
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.workplace.uid], {
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
         fragment: 'staff-records',
       });
       expect(updateWorkerSpy).not.toHaveBeenCalled();
@@ -492,8 +493,8 @@ describe('StaffDetailsComponent', () => {
         false,
       );
 
-      const jobWithDropdown = component.jobsAvailable.findIndex((job) => job.other);
-      userEvent.selectOptions(getByLabelText('Main job role'), [jobWithDropdown.toString()]);
+      const otherJobs = component.jobsAvailable.filter((job) => job.other);
+      userEvent.selectOptions(getByLabelText('Main job role'), [otherJobs[0].id.toString()]);
       fixture.detectChanges();
       userEvent.type(getByLabelText('What is the job role?'), 'Admin');
       userEvent.click(getByLabelText('Temporary'));
@@ -503,7 +504,7 @@ describe('StaffDetailsComponent', () => {
       const updatedFormData = component.form.value;
       expect(updatedFormData).toEqual({
         nameOrId: component.worker.nameOrId,
-        mainJob: '3',
+        mainJob: '21',
         otherJobRole: 'Admin',
         contract: 'Temporary',
       });
@@ -511,7 +512,7 @@ describe('StaffDetailsComponent', () => {
       expect(updateWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nameOrId: component.worker.nameOrId,
         contract: 'Temporary',
-        mainJob: { jobId: 3, other: 'Admin' },
+        mainJob: { jobId: 21, other: 'Admin' },
       });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -664,9 +665,9 @@ describe('StaffDetailsComponent', () => {
       form.controls.mainJob.setValue('');
       form.controls.contract.setValue('');
 
-      const jobWithDropdown = component.jobsAvailable.findIndex((job) => job.other);
+      const otherJobs = component.jobsAvailable.filter((job) => job.other);
       userEvent.type(getByLabelText('Name or ID number'), 'Someone');
-      userEvent.selectOptions(getByLabelText('Main job role'), [jobWithDropdown.toString()]);
+      userEvent.selectOptions(getByLabelText('Main job role'), [otherJobs[0].id.toString()]);
       fixture.detectChanges();
       userEvent.type(
         getByLabelText('What is the job role?'),

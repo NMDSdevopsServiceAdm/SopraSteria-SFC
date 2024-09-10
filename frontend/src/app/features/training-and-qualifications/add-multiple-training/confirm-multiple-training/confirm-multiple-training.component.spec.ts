@@ -140,11 +140,24 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(within(trainingRecordDetails).getByText('No notes added')).toBeTruthy();
     });
 
-    it('should display a change link with the correct href', async () => {
+    it('should display a change link with the correct href at Training category row which navigate to select training category page', async () => {
       const { getByTestId } = await setup();
 
       const trainingRecordDetails = getByTestId('trainingRecordDetails');
-      const changeLink = within(trainingRecordDetails).getByText('Change');
+      const trainingCategoryRow = within(trainingRecordDetails).getByText('Training category').parentElement;
+      const changeLink = within(trainingCategoryRow).getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toEqual(
+        '/workplace/98a83eef-e1e1-49f3-89c5-b1287a3cc8de/add-multiple-training/confirm-training/select-training-category',
+      );
+    });
+
+    it('should display a change link with the correct href at Training name row which navigate to training detail page', async () => {
+      const { getByTestId } = await setup();
+
+      const trainingRecordDetails = getByTestId('trainingRecordDetails');
+      const trainingNameRow = within(trainingRecordDetails).getByText('Training name').parentElement;
+      const changeLink = within(trainingNameRow).getByText('Change');
 
       expect(changeLink.getAttribute('href')).toEqual(
         '/workplace/98a83eef-e1e1-49f3-89c5-b1287a3cc8de/add-multiple-training/confirm-training/training-details',
@@ -184,21 +197,6 @@ describe('MultipleTrainingDetailsComponent', () => {
       fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
-      await fixture.whenStable();
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: '2 training records added',
-      } as Alert);
-    });
-
-    it('should navigate back to the sub workplace home page and add an alert when it is not the primary workplace', async () => {
-      const { fixture, getByText, routerSpy, alertSpy } = await setup(false, false);
-
-      const button = getByText('Confirm details');
-      fireEvent.click(button);
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mock-uid'], { fragment: 'training-and-qualifications' });
       await fixture.whenStable();
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',

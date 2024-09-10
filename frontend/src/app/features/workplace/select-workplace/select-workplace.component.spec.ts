@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackService } from '@core/services/back.service';
@@ -134,12 +134,9 @@ describe('SelectWorkplaceComponent', () => {
       const continueButton = getByText('Save and return');
       fireEvent.click(continueButton);
 
-      expect(spy).toHaveBeenCalledWith(
-        [`workplace/${component.establishmentService.establishmentId}`, 'cannot-create-account'],
-        {
-          state: { returnTo: `workplace/${component.establishmentService.establishmentId}/select-workplace` },
-        },
-      );
+      expect(spy).toHaveBeenCalledWith([`workplace/${component.workplace.uid}`, 'cannot-create-account'], {
+        state: { returnTo: `workplace/${component.workplace.uid}/select-workplace` },
+      });
     });
 
     it('should navigate to the back to the workplace page when workplace selected and the establishment does not already exists in the service', async () => {
@@ -188,7 +185,7 @@ describe('SelectWorkplaceComponent', () => {
       component.setBackLink();
 
       expect(backLinkSpy).toHaveBeenCalledWith({
-        url: [`workplace/${component.establishmentService.establishmentId}/regulated-by-cqc`],
+        url: [`workplace/${component.workplace.uid}/regulated-by-cqc`],
       });
     });
   });

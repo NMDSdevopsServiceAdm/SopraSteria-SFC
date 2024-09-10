@@ -2,9 +2,14 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -20,6 +25,7 @@ import { SharedModule } from '@shared/shared.module';
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
+import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
@@ -29,6 +35,8 @@ import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EmployedFromOutsideUkExistingWorkersComponent } from './employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
+import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
@@ -59,10 +67,6 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
-import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 
 @NgModule({
   imports: [
@@ -121,6 +125,9 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
     PensionsComponent,
+    EmployedFromOutsideUkExistingWorkersComponent,
+    HealthAndCareVisaExistingWorkers,
+    ChangeDataOwnerComponent,
   ],
   providers: [
     DialogService,
@@ -133,6 +140,7 @@ import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recru
     RankingsResolver,
     UsefulLinkPayResolver,
     UsefulLinkRecruitmentResolver,
+    GetMissingCqcLocationsResolver,
   ],
 })
 export class WorkplaceModule {}

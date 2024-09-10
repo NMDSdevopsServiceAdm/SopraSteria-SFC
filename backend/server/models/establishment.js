@@ -755,6 +755,11 @@ module.exports = function (sequelize, DataTypes) {
         values: ['Yes', 'No', "Don't know"],
         field: 'SickPay',
       },
+      isParentApprovedBannerViewed: {
+        type: DataTypes.BOOLEAN,
+        allowNull: true,
+        field: 'IsParentApprovedBannerViewed',
+      },
       cssrId: {
         type: DataTypes.INTEGER,
         allowNull: true,
@@ -1476,6 +1481,8 @@ module.exports = function (sequelize, DataTypes) {
             'DisabilityValue',
             'CareCertificateValue',
             'RecruitedFromValue',
+            'HealthAndCareVisaValue',
+            'EmployedFromOutsideUkValue',
             'MainJobStartDateValue',
             'SocialCareStartDateValue',
             'SocialCareStartDateYear',
@@ -1496,6 +1503,8 @@ module.exports = function (sequelize, DataTypes) {
             'ApprovedMentalHealthWorkerValue',
             'QualificationInSocialCareValue',
             'OtherQualificationsValue',
+            'Level2CareCertificateValue',
+            'Level2CareCertificateYear',
           ],
           as: 'workers',
           where: {
@@ -2115,11 +2124,41 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Establishment.getChildWorkplaces = async function (establishmentUid, limit = 0, pageIndex = 0, searchTerm = '') {
+  Establishment.getChildWorkplaces = async function (
+    establishmentUid,
+    limit = 0,
+    pageIndex = 0,
+    searchTerm = '',
+    getPendingWorkplaces = false,
+  ) {
     const offset = pageIndex * limit;
+    let ustatus;
+
+    if (getPendingWorkplaces) {
+      ustatus = {
+        [Op.or]: {
+          [Op.ne]: 'REJECTED',
+          [Op.is]: null,
+        },
+      };
+    } else {
+      ustatus = {
+        [Op.is]: null,
+      };
+    }
 
     const data = await this.findAndCountAll({
-      attributes: ['uid', 'updated', 'NameValue', 'dataOwner', 'dataPermissions', 'dataOwnershipRequested', 'ustatus'],
+      attributes: [
+        'uid',
+        'updated',
+        'NameValue',
+        'dataOwner',
+        'dataPermissions',
+        'dataOwnershipRequested',
+        'ustatus',
+        'postcode',
+        'locationId',
+      ],
       include: [
         {
           model: sequelize.models.services,
@@ -2129,19 +2168,14 @@ module.exports = function (sequelize, DataTypes) {
       ],
       where: {
         ParentUID: establishmentUid,
-        ustatus: {
-          [Op.or]: {
-            [Op.ne]: 'REJECTED',
-            [Op.is]: null,
-          },
-        },
+        ustatus,
         ...(searchTerm ? { NameValue: { [Op.iLike]: `%${searchTerm}%` } } : {}),
       },
       order: [
         [sequelize.literal("\"Status\" IN ('PENDING', 'IN PROGRESS')"), 'ASC'],
         ['NameValue', 'ASC'],
       ],
-      limit,
+      ...(limit ? { limit } : {}),
       offset,
     });
 
@@ -2322,29 +2356,12 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-
-  const nhsBsaAttributes = [
-    'id',
-    'nmdsId',
-    'NameValue',
-    'address1',
-    'locationId',
-    'town',
-    'postcode',
-    'isParent',
-    'dataOwner',
-    'NumberOfStaffValue',
-    'parentId',
-  ];
-
-  Establishment.getNhsBsaApiDataByWorkplaceId = async function (where) {
-    return await this.findOne({
-      nhsBsaAttributes,
+  const nhsBsaApiQuery = (where) => {
+    return {
       as: 'establishment',
-
       where: {
         archived: false,
-       ...where
+        ...where,
       },
       include: [
         {
@@ -2353,33 +2370,30 @@ module.exports = function (sequelize, DataTypes) {
           attributes: ['name', 'category'],
           required: true,
         },
-      ],
-    });
-  };
-
-
-  Establishment.getNhsBsaApiDataForSubs= async function (establishmentId) {
-    return await this.findAll({
-      nhsBsaAttributes,
-      as: 'establishment',
-
-      where: {
-        archived: false,
-        parentId: establishmentId,
-      },
-
-      include: [
         {
-          model: sequelize.models.services,
-          as: 'mainService',
-          attributes: ['name', 'category'],
-          required: true,
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['WdfEligible'],
+          where: {
+            archived: false,
+          },
+          required: false,
         },
       ],
-    });
-
+    };
   };
 
+  Establishment.getNhsBsaApiDataByWorkplaceId = async function (workplaceId) {
+    return await this.findOne(nhsBsaApiQuery({ nmdsId: workplaceId }));
+  };
+
+  Establishment.getNhsBsaApiDataForParent = async function (workplaceId) {
+    return await this.findOne(nhsBsaApiQuery({ id: workplaceId }));
+  };
+
+  Establishment.getNhsBsaApiDataForSubs = async function (parentId) {
+    return await this.findAll(nhsBsaApiQuery({ parentId }));
+  };
 
   return Establishment;
 };

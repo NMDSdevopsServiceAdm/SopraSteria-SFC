@@ -94,7 +94,7 @@
       (currentPageIndexChange)="handlePageUpdate($event)"
       [currentPageIndex]="currentPageIndex"
     ></app-pagination>
-    <div class="govuk-button-group">
+    <div class="govuk-button-group" [ngClass]="{ 'govuk-!-margin-top-9': !showSearchBar }">
       <button class="govuk-button govuk-!-margin-right-9" type="button" (click)="onSubmit()">
         {{ submitButtonText }}
       </button>

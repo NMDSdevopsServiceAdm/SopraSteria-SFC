@@ -16,7 +16,6 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   public workers;
   public workplaceUid: string;
   public canEditWorker: boolean;
-  public primaryWorkplaceUid: string;
   public flagText: string;
   public img: string;
   public searchTerm = '';
@@ -42,11 +41,8 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const alertMessage = history.state?.alertMessage;
-    alertMessage && this.showAlert(alertMessage);
     this.setTrainingAndCount();
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
-    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.init();
     this.canEditWorker = this.permissionsService.can(this.workplaceUid, 'canEditWorker');
     this.backLinkService.showBackLink();
@@ -55,13 +51,6 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   }
 
   protected init(): void {}
-
-  private showAlert(message: string): void {
-    this.alertService.addAlert({
-      type: 'success',
-      message,
-    });
-  }
 
   private setSearchIfPrevious(): void {
     const search = this.route.snapshot.queryParamMap.get('search');
@@ -76,9 +65,7 @@ export class ExpiredAndExpiringTrainingDirective implements OnInit {
   }
 
   public returnToHome(): void {
-    const returnLink =
-      this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
-    this.router.navigate(returnLink, { fragment: 'training-and-qualifications' });
+    this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
 
   public getTrainingByStatus(properties: {

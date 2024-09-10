@@ -40,7 +40,7 @@ describe('ChildWorkplacesResolver', () => {
     const { resolver, establishmentService } = setup();
 
     const primaryWorkplaceUid = '98a83eef-e1e1-49f3-89c5-b1287a3cc8de';
-    const queryParams = { pageIndex: 0, itemsPerPage: 12 };
+    const queryParams = { pageIndex: 0, itemsPerPage: 12, getPendingWorkplaces: true };
 
     resolver.resolve();
 

@@ -17,9 +17,10 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import sinon from 'sinon';
 
-
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
+import { TrainingCategoryService } from '@core/services/training-category.service';
+import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('MultipleTrainingDetailsComponent', () => {
   async function setup(
@@ -28,13 +29,14 @@ describe('MultipleTrainingDetailsComponent', () => {
     isPrimaryWorkplace = true,
     qsParamGetMock = sinon.fake(),
   ) {
-    const { fixture, getByText, getAllByText, getByTestId, getByLabelText } = await render(
+    const { fixture, getByText, getAllByText, getByTestId, getByLabelText, queryByTestId } = await render(
       MultipleTrainingDetailsComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMultipleTrainingModule],
         providers: [
           WindowRef,
           { provide: EstablishmentService, useClass: MockEstablishmentService },
+          { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
           {
             provide: ActivatedRoute,
             useValue: new MockActivatedRoute({
@@ -42,9 +44,6 @@ describe('MultipleTrainingDetailsComponent', () => {
                 params: { trainingRecordId: '1' },
                 parent: {
                   url: [{ path: accessedFromSummary ? 'confirm-training' : 'add-multiple-training' }],
-                },
-                queryParamMap: {
-                  get: qsParamGetMock,
                 },
               },
               parent: {
@@ -65,6 +64,10 @@ describe('MultipleTrainingDetailsComponent', () => {
             useClass: prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
           },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
+          {
+            provide: TrainingCategoryService,
+            useClass: MockTrainingCategoryService,
+          },
         ],
       },
     );
@@ -78,7 +81,11 @@ describe('MultipleTrainingDetailsComponent', () => {
     const spy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerSpy = spyOn(workerService, 'createMultipleTrainingRecords').and.callThrough();
     const trainingSpy = spyOn(trainingService, 'resetState').and.callThrough();
-    const updateSelectedTrainingSpy = spyOn(trainingService, 'updateSelectedTraining');
+    const setSelectedTrainingSpy = spyOnProperty(trainingService, 'selectedTraining', 'set');
+    const setUpdatingSelectedStaffForMultipleTrainingSpy = spyOn(
+      trainingService,
+      'setUpdatingSelectedStaffForMultipleTraining',
+    );
 
     return {
       component,
@@ -91,7 +98,9 @@ describe('MultipleTrainingDetailsComponent', () => {
       workerSpy,
       trainingService,
       trainingSpy,
-      updateSelectedTrainingSpy,
+      setSelectedTrainingSpy,
+      setUpdatingSelectedStaffForMultipleTrainingSpy,
+      queryByTestId,
     };
   }
 
@@ -117,17 +126,21 @@ describe('MultipleTrainingDetailsComponent', () => {
   it('should show a dropdown with the correct categories in', async () => {
     const { component } = await setup();
     expect(component.categories).toEqual([
-      { id: 1, seq: 10, category: 'Activity provision/Well-being' },
-      { id: 2, seq: 20, category: 'Autism' },
+      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+      { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
   });
 
   it('should store the selected training in training service and navigate to the next page when filling out the form and clicking continue', async () => {
-    const { component, getByText, getByLabelText, getByTestId, fixture, updateSelectedTrainingSpy, spy } =
-      await setup();
+    const { component, getByText, getByLabelText, getByTestId, fixture, setSelectedTrainingSpy, spy } = await setup();
 
-    const categoryOption = component.categories[0].id.toString();
-    userEvent.selectOptions(getByLabelText('Training category'), categoryOption);
+    component.trainingCategory = {
+      id: component.categories[0].id,
+      category: component.categories[0].category,
+    };
+    fixture.detectChanges();
+
     userEvent.type(getByLabelText('Training name'), 'Training');
     userEvent.click(getByLabelText('Yes'));
     const completedDate = getByTestId('completedDate');
@@ -145,7 +158,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     fixture.detectChanges();
 
     expect(component.form.valid).toBeTruthy();
-    expect(updateSelectedTrainingSpy).toHaveBeenCalledWith({
+    expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
       trainingCategory: component.categories[0],
       title: 'Training',
       accredited: 'Yes',
@@ -162,13 +175,18 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   it('should navigate to the confirm training page when page has been accessed from that page and pressing Save and return', async () => {
-    const { component, fixture, getByText, updateSelectedTrainingSpy, spy } = await setup(true, true);
+    const { component, fixture, getByText, setSelectedTrainingSpy, spy } = await setup(true, true);
+
+    component.trainingCategory = {
+      id: component.categories[0].id,
+      category: component.categories[0].category,
+    };
 
     const button = getByText('Save and return');
     fireEvent.click(button);
     fixture.detectChanges();
 
-    expect(updateSelectedTrainingSpy).toHaveBeenCalledWith({
+    expect(setSelectedTrainingSpy).toHaveBeenCalledWith({
       trainingCategory: component.categories[0],
       title: 'Title',
       accredited: 'Yes',
@@ -184,7 +202,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     ]);
   });
 
-  it('should reset training service state and navigate to dashboard when pressing cancel when in the flow and primary user', async () => {
+  it('should reset training service state and navigate to dashboard when pressing cancel when in the flow', async () => {
     const { getByText, spy, trainingSpy } = await setup();
 
     const cancelButton = getByText('Cancel');
@@ -192,16 +210,6 @@ describe('MultipleTrainingDetailsComponent', () => {
 
     expect(trainingSpy).toHaveBeenCalled();
     expect(spy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
-  });
-
-  it('should reset training service state and navigate to sub workplace home page åwhen pressing cancel when in the flow but not the primary user', async () => {
-    const { getByText, spy, trainingSpy } = await setup(false, false, false);
-
-    const cancelButton = getByText('Cancel');
-    fireEvent.click(cancelButton);
-
-    expect(trainingSpy).toHaveBeenCalled();
-    expect(spy).toHaveBeenCalledWith(['workplace', 'mock-uid'], { fragment: 'training-and-qualifications' });
   });
 
   it('should not clear selected staff and navigate when pressing cancel when in the flow', async () => {
@@ -218,13 +226,11 @@ describe('MultipleTrainingDetailsComponent', () => {
     const { component } = await setup(false, true);
 
     const form = component.form;
-    const { trainingCategory, title, accredited, completed, expires, notes } =
-      component.trainingService.selectedTraining;
+    const { title, accredited, completed, expires, notes } = component.trainingService.selectedTraining;
     const completedArr = completed.split('-');
     const expiresArr = expires.split('-');
 
     expect(form.value).toEqual({
-      category: trainingCategory.id,
       title,
       accredited,
       completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
@@ -234,18 +240,6 @@ describe('MultipleTrainingDetailsComponent', () => {
   });
 
   describe('errors', () => {
-    it('should show an error when no training category selected', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      component.form.get('category').setValue(null);
-      component.form.get('category').markAsDirty();
-      const finishButton = getByText('Continue');
-      fireEvent.click(finishButton);
-      fixture.detectChanges();
-      expect(component.form.invalid).toBeTruthy();
-      expect(getAllByText('Select the training category').length).toEqual(3);
-    });
-
     it('should show an error when training name less than 3 characters', async () => {
       const { component, getByText, fixture, getAllByText } = await setup();
       component.form.markAsDirty();
@@ -332,18 +326,18 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
 
     it('should show an error when expiry date is before the completed date', async () => {
-      const { component,getByTestId, getByText, fixture, getAllByText } = await setup();
-    component.form.markAsDirty();
-    const today = new Date();
-    const completedDate = getByTestId('completedDate');
-    userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
-    userEvent.type(within(completedDate).getByLabelText('Month'), `${today.getMonth()+1}`);
-    userEvent.type(within(completedDate).getByLabelText('Year'), `${today.getFullYear()}`);
-    const expiresDate = getByTestId('expiresDate');
-    userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
-    userEvent.type(within(expiresDate).getByLabelText('Month'), `${today.getMonth()+1}`);
-     userEvent.type(within(expiresDate).getByLabelText('Year'), `${today.getFullYear()}`);
-    fireEvent.click(getByText('Continue'));
+      const { component, getByTestId, getByText, fixture, getAllByText } = await setup();
+      component.form.markAsDirty();
+      const today = new Date();
+      const completedDate = getByTestId('completedDate');
+      userEvent.type(within(completedDate).getByLabelText('Day'), `7`);
+      userEvent.type(within(completedDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
+      userEvent.type(within(completedDate).getByLabelText('Year'), `${today.getFullYear()}`);
+      const expiresDate = getByTestId('expiresDate');
+      userEvent.type(within(expiresDate).getByLabelText('Day'), `6`);
+      userEvent.type(within(expiresDate).getByLabelText('Month'), `${today.getMonth() + 1}`);
+      userEvent.type(within(expiresDate).getByLabelText('Year'), `${today.getFullYear()}`);
+      fireEvent.click(getByText('Continue'));
       fixture.detectChanges();
 
       expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
@@ -362,6 +356,59 @@ describe('MultipleTrainingDetailsComponent', () => {
       fireEvent.click(finishButton);
       fixture.detectChanges();
       expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
+    });
+  });
+
+  describe('change links', () => {
+    it('should display a change link for number of staff selected', async () => {
+      const { getByTestId } = await setup(false, true);
+
+      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
+
+      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
+
+      expect(numberOfStaffSelected).toBeTruthy();
+      expect(changeStaffSelectedLink).toBeTruthy();
+    });
+
+    it('should display a change link for training category selected if not accessed from summary page', async () => {
+      const { component, fixture, getByTestId } = await setup(false, true);
+
+      component.trainingCategory = {
+        id: component.categories[0].id,
+        category: component.categories[0].category,
+      };
+
+      fixture.detectChanges();
+
+      const trainingCategoryDisplay = getByTestId('trainingCategoryDisplay');
+
+      const changeTrainingCaegorySelectedLink = within(trainingCategoryDisplay).getByText('Change');
+
+      expect(trainingCategoryDisplay).toBeTruthy();
+      expect(changeTrainingCaegorySelectedLink).toBeTruthy();
+    });
+
+    it('should not display the number of staff and training category if accessed from summary page', async () => {
+      const { queryByTestId } = await setup(true, true);
+
+      const numberOfStaffSelected = queryByTestId('numberOfStaffSelected');
+      const trainingCategoryDisplay = queryByTestId('trainingCategoryDisplay');
+
+      expect(numberOfStaffSelected).toBeFalsy();
+      expect(trainingCategoryDisplay).toBeFalsy();
+    });
+
+    it('should call setIsSelectStaffChange when change is clicked for staff', async () => {
+      const { setUpdatingSelectedStaffForMultipleTrainingSpy, getByTestId } = await setup(false, true);
+
+      const numberOfStaffSelected = getByTestId('numberOfStaffSelected');
+
+      const changeStaffSelectedLink = within(numberOfStaffSelected).getByText('Change');
+
+      fireEvent.click(changeStaffSelectedLink);
+
+      expect(setUpdatingSelectedStaffForMultipleTrainingSpy).toHaveBeenCalledWith(true);
     });
   });
 });

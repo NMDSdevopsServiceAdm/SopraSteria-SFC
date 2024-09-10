@@ -22,6 +22,7 @@ import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { MandatoryDetailsComponent } from './mandatory-details.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('MandatoryDetailsComponent', () => {
   const setup = async (canEditWorker = true, primaryUid = 123) => {
@@ -37,6 +38,7 @@ describe('MandatoryDetailsComponent', () => {
         ProgressBarComponent,
       ],
       providers: [
+        InternationalRecruitmentService,
         {
           provide: WindowRef,
           useValue: WindowRef,
@@ -144,15 +146,5 @@ describe('MandatoryDetailsComponent', () => {
     userEvent.click(allWorkersButton);
     expect(navDash).toHaveBeenCalled();
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
-  });
-
-  it('should take you to to the workplace home page if adding a staff record to subsidiary establishment', async () => {
-    const { getByTestId, component, routerSpy } = await setup(true, 345);
-
-    const navDash = spyOn(component, 'navigateToDashboard').and.callThrough();
-    const allWorkersButton = getByTestId('view-all-workers-button');
-    userEvent.click(allWorkersButton);
-    expect(navDash).toHaveBeenCalled();
-    expect(routerSpy).toHaveBeenCalledWith(['/workplace', 123], { fragment: 'staff-records' });
   });
 });

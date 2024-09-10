@@ -23,7 +23,6 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   public form: UntypedFormGroup;
   public submitted: boolean;
   public primaryWorkplaceUid: string;
-  public returnLink: Array<string>;
   public selectAll = false;
   public errorsMap: Array<ErrorDetails>;
   public workplaceUid: string;
@@ -40,6 +39,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   public submitButtonText: string;
   public accessedFromSummary = false;
   public selectedWorkers: string[] = [];
+  public isChangeStaffSelected: boolean;
 
   constructor(
     public backLinkService: BackLinkService,
@@ -53,17 +53,16 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
-    this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.workers = this.route.snapshot.data.workers.workers;
     this.totalWorkerCount = this.workers.length;
     this.getPageOfWorkers();
     this.showSearchBar = this.totalWorkerCount > this.itemsPerPage;
     this.prefill();
     this.setupErrorsMap();
-    this.setReturnLink();
     this.setBackLink();
     this.accessedFromSummary = this.route.snapshot.parent.url[0].path.includes('confirm-training');
     this.submitButtonText = this.accessedFromSummary ? 'Save and return' : 'Continue';
+    this.isChangeStaffSelected = this.trainingService.getUpdatingSelectedStaffForMultipleTraining();
   }
 
   ngAfterViewInit(): void {
@@ -73,6 +72,13 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   private prefill(): void {
     this.selectedWorkers = this.trainingService.selectedStaff.map((worker) => worker.uid);
     this.updateSelectAllLinks();
+    this.clearSelectedTrainingCategoryOnPageEntry();
+  }
+
+  private clearSelectedTrainingCategoryOnPageEntry() {
+    if (this.selectedWorkers.length === 0) {
+      this.trainingService.clearSelectedTrainingCategory();
+    }
   }
 
   public getPageOfWorkers(): void {
@@ -125,11 +131,6 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
     ];
   }
 
-  public setReturnLink(): void {
-    this.returnLink =
-      this.workplaceUid === this.primaryWorkplaceUid ? ['/dashboard'] : ['/workplace', this.workplaceUid];
-  }
-
   public setBackLink(): void {
     this.backLinkService.showBackLink();
   }
@@ -175,9 +176,14 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
 
     if (this.selectedWorkers.length > 0) {
       this.updateSelectedStaff();
-      const nextRoute = this.getNextRoute();
       this.trainingService.addMultipleTrainingInProgress$.next(true);
-      this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', nextRoute]);
+      if (this.isChangeStaffSelected) {
+        this.trainingService.clearUpdatingSelectedStaffForMultipleTraining();
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', 'training-details']);
+      } else {
+        const nextRoute = this.getNextRoute();
+        this.router.navigate(['workplace', this.workplaceUid, 'add-multiple-training', nextRoute]);
+      }
     } else {
       this.error = true;
       this.errorSummaryService.scrollToErrorSummary();
@@ -185,7 +191,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
   }
 
   private getNextRoute(): string {
-    return this.accessedFromSummary ? 'confirm-training' : 'training-details';
+    return this.accessedFromSummary ? 'confirm-training' : 'select-training-category';
   }
 
   handleSearch(searchTerm: string): void {
@@ -210,7 +216,7 @@ export class SelectStaffComponent implements OnInit, AfterViewInit {
       this.router.navigate(['../'], { relativeTo: this.route });
     } else {
       this.trainingService.resetSelectedStaff();
-      this.router.navigate(this.returnLink, { fragment: 'training-and-qualifications' });
+      this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
     }
   }
 

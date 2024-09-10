@@ -4,6 +4,7 @@
 all: install run
 
 install:
+	export NODE_ENV=localhost
 	npm install --prefix frontend
 	npm install --prefix backend
 
@@ -18,5 +19,7 @@ test-be:
 	npm run server:test:unit --prefix backend
 
 db-migrate:
-	cd backend && export NODE_ENV=localhost & \
-	cd backend && npm run db:migrate
+	cd backend && export NODE_ENV=localhost && npm run db:migrate
+
+db-migrate-undo:
+	cd backend && export NODE_ENV=localhost && npm run db:migrate:undo

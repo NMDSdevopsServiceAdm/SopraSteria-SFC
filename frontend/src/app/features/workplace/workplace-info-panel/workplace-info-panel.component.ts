@@ -12,6 +12,8 @@ import { CancelDataOwnerDialogComponent } from '@shared/components/cancel-data-o
 import { ChangeDataOwnerDialogComponent } from '@shared/components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { MoveWorkplaceDialogComponent } from '@shared/components/move-workplace/move-workplace-dialog.component';
 import { SetDataPermissionDialogComponent } from '@shared/components/set-data-permission/set-data-permission-dialog.component';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -21,6 +23,7 @@ import { Subscription } from 'rxjs';
 export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   @Output() public changeOwnershipAndPermissionsEvent = new EventEmitter();
   @Input() public workplace: Workplace;
+  @Input() public subWorkplaceNumber: number;
   public canViewEstablishment: boolean;
   public canChangePermissionsForSubsidiary: boolean;
   public primaryWorkplace: Establishment;
@@ -30,6 +33,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public ownershipChangeRequestId: any = [];
   public ownershipChangeRequestCreatedByLoggegInUser: boolean;
   public ownershipChangeRequester: any;
+  public newHomeDesignParentFlag: boolean;
 
   constructor(
     private dialogService: DialogService,
@@ -39,6 +43,8 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     private userService: UserService,
     private alertService: AlertService,
     private authService: AuthService,
+    private featureFlagsService: FeatureFlagsService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit() {
@@ -54,6 +60,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         }
       }),
     );
+    this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
   }
 
   private changeOwnershipAndPermissions(): void {
@@ -134,6 +141,14 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
     });
   }
 
+  public navigateToChangeDataOwner(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/workplace/change-data-owner'], {
+      queryParams: { changeDataOwnerFrom: this.workplace.uid },
+    });
+  }
+
+  // refactor and rename
   public setEmployerType(event: Event): void {
     event.preventDefault();
 
@@ -142,7 +157,8 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
         this.establishmentService.setEmployerTypeHasValue(false);
         this.router.navigate(['/workplace', this.workplace.uid, 'type-of-employer']);
       } else {
-        this.router.navigate(['/workplace', this.workplace.uid]);
+        this.parentSubsidiaryViewService.setViewingSubAsParent(this.workplace.uid);
+        this.router.navigate(['/subsidiary', this.workplace.uid, 'home']);
       }
     });
   }

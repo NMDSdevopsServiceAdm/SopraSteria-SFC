@@ -3,21 +3,6 @@ const Sentry = require('@sentry/node');
 const Tracing = require('@sentry/tracing');
 const Integrations = require('@sentry/integrations');
 
-const beeline = require('honeycomb-beeline')({
-  dataset: config.get('env'),
-  serviceName: 'sfc',
-  sampleRate: 7,
-  express: {
-    userContext: ['id'],
-    parentIdSource: 'X-Honeycomb-Trace',
-    traceIdSource: 'X-Honeycomb-Trace',
-  },
-  presendHook: (ev) => {
-    delete ev.data['db.query'];
-    delete ev.data['db.query_args'];
-  },
-});
-
 var express = require('express');
 
 var path = require('path');
@@ -61,7 +46,7 @@ var recruitedFrom = require('./server/routes/recruitedFrom');
 var user = require('./server/routes/accounts/user');
 var workerLeaveReasons = require('./server/routes/workerReason');
 var serviceUsers = require('./server/routes/serviceUsers');
-var workingTrainingCategories = require('./server/routes/workerTrainingCategories');
+var workerTrainingCategories = require('./server/routes/workerTrainingCategories');
 var nurseSpecialism = require('./server/routes/nurseSpecialism');
 var availableQualifications = require('./server/routes/availableQualifications');
 var approvals = require('./server/routes/approvals');
@@ -71,6 +56,7 @@ var cqcStatusCheck = require('./server/routes/cqcStatusCheck');
 var longTermAbsence = require('./server/routes/longTermAbsence');
 var nhsBsaApi = require('./server/routes/nhsBsaApi/workplaceData');
 var nhsBsaApiAuth = require('./server/routes/nhsBsaApi/index');
+var nhsBsaApiDocumentation = require('./server/routes/nhsBsaApi/apiDocs');
 
 // admin route
 var admin = require('./server/routes/admin');
@@ -95,6 +81,7 @@ var app = express();
 //NHSBSA API
 app.use('/api/v1/workplaces', nhsBsaApi);
 app.use('/api/v1/workplaces/auth/token', nhsBsaApiAuth);
+app.use('/api/v1/api-docs', nhsBsaApiDocumentation);
 
 const corsOptions = {
   origin: '*',
@@ -268,11 +255,11 @@ app.use('/api/country', [refCacheMiddleware.refcache, country]);
 app.use('/api/nationality', [refCacheMiddleware.refcache, nationality]);
 app.use('/api/qualification', [refCacheMiddleware.refcache, qualification]);
 app.use('/api/recruitedFrom', [refCacheMiddleware.refcache, recruitedFrom]);
-app.use('/api/jobs', [refCacheMiddleware.refcache, jobs]);
+app.use('/api/jobs', [cacheMiddleware.nocache, jobs]);
 app.use('/api/localAuthority', [refCacheMiddleware.refcache, la]);
 app.use('/api/worker/leaveReasons', [refCacheMiddleware.refcache, workerLeaveReasons]);
 app.use('/api/serviceUsers', [refCacheMiddleware.refcache, serviceUsers]);
-app.use('/api/trainingCategories', workingTrainingCategories);
+app.use('/api/trainingCategories', [cacheMiddleware.nocache, workerTrainingCategories]);
 app.use('/api/nurseSpecialism', [refCacheMiddleware.refcache, nurseSpecialism]);
 app.use('/api/availableQualifications', [refCacheMiddleware.refcache, availableQualifications]);
 app.use('/api/longTermAbsence', [refCacheMiddleware.refcache, longTermAbsence]);
@@ -301,15 +288,16 @@ app.use('/api/approvals', [cacheMiddleware.nocache, approvals]);
 const establishmentsV2 = require('./server/routes/v2/establishments');
 app.use('/api/v2/establishment', [cacheMiddleware.nocache, establishmentsV2]);
 
+const missingCqcProviderLocations = require('./server/routes/missingCqcProviderLocations');
+app.use('/api/missingCqcProviderLocations', [cacheMiddleware.nocache], missingCqcProviderLocations);
+
 app.use('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', authLimiter);
 app.get('/loaderio-63e80cd3c669177f22e9ec997ea2594d.txt', function (req, res) {
   res.sendFile(path.join(__dirname, 'loaderio-63e80cd3c669177f22e9ec997ea2594d.txt'));
 });
 
 app.use('*', authLimiter);
-// app.get('*', function (req, res) {
-// return res.sendFile(path.join(__dirname, 'dist/index.html'));
-// });
+app.set('trust proxy', 2 /* number of proxies between user and server */);
 
 app.all('*', function (req, res) {
   res.status(404);
@@ -324,10 +312,6 @@ app.use(function onError(err, req, res, next) {
 });
 
 const startApp = () => {
-  if (config.get('honeycomb.write_key')) {
-    beeline._apiForTesting().honey.writeKey = config.get('honeycomb.write_key');
-  }
-
   const listenPort = parseInt(config.get('listen.port'), 10);
   app.set('port', listenPort);
   app.listen(app.get('port'));

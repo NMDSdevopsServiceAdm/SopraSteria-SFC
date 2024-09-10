@@ -5,9 +5,11 @@ import { TestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfService } from '@core/services/pdf.service';
@@ -16,19 +18,18 @@ import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, queryByTestId, render } from '@testing-library/angular';
 
 import { NewBenchmarksTabComponent } from './benchmarks-tab.component';
 import { NewComparisonGroupHeaderComponent } from './comparison-group-header/comparison-group-header.component';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
-import { MockBenchmarksService } from '@core/test-utils/MockBenchmarkService';
 
 const MockWindow = {
   dataLayer: {
@@ -39,10 +40,10 @@ const MockWindow = {
 };
 
 describe('NewBenchmarksTabComponent', () => {
-  const setup = async (isAdmin = true, subsidiaries = 0) => {
+  const setup = async (isAdmin = true, subsidiaries = 0, isParentViewingSubsidiary = false) => {
     const establishment = establishmentBuilder() as Establishment;
     const role = isAdmin ? Roles.Admin : Roles.Edit;
-    const { fixture, getByText } = await render(NewBenchmarksTabComponent, {
+    const { fixture, getByText, queryByTestId } = await render(NewBenchmarksTabComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
@@ -77,11 +78,16 @@ describe('NewBenchmarksTabComponent', () => {
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
       ],
       declarations: [NewComparisonGroupHeaderComponent],
       schemas: [NO_ERRORS_SCHEMA],
       componentProperties: {
         workplace: establishment,
+        isParentViewingSubsidiary: isParentViewingSubsidiary,
       },
     });
 
@@ -91,6 +97,7 @@ describe('NewBenchmarksTabComponent', () => {
 
     return {
       component,
+      queryByTestId,
       getByText,
       pdfService,
     };
@@ -101,7 +108,7 @@ describe('NewBenchmarksTabComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  xit('should download the page as a pdf when the the download as pdf link is clicked', async () => {
+  it('should download the page as a pdf when the the download as pdf link is clicked', async () => {
     const { component, getByText, pdfService } = await setup();
 
     const downloadFunctionSpy = spyOn(component, 'downloadAsPDF').and.callThrough();
@@ -110,5 +117,29 @@ describe('NewBenchmarksTabComponent', () => {
 
     expect(downloadFunctionSpy).toHaveBeenCalled();
     expect(pdfServiceSpy).toHaveBeenCalled();
+  });
+
+  it('should not render the banner when in subsidiary view of benchmark tab', async () => {
+    const { queryByTestId } = await setup(true, 0, true);
+    expect(queryByTestId('dashboardHeader')).toBeFalsy();
+  });
+
+  it('should render the banner when in parent view of benchmark tab', async () => {
+    const { queryByTestId } = await setup(true, 0, false);
+    expect(queryByTestId('dashboardHeader')).toBeTruthy();
+  });
+
+  describe('getBreadcrumbsJourney', () => {
+    it('should return subsidiary journey when viewing sub as parent', async () => {
+      const { component } = await setup(false, 0, true);
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.SUBSIDIARY);
+    });
+
+    it('should return old benchmarks tab journey when not viewing sub', async () => {
+      const { component } = await setup(false, 0, false);
+
+      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.OLD_BENCHMARKS_DATA_TAB);
+    });
   });
 });

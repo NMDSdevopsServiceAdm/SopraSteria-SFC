@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './standAloneAccount.component.html',
   styleUrls: ['./standAloneAccount.component.scss'],
 })
-export class StandAloneAccountComponent implements OnInit {
+export class StandAloneAccountComponent implements OnInit, OnDestroy {
   @Input() dashboardView: boolean;
 
   private subscriptions: Subscription = new Subscription();
@@ -21,6 +21,7 @@ export class StandAloneAccountComponent implements OnInit {
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
   public tabs: { title: string; slug: string; active: boolean }[];
+  public workplaceName: string;
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -30,11 +31,13 @@ export class StandAloneAccountComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const { uid, id } = this.establishmentService.primaryWorkplace;
+    const { uid, id, name } = this.establishmentService.primaryWorkplace;
     this.workplaceUid = uid;
     this.workplaceId = id;
+    this.workplaceName = name;
     this.getPermissions();
     this.setTabs();
+    this.trackChangesToWorkplaceName();
   }
 
   public tabClickEvent(properties: { tabSlug: string }): void {
@@ -57,5 +60,19 @@ export class StandAloneAccountComponent implements OnInit {
     tabs.push(this.tabsService.benchmarksTab);
 
     this.tabs = tabs;
+  }
+
+  private trackChangesToWorkplaceName(): void {
+    this.subscriptions.add(
+      this.establishmentService.primaryWorkplace$.subscribe((workplace) => {
+        if (workplace) {
+          this.workplaceName = workplace.name;
+        }
+      }),
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

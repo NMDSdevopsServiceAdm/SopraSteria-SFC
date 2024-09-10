@@ -29,9 +29,8 @@ import { ViewMyWorkplacesComponent } from './view-my-workplaces.component';
 
 describe('ViewMyWorkplacesComponent', () => {
   async function setup(hasChildWorkplaces = true, qsParamGetMock = sinon.fake()) {
-    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText } = await render(
-      ViewMyWorkplacesComponent,
-      {
+    const { fixture, getByText, getByTestId, queryByText, getByLabelText, queryByLabelText, queryByTestId } =
+      await render(ViewMyWorkplacesComponent, {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
         declarations: [WorkplaceInfoPanelComponent],
         providers: [
@@ -82,13 +81,19 @@ describe('ViewMyWorkplacesComponent', () => {
                         count: 0,
                         activeWorkplaceCount: 0,
                       },
+                  cqcLocations: hasChildWorkplaces
+                    ? {
+                        showMissingCqcMessage: true,
+                      }
+                    : {
+                        showMissingCqcMessage: false,
+                      },
                 },
               },
             },
           },
         ],
-      },
-    );
+      });
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -109,6 +114,7 @@ describe('ViewMyWorkplacesComponent', () => {
       queryByText,
       getByLabelText,
       queryByLabelText,
+      queryByTestId,
       getChildWorkplacesSpy,
       establishmentService,
     };
@@ -138,12 +144,12 @@ describe('ViewMyWorkplacesComponent', () => {
 
   it('should display activeWorkplaceCount returned from getChildWorkplaces (2)', async () => {
     const { queryByText } = await setup();
-    expect(queryByText('All workplaces (2)')).toBeTruthy();
+    expect(queryByText('Your other workplaces (2)')).toBeTruthy();
   });
 
   it('should display no workplaces message when workplace has no child workplaces', async () => {
-    const { queryByText } = await setup(false);
-    expect(queryByText('There are no workplaces.')).toBeTruthy();
+    const { getByTestId } = await setup(false);
+    expect(getByTestId('noWorkplacesMessage')).toBeTruthy();
   });
 
   describe('calls getChildWorkplaces on establishmentService when using search', () => {
@@ -170,6 +176,7 @@ describe('ViewMyWorkplacesComponent', () => {
         pageIndex: 0,
         itemsPerPage: 12,
         searchTerm: 'search term here',
+        getPendingWorkplaces: true,
       };
 
       expect(getChildWorkplacesSpy.calls.mostRecent().args[1]).toEqual(expectedEmit);
@@ -234,7 +241,7 @@ describe('ViewMyWorkplacesComponent', () => {
 
       fixture.detectChanges();
 
-      expect(getByText('All workplaces (2)'));
+      expect(getByText('Your other workplaces (2)'));
       expect(component.workplaceCount).toEqual(1);
     });
 
@@ -261,5 +268,44 @@ describe('ViewMyWorkplacesComponent', () => {
 
       expect((getByLabelText('Search child workplace records') as HTMLInputElement).value).toBe('mysupersearch');
     });
+  });
+
+  describe('missing cqc workplaces message', () => {
+    it('should not show if missingCqcWorkplaces is false ', async () => {
+      const { queryByTestId } = await setup(false);
+
+      expect(queryByTestId('missingCqcWorkplaces')).toBeFalsy();
+    });
+
+    it('should not show if missingCqcWorkplaces is true', async () => {
+      const { queryByTestId } = await setup(true);
+
+      expect(queryByTestId('missingCqcWorkplaces')).toBeTruthy();
+    });
+
+    it('should show the primary workplace name, if missingCqcWorkplaces is true', async () => {
+      const { component, getByTestId } = await setup(true);
+
+      const missingCqcWorkplacesMessage = getByTestId('missingCqcWorkplaces');
+
+      expect(missingCqcWorkplacesMessage.textContent).toContain(component.primaryWorkplace.name);
+    });
+
+    it('should show link to CQC provider page with provider ID in url', async () => {
+      const { component, getByText } = await setup(true);
+
+      const cqcLink = getByText('Please check your CQC workplaces');
+
+      expect(cqcLink.getAttribute('href')).toEqual(`https://www.cqc.org.uk/provider/${component.providerId}`);
+    });
+  });
+
+  it('should show `What you can do as a parent workplace` link', async () => {
+    const { getByText } = await setup();
+
+    const linkText = getByText('What you can do as a parent workplace');
+
+    expect(linkText).toBeTruthy();
+    expect(linkText.getAttribute('href')).toEqual('/workplace/about-parents');
   });
 });

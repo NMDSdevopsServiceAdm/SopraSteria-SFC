@@ -1,5 +1,10 @@
-<app-new-dashboard-header [tab]="'workplace'" [updatedDate]="workplace.updated"></app-new-dashboard-header>
+<app-new-dashboard-header
+  [tab]="'workplace'"
+  [workplace]="workplace"
+  [updatedDate]="workplace.updated"
+></app-new-dashboard-header>
 <div class="govuk-width-container govuk-!-padding-top-2">
+  <app-alert></app-alert>
   <ng-container *ngIf="canEditEstablishment && addWorkplaceDetailsBanner">
     <app-inset-text [color]="'todo'">
       <div class="govuk-grid-row">
@@ -17,6 +22,7 @@
     [workplace]="workplace"
     [workerCount]="workerCount"
     [return]="summaryReturnUrl"
+    [(navigateToTab)]="navigateToTab"
     data-testid="workplace-summary"
   ></app-new-workplace-summary>
 </div>

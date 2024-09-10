@@ -12,6 +12,8 @@ import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-rec
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { DialogService } from '@core/services/dialog.service';
+import { DownloadPdfTrainingAndQualificationComponent } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
+import { HealthAndCareVisaComponent } from '@features/workers/health-and-care-visa/health-and-care-visa.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
@@ -62,7 +64,9 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { DownloadPdfTrainingAndQualificationComponent } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
+import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -115,6 +119,9 @@ import { DownloadPdfTrainingAndQualificationComponent } from '@features/training
     NewQualificationsComponent,
     NewTrainingAndQualificationsRecordSummaryComponent,
     DownloadPdfTrainingAndQualificationComponent,
+    HealthAndCareVisaComponent,
+    EmployedFromOutsideUkComponent,
+    Level2AdultSocialCareCertificateComponent,
   ],
   providers: [
     DialogService,
@@ -122,6 +129,7 @@ import { DownloadPdfTrainingAndQualificationComponent } from '@features/training
     LongTermAbsenceResolver,
     QualificationResolver,
     QualificationsResolver,
+    TrainingCategoriesResolver,
     TrainingRecordResolver,
     TrainingRecordsResolver,
     TrainingAndQualificationRecordsResolver,

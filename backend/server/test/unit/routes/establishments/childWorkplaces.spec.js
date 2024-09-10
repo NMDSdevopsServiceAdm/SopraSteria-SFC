@@ -123,6 +123,36 @@ describe('server/routes/establishments/childWorkplaces', () => {
 
       expect(modelStub.args[0][3]).to.equal(req.query.searchTerm);
     });
+
+    it('should call getChildWorkplaces on establishment model with getPendingWorkplaces set to false as boolean when false in req', async () => {
+      const modelStub = sinon.stub(models.establishment, 'getChildWorkplaces').returns(modelData);
+
+      req.query.getPendingWorkplaces = 'false';
+
+      await getChildWorkplaces(req, res);
+      console.log(modelStub.args[0]);
+      expect(modelStub.args[0][4]).to.equal(false);
+    });
+
+    it('should call getChildWorkplaces on establishment model with getPendingWorkplaces set to true as boolean when true in req', async () => {
+      const modelStub = sinon.stub(models.establishment, 'getChildWorkplaces').returns(modelData);
+
+      req.query.getPendingWorkplaces = 'true';
+
+      await getChildWorkplaces(req, res);
+
+      expect(modelStub.args[0][4]).to.equal(true);
+    });
+
+    it('should call getChildWorkplaces on establishment model with getPendingWorkplaces set to true when not in req', async () => {
+      const modelStub = sinon.stub(models.establishment, 'getChildWorkplaces').returns(modelData);
+
+      req.query.getPendingWorkplaces = undefined;
+
+      await getChildWorkplaces(req, res);
+
+      expect(modelStub.args[0][4]).to.equal(true);
+    });
   });
 
   describe('formatChildWorkplaces', () => {

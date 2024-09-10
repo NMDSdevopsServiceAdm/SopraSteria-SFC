@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { Component, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
@@ -29,6 +29,7 @@ import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
+import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
@@ -50,6 +51,10 @@ import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
+import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 
 const routes: Routes = [
   {
@@ -193,6 +198,16 @@ const routes: Routes = [
             data: { title: 'Recruited From' },
           },
           {
+            path: 'health-and-care-visa',
+            component: HealthAndCareVisaComponent,
+            data: { title: 'Health and Care Visa' },
+          },
+          {
+            path: 'inside-or-outside-of-uk',
+            component: EmployedFromOutsideUkComponent,
+            data: { title: 'Inside or Outside UK' },
+          },
+          {
             path: 'adult-social-care-started',
             component: AdultSocialCareStartedComponent,
             data: { title: 'Adult Social Care Started' },
@@ -226,6 +241,11 @@ const routes: Routes = [
             path: 'care-certificate',
             component: CareCertificateComponent,
             data: { title: 'Care Certificate' },
+          },
+          {
+            path: 'level-2-care-certificate',
+            component: Level2AdultSocialCareCertificateComponent,
+            data: { title: 'Level 2 Adult Social Care Certificate' },
           },
           {
             path: 'apprenticeship-training',
@@ -277,8 +297,21 @@ const routes: Routes = [
           },
           {
             path: 'add-training',
-            component: AddEditTrainingComponent,
-            data: { title: 'Add Training' },
+            children: [
+              {
+                path: '',
+                component: SelectTrainingCategoryComponent,
+                data: { title: 'Add Training' },
+                resolve: {
+                  trainingCategories: TrainingCategoriesResolver,
+                },
+              },
+              {
+                path: 'details',
+                component: AddEditTrainingComponent,
+                data: { title: 'Add Training' },
+              },
+            ],
           },
           {
             path: 'training/:trainingRecordId',
@@ -427,6 +460,16 @@ const routes: Routes = [
         data: { title: 'Recruited From' },
       },
       {
+        path: 'health-and-care-visa',
+        component: HealthAndCareVisaComponent,
+        data: { title: 'Health and Care Visa' },
+      },
+      {
+        path: 'inside-or-outside-of-uk',
+        component: EmployedFromOutsideUkComponent,
+        data: { title: 'Inside or Outside UK' },
+      },
+      {
         path: 'adult-social-care-started',
         component: AdultSocialCareStartedComponent,
         data: { title: 'Adult Social Care Started' },
@@ -460,6 +503,11 @@ const routes: Routes = [
         path: 'care-certificate',
         component: CareCertificateComponent,
         data: { title: 'Care Certificate' },
+      },
+      {
+        path: 'level-2-care-certificate',
+        component: Level2AdultSocialCareCertificateComponent,
+        data: { title: 'Level 2 Adult Social Care Certificate' },
       },
       {
         path: 'apprenticeship-training',
@@ -511,8 +559,21 @@ const routes: Routes = [
       },
       {
         path: 'add-training',
-        component: AddEditTrainingComponent,
-        data: { title: 'Add Training' },
+        children: [
+          {
+            path: '',
+            component: SelectTrainingCategoryComponent,
+            data: { title: 'Add Training' },
+            resolve: {
+              trainingCategories: TrainingCategoriesResolver,
+            },
+          },
+          {
+            path: 'details',
+            component: AddEditTrainingComponent,
+            data: { title: 'Add Training' },
+          },
+        ],
       },
       {
         path: 'training/:trainingRecordId',

@@ -116,7 +116,7 @@ describe('WdfTabComponent', () => {
     it('should display the correct date for parents for when WDF eligibility is valid until', async () => {
       const { component, fixture, getByText } = await setup();
       const year = new Date().getFullYear();
-      const timeFrameSentence = `and will continue to meet them until 31 March ${year+1}`;
+      const timeFrameSentence = `and will continue to meet them until 31 March ${year + 1}`;
 
       component.isParent = true;
       component.parentOverallWdfEligibility = true;

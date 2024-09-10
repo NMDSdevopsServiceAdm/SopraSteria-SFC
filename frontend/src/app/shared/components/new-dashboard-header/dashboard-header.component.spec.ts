@@ -1,25 +1,29 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { Establishment } from '@core/model/establishment.model';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
+import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
+import { MockUserService } from '@core/test-utils/MockUserService';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { SharedModule } from '@shared/shared.module';
+import { render, within } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
-import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { HttpClient } from '@angular/common/http';
-import { MockUserService } from '@core/test-utils/MockUserService';
-import { Roles } from '@core/model/roles.enum';
-import { getTestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+
 const MockWindow = {
   dataLayer: {
     push: () => {
@@ -29,6 +33,7 @@ const MockWindow = {
 };
 
 describe('NewDashboardHeaderComponent', () => {
+  const establishment = establishmentBuilder() as Establishment;
   const setup = async (
     tab = 'home',
     updateDate = false,
@@ -37,6 +42,9 @@ describe('NewDashboardHeaderComponent', () => {
     hasWorkers = true,
     isAdmin = true,
     subsidiaries = 0,
+    viewingSubAsParent = false,
+    canDeleteEstablishment = true,
+    workplace = establishment,
   ) => {
     const role = isAdmin ? Roles.Admin : Roles.Edit;
     const updatedDate = updateDate ? '01/02/2023' : null;
@@ -53,7 +61,7 @@ describe('NewDashboardHeaderComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory([], isAdmin),
+          useFactory: MockPermissionsService.factory(canDeleteEstablishment ? ['canDeleteEstablishment'] : [], isAdmin),
           deps: [HttpClient, Router, UserService],
         },
         {
@@ -67,6 +75,10 @@ describe('NewDashboardHeaderComponent', () => {
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
+        {
+          provide: ParentSubsidiaryViewService,
+          useFactory: MockParentSubsidiaryViewService.factory(viewingSubAsParent),
+        },
       ],
       componentProperties: {
         tab,
@@ -75,6 +87,8 @@ describe('NewDashboardHeaderComponent', () => {
         tAndQCount: 5,
         canEditWorker,
         hasWorkers,
+        isParent: false,
+        workplace,
       },
     });
 
@@ -83,6 +97,7 @@ describe('NewDashboardHeaderComponent', () => {
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
 
     const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
@@ -92,6 +107,8 @@ describe('NewDashboardHeaderComponent', () => {
       queryByText,
       establishmentService,
       router,
+      fixture,
+      routerSpy,
     };
   };
 
@@ -112,6 +129,22 @@ describe('NewDashboardHeaderComponent', () => {
       expect(queryByTestId('lastUpdatedDate')).toBeFalsy();
     });
 
+    it('should not show parent above workplace name if it is not a parent', async () => {
+      const { component, queryByTestId } = await setup();
+
+      component.isParent = false;
+
+      expect(queryByTestId('parentLabel')).toBeFalsy();
+    });
+
+    it('should show parent above workplace name if it is a parent', async () => {
+      const { component, queryByTestId } = await setup();
+
+      component.isParent = true;
+
+      expect(queryByTestId('parentLabel')).toBeTruthy();
+    });
+
     it('should show Skills for Care contact info', async () => {
       const { getByTestId } = await setup();
 
@@ -126,6 +159,34 @@ describe('NewDashboardHeaderComponent', () => {
 
       expect(column1.getAttribute('class')).toContain('govuk-grid-column-one-half');
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-half');
+    });
+
+    it('should show the parent name for a sub account', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.isParent = false;
+      component.workplace.parentName = 'My parent';
+
+      fixture.detectChanges();
+
+      const parentName = getByTestId('parentNameLabel');
+
+      expect(parentName).toBeTruthy();
+    });
+
+    it('should show the selected workplace caption if a sub in parent view', async () => {
+      const { component, fixture, getByTestId, queryByTestId } = await setup();
+
+      component.isParent = false;
+      component.isParentSubsidiaryView = true;
+
+      fixture.detectChanges();
+
+      const selectedWorkplaceLabel = getByTestId('selectedWorkplaceLabel');
+      const parentName = queryByTestId('parentNameLabel');
+
+      expect(selectedWorkplaceLabel).toBeTruthy();
+      expect(parentName).toBeFalsy();
     });
   });
 
@@ -305,74 +366,48 @@ describe('NewDashboardHeaderComponent', () => {
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
     });
   });
+
   describe('Archive Workplace', () => {
-    it('should display a Delete Workplace link if user is an admin', async () => {
-      const { component, getByText } = await setup();
+    it('should display a Delete workplace link if user is an admin', async () => {
+      const { getByText } = await setup();
 
-      getByText('Delete Workplace');
+      expect(getByText('Delete workplace')).toBeTruthy();
     });
 
-    it('should not display a Delete Workplace link if the workplace has subsidiaries', async () => {
-      const { component, queryByText } = await setup('home', false, true, false, true, false);
+    it('should display a Delete workplace link if parent is viewing a subsidiary', async () => {
+      const { getByText } = await setup('home', false, true, false, false, false, 1, true);
 
-      expect(queryByText('Delete Workplace')).toBeNull();
+      expect(getByText('Delete workplace')).toBeTruthy();
     });
 
-    it('should not display a Delete Workplace link if user not an admin', async () => {
-      const { component, queryByText } = await setup('home', false, true, false, true, false);
+    it('should not display a Delete workplace link if the workplace has subsidiaries', async () => {
+      const { queryByText } = await setup('home', false, true, false, true, false, 2);
 
-      expect(queryByText('Delete Workplace')).toBeNull();
+      expect(queryByText('Delete workplace')).toBeNull();
     });
 
-    it('should display a modal when the user clicks on Delete Workplace', async () => {
-      const { component, getByText } = await setup('home', false, true, false, true, true);
+    it('should not display a Delete workplace link if user not an admin and does not have canDeleteEstablishment permission', async () => {
+      const { queryByText } = await setup('home', false, true, false, true, false, 0, true, false);
 
-      const deleteWorkplace = getByText('Delete Workplace');
-      deleteWorkplace.click();
-
-      const dialog = await within(document.body).findByRole('dialog');
-
-      const cancel = within(dialog).getByText('Cancel');
-      cancel.click();
+      expect(queryByText('Delete workplace')).toBeNull();
     });
 
-    it('should send a DELETE request once the user confirms to Delete Workplace', async () => {
-      const { component, establishmentService, getByText } = await setup('home', false, true, false, true, true);
+    it('should navigate to the subsidiary delete-workplace page when parent is viewing a subsidiary', async () => {
+      const { getByText, routerSpy, component } = await setup('home', false, true, false, false, false, 1, true);
 
-      const spy = spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
+      const deletWorplaceLink = getByText('Delete workplace');
+      deletWorplaceLink.click();
 
-      const deleteWorkplace = getByText('Delete Workplace');
-      deleteWorkplace.click();
-
-      const dialog = await within(document.body).findByRole('dialog');
-      const confirm = within(dialog).getByText('Delete workplace');
-      confirm.click();
-
-      expect(spy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith([component.workplace.uid, 'delete-workplace']);
     });
 
-    it('should redirect the user after deleting a workplace', async () => {
-      const { component, establishmentService, router, getByText } = await setup(
-        'home',
-        false,
-        true,
-        false,
-        true,
-        true,
-      );
+    it('should navigate to the standalone delete-workplace page when logged in as admin', async () => {
+      const { getByText, routerSpy } = await setup('home', false, true, false, false, true, 0, false);
 
-      spyOn(establishmentService, 'deleteWorkplace').and.returnValue(of({}));
-      const spy = spyOn(router, 'navigate');
-      spy.and.returnValue(Promise.resolve(true));
+      const deletWorplaceLink = getByText('Delete workplace');
+      deletWorplaceLink.click();
 
-      const deleteWorkplace = getByText('Delete Workplace');
-      deleteWorkplace.click();
-
-      const dialog = await within(document.body).findByRole('dialog');
-      const confirm = within(dialog).getByText('Delete workplace');
-      confirm.click();
-
-      expect(spy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(['/delete-workplace']);
     });
   });
 });

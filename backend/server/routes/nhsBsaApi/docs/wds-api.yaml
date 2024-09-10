@@ -1,0 +1,371 @@
+openapi: 3.1.0
+info:
+  title: ASC-WDS API for NHSBSA
+  description: >
+    This is an OpenAPI 3.0 Specification
+    ---
+    Using this API you can retrieve the eligibility of a workplace and its subsidiaries if any
+  version: 1.0.1
+servers:
+  - url: '' # to be shared later
+paths:
+  /api/v1/workplaces/auth/token:
+    get:
+      tags:
+        - WorkplaceData
+      summary: Get an authorization token
+      responses:
+        '200':
+          description: Auth token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/authToken'
+        '401':
+          description: API Key missing
+      security:
+        - apiKeyAuth: []
+  /api/v1/workplaces/{workplaceId}:
+    get:
+      tags:
+        - WorkplaceData
+      summary: Return workplace data
+      description: Return a parent workplace, optionally with subsidiaries, or a subsidiary workplace with a parent
+      parameters:
+      - name: workplaceId
+        in: path
+        required: true
+        description: The workplaceId of the workplace
+        example: J0000000
+        schema:
+          type : string
+      responses:
+        '200':
+          description: Workplace data  in JSON format
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/workplaceData'
+                  - $ref: '#/components/schemas/subsidiaryWorkplaceData'
+              examples:
+                parentWorkplace:
+                  summary: An example of a workplace with subsidiaries
+                  value:
+                    workplaceData: {
+                      isParent: true,
+                      workplaceDetails: {
+                        workplaceId: J0000000,
+                        workplaceName: Example Parent Workplace,
+                        workplaceAddress: {
+                          firstLine: 1 Parent Lane,
+                          town: Example Town Name,
+                          postCode: ET1 5NA
+                        },
+                        dataOwner: Workplace,
+                        locationId: 1-0123456789,
+                        numberOfWorkplaceStaff: 5,
+                        serviceName: Carers support,
+                        serviceCategory: Healthcare,
+                        eligibilityPercentage: 100,
+                        eligibilityDate: 2024-04-13T11:32:41.830Z,
+                        isEligible: true
+                      },
+                      subsidiaries: [
+                        {
+                          workplaceId: F0000000,
+                          workplaceName: Example Subsidiary Workplace,
+                          workplaceAddress: {
+                            firstLine: 18 Subsidiary Lane,
+                            town: Example Town Name,
+                            postCode: ET1 3AB
+                          },
+                          dataOwner: Parent,
+                          parentWorkplaceId: J0000000,
+                          locationId: null,
+                          numberOfWorkplaceStaff: 0,
+                          serviceName: Carers support,
+                          serviceCategory: Healthcare,
+                          eligibilityPercentage: 0,
+                          eligibilityDate: 2023-03-14T09:23:36.643Z,
+                          isEligible: false
+                        },
+                        {
+                          workplaceId: F00000001,
+                          workplaceName: Example Subsidiary Workplace 2,
+                          workplaceAddress: {
+                            firstLine: 29 Subsidiary Avenue,
+                            town: Other Example Town,
+                            postCode: OE12 3TO
+                          },
+                          dataOwner: Parent,
+                          parentWorkplaceId: J0000000,
+                          locationId: null,
+                          numberOfWorkplaceStaff: 0,
+                          serviceName: Carers support,
+                          serviceCategory: Healthcare,
+                          eligibilityPercentage: 0,
+                          eligibilityDate: 2023-03-14T09:23:36.643Z,
+                          isEligible: false
+                        },
+                      ]
+                    }
+                standAloneWorkplace:
+                  summary: An example of a stand alone workplace
+                  value:
+                    workplaceData: {
+                      isParent: false,
+                      workplaceDetails: {
+                        workplaceId: J0000000,
+                        workplaceName: Example Standalone Workplace,
+                        workplaceAddress: {
+                          firstLine: 11 Lonely Lane,
+                          town: Lonetown,
+                          postCode: LT20 9AB
+                        },
+                        dataOwner: Workplace,
+                        locationId: 1-0246813579,
+                        numberOfWorkplaceStaff: 5,
+                        serviceName: Carers support,
+                        serviceCategory: Healthcare,
+                        eligibilityPercentage: 100,
+                        eligibilityDate: 2024-04-13T11:32:41.830Z,
+                        isEligible: true
+                      }
+                    }
+                subsidiaryWorkplace:
+                  summary: An example of a subsidiary workplace with parent information
+                  value:
+                    workplaceData: {
+                      workplaceDetails: {
+                        workplaceId: F0000000,
+                        workplaceName: Example Subsidiary With Parent,
+                        workplaceAddress: {
+                          firstLine: 1 Sub Street,
+                          town: Suburbia,
+                          postCode: SU1 3IA
+                        },
+                        dataOwner: Parent,
+                        locationId: 1-0123456789,
+                        numberOfWorkplaceStaff: 5,
+                        serviceName: Carers support,
+                        serviceCategory: Healthcare,
+                        eligibilityPercentage: 100,
+                        eligibilityDate: 2024-04-13T11:32:41.830Z,
+                        isEligible: true
+                      },
+                      parent: {
+                        isParent: true,
+                        workplaceDetails: {
+                          workplaceId: J0000000,
+                          workplaceName: Parent of Sub Example,
+                          workplaceAddress: {
+                            firstLine: 1 Parent Parade,
+                            town: Example Town,
+                            postCode: ET1 9WN
+                          },
+                          dataOwner: Workplace,
+                          locationId: 1-0987654321,
+                          numberOfWorkplaceStaff: 5,
+                          serviceName: Carers support,
+                          serviceCategory: Healthcare,
+                          eligibilityPercentage: 100,
+                          eligibilityDate: 2024-04-13T11:32:41.830Z,
+                          isEligible: true
+                        },
+                      }
+                    }
+        '404':
+          description: No workplace found for this workplaceId
+        '401':
+          description: Access token is missing or invalid
+      security:
+        - bearerAuth: []
+  /api/v1/workplaces/{cqcLocationId}:
+    get:
+      tags:
+        - WorkplaceData
+      summary: Return workplace data
+      description: Return a parent workplace, optionally with subsidiaries, or a subsidiary workplace with a parent
+      parameters:
+      - name: cqcLocationId
+        in: path
+        required: true
+        description: The cqcLocationId of the workplace
+        example: 1-0000000000
+        schema:
+          type : string
+      responses:
+        '200':
+          description: Workplace data  in JSON format
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/workplaceDetails'
+                  - $ref: '#/components/schemas/subsidiaryWorkplace'
+        '404':
+          description: No workplace found for this cqcLocationId
+        '401':
+          description: Access token is missing or invalid
+      security:
+        - bearerAuth: []
+        - apiKeyAuth: []
+components:
+  schemas:
+    workplaceData:
+      type: object
+      properties:
+        workplaceData:
+          $ref: '#components/schemas/workplace'
+    subsidiaryWorkplaceData:
+      type: object
+      properties:
+        workplaceData:
+          $ref: '#components/schemas/subsidiaryWorkplace'
+    workplace:
+      type: object
+      properties:
+        isParent:
+          type: boolean
+          description: if this workplace is a parent there will be a list of susidiary accounts otherwise its a standalone
+          enum:
+            - true
+            - false
+        workplaceDetails:
+          $ref: '#/components/schemas/workplaceDetails'
+        subsidiaries:
+          type: array
+          items:
+           $ref:  '#/components/schemas/workplaceDetails'
+    subsidiaryWorkplace:
+      type: object
+      properties:
+        workplaceDetails:
+          $ref: '#/components/schemas/workplaceDetails'
+        parent:
+          $ref: '#/components/schemas/workplaceDetails'
+    workplaceDetails:
+      type: object
+      description: The details of the workplace
+      properties:
+        workplaceId:
+          type: string
+          description: Id of the workplace
+          example: J0000000
+        workplaceName:
+          type: string
+          description: Name of the workplace
+        workplaceAddress:
+          type: object
+          description: Workplace address object
+          $ref: "#/components/schemas/workplaceAddress"
+        dataOwner:
+          type: string
+          description: Data owner of the workplace
+          default: 'Parent'
+          enum:
+            - 'Workplace'
+            - 'Parent'
+        locationId:
+          type: string
+          description: CQC location Id of the workplace
+        numberOfWorkplaceStaff:
+          type: integer
+          description: Number of staff in the workplace
+        serviceName:
+          $ref: '#/components/schemas/mainService'
+        serviceCategory:
+           $ref: '#/components/schemas/mainServiceCategory'
+        eligibilityPercentage:
+          type: integer
+          description: Percentage of the eligibility for this workplace(if the eligibility is between 90 and 100 it means its eligible, above 100 and less than 90 is considered not eligible)
+        eligibilityDate:
+          type: string
+          format: date-time
+          description: Date eligibility achieved for the workplace
+        isEligible:
+          type : boolean
+          description: Eligibility of the workplace
+          enum:
+            - true
+            - false
+    mainService:
+      type: string
+      description: Main service of the workplace
+      enum:
+        - Carers support
+        - Community support and outreach
+        - Disability adaptations, assistive technology services
+        - Information and advice services
+        - Occupational, employment-related services
+        - Other adult community care service
+        - Short breaks, respite care
+        - Social work and care management
+        - Day care and day services
+        - Other adult day care service
+        - Domestic services and home help
+        - Other adult residential care service
+        - Sheltered housing
+        - Any children's, young people's service
+        - Other service (not healthcare)
+        - Head office services
+        - Other service (healthcare)
+        - Other adult domiciliary care service
+        - Shared lives
+        - Domiciliary care services
+        - Extra care housing services
+        - Nurses agency
+        - Supported living services
+        - Care home services with nursing
+        - Care home services without nursing
+        - Community based services for people who misuse substances
+        - Community based services for people with a learning disability
+        - Community based services for people with mental health needs
+        - Community healthcare services
+        - Hospice services
+        - Hospital services for people with mental health needs, learning disabilities, problems with substance misuse
+        - Long-term conditions services
+        - Rehabilitation services
+        - Residential substance misuse treatment, rehabilitation services
+        - Live-in care
+        - Specialist college services
+    mainServiceCategory:
+      type: string
+      description: Main service category of the workplace
+      enum:
+        - Healthcare
+        - Adult day
+        - Other
+        - Adult residential
+        - Adult community care
+        - Adult domiciliary
+    workplaceAddress:
+      type: object
+      description: Address of the workplace
+      properties:
+        firstLine:
+          type: string
+          description: First line address of the workplace
+        town:
+          type: string
+          description: Town of the workplace
+        postCode:
+          type: string
+          description: Postcode of the workplace
+    authToken:
+      type: object
+      properties:
+        access_token:
+          type: string
+        expires_in:
+          type: string
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    apiKeyAuth:
+      type: apiKey
+      in: header
+      name: nhsbsaApiKey

@@ -4,14 +4,21 @@ import { EditUserPermissionsGuard } from '@core/guards/edit-user-permissions/edi
 import { ParentGuard } from '@core/guards/parent/parent.guard';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
+import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { ChildWorkplacesResolver } from '@core/resolvers/child-workplaces.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
+import { RankingsResolver } from '@core/resolvers/rankings.resolver';
+import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
+import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
+import { AboutParentsComponent } from '@features/pages/about-parents/about-parents.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
@@ -23,12 +30,15 @@ import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-
 
 import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
+import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmStaffRecruitmentAndBenefitsComponent } from './confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
+import { EmployedFromOutsideUkExistingWorkersComponent } from './employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
+import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
@@ -54,19 +64,31 @@ import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
-import { RankingsResolver } from '@core/resolvers/rankings.resolver';
-import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
-import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
   {
     path: 'view-all-workplaces',
     component: ViewMyWorkplacesComponent,
-    resolve: { childWorkplaces: ChildWorkplacesResolver },
+    resolve: { childWorkplaces: ChildWorkplacesResolver, cqcLocations: GetMissingCqcLocationsResolver },
     canActivate: [ParentGuard],
     data: { title: 'View My Workplaces' },
+  },
+  {
+    path: 'change-data-owner',
+    component: ChangeDataOwnerComponent,
+    resolve: { establishment: WorkplaceResolver },
+    data: { title: 'Change Data Owner' },
+  },
+  {
+    path: 'about-parents',
+    component: AboutParentsComponent,
+    data: {
+      title: 'What you can do as a parent workplace',
+    },
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: ':establishmentuid',
@@ -129,7 +151,6 @@ const routes: Routes = [
           title: 'Regulated by CQC',
         },
       },
-
       {
         path: 'select-workplace',
         component: SelectWorkplaceComponent,
@@ -349,6 +370,27 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Check Answers',
+        },
+      },
+      {
+        path: 'health-and-care-visa-existing-workers',
+        component: HealthAndCareVisaExistingWorkers,
+        canActivate: [CheckPermissionsGuard],
+        resolve: {
+          workers: WorkersResolver,
+        },
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Health And Care Visa',
+        },
+      },
+      {
+        path: 'employed-from-outside-or-inside-uk',
+        component: EmployedFromOutsideUkExistingWorkersComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditWorker'],
+          title: 'Employed from Outside the UK',
         },
       },
       {

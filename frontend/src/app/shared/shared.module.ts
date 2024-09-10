@@ -1,7 +1,7 @@
 import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
@@ -10,6 +10,7 @@ import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
+import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
 import { MissingMandatoryTrainingComponent } from '@features/training-and-qualifications/new-training-qualifications-record/missing-mandatory-training/missing-mandatory-training.component';
 import { DeleteWorkplaceDialogComponent } from '@features/workplace/delete-workplace-dialog/delete-workplace-dialog.component';
 import { AlertComponent } from '@shared/components/alert/alert.component';
@@ -26,8 +27,10 @@ import { BackLinkComponent } from './components/back-link/back-link.component';
 import { BecomeAParentDialogComponent } from './components/become-a-parent/become-a-parent-dialog.component';
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
+import { CardComponent } from './components/card/card.component';
 import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { CharacterCountComponent } from './components/character-count/character-count.component';
+import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-data-link/about-the-data-link.component';
 import { DatePickerComponent } from './components/date-picker/date-picker.component';
 import { DetailsComponent } from './components/details/details.component';
 import { ValidationErrorMessageComponent } from './components/drag-and-drop/validation-error-message/validation-error-message.component';
@@ -40,11 +43,13 @@ import { LinkToParentDialogComponent } from './components/link-to-parent/link-to
 import { LinkWithArrowComponent } from './components/link-with-arrow/link-with-arrow.component';
 import { MessagesComponent } from './components/messages/messages.component';
 import { MoveWorkplaceDialogComponent } from './components/move-workplace/move-workplace-dialog.component';
+import { NavigateToWorkplaceDropdownComponent } from './components/navigate-to-workplace-dropdown/navigate-to-workplace-dropdown.component';
 import { NewBackLinkComponent } from './components/new-back-link/new-back-link.component';
 import { NewTabsComponent } from './components/new-tabs/new-tabs.component';
 import { WDFTabComponent } from './components/new-wdf-tabs/new-wdf-tab.component';
 import { WDFWorkplaceSummaryComponent } from './components/new-wdf-workplace-summary/wdf-workplace-summary.component';
 import { NewWorkplaceSummaryComponent } from './components/new-workplace-summary/workplace-summary.component';
+import { OtherLinksComponent } from './components/other-links/other-links.component';
 import { OwnershipChangeMessageDialogComponent } from './components/ownership-change-message/ownership-change-message-dialog.component';
 import { PageComponent } from './components/page/page.component';
 import { PaginationComponent } from './components/pagination/pagination.component';
@@ -72,6 +77,7 @@ import { SubmitButtonComponent } from './components/submit-button/submit-button.
 import { SubmitExitButtonsComponent } from './components/submit-exit-buttons/submit-exit-buttons.component';
 import { SummaryListComponent } from './components/summary-list/summary-list.component';
 import { SummaryRecordChangeComponent } from './components/summary-record-change/summary-record-change.component';
+import { SummarySectionComponent } from './components/summary-section/summary-section.component';
 import { TablePaginationWrapperComponent } from './components/table-pagination-wrapper/table-pagination-wrapper.component';
 import { TabComponent } from './components/tabs/tab.component';
 import { TabsComponent } from './components/tabs/tabs.component';
@@ -102,6 +108,7 @@ import { DontKnowPipe } from './pipes/dont-know.pipe';
 import { FirstErrorPipe } from './pipes/first-error.pipe';
 import { FormatAmpersandPipe } from './pipes/format-ampersand.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
+import { NewDataViewPermissionsPipe } from './pipes/new-data-view-permissions.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
 import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe';
 import { NursingSpecialismsTextPipe } from './pipes/nursing-specialisms-text.pipe';
@@ -112,10 +119,11 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-data-link/about-the-data-link.component';
+import { RadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { GroupedRadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 
 @NgModule({
-  imports: [CommonModule, ReactiveFormsModule, RouterModule, OverlayModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
   declarations: [
     AbsoluteNumberPipe,
     AlertComponent,
@@ -128,6 +136,7 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
+    NewDataViewPermissionsPipe,
     SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
@@ -194,6 +203,8 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    RadioButtonAccordionComponent,
+    GroupedRadioButtonAccordionComponent,
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,
@@ -227,6 +238,11 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     ServiceNamePipe,
     FormatAmpersandPipe,
     AboutTheDataLinkComponent,
+    CardComponent,
+    SummarySectionComponent,
+    NavigateToWorkplaceDropdownComponent,
+    OtherLinksComponent,
+    NewTrainingLinkPanelComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -240,6 +256,7 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     CharacterCountComponent,
     ClosedEndedAnswerPipe,
     DataViewPermissionsPipe,
+    NewDataViewPermissionsPipe,
     SelectRecordTypePipe,
     DatePickerComponent,
     DetailsComponent,
@@ -303,6 +320,8 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    RadioButtonAccordionComponent,
+    GroupedRadioButtonAccordionComponent,
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,
@@ -337,6 +356,11 @@ import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-
     ServiceNamePipe,
     FormatAmpersandPipe,
     AboutTheDataLinkComponent,
+    CardComponent,
+    SummarySectionComponent,
+    NavigateToWorkplaceDropdownComponent,
+    OtherLinksComponent,
+    NewTrainingLinkPanelComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

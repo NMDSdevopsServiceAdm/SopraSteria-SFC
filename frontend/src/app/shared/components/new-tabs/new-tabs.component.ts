@@ -1,8 +1,10 @@
 import { Location } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { TabsService } from '@core/services/tabs.service';
+import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-tabs',
@@ -18,30 +20,79 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
   private focus: boolean;
   private clickEvent: boolean;
+  public isParentViewingSub: boolean;
 
   @ViewChild('tablist') tablist: ElementRef;
 
   constructor(
     private location: Location,
     private route: ActivatedRoute,
-    private tabsService: TabsService,
+    public tabsService: TabsService,
+    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
     private router: Router,
   ) {}
 
   ngOnInit(): void {
-    this.selectedTabSubscription();
+    this.isParentViewingSub = this.parentSubsidiaryViewService.getViewingSubAsParent();
 
-    const hash = this.route.snapshot.fragment;
+    this.selectedTabSubscription();
+    this.setTabOnInit();
+    this.trackRouterEventsToSetTab();
+  }
+
+  private trackRouterEventsToSetTab(): void {
+    this.subscriptions.add(
+      this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((route: NavigationEnd) => {
+        if (this.isParentViewingSub) {
+          const tabInUrl = this.getTabSlugFromSubsidiaryUrl(route);
+
+          if (tabInUrl) {
+            this.tabsService.selectedTab = tabInUrl.slug;
+          }
+        } else {
+          const tabInUrl = this.getTabSlugFromMainDashboardUrl(route);
+          if (tabInUrl && this.tabs[this.currentTab].slug !== tabInUrl) {
+            this.tabsService.selectedTab = tabInUrl;
+          }
+        }
+      }),
+    );
+  }
+
+  public getTabSlugFromMainDashboardUrl(route: NavigationEnd): string {
+    const url = route.urlAfterRedirects;
+
+    const hashIndex = url.indexOf('#');
+    if (hashIndex !== -1 && hashIndex < url.length - 1) {
+      const urlWithoutFragment = url.substring(0, hashIndex);
+      if (!urlWithoutFragment.includes('dashboard')) return null;
+
+      const tabSlug = url.substring(hashIndex + 1);
+      return this.tabs.find((tab) => tab.slug === tabSlug) ? tabSlug : null;
+    }
+    return null;
+  }
+
+  public getTabSlugFromSubsidiaryUrl(route: NavigationEnd) {
+    const urlArray = route.urlAfterRedirects.split('/').filter((section) => section.length > 0);
+    if (urlArray.length > 2) {
+      return this.tabs.find((tab) => urlArray[2] === tab.slug);
+    }
+  }
+
+  private setTabOnInit(): void {
+    const hash = this.isParentViewingSub ? this.getTabSlugInSubView() : this.route.snapshot.fragment;
+
     if (hash) {
       const activeTab = this.tabs.findIndex((tab) => tab.slug === hash);
       if (activeTab) {
-        this.selectTab(null, activeTab, false, false);
+        this.selectTab(null, activeTab, false, false, true);
       }
     }
     const activeTabs = this.tabs.filter((tab) => tab.active);
 
     if (activeTabs.length === 0) {
-      this.selectTab(null, 0, false, false);
+      this.selectTab(null, 0, false, false, true);
     }
   }
 
@@ -53,10 +104,14 @@ export class NewTabsComponent implements OnInit, OnDestroy {
         if (tabIndex > -1) {
           const tab = this.tabs[tabIndex];
           tab.active = true;
-          if (this.dashboardView) {
-            this.location.replaceState(`/dashboard#${tab.slug}`);
-          } else if (this.clickEvent) {
-            this.router.navigate(['/dashboard'], { fragment: tab.slug });
+          this.currentTab = tabIndex;
+
+          if (!this.isParentViewingSub) {
+            if (this.dashboardView) {
+              this.location.replaceState(`/dashboard#${tab.slug}`);
+            } else if (this.clickEvent) {
+              this.router.navigate(['/dashboard'], { fragment: tab.slug });
+            }
           }
           if (this.focus) {
             setTimeout(() => {
@@ -100,20 +155,34 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public selectTab(event: Event, index: number, focus: boolean = true, clicked = true): void {
+  public selectTab(event: Event, index: number, focus: boolean = true, clicked = true, isOnPageLoad = false): void {
     event?.preventDefault();
 
     this.clickEvent = clicked;
     this.focus = focus;
     const tab = this.tabs[index];
-    this.currentTab = index;
 
     this.selectedTabClick.emit({ tabSlug: tab.slug });
     this.tabsService.selectedTab = tab.slug;
+
+    if (!isOnPageLoad && this.isParentViewingSub) {
+      let subsidiaryUid: string = this.parentSubsidiaryViewService.getSubsidiaryUid();
+      this.router.navigate([`/subsidiary/${subsidiaryUid}/${tab.slug}`]);
+    }
   }
 
   private unselectTabs() {
     this.tabs.forEach((t) => (t.active = false));
+  }
+
+  public getTabSlugInSubView(): string {
+    const urlSegmentGroup = this.route.snapshot['_urlSegment'];
+    const urlSegments = urlSegmentGroup.children?.primary?.segments;
+    if (urlSegments?.length == 3) {
+      const tabSlug = urlSegments[2].path;
+      return this.tabs.find((tab) => tab.slug === tabSlug) ? tabSlug : null;
+    }
+    return null;
   }
 
   ngOnDestroy(): void {
