@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { TrainingRecordCategories } from '@core/model/training.model';
+import { TrainingCategory, TrainingCategoryResponse, TrainingRecordCategories } from '@core/model/training.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -11,6 +11,12 @@ import { environment } from 'src/environments/environment';
 })
 export class TrainingCategoryService {
   constructor(private http: HttpClient) {}
+
+  getCategories(): Observable<TrainingCategory[]> {
+    return this.http
+      .get<TrainingCategoryResponse>(`${environment.appRunnerEndpoint}/api/trainingCategories`)
+      .pipe(map((res) => res.trainingCategories));
+  }
 
   getCategoriesWithTraining(establishmentId): Observable<TrainingRecordCategories[]> {
     return this.http

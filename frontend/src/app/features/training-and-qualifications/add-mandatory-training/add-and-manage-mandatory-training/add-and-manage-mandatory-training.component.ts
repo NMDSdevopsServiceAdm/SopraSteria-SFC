@@ -17,6 +17,9 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
   private subscriptions: Subscription = new Subscription();
   public establishment: Establishment;
   public existingMandatoryTrainings: any;
+  public allJobsLength: Number;
+  public mandatoryTrainingHasDuplicateJobRoles = [];
+  public previousAllJobsLength = [29, 31, 32];
 
   constructor(
     public trainingService: TrainingService,
@@ -35,8 +38,33 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
       this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((trainings) => {
         this.existingMandatoryTrainings = trainings;
         this.sortTrainingAlphabetically(trainings.mandatoryTraining);
+        this.allJobsLength = trainings.allJobRolesCount;
+        this.setMandatoryTrainingHasDuplicateJobRoles();
       }),
     );
+  }
+
+  public checkDuplicateJobRoles(jobs): boolean {
+    for (let i = 0; i < jobs.length; i++) {
+      for (let j = i + 1; j < jobs.length; j++) {
+        if (jobs[i].id === jobs[j].id) {
+          return true;
+        }
+      }
+    }
+  }
+
+  public setMandatoryTrainingHasDuplicateJobRoles() {
+    let mandatoryTraining = this.existingMandatoryTrainings.mandatoryTraining;
+
+    mandatoryTraining.forEach((trainingCategory, index) => {
+      this.mandatoryTrainingHasDuplicateJobRoles.push({
+        [trainingCategory.trainingCategoryId]: {
+          hasDuplicates: this.checkDuplicateJobRoles(trainingCategory.jobs),
+          hasPreviousAllJobsLength: this.previousAllJobsLength.includes(trainingCategory.jobs.length),
+        },
+      });
+    });
   }
 
   public sortTrainingAlphabetically(training) {

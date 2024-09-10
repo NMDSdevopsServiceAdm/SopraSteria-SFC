@@ -290,6 +290,14 @@ describe('ViewMyWorkplacesComponent', () => {
 
       expect(missingCqcWorkplacesMessage.textContent).toContain(component.primaryWorkplace.name);
     });
+
+    it('should show link to CQC provider page with provider ID in url', async () => {
+      const { component, getByText } = await setup(true);
+
+      const cqcLink = getByText('Please check your CQC workplaces');
+
+      expect(cqcLink.getAttribute('href')).toEqual(`https://www.cqc.org.uk/provider/${component.providerId}`);
+    });
   });
 
   it('should show `What you can do as a parent workplace` link', async () => {

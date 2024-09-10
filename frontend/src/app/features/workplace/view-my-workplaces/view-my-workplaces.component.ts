@@ -30,7 +30,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
   public itemsPerPage = 12;
   public currentPageIndex = 0;
   private searchTerm = '';
-  public locationId: string;
+  public providerId: string;
   public showMissingCqcMessage: boolean;
   public missingCqcLocations: any;
 
@@ -58,7 +58,7 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
     this.setupServerErrorsMap();
     this.setSearchIfPrevious();
 
-    this.locationId = this.primaryWorkplace.locationId;
+    this.providerId = this.primaryWorkplace.provId;
 
     this.showMissingCqcMessage = this.route.snapshot.data?.cqcLocations?.showMissingCqcMessage;
   }

@@ -2,10 +2,15 @@ export interface TrainingCategory {
   id: number;
   seq: number;
   category: string;
+  trainingCategoryGroup: string;
 }
 
 export interface TrainingCategoryResponse {
   trainingCategories: TrainingCategory[];
+}
+
+export interface SelectedTraining extends Omit<TrainingRecordRequest, 'trainingCategory'> {
+  trainingCategory: TrainingCategory;
 }
 
 export interface TrainingRecordRequest {

@@ -10,35 +10,63 @@
             {{ title }}
           </h1>
         </legend>
-        <p class="govuk-body" *ngIf="showWorkerCount">
-          <span class="govuk-!-font-weight-bold">Number of staff selected:</span> {{ workerCount }}
-          <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-staff']">Change</a>
-        </p>
-        <ng-container *ngIf="!trainingCategory && !trainingRecordId; else noDropdown">
-          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('category').invalid">
-            <label class="govuk-label" for="category"> Training category </label>
-            <span *ngIf="submitted && form.get('category').invalid" id="category-error" class="govuk-error-message">
-              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('category') }}
-            </span>
-            <select
-              class="govuk-select"
-              [class.govuk-select--error]="submitted && form.get('category').invalid"
-              [formControlName]="'category'"
-              id="category"
-              name="category"
-              data-testid="trainingSelect"
-            >
-              <option [ngValue]="null">Select the training category</option>
-              <option *ngFor="let category of categories" [value]="category.id">
-                {{ category.category }}
-              </option>
-            </select>
+        <div class="govuk-body" *ngIf="showWorkerCount" data-testid="numberOfStaffSelected">
+          <span class="govuk-util__block govuk-!-font-weight-bold">Number of staff selected</span>
+          <div class="govuk-grid-row">
+            <div class="govuk-grid-column-three-quarters">
+              <div class="govuk-grid-row">
+                <div class="govuk-grid-column-one-half">
+                  <p>{{ workerCount }}</p>
+                </div>
+                <div class="govuk-grid-column-one-half">
+                  <p>
+                    <a
+                      class="govuk-link govuk-!-margin-left-4"
+                      [routerLink]="['..', 'select-staff']"
+                      (click)="setIsSelectStaffChange()"
+                      >Change</a
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <ng-container *ngIf="multipleTrainingDetails; else singleRecord">
+          <div *ngIf="showCategory" class="govuk-body" data-testid="trainingCategoryDisplay">
+            <span class="govuk-util__block govuk-!-font-weight-bold">Training category</span>
+            <div class="govuk-grid-row">
+              <div class="govuk-grid-column-three-quarters">
+                <div class="govuk-grid-row">
+                  <div class="govuk-grid-column-one-half">
+                    <p>{{ category }}</p>
+                  </div>
+                  <div class="govuk-grid-column-one-half">
+                    <p>
+                      <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['..', 'select-training-category']"
+                        >Change</a
+                      >
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </ng-container>
-        <ng-template #noDropdown>
+        <ng-template #singleRecord>
           <p class="govuk-body govuk-!-margin-bottom-6" data-testid="trainingCategoryDisplay">
             <span class="govuk-util__block"><b>Training category</b></span>
-            <span class="govuk-util__block govuk-!-margin-top-2">{{ category }}</span>
+            <span class="govuk-util__block govuk-!-margin-top-2"
+              >{{ category }}
+              <a
+                *ngIf="showChangeLink && !trainingRecordId"
+                data-testid="changeTrainingCategoryLink"
+                class="govuk-link--no-visited-state govuk-!-margin-left-4"
+                [routerLink]="['..']"
+                >Change</a
+              >
+            </span>
           </p>
         </ng-template>
 
@@ -151,7 +179,7 @@
             }"
             aria-live="polite"
           >
-            <noscript> You can enter up to {{ notesMaxLength }} characters  </noscript>
+            <noscript> You can enter up to {{ notesMaxLength }} characters </noscript>
             <ng-container>
               You have {{ remainingCharacterCount | absoluteNumber | number }}
               {{

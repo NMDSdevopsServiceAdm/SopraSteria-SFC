@@ -6,6 +6,7 @@ import { TrainingCategory } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 
@@ -22,6 +23,7 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
   constructor(
     protected backLinkService: BackLinkService,
     protected trainingService: TrainingService,
+    protected trainingCategoryService: TrainingCategoryService,
     protected route: ActivatedRoute,
     protected router: Router,
     private alertService: AlertService,
@@ -32,7 +34,7 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
     this.setBackLink();
     const id = parseInt(this.route.snapshot.parent.url[0].path, 10);
     this.establishment = this.route.snapshot.parent.data.establishment;
-    this.trainingService.getCategories().subscribe((x) => (this.selectedCategory = x.find((y) => y.id === id)));
+    this.trainingCategoryService.getCategories().subscribe((x) => (this.selectedCategory = x.find((y) => y.id === id)));
   }
 
   public onDelete(): void {
