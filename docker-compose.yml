@@ -1,4 +1,3 @@
-version: '3'
 services:
   sfc-test:
     image: postgres:13
