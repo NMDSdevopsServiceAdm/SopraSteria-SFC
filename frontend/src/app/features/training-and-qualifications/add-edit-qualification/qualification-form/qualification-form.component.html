@@ -21,7 +21,7 @@
       >
         <option [ngValue]="null">Select</option>
         <option *ngIf="preselectedQualification" [value]="preselectedQualification.id">
-          {{ preselectedQualification.title }} {{ preselectedQualification?.level }}
+          {{ preselectedQualification.title }}
         </option>
         <option *ngFor="let qualification of qualifications" [value]="qualification.id">
           {{ qualification.title }}
