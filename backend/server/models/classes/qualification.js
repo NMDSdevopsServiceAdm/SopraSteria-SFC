@@ -191,7 +191,11 @@ class Qualification extends EntityValidator {
     // to validate a qualification record, need the list of available qualifications
     const qualifications = await models.workerAvailableQualifications.findAll({
       attributes: ['id', 'seq', 'group', 'title', 'level', 'from', 'until'],
-      order: [['seq', 'ASC']],
+      order: [
+        ['seq', 'ASC'],
+        ['title', 'ASC'],
+        ['level', 'ASC'],
+      ],
     });
 
     if (!qualifications || !Array.isArray(qualifications)) {
@@ -760,7 +764,11 @@ class Qualification extends EntityValidator {
           [models.Sequelize.Op.notIn]: [...currentSetOfWorkerQuals, ...unavailableQualIds],
         },
       },
-      order: [['seq', 'ASC']],
+      order: [
+        ['seq', 'ASC'],
+        ['title', 'ASC'],
+        ['level', 'ASC'],
+      ],
     });
 
     if (qualifications && Array.isArray(qualifications)) {
