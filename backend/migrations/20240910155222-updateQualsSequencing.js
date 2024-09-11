@@ -3,7 +3,6 @@
 const { Op } = require('sequelize');
 const models = require('../server/models/index');
 
-/** @type {import('sequelize-cli').Migration} */
 const qualsGroups = [
   { name: 'Apprenticeship', standardSeq: 0, specifiedSequences: [{ id: 133, seq: 1 }] },
   {
@@ -59,6 +58,7 @@ const qualsGroups = [
 const getIdsWithDifferentSequencing = (qualificationGroup) =>
   qualificationGroup.specifiedSequences.map((qualification) => qualification.id);
 
+/** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface) {
     return queryInterface.sequelize.transaction(async (transaction) => {
