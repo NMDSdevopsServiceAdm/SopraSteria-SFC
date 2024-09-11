@@ -24,7 +24,7 @@ describe('qualificationsUtils', () => {
         expect(returnedValue).to.deep.equal('This is a qual (level 4)');
       });
 
-      it('should return the title with the level in brackets when the qual already has brackets', () => {
+      it('should return the title with the level inside the existing brackets when the qual already has brackets', () => {
         const title = 'This is a qual (ABC)';
         const level = '6';
 
@@ -32,6 +32,15 @@ describe('qualificationsUtils', () => {
 
         expect(returnedValue).to.deep.equal('This is a qual (ABC, level 6)');
       });
-    })
+
+      it('should return the title with the level at the end when level is letter', () => {
+        const title = 'Test';
+        const level = 'E';
+
+        const returnedValue = formatQualificationTitle(title, level);
+
+        expect(returnedValue).to.deep.equal('Test E');
+      });
+    });
   });
 });
