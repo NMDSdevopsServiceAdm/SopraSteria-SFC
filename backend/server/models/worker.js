@@ -1207,7 +1207,7 @@ module.exports = function (sequelize, DataTypes) {
       otherKey: 'ID',
       as: 'qualifications',
     });
-    Worker.hasMany(trainingCertificates, {
+    Worker.hasMany(models.trainingCertificates, {
       foreignKey: 'workerFk',
       sourceKey: 'id',
       as: 'trainingCertificates',
