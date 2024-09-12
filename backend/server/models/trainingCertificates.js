@@ -2,7 +2,7 @@
 
 module.exports = function (sequelize, DataTypes) {
   const TrainingCertificates = sequelize.define(
-    'TrainingCertificates',
+    'trainingCertificates',
     {
       id: {
         type: DataTypes.INTEGER,

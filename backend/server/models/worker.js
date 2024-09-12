@@ -1207,6 +1207,12 @@ module.exports = function (sequelize, DataTypes) {
       otherKey: 'ID',
       as: 'qualifications',
     });
+    Worker.hasMany(trainingCertificates, {
+      foreignKey: 'workerFk',
+      sourceKey: 'id',
+      as: 'trainingCertificates',
+      onDelete: 'CASCADE',
+    });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {
     return this.count({
