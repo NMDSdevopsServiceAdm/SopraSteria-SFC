@@ -1,0 +1,20 @@
+<table class="govuk-table">
+  <thead class="govuk-table__head" data-testid="certificationsTableHeader">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header">File name</th>
+      <th scope="col" class="govuk-table__header">Upload date</th>
+      <th scope="col" class="govuk-table__header">
+        <img alt="" src="/assets/images/icon-download.svg" /> Download all
+      </th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <ng-container *ngFor="let certificate of certificates">
+      <tr class="govuk-table__row">
+        <td class="govuk-table__cell govuk-!-font-weight-regular">{{ certificate.filename }}</td>
+        <td class="govuk-table__cell">{{ certificate.uploadDate | date: "d MMM y, h:mmaaaaa'm'" }}</td>
+        <td class="govuk-table__cell"><img alt="" src="/assets/images/icon-download.svg" />Download</td>
+      </tr>
+    </ng-container>
+  </tbody>
+</table>
