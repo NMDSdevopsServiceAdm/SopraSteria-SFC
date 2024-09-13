@@ -173,6 +173,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
               id: missingMandatoryTraining.trainingCategoryId,
               category: missingMandatoryTraining.category,
             },
+            trainingCertificates: [],
             created: null,
             title: null,
             uid: null,
