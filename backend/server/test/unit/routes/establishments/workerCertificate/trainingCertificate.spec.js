@@ -14,8 +14,6 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
   const user = buildUser();
   const training = trainingBuilder();
 
-  const mockUploadFiles = ['cert1.pdf', 'cert2.pdf'];
-
   afterEach(() => {
     sinon.restore();
   });
@@ -23,23 +21,29 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
   beforeEach(() => {
     sinon.stub(Training.prototype, 'load');
     sinon.stub(Training.prototype, 'save');
-    sinon.stub(s3, 'getSignedUrlForUpload').returns('http://localhost/mock-upload-url');
-    sinon.stub(uuid, 'v4').returns('mockuuid');
   });
 
-  function createReq() {
-    const mockUploadBody = { files: [{ filename: 'cert1.pdf' }, { filename: 'cert2.pdf' }] };
+  describe('requestUploadUrl', () => {
+    const mockUploadFiles = ['cert1.pdf', 'cert2.pdf'];
+    const mockSignedUrl = 'http://localhost/mock-upload-url';
 
-    const req = httpMocks.createRequest({
-      method: 'POST',
-      url: `/api/establishment/${user.establishmentId}/worker/${user.workerId}/training/${training.uid}/certificate`,
-      body: mockUploadBody,
+    function createReq(override = {}) {
+      const mockUploadBody = { files: [{ filename: 'cert1.pdf' }, { filename: 'cert2.pdf' }] };
+
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: `/api/establishment/${user.establishmentId}/worker/${user.workerId}/training/${training.uid}/certificate`,
+        body: mockUploadBody,
+        ...override,
+      });
+
+      return req;
+    }
+
+    beforeEach(() => {
+      sinon.stub(s3, 'getSignedUrlForUpload').returns(mockSignedUrl);
     });
 
-    return req;
-  }
-
-  describe('requestUploadUrl', () => {
     it('should reply with a status of 200', async () => {
       const req = createReq();
       const res = httpMocks.createResponse();
@@ -48,24 +52,10 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
       expect(res.statusCode).to.equal(200);
     });
 
-    it('should reply with an object that contains signed urls for upload', async () => {
+    it('should include a signed url for upload and a uuid for each file', async () => {
       const req = createReq();
       const res = httpMocks.createResponse();
       await trainingCertificate.requestUploadUrl(req, res);
-
-      const expectedResponseBody = {
-        files: [
-          {
-            filename: 'cert1.pdf',
-            signedUrl: 'http://localhost/mock-upload-url',
-          },
-          ,
-          {
-            filename: 'cert2.pdf',
-            signedUrl: 'http://localhost/mock-upload-url',
-          },
-        ],
-      };
 
       const actual = await res._getJSONData();
 
@@ -74,9 +64,27 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
       actual.files.forEach((file) => {
         const { fileId, filename, signedUrl } = file;
         expect(uuid.validate(fileId)).to.be.true;
-        expect(mockUploadFiles).to.include(filename);
-        expect(signedUrl).to.include('http://localhost/mock-upload-url');
+        expect(filename).to.be.oneOf(mockUploadFiles);
+        expect(signedUrl).to.equal(mockSignedUrl);
       });
+    });
+
+    it('should reply with status 400 if files param was missing in body', async () => {
+      const req = createReq({ body: {} });
+      const res = httpMocks.createResponse();
+      await trainingCertificate.requestUploadUrl(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.equal('Missing `files` param in request body');
+    });
+
+    it('should reply with status 400 if filename was missing in any of the files', async () => {
+      const req = createReq({ body: { files: [{ filename: 'file1.pdf' }, { anotherItem: 'no file name' }] } });
+      const res = httpMocks.createResponse();
+      await trainingCertificate.requestUploadUrl(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.equal('Missing file name in request body');
     });
   });
 });
