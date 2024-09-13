@@ -20,7 +20,7 @@ import { AddEditTrainingComponent } from './add-edit-training.component';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 
-describe('AddEditTrainingComponent', () => {
+fdescribe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
@@ -121,6 +121,7 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
+        uploadCertificate: null,
       };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
@@ -148,6 +149,7 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
+        uploadCertificate: null,
       };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
@@ -192,6 +194,7 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
         notes: undefined,
+        uploadCertificate: null,
       };
 
       expect(form.value).toEqual(expectedFormValue);
@@ -210,6 +213,7 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
+        uploadCertificate: null,
       };
       expect(form.value).toEqual(expectedFormValue);
     });
@@ -239,6 +243,18 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Save record')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
       expect(queryByTestId('deleteButton')).toBeFalsy();
+    });
+
+    it('should render a upload file button', async () => {
+      const { component, getByTestId } = await setup(null);
+
+      component.ngOnInit();
+
+      const certificateUploadSection = getByTestId('uploadCertificate');
+      expect(certificateUploadSection).toBeTruthy();
+
+      const uploadButton = within(certificateUploadSection).getByTestId('fileInput');
+      expect(uploadButton).toBeTruthy();
     });
   });
 
@@ -307,6 +323,7 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
         notes: 'Some notes added to this training',
+        uploadCertificate: null,
       };
 
       const updatedFormData = component.form.value;
@@ -368,6 +385,7 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: 10, month: 4, year: 2020 },
         expires: { day: 10, month: 4, year: 2022 },
         notes: 'Some notes for this training',
+        uploadCertificate: null,
       };
 
       const formData = component.form.value;
@@ -618,6 +636,54 @@ describe('AddEditTrainingComponent', () => {
         fixture.detectChanges();
 
         expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
+      });
+
+      fdescribe('uploadCertificate errors', () => {
+        it('should show an error message if the selected file is over 500 KB', async () => {
+          const { component, fixture, getByTestId, getByText, getAllByText } = await setup(null);
+          component.trainingCategory = {
+            category: 'Autism',
+            id: 2,
+          };
+
+          const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
+
+          Object.defineProperty(mockUploadFile, 'size', {
+            value: 10 * 1024 * 1024, // 10MB
+          });
+
+          component.ngOnInit();
+
+          const fileInputButton = getByTestId('fileInput') as HTMLInputElement;
+
+          userEvent.upload(fileInputButton, [mockUploadFile]);
+          userEvent.click(getByText('Save record'));
+
+          fixture.detectChanges();
+
+          expect(getAllByText('The certificate must be no larger than 500KB').length).toEqual(2);
+        });
+
+        it('should show an error message if the selected file is not a pdf file', async () => {
+          const { component, fixture, getByTestId, getByText, getAllByText } = await setup(null);
+          component.trainingCategory = {
+            category: 'Autism',
+            id: 2,
+          };
+
+          const mockUploadFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+
+          component.ngOnInit();
+
+          const fileInputButton = getByTestId('fileInput') as HTMLInputElement;
+
+          userEvent.upload(fileInputButton, [mockUploadFile]);
+          userEvent.click(getByText('Save record'));
+
+          fixture.detectChanges();
+
+          expect(getAllByText('The certificate must be a pdf file').length).toEqual(2);
+        });
       });
     });
   });

@@ -118,7 +118,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
           year: null,
         }),
         notes: [null, Validators.maxLength(this.notesMaxLength)],
-        uploadCertificate: null,
+        uploadCertificate: [null, CustomValidators.checkUploadCertificate()],
       },
       { updateOn: 'submit' },
     );
@@ -135,7 +135,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         DateValidator.min(minDate),
         DateValidator.beforeStartDate('completed', true, true),
       ]);
-    this.form.get('uploadCertificate').setValidators(CustomValidators.checkUploadCertificate);
   }
 
   private getCategories(): void {
@@ -233,8 +232,12 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onSubmit(): void {
+    console.log('onSubmit triggered');
     this.form.get('completed').updateValueAndValidity();
     this.form.get('expires').updateValueAndValidity();
+    this.form.get('uploadCertificate').updateValueAndValidity();
+
+    console.log(this.form.controls.uploadCertificate.errors, '<--  errors on submit');
 
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -250,7 +253,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
     const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
 
-    if (uploadCertificate.value.length) {
+    if (uploadCertificate?.value?.length) {
       this.handleNewCertificateUpload(uploadCertificate.value[0]);
     }
 
@@ -273,9 +276,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onSelectFile(event): void {
-    const selectedFile = event?.target?.files?.[0];
-    console.log(selectedFile, '<--- event');
-    // logic to display file table
+    //const selectedFile = event?.target?.files[0];
+    this.form.patchValue({ uploadCertificate: event?.target?.files });
   }
 
   dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs {

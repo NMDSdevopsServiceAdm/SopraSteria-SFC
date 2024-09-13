@@ -130,4 +130,8 @@ export class TrainingService {
   public clearUpdatingSelectedStaffForMultipleTraining(): void {
     this.updatingSelectedStaffForMultipleTraining = null;
   }
+
+  public addCertificateToTraining(uploadFile: File): void {
+    // to be implemented
+  }
 }

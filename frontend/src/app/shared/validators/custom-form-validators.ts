@@ -1,4 +1,4 @@
-import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FILE_UPLOAD_TYPES } from '@core/constants/constants';
 
 export class CustomValidators extends Validators {
@@ -130,38 +130,32 @@ export class CustomValidators extends Validators {
     return null;
   }
 
-  static checkUploadCertificate(c: AbstractControl): { [key: string]: boolean } | null {
-    const errors: ValidationErrors = {};
-    const maxFileSize = 500 * 1024;
+  static checkUploadCertificate(): ValidatorFn {
+    const validator = (formControl: UntypedFormGroup): ValidationErrors | null => {
+      const errors: ValidationErrors = {};
+      const maxFileSize = 500 * 1024;
 
-    if (c.value == null || c.value.length === 0) {
-      return null;
-    }
+      if (formControl.value == null || formControl.value.length === 0) {
+        return null;
+      }
 
-    const files = Array.from(c.value);
+      const files = Array.from(formControl.value) as File[];
 
-    files.forEach((file: File) => {
-      if (file.size > maxFileSize) {
+      if (files.some((file) => file.size > maxFileSize)) {
         errors['filesize'] = true;
-        return;
       }
-    });
 
-    files.forEach((file: File) => {
-      const parts: Array<string> = file.name.split('.');
-      const fileExtension: string = parts[parts.length - 1].toUpperCase();
-
-      if (fileExtension !== 'PDF') {
+      if (files.some((file) => !file.name.toLowerCase().endsWith('.pdf'))) {
         errors['pdffiletype'] = true;
-        return;
       }
-    });
 
-    if (Object.keys(errors).length) {
-      c.setErrors(errors);
-      return errors;
-    }
+      if (Object.keys(errors).length) {
+        return errors;
+      }
 
-    return null;
+      return null;
+    };
+
+    return validator;
   }
 }

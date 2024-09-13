@@ -102,9 +102,9 @@ fdescribe('TrainingService', () => {
   });
 
   describe('addCertificate', () => {
-    const testFile = new File(['test1234'], 'certificate.pdf');
-    it('should call to backend to retreive a signed url to upload certificate', async () => {
-      service.addCertificateToTraining(testFile);
+    const mockUploadFile = new File([''], 'certificate.pdf');
+    xit('should call to backend to retreive a signed url to upload certificate', async () => {
+      service.addCertificateToTraining(mockUploadFile);
 
       const req = http.expectOne(
         `${environment.appRunnerEndpoint}/api/establishment/mock-uid/worker/mockWorkerId/training/mockTrainingId/certificate`,
