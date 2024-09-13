@@ -153,6 +153,30 @@
           </fieldset>
         </div>
 
+        <div *ngIf="!showWorkerCount" class="govuk-!-margin-bottom-4" data-testid="uploadCertificate">
+          <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
+            <label class="govuk-label govuk-!-font-weight-bold" for="upload-certificate"> Upload a certificate </label>
+            <div id="upload-certificate-hint" class="govuk-hint govuk-!-margin-bottom-4">
+              The certificate must be a PDF file that's no larger than 500KB
+            </div>
+            <span
+              *ngIf="submitted && form.get('uploadCertificate').invalid"
+              id="uploadCertificate-error"
+              class="govuk-error-message"
+            >
+              <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('uploadCertificate') }}
+            </span>
+            <input
+              id="upload-certificate"
+              type="file"
+              class="govuk-file-upload"
+              accept=".pdf"
+              (change)="onSelectFile($event)"
+              [formControlName]="'uploadCertificate'"
+            />
+          </fieldset>
+        </div>
+
         <div class="govuk-character-count govuk-!-margin-bottom-4">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
             <label class="govuk-label" for="notes">Notes</label>

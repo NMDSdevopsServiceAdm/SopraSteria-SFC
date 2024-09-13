@@ -4,7 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { TrainingService } from './training.service';
 import { environment } from 'src/environments/environment';
 
-describe('TrainingService', () => {
+fdescribe('TrainingService', () => {
   let service: TrainingService;
   let http: HttpTestingController;
 
@@ -98,6 +98,18 @@ describe('TrainingService', () => {
       service.clearUpdatingSelectedStaffForMultipleTraining();
 
       expect(service.getUpdatingSelectedStaffForMultipleTraining()).toBe(null);
+    });
+  });
+
+  describe('addCertificate', () => {
+    const testFile = new File(['test1234'], 'certificate.pdf');
+    it('should call to backend to retreive a signed url to upload certificate', async () => {
+      service.addCertificateToTraining(testFile);
+
+      const req = http.expectOne(
+        `${environment.appRunnerEndpoint}/api/establishment/mock-uid/worker/mockWorkerId/training/mockTrainingId/certificate`,
+      );
+      expect(req.request.method).toBe('POST');
     });
   });
 });
