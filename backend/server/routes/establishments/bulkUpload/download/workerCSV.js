@@ -222,7 +222,12 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   ); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
 
   // "STARTINSECT"
-  columns.push(entity.SocialCareStartDateValue === 'Yes' ? entity.SocialCareStartDateYear : '');
+  const socialCareStartDateMappings = {
+    Yes: entity.SocialCareStartDateYear,
+    No: '999',
+  };
+
+  columns.push(socialCareStartDateMappings[entity.SocialCareStartDateValue] || '');
 
   // "APPRENTICE"
   let apprenticeship = '';
