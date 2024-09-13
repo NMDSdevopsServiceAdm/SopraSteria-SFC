@@ -4,6 +4,7 @@ const express = require('express');
 const config = require('../../../config/config');
 
 const s3 = require('./s3');
+const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const certificateBucket = String(config.get('workerCertificate.bucketname'));
 const uploadSignedUrlExpire = config.get('workerCertificate.uploadSignedUrlExpire');
@@ -11,14 +12,14 @@ const downloadSignedUrlExpire = config.get('workerCertificate.downloadSignedUrlE
 
 const router = express.Router({ mergeParams: true });
 
-const getFileKey = ({ establishmentId, fileId }) => {
+const makeFileKey = ({ establishmentId, fileId }) => {
   return `${establishmentId}/trainingCertificate/${fileId}`;
 };
 
 const requestUploadUrl = async (req, res) => {
   const { establishmentId } = req;
   const { files } = req.body;
-  if (!files | !files.length) {
+  if (!files || !files.length) {
     return res.status(400).send('Missing `files` param in request body');
   }
 
@@ -31,7 +32,7 @@ const requestUploadUrl = async (req, res) => {
   for (const file of files) {
     const filename = file.filename;
     const fileId = uuidv4();
-    const fileKey = getFileKey({ establishmentId, fileId });
+    const fileKey = makeFileKey({ establishmentId, fileId });
     const signedUrl = await s3.getSignedUrlForUpload({
       bucket: certificateBucket,
       key: fileKey,
@@ -43,7 +44,18 @@ const requestUploadUrl = async (req, res) => {
   return res.status(200).json({ files: responsePayload });
 };
 
-router.route('/').post(requestUploadUrl);
+const confirmUpload = async (res, req) => {
+  const { establishmentId } = req;
+  const { files } = req.body;
+  if (!files || !files.length) {
+    return res.status(400).send('Missing `files` param in request body');
+  }
+
+  return res.status(200);
+};
+
+router.route('/').post(hasPermission('canEditWorker'), requestUploadUrl);
+router.route('/').put(hasPermission('canEditWorker'), confirmUpload);
 
 module.exports = router;
 module.exports.requestUploadUrl = requestUploadUrl;
