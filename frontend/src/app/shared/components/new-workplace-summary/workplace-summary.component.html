@@ -218,7 +218,11 @@
         ></app-summary-record-change>
       </dd>
     </div>
-    <div *ngIf="!workplace.showAddWorkplaceDetailsBanner" class="govuk-summary-list__row" data-testid="serviceCapacity">
+    <div
+      *ngIf="!workplace.showAddWorkplaceDetailsBanner && hasCapacity"
+      class="govuk-summary-list__row"
+      data-testid="serviceCapacity"
+    >
       <dt class="govuk-summary-list__key">Service capacity</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value>
