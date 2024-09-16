@@ -620,6 +620,10 @@ class Training extends EntityValidator {
             attributes: ['uid', 'filename', 'uploadDate'],
           },
         ],
+        order: [
+          [{ model: models.trainingCertificates, as: 'trainingCertificates' }, 'uploadDate', 'DESC'],
+          [{ model: models.trainingCertificates, as: 'trainingCertificates' }, 'filename', 'ASC'],
+        ],
       };
 
       const fetchResults = await models.workerTraining.findOne(fetchQuery);
@@ -872,12 +876,6 @@ class Training extends EntityValidator {
             as: 'category',
             attributes: ['id', 'category'],
           },
-          // {
-          //   model: models.trainingCertificates,
-          //   as: 'trainingCertificates',
-          //   attributes: ['uid', 'filename', 'uploadDate'],
-          //   where: { id: models.workerTraining.id },
-          // },
         ],
         order: [
           //['completed', 'DESC'],
@@ -944,7 +942,6 @@ class Training extends EntityValidator {
       expires: this._expires !== null ? this.expires : undefined,
       notes: this._notes !== null ? this.notes : undefined,
       trainingCertificates: this.trainingCertificates,
-      // test: 'test',
     };
 
     return myDefaultJSON;

@@ -4,18 +4,34 @@ import { render, within } from '@testing-library/angular';
 import { CertificationsTableComponent } from './certifications-table.component';
 
 describe('CertificationsTableComponent', () => {
-  let single = [
+  let singleFile = [
     {
-      uid: '396ae33f-a99b-4035-9f29-718529a54244',
+      uid: 'uid-1',
       filename: 'first_aid.pdf',
-      uploadDate: '2024-04-12T14:44:29.151Z',
+      uploadDate: '2024-04-12T14:44:29.151',
     },
   ];
 
-  let multipleFiles = [];
+  let multipleFiles = [
+    {
+      uid: 'uid-1',
+      filename: 'first_aid.pdf',
+      uploadDate: '2024-04-12T14:44:29.151',
+    },
+    {
+      uid: 'uid-2',
+      filename: 'first_aid.pdf_v2',
+      uploadDate: '2024-05-12T14:44:29.151',
+    },
+    {
+      uid: 'uid-3',
+      filename: 'first_aid.pdf_v3',
+      uploadDate: '2024-06-12T14:44:29.151',
+    },
+  ];
 
   const setup = async (files = []) => {
-    const { fixture, getByText, getByTestId } = await render(CertificationsTableComponent, {
+    const { fixture, getByText, getByTestId, queryByText, queryByTestId } = await render(CertificationsTableComponent, {
       imports: [SharedModule],
       componentProperties: {
         certificates: files,
@@ -29,6 +45,8 @@ describe('CertificationsTableComponent', () => {
       fixture,
       getByText,
       getByTestId,
+      queryByText,
+      queryByTestId,
     };
   };
 
@@ -37,20 +55,62 @@ describe('CertificationsTableComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the file name and upload date table header', async () => {
-    const { component, getByText, getByTestId } = await setup();
+  describe('table header', () => {
+    it('should show the file name and upload date', async () => {
+      const { getByTestId } = await setup(multipleFiles);
 
-    const certificationsTableHeader = getByTestId('certificationsTableHeader');
+      const certificationsTableHeader = getByTestId('certificationsTableHeader');
 
-    expect(certificationsTableHeader).toBeTruthy();
-    expect(within(certificationsTableHeader).getByText('File name')).toBeTruthy();
-    expect(within(certificationsTableHeader).getByText('Upload date')).toBeTruthy();
-    expect(within(certificationsTableHeader).getByText('Download all')).toBeTruthy();
+      expect(certificationsTableHeader).toBeTruthy();
+      expect(within(certificationsTableHeader).getByText('File name')).toBeTruthy();
+      expect(within(certificationsTableHeader).getByText('Upload date')).toBeTruthy();
+      expect(within(certificationsTableHeader).getByText('Download all')).toBeTruthy();
+    });
+
+    it('should not show the file name and upload date if there a no certificates', async () => {
+      const { queryByTestId } = await setup();
+
+      const certificationsTableHeader = queryByTestId('certificationsTableHeader');
+
+      expect(certificationsTableHeader).toBeFalsy();
+    });
+
+    describe('download all', () => {
+      it('should show if there is more than one file', async () => {
+        const { getByTestId } = await setup(multipleFiles);
+
+        const certificationsTableHeader = getByTestId('certificationsTableHeader');
+
+        expect(within(certificationsTableHeader).getByText('Download all')).toBeTruthy();
+      });
+
+      it('should not show if there is only one file', async () => {
+        const { getByTestId } = await setup(singleFile);
+
+        const certificationsTableHeader = getByTestId('certificationsTableHeader');
+
+        expect(within(certificationsTableHeader).queryByText('Download all')).toBeFalsy();
+      });
+    });
   });
 
   it('should show a row of for a single file', async () => {
-    const { component, getByText } = await setup(single);
+    const { getByTestId } = await setup(singleFile);
 
-    expect(getByText('first_aid.pdf')).toBeTruthy();
+    const certificateRow = getByTestId('certificate-row-0');
+
+    expect(certificateRow).toBeTruthy();
+    expect(within(certificateRow).getByText('first_aid.pdf')).toBeTruthy();
+    expect(within(certificateRow).getByText('12 Apr 2024, 2:44pm')).toBeTruthy();
+    expect(within(certificateRow).getByText('Download')).toBeTruthy();
+    expect(within(certificateRow).getByText('Remove')).toBeTruthy();
+  });
+
+  it('should show multiple rows for multiple files', async () => {
+    const { getByTestId } = await setup(multipleFiles);
+
+    expect(getByTestId('certificate-row-0')).toBeTruthy();
+    expect(getByTestId('certificate-row-1')).toBeTruthy();
+    expect(getByTestId('certificate-row-2')).toBeTruthy();
   });
 });
