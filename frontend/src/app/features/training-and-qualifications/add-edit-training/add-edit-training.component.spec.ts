@@ -19,6 +19,7 @@ import sinon from 'sinon';
 import { AddEditTrainingComponent } from './add-edit-training.component';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -26,6 +27,7 @@ describe('AddEditTrainingComponent', () => {
       AddEditTrainingComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+        declarations: [CertificationsTableComponent],
         providers: [
           WindowRef,
           {
@@ -632,5 +634,33 @@ describe('AddEditTrainingComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith([
       `workplace/${component.establishmentUid}/training-and-qualifications-record/${component.workerId}/add-training`,
     ]);
+  });
+
+  describe('training certifications', () => {
+    it('should show when there are training certifications', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.trainingCertificates = [
+        {
+          uid: '396ae33f-a99b-4035-9f29-718529a54244',
+          filename: 'first_aid.pdf',
+          uploadDate: '2024-04-12T14:44:29.151Z',
+        },
+      ];
+
+      fixture.detectChanges();
+
+      expect(getByTestId('trainingCertificatesTable')).toBeTruthy();
+    });
+
+    it('should not show when there are no training certifications', async () => {
+      const { component, fixture, queryByTestId } = await setup();
+
+      component.trainingCertificates = [];
+
+      fixture.detectChanges();
+
+      expect(queryByTestId('trainingCertificatesTable')).toBeFalsy();
+    });
   });
 });

@@ -3,7 +3,7 @@ import { render, within } from '@testing-library/angular';
 
 import { CertificationsTableComponent } from './certifications-table.component';
 
-fdescribe('CertificationsTableComponent', () => {
+describe('CertificationsTableComponent', () => {
   let single = [
     {
       uid: '396ae33f-a99b-4035-9f29-718529a54244',
@@ -52,6 +52,5 @@ fdescribe('CertificationsTableComponent', () => {
     const { component, getByText } = await setup(single);
 
     expect(getByText('first_aid.pdf')).toBeTruthy();
-    //expect(getByText('12 Apr 2024, 2:44pm')).toBeTruthy();
   });
 });
