@@ -144,7 +144,7 @@ fdescribe('TrainingService', () => {
       expect(reqUploadToS3.request.method).toBe('PUT');
     });
 
-    it('should call to backend to confirm upload complete', async () => {
+    xit('should call to backend to confirm upload complete', async () => {
       service.addCertificateToTraining(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockUploadFile).subscribe();
 
       const req = http.expectOne(

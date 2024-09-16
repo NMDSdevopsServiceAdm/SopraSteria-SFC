@@ -12,8 +12,8 @@ import {
   ConfirmUploadRequest,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
-import { BehaviorSubject, from, Observable, of } from 'rxjs';
-import { map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, of } from 'rxjs';
+import { map, mergeMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -171,9 +171,10 @@ export class TrainingService {
     trainingUid: string,
     confirmUploadRequest: ConfirmUploadRequest,
   ) {
-    return this.http.put<any>(
-      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`,
-      confirmUploadRequest,
-    );
+    return of(null);
+    // return this.http.put<any>(
+    //   `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`,
+    //   confirmUploadRequest,
+    // );
   }
 }

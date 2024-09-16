@@ -11,6 +11,9 @@ import dayjs from 'dayjs';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { Observable, of } from 'rxjs';
+import { TrainingRecordRequest } from '@core/model/training.model';
+import { mergeMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -124,46 +127,67 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   protected submit(record: any): void {
     const { uploadCertificate } = this.form.controls;
-    if (uploadCertificate?.value?.length) {
-      this.handleNewCertificateUpload(uploadCertificate.value[0]);
+    const hasFileToUpload = uploadCertificate?.value?.length > 0;
+
+    let submitTrainingRecord = this.trainingRecordId
+      ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
+      : this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
+
+    if (hasFileToUpload) {
+      submitTrainingRecord = submitTrainingRecord.pipe(mergeMap((response) => this.uploadNewCertificate(response)));
     }
 
-    if (this.trainingRecordId) {
-      this.subscriptions.add(
-        this.workerService
-          .updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
-          .subscribe(
-            () => this.onSuccess(),
-            (error) => this.onError(error),
-          ),
-      );
-    } else {
-      this.subscriptions.add(
-        this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record).subscribe(
-          () => this.onSuccess(),
-          (error) => this.onError(error),
-        ),
-      );
-    }
+    this.subscriptions.add(
+      submitTrainingRecord.subscribe(
+        () => this.onSuccess(),
+        (error) => this.onError(error),
+      ),
+    );
+
+    // if (this.trainingRecordId) {
+    //   this.subscriptions.add(
+    //     this.workerService
+    //       .updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
+    //       .subscribe(
+    //         () => this.onSuccess(),
+    //         (error) => this.onError(error),
+    //       ),
+    //   );
+    // } else {
+    //   this.subscriptions.add(
+    //     this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record).subscribe(
+    //       () => this.onSuccess(),
+    //       (error) => this.onError(error),
+    //     ),
+    //   );
+    // }
   }
 
   public onSelectFile(event): void {
     // this.form.patchValue({ uploadCertificate: event?.target?.files });
   }
 
-  private handleNewCertificateUpload(file: File) {
-    const subscription = this.trainingService
-      .addCertificateToTraining(this.establishmentUid, this.workerId, this.trainingRecordId, file)
-      .subscribe(
-        (x) => {
-          console.log(x);
-          return this.onSuccess();
-        },
-        (error) => {
-          this.onError(error);
-        },
-      );
-    this.subscriptions.add(subscription);
+  private uploadNewCertificate(trainingRecordResponse: any) {
+    console.log(trainingRecordResponse, '<--- trainingRecordResponse');
+
+    let trainingRecordId: string;
+    if (this.trainingRecordId) {
+      trainingRecordId = this.trainingRecordId;
+    } else {
+      // TODO: this should be the case of adding new training.
+      // extract trainingRecordId from trainingRecordResponse
+    }
+
+    const { uploadCertificate } = this.form.controls;
+
+    const fileToUpload = uploadCertificate?.value[0];
+
+    return this.trainingService.addCertificateToTraining(
+      this.workplace.uid,
+      this.worker.uid,
+      trainingRecordId,
+      fileToUpload,
+    );
   }
 
   private onSuccess() {
