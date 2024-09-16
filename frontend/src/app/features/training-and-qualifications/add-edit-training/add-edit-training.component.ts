@@ -123,6 +123,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected submit(record: any): void {
+    const { uploadCertificate } = this.form.controls;
+    if (uploadCertificate?.value?.length) {
+      this.handleNewCertificateUpload(uploadCertificate.value[0]);
+    }
+
     if (this.trainingRecordId) {
       this.subscriptions.add(
         this.workerService
@@ -140,6 +145,14 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         ),
       );
     }
+  }
+
+  public onSelectFile(event): void {
+    // this.form.patchValue({ uploadCertificate: event?.target?.files });
+  }
+
+  private handleNewCertificateUpload(file: File) {
+    console.log(file, '<--- this file');
   }
 
   private onSuccess() {

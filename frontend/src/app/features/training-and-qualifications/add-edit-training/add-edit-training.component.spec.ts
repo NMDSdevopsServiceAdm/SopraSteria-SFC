@@ -20,7 +20,7 @@ import { AddEditTrainingComponent } from './add-edit-training.component';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 
-fdescribe('AddEditTrainingComponent', () => {
+describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
@@ -638,7 +638,7 @@ fdescribe('AddEditTrainingComponent', () => {
         expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
       });
 
-      fdescribe('uploadCertificate errors', () => {
+      describe('uploadCertificate errors', () => {
         it('should show an error message if the selected file is over 500 KB', async () => {
           const { component, fixture, getByTestId, getByText, getAllByText } = await setup(null);
           component.trainingCategory = {
@@ -652,11 +652,9 @@ fdescribe('AddEditTrainingComponent', () => {
             value: 10 * 1024 * 1024, // 10MB
           });
 
-          component.ngOnInit();
-
           const fileInputButton = getByTestId('fileInput') as HTMLInputElement;
 
-          userEvent.upload(fileInputButton, [mockUploadFile]);
+          userEvent.upload(fileInputButton, mockUploadFile, undefined, { applyAccept: false });
           userEvent.click(getByText('Save record'));
 
           fixture.detectChanges();
@@ -672,8 +670,6 @@ fdescribe('AddEditTrainingComponent', () => {
           };
 
           const mockUploadFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
-
-          component.ngOnInit();
 
           const fileInputButton = getByTestId('fileInput') as HTMLInputElement;
 

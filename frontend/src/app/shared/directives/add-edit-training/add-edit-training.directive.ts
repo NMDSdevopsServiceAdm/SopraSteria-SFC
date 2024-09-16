@@ -44,7 +44,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public notesValue = '';
   public showChangeLink: boolean = false;
   public multipleTrainingDetails: boolean;
-  public fileToUpload: File;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -232,12 +231,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   }
 
   public onSubmit(): void {
-    console.log('onSubmit triggered');
     this.form.get('completed').updateValueAndValidity();
     this.form.get('expires').updateValueAndValidity();
-    this.form.get('uploadCertificate').updateValueAndValidity();
-
-    console.log(this.form.controls.uploadCertificate.errors, '<--  errors on submit');
 
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
@@ -249,13 +244,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
     const trainingCategorySelected = this.trainingCategory;
 
-    const { title, accredited, completed, expires, notes, uploadCertificate } = this.form.controls;
+    const { title, accredited, completed, expires, notes } = this.form.controls;
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
     const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
-
-    if (uploadCertificate?.value?.length) {
-      this.handleNewCertificateUpload(uploadCertificate.value[0]);
-    }
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
@@ -269,15 +260,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     };
 
     this.submit(record);
-  }
-
-  private handleNewCertificateUpload(file: File) {
-    console.log(file, '<--- this file');
-  }
-
-  public onSelectFile(event): void {
-    //const selectedFile = event?.target?.files[0];
-    this.form.patchValue({ uploadCertificate: event?.target?.files });
   }
 
   dateGroupToDayjs(group: UntypedFormGroup): dayjs.Dayjs {
