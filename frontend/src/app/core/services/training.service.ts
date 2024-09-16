@@ -6,10 +6,14 @@ import {
   TrainingCategory,
   TrainingCategoryResponse,
   SelectedTraining,
+  S3UploadResponse,
+  CertificateSignedUrlRequest,
+  CertificateSignedUrlResponse,
+  ConfirmUploadRequest,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
+import { map, mergeMap, switchMap, take, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -131,7 +135,45 @@ export class TrainingService {
     this.updatingSelectedStaffForMultipleTraining = null;
   }
 
-  public addCertificateToTraining(uploadFile: File): void {
-    // to be implemented
+  public addCertificateToTraining(workplaceUid: string, workerUid: string, trainingUid: string, uploadFile: File) {
+    const requestBody: CertificateSignedUrlRequest = { files: [{ filename: uploadFile.name }] };
+
+    return this.http
+      .post<CertificateSignedUrlResponse>(
+        `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`,
+        requestBody,
+      )
+      .pipe(
+        mergeMap((response) => {
+          const { signedUrl, fileId } = response?.files[0];
+          return this.uploadCertificateToS3(signedUrl, fileId, uploadFile);
+        }),
+        mergeMap(({ s3response, fileId }) => {
+          const etag = s3response.headers.get('Etag');
+          const confirmUploadRequest: ConfirmUploadRequest = { files: [{ filename: uploadFile.name, etag, fileId }] };
+          return this.confirmCertificateUpload(workplaceUid, workerUid, trainingUid, confirmUploadRequest);
+        }),
+      );
+  }
+
+  private uploadCertificateToS3(signedUrl: string, fileId: string, uploadFile: File) {
+    return this.http.put<S3UploadResponse>(signedUrl, uploadFile, { observe: 'response' }).pipe(
+      map((s3response) => ({
+        s3response,
+        fileId,
+      })),
+    );
+  }
+
+  private confirmCertificateUpload(
+    workplaceUid: string,
+    workerUid: string,
+    trainingUid: string,
+    confirmUploadRequest: ConfirmUploadRequest,
+  ) {
+    return this.http.put<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`,
+      confirmUploadRequest,
+    );
   }
 }

@@ -109,3 +109,19 @@ export interface TrainingRecordCategories {
   training: Training[];
   isMandatory: boolean;
 }
+
+export interface CertificateSignedUrlRequest {
+  files: { filename: string }[];
+}
+
+export interface CertificateSignedUrlResponse {
+  files: { filename: string; fileId: string; signedUrl: string }[];
+}
+
+export interface S3UploadResponse {
+  headers: { eTag: string };
+}
+
+export interface ConfirmUploadRequest {
+  files: { filename: string; fileId: string; etag: string }[];
+}

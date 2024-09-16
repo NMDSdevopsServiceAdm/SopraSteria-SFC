@@ -152,7 +152,18 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private handleNewCertificateUpload(file: File) {
-    console.log(file, '<--- this file');
+    const subscription = this.trainingService
+      .addCertificateToTraining(this.establishmentUid, this.workerId, this.trainingRecordId, file)
+      .subscribe(
+        (x) => {
+          console.log(x);
+          return this.onSuccess();
+        },
+        (error) => {
+          this.onError(error);
+        },
+      );
+    this.subscriptions.add(subscription);
   }
 
   private onSuccess() {
