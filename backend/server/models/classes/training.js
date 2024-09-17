@@ -816,55 +816,31 @@ class Training extends EntityValidator {
     if (filters) throw new Error('Filters not implemented');
 
     const allTrainingRecords = [];
-    let fetchResults;
-    if (categoryId === null) {
-      fetchResults = await models.workerTraining.findAll({
-        include: [
-          {
-            model: models.worker,
-            as: 'worker',
-            attributes: ['id', 'uid'],
-            where: {
-              uid: workerId,
-            },
+    const fetchResults = await models.workerTraining.findAll({
+      include: [
+        {
+          model: models.worker,
+          as: 'worker',
+          attributes: ['id', 'uid'],
+          where: {
+            uid: workerId,
           },
-          {
-            model: models.workerTrainingCategories,
-            as: 'category',
-            attributes: ['id', 'category'],
-          },
-        ],
-        order: [
-          //['completed', 'DESC'],
-          ['updated', 'DESC'],
-        ],
-      });
-    } else {
-      fetchResults = await models.workerTraining.findAll({
-        include: [
-          {
-            model: models.worker,
-            as: 'worker',
-            attributes: ['id', 'uid'],
-            where: {
-              uid: workerId,
-            },
-          },
-          {
-            model: models.workerTrainingCategories,
-            as: 'category',
-            attributes: ['id', 'category'],
-          },
-        ],
-        order: [
-          //['completed', 'DESC'],
-          ['updated', 'DESC'],
-        ],
-        where: {
-          categoryFk: categoryId,
         },
-      });
-    }
+        {
+          model: models.workerTrainingCategories,
+          as: 'category',
+          attributes: ['id', 'category'],
+        },
+      ],
+      order: [['updated', 'DESC']],
+      ...(categoryId
+        ? {
+            where: {
+              categoryFk: categoryId,
+            },
+          }
+        : {}),
+    });
 
     if (fetchResults) {
       fetchResults.forEach((thisRecord) => {

@@ -1,11 +1,15 @@
 'use strict';
 const expect = require('chai').expect;
 const sandbox = require('sinon').createSandbox();
+const sinon = require('sinon');
+
 const moment = require('moment');
 //include Training class
 const Training = require('../../../../models/classes/training').Training;
+const models = require('../../../../models');
 
 const establishmentId = 123;
+const workerUid = '69e62cc3-03bf-4128-b456-cf0350cd032f';
 const workerRecords = [
   {
     id: 9718,
@@ -49,16 +53,16 @@ const workerTrainingRecords = {
 };
 
 describe('/server/models/class/training.js', () => {
-  afterEach(() => {
-    sandbox.restore();
-  });
-
-  beforeEach(() => {
-    sandbox.stub(Training, 'fetch').returns(workerTrainingRecords);
-    sandbox.stub(Training, 'getAllMissingMandatoryTrainingCounts').returns(null);
-  });
-
   describe('getExpiringAndExpiredTrainingCounts', () => {
+    afterEach(() => {
+      sandbox.restore();
+    });
+
+    beforeEach(() => {
+      sandbox.stub(Training, 'fetch').returns(workerTrainingRecords);
+      sandbox.stub(Training, 'getAllMissingMandatoryTrainingCounts').returns(null);
+    });
+
     it('should return updated worker records : Training.getAllRequiredCounts', async () => {
       const updateTrainingRecords = await Training.getAllRequiredCounts(establishmentId, workerRecords);
       if (updateTrainingRecords) {
@@ -83,6 +87,64 @@ describe('/server/models/class/training.js', () => {
       if (updateTrainingRecords) {
         expect(updateTrainingRecords[0].trainingCount).to.equal(0);
       }
+    });
+  });
+
+  describe('fetch', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should make database call without where clause when no categoryId', async () => {
+      const workerTrainingFindAll = sinon.stub(models.workerTraining, 'findAll').resolves([]);
+      await Training.fetch(establishmentId, workerUid);
+
+      expect(workerTrainingFindAll.args[0][0]).to.deep.equal({
+        include: [
+          {
+            model: models.worker,
+            as: 'worker',
+            attributes: ['id', 'uid'],
+            where: {
+              uid: workerUid,
+            },
+          },
+          {
+            model: models.workerTrainingCategories,
+            as: 'category',
+            attributes: ['id', 'category'],
+          },
+        ],
+        order: [['updated', 'DESC']],
+      });
+    });
+
+    it('should make database call with where clause when categoryId provided', async () => {
+      const categoryId = 12;
+      const workerTrainingFindAll = sinon.stub(models.workerTraining, 'findAll').resolves([]);
+      await Training.fetch(establishmentId, workerUid, categoryId);
+
+      expect(workerTrainingFindAll.args[0][0]).to.deep.equal({
+        include: [
+          {
+            model: models.worker,
+            as: 'worker',
+            attributes: ['id', 'uid'],
+            where: {
+              uid: workerUid,
+            },
+          },
+          {
+            model: models.workerTrainingCategories,
+            as: 'category',
+            attributes: ['id', 'category'],
+          },
+        ],
+        order: [['updated', 'DESC']],
+        where: {
+          categoryFk: categoryId,
+        },
+      });
     });
   });
 });
