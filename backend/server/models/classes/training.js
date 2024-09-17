@@ -41,6 +41,7 @@ class Training extends EntityValidator {
     this._completed = null;
     this._expires = null;
     this._notes = null;
+    this._trainingCertificates = null;
 
     // lifecycle properties
     this._isNew = false;
@@ -130,6 +131,11 @@ class Training extends EntityValidator {
   get category() {
     return this._category;
   }
+
+  get trainingCertificates() {
+    return this._trainingCertificates;
+  }
+
   get title() {
     if (this._title === null) return null;
     return unescape(this._title);
@@ -150,6 +156,11 @@ class Training extends EntityValidator {
   set category(category) {
     this._category = category;
   }
+
+  set trainingCertificates(trainingCertificates) {
+    this._trainingCertificates = trainingCertificates;
+  }
+
   set title(title) {
     if (title !== null) {
       this._title = escape(title);
@@ -603,6 +614,15 @@ class Training extends EntityValidator {
             model: models.workerTrainingCategories,
             as: 'category',
           },
+          {
+            model: models.trainingCertificates,
+            as: 'trainingCertificates',
+            attributes: ['uid', 'filename', 'uploadDate'],
+          },
+        ],
+        order: [
+          [models.trainingCertificates, 'uploadDate', 'DESC'],
+          [models.trainingCertificates, 'filename', 'ASC'],
         ],
       };
 
@@ -627,6 +647,7 @@ class Training extends EntityValidator {
         this._created = fetchResults.created;
         this._updated = fetchResults.updated;
         this._updatedBy = fetchResults.updatedBy;
+        this._trainingCertificates = fetchResults.trainingCertificates;
 
         return true;
       }
@@ -920,6 +941,7 @@ class Training extends EntityValidator {
       completed: this.completed ? this.completed : undefined,
       expires: this._expires !== null ? this.expires : undefined,
       notes: this._notes !== null ? this.notes : undefined,
+      trainingCertificates: this.trainingCertificates,
     };
 
     return myDefaultJSON;

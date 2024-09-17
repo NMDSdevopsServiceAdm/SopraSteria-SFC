@@ -30,12 +30,19 @@ export interface TrainingResponse {
   training: TrainingRecord[];
 }
 
+export interface TrainingCertificate {
+  uid: string;
+  filename: string;
+  uploadDate: string;
+}
+
 export interface TrainingRecord {
   accredited?: boolean;
   trainingCategory: {
     id: number;
     category: string;
   };
+  trainingCertificates: TrainingCertificate[];
   completed?: Date;
   created: Date;
   expires?: Date;
