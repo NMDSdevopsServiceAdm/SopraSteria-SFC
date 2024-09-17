@@ -44,14 +44,14 @@ const requestUploadUrl = async (req, res) => {
   return res.status(200).json({ files: responsePayload });
 };
 
-const confirmUpload = async (res, req) => {
+const confirmUpload = async (req, res) => {
   const { establishmentId } = req;
   const { files } = req.body;
   if (!files || !files.length) {
     return res.status(400).send('Missing `files` param in request body');
   }
 
-  return res.status(200);
+  return res.status(200).send();
 };
 
 router.route('/').post(hasPermission('canEditWorker'), requestUploadUrl);

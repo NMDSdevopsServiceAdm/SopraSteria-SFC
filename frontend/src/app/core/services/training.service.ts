@@ -171,10 +171,10 @@ export class TrainingService {
     trainingUid: string,
     confirmUploadRequest: ConfirmUploadRequest,
   ) {
-    return of(null);
-    // return this.http.put<any>(
-    //   `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`,
-    //   confirmUploadRequest,
-    // );
+    // return of(null);
+    return this.http.put<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`,
+      confirmUploadRequest,
+    );
   }
 }

@@ -143,24 +143,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         (error) => this.onError(error),
       ),
     );
-
-    // if (this.trainingRecordId) {
-    //   this.subscriptions.add(
-    //     this.workerService
-    //       .updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
-    //       .subscribe(
-    //         () => this.onSuccess(),
-    //         (error) => this.onError(error),
-    //       ),
-    //   );
-    // } else {
-    //   this.subscriptions.add(
-    //     this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record).subscribe(
-    //       () => this.onSuccess(),
-    //       (error) => this.onError(error),
-    //     ),
-    //   );
-    // }
   }
 
   public onSelectFile(event): void {
