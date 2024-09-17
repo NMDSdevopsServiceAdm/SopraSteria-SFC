@@ -621,8 +621,8 @@ class Training extends EntityValidator {
           },
         ],
         order: [
-          [{ model: models.trainingCertificates, as: 'trainingCertificates' }, 'uploadDate', 'DESC'],
-          [{ model: models.trainingCertificates, as: 'trainingCertificates' }, 'filename', 'ASC'],
+          [models.trainingCertificates, 'uploadDate', 'DESC'],
+          [models.trainingCertificates, 'filename', 'ASC'],
         ],
       };
 
