@@ -5,7 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
+import {
+  TrainingCategory,
+  TrainingCertificate,
+  TrainingRecord,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -44,6 +49,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public notesValue = '';
   public showChangeLink: boolean = false;
   public multipleTrainingDetails: boolean;
+  public trainingCertificates: TrainingCertificate[];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
