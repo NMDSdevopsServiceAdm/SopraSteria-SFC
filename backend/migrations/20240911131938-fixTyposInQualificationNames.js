@@ -22,6 +22,11 @@ const qualificationsWithTypos = [
     updatedTitle: "Any children's or young people's qualification",
     incorrectTitle: "Any childrens or young people's qualification",
   },
+  {
+    id: 62,
+    updatedTitle: "Introduction to health, social care, and children's and young people's settings",
+    incorrectTitle: "Introduction to health, social care and children's and young people's settings",
+  },
 ];
 
 /** @type {import('sequelize-cli').Migration} */
