@@ -20,7 +20,7 @@ import { AddEditTrainingComponent } from './add-edit-training.component';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 
-fdescribe('AddEditTrainingComponent', () => {
+describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, getByLabelText } = await render(
       AddEditTrainingComponent,
@@ -439,7 +439,7 @@ fdescribe('AddEditTrainingComponent', () => {
     describe('upload certificate to existing training', () => {
       const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
 
-      fit('should call both `addCertificateToTraining` and `updateTrainingRecord` if an upload file is selected', async () => {
+      it('should call both `addCertificateToTraining` and `updateTrainingRecord` if an upload file is selected', async () => {
         const { component, fixture, getByText, getByLabelText, getByTestId, updateSpy, routerSpy, trainingService } =
           await setup();
 

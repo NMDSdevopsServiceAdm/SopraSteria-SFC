@@ -4,7 +4,6 @@ import { Params } from '@angular/router';
 import {
   allMandatoryTrainingCategories,
   TrainingCategory,
-  TrainingCategoryResponse,
   SelectedTraining,
   S3UploadResponse,
   CertificateSignedUrlRequest,
@@ -12,7 +11,7 @@ import {
   ConfirmUploadRequest,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 

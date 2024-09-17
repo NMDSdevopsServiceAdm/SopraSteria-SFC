@@ -11,8 +11,6 @@ import dayjs from 'dayjs';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
 import { TrainingCategoryService } from '@core/services/training-category.service';
-import { Observable, of } from 'rxjs';
-import { TrainingRecordRequest } from '@core/model/training.model';
 import { mergeMap } from 'rxjs/operators';
 
 @Component({

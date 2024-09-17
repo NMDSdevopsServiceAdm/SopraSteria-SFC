@@ -6,12 +6,11 @@ const uuid = require('uuid');
 const models = require('../../../../../models');
 const buildUser = require('../../../../factories/user');
 const { trainingBuilder } = require('../../../../factories/models');
-const { Training } = require('../../../../../models/classes/training');
 const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
 
 const trainingCertificateRoute = require('../../../../../routes/establishments/workerCertificate/trainingCertificate');
 
-describe.only('backend/server/routes/establishments/workerCertificate/trainingCertificate.js', () => {
+describe('backend/server/routes/establishments/workerCertificate/trainingCertificate.js', () => {
   const user = buildUser();
   const training = trainingBuilder();
 

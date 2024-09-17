@@ -153,7 +153,12 @@
           </fieldset>
         </div>
 
-        <div *ngIf="!showWorkerCount" class="govuk-!-margin-bottom-4" data-testid="uploadCertificate">
+        <div
+          *ngIf="!showWorkerCount"
+          class="govuk-form-group govuk-!-margin-bottom-4"
+          [class.govuk-form-group--error]="submitted && form.get('uploadCertificate').invalid"
+          data-testid="uploadCertificate"
+        >
           <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
             <label class="govuk-label govuk-!-font-weight-bold" for="upload-certificate"> Upload a certificate </label>
             <div id="upload-certificate-hint" class="govuk-hint govuk-!-margin-bottom-4">
