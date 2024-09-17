@@ -255,4 +255,78 @@ describe('NewTrainingComponent', async () => {
       expect(noMandatoryTrainingLink).toBeFalsy();
     });
   });
+
+  describe('expired flag', () => {
+    it('should not show if there is no expiry date', async () => {
+      component.trainingCategories[0].trainingRecords[0].expires = null;
+      fixture.detectChanges();
+
+      const expiredAutismTrainingExpired = fixture.debugElement.query(
+        By.css('[data-testid="status-expired-someAutismUid"]'),
+      );
+      const expiredAutismTrainingExpiring = fixture.debugElement.query(
+        By.css('[data-testid="status-expiring-someAutismUid"]'),
+      );
+
+      expect(expiredAutismTrainingExpired).toBeFalsy();
+      expect(expiredAutismTrainingExpiring).toBeFalsy();
+    });
+
+    it('should not show if expiry date has not passed', async () => {
+      const today = new Date();
+      const yearFromNow = today.setFullYear(today.getFullYear() + 1);
+
+      component.trainingCategories[0].trainingRecords[0].expires = new Date(yearFromNow);
+      component.trainingCategories[0].trainingRecords[0].trainingStatus = 0;
+      fixture.detectChanges();
+
+      const expiredAutismTrainingExpired = fixture.debugElement.query(
+        By.css('[data-testid="status-expired-someAutismUid"]'),
+      );
+      const expiredAutismTrainingExpiring = fixture.debugElement.query(
+        By.css('[data-testid="status-expiring-someAutismUid"]'),
+      );
+
+      expect(expiredAutismTrainingExpired).toBeFalsy();
+      expect(expiredAutismTrainingExpiring).toBeFalsy();
+    });
+
+    it('should show expired if expiry date has passed', async () => {
+      const today = new Date();
+      const yearBeforeNow = today.setFullYear(today.getFullYear() - 1);
+
+      component.trainingCategories[0].trainingRecords[0].expires = new Date(yearBeforeNow);
+      component.trainingCategories[0].trainingRecords[0].trainingStatus = 3;
+      fixture.detectChanges();
+
+      const expiredAutismTrainingExpired = fixture.debugElement.query(
+        By.css('[data-testid="status-expired-someAutismUid"]'),
+      );
+      const expiredAutismTrainingExpiring = fixture.debugElement.query(
+        By.css('[data-testid="status-expiring-someAutismUid"]'),
+      );
+
+      expect(expiredAutismTrainingExpired).toBeTruthy();
+      expect(expiredAutismTrainingExpiring).toBeFalsy();
+    });
+
+    it('should show expires soon', async () => {
+      const today = new Date();
+      const monthFromNow = today.setMonth(today.getMonth() + 1);
+
+      component.trainingCategories[0].trainingRecords[0].expires = new Date(monthFromNow);
+      component.trainingCategories[0].trainingRecords[0].trainingStatus = 1;
+      fixture.detectChanges();
+
+      const expiredAutismTrainingExpired = fixture.debugElement.query(
+        By.css('[data-testid="status-expired-someAutismUid"]'),
+      );
+      const expiredAutismTrainingExpiring = fixture.debugElement.query(
+        By.css('[data-testid="status-expiring-someAutismUid"]'),
+      );
+
+      expect(expiredAutismTrainingExpired).toBeFalsy();
+      expect(expiredAutismTrainingExpiring).toBeTruthy();
+    });
+  });
 });
