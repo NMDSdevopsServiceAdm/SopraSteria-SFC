@@ -24,6 +24,7 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
   describe('requestUploadUrl', () => {
     const mockUploadFiles = ['cert1.pdf', 'cert2.pdf'];
     const mockSignedUrl = 'http://localhost/mock-upload-url';
+    let res;
 
     function createReq(override = {}) {
       const mockRequestBody = { files: [{ filename: 'cert1.pdf' }, { filename: 'cert2.pdf' }] };
@@ -41,11 +42,12 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
 
     beforeEach(() => {
       sinon.stub(s3, 'getSignedUrlForUpload').returns(mockSignedUrl);
+      res = httpMocks.createResponse();
     });
 
     it('should reply with a status of 200', async () => {
       const req = createReq();
-      const res = httpMocks.createResponse();
+
       await trainingCertificateRoute.requestUploadUrl(req, res);
 
       expect(res.statusCode).to.equal(200);
@@ -53,7 +55,7 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
 
     it('should include a signed url for upload and a uuid for each file', async () => {
       const req = createReq();
-      const res = httpMocks.createResponse();
+
       await trainingCertificateRoute.requestUploadUrl(req, res);
 
       const actual = await res._getJSONData();
@@ -70,7 +72,7 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
 
     it('should reply with status 400 if files param was missing in body', async () => {
       const req = createReq({ body: {} });
-      const res = httpMocks.createResponse();
+
       await trainingCertificateRoute.requestUploadUrl(req, res);
 
       expect(res.statusCode).to.equal(400);
@@ -79,7 +81,7 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
 
     it('should reply with status 400 if filename was missing in any of the files', async () => {
       const req = createReq({ body: { files: [{ filename: 'file1.pdf' }, { anotherItem: 'no file name' }] } });
-      const res = httpMocks.createResponse();
+
       await trainingCertificateRoute.requestUploadUrl(req, res);
 
       expect(res.statusCode).to.equal(400);
@@ -100,6 +102,7 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
         sinon.stub(models.workerTraining, 'findOne').returns(mockTrainingRecord);
         sinon.stub(s3, 'verifyEtag').returns(true);
         stubAddCertificate = sinon.stub(models.trainingCertificates, 'addCertificate');
+        sinon.stub(console, 'error'); // mute error log
       });
 
       const createPutReq = (override) => {
@@ -108,7 +111,7 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
 
       it('should reply with a status of 200', async () => {
         const req = createPutReq();
-        const res = httpMocks.createResponse();
+
         await trainingCertificateRoute.confirmUpload(req, res);
 
         expect(res.statusCode).to.equal(200);
@@ -116,20 +119,24 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
 
       it('should add a new record to database for each file', async () => {
         const req = createPutReq();
-        const res = httpMocks.createResponse();
+
         await trainingCertificateRoute.confirmUpload(req, res);
 
         expect(stubAddCertificate).to.have.been.callCount(mockUploadFiles.length);
 
         mockUploadFiles.forEach((file) => {
           expect(stubAddCertificate).to.have.been.called;
-          expect(stubAddCertificate).to.have.been.calledWith(training.id, mockWorkerFk, file.filename, file.fileId);
+          expect(stubAddCertificate).to.have.been.calledWith({
+            trainingRecordId: training.id,
+            workerFk: mockWorkerFk,
+            filename: file.filename,
+            fileId: file.fileId,
+          });
         });
       });
 
       it('should reply with status 400 if file param was missing', async () => {
         const req = createPutReq({ body: {} });
-        const res = httpMocks.createResponse();
 
         await trainingCertificateRoute.confirmUpload(req, res);
 
@@ -142,7 +149,6 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
         sinon.stub(models.workerTraining, 'findOne').returns(null);
 
         const req = createPutReq();
-        const res = httpMocks.createResponse();
 
         await trainingCertificateRoute.confirmUpload(req, res);
 
@@ -155,7 +161,6 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
         sinon.stub(s3, 'verifyEtag').returns(false);
 
         const req = createPutReq();
-        const res = httpMocks.createResponse();
 
         await trainingCertificateRoute.confirmUpload(req, res);
 
@@ -165,11 +170,9 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
 
       it('should reply with status 400 if the file does not exist on s3', async () => {
         s3.verifyEtag.restore();
-        sinon.stub(console, 'error'); // mute the error log
         sinon.stub(s3, 'verifyEtag').throws('403: UnknownError');
 
         const req = createPutReq();
-        const res = httpMocks.createResponse();
 
         await trainingCertificateRoute.confirmUpload(req, res);
 
@@ -178,11 +181,9 @@ describe.only('backend/server/routes/establishments/workerCertificate/trainingCe
       });
 
       it('should reply with status 500 if failed to add new certificate record to database', async () => {
-        stubAddCertificate.throws('validation error');
-        sinon.stub(console, 'error'); // mute the error log
+        stubAddCertificate.throws('DatabaseError');
 
         const req = createPutReq();
-        const res = httpMocks.createResponse();
 
         await trainingCertificateRoute.confirmUpload(req, res);
 

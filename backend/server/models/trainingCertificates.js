@@ -61,7 +61,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  TrainingCertificates.addCertificate = function (trainingRecordId, workerFk, filename, fileId) {
+  TrainingCertificates.addCertificate = function ({ trainingRecordId, workerFk, filename, fileId }) {
     const timeNow = dayjs().format();
 
     return this.create({

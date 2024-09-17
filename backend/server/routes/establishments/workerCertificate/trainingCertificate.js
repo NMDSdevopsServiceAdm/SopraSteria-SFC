@@ -76,10 +76,10 @@ const confirmUpload = async (req, res) => {
     const { filename, fileId } = file;
 
     try {
-      await models.trainingCertificates.addCertificate(trainingRecordId, workerFk, filename, fileId);
+      await models.trainingCertificates.addCertificate({ trainingRecordId, workerFk, filename, fileId });
     } catch (err) {
       console.error(err);
-      return res.status(500).send();
+      return res.status(500).send('Failed to add records to database');
     }
   }
 
