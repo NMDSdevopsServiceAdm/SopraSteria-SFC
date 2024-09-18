@@ -169,7 +169,7 @@ describe('/server/models/class/training.js', () => {
           {
             uid: 'ghi789',
             filename: 'certificate.pdf',
-            uploadDate: '2024-01-03',
+            uploadDate: '2024-01-03T00:00:00.000Z',
           },
         ],
         title: 'Title',

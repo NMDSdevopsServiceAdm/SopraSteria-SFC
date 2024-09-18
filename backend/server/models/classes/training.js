@@ -812,9 +812,7 @@ class Training extends EntityValidator {
   }
 
   // returns a set of Workers' Training Records based on given filter criteria (all if no filters defined) - restricted to the given Worker
-  static async fetch(establishmentId, workerId, categoryId = null, filters = null) {
-    if (filters) throw new Error('Filters not implemented');
-
+  static async fetch(establishmentId, workerId, categoryId = null) {
     const allTrainingRecords = [];
     const fetchResults = await models.workerTraining.findAll({
       include: [
@@ -1005,7 +1003,7 @@ class Training extends EntityValidator {
         return {
           uid: certificate.uid,
           filename: certificate.filename,
-          uploadDate: certificate.uploadDate?.toISOString().slice(0, 10),
+          uploadDate: certificate.uploadDate?.toISOString(),
         };
       }),
       title: recordFromDatabase.title ? unescape(recordFromDatabase.title) : undefined,
