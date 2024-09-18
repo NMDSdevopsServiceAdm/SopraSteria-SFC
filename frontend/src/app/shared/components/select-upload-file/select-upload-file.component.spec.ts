@@ -6,15 +6,12 @@ import userEvent from '@testing-library/user-event';
 
 describe('SelectUploadFileComponent', () => {
   const setup = async (inputOverride = {}) => {
-    const { fixture, getByText, getByTestId, queryByText, queryByTestId, getByRole } = await render(
-      SelectUploadFileComponent,
-      {
-        imports: [SharedModule],
-        componentProperties: {
-          ...inputOverride,
-        },
+    const { fixture, getByTestId, getByRole } = await render(SelectUploadFileComponent, {
+      imports: [SharedModule],
+      componentProperties: {
+        ...inputOverride,
       },
-    );
+    });
 
     const component = fixture.componentInstance;
 
@@ -22,10 +19,7 @@ describe('SelectUploadFileComponent', () => {
       component,
       fixture,
       getByRole,
-      getByText,
       getByTestId,
-      queryByText,
-      queryByTestId,
     };
   };
 

@@ -1,11 +1,11 @@
-<ng-container *ngIf="certificates.length > 0">
+<ng-container *ngIf="certificates?.length > 0 || uploadFiles?.length > 0">
   <table class="govuk-table">
     <thead class="govuk-table__head" data-testid="certificationsTableHeader">
       <tr class="govuk-table__row">
         <th scope="col" class="govuk-table__header govuk-!-padding-bottom-1 filename-table-header">File name</th>
         <th scope="col" class="govuk-table__header govuk-!-padding-bottom-1">Upload date</th>
         <th scope="col" class="govuk-table__header govuk-!-font-weight-regular govuk-!-padding-bottom-1">
-          <ng-container *ngIf="certificates.length > 1">
+          <ng-container *ngIf="certificates?.length > 1">
             <a href="#" class="govuk-link govuk-link--no-visited-state">
               <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
                 class="govuk-!-margin-left-1"
@@ -18,6 +18,23 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
+      <ng-container *ngFor="let file of uploadFiles; let i = index">
+        <tr class="govuk-table__row" [attr.data-testid]="'upload-file-row-' + i">
+          <td class="govuk-table__cell govuk-!-font-weight-regular">{{ file.name }}</td>
+          <td class="govuk-table__cell"></td>
+          <td class="govuk-table__cell"></td>
+          <td class="govuk-table__cell">
+            <a
+              href="#"
+              type="button"
+              class="govuk-link govuk-link--no-visited-state"
+              (click)="handleRemoveUploadFile($event, i)"
+            >
+              Remove
+            </a>
+          </td>
+        </tr>
+      </ng-container>
       <ng-container *ngFor="let certificate of certificates; let i = index">
         <tr class="govuk-table__row" [attr.data-testid]="'certificate-row-' + i">
           <td class="govuk-table__cell govuk-!-font-weight-regular">{{ certificate.filename }}</td>

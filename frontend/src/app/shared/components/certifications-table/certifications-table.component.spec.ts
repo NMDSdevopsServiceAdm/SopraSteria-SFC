@@ -2,6 +2,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
 import { CertificationsTableComponent } from './certifications-table.component';
+import userEvent from '@testing-library/user-event';
 
 describe('CertificationsTableComponent', () => {
   let singleFile = [
@@ -30,11 +31,12 @@ describe('CertificationsTableComponent', () => {
     },
   ];
 
-  const setup = async (files = []) => {
+  const setup = async (files = [], uploadFiles = []) => {
     const { fixture, getByText, getByTestId, queryByText, queryByTestId } = await render(CertificationsTableComponent, {
       imports: [SharedModule],
       componentProperties: {
         certificates: files,
+        uploadFiles,
       },
     });
 
@@ -67,7 +69,7 @@ describe('CertificationsTableComponent', () => {
       expect(within(certificationsTableHeader).getByText('Download all')).toBeTruthy();
     });
 
-    it('should not show the file name and upload date if there a no certificates', async () => {
+    it('should not show the file name and upload date if there is no certificates', async () => {
       const { queryByTestId } = await setup();
 
       const certificationsTableHeader = queryByTestId('certificationsTableHeader');
@@ -112,5 +114,51 @@ describe('CertificationsTableComponent', () => {
     expect(getByTestId('certificate-row-0')).toBeTruthy();
     expect(getByTestId('certificate-row-1')).toBeTruthy();
     expect(getByTestId('certificate-row-2')).toBeTruthy();
+  });
+
+  describe('Files to upload', () => {
+    const mockUploadFiles = ['new file1.pdf', 'new file2.pdf'].map(
+      (filename) => new File(['some file content'], filename, { type: 'application/pdf' }),
+    );
+
+    it('should show the file names for the new files to be uploaded', async () => {
+      const { getByTestId } = await setup([], mockUploadFiles);
+
+      mockUploadFiles.forEach((file, index) => {
+        const uploadFileRow = getByTestId(`upload-file-row-${index}`);
+        expect(uploadFileRow).toBeTruthy();
+        expect(within(uploadFileRow).getByText(file.name)).toBeTruthy();
+        expect(within(uploadFileRow).getByText('Remove')).toBeTruthy();
+      });
+    });
+
+    it('should not show download buttons or download all button', async () => {
+      const { queryByText } = await setup([], mockUploadFiles);
+
+      expect(queryByText('Download all')).toBeFalsy();
+      expect(queryByText('Download')).toBeFalsy();
+    });
+
+    it('should co-exist with the already uploaded files', async () => {
+      const { getByTestId } = await setup(multipleFiles, mockUploadFiles);
+
+      expect(getByTestId('upload-file-row-0')).toBeTruthy();
+      expect(getByTestId('upload-file-row-1')).toBeTruthy();
+      expect(getByTestId('certificate-row-0')).toBeTruthy();
+      expect(getByTestId('certificate-row-1')).toBeTruthy();
+      expect(getByTestId('certificate-row-2')).toBeTruthy();
+    });
+
+    it('should call removeUploadFile with file index when the remove button for upload file is clicked', async () => {
+      const { getByTestId, component } = await setup([], mockUploadFiles);
+      const uploadFileRow = getByTestId('upload-file-row-1');
+
+      const removeUploadFileSpy = spyOn(component.removeUploadFile, 'emit');
+
+      const removeButton = within(uploadFileRow).getByText('Remove');
+      userEvent.click(removeButton);
+
+      expect(removeUploadFileSpy).toHaveBeenCalledWith(1);
+    });
   });
 });

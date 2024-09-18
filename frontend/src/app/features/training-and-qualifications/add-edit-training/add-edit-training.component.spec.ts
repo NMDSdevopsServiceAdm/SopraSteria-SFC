@@ -20,6 +20,8 @@ import { AddEditTrainingComponent } from './add-edit-training.component';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
+import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
+import { Component } from '@angular/core';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -27,7 +29,7 @@ describe('AddEditTrainingComponent', () => {
       AddEditTrainingComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        declarations: [CertificationsTableComponent],
+        declarations: [CertificationsTableComponent, SelectUploadFileComponent],
         providers: [
           WindowRef,
           {
@@ -439,7 +441,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     describe('upload certificate to existing training', () => {
-      const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
+      const mockUploadFile = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
 
       it('should call both `addCertificateToTraining` and `updateTrainingRecord` if an upload file is selected', async () => {
         const { component, fixture, getByText, getByLabelText, getByTestId, updateSpy, routerSpy, trainingService } =
@@ -781,6 +783,47 @@ describe('AddEditTrainingComponent', () => {
       fixture.detectChanges();
 
       expect(queryByTestId('trainingCertificatesTable')).toBeFalsy();
+    });
+
+    describe('files to be uploaded', () => {
+      const mockUploadFile1 = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
+      const mockUploadFile2 = new File(['some file content'], 'First aid 2024.pdf', { type: 'application/pdf' });
+
+      it('should add a new upload file to the certification table when a file is selected', async () => {
+        const { component, fixture, getByTestId } = await setup();
+        fixture.autoDetectChanges();
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile1);
+
+        const certificationTable = getByTestId('trainingCertificatesTable');
+
+        expect(certificationTable).toBeTruthy();
+        expect(within(certificationTable).getByText(mockUploadFile1.name)).toBeTruthy();
+        expect(component.uploadFiles).toEqual([mockUploadFile1]);
+      });
+
+      it('should remove an upload file when its remove button is clicked', async () => {
+        const { component, fixture, getByTestId, getByText } = await setup();
+        fixture.autoDetectChanges();
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile1);
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile2);
+
+        const certificationTable = getByTestId('trainingCertificatesTable');
+        expect(within(certificationTable).getByText(mockUploadFile1.name)).toBeTruthy();
+        expect(within(certificationTable).getByText(mockUploadFile2.name)).toBeTruthy();
+
+        const rowForFile2 = getByText(mockUploadFile2.name).parentElement;
+        const removeButtonForFile2 = within(rowForFile2).getByText('Remove');
+
+        userEvent.click(removeButtonForFile2);
+
+        expect(within(certificationTable).queryByText(mockUploadFile2.name)).toBeFalsy();
+
+        expect(within(certificationTable).queryByText(mockUploadFile1.name)).toBeTruthy();
+        expect(component.uploadFiles).toHaveSize(1);
+        expect(component.uploadFiles[0]).toEqual(mockUploadFile1);
+      });
     });
   });
 });

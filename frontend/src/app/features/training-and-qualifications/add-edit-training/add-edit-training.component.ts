@@ -125,9 +125,9 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
   }
 
-  get hasFileToUpload(): boolean {
+  get uploadFiles(): File[] {
     const { uploadCertificate } = this.form.controls;
-    return uploadCertificate?.value?.length > 0;
+    return uploadCertificate.value ?? [];
   }
 
   protected submit(record: any): void {
@@ -135,7 +135,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
       : this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
 
-    if (this.hasFileToUpload) {
+    if (this.uploadFiles?.length > 0) {
       submitTrainingRecord = submitTrainingRecord.pipe(mergeMap((response) => this.uploadNewCertificate(response)));
     }
 
@@ -148,25 +148,29 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   public onSelectFiles(files: File[]): void {
-    const currentFiles = this.form.controls.uploadCertificate?.value ?? [];
-    const combinedFiles = [...currentFiles, ...files];
-    this.form.patchValue({ uploadCertificate: combinedFiles });
+    const combinedFiles = [...files, ...this.uploadFiles];
+    this.replaceUploadFile(combinedFiles);
+  }
+
+  public replaceUploadFile(newFiles: File[]): void {
+    this.form.patchValue({ uploadCertificate: newFiles });
+  }
+
+  public removeUploadFile(fileIndexToRemove: number): void {
+    const newUploadFiles = this.uploadFiles.filter((_file, index) => index !== fileIndexToRemove);
+    this.replaceUploadFile(newUploadFiles);
   }
 
   private uploadNewCertificate(trainingRecordResponse: any) {
-    console.log(trainingRecordResponse, '<--- trainingRecordResponse');
-
     let trainingRecordId: string;
     if (this.trainingRecordId) {
       trainingRecordId = this.trainingRecordId;
     } else {
-      // TODO: this should be the case of adding new training.
-      // extract trainingRecordId from trainingRecordResponse
+      // TODO: the case of adding new training with certificate
+      // to extract trainingRecordId from trainingRecordResponse
     }
 
-    const { uploadCertificate } = this.form.controls;
-
-    const fileToUpload = uploadCertificate?.value[0];
+    const fileToUpload = this.uploadFiles?.[0];
 
     return this.trainingService.addCertificateToTraining(
       this.workplace.uid,

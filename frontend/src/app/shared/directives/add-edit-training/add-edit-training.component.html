@@ -181,9 +181,8 @@
           </div>
         </div>
         <div class="govuk-grid-row">
-          <div class="govuk-grid-column-full">
+          <div *ngIf="!showWorkerCount" class="govuk-grid-column-full">
             <div
-              *ngIf="!showWorkerCount"
               class="govuk-form-group govuk-!-margin-bottom-4"
               [class.govuk-form-group--error]="submitted && form.get('uploadCertificate').invalid"
               data-testid="uploadCertificate"
@@ -203,17 +202,23 @@
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('uploadCertificate') }}
                 </span>
                 <div class="uploadCertificate-wrapper">
-                  <app-select-upload-file accept=".pdf" buttonId="uploadCertificate" (selectFiles)="onSelectFiles($event)" aria-describedby="uploadCertificate-hint uploadCertificate-aria-text"/>
-                  <span id="uploadCertificate-aria-text" class="govuk-body" [class.govuk-visually-hidden]="hasFileToUpload">
-                    {{hasFileToUpload ? "One file chosen" : "No file chosen"}}
+                  <app-select-upload-file accept=".pdf"
+                    buttonId="uploadCertificate"
+                    (selectFiles)="onSelectFiles($event)"
+                    [aria-describedby]="uploadFiles?.length > 0 ? 'uploadCertificate-aria-text' : 'uploadCertificate-hint uploadCertificate-aria-text'"
+                  />
+                  <span id="uploadCertificate-aria-text" class="govuk-body" [class.govuk-visually-hidden]="uploadFiles?.length > 0">
+                    {{uploadFiles?.length > 0 ? uploadFiles.length + " file chosen" : "No file chosen"}}
                   </span>
                 </div>
               </fieldset>
             </div>
             <app-certifications-table
-              *ngIf="trainingCertificates?.length > 0"
+              *ngIf="trainingCertificates?.length > 0 || uploadFiles?.length > 0"
               data-testid="trainingCertificatesTable"
               [certificates]="trainingCertificates"
+              [uploadFiles]="uploadFiles"
+              (removeUploadFile)="removeUploadFile($event)"
             ></app-certifications-table>
           </div>
         </div>
