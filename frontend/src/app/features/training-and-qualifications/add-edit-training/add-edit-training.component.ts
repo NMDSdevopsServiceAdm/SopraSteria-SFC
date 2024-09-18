@@ -16,6 +16,7 @@ import { mergeMap } from 'rxjs/operators';
 @Component({
   selector: 'app-add-edit-training',
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
+  styleUrls: ['./add-edit-training.component.scss'],
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public category: string;
@@ -124,15 +125,17 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
   }
 
-  protected submit(record: any): void {
+  get hasFileToUpload(): boolean {
     const { uploadCertificate } = this.form.controls;
-    const hasFileToUpload = uploadCertificate?.value?.length > 0;
+    return uploadCertificate?.value?.length > 0;
+  }
 
+  protected submit(record: any): void {
     let submitTrainingRecord = this.trainingRecordId
       ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
       : this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
 
-    if (hasFileToUpload) {
+    if (this.hasFileToUpload) {
       submitTrainingRecord = submitTrainingRecord.pipe(mergeMap((response) => this.uploadNewCertificate(response)));
     }
 
@@ -144,8 +147,10 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
   }
 
-  public onSelectFile(event): void {
-    // this.form.patchValue({ uploadCertificate: event?.target?.files });
+  public onSelectFiles(files: File[]): void {
+    const currentFiles = this.form.controls.uploadCertificate?.value ?? [];
+    const combinedFiles = [...currentFiles, ...files];
+    this.form.patchValue({ uploadCertificate: combinedFiles });
   }
 
   private uploadNewCertificate(trainingRecordResponse: any) {

@@ -189,10 +189,10 @@
               data-testid="uploadCertificate"
             >
               <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
-                <label class="govuk-label govuk-!-font-weight-bold" for="upload-certificate">
+                <label class="govuk-label govuk-!-font-weight-bold" for="uploadCertificate">
                   Upload a certificate
                 </label>
-                <div id="upload-certificate-hint" class="govuk-hint govuk-!-margin-bottom-4">
+                <div id="uploadCertificate-hint" class="govuk-hint govuk-!-margin-bottom-4">
                   The certificate must be a PDF file that's no larger than 500KB
                 </div>
                 <span
@@ -202,16 +202,12 @@
                 >
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('uploadCertificate') }}
                 </span>
-                <input
-                  id="upload-certificate"
-                  type="file"
-                  class="govuk-file-upload"
-                  accept=".pdf"
-                  (change)="onSelectFile($event)"
-                  [formControlName]="'uploadCertificate'"
-                  name="uploadCertificate"
-                  data-testid="fileInput"
-                />
+                <div class="uploadCertificate-wrapper">
+                  <app-select-upload-file accept=".pdf" buttonId="uploadCertificate" (selectFiles)="onSelectFiles($event)" aria-describedby="uploadCertificate-hint uploadCertificate-aria-text"/>
+                  <span id="uploadCertificate-aria-text" class="govuk-body" [class.govuk-visually-hidden]="hasFileToUpload">
+                    {{hasFileToUpload ? "One file chosen" : "No file chosen"}}
+                  </span>
+                </div>
               </fieldset>
             </div>
             <app-certifications-table
