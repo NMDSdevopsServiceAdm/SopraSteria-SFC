@@ -188,7 +188,16 @@ describe('/server/models/class/training.js', () => {
       expect(res.training[0]).to.deep.equal(formattedTrainingRecord);
     });
 
-    it('should return trainingCertificates as empty array when no certificate records returned from database (empty array)', async () => {
+    it('should return count as length of training records array (2)', async () => {
+      sinon
+        .stub(models.workerTraining, 'findAll')
+        .resolves([mockTrainingRecordFromDatabase(), mockTrainingRecordFromDatabase()]);
+      const res = await Training.fetch(establishmentId, workerUid);
+
+      expect(res.count).to.equal(2);
+    });
+
+    it('should return trainingCertificates as empty array and count as 0 when no certificate records returned from database (empty array)', async () => {
       const trainingRecordFromDatabase = mockTrainingRecordFromDatabase();
       trainingRecordFromDatabase.trainingCertificates = [];
 
@@ -196,6 +205,7 @@ describe('/server/models/class/training.js', () => {
       const res = await Training.fetch(establishmentId, workerUid);
 
       expect(res.training[0].trainingCertificates).to.deep.equal([]);
+      expect(res.count).to.equal(0);
     });
 
     it('should not return trainingCertificates when no certificate records returned from database (null)', async () => {

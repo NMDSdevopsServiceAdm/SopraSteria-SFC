@@ -813,7 +813,6 @@ class Training extends EntityValidator {
 
   // returns a set of Workers' Training Records based on given filter criteria (all if no filters defined) - restricted to the given Worker
   static async fetch(establishmentId, workerId, categoryId = null) {
-    const allTrainingRecords = [];
     const fetchResults = await models.workerTraining.findAll({
       include: [
         {
@@ -845,11 +844,7 @@ class Training extends EntityValidator {
         : {}),
     });
 
-    if (fetchResults) {
-      fetchResults.forEach((record) => {
-        allTrainingRecords.push(this.formatTrainingRecord(record));
-      });
-    }
+    const allTrainingRecords = fetchResults ? fetchResults.map((record) => this.formatTrainingRecord(record)) : [];
 
     let lastUpdated = null;
     if (fetchResults && fetchResults.length === 1) {
