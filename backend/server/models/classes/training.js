@@ -848,29 +848,8 @@ class Training extends EntityValidator {
     });
 
     if (fetchResults) {
-      fetchResults.forEach((thisRecord) => {
-        allTrainingRecords.push({
-          uid: thisRecord.uid,
-          trainingCategory: {
-            id: thisRecord.category.id,
-            category: thisRecord.category.category,
-          },
-          trainingCertificates: thisRecord.trainingCertificates?.map((certificate) => {
-            return {
-              uid: certificate.uid,
-              filename: certificate.filename,
-              uploadDate: certificate.uploadDate?.toISOString().slice(0, 10),
-            };
-          }),
-          title: thisRecord.title ? unescape(thisRecord.title) : undefined,
-          accredited: thisRecord.accredited ? thisRecord.accredited : undefined,
-          completed: thisRecord.completed ? new Date(thisRecord.completed).toISOString().slice(0, 10) : undefined,
-          expires: thisRecord.expires !== null ? new Date(thisRecord.expires).toISOString().slice(0, 10) : undefined,
-          notes: thisRecord.notes !== null ? unescape(thisRecord.notes) : undefined,
-          created: thisRecord.created.toISOString(),
-          updated: thisRecord.updated.toISOString(),
-          updatedBy: thisRecord.updatedBy,
-        });
+      fetchResults.forEach((record) => {
+        allTrainingRecords.push(this.formatTrainingRecord(record));
       });
     }
 
@@ -1013,6 +992,36 @@ class Training extends EntityValidator {
     } else {
       return 0;
     }
+  }
+
+  static formatTrainingRecord(recordFromDatabase) {
+    return {
+      uid: recordFromDatabase.uid,
+      trainingCategory: {
+        id: recordFromDatabase.category.id,
+        category: recordFromDatabase.category.category,
+      },
+      trainingCertificates: recordFromDatabase.trainingCertificates?.map((certificate) => {
+        return {
+          uid: certificate.uid,
+          filename: certificate.filename,
+          uploadDate: certificate.uploadDate?.toISOString().slice(0, 10),
+        };
+      }),
+      title: recordFromDatabase.title ? unescape(recordFromDatabase.title) : undefined,
+      accredited: recordFromDatabase.accredited ? recordFromDatabase.accredited : undefined,
+      completed: recordFromDatabase.completed
+        ? new Date(recordFromDatabase.completed).toISOString().slice(0, 10)
+        : undefined,
+      expires:
+        recordFromDatabase.expires !== null
+          ? new Date(recordFromDatabase.expires).toISOString().slice(0, 10)
+          : undefined,
+      notes: recordFromDatabase.notes !== null ? unescape(recordFromDatabase.notes) : undefined,
+      created: recordFromDatabase.created.toISOString(),
+      updated: recordFromDatabase.updated.toISOString(),
+      updatedBy: recordFromDatabase.updatedBy,
+    };
   }
 }
 
