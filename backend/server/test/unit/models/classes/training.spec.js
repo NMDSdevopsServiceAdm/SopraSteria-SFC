@@ -93,66 +93,67 @@ describe('/server/models/class/training.js', () => {
     afterEach(() => {
       sinon.restore();
     });
+    describe('DB call', () => {
+      it('should make database call without where clause when no categoryId', async () => {
+        const workerTrainingFindAll = sinon.stub(models.workerTraining, 'findAll').resolves([]);
+        await Training.fetch(establishmentId, workerUid);
 
-    it('should make database call without where clause when no categoryId', async () => {
-      const workerTrainingFindAll = sinon.stub(models.workerTraining, 'findAll').resolves([]);
-      await Training.fetch(establishmentId, workerUid);
-
-      expect(workerTrainingFindAll.args[0][0]).to.deep.equal({
-        include: [
-          {
-            model: models.worker,
-            as: 'worker',
-            attributes: ['id', 'uid'],
-            where: {
-              uid: workerUid,
+        expect(workerTrainingFindAll.args[0][0]).to.deep.equal({
+          include: [
+            {
+              model: models.worker,
+              as: 'worker',
+              attributes: ['id', 'uid'],
+              where: {
+                uid: workerUid,
+              },
             },
-          },
-          {
-            model: models.workerTrainingCategories,
-            as: 'category',
-            attributes: ['id', 'category'],
-          },
-          {
-            model: models.trainingCertificates,
-            as: 'trainingCertificates',
-            attributes: ['uid', 'filename', 'uploadDate'],
-          },
-        ],
-        order: [['updated', 'DESC']],
+            {
+              model: models.workerTrainingCategories,
+              as: 'category',
+              attributes: ['id', 'category'],
+            },
+            {
+              model: models.trainingCertificates,
+              as: 'trainingCertificates',
+              attributes: ['uid', 'filename', 'uploadDate'],
+            },
+          ],
+          order: [['updated', 'DESC']],
+        });
       });
-    });
 
-    it('should make database call with where clause when categoryId provided', async () => {
-      const categoryId = 12;
-      const workerTrainingFindAll = sinon.stub(models.workerTraining, 'findAll').resolves([]);
-      await Training.fetch(establishmentId, workerUid, categoryId);
+      it('should make database call with where clause when categoryId provided', async () => {
+        const categoryId = 12;
+        const workerTrainingFindAll = sinon.stub(models.workerTraining, 'findAll').resolves([]);
+        await Training.fetch(establishmentId, workerUid, categoryId);
 
-      expect(workerTrainingFindAll.args[0][0]).to.deep.equal({
-        include: [
-          {
-            model: models.worker,
-            as: 'worker',
-            attributes: ['id', 'uid'],
-            where: {
-              uid: workerUid,
+        expect(workerTrainingFindAll.args[0][0]).to.deep.equal({
+          include: [
+            {
+              model: models.worker,
+              as: 'worker',
+              attributes: ['id', 'uid'],
+              where: {
+                uid: workerUid,
+              },
             },
+            {
+              model: models.workerTrainingCategories,
+              as: 'category',
+              attributes: ['id', 'category'],
+            },
+            {
+              model: models.trainingCertificates,
+              as: 'trainingCertificates',
+              attributes: ['uid', 'filename', 'uploadDate'],
+            },
+          ],
+          order: [['updated', 'DESC']],
+          where: {
+            categoryFk: categoryId,
           },
-          {
-            model: models.workerTrainingCategories,
-            as: 'category',
-            attributes: ['id', 'category'],
-          },
-          {
-            model: models.trainingCertificates,
-            as: 'trainingCertificates',
-            attributes: ['uid', 'filename', 'uploadDate'],
-          },
-        ],
-        order: [['updated', 'DESC']],
-        where: {
-          categoryFk: categoryId,
-        },
+        });
       });
     });
 
@@ -188,7 +189,14 @@ describe('/server/models/class/training.js', () => {
       expect(res.training[0]).to.deep.equal(formattedTrainingRecord);
     });
 
-    it('should return count as length of training records array (2)', async () => {
+    it('should return count as length of training records array when no records', async () => {
+      sinon.stub(models.workerTraining, 'findAll').resolves([]);
+      const res = await Training.fetch(establishmentId, workerUid);
+
+      expect(res.count).to.equal(0);
+    });
+
+    it('should return count as length of training records array when 2 records', async () => {
       sinon
         .stub(models.workerTraining, 'findAll')
         .resolves([mockTrainingRecordFromDatabase(), mockTrainingRecordFromDatabase()]);
@@ -205,7 +213,6 @@ describe('/server/models/class/training.js', () => {
       const res = await Training.fetch(establishmentId, workerUid);
 
       expect(res.training[0].trainingCertificates).to.deep.equal([]);
-      expect(res.count).to.equal(0);
     });
 
     it('should not return trainingCertificates when no certificate records returned from database (null)', async () => {
@@ -216,6 +223,49 @@ describe('/server/models/class/training.js', () => {
       const res = await Training.fetch(establishmentId, workerUid);
 
       expect(res.training[0].trainingCertificates).to.deep.equal(undefined);
+    });
+
+    it('should not return trainingCertificates when no certificate records returned from database (null)', async () => {
+      const trainingRecordFromDatabase = mockTrainingRecordFromDatabase();
+      trainingRecordFromDatabase.trainingCertificates = null;
+
+      sinon.stub(models.workerTraining, 'findAll').resolves([trainingRecordFromDatabase]);
+      const res = await Training.fetch(establishmentId, workerUid);
+
+      expect(res.training[0].trainingCertificates).to.deep.equal(undefined);
+    });
+
+    it('should set lastUpdated as updated of record in ISO format when single training record', async () => {
+      const trainingRecordFromDatabase = mockTrainingRecordFromDatabase();
+      trainingRecordFromDatabase.updated = new Date('2024-04-02');
+
+      sinon.stub(models.workerTraining, 'findAll').resolves([trainingRecordFromDatabase]);
+      const res = await Training.fetch(establishmentId, workerUid);
+
+      expect(res.lastUpdated).to.equal('2024-04-02T00:00:00.000Z');
+    });
+
+    it('should set lastUpdated as updated of record with latest updated in ISO format when several training records', async () => {
+      const trainingRecord1 = mockTrainingRecordFromDatabase();
+      trainingRecord1.updated = new Date('2024-04-02');
+
+      const trainingRecord2 = mockTrainingRecordFromDatabase();
+      trainingRecord2.updated = new Date('2024-06-02');
+
+      const trainingRecord3 = mockTrainingRecordFromDatabase();
+      trainingRecord3.updated = new Date('2024-02-02');
+
+      sinon.stub(models.workerTraining, 'findAll').resolves([trainingRecord1, trainingRecord2, trainingRecord3]);
+      const res = await Training.fetch(establishmentId, workerUid);
+
+      expect(res.lastUpdated).to.equal('2024-06-02T00:00:00.000Z');
+    });
+
+    it('should set lastUpdated as undefined when no training records', async () => {
+      sinon.stub(models.workerTraining, 'findAll').resolves([]);
+      const res = await Training.fetch(establishmentId, workerUid);
+
+      expect(res.lastUpdated).to.equal(undefined);
     });
   });
 });

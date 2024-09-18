@@ -846,23 +846,12 @@ class Training extends EntityValidator {
 
     const allTrainingRecords = fetchResults ? fetchResults.map((record) => this.formatTrainingRecord(record)) : [];
 
-    let lastUpdated = null;
-    if (fetchResults && fetchResults.length === 1) {
-      lastUpdated = fetchResults[0];
-    } else if (fetchResults && fetchResults.length > 1) {
-      lastUpdated = fetchResults.reduce((a, b) => {
-        return a.updated > b.updated ? a : b;
-      });
-    }
-
-    const response = {
+    return {
       workerUid: workerId,
       count: allTrainingRecords.length,
-      lastUpdated: lastUpdated ? lastUpdated.updated.toISOString() : undefined,
+      lastUpdated: this.getLastUpdatedTrainingRecord(allTrainingRecords),
       training: allTrainingRecords,
     };
-
-    return response;
   }
 
   // returns a Javascript object which can be used to present as JSON
@@ -985,6 +974,14 @@ class Training extends EntityValidator {
     } else {
       return 0;
     }
+  }
+
+  static getLastUpdatedTrainingRecord(trainingRecords) {
+    return trainingRecords?.length
+      ? trainingRecords.reduce((a, b) => {
+          return a.updated > b.updated ? a : b;
+        }).updated
+      : undefined;
   }
 
   static formatTrainingRecord(recordFromDatabase) {
