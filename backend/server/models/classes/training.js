@@ -833,97 +833,46 @@ class Training extends EntityValidator {
   }
 
   // returns a set of Workers' Training Records based on given filter criteria (all if no filters defined) - restricted to the given Worker
-  static async fetch(establishmentId, workerId, categoryId = null, filters = null) {
-    if (filters) throw new Error('Filters not implemented');
-
-    const allTrainingRecords = [];
-    let fetchResults;
-    if (categoryId === null) {
-      fetchResults = await models.workerTraining.findAll({
-        include: [
-          {
-            model: models.worker,
-            as: 'worker',
-            attributes: ['id', 'uid'],
-            where: {
-              uid: workerId,
-            },
+  static async fetch(establishmentId, workerId, categoryId = null) {
+    const fetchResults = await models.workerTraining.findAll({
+      include: [
+        {
+          model: models.worker,
+          as: 'worker',
+          attributes: ['id', 'uid'],
+          where: {
+            uid: workerId,
           },
-          {
-            model: models.workerTrainingCategories,
-            as: 'category',
-            attributes: ['id', 'category'],
-          },
-        ],
-        order: [
-          //['completed', 'DESC'],
-          ['updated', 'DESC'],
-        ],
-      });
-    } else {
-      fetchResults = await models.workerTraining.findAll({
-        include: [
-          {
-            model: models.worker,
-            as: 'worker',
-            attributes: ['id', 'uid'],
-            where: {
-              uid: workerId,
-            },
-          },
-          {
-            model: models.workerTrainingCategories,
-            as: 'category',
-            attributes: ['id', 'category'],
-          },
-        ],
-        order: [
-          //['completed', 'DESC'],
-          ['updated', 'DESC'],
-        ],
-        where: {
-          categoryFk: categoryId,
         },
-      });
-    }
+        {
+          model: models.workerTrainingCategories,
+          as: 'category',
+          attributes: ['id', 'category'],
+        },
+        {
+          model: models.trainingCertificates,
+          as: 'trainingCertificates',
+          attributes: ['uid', 'filename', 'uploadDate'],
+        },
+      ],
+      order: [['updated', 'DESC']],
+      ...(categoryId
+        ? {
+            where: {
+              categoryFk: categoryId,
+            },
+          }
+        : {}),
+    });
 
-    if (fetchResults) {
-      fetchResults.forEach((thisRecord) => {
-        allTrainingRecords.push({
-          uid: thisRecord.uid,
-          trainingCategory: {
-            id: thisRecord.category.id,
-            category: thisRecord.category.category,
-          },
-          title: thisRecord.title ? unescape(thisRecord.title) : undefined,
-          accredited: thisRecord.accredited ? thisRecord.accredited : undefined,
-          completed: thisRecord.completed ? new Date(thisRecord.completed).toISOString().slice(0, 10) : undefined,
-          expires: thisRecord.expires !== null ? new Date(thisRecord.expires).toISOString().slice(0, 10) : undefined,
-          notes: thisRecord.notes !== null ? unescape(thisRecord.notes) : undefined,
-          created: thisRecord.created.toISOString(),
-          updated: thisRecord.updated.toISOString(),
-          updatedBy: thisRecord.updatedBy,
-        });
-      });
-    }
+    const allTrainingRecords = fetchResults ? fetchResults.map((record) => this.formatTrainingRecord(record)) : [];
 
-    let lastUpdated = null;
-    if (fetchResults && fetchResults.length === 1) {
-      lastUpdated = fetchResults[0];
-    } else if (fetchResults && fetchResults.length > 1) {
-      lastUpdated = fetchResults.reduce((a, b) => {
-        return a.updated > b.updated ? a : b;
-      });
-    }
-
-    const response = {
+    return {
       workerUid: workerId,
       count: allTrainingRecords.length,
-      lastUpdated: lastUpdated ? lastUpdated.updated.toISOString() : undefined,
+      lastUpdated: this.getLastUpdatedTrainingRecord(allTrainingRecords),
       training: allTrainingRecords,
     };
-
-    return response;
   }
 
   // returns a Javascript object which can be used to present as JSON
@@ -1047,6 +996,44 @@ class Training extends EntityValidator {
     } else {
       return 0;
     }
+  }
+
+  static getLastUpdatedTrainingRecord(trainingRecords) {
+    return trainingRecords?.length
+      ? trainingRecords.reduce((a, b) => {
+          return a.updated > b.updated ? a : b;
+        }).updated
+      : undefined;
+  }
+
+  static formatTrainingRecord(recordFromDatabase) {
+    return {
+      uid: recordFromDatabase.uid,
+      trainingCategory: {
+        id: recordFromDatabase.category.id,
+        category: recordFromDatabase.category.category,
+      },
+      trainingCertificates: recordFromDatabase.trainingCertificates?.map((certificate) => {
+        return {
+          uid: certificate.uid,
+          filename: certificate.filename,
+          uploadDate: certificate.uploadDate?.toISOString(),
+        };
+      }),
+      title: recordFromDatabase.title ? unescape(recordFromDatabase.title) : undefined,
+      accredited: recordFromDatabase.accredited ? recordFromDatabase.accredited : undefined,
+      completed: recordFromDatabase.completed
+        ? new Date(recordFromDatabase.completed).toISOString().slice(0, 10)
+        : undefined,
+      expires:
+        recordFromDatabase.expires !== null
+          ? new Date(recordFromDatabase.expires).toISOString().slice(0, 10)
+          : undefined,
+      notes: recordFromDatabase.notes !== null ? unescape(recordFromDatabase.notes) : undefined,
+      created: recordFromDatabase.created.toISOString(),
+      updated: recordFromDatabase.updated.toISOString(),
+      updatedBy: recordFromDatabase.updatedBy,
+    };
   }
 }
 
