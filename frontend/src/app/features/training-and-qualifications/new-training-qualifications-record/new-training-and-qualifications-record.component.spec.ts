@@ -89,6 +89,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: activeDate,
                               title: 'Health training',
                               trainingCategory: { id: 1, category: 'Health' },
+                              trainingCertificates: [],
                               trainingStatus: 0,
                               uid: 'someHealthuid',
                             },
@@ -104,6 +105,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: yesterday,
                               title: 'Autism training',
                               trainingCategory: { id: 2, category: 'Autism' },
+                              trainingCertificates: [],
                               trainingStatus: 3,
                               uid: 'someAutismuid',
                             },
@@ -119,6 +121,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: tomorrow,
                               title: 'Coshh training',
                               trainingCategory: { id: 3, category: 'Coshh' },
+                              trainingCertificates: [],
                               trainingStatus: 1,
                               uid: 'someCoshhuid',
                             },
@@ -402,7 +405,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
       expect(getByText('Not answered', { exact: false })).toBeTruthy();
     });
-
   });
 
   describe('Long-Term Absence', async () => {

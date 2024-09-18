@@ -1,4 +1,5 @@
 /* jshint indent: 2 */
+const { formatQualificationTitle } = require('../utils/qualificationsUtils');
 
 module.exports = function(sequelize, DataTypes) {
   const WorkerQualifications =  sequelize.define('workerAvailableQualifications', {
@@ -22,7 +23,13 @@ module.exports = function(sequelize, DataTypes) {
     title: {
       type: DataTypes.TEXT,
       allowNull: false,
-      field: '"Title"'
+      field: '"Title"',
+      get() {
+        const titleValue = this.getDataValue('title');
+        const levelValue = this.getDataValue('level');
+
+        return formatQualificationTitle(titleValue, levelValue);
+      }
     },
     level: {
       type: DataTypes.INTEGER,

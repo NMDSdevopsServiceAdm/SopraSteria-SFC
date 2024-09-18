@@ -66,7 +66,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
     this.subscriptions.add(
       this.workerService
-        .getAvailableQualifcations(this.workplace.uid, this.worker.uid, QualificationType.Award)
+        .getAvailableQualifications(this.workplace.uid, this.worker.uid, QualificationType.Award)
         .subscribe(
           (qualifications) => {
             if (qualifications) {

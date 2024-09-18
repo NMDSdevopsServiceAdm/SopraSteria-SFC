@@ -1,9 +1,8 @@
 export enum QualificationType {
   NVQ = 'NVQ',
-  Other = 'Any other qualification',
+  Other = 'Other type of qualification',
   Certificate = 'Certificate',
   Degree = 'Degree',
-  Assessor = 'Assessor and mentoring',
   Award = 'Award',
   Diploma = 'Diploma',
   Apprenticeship = 'Apprenticeship',
