@@ -831,6 +831,11 @@ class Training extends EntityValidator {
           as: 'category',
           attributes: ['id', 'category'],
         },
+        {
+          model: models.trainingCertificates,
+          as: 'trainingCertificates',
+          attributes: ['uid', 'filename', 'uploadDate'],
+        },
       ],
       order: [['updated', 'DESC']],
       ...(categoryId
@@ -850,6 +855,13 @@ class Training extends EntityValidator {
             id: thisRecord.category.id,
             category: thisRecord.category.category,
           },
+          trainingCertificates: thisRecord.trainingCertificates?.map((certificate) => {
+            return {
+              uid: certificate.uid,
+              filename: certificate.filename,
+              uploadDate: certificate.uploadDate?.toISOString().slice(0, 10),
+            };
+          }),
           title: thisRecord.title ? unescape(thisRecord.title) : undefined,
           accredited: thisRecord.accredited ? thisRecord.accredited : undefined,
           completed: thisRecord.completed ? new Date(thisRecord.completed).toISOString().slice(0, 10) : undefined,

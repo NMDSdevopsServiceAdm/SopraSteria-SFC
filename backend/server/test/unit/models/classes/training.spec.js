@@ -1,6 +1,5 @@
 'use strict';
 const expect = require('chai').expect;
-const sandbox = require('sinon').createSandbox();
 const sinon = require('sinon');
 
 const moment = require('moment');
@@ -55,12 +54,12 @@ const workerTrainingRecords = {
 describe('/server/models/class/training.js', () => {
   describe('getExpiringAndExpiredTrainingCounts', () => {
     afterEach(() => {
-      sandbox.restore();
+      sinon.restore();
     });
 
     beforeEach(() => {
-      sandbox.stub(Training, 'fetch').returns(workerTrainingRecords);
-      sandbox.stub(Training, 'getAllMissingMandatoryTrainingCounts').returns(null);
+      sinon.stub(Training, 'fetch').returns(workerTrainingRecords);
+      sinon.stub(Training, 'getAllMissingMandatoryTrainingCounts').returns(null);
     });
 
     it('should return updated worker records : Training.getAllRequiredCounts', async () => {
@@ -114,6 +113,11 @@ describe('/server/models/class/training.js', () => {
             as: 'category',
             attributes: ['id', 'category'],
           },
+          {
+            model: models.trainingCertificates,
+            as: 'trainingCertificates',
+            attributes: ['uid', 'filename', 'uploadDate'],
+          },
         ],
         order: [['updated', 'DESC']],
       });
@@ -139,6 +143,11 @@ describe('/server/models/class/training.js', () => {
             as: 'category',
             attributes: ['id', 'category'],
           },
+          {
+            model: models.trainingCertificates,
+            as: 'trainingCertificates',
+            attributes: ['uid', 'filename', 'uploadDate'],
+          },
         ],
         order: [['updated', 'DESC']],
         where: {
@@ -146,5 +155,82 @@ describe('/server/models/class/training.js', () => {
         },
       });
     });
+
+    it('should return formatted version of training record from database', async () => {
+      const trainingRecordFromDatabase = mockTrainingRecordFromDatabase();
+
+      const formattedTrainingRecord = {
+        uid: 'abc123',
+        trainingCategory: {
+          id: 'def456',
+          category: 'Test Category',
+        },
+        trainingCertificates: [
+          {
+            uid: 'ghi789',
+            filename: 'certificate.pdf',
+            uploadDate: '2024-01-03',
+          },
+        ],
+        title: 'Title',
+        accredited: undefined,
+        completed: '2023-12-03',
+        expires: '2024-12-03',
+        notes: undefined,
+        created: '2023-12-03T00:00:00.000Z',
+        updated: '2023-12-04T00:00:00.000Z',
+        updatedBy: 'user1',
+      };
+
+      sinon.stub(models.workerTraining, 'findAll').resolves([trainingRecordFromDatabase]);
+      const res = await Training.fetch(establishmentId, workerUid);
+
+      expect(res.training[0]).to.deep.equal(formattedTrainingRecord);
+    });
+
+    it('should return trainingCertificates as empty array when no certificate records returned from database (empty array)', async () => {
+      const trainingRecordFromDatabase = mockTrainingRecordFromDatabase();
+      trainingRecordFromDatabase.trainingCertificates = [];
+
+      sinon.stub(models.workerTraining, 'findAll').resolves([trainingRecordFromDatabase]);
+      const res = await Training.fetch(establishmentId, workerUid);
+
+      expect(res.training[0].trainingCertificates).to.deep.equal([]);
+    });
+
+    it('should not return trainingCertificates when no certificate records returned from database (null)', async () => {
+      const trainingRecordFromDatabase = mockTrainingRecordFromDatabase();
+      trainingRecordFromDatabase.trainingCertificates = null;
+
+      sinon.stub(models.workerTraining, 'findAll').resolves([trainingRecordFromDatabase]);
+      const res = await Training.fetch(establishmentId, workerUid);
+
+      expect(res.training[0].trainingCertificates).to.deep.equal(undefined);
+    });
   });
 });
+
+const mockTrainingRecordFromDatabase = () => {
+  return {
+    uid: 'abc123',
+    category: {
+      id: 'def456',
+      category: 'Test Category',
+    },
+    trainingCertificates: [
+      {
+        uid: 'ghi789',
+        filename: 'certificate.pdf',
+        uploadDate: new Date('2024-01-03'),
+      },
+    ],
+    title: 'Title',
+    accredited: false,
+    completed: new Date('2023-12-03'),
+    expires: new Date('2024-12-03'),
+    notes: null,
+    created: new Date('2023-12-03'),
+    updated: new Date('2023-12-04'),
+    updatedBy: 'user1',
+  };
+};
