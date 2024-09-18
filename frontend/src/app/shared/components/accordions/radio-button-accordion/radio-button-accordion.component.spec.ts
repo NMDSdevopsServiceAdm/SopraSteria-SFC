@@ -1,7 +1,8 @@
-import { SharedModule } from '@shared/shared.module';
-import { RadioButtonAccordionComponent } from './radio-button-accordion.component';
 import { FormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+
+import { RadioButtonAccordionComponent } from './radio-button-accordion.component';
 
 describe('RadioButtonAccordionComponent', () => {
   async function setup(props?: { title?; description?; formControlName?; items? }) {

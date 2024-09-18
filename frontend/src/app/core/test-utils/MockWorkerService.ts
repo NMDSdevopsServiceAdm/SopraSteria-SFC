@@ -33,6 +33,10 @@ export const workerBuilder = build('Worker', {
       rate: 8.98,
     },
     careCertificate: 'Yes',
+    level2CareCertificate: {
+      value: 'Yes, completed',
+      year: 2023,
+    },
     apprenticeshipTraining: null,
     qualificationInSocialCare: 'No',
     otherQualification: 'Yes',

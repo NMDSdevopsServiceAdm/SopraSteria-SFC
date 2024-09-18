@@ -35,7 +35,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     'Health and safety in the workplace': "'fire safety', 'first aid'",
     'IT, digital and data in the workplace': "'online safety and security', 'working with digital technology'",
     'Specific conditions and disabilities': "'dementia care', 'Oliver McGowan Mandatory Training'",
-    'Staff development': "'communication', 'equality and diversity'",
+    'Staff development': "'communication', 'leadership and management' ",
   };
   submitButtonText: string = 'Continue';
 

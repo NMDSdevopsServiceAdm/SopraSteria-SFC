@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
+import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdultSocialCareStartedComponent } from '@features/workers/adult-social-care-started/adult-social-care-started.component';
@@ -19,6 +20,8 @@ import { EthnicityComponent } from '@features/workers/ethnicity/ethnicity.compon
 import { GenderComponent } from '@features/workers/gender/gender.component';
 import { HealthAndCareVisaComponent } from '@features/workers/health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from '@features/workers/home-postcode/home-postcode.component';
+import { Level2AdultSocialCareCertificateComponent } from '@features/workers/level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
+import { MainJobRoleComponent } from '@features/workers/main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from '@features/workers/main-job-start-date/main-job-start-date.component';
 import { MentalHealthProfessionalComponent } from '@features/workers/mental-health-professional/mental-health-professional.component';
 import { NationalInsuranceNumberComponent } from '@features/workers/national-insurance-number/national-insurance-number.component';
@@ -40,8 +43,6 @@ import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
-import { MainJobRoleComponent } from '@features/workers/main-job-role/main-job-role.component';
-import { JobsResolver } from '@core/resolvers/jobs.resolver';
 
 const routes: Routes = [
   {
@@ -207,6 +208,11 @@ const routes: Routes = [
         path: 'care-certificate',
         component: CareCertificateComponent,
         data: { title: 'Care Certificate' },
+      },
+      {
+        path: 'level-2-care-certificate',
+        component: Level2AdultSocialCareCertificateComponent,
+        data: { title: 'Level 2 Adult Social Care Certificate' },
       },
       {
         path: 'apprenticeship-training',
@@ -402,6 +408,11 @@ const routes: Routes = [
                 path: 'care-certificate',
                 component: CareCertificateComponent,
                 data: { title: 'Care Certificate' },
+              },
+              {
+                path: 'level-2-care-certificate',
+                component: Level2AdultSocialCareCertificateComponent,
+                data: { title: 'Level 2 Adult Social Care Certificate' },
               },
               {
                 path: 'apprenticeship-training',

@@ -35,6 +35,7 @@ import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
@@ -266,6 +267,11 @@ const routes: Routes = [
             path: 'care-certificate',
             component: CareCertificateComponent,
             data: { title: 'Care Certificate' },
+          },
+          {
+            path: 'level-2-care-certificate',
+            component: Level2AdultSocialCareCertificateComponent,
+            data: { title: 'Level 2 Adult Social Care Certificate' },
           },
           {
             path: 'apprenticeship-training',
@@ -533,6 +539,11 @@ const routes: Routes = [
         path: 'care-certificate',
         component: CareCertificateComponent,
         data: { title: 'Care Certificate' },
+      },
+      {
+        path: 'level-2-care-certificate',
+        component: Level2AdultSocialCareCertificateComponent,
+        data: { title: 'Level 2 Adult Social Care Certificate' },
       },
       {
         path: 'apprenticeship-training',

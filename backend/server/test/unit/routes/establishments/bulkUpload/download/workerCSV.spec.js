@@ -308,6 +308,31 @@ describe('workerCSV', () => {
             expect(csvAsArray[getWorkerColumnIndex('CARECERT')]).to.equal(careCert.code);
           });
         });
+
+        [
+          { name: 'Yes, completed', code: '1;' },
+          { name: 'Yes, completed', year: 2024, code: '1;2024' },
+          { name: 'Yes, started', code: '2' },
+          { name: 'No', code: '3' },
+        ].forEach((level2CareCert) => {
+          let testName = 'should return the correct code for level 2 care certificate ' + level2CareCert.name;
+          if (level2CareCert.year) {
+            testName += ` with year: ${level2CareCert.year}`;
+          }
+
+          it(testName, async () => {
+            worker.Level2CareCertificateValue = level2CareCert.name;
+            if (level2CareCert.year) {
+              worker.Level2CareCertificateYear = level2CareCert.year;
+            }
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('L2CARECERT')]).to.equal(level2CareCert.code);
+          });
+        });
+
         it('should return the correct code for no in recruitment source', async () => {
           worker.RecruitedFromValue = 'No';
           worker.recruitedFrom = null;
@@ -367,22 +392,34 @@ describe('workerCSV', () => {
           expect(csvAsArray[getWorkerColumnIndex('STARTDATE')]).to.equal('');
         });
 
-        it('should return the correct code for social care start date', async () => {
-          worker.SocialCareStartDateValue = 'Yes';
-          worker.SocialCareStartDateYear = '1998';
+        describe('Social care start date', () => {
+          it('should return the correct code for social care start date', async () => {
+            worker.SocialCareStartDateValue = 'Yes';
+            worker.SocialCareStartDateYear = '1998';
 
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[getWorkerColumnIndex('STARTINSECT')]).to.equal(worker.YearArrivedYear);
-        });
-        it('should not return year if the social care start date is no', async () => {
-          worker.SocialCareStartDateValue = 'No';
+            expect(csvAsArray[getWorkerColumnIndex('STARTINSECT')]).to.equal(worker.YearArrivedYear);
+          });
 
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
+          it('should return 999 if the social care start date value is No', async () => {
+            worker.SocialCareStartDateValue = 'No';
 
-          expect(csvAsArray[getWorkerColumnIndex('STARTINSECT')]).to.equal('');
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('STARTINSECT')]).to.equal('999');
+          });
+
+          it('should return empty string if the social care start date value is null (question not answered)', async () => {
+            worker.SocialCareStartDateValue = null;
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('STARTINSECT')]).to.equal('');
+          });
         });
 
         yesNoDontKnow.forEach((value) => {

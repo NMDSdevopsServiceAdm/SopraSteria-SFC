@@ -15,7 +15,7 @@
         <span class="govuk-accordion__section-toggle" data-nosnippet="">
           <span class="govuk-accordion__section-toggle-focus">
             <span class="govuk-accordion-nav__chevron" [class]="{'govuk-accordion-nav__chevron--up' : benefit.open, 'govuk-accordion-nav__chevron--down': !benefit.open} "></span>
-            <span class="govuk-accordion__section-toggle-text">Show</span>
+            <span class="govuk-accordion__section-toggle-text">{{ benefit.open ? 'Hide' : 'Show'}}</span>
           </span>
         </span>
       </button>

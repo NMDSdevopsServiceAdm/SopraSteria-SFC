@@ -44,6 +44,7 @@ import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/emplo
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
@@ -122,6 +123,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     DownloadPdfTrainingAndQualificationComponent,
     HealthAndCareVisaComponent,
     EmployedFromOutsideUkComponent,
+    Level2AdultSocialCareCertificateComponent,
   ],
   providers: [
     DialogService,
