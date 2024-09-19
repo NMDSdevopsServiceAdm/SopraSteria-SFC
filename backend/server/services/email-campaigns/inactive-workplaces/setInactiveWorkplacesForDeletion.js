@@ -1,7 +1,6 @@
 const {
   getInactiveWorkplacesForDeletion,
 } = require('../../../models/email-campaigns/inactive-workplaces/getInactiveWorkplacesForDeletion');
-const { refreshEstablishmentLastActivityView } = require('../../../utils/db/inactiveWorkplacesUtils');
 
 const transformInactiveWorkplacesForDeletion = (inactiveWorkplace) => {
   const name = inactiveWorkplace.NameValue;
@@ -34,7 +33,6 @@ const formattedAddress = (inactiveWorkplace) => {
 };
 
 const findInactiveWorkplacesForDeletion = async () => {
-  await refreshEstablishmentLastActivityView();
   return (await getInactiveWorkplacesForDeletion()).map(transformInactiveWorkplacesForDeletion);
 };
 

@@ -18,9 +18,9 @@ import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-co
   styleUrls: ['./inactive-emails.component.scss'],
 })
 export class InactiveEmailsComponent {
-  public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
+  public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces?.inactiveWorkplaces;
   public numberOfInactiveWorkplacesForDeletion =
-    this.route.snapshot.data.inactiveWorkplaceForDeletion.numberOfInactiveWorkplacesForDeletion;
+    this.route.snapshot.data.inactiveWorkplaces?.numberOfInactiveWorkplacesForDeletion;
   public templates = this.route.snapshot.data.emailTemplates.templates;
   public history = this.route.snapshot.data.emailCampaignHistory;
   private subscriptions: Subscription = new Subscription();
@@ -69,7 +69,7 @@ export class InactiveEmailsComponent {
     this.subscriptions.add(
       this.emailCampaignService
         .inactiveWorkplcesForDeletion()
-        .pipe(concatMap(() => this.emailCampaignService.getInactiveWorkplcesForDeletion()))
+        .pipe(concatMap(() => this.emailCampaignService.getInactiveWorkplaces()))
         .subscribe((res) => {
           this.numberOfInactiveWorkplacesForDeletion = res.numberOfInactiveWorkplacesForDeletion;
         }),

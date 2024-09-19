@@ -1,6 +1,5 @@
 const nextEmail = require('./nextEmail');
 const { getInactiveWorkplaces } = require('../../../models/email-campaigns/inactive-workplaces/getInactiveWorkplaces');
-const { refreshEstablishmentLastActivityView } = require('../../../utils/db/inactiveWorkplacesUtils');
 
 const transformInactiveWorkplaces = (inactiveWorkplace) => {
   const id = inactiveWorkplace.EstablishmentID;
@@ -28,8 +27,6 @@ const transformInactiveWorkplaces = (inactiveWorkplace) => {
 };
 
 const findInactiveWorkplaces = async () => {
-  await refreshEstablishmentLastActivityView();
-
   return (await getInactiveWorkplaces()).filter(nextEmail.shouldReceive).map(transformInactiveWorkplaces);
 };
 

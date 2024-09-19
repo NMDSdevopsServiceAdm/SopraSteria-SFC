@@ -1,5 +1,5 @@
 const excelUtils = require('../../utils/excelUtils');
-
+const { refreshEstablishmentLastActivityView } = require('../../utils/db/inactiveWorkplacesUtils');
 const setParentWorkplaces = require('../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
 
 const { generateInactiveWorkplacesTab } = require('./workplaces');
@@ -8,6 +8,7 @@ const { generateSubsidaryWorkplaceTab } = require('./subsidiaries');
 const { generateInactiveWorkplacesForDeletionTab } = require('./deleteInactiveWorkplace');
 
 const generateInactiveWorkplacesReport = async (workbook) => {
+  await refreshEstablishmentLastActivityView();
   const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
   await generateInactiveWorkplacesTab(workbook);
