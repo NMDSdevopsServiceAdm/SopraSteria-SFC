@@ -7,14 +7,18 @@ const setInactiveWorkplaces = require('../../../../services/email-campaigns/inac
 const setInactiveWorkplacesForDeletion = require('../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
 const setParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
+const { refreshEstablishmentLastActivityView } = require('../../../../utils/db/inactiveWorkplacesUtils');
 
 const getInactiveWorkplaces = async (_req, res) => {
   try {
+    await refreshEstablishmentLastActivityView();
     const inactiveWorkplaces = await setInactiveWorkplaces.findInactiveWorkplaces();
     const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
+    const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
 
     return res.json({
       inactiveWorkplaces: inactiveWorkplaces.length + parentWorkplaces.length,
+      numberOfInactiveWorkplacesForDeletion: inactiveWorkplacesForDeletion.length,
     });
   } catch (err) {
     console.error(err);
@@ -25,6 +29,7 @@ const getInactiveWorkplaces = async (_req, res) => {
 
 const getInactiveWorkplcesForDeletion = async (req, res) => {
   try {
+    await refreshEstablishmentLastActivityView();
     const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
 
     return res.json({ numberOfInactiveWorkplacesForDeletion: inactiveWorkplacesForDeletion.length });
@@ -36,6 +41,7 @@ const getInactiveWorkplcesForDeletion = async (req, res) => {
 
 const inactiveWorkplacesIdsForDeletions = async (req, res) => {
   try {
+    await refreshEstablishmentLastActivityView();
     const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
     const establishmentIds = inactiveWorkplacesForDeletion.map((id) => id.establishmentID);
     await models.establishment.archiveInactiveWorkplaces(establishmentIds);
