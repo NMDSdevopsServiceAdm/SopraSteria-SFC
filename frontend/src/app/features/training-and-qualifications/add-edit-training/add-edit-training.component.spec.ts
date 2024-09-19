@@ -477,7 +477,7 @@ describe('AddEditTrainingComponent', () => {
           component.workplace.uid,
           component.worker.uid,
           component.trainingRecordId,
-          mockUploadFile,
+          [mockUploadFile],
         );
 
         expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);

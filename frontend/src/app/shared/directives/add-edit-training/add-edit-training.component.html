@@ -202,7 +202,9 @@
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('uploadCertificate') }}
                 </span>
                 <div class="uploadCertificate-wrapper">
-                  <app-select-upload-file accept=".pdf"
+                  <app-select-upload-file
+                    accept=".pdf"
+                    multiple="true"
                     buttonId="uploadCertificate"
                     (selectFiles)="onSelectFiles($event)"
                     [aria-describedby]="uploadFiles?.length > 0 ? 'uploadCertificate-aria-text' : 'uploadCertificate-hint uploadCertificate-aria-text'"

@@ -9,9 +9,10 @@ import {
   CertificateSignedUrlRequest,
   CertificateSignedUrlResponse,
   ConfirmUploadRequest,
+  FileInfoWithETag,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map, mergeMap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -134,8 +135,9 @@ export class TrainingService {
     this.updatingSelectedStaffForMultipleTraining = null;
   }
 
-  public addCertificateToTraining(workplaceUid: string, workerUid: string, trainingUid: string, uploadFile: File) {
-    const requestBody: CertificateSignedUrlRequest = { files: [{ filename: uploadFile.name }] };
+  public addCertificateToTraining(workplaceUid: string, workerUid: string, trainingUid: string, uploadFiles: File[]) {
+    const listOfFilenames = uploadFiles.map((file) => ({ filename: file.name }));
+    const requestBody: CertificateSignedUrlRequest = { files: listOfFilenames };
 
     return this.http
       .post<CertificateSignedUrlResponse>(
@@ -143,37 +145,53 @@ export class TrainingService {
         requestBody,
       )
       .pipe(
-        mergeMap((response) => {
-          const { signedUrl, fileId } = response?.files[0];
-          return this.uploadCertificateToS3(signedUrl, fileId, uploadFile);
-        }),
-        mergeMap(({ s3response, fileId }) => {
-          const etag = s3response.headers.get('Etag');
-          const confirmUploadRequest: ConfirmUploadRequest = { files: [{ filename: uploadFile.name, etag, fileId }] };
-          return this.confirmCertificateUpload(workplaceUid, workerUid, trainingUid, confirmUploadRequest);
-        }),
+        mergeMap((response) => this.uploadAllCertificatetoS3(response, uploadFiles)),
+        map((allFileInfoWithETag) => this.buildConfirmUploadRequestBody(allFileInfoWithETag)),
+        mergeMap((confirmUploadRequestBody) =>
+          this.confirmCertificateUpload(workplaceUid, workerUid, trainingUid, confirmUploadRequestBody),
+        ),
       );
   }
 
-  private uploadCertificateToS3(signedUrl: string, fileId: string, uploadFile: File) {
+  private uploadAllCertificatetoS3(
+    signedUrlResponse: CertificateSignedUrlResponse,
+    uploadFiles: File[],
+  ): Observable<FileInfoWithETag[]> {
+    const allUploadResults$ = signedUrlResponse.files.map(({ signedUrl, fileId, filename }, index) => {
+      const fileToUpload = uploadFiles[index];
+      if (fileToUpload.name !== filename) {
+        throw new Error('Invalid response from backend');
+      }
+      const upload$ = this.uploadOneCertificateToS3(signedUrl, fileId, fileToUpload);
+      return upload$;
+    });
+
+    return forkJoin(allUploadResults$);
+  }
+
+  private uploadOneCertificateToS3(signedUrl: string, fileId: string, uploadFile: File): Observable<FileInfoWithETag> {
     return this.http.put<S3UploadResponse>(signedUrl, uploadFile, { observe: 'response' }).pipe(
       map((s3response) => ({
-        s3response,
+        etag: s3response?.headers?.get('etag'),
         fileId,
+        filename: uploadFile.name,
       })),
     );
+  }
+
+  private buildConfirmUploadRequestBody(allFileInfoWithETag: FileInfoWithETag[]): ConfirmUploadRequest {
+    return { files: allFileInfoWithETag };
   }
 
   private confirmCertificateUpload(
     workplaceUid: string,
     workerUid: string,
     trainingUid: string,
-    confirmUploadRequest: ConfirmUploadRequest,
+    confirmUploadRequestBody: ConfirmUploadRequest,
   ) {
-    // return of(null);
     return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`,
-      confirmUploadRequest,
+      confirmUploadRequestBody,
     );
   }
 }

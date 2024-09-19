@@ -126,7 +126,12 @@ export interface CertificateSignedUrlResponse {
 }
 
 export interface S3UploadResponse {
-  headers: { eTag: string };
+  headers: { etag: string };
+}
+export interface FileInfoWithETag {
+  filename: string;
+  fileId: string;
+  etag: string;
 }
 
 export interface ConfirmUploadRequest {

@@ -166,17 +166,15 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     if (this.trainingRecordId) {
       trainingRecordId = this.trainingRecordId;
     } else {
-      // TODO: the case of adding new training with certificate
-      // to extract trainingRecordId from trainingRecordResponse
+      // TODO: this is the case of adding new training with certificate
+      // extract trainingRecordId from trainingRecordResponse
     }
-
-    const fileToUpload = this.uploadFiles?.[0];
 
     return this.trainingService.addCertificateToTraining(
       this.workplace.uid,
       this.worker.uid,
       trainingRecordId,
-      fileToUpload,
+      this.uploadFiles,
     );
   }
 
