@@ -30,7 +30,7 @@
               class="govuk-link govuk-link--no-visited-state"
               (click)="handleRemoveUploadFile($event, i)"
             >
-              Remove
+              Remove <span class="govuk-visually-hidden">{{ file.name + ' from the files to be uploaded' }}</span>
             </a>
           </td>
         </tr>
@@ -44,10 +44,15 @@
               <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
                 class="govuk-!-margin-left-1"
                 >Download</span
-              ></a
+              >
+              <span class="govuk-visually-hidden">the certificate {{ certificate.filename }}</span>
+            </a>
+          </td>
+          <td class="govuk-table__cell">
+            <a href="#" class="govuk-link govuk-link--no-visited-state"
+              >Remove <span class="govuk-visually-hidden">the uploaded certificate {{ certificate.filename }}</span></a
             >
           </td>
-          <td class="govuk-table__cell"><a href="#" class="govuk-link govuk-link--no-visited-state">Remove</a></td>
         </tr>
       </ng-container>
     </tbody>

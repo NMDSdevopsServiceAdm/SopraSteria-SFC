@@ -209,7 +209,7 @@
                     (selectFiles)="onSelectFiles($event)"
                     [aria-describedby]="uploadFiles?.length > 0 ? 'uploadCertificate-aria-text' : 'uploadCertificate-hint uploadCertificate-aria-text'"
                   />
-                  <span id="uploadCertificate-aria-text" class="govuk-body" [class.govuk-visually-hidden]="uploadFiles?.length > 0">
+                  <span id="uploadCertificate-aria-text" class="govuk-body" aria-live="polite" [class.govuk-visually-hidden]="uploadFiles?.length > 0">
                     {{uploadFiles?.length > 0 ? uploadFiles.length + " file chosen" : "No file chosen"}}
                   </span>
                 </div>
