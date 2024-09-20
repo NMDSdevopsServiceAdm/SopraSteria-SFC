@@ -1,4 +1,5 @@
 /* jshint indent: 2 */
+const dayjs = require('dayjs');
 
 module.exports = function (sequelize, DataTypes) {
   const TrainingCertificates = sequelize.define(
@@ -57,6 +58,18 @@ module.exports = function (sequelize, DataTypes) {
       foreignKey: 'workerTrainingFk',
       targetKey: 'id',
       as: 'workerTraining',
+    });
+  };
+
+  TrainingCertificates.addCertificate = function ({ trainingRecordId, workerFk, filename, fileId }) {
+    const timeNow = dayjs().format();
+
+    return this.create({
+      uid: fileId,
+      workerFk: workerFk,
+      workerTrainingFk: trainingRecordId,
+      filename: filename,
+      uploadDate: timeNow,
     });
   };
 

@@ -1,3 +1,20 @@
 .filename-table-header {
   width: 46%;
 }
+
+td.table__cell-file_name {
+  word-break: break-all;
+}
+
+td.table__cell-date {
+  min-width: 220px;
+}
+
+td.table__cell-download_button {
+  min-width: 155px;
+  width: fit-content;
+}
+
+td.table__cell-cancel_button {
+  min-width: 80px;
+}

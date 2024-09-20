@@ -20,6 +20,7 @@ import { AddEditTrainingComponent } from './add-edit-training.component';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
+import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -27,7 +28,7 @@ describe('AddEditTrainingComponent', () => {
       AddEditTrainingComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        declarations: [CertificationsTableComponent],
+        declarations: [CertificationsTableComponent, SelectUploadFileComponent],
         providers: [
           WindowRef,
           {
@@ -62,7 +63,7 @@ describe('AddEditTrainingComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     const workerService = injector.inject(WorkerService);
-    const updateSpy = spyOn(workerService, 'updateTrainingRecord').and.callThrough();
+    const updateSpy = spyOn(workerService, 'updateTrainingRecord').and.returnValue(of(null));
     const createSpy = spyOn(workerService, 'createTrainingRecord').and.callThrough();
 
     const component = fixture.componentInstance;
@@ -292,6 +293,61 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
+  describe('Upload file button', () => {
+    it('should render a file input element', async () => {
+      const { getByTestId } = await setup(null);
+
+      const uploadSection = getByTestId('uploadCertificate');
+      expect(uploadSection).toBeTruthy();
+
+      const fileInput = within(uploadSection).getByTestId('fileInput');
+      expect(fileInput).toBeTruthy();
+    });
+
+    it('should render "No file chosen" beside the file input', async () => {
+      const { getByTestId } = await setup(null);
+
+      const uploadSection = getByTestId('uploadCertificate');
+
+      const text = within(uploadSection).getByText('No file chosen');
+      expect(text).toBeTruthy();
+    });
+
+    it('should not render "No file chosen" when a file is chosen', async () => {
+      const { fixture, getByTestId } = await setup(null);
+
+      const uploadSection = getByTestId('uploadCertificate');
+      const fileInput = getByTestId('fileInput');
+
+      userEvent.upload(fileInput, new File(['some file content'], 'cert.pdf'));
+
+      fixture.detectChanges();
+
+      const text = within(uploadSection).queryByText('No file chosen');
+      expect(text).toBeFalsy();
+    });
+
+    it('should provide aria description to screen reader users', async () => {
+      const { fixture, getByTestId } = await setup(null);
+      fixture.autoDetectChanges();
+
+      const uploadSection = getByTestId('uploadCertificate');
+      const fileInput = getByTestId('fileInput');
+
+      let uploadButton = within(uploadSection).getByRole('button', {
+        description: /The certificate must be a PDF file that's no larger than 500KB/,
+      });
+      expect(uploadButton).toBeTruthy();
+
+      userEvent.upload(fileInput, new File(['some file content'], 'cert.pdf'));
+
+      uploadButton = within(uploadSection).getByRole('button', {
+        description: '1 file chosen',
+      });
+      expect(uploadButton).toBeTruthy();
+    });
+  });
+
   describe('submitting form', () => {
     it('should call the updateTrainingRecord function if editing existing training, and navigate away from page', async () => {
       const { component, fixture, getByText, getByLabelText, updateSpy, routerSpy, alertServiceSpy } = await setup();
@@ -418,6 +474,64 @@ describe('AddEditTrainingComponent', () => {
       expect(trainingServiceSpy).toHaveBeenCalled();
 
       expect(trainingService.selectedTraining.trainingCategory).toBeNull();
+    });
+
+    describe('upload certificate of an existing training', () => {
+      const mockUploadFile = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
+
+      it('should call both `addCertificateToTraining` and `updateTrainingRecord` if an upload file is selected', async () => {
+        const { component, fixture, getByText, getByLabelText, getByTestId, updateSpy, routerSpy, trainingService } =
+          await setup();
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        fixture.detectChanges();
+
+        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining').and.returnValue(
+          of(null),
+        );
+
+        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile);
+        fireEvent.click(getByText('Save and return'));
+        fixture.detectChanges();
+
+        expect(updateSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          component.trainingRecordId,
+          {
+            trainingCategory: { id: 1 },
+            title: 'Communication Training 1',
+            accredited: 'Yes',
+            completed: '2020-01-02',
+            expires: '2021-01-02',
+            notes: 'Some notes added to this training',
+          },
+        );
+
+        expect(addCertificateToTrainingSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          component.trainingRecordId,
+          [mockUploadFile],
+        );
+
+        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+      });
+
+      it('should not call addCertificateToTraining if no file was selected', async () => {
+        const { component, fixture, getByText, getByLabelText, trainingService } = await setup();
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        fixture.detectChanges();
+
+        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining');
+
+        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        fireEvent.click(getByText('Save and return'));
+
+        expect(addCertificateToTrainingSpy).not.toHaveBeenCalled();
+      });
     });
   });
 
@@ -622,6 +736,70 @@ describe('AddEditTrainingComponent', () => {
         expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
       });
     });
+
+    describe('uploadCertificate errors', () => {
+      it('should show an error message if the selected file is over 500 KB', async () => {
+        const { fixture, getByTestId, getByText } = await setup(null);
+
+        const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
+
+        Object.defineProperty(mockUploadFile, 'size', {
+          value: 10 * 1024 * 1024, // 10MB
+        });
+
+        const fileInputButton = getByTestId('fileInput');
+
+        userEvent.upload(fileInputButton, mockUploadFile);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+      });
+
+      it('should show an error message if the selected file is not a pdf file', async () => {
+        const { fixture, getByTestId, getByText } = await setup(null);
+
+        const mockUploadFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+
+        const fileInputButton = getByTestId('fileInput');
+
+        userEvent.upload(fileInputButton, [mockUploadFile]);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+      });
+
+      it('should clear the error message when user select a valid file instead', async () => {
+        const { fixture, getByTestId, getByText, queryByText } = await setup(null);
+        fixture.autoDetectChanges();
+
+        const invalidFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+        const validFile = new File(['some file content'], 'certificate.pdf', { type: 'application/pdf' });
+
+        const fileInputButton = getByTestId('fileInput');
+        userEvent.upload(fileInputButton, [invalidFile]);
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+
+        userEvent.upload(fileInputButton, [validFile]);
+        expect(queryByText('The certificate must be a PDF file')).toBeFalsy();
+      });
+
+      it('should provide aria description to screen reader users when error happen', async () => {
+        const { fixture, getByTestId } = await setup(null);
+        fixture.autoDetectChanges();
+
+        const uploadSection = getByTestId('uploadCertificate');
+        const fileInput = getByTestId('fileInput');
+
+        userEvent.upload(fileInput, new File(['some file content'], 'non-pdf-file.csv'));
+
+        const uploadButton = within(uploadSection).getByRole('button', {
+          description: /Error: The certificate must be a PDF file/,
+        });
+        expect(uploadButton).toBeTruthy();
+      });
+    });
   });
 
   it('should redirect to the add training select category on page refresh', async () => {
@@ -661,6 +839,47 @@ describe('AddEditTrainingComponent', () => {
       fixture.detectChanges();
 
       expect(queryByTestId('trainingCertificatesTable')).toBeFalsy();
+    });
+
+    describe('files to be uploaded', () => {
+      const mockUploadFile1 = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
+      const mockUploadFile2 = new File(['some file content'], 'First aid 2024.pdf', { type: 'application/pdf' });
+
+      it('should add a new upload file to the certification table when a file is selected', async () => {
+        const { component, fixture, getByTestId } = await setup();
+        fixture.autoDetectChanges();
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile1);
+
+        const certificationTable = getByTestId('trainingCertificatesTable');
+
+        expect(certificationTable).toBeTruthy();
+        expect(within(certificationTable).getByText(mockUploadFile1.name)).toBeTruthy();
+        expect(component.filesToUpload).toEqual([mockUploadFile1]);
+      });
+
+      it('should remove an upload file when its remove button is clicked', async () => {
+        const { component, fixture, getByTestId, getByText } = await setup();
+        fixture.autoDetectChanges();
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile1);
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile2);
+
+        const certificationTable = getByTestId('trainingCertificatesTable');
+        expect(within(certificationTable).getByText(mockUploadFile1.name)).toBeTruthy();
+        expect(within(certificationTable).getByText(mockUploadFile2.name)).toBeTruthy();
+
+        const rowForFile2 = getByText(mockUploadFile2.name).parentElement;
+        const removeButtonForFile2 = within(rowForFile2).getByText('Remove');
+
+        userEvent.click(removeButtonForFile2);
+
+        expect(within(certificationTable).queryByText(mockUploadFile2.name)).toBeFalsy();
+
+        expect(within(certificationTable).queryByText(mockUploadFile1.name)).toBeTruthy();
+        expect(component.filesToUpload).toHaveSize(1);
+        expect(component.filesToUpload[0]).toEqual(mockUploadFile1);
+      });
     });
   });
 });

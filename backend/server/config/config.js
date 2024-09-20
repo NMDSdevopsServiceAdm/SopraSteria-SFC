@@ -397,6 +397,33 @@ const config = convict({
       default: 'sfc-public-staging',
     },
   },
+  workerCertificate: {
+    region: {
+      doc: 'AWS region override for worker certificate s3 bucket',
+      format: String,
+      default: 'eu-west-2',
+    },
+    bucketname: {
+      doc: 'Bucket used to upload worker certificate',
+      format: String,
+      default: 'sfc-dev-worker-certificates',
+    },
+    roleArn: {
+      doc: 'IAM Role Arn for gaining access to the bucket',
+      format: String,
+      default: '',
+    },
+    uploadSignedUrlExpire: {
+      doc: 'The duration in seconds for the upload signed URL to expire',
+      format: 'int',
+      default: 300,
+    },
+    downloadSignedUrlExpire: {
+      doc: 'The duration in seconds for the download signed URL to expire',
+      format: 'int',
+      default: 300,
+    },
+  },
   disbursement: {
     region: {
       doc: 'AWS region override for disbursement S3 only',
