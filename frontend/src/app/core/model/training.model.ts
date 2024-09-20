@@ -24,6 +24,12 @@ export interface TrainingRecordRequest {
   notes?: string;
 }
 
+export interface CreateTrainingRecordResponse extends TrainingRecordRequest {
+  uid: string;
+  workerUid: string;
+  created: string;
+}
+
 export interface TrainingResponse {
   count: number;
   lastUpdated?: string;

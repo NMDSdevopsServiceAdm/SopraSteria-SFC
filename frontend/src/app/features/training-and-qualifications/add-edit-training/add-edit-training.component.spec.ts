@@ -21,6 +21,7 @@ import { MockTrainingCategoryService, trainingCategories } from '@core/test-util
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
+import { trainingRecord } from '@core/test-utils/MockWorkerService';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -531,6 +532,85 @@ describe('AddEditTrainingComponent', () => {
         fireEvent.click(getByText('Save and return'));
 
         expect(addCertificateToTrainingSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('add a new training record and upload certificate together', async () => {
+      const mockUploadFile = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
+
+      it('should call both `addCertificateToTraining` and `createTrainingRecord` if an upload file is selected', async () => {
+        const { component, fixture, getByText, getByLabelText, getByTestId, createSpy, routerSpy, trainingService } =
+          await setup(null);
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        component.trainingCategory = {
+          category: 'Autism',
+          id: 2,
+        };
+
+        fixture.detectChanges();
+
+        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining').and.returnValue(
+          of(null),
+        );
+
+        userEvent.type(getByLabelText('Training name'), 'Understanding Autism');
+        userEvent.click(getByLabelText('Yes'));
+        const completedDate = getByTestId('completedDate');
+        userEvent.type(within(completedDate).getByLabelText('Day'), '10');
+        userEvent.type(within(completedDate).getByLabelText('Month'), '4');
+        userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
+        const expiresDate = getByTestId('expiresDate');
+        userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
+        userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
+        userEvent.type(within(expiresDate).getByLabelText('Year'), '2027');
+        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile);
+        fireEvent.click(getByText('Save record'));
+        fixture.detectChanges();
+
+        expect(createSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+          trainingCategory: { id: 2 },
+          title: 'Understanding Autism',
+          accredited: 'Yes',
+          completed: '2020-04-10',
+          expires: '2027-04-10',
+          notes: 'Some notes added to this training',
+        });
+
+        expect(addCertificateToTrainingSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          trainingRecord.uid,
+          [mockUploadFile],
+        );
+
+        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+      });
+
+      it('should not call `addCertificateToTraining` when no upload file was selected', async () => {
+        const { component, fixture, getByText, getByLabelText, createSpy, routerSpy, trainingService } = await setup(
+          null,
+        );
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        component.trainingCategory = {
+          category: 'Autism',
+          id: 2,
+        };
+        fixture.detectChanges();
+
+        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining');
+
+        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        fireEvent.click(getByText('Save record'));
+
+        expect(createSpy).toHaveBeenCalled;
+
+        expect(addCertificateToTrainingSpy).not.toHaveBeenCalled;
+
+        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       });
     });
   });

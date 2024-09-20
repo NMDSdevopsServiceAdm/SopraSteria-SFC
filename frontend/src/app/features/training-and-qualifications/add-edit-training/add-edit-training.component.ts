@@ -13,6 +13,7 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { mergeMap } from 'rxjs/operators';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { CreateTrainingRecordResponse } from '@core/model/training.model';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -189,8 +190,8 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     if (this.trainingRecordId) {
       trainingRecordId = this.trainingRecordId;
     } else {
-      // TODO: this is the case of adding new training with certificate
-      // extract trainingRecordId from trainingRecordResponse
+      const { uid } = trainingRecordResponse as CreateTrainingRecordResponse;
+      trainingRecordId = uid;
     }
 
     return this.trainingService.addCertificateToTraining(

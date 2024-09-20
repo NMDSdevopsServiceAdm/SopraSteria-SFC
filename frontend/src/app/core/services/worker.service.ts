@@ -10,7 +10,12 @@ import {
   QualificationsResponse,
   QualificationType,
 } from '@core/model/qualification.model';
-import { MultipleTrainingResponse, TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
+import {
+  CreateTrainingRecordResponse,
+  MultipleTrainingResponse,
+  TrainingRecordRequest,
+  TrainingResponse,
+} from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
@@ -222,7 +227,7 @@ export class WorkerService {
   }
 
   createTrainingRecord(workplaceUid: string, workerId: string, record: TrainingRecordRequest) {
-    return this.http.post<TrainingRecordRequest>(
+    return this.http.post<CreateTrainingRecordResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training`,
       record,
     );
@@ -234,7 +239,7 @@ export class WorkerService {
     trainingRecordId: string,
     record: TrainingRecordRequest,
   ) {
-    return this.http.put<TrainingRecordRequest>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`,
       record,
     );
