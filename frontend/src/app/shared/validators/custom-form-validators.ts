@@ -139,7 +139,7 @@ export class CustomValidators extends Validators {
     }
 
     if (files.some((file) => !file.name.toLowerCase().endsWith('.pdf'))) {
-      errors.push('The certificate must be a pdf file');
+      errors.push('The certificate must be a PDF file');
     }
 
     return errors.length ? errors : null;

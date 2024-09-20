@@ -767,7 +767,22 @@ describe('AddEditTrainingComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('The certificate must be a pdf file')).toBeTruthy();
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+      });
+
+      it('should clear the error message when user select a valid file instead', async () => {
+        const { fixture, getByTestId, getByText, queryByText } = await setup(null);
+        fixture.autoDetectChanges();
+
+        const invalidFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+        const validFile = new File(['some file content'], 'certificate.pdf', { type: 'application/pdf' });
+
+        const fileInputButton = getByTestId('fileInput');
+        userEvent.upload(fileInputButton, [invalidFile]);
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+
+        userEvent.upload(fileInputButton, [validFile]);
+        expect(queryByText('The certificate must be a PDF file')).toBeFalsy();
       });
 
       it('should provide aria description to screen reader users when error happen', async () => {
@@ -780,7 +795,7 @@ describe('AddEditTrainingComponent', () => {
         userEvent.upload(fileInput, new File(['some file content'], 'non-pdf-file.csv'));
 
         const uploadButton = within(uploadSection).getByRole('button', {
-          description: /Error: The certificate must be a pdf file/,
+          description: /Error: The certificate must be a PDF file/,
         });
         expect(uploadButton).toBeTruthy();
       });
