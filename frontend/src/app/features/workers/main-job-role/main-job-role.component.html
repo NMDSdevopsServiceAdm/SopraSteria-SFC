@@ -1,0 +1,27 @@
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l">Mandatory information</span>
+          <h1 class="govuk-fieldset__heading">{{ worker ? 'Update' : 'Select' }} their main job role</h1>
+        </legend>
+
+        <app-grouped-radio-button-accordion
+          formControlName="mainJob"
+          [accordions]="jobGroups"
+          textShowHideAll="job roles"
+          [preFilledId]="preFilledId"
+          data-testid="accordian"
+        ></app-grouped-radio-button-accordion>
+      </fieldset>
+    </div>
+  </div>
+  <app-submit-button
+    [recordSummary]="false"
+    [canExit]="canExit"
+    [return]="editFlow"
+    [isExistingStaffRecord]="!!worker"
+    (clicked)="setSubmitAction($event)"
+  ></app-submit-button>
+</form>

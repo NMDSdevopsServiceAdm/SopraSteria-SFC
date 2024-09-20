@@ -55,6 +55,8 @@ import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/emplo
 import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
+import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
+import { JobsResolver } from '@core/resolvers/jobs.resolver';
 
 const routes: Routes = [
   {
@@ -95,7 +97,7 @@ const routes: Routes = [
     path: ':id',
     canActivate: [CheckPermissionsGuard],
     component: EditWorkerComponent,
-    resolve: { worker: WorkerResolver },
+    resolve: { worker: WorkerResolver, jobs: JobsResolver },
     data: {
       permissions: ['canViewWorker'],
     },
@@ -112,6 +114,11 @@ const routes: Routes = [
             path: 'staff-details',
             component: StaffDetailsComponent,
             data: { title: 'Staff Details' },
+          },
+          {
+            path: 'main-job-role',
+            component: MainJobRoleComponent,
+            data: { title: 'Main Job Role' },
           },
           {
             path: 'main-job-start-date',
@@ -361,6 +368,11 @@ const routes: Routes = [
         data: { title: 'Staff Details' },
       },
       {
+        path: 'main-job-role',
+        component: MainJobRoleComponent,
+        data: { title: 'Main Job Role' },
+      },
+      {
         path: 'mandatory-details',
         children: [
           {
@@ -372,6 +384,11 @@ const routes: Routes = [
             path: 'staff-details',
             component: StaffDetailsComponent,
             data: { title: 'Staff Details' },
+          },
+          {
+            path: 'main-job-role',
+            component: MainJobRoleComponent,
+            data: { title: 'Main Job Role' },
           },
         ],
       },
