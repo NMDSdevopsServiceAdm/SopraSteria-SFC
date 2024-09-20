@@ -124,7 +124,6 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         expect(stubAddCertificate).to.have.been.callCount(mockUploadFiles.length);
 
         mockUploadFiles.forEach((file) => {
-          expect(stubAddCertificate).to.have.been.called;
           expect(stubAddCertificate).to.have.been.calledWith({
             trainingRecordId: training.id,
             workerFk: mockWorkerFk,

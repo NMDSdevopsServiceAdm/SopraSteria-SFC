@@ -154,9 +154,7 @@ describe('TrainingService', () => {
       const uploadToS3Request = http.expectOne(mockSignedUrl);
       uploadToS3Request.flush(null, { headers: { etag: mockEtagFromS3 } });
 
-      const confirmUploadRequest = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/training/${mockTrainingUid}/certificate`,
-      );
+      const confirmUploadRequest = http.expectOne(certificateEndpoint);
       const expectedconfirmUploadReqBody = {
         files: [{ filename: mockUploadFiles[0].name, fileId: mockFileId, etag: mockEtagFromS3 }],
       };
