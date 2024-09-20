@@ -31,12 +31,12 @@ describe('CertificationsTableComponent', () => {
     },
   ];
 
-  const setup = async (files = [], uploadFiles = []) => {
+  const setup = async (files = [], filesToUpload = []) => {
     const { fixture, getByText, getByTestId, queryByText, queryByTestId } = await render(CertificationsTableComponent, {
       imports: [SharedModule],
       componentProperties: {
         certificates: files,
-        uploadFiles,
+        filesToUpload,
       },
     });
 
@@ -149,16 +149,16 @@ describe('CertificationsTableComponent', () => {
       expect(getByTestId('certificate-row-2')).toBeTruthy();
     });
 
-    it('should call removeUploadFile with file index when the remove button for upload file is clicked', async () => {
+    it('should call removeFileToUpload with file index when the remove button for upload file is clicked', async () => {
       const { getByTestId, component } = await setup([], mockUploadFiles);
       const uploadFileRow = getByTestId('upload-file-row-1');
 
-      const removeUploadFileSpy = spyOn(component.removeUploadFile, 'emit');
+      const removeFileToUploadSpy = spyOn(component.removeFileToUpload, 'emit');
 
       const removeButton = within(uploadFileRow).getByText('Remove');
       userEvent.click(removeButton);
 
-      expect(removeUploadFileSpy).toHaveBeenCalledWith(1);
+      expect(removeFileToUploadSpy).toHaveBeenCalledWith(1);
     });
   });
 });

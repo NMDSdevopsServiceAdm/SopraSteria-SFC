@@ -855,7 +855,7 @@ describe('AddEditTrainingComponent', () => {
 
         expect(certificationTable).toBeTruthy();
         expect(within(certificationTable).getByText(mockUploadFile1.name)).toBeTruthy();
-        expect(component.uploadFiles).toEqual([mockUploadFile1]);
+        expect(component.filesToUpload).toEqual([mockUploadFile1]);
       });
 
       it('should remove an upload file when its remove button is clicked', async () => {
@@ -877,8 +877,8 @@ describe('AddEditTrainingComponent', () => {
         expect(within(certificationTable).queryByText(mockUploadFile2.name)).toBeFalsy();
 
         expect(within(certificationTable).queryByText(mockUploadFile1.name)).toBeTruthy();
-        expect(component.uploadFiles).toHaveSize(1);
-        expect(component.uploadFiles[0]).toEqual(mockUploadFile1);
+        expect(component.filesToUpload).toHaveSize(1);
+        expect(component.filesToUpload[0]).toEqual(mockUploadFile1);
       });
     });
   });

@@ -201,8 +201,8 @@
                     (selectFiles)="onSelectFiles($event)"
                     [aria-describedby]="getUploadComponentAriaDescribedBy()"
                   />
-                  <span id="uploadCertificate-aria-text" class="govuk-body" aria-live="polite" [class.govuk-visually-hidden]="uploadFiles?.length > 0">
-                    {{uploadFiles?.length > 0 ? uploadFiles.length + " file chosen" : "No file chosen"}}
+                  <span id="uploadCertificate-aria-text" class="govuk-body" aria-live="polite" [class.govuk-visually-hidden]="filesToUpload?.length > 0">
+                    {{filesToUpload?.length > 0 ? filesToUpload.length + " file chosen" : "No file chosen"}}
                   </span>
                 </div>
                 <div id="uploadCertificate-errors">
@@ -211,11 +211,11 @@
               </fieldset>
             </div>
             <app-certifications-table
-              *ngIf="trainingCertificates?.length > 0 || uploadFiles?.length > 0"
+              *ngIf="trainingCertificates?.length > 0 || filesToUpload?.length > 0"
               data-testid="trainingCertificatesTable"
               [certificates]="trainingCertificates"
-              [uploadFiles]="uploadFiles"
-              (removeUploadFile)="removeUploadFile($event)"
+              [filesToUpload]="filesToUpload"
+              (removeFileToUpload)="removeFileToUpload($event)"
             ></app-certifications-table>
           </div>
         </div>

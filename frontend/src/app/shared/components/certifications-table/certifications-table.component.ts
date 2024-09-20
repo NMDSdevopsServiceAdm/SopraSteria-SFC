@@ -8,13 +8,13 @@ import { TrainingCertificate } from '@core/model/training.model';
 })
 export class CertificationsTableComponent implements OnInit {
   @Input() certificates: TrainingCertificate[] = [];
-  @Input() uploadFiles: File[] = [];
-  @Output() removeUploadFile = new EventEmitter<number>();
+  @Input() filesToUpload: File[] = [];
+  @Output() removeFileToUpload = new EventEmitter<number>();
 
   ngOnInit() {}
 
   public handleRemoveUploadFile(event: Event, index: number): void {
     event.preventDefault();
-    this.removeUploadFile.emit(index);
+    this.removeFileToUpload.emit(index);
   }
 }

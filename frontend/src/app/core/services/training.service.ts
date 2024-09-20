@@ -135,8 +135,8 @@ export class TrainingService {
     this.updatingSelectedStaffForMultipleTraining = null;
   }
 
-  public addCertificateToTraining(workplaceUid: string, workerUid: string, trainingUid: string, uploadFiles: File[]) {
-    const listOfFilenames = uploadFiles.map((file) => ({ filename: file.name }));
+  public addCertificateToTraining(workplaceUid: string, workerUid: string, trainingUid: string, filesToUpload: File[]) {
+    const listOfFilenames = filesToUpload.map((file) => ({ filename: file.name }));
     const requestBody: CertificateSignedUrlRequest = { files: listOfFilenames };
 
     return this.http
@@ -145,7 +145,7 @@ export class TrainingService {
         requestBody,
       )
       .pipe(
-        mergeMap((response) => this.uploadAllCertificatetoS3(response, uploadFiles)),
+        mergeMap((response) => this.uploadAllCertificatestoS3(response, filesToUpload)),
         map((allFileInfoWithETag) => this.buildConfirmUploadRequestBody(allFileInfoWithETag)),
         mergeMap((confirmUploadRequestBody) =>
           this.confirmCertificateUpload(workplaceUid, workerUid, trainingUid, confirmUploadRequestBody),
@@ -153,17 +153,16 @@ export class TrainingService {
       );
   }
 
-  private uploadAllCertificatetoS3(
+  private uploadAllCertificatestoS3(
     signedUrlResponse: CertificateSignedUrlResponse,
-    uploadFiles: File[],
+    filesToUpload: File[],
   ): Observable<FileInfoWithETag[]> {
     const allUploadResults$ = signedUrlResponse.files.map(({ signedUrl, fileId, filename }, index) => {
-      const fileToUpload = uploadFiles[index];
+      const fileToUpload = filesToUpload[index];
       if (!fileToUpload.name || fileToUpload.name !== filename) {
         throw new Error('Invalid response from backend');
       }
-      const uploadResult$ = this.uploadOneCertificateToS3(signedUrl, fileId, fileToUpload);
-      return uploadResult$;
+      return this.uploadOneCertificateToS3(signedUrl, fileId, fileToUpload);
     });
 
     return forkJoin(allUploadResults$);

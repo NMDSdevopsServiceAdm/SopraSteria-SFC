@@ -1,4 +1,4 @@
-<ng-container *ngIf="certificates?.length > 0 || uploadFiles?.length > 0">
+<ng-container *ngIf="certificates?.length > 0 || filesToUpload?.length > 0">
   <table class="govuk-table">
     <thead class="govuk-table__head" data-testid="certificationsTableHeader">
       <tr class="govuk-table__row">
@@ -18,7 +18,7 @@
       </tr>
     </thead>
     <tbody class="govuk-table__body">
-      <ng-container *ngFor="let file of uploadFiles; let i = index">
+      <ng-container *ngFor="let file of filesToUpload; let i = index">
         <tr class="govuk-table__row" [attr.data-testid]="'upload-file-row-' + i">
           <td class="govuk-table__cell table__cell-file_name govuk-!-font-weight-regular">{{ file.name }}</td>
           <td class="govuk-table__cell table__cell-date">-</td>

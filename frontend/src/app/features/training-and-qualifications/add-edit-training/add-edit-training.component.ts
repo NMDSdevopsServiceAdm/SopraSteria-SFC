@@ -22,7 +22,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public category: string;
   public establishmentUid: string;
   public workerId: string;
-  private _uploadFiles: File[];
+  private _filesToUpload: File[];
   public uploadFilesErrors: string[] | null;
 
   constructor(
@@ -132,7 +132,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
       : this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
 
-    if (this.uploadFiles?.length > 0) {
+    if (this.filesToUpload?.length > 0) {
       submitTrainingRecord = submitTrainingRecord.pipe(mergeMap((response) => this.uploadNewCertificate(response)));
     }
 
@@ -144,12 +144,12 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
   }
 
-  get uploadFiles(): File[] {
-    return this._uploadFiles ?? [];
+  get filesToUpload(): File[] {
+    return this._filesToUpload ?? [];
   }
 
-  private set uploadFiles(files: File[]) {
-    this._uploadFiles = files ?? [];
+  private set filesToUpload(files: File[]) {
+    this._filesToUpload = files ?? [];
   }
 
   private resetUploadFilesError(): void {
@@ -159,7 +159,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public getUploadComponentAriaDescribedBy(): string {
     if (this.uploadFilesErrors) {
       return 'uploadCertificate-errors uploadCertificate-aria-text';
-    } else if (this.uploadFiles?.length > 0) {
+    } else if (this.filesToUpload?.length > 0) {
       return 'uploadCertificate-aria-text';
     } else {
       return 'uploadCertificate-hint uploadCertificate-aria-text';
@@ -175,13 +175,13 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       return;
     }
 
-    const combinedFiles = [...newFiles, ...this.uploadFiles];
-    this.uploadFiles = combinedFiles;
+    const combinedFiles = [...newFiles, ...this.filesToUpload];
+    this.filesToUpload = combinedFiles;
   }
 
-  public removeUploadFile(fileIndexToRemove: number): void {
-    const filesToKeep = this.uploadFiles.filter((_file, index) => index !== fileIndexToRemove);
-    this.uploadFiles = filesToKeep;
+  public removeFileToUpload(fileIndexToRemove: number): void {
+    const filesToKeep = this.filesToUpload.filter((_file, index) => index !== fileIndexToRemove);
+    this.filesToUpload = filesToKeep;
   }
 
   private uploadNewCertificate(trainingRecordResponse: any) {
@@ -197,7 +197,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       this.workplace.uid,
       this.worker.uid,
       trainingRecordId,
-      this.uploadFiles,
+      this.filesToUpload,
     );
   }
 
