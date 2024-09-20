@@ -1,4 +1,4 @@
-import { AbstractControl, UntypedFormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
+import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FILE_UPLOAD_TYPES } from '@core/constants/constants';
 
 export class CustomValidators extends Validators {

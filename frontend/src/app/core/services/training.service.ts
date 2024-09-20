@@ -159,11 +159,11 @@ export class TrainingService {
   ): Observable<FileInfoWithETag[]> {
     const allUploadResults$ = signedUrlResponse.files.map(({ signedUrl, fileId, filename }, index) => {
       const fileToUpload = uploadFiles[index];
-      if (fileToUpload.name !== filename) {
+      if (!fileToUpload.name || fileToUpload.name !== filename) {
         throw new Error('Invalid response from backend');
       }
-      const upload$ = this.uploadOneCertificateToS3(signedUrl, fileId, fileToUpload);
-      return upload$;
+      const uploadResult$ = this.uploadOneCertificateToS3(signedUrl, fileId, fileToUpload);
+      return uploadResult$;
     });
 
     return forkJoin(allUploadResults$);
