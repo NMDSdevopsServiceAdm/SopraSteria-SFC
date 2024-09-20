@@ -17,7 +17,6 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 @Component({
   selector: 'app-add-edit-training',
   templateUrl: '../../../shared/directives/add-edit-training/add-edit-training.component.html',
-  styleUrls: ['./add-edit-training.component.scss'],
 })
 export class AddEditTrainingComponent extends AddEditTrainingDirective implements OnInit, AfterViewInit {
   public category: string;
