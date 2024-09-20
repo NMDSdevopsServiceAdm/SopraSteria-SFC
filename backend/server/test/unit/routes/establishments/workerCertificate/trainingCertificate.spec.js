@@ -7,6 +7,7 @@ const models = require('../../../../../models');
 const buildUser = require('../../../../factories/user');
 const { trainingBuilder } = require('../../../../factories/models');
 const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
+const config = require('../../../../../config/config');
 
 const trainingCertificateRoute = require('../../../../../routes/establishments/workerCertificate/trainingCertificate');
 
@@ -89,8 +90,8 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
     describe('confirmUpload', () => {
       const mockUploadFiles = [
-        { filename: 'cert1.pdf', fileId: 'uuid1', etag: 'etag1' },
-        { filename: 'cert2.pdf', fileId: 'uuid2', etag: 'etag2' },
+        { filename: 'cert1.pdf', fileId: 'uuid1', etag: 'etag1', key: 'mockKey' },
+        { filename: 'cert2.pdf', fileId: 'uuid2', etag: 'etag2', key: 'mockKey2' },
       ];
       const mockWorkerFk = user.id;
       const mockTrainingRecord = { dataValues: { workerFk: user.id, id: training.id } };
@@ -129,6 +130,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
             workerFk: mockWorkerFk,
             filename: file.filename,
             fileId: file.fileId,
+            key: file.key,
           });
         });
       });
@@ -187,6 +189,72 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
         expect(res.statusCode).to.equal(500);
       });
+    });
+  });
+
+  describe('getPresignedUrlForCertificateDownload', () => {
+    const mockSignedUrl = 'http://localhost/mock-download-url';
+    let res;
+    let mockFileUid;
+
+    beforeEach(() => {
+      getSignedUrlForDownloadSpy = sinon.stub(s3, 'getSignedUrlForDownload').returns(mockSignedUrl);
+      mockFileUid = 'mockFileUid';
+      req = httpMocks.createRequest({
+        method: 'POST',
+        url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/download`,
+        body: { filesToDownload: [mockFileUid] },
+        establishmentId: user.establishment.uid,
+        params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
+      });
+      res = httpMocks.createResponse();
+    });
+
+    it('should reply with a status of 200', async () => {
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+
+      expect(res.statusCode).to.equal(200);
+    });
+
+    it('should return an array with signed url for download in response', async () => {
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+      const actual = await res._getJSONData();
+
+      expect(actual.files).to.deep.equal([{ signedUrl: mockSignedUrl }]);
+    });
+
+    it('should call getSignedUrlForDownload with bucket name from config', async () => {
+      const bucketName = config.get('workerCertificate.bucketname');
+
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+      expect(getSignedUrlForDownloadSpy.args[0][0].bucket).to.equal(bucketName);
+    });
+
+    it('should call getSignedUrlForDownload with key of formatted uids passed in params', async () => {
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+
+      const expectedKey = `${req.params.id}/${req.params.workerId}/trainingCertificate/${req.params.trainingUid}/${mockFileUid}`;
+      expect(getSignedUrlForDownloadSpy.args[0][0].key).to.equal(expectedKey);
+    });
+
+    it('should return 400 status and no files message if no file uids in req body', async () => {
+      req.body = { filesToDownload: [] };
+
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.equal('No files provided in request body');
+      expect(getSignedUrlForDownloadSpy).not.to.be.called;
+    });
+
+    it('should return 400 status and no files message if no req body', async () => {
+      req.body = {};
+
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.equal('No files provided in request body');
+      expect(getSignedUrlForDownloadSpy).not.to.be.called;
     });
   });
 });
