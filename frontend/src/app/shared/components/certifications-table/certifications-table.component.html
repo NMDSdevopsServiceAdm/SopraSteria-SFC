@@ -20,10 +20,10 @@
     <tbody class="govuk-table__body">
       <ng-container *ngFor="let file of uploadFiles; let i = index">
         <tr class="govuk-table__row" [attr.data-testid]="'upload-file-row-' + i">
-          <td class="govuk-table__cell govuk-!-font-weight-regular">{{ file.name }}</td>
-          <td class="govuk-table__cell"></td>
-          <td class="govuk-table__cell"></td>
-          <td class="govuk-table__cell">
+          <td class="govuk-table__cell table__cell-file_name govuk-!-font-weight-regular">{{ file.name }}</td>
+          <td class="govuk-table__cell table__cell-date">-</td>
+          <td class="govuk-table__cell table__cell-download_button"></td>
+          <td class="govuk-table__cell table__cell-cancel_button">
             <a
               href="#"
               type="button"
@@ -37,9 +37,13 @@
       </ng-container>
       <ng-container *ngFor="let certificate of certificates; let i = index">
         <tr class="govuk-table__row" [attr.data-testid]="'certificate-row-' + i">
-          <td class="govuk-table__cell govuk-!-font-weight-regular">{{ certificate.filename }}</td>
-          <td class="govuk-table__cell">{{ certificate.uploadDate | date: "d MMM y, h:mmaaaaa'm'" }}</td>
-          <td class="govuk-table__cell">
+          <td class="govuk-table__cell table__cell-file_name govuk-!-font-weight-regular">
+            {{ certificate.filename }}
+          </td>
+          <td class="govuk-table__cell table__cell-date">
+            {{ certificate.uploadDate | date: "d MMM y, h:mmaaaaa'm'" }}
+          </td>
+          <td class="govuk-table__cell table__cell-download_button">
             <a href="#" class="govuk-link govuk-link--no-visited-state">
               <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
                 class="govuk-!-margin-left-1"
@@ -48,7 +52,7 @@
               <span class="govuk-visually-hidden">the certificate {{ certificate.filename }}</span>
             </a>
           </td>
-          <td class="govuk-table__cell">
+          <td class="govuk-table__cell table__cell-cancel_button">
             <a href="#" class="govuk-link govuk-link--no-visited-state"
               >Remove <span class="govuk-visually-hidden">the uploaded certificate {{ certificate.filename }}</span></a
             >
