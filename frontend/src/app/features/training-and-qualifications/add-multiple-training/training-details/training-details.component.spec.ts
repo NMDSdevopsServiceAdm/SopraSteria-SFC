@@ -236,8 +236,13 @@ describe('MultipleTrainingDetailsComponent', () => {
       completed: { day: +completedArr[2], month: +completedArr[1], year: +completedArr[0] },
       expires: { day: +expiresArr[2], month: +expiresArr[1], year: +expiresArr[0] },
       notes,
-      uploadCertificate: null,
     });
+  });
+
+  it('should not render certificate upload', async () => {
+    const { queryByTestId } = await setup();
+    const uploadSection = queryByTestId('uploadCertificate');
+    expect(uploadSection).toBeFalsy();
   });
 
   describe('errors', () => {
