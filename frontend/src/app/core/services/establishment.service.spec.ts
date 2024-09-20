@@ -34,9 +34,7 @@ describe('EstablishmentService', () => {
 
       service.updateSingleEstablishmentField('establishmentId', requestBody).subscribe();
 
-      const req = http.expectOne(
-        `${environment.appRunnerEndpoint}/api/establishment/establishmentId/updateSingleEstablishmentField`,
-      );
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/establishment/establishmentId/updateSingleEstablishmentField`);
 
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(requestBody);
