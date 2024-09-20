@@ -119,12 +119,12 @@ describe('CertificationsTableComponent', () => {
   it('should emit event when download button clicked with index of table row', async () => {
     const { component, getByTestId } = await setup(multipleFiles);
 
-    const fileDownloadEmitSpy = spyOn(component.downloadFile, 'emit');
+    const certificateDownloadEmitSpy = spyOn(component.downloadCertificate, 'emit');
     const certificateRow = getByTestId('certificate-row-0');
     const downloadButton = within(certificateRow).getByText('Download');
     downloadButton.click();
 
-    expect(fileDownloadEmitSpy).toHaveBeenCalledWith(0);
+    expect(certificateDownloadEmitSpy).toHaveBeenCalledWith(0);
   });
 
   describe('Files to upload', () => {

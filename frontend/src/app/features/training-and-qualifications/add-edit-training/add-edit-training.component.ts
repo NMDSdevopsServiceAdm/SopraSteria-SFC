@@ -201,7 +201,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
   }
 
-  public downloadFile(fileIndex: number): void {
+  public downloadCertificate(fileIndex: number): void {
     this.trainingService
       .downloadCertificate(this.workplace.uid, this.worker.uid, this.trainingRecordId, [
         this.trainingCertificates[fileIndex].uid,

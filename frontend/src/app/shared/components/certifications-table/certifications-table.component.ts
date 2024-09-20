@@ -10,7 +10,7 @@ export class CertificationsTableComponent implements OnInit {
   @Input() certificates: TrainingCertificate[] = [];
   @Input() filesToUpload: File[] = [];
   @Output() removeFileToUpload = new EventEmitter<number>();
-  @Output() downloadFile = new EventEmitter<number>();
+  @Output() downloadCertificate = new EventEmitter<number>();
 
   ngOnInit() {}
 
@@ -19,8 +19,8 @@ export class CertificationsTableComponent implements OnInit {
     this.removeFileToUpload.emit(index);
   }
 
-  public handleDownloadFile(event: Event, index: number): void {
+  public handleDownloadCertificate(event: Event, index: number): void {
     event.preventDefault();
-    this.downloadFile.emit(index);
+    this.downloadCertificate.emit(index);
   }
 }
