@@ -12,6 +12,7 @@ import dayjs from 'dayjs';
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { mergeMap } from 'rxjs/operators';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -22,6 +23,8 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public category: string;
   public establishmentUid: string;
   public workerId: string;
+  private _uploadFiles: File[];
+  public uploadFilesErrors: string[] | null;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -125,11 +128,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
   }
 
-  get uploadFiles(): File[] {
-    const { uploadCertificate } = this.form.controls;
-    return uploadCertificate.value ?? [];
-  }
-
   protected submit(record: any): void {
     let submitTrainingRecord = this.trainingRecordId
       ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
@@ -147,18 +145,44 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
   }
 
-  public onSelectFiles(files: File[]): void {
-    const combinedFiles = [...files, ...this.uploadFiles];
-    this.replaceUploadFile(combinedFiles);
+  get uploadFiles(): File[] {
+    return this._uploadFiles ?? [];
   }
 
-  public replaceUploadFile(newFiles: File[]): void {
-    this.form.patchValue({ uploadCertificate: newFiles });
+  private set uploadFiles(files: File[]) {
+    this._uploadFiles = files ?? [];
+  }
+
+  private resetUploadFilesError(): void {
+    this.uploadFilesErrors = null;
+  }
+
+  public getUploadComponentAriaDescribedBy(): string {
+    if (this.uploadFilesErrors) {
+      return 'uploadCertificate-errors uploadCertificate-aria-text';
+    } else if (this.uploadFiles?.length > 0) {
+      return 'uploadCertificate-aria-text';
+    } else {
+      return 'uploadCertificate-hint uploadCertificate-aria-text';
+    }
+  }
+
+  public onSelectFiles(newFiles: File[]): void {
+    this.resetUploadFilesError();
+    const errors = CustomValidators.validateUploadCertificates(newFiles);
+
+    if (errors) {
+      this.uploadFilesErrors = errors;
+      return;
+    }
+
+    const combinedFiles = [...newFiles, ...this.uploadFiles];
+    this.uploadFiles = combinedFiles;
   }
 
   public removeUploadFile(fileIndexToRemove: number): void {
-    const newUploadFiles = this.uploadFiles.filter((_file, index) => index !== fileIndexToRemove);
-    this.replaceUploadFile(newUploadFiles);
+    const filesToKeep = this.uploadFiles.filter((_file, index) => index !== fileIndexToRemove);
+    this.uploadFiles = filesToKeep;
   }
 
   private uploadNewCertificate(trainingRecordResponse: any) {

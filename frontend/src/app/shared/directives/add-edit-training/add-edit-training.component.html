@@ -180,38 +180,33 @@
             >
           </div>
         </div>
-        <div class="govuk-grid-row">
-          <div *ngIf="!showWorkerCount" class="govuk-grid-column-full">
+        <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
+          <div class="govuk-grid-column-full">
             <div
               class="govuk-form-group govuk-!-margin-bottom-4"
-              [class.govuk-form-group--error]="submitted && form.get('uploadCertificate').invalid"
               data-testid="uploadCertificate"
             >
-              <fieldset class="govuk-fieldset" aria-describedby="expires-hint" role="group">
+              <fieldset class="govuk-fieldset" aria-describedby="uploadCertificate-hint" role="group">
                 <label class="govuk-label govuk-!-font-weight-bold" for="uploadCertificate">
                   Upload a certificate
                 </label>
                 <div id="uploadCertificate-hint" class="govuk-hint govuk-!-margin-bottom-4">
                   The certificate must be a PDF file that's no larger than 500KB
                 </div>
-                <span
-                  *ngIf="submitted && form.get('uploadCertificate').invalid"
-                  id="uploadCertificate-error"
-                  class="govuk-error-message"
-                >
-                  <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('uploadCertificate') }}
-                </span>
                 <div class="uploadCertificate-wrapper">
                   <app-select-upload-file
                     accept=".pdf"
                     multiple="true"
                     buttonId="uploadCertificate"
                     (selectFiles)="onSelectFiles($event)"
-                    [aria-describedby]="uploadFiles?.length > 0 ? 'uploadCertificate-aria-text' : 'uploadCertificate-hint uploadCertificate-aria-text'"
+                    [aria-describedby]="getUploadComponentAriaDescribedBy()"
                   />
                   <span id="uploadCertificate-aria-text" class="govuk-body" aria-live="polite" [class.govuk-visually-hidden]="uploadFiles?.length > 0">
                     {{uploadFiles?.length > 0 ? uploadFiles.length + " file chosen" : "No file chosen"}}
                   </span>
+                </div>
+                <div id="uploadCertificate-errors">
+                  <app-validation-error-message *ngFor="let errorMessage of uploadFilesErrors" [errorMessage]="errorMessage"/>
                 </div>
               </fieldset>
             </div>

@@ -130,32 +130,18 @@ export class CustomValidators extends Validators {
     return null;
   }
 
-  static checkUploadCertificate(): ValidatorFn {
-    const validator = (formControl: UntypedFormGroup): ValidationErrors | null => {
-      const errors: ValidationErrors = {};
-      const maxFileSize = 500 * 1024;
+  static validateUploadCertificates(files: File[]): string[] | null {
+    let errors = [];
+    const maxFileSize = 500 * 1024;
 
-      if (formControl.value == null || formControl.value.length === 0) {
-        return null;
-      }
+    if (files.some((file) => file.size > maxFileSize)) {
+      errors.push('The certificate must be no larger than 500KB');
+    }
 
-      const files = Array.from(formControl.value) as File[];
+    if (files.some((file) => !file.name.toLowerCase().endsWith('.pdf'))) {
+      errors.push('The certificate must be a pdf file');
+    }
 
-      if (files.some((file) => file.size > maxFileSize)) {
-        errors['filesize'] = true;
-      }
-
-      if (files.some((file) => !file.name.toLowerCase().endsWith('.pdf'))) {
-        errors['pdffiletype'] = true;
-      }
-
-      if (Object.keys(errors).length) {
-        return errors;
-      }
-
-      return null;
-    };
-
-    return validator;
+    return errors.length ? errors : null;
   }
 }

@@ -21,7 +21,6 @@ import { MockTrainingCategoryService, trainingCategories } from '@core/test-util
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
-import { Component } from '@angular/core';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -125,7 +124,6 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
-        uploadCertificate: null,
       };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
@@ -153,7 +151,6 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
-        uploadCertificate: null,
       };
 
       expect(getByTestId('trainingCategoryDisplay')).toBeTruthy();
@@ -198,7 +195,6 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
         notes: undefined,
-        uploadCertificate: null,
       };
 
       expect(form.value).toEqual(expectedFormValue);
@@ -217,7 +213,6 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: null, month: null, year: null },
         expires: { day: null, month: null, year: null },
         notes: null,
-        uploadCertificate: null,
       };
       expect(form.value).toEqual(expectedFormValue);
     });
@@ -247,18 +242,6 @@ describe('AddEditTrainingComponent', () => {
       expect(getByText('Save record')).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
       expect(queryByTestId('deleteButton')).toBeFalsy();
-    });
-
-    it('should render a upload file button', async () => {
-      const { component, getByTestId } = await setup(null);
-
-      component.ngOnInit();
-
-      const certificateUploadSection = getByTestId('uploadCertificate');
-      expect(certificateUploadSection).toBeTruthy();
-
-      const uploadButton = within(certificateUploadSection).getByTestId('fileInput');
-      expect(uploadButton).toBeTruthy();
     });
   });
 
@@ -310,6 +293,61 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
+  describe('Upload file button', () => {
+    it('should render a file input element', async () => {
+      const { getByTestId } = await setup(null);
+
+      const uploadSection = getByTestId('uploadCertificate');
+      expect(uploadSection).toBeTruthy();
+
+      const fileInput = within(uploadSection).getByTestId('fileInput');
+      expect(fileInput).toBeTruthy();
+    });
+
+    it('should render "No file chosen" beside the file input', async () => {
+      const { getByTestId } = await setup(null);
+
+      const uploadSection = getByTestId('uploadCertificate');
+
+      const text = within(uploadSection).getByText('No file chosen');
+      expect(text).toBeTruthy();
+    });
+
+    it('should not render "No file chosen" when a file is chosen', async () => {
+      const { fixture, getByTestId } = await setup(null);
+
+      const uploadSection = getByTestId('uploadCertificate');
+      const fileInput = getByTestId('fileInput');
+
+      userEvent.upload(fileInput, new File(['some file content'], 'cert.pdf'));
+
+      fixture.detectChanges();
+
+      const text = within(uploadSection).queryByText('No file chosen');
+      expect(text).toBeFalsy();
+    });
+
+    it('should provide aria description to screen reader users', async () => {
+      const { fixture, getByTestId } = await setup(null);
+      fixture.autoDetectChanges();
+
+      const uploadSection = getByTestId('uploadCertificate');
+      const fileInput = getByTestId('fileInput');
+
+      let uploadButton = within(uploadSection).getByRole('button', {
+        description: /The certificate must be a PDF file that's no larger than 500KB/,
+      });
+      expect(uploadButton).toBeTruthy();
+
+      userEvent.upload(fileInput, new File(['some file content'], 'cert.pdf'));
+
+      uploadButton = within(uploadSection).getByRole('button', {
+        description: '1 file chosen',
+      });
+      expect(uploadButton).toBeTruthy();
+    });
+  });
+
   describe('submitting form', () => {
     it('should call the updateTrainingRecord function if editing existing training, and navigate away from page', async () => {
       const { component, fixture, getByText, getByLabelText, updateSpy, routerSpy, alertServiceSpy } = await setup();
@@ -327,7 +365,6 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: 2, month: '1', year: 2020 },
         expires: { day: 2, month: '1', year: 2021 },
         notes: 'Some notes added to this training',
-        uploadCertificate: null,
       };
 
       const updatedFormData = component.form.value;
@@ -389,7 +426,6 @@ describe('AddEditTrainingComponent', () => {
         completed: { day: 10, month: 4, year: 2020 },
         expires: { day: 10, month: 4, year: 2022 },
         notes: 'Some notes for this training',
-        uploadCertificate: null,
       };
 
       const formData = component.form.value;
@@ -440,7 +476,7 @@ describe('AddEditTrainingComponent', () => {
       expect(trainingService.selectedTraining.trainingCategory).toBeNull();
     });
 
-    describe('upload certificate to existing training', () => {
+    describe('upload certificate of an existing training', () => {
       const mockUploadFile = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
 
       it('should call both `addCertificateToTraining` and `updateTrainingRecord` if an upload file is selected', async () => {
@@ -699,49 +735,54 @@ describe('AddEditTrainingComponent', () => {
 
         expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
       });
+    });
 
-      describe('uploadCertificate errors', () => {
-        it('should show an error message if the selected file is over 500 KB', async () => {
-          const { component, fixture, getByTestId, getByText, getAllByText } = await setup(null);
-          component.trainingCategory = {
-            category: 'Autism',
-            id: 2,
-          };
+    describe('uploadCertificate errors', () => {
+      it('should show an error message if the selected file is over 500 KB', async () => {
+        const { fixture, getByTestId, getByText } = await setup(null);
 
-          const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
+        const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
 
-          Object.defineProperty(mockUploadFile, 'size', {
-            value: 10 * 1024 * 1024, // 10MB
-          });
-
-          const fileInputButton = getByTestId('fileInput') as HTMLInputElement;
-
-          userEvent.upload(fileInputButton, mockUploadFile);
-          userEvent.click(getByText('Save record'));
-
-          fixture.detectChanges();
-
-          expect(getAllByText('The certificate must be no larger than 500KB').length).toEqual(2);
+        Object.defineProperty(mockUploadFile, 'size', {
+          value: 10 * 1024 * 1024, // 10MB
         });
 
-        it('should show an error message if the selected file is not a pdf file', async () => {
-          const { component, fixture, getByTestId, getByText, getAllByText } = await setup(null);
-          component.trainingCategory = {
-            category: 'Autism',
-            id: 2,
-          };
+        const fileInputButton = getByTestId('fileInput');
 
-          const mockUploadFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+        userEvent.upload(fileInputButton, mockUploadFile);
 
-          const fileInputButton = getByTestId('fileInput') as HTMLInputElement;
+        fixture.detectChanges();
 
-          userEvent.upload(fileInputButton, [mockUploadFile]);
-          userEvent.click(getByText('Save record'));
+        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+      });
 
-          fixture.detectChanges();
+      it('should show an error message if the selected file is not a pdf file', async () => {
+        const { fixture, getByTestId, getByText } = await setup(null);
 
-          expect(getAllByText('The certificate must be a pdf file').length).toEqual(2);
+        const mockUploadFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+
+        const fileInputButton = getByTestId('fileInput');
+
+        userEvent.upload(fileInputButton, [mockUploadFile]);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be a pdf file')).toBeTruthy();
+      });
+
+      it('should provide aria description to screen reader users when error happen', async () => {
+        const { fixture, getByTestId } = await setup(null);
+        fixture.autoDetectChanges();
+
+        const uploadSection = getByTestId('uploadCertificate');
+        const fileInput = getByTestId('fileInput');
+
+        userEvent.upload(fileInput, new File(['some file content'], 'non-pdf-file.csv'));
+
+        const uploadButton = within(uploadSection).getByRole('button', {
+          description: /Error: The certificate must be a pdf file/,
         });
+        expect(uploadButton).toBeTruthy();
       });
     });
   });

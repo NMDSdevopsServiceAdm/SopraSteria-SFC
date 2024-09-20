@@ -21,7 +21,6 @@ import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
-import { CustomValidators } from '../../validators/custom-form-validators';
 
 @Directive({})
 export class AddEditTrainingDirective implements OnInit, AfterViewInit {
@@ -123,7 +122,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
           year: null,
         }),
         notes: [null, Validators.maxLength(this.notesMaxLength)],
-        uploadCertificate: [null, CustomValidators.checkUploadCertificate()],
       },
       { updateOn: 'submit' },
     );
@@ -212,19 +210,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
           {
             name: 'maxlength',
             message: `Notes must be ${this.notesMaxLength} characters or fewer`,
-          },
-        ],
-      },
-      {
-        item: 'uploadCertificate',
-        type: [
-          {
-            name: 'filesize',
-            message: 'The certificate must be no larger than 500KB',
-          },
-          {
-            name: 'pdffiletype',
-            message: 'The certificate must be a pdf file',
           },
         ],
       },
