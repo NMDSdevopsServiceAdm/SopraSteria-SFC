@@ -1,8 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { environment } from 'src/environments/environment';
 
 import { TrainingService } from './training.service';
-import { environment } from 'src/environments/environment';
 
 describe('TrainingService', () => {
   let service: TrainingService;
@@ -144,11 +144,12 @@ describe('TrainingService', () => {
     });
 
     it('should call to backend to confirm upload complete', async () => {
+      const mockKey = 'abcd/adsadsadvfdv/123dsvf';
       service.addCertificateToTraining(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockUploadFiles).subscribe();
 
       const signedUrlRequest = http.expectOne(certificateEndpoint);
       signedUrlRequest.flush({
-        files: [{ filename: 'certificate.pdf', signedUrl: mockSignedUrl, fileId: mockFileId }],
+        files: [{ filename: 'certificate.pdf', signedUrl: mockSignedUrl, fileId: mockFileId, key: mockKey }],
       });
 
       const uploadToS3Request = http.expectOne(mockSignedUrl);
@@ -156,7 +157,7 @@ describe('TrainingService', () => {
 
       const confirmUploadRequest = http.expectOne(certificateEndpoint);
       const expectedconfirmUploadReqBody = {
-        files: [{ filename: mockUploadFiles[0].name, fileId: mockFileId, etag: mockEtagFromS3 }],
+        files: [{ filename: mockUploadFiles[0].name, fileId: mockFileId, etag: mockEtagFromS3, key: mockKey }],
       };
 
       expect(confirmUploadRequest.request.method).toBe('PUT');
@@ -169,12 +170,14 @@ describe('TrainingService', () => {
       const mockFileIds = ['fileId1', 'fileId2', 'fileId3'];
       const mockEtags = ['etag1', 'etag2', 'etag3'];
       const mockSignedUrls = mockFileIds.map((fileId) => `${mockSignedUrl}/${fileId}`);
+      const mockKeys = mockFileIds.map((fileId) => `${fileId}/mockKey`);
 
       const mockSignedUrlResponse = {
         files: mockUploadFilenames.map((filename, index) => ({
           filename,
           signedUrl: mockSignedUrls[index],
           fileId: mockFileIds[index],
+          key: mockKeys[index],
         })),
       };
 
@@ -187,9 +190,9 @@ describe('TrainingService', () => {
       };
       const expectedConfirmUploadReqBody = {
         files: [
-          { filename: mockUploadFiles[0].name, fileId: mockFileIds[0], etag: mockEtags[0] },
-          { filename: mockUploadFiles[1].name, fileId: mockFileIds[1], etag: mockEtags[1] },
-          { filename: mockUploadFiles[2].name, fileId: mockFileIds[2], etag: mockEtags[2] },
+          { filename: mockUploadFiles[0].name, fileId: mockFileIds[0], etag: mockEtags[0], key: mockKeys[0] },
+          { filename: mockUploadFiles[1].name, fileId: mockFileIds[1], etag: mockEtags[1], key: mockKeys[1] },
+          { filename: mockUploadFiles[2].name, fileId: mockFileIds[2], etag: mockEtags[2], key: mockKeys[2] },
         ],
       };
 
@@ -212,6 +215,32 @@ describe('TrainingService', () => {
         const confirmUploadRequest = http.expectOne({ method: 'PUT', url: certificateEndpoint });
         expect(confirmUploadRequest.request.body).toEqual(expectedConfirmUploadReqBody);
       });
+    });
+  });
+
+  describe('downloadCertificate', () => {
+    const mockWorkplaceUid = 'mockWorkplaceUid';
+    const mockWorkerUid = 'mockWorkerUid';
+    const mockTrainingUid = 'mockTrainingUid';
+
+    const mockFiles = ['mockCertificateUid123'];
+
+    const certificateDownloadEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/training/${mockTrainingUid}/certificate/download`;
+
+    it('should make call to expected backend endpoint', async () => {
+      service.downloadCertificate(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockFiles).subscribe();
+
+      const downloadRequest = http.expectOne(certificateDownloadEndpoint);
+      expect(downloadRequest.request.method).toBe('POST');
+    });
+
+    it('should have request body that contains file uid', async () => {
+      service.downloadCertificate(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockFiles).subscribe();
+
+      const downloadRequest = http.expectOne(certificateDownloadEndpoint);
+      const expectedRequestBody = { filesToDownload: mockFiles };
+
+      expect(downloadRequest.request.body).toEqual(expectedRequestBody);
     });
   });
 });

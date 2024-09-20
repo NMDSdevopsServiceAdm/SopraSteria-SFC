@@ -5,14 +5,14 @@ import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import dayjs from 'dayjs';
+import { mergeMap } from 'rxjs/operators';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
-import { TrainingCategoryService } from '@core/services/training-category.service';
-import { mergeMap } from 'rxjs/operators';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -199,6 +199,18 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       trainingRecordId,
       this.filesToUpload,
     );
+  }
+
+  public downloadFile(fileIndex: number): void {
+    this.trainingService
+      .downloadCertificate(this.workplace.uid, this.worker.uid, this.trainingRecordId, [
+        this.trainingCertificates[fileIndex].uid,
+      ])
+      .subscribe((res) => {
+        res.files.forEach((file) => {
+          window.open(file.signedUrl, '_blank');
+        });
+      });
   }
 
   private onSuccess() {

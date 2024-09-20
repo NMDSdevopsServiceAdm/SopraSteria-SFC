@@ -3,13 +3,13 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import {
   allMandatoryTrainingCategories,
-  TrainingCategory,
-  SelectedTraining,
-  S3UploadResponse,
   CertificateSignedUrlRequest,
   CertificateSignedUrlResponse,
   ConfirmUploadRequest,
   FileInfoWithETag,
+  S3UploadResponse,
+  SelectedTraining,
+  TrainingCategory,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
@@ -157,24 +157,42 @@ export class TrainingService {
     signedUrlResponse: CertificateSignedUrlResponse,
     filesToUpload: File[],
   ): Observable<FileInfoWithETag[]> {
-    const allUploadResults$ = signedUrlResponse.files.map(({ signedUrl, fileId, filename }, index) => {
+    const allUploadResults$ = signedUrlResponse.files.map(({ signedUrl, fileId, filename, key }, index) => {
       const fileToUpload = filesToUpload[index];
       if (!fileToUpload.name || fileToUpload.name !== filename) {
         throw new Error('Invalid response from backend');
       }
-      return this.uploadOneCertificateToS3(signedUrl, fileId, fileToUpload);
+      return this.uploadOneCertificateToS3(signedUrl, fileId, fileToUpload, key);
     });
 
     return forkJoin(allUploadResults$);
   }
 
-  private uploadOneCertificateToS3(signedUrl: string, fileId: string, uploadFile: File): Observable<FileInfoWithETag> {
+  private uploadOneCertificateToS3(
+    signedUrl: string,
+    fileId: string,
+    uploadFile: File,
+    key: string,
+  ): Observable<FileInfoWithETag> {
     return this.http.put<S3UploadResponse>(signedUrl, uploadFile, { observe: 'response' }).pipe(
       map((s3response) => ({
         etag: s3response?.headers?.get('etag'),
         fileId,
         filename: uploadFile.name,
+        key,
       })),
+    );
+  }
+
+  public downloadCertificate(
+    workplaceUid: string,
+    workerUid: string,
+    trainingUid: string,
+    filesToDownload: string[],
+  ): Observable<any> {
+    return this.http.post<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate/download`,
+      { filesToDownload },
     );
   }
 
