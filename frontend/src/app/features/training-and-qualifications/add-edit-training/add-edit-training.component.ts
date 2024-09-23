@@ -25,7 +25,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public establishmentUid: string;
   public workerId: string;
   private _filesToUpload: File[];
-  public uploadFilesErrors: string[] | null;
+  public certificateErrors: string[] | null;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -156,11 +156,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private resetUploadFilesError(): void {
-    this.uploadFilesErrors = null;
+    this.certificateErrors = null;
   }
 
   public getUploadComponentAriaDescribedBy(): string {
-    if (this.uploadFilesErrors) {
+    if (this.certificateErrors) {
       return 'uploadCertificate-errors uploadCertificate-aria-text';
     } else if (this.filesToUpload?.length > 0) {
       return 'uploadCertificate-aria-text';
@@ -174,7 +174,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     const errors = CustomValidators.validateUploadCertificates(newFiles);
 
     if (errors) {
-      this.uploadFilesErrors = errors;
+      this.certificateErrors = errors;
       return;
     }
 
@@ -216,7 +216,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
       .subscribe((res) => {
         if (!res.files || res.files.length == 0) {
-          this.uploadFilesErrors = [`Error downloading the certificate${filesToDownload.length > 1 ? 's' : ''}`];
+          this.certificateErrors = [`Error downloading the certificate${filesToDownload.length > 1 ? 's' : ''}`];
           return;
         }
         this.trainingService.triggerCertificateDownloads(res.files);
