@@ -1,3 +1,4 @@
+import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -35,6 +36,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
+    protected http: HttpClient,
   ) {
     super(
       formBuilder,
@@ -205,12 +207,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     const filesToDownload = fileIndex
       ? [this.trainingCertificates[fileIndex].uid]
       : this.trainingCertificates.map((certificate) => certificate.uid);
+
     this.trainingService
       .downloadCertificate(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
       .subscribe((res) => {
-        res.files.forEach((file) => {
-          window.open(file.signedUrl, '_blank');
-        });
+        this.trainingService.triggerCertificateDownloads(res.files);
       });
   }
 

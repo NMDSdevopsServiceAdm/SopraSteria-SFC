@@ -243,4 +243,36 @@ describe('TrainingService', () => {
       expect(downloadRequest.request.body).toEqual(expectedRequestBody);
     });
   });
+
+  describe('triggerCertificateDownloads', () => {
+    it('should download certificates by creating and triggering anchor tag, then cleaning DOM', () => {
+      const mockCertificates = [{ signedUrl: 'https://example.com/file1.pdf' }];
+      const mockBlob = new Blob(['file content'], { type: 'application/pdf' });
+      const mockBlobUrl = 'blob:http://signed-url-example.com/blob-url';
+
+      const createElementSpy = spyOn(document, 'createElement').and.callThrough();
+      const appendChildSpy = spyOn(document.body, 'appendChild').and.callThrough();
+      const removeChildSpy = spyOn(document.body, 'removeChild').and.callThrough();
+      const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL').and.callThrough();
+      spyOn(window.URL, 'createObjectURL').and.returnValue(mockBlobUrl);
+
+      service.triggerCertificateDownloads(mockCertificates);
+
+      const downloadReq = http.expectOne(mockCertificates[0].signedUrl);
+      downloadReq.flush(mockBlob);
+
+      // Assert anchor element appended
+      expect(createElementSpy).toHaveBeenCalledWith('a');
+      expect(appendChildSpy).toHaveBeenCalled();
+
+      // Assert anchor element has correct attributes
+      const createdAnchor = createElementSpy.calls.mostRecent().returnValue as HTMLAnchorElement;
+      expect(createdAnchor.href).toBe(mockBlobUrl);
+      expect(createdAnchor.download).toBe('test0');
+
+      // Assert DOM is cleaned up after download
+      expect(revokeObjectURLSpy).toHaveBeenCalledWith(mockBlobUrl);
+      expect(removeChildSpy).toHaveBeenCalled();
+    });
+  });
 });

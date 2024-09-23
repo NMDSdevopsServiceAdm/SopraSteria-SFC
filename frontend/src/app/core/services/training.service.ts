@@ -196,6 +196,38 @@ export class TrainingService {
     );
   }
 
+  public triggerCertificateDownloads(files: { signedUrl: string }[]) {
+    const downloadRequests = files.map((file) => this.http.get(file.signedUrl, { responseType: 'blob' }));
+
+    forkJoin(downloadRequests).subscribe((fileBlobs: Blob[]) => {
+      fileBlobs.forEach((blob, index) => {
+        this.triggerSingleCertificateDownload(blob, index);
+      });
+    });
+  }
+
+  private triggerSingleCertificateDownload(fileBlob: Blob, index: number): void {
+    const blobUrl = window.URL.createObjectURL(fileBlob);
+    const link = this.createHiddenDownloadLink(blobUrl, index);
+
+    // Append the link to the body and click to trigger
+    document.body.appendChild(link);
+    link.click();
+
+    // Remove the link
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  }
+
+  private createHiddenDownloadLink(blobUrl: string, index: number): HTMLAnchorElement {
+    const link = document.createElement('a');
+
+    link.href = blobUrl;
+    link.download = 'test' + index;
+    link.style.display = 'none';
+    return link;
+  }
+
   private buildConfirmUploadRequestBody(allFileInfoWithETag: FileInfoWithETag[]): ConfirmUploadRequest {
     return { files: allFileInfoWithETag };
   }
