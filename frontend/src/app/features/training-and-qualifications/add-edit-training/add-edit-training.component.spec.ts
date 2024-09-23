@@ -71,7 +71,6 @@ describe('AddEditTrainingComponent', () => {
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
     const trainingService = injector.inject(TrainingService) as TrainingService;
-    const downloadCertificateSpy = spyOn(trainingService, 'downloadCertificate').and.returnValue(of(['abc123']));
 
     return {
       component,
@@ -88,7 +87,6 @@ describe('AddEditTrainingComponent', () => {
       workerService,
       alertServiceSpy,
       trainingService,
-      downloadCertificateSpy,
     };
   }
 
@@ -843,7 +841,7 @@ describe('AddEditTrainingComponent', () => {
       expect(queryByTestId('trainingCertificatesTable')).toBeFalsy();
     });
 
-    describe('download buttons', () => {
+    describe('Download buttons', () => {
       const mockTrainingCertificate = {
         uid: '396ae33f-a99b-4035-9f29-718529a54244',
         filename: 'first_aid.pdf',
@@ -870,14 +868,17 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should make call to downloadCertificate with required uids and file uid in array when Download button clicked', async () => {
-        const { component, fixture, getByTestId, downloadCertificateSpy } = await setup();
-        component.trainingCertificates = [mockTrainingCertificate];
+        const { component, fixture, getByTestId, trainingService } = await setup();
 
+        const downloadCertificateSpy = spyOn(trainingService, 'downloadCertificate').and.returnValue(
+          of({ files: ['abc123'] }),
+        );
+        component.trainingCertificates = [mockTrainingCertificate];
         fixture.detectChanges();
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
-        const downloadButton = within(certificatesTable).getByText('Download');
-        downloadButton.click();
+        const firstCertDownloadButton = within(certificatesTable).getAllByText('Download')[0];
+        firstCertDownloadButton.click();
 
         expect(downloadCertificateSpy).toHaveBeenCalledWith(
           component.workplace.uid,
@@ -888,9 +889,12 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should make call to downloadCertificate with all certificate file uids in array when Download all button clicked', async () => {
-        const { component, fixture, getByTestId, downloadCertificateSpy } = await setup();
-        component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
+        const { component, fixture, getByTestId, trainingService } = await setup();
 
+        const downloadCertificateSpy = spyOn(trainingService, 'downloadCertificate').and.returnValue(
+          of({ files: ['abc123'] }),
+        );
+        component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
         fixture.detectChanges();
 
         const certificatesTable = getByTestId('trainingCertificatesTable');
@@ -903,6 +907,40 @@ describe('AddEditTrainingComponent', () => {
           component.trainingRecordId,
           [mockTrainingCertificate.uid, mockTrainingCertificate2.uid],
         );
+      });
+
+      it('should display singular version of error message when Download fails', async () => {
+        const { component, fixture, getByText, getByTestId, trainingService } = await setup();
+
+        spyOn(trainingService, 'downloadCertificate').and.returnValue(of({ files: [] }));
+        component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
+
+        fixture.detectChanges();
+
+        const certificatesTable = getByTestId('trainingCertificatesTable');
+        const downloadButton = within(certificatesTable).getAllByText('Download')[1];
+        downloadButton.click();
+        fixture.detectChanges();
+
+        const expectedErrorMessage = getByText('Error downloading the certificate');
+        expect(expectedErrorMessage).toBeTruthy();
+      });
+
+      it('should display plural version of error message when Download all fails', async () => {
+        const { component, fixture, getByText, getByTestId, trainingService } = await setup();
+
+        spyOn(trainingService, 'downloadCertificate').and.returnValue(of({ files: [] }));
+        component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
+
+        fixture.detectChanges();
+
+        const certificatesTable = getByTestId('trainingCertificatesTable');
+        const downloadAllButton = within(certificatesTable).getByText('Download all');
+        downloadAllButton.click();
+        fixture.detectChanges();
+
+        const expectedErrorMessage = getByText('Error downloading the certificates');
+        expect(expectedErrorMessage).toBeTruthy();
       });
     });
 

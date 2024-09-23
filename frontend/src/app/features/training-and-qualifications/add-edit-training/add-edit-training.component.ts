@@ -204,13 +204,18 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   public downloadCertificate(fileIndex: number): void {
-    const filesToDownload = fileIndex
-      ? [this.trainingCertificates[fileIndex].uid]
-      : this.trainingCertificates.map((certificate) => certificate.uid);
+    const filesToDownload =
+      fileIndex != null
+        ? [this.trainingCertificates[fileIndex].uid]
+        : this.trainingCertificates.map((certificate) => certificate.uid);
 
     this.trainingService
       .downloadCertificate(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
       .subscribe((res) => {
+        if (!res.files || res.files.length == 0) {
+          this.uploadFilesErrors = [`Error downloading the certificate${filesToDownload.length > 1 ? 's' : ''}`];
+          return;
+        }
         this.trainingService.triggerCertificateDownloads(res.files);
       });
   }
