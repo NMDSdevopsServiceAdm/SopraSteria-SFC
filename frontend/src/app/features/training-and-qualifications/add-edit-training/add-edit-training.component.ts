@@ -129,6 +129,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected submit(record: any): void {
+    this.disableSubmitButton = true;
     let submitTrainingRecord = this.trainingRecordId
       ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
       : this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
@@ -216,5 +217,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   private onError(error) {
     console.log(error);
+    this.disableSubmitButton = false;
   }
 }

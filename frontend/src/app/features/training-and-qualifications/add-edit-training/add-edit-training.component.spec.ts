@@ -477,6 +477,27 @@ describe('AddEditTrainingComponent', () => {
       expect(trainingService.selectedTraining.trainingCategory).toBeNull();
     });
 
+    it('should disable the submit button to prevent it being triggered more than once', async () => {
+      const { component, fixture, getByText, getByLabelText, trainingService, createSpy } = await setup(null);
+
+      trainingService.setSelectedTrainingCategory({
+        id: 2,
+        seq: 20,
+        category: 'Autism',
+        trainingCategoryGroup: 'Specific conditions and disabilities',
+      });
+      component.ngOnInit();
+
+      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.click(getByLabelText('No'));
+
+      const submitButton = getByText('Save record') as HTMLButtonElement;
+      userEvent.click(submitButton);
+      fixture.detectChanges();
+
+      expect(submitButton.disabled).toBe(true);
+    });
+
     describe('upload certificate of an existing training', () => {
       const mockUploadFile = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
 
