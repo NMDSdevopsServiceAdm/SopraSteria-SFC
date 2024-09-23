@@ -11,6 +11,8 @@ import dayjs from 'dayjs';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
 import { TrainingCategoryService } from '@core/services/training-category.service';
+import { mergeMap } from 'rxjs/operators';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -20,6 +22,8 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public category: string;
   public establishmentUid: string;
   public workerId: string;
+  private _filesToUpload: File[];
+  public uploadFilesErrors: string[] | null;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -89,6 +93,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
             this.trainingRecord = trainingRecord;
             this.category = trainingRecord.trainingCategory.category;
             this.trainingCategory = trainingRecord.trainingCategory;
+            this.trainingCertificates = trainingRecord.trainingCertificates;
 
             const completed = this.trainingRecord.completed
               ? dayjs(this.trainingRecord.completed, DATE_PARSE_FORMAT)
@@ -123,23 +128,77 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected submit(record: any): void {
-    if (this.trainingRecordId) {
-      this.subscriptions.add(
-        this.workerService
-          .updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
-          .subscribe(
-            () => this.onSuccess(),
-            (error) => this.onError(error),
-          ),
-      );
-    } else {
-      this.subscriptions.add(
-        this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record).subscribe(
-          () => this.onSuccess(),
-          (error) => this.onError(error),
-        ),
-      );
+    let submitTrainingRecord = this.trainingRecordId
+      ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
+      : this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
+
+    if (this.filesToUpload?.length > 0) {
+      submitTrainingRecord = submitTrainingRecord.pipe(mergeMap((response) => this.uploadNewCertificate(response)));
     }
+
+    this.subscriptions.add(
+      submitTrainingRecord.subscribe(
+        () => this.onSuccess(),
+        (error) => this.onError(error),
+      ),
+    );
+  }
+
+  get filesToUpload(): File[] {
+    return this._filesToUpload ?? [];
+  }
+
+  private set filesToUpload(files: File[]) {
+    this._filesToUpload = files ?? [];
+  }
+
+  private resetUploadFilesError(): void {
+    this.uploadFilesErrors = null;
+  }
+
+  public getUploadComponentAriaDescribedBy(): string {
+    if (this.uploadFilesErrors) {
+      return 'uploadCertificate-errors uploadCertificate-aria-text';
+    } else if (this.filesToUpload?.length > 0) {
+      return 'uploadCertificate-aria-text';
+    } else {
+      return 'uploadCertificate-hint uploadCertificate-aria-text';
+    }
+  }
+
+  public onSelectFiles(newFiles: File[]): void {
+    this.resetUploadFilesError();
+    const errors = CustomValidators.validateUploadCertificates(newFiles);
+
+    if (errors) {
+      this.uploadFilesErrors = errors;
+      return;
+    }
+
+    const combinedFiles = [...newFiles, ...this.filesToUpload];
+    this.filesToUpload = combinedFiles;
+  }
+
+  public removeFileToUpload(fileIndexToRemove: number): void {
+    const filesToKeep = this.filesToUpload.filter((_file, index) => index !== fileIndexToRemove);
+    this.filesToUpload = filesToKeep;
+  }
+
+  private uploadNewCertificate(trainingRecordResponse: any) {
+    let trainingRecordId: string;
+    if (this.trainingRecordId) {
+      trainingRecordId = this.trainingRecordId;
+    } else {
+      // TODO: this is the case of adding new training with certificate
+      // extract trainingRecordId from trainingRecordResponse
+    }
+
+    return this.trainingService.addCertificateToTraining(
+      this.workplace.uid,
+      this.worker.uid,
+      trainingRecordId,
+      this.filesToUpload,
+    );
   }
 
   private onSuccess() {

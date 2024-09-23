@@ -239,6 +239,12 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
   });
 
+  it('should not render certificate upload', async () => {
+    const { queryByTestId } = await setup();
+    const uploadSection = queryByTestId('uploadCertificate');
+    expect(uploadSection).toBeFalsy();
+  });
+
   describe('errors', () => {
     it('should show an error when training name less than 3 characters', async () => {
       const { component, getByText, fixture, getAllByText } = await setup();

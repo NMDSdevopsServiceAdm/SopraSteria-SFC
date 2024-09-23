@@ -5,6 +5,7 @@ const router = express.Router({ mergeParams: true });
 // all user functionality is encapsulated
 const Training = require('../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../models/classes/mandatoryTraining').MandatoryTraining;
+const TrainingCertificateRoute = require('../workerCertificate/trainingCertificate');
 
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
@@ -190,6 +191,7 @@ router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
 router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
 router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
 router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);
+router.use('/:trainingUid/certificate', TrainingCertificateRoute);
 
 module.exports = router;
 module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;

@@ -100,4 +100,118 @@ describe('TrainingService', () => {
       expect(service.getUpdatingSelectedStaffForMultipleTraining()).toBe(null);
     });
   });
+
+  describe('addCertificateToTraining', () => {
+    const mockWorkplaceUid = 'mockWorkplaceUid';
+    const mockWorkerUid = 'mockWorkerUid';
+    const mockTrainingUid = 'mockTrainingUid';
+
+    const mockUploadFiles = [new File([''], 'certificate.pdf')];
+    const mockFileId = 'mockFileId';
+    const mockEtagFromS3 = 'mock-etag';
+    const mockSignedUrl = 'http://localhost/mock-signed-url-for-upload';
+
+    const certificateEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/training/${mockTrainingUid}/certificate`;
+
+    it('should call to backend to retreive a signed url to upload certificate', async () => {
+      service.addCertificateToTraining(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockUploadFiles).subscribe();
+
+      const signedUrlRequest = http.expectOne(certificateEndpoint);
+      expect(signedUrlRequest.request.method).toBe('POST');
+    });
+
+    it('should have request body that contains filename', async () => {
+      service.addCertificateToTraining(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockUploadFiles).subscribe();
+
+      const signedUrlRequest = http.expectOne(certificateEndpoint);
+
+      const expectedRequestBody = { files: [{ filename: 'certificate.pdf' }] };
+
+      expect(signedUrlRequest.request.body).toEqual(expectedRequestBody);
+    });
+
+    it('should upload the file with the signed url received from backend', async () => {
+      service.addCertificateToTraining(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockUploadFiles).subscribe();
+
+      const signedUrlRequest = http.expectOne(certificateEndpoint);
+      signedUrlRequest.flush({
+        files: [{ filename: 'certificate.pdf', signedUrl: mockSignedUrl, fileId: mockFileId }],
+      });
+
+      const uploadToS3Request = http.expectOne(mockSignedUrl);
+      expect(uploadToS3Request.request.method).toBe('PUT');
+      expect(uploadToS3Request.request.body).toEqual(mockUploadFiles[0]);
+    });
+
+    it('should call to backend to confirm upload complete', async () => {
+      service.addCertificateToTraining(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockUploadFiles).subscribe();
+
+      const signedUrlRequest = http.expectOne(certificateEndpoint);
+      signedUrlRequest.flush({
+        files: [{ filename: 'certificate.pdf', signedUrl: mockSignedUrl, fileId: mockFileId }],
+      });
+
+      const uploadToS3Request = http.expectOne(mockSignedUrl);
+      uploadToS3Request.flush(null, { headers: { etag: mockEtagFromS3 } });
+
+      const confirmUploadRequest = http.expectOne(certificateEndpoint);
+      const expectedconfirmUploadReqBody = {
+        files: [{ filename: mockUploadFiles[0].name, fileId: mockFileId, etag: mockEtagFromS3 }],
+      };
+
+      expect(confirmUploadRequest.request.method).toBe('PUT');
+      expect(confirmUploadRequest.request.body).toEqual(expectedconfirmUploadReqBody);
+    });
+
+    describe('multiple files upload', () => {
+      const mockUploadFilenames = ['certificate1.pdf', 'certificate2.pdf', 'certificate3.pdf'];
+      const mockUploadFiles = mockUploadFilenames.map((filename) => new File([''], filename));
+      const mockFileIds = ['fileId1', 'fileId2', 'fileId3'];
+      const mockEtags = ['etag1', 'etag2', 'etag3'];
+      const mockSignedUrls = mockFileIds.map((fileId) => `${mockSignedUrl}/${fileId}`);
+
+      const mockSignedUrlResponse = {
+        files: mockUploadFilenames.map((filename, index) => ({
+          filename,
+          signedUrl: mockSignedUrls[index],
+          fileId: mockFileIds[index],
+        })),
+      };
+
+      const expectedSignedUrlReqBody = {
+        files: [
+          { filename: mockUploadFiles[0].name },
+          { filename: mockUploadFiles[1].name },
+          { filename: mockUploadFiles[2].name },
+        ],
+      };
+      const expectedConfirmUploadReqBody = {
+        files: [
+          { filename: mockUploadFiles[0].name, fileId: mockFileIds[0], etag: mockEtags[0] },
+          { filename: mockUploadFiles[1].name, fileId: mockFileIds[1], etag: mockEtags[1] },
+          { filename: mockUploadFiles[2].name, fileId: mockFileIds[2], etag: mockEtags[2] },
+        ],
+      };
+
+      it('should be able to upload multiple files at the same time', () => {
+        service.addCertificateToTraining(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockUploadFiles).subscribe();
+
+        const signedUrlRequest = http.expectOne({ method: 'POST', url: certificateEndpoint });
+        expect(signedUrlRequest.request.body).toEqual(expectedSignedUrlReqBody);
+
+        signedUrlRequest.flush(mockSignedUrlResponse);
+
+        mockSignedUrls.forEach((signedUrl, index) => {
+          const uploadToS3Request = http.expectOne(signedUrl);
+          expect(uploadToS3Request.request.method).toBe('PUT');
+          expect(uploadToS3Request.request.body).toEqual(mockUploadFiles[index]);
+
+          uploadToS3Request.flush(null, { headers: { etag: mockEtags[index] } });
+        });
+
+        const confirmUploadRequest = http.expectOne({ method: 'PUT', url: certificateEndpoint });
+        expect(confirmUploadRequest.request.body).toEqual(expectedConfirmUploadReqBody);
+      });
+    });
+  });
 });

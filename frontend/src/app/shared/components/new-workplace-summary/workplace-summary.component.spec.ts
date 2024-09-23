@@ -10,7 +10,11 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
-import { establishmentWithShareWith, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import {
+  establishmentWithShareWith,
+  MockEstablishmentService,
+  MockEstablishmentServiceWithNoCapacities,
+} from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -18,7 +22,11 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
 describe('NewWorkplaceSummaryComponent', () => {
-  const setup = async (shareWith = null, permissions = ['canEditEstablishment'] as PermissionType[]) => {
+  const setup = async (
+    shareWith = null,
+    permissions = ['canEditEstablishment'] as PermissionType[],
+    hasQuestions = true,
+  ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -29,7 +37,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useClass: hasQuestions ? MockEstablishmentService : MockEstablishmentServiceWithNoCapacities,
         },
         {
           provide: CqcStatusChangeService,
@@ -616,11 +624,35 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
 
     describe('Service capacity', () => {
-      it('should show dash and have Add information button on when capacities is an empty array', async () => {
+      it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is false', async () => {
+        const { component, fixture, queryByTestId } = await setup(null, ['canEditEstablishment'], false);
+
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+
+        fixture.detectChanges();
+
+        const serviceCapacityRow = queryByTestId('serviceCapacity');
+
+        expect(serviceCapacityRow).toBeFalsy();
+      });
+
+      it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is true', async () => {
+        const { component, fixture, queryByTestId } = await setup(null, ['canEditEstablishment'], false);
+
+        component.workplace.showAddWorkplaceDetailsBanner = true;
+
+        fixture.detectChanges();
+
+        const serviceCapacityRow = queryByTestId('serviceCapacity');
+
+        expect(serviceCapacityRow).toBeFalsy();
+      });
+
+      it('should show dash and have Add information button if there are allServiceCapacities and showAddWorkplaceDetailsBanner is false', async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.capacities = [];
-        component.canEditEstablishment = true;
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+
         fixture.detectChanges();
 
         const serviceCapacityRow = within(document.body).queryByTestId('serviceCapacity');
@@ -629,6 +661,18 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/capacity-of-services`);
         expect(within(serviceCapacityRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should not show if there are allServiceCapacities and showAddWorkplaceDetailsBanner is true', async () => {
+        const { component, fixture, queryByTestId } = await setup();
+
+        component.workplace.showAddWorkplaceDetailsBanner = true;
+
+        fixture.detectChanges();
+
+        const serviceCapacityRow = queryByTestId('serviceCapacity');
+
+        expect(serviceCapacityRow).toBeFalsy();
       });
 
       it('should show service capacity and have Change link when capacity array is not emtpy', async () => {
