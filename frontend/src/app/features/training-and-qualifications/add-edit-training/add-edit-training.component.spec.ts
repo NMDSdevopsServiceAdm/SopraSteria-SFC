@@ -867,10 +867,10 @@ describe('AddEditTrainingComponent', () => {
         expect(downloadButton).toBeTruthy();
       });
 
-      it('should make call to downloadCertificate with required uids and file uid in array when Download button clicked', async () => {
+      it('should make call to downloadCertificates with required uids and file uid in array when Download button clicked', async () => {
         const { component, fixture, getByTestId, trainingService } = await setup();
 
-        const downloadCertificateSpy = spyOn(trainingService, 'downloadCertificate').and.returnValue(
+        const downloadCertificatesSpy = spyOn(trainingService, 'downloadCertificates').and.returnValue(
           of({ files: ['abc123'] }),
         );
         component.trainingCertificates = [mockTrainingCertificate];
@@ -880,7 +880,7 @@ describe('AddEditTrainingComponent', () => {
         const firstCertDownloadButton = within(certificatesTable).getAllByText('Download')[0];
         firstCertDownloadButton.click();
 
-        expect(downloadCertificateSpy).toHaveBeenCalledWith(
+        expect(downloadCertificatesSpy).toHaveBeenCalledWith(
           component.workplace.uid,
           component.worker.uid,
           component.trainingRecordId,
@@ -888,10 +888,10 @@ describe('AddEditTrainingComponent', () => {
         );
       });
 
-      it('should make call to downloadCertificate with all certificate file uids in array when Download all button clicked', async () => {
+      it('should make call to downloadCertificates with all certificate file uids in array when Download all button clicked', async () => {
         const { component, fixture, getByTestId, trainingService } = await setup();
 
-        const downloadCertificateSpy = spyOn(trainingService, 'downloadCertificate').and.returnValue(
+        const downloadCertificatesSpy = spyOn(trainingService, 'downloadCertificates').and.returnValue(
           of({ files: ['abc123'] }),
         );
         component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
@@ -901,7 +901,7 @@ describe('AddEditTrainingComponent', () => {
         const downloadButton = within(certificatesTable).getByText('Download all');
         downloadButton.click();
 
-        expect(downloadCertificateSpy).toHaveBeenCalledWith(
+        expect(downloadCertificatesSpy).toHaveBeenCalledWith(
           component.workplace.uid,
           component.worker.uid,
           component.trainingRecordId,
@@ -915,7 +915,7 @@ describe('AddEditTrainingComponent', () => {
       it('should display singular version of error message when Download fails', async () => {
         const { component, fixture, getByText, getByTestId, trainingService } = await setup();
 
-        spyOn(trainingService, 'downloadCertificate').and.returnValue(of({ files: [] }));
+        spyOn(trainingService, 'downloadCertificates').and.returnValue(of({ files: [] }));
         component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
 
         fixture.detectChanges();
@@ -932,7 +932,7 @@ describe('AddEditTrainingComponent', () => {
       it('should display plural version of error message when Download all fails', async () => {
         const { component, fixture, getByText, getByTestId, trainingService } = await setup();
 
-        spyOn(trainingService, 'downloadCertificate').and.returnValue(of({ files: [] }));
+        spyOn(trainingService, 'downloadCertificates').and.returnValue(of({ files: [] }));
         component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
 
         fixture.detectChanges();

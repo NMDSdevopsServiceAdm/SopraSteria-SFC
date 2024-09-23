@@ -218,7 +218,7 @@ describe('TrainingService', () => {
     });
   });
 
-  describe('downloadCertificate', () => {
+  describe('downloadCertificates', () => {
     const mockWorkplaceUid = 'mockWorkplaceUid';
     const mockWorkerUid = 'mockWorkerUid';
     const mockTrainingUid = 'mockTrainingUid';
@@ -228,14 +228,14 @@ describe('TrainingService', () => {
     const certificateDownloadEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/training/${mockTrainingUid}/certificate/download`;
 
     it('should make call to expected backend endpoint', async () => {
-      service.downloadCertificate(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockFiles).subscribe();
+      service.downloadCertificates(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockFiles).subscribe();
 
       const downloadRequest = http.expectOne(certificateDownloadEndpoint);
       expect(downloadRequest.request.method).toBe('POST');
     });
 
     it('should have request body that contains file uid', async () => {
-      service.downloadCertificate(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockFiles).subscribe();
+      service.downloadCertificates(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockFiles).subscribe();
 
       const downloadRequest = http.expectOne(certificateDownloadEndpoint);
       const expectedRequestBody = { filesToDownload: mockFiles };

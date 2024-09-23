@@ -185,7 +185,7 @@ export class TrainingService {
     );
   }
 
-  public downloadCertificate(
+  public downloadCertificates(
     workplaceUid: string,
     workerUid: string,
     trainingUid: string,
