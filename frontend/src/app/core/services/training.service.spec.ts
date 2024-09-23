@@ -223,7 +223,7 @@ describe('TrainingService', () => {
     const mockWorkerUid = 'mockWorkerUid';
     const mockTrainingUid = 'mockTrainingUid';
 
-    const mockFiles = ['mockCertificateUid123'];
+    const mockFiles = [{ uid: 'mockCertificateUid123', filename: 'mockCertificateName' }];
 
     const certificateDownloadEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/training/${mockTrainingUid}/certificate/download`;
 
@@ -246,7 +246,7 @@ describe('TrainingService', () => {
 
   describe('triggerCertificateDownloads', () => {
     it('should download certificates by creating and triggering anchor tag, then cleaning DOM', () => {
-      const mockCertificates = [{ signedUrl: 'https://example.com/file1.pdf' }];
+      const mockCertificates = [{ signedUrl: 'https://example.com/file1.pdf', filename: 'file1.pdf' }];
       const mockBlob = new Blob(['file content'], { type: 'application/pdf' });
       const mockBlobUrl = 'blob:http://signed-url-example.com/blob-url';
 
@@ -268,7 +268,7 @@ describe('TrainingService', () => {
       // Assert anchor element has correct attributes
       const createdAnchor = createElementSpy.calls.mostRecent().returnValue as HTMLAnchorElement;
       expect(createdAnchor.href).toBe(mockBlobUrl);
-      expect(createdAnchor.download).toBe('test0');
+      expect(createdAnchor.download).toBe(mockCertificates[0].filename);
 
       // Assert DOM is cleaned up after download
       expect(revokeObjectURLSpy).toHaveBeenCalledWith(mockBlobUrl);

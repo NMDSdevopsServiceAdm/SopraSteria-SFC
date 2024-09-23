@@ -196,14 +196,16 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     const mockSignedUrl = 'http://localhost/mock-download-url';
     let res;
     let mockFileUid;
+    let mockFileName;
 
     beforeEach(() => {
       getSignedUrlForDownloadSpy = sinon.stub(s3, 'getSignedUrlForDownload').returns(mockSignedUrl);
       mockFileUid = 'mockFileUid';
+      mockFileName = 'mockFileName';
       req = httpMocks.createRequest({
         method: 'POST',
         url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/download`,
-        body: { filesToDownload: [mockFileUid] },
+        body: { filesToDownload: [{ uid: mockFileUid, filename: mockFileName }] },
         establishmentId: user.establishment.uid,
         params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
       });
@@ -216,11 +218,11 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       expect(res.statusCode).to.equal(200);
     });
 
-    it('should return an array with signed url for download in response', async () => {
+    it('should return an array with signed url for download and file name in response', async () => {
       await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
       const actual = await res._getJSONData();
 
-      expect(actual.files).to.deep.equal([{ signedUrl: mockSignedUrl }]);
+      expect(actual.files).to.deep.equal([{ signedUrl: mockSignedUrl, filename: mockFileName }]);
     });
 
     it('should call getSignedUrlForDownload with bucket name from config', async () => {

@@ -884,7 +884,7 @@ describe('AddEditTrainingComponent', () => {
           component.workplace.uid,
           component.worker.uid,
           component.trainingRecordId,
-          [mockTrainingCertificate.uid],
+          [{ uid: mockTrainingCertificate.uid, filename: mockTrainingCertificate.filename }],
         );
       });
 
@@ -905,7 +905,10 @@ describe('AddEditTrainingComponent', () => {
           component.workplace.uid,
           component.worker.uid,
           component.trainingRecordId,
-          [mockTrainingCertificate.uid, mockTrainingCertificate2.uid],
+          [
+            { uid: mockTrainingCertificate.uid, filename: mockTrainingCertificate.filename },
+            { uid: mockTrainingCertificate2.uid, filename: mockTrainingCertificate2.filename },
+          ],
         );
       });
 

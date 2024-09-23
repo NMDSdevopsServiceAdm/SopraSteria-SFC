@@ -112,13 +112,13 @@ const getPresignedUrlForCertificateDownload = async (req, res) => {
 
   const responsePayload = [];
 
-  for (const fileUid of filesToDownload) {
+  for (const file of filesToDownload) {
     const signedUrl = await s3.getSignedUrlForDownload({
       bucket: certificateBucket,
-      key: makeFileKey(id, workerId, trainingUid, fileUid),
+      key: makeFileKey(id, workerId, trainingUid, file.uid),
       options: { expiresIn: downloadSignedUrlExpire },
     });
-    responsePayload.push({ signedUrl });
+    responsePayload.push({ signedUrl, filename: file.filename });
   }
 
   return res.status(200).json({ files: responsePayload });

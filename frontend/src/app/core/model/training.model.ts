@@ -30,6 +30,11 @@ export interface TrainingResponse {
   training: TrainingRecord[];
 }
 
+export interface CertificateDownload {
+  uid: string;
+  filename: string;
+}
+
 export interface TrainingCertificate {
   uid: string;
   filename: string;

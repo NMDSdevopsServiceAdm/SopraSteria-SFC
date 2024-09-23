@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import {
   allMandatoryTrainingCategories,
+  CertificateDownload,
   CertificateSignedUrlRequest,
   CertificateSignedUrlResponse,
   ConfirmUploadRequest,
@@ -188,7 +189,7 @@ export class TrainingService {
     workplaceUid: string,
     workerUid: string,
     trainingUid: string,
-    filesToDownload: string[],
+    filesToDownload: CertificateDownload[],
   ): Observable<any> {
     return this.http.post<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate/download`,
@@ -196,21 +197,21 @@ export class TrainingService {
     );
   }
 
-  public triggerCertificateDownloads(files: { signedUrl: string }[]) {
+  public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): void {
     const downloadRequests = files.map((file) => this.http.get(file.signedUrl, { responseType: 'blob' }));
 
     forkJoin(downloadRequests).subscribe((fileBlobs: Blob[]) => {
       fileBlobs.forEach((blob, index) => {
-        this.triggerSingleCertificateDownload(blob, index);
+        this.triggerSingleCertificateDownload(blob, files[index].filename);
       });
     });
   }
 
-  private triggerSingleCertificateDownload(fileBlob: Blob, index: number): void {
+  private triggerSingleCertificateDownload(fileBlob: Blob, filename: string): void {
     const blobUrl = window.URL.createObjectURL(fileBlob);
-    const link = this.createHiddenDownloadLink(blobUrl, index);
+    const link = this.createHiddenDownloadLink(blobUrl, filename);
 
-    // Append the link to the body and click to trigger
+    // Append the link to the body and click to trigger download
     document.body.appendChild(link);
     link.click();
 
@@ -219,11 +220,11 @@ export class TrainingService {
     window.URL.revokeObjectURL(blobUrl);
   }
 
-  private createHiddenDownloadLink(blobUrl: string, index: number): HTMLAnchorElement {
+  private createHiddenDownloadLink(blobUrl: string, filename: string): HTMLAnchorElement {
     const link = document.createElement('a');
 
     link.href = blobUrl;
-    link.download = 'test' + index;
+    link.download = filename;
     link.style.display = 'none';
     return link;
   }

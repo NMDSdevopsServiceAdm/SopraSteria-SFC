@@ -3,6 +3,7 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
+import { CertificateDownload, TrainingCertificate } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -206,8 +207,10 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public downloadCertificate(fileIndex: number): void {
     const filesToDownload =
       fileIndex != null
-        ? [this.trainingCertificates[fileIndex].uid]
-        : this.trainingCertificates.map((certificate) => certificate.uid);
+        ? [this.formatForCertificateDownload(this.trainingCertificates[fileIndex])]
+        : this.trainingCertificates.map((certificate) => {
+            return this.formatForCertificateDownload(certificate);
+          });
 
     this.trainingService
       .downloadCertificate(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
@@ -218,6 +221,10 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         }
         this.trainingService.triggerCertificateDownloads(res.files);
       });
+  }
+
+  private formatForCertificateDownload(certificate: TrainingCertificate): CertificateDownload {
+    return { uid: certificate.uid, filename: certificate.filename };
   }
 
   private onSuccess() {
