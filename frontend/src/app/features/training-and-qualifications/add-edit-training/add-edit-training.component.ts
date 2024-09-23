@@ -13,6 +13,7 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { mergeMap } from 'rxjs/operators';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { TrainingCertificate } from '@core/model/training.model';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -24,6 +25,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public workerId: string;
   private _filesToUpload: File[];
   public uploadFilesErrors: string[] | null;
+  public filesToRemove: TrainingCertificate[] = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -199,6 +201,19 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       trainingRecordId,
       this.filesToUpload,
     );
+  }
+
+  public removeSavedFile(fileIndexToRemove: number): void {
+    console.log(fileIndexToRemove);
+
+    let tempTrainingCertificates = this.trainingCertificates.filter(
+      (certificate, index) => index !== fileIndexToRemove,
+    );
+
+    this.trainingCertificates = tempTrainingCertificates;
+
+    this.filesToRemove.push(this.trainingCertificates[fileIndexToRemove]);
+    console.log(this.filesToRemove);
   }
 
   private onSuccess() {

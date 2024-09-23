@@ -53,7 +53,11 @@
             </a>
           </td>
           <td class="govuk-table__cell table__cell-cancel_button">
-            <a href="#" class="govuk-link govuk-link--no-visited-state"
+            <a
+              href="#"
+              type="button"
+              class="govuk-link govuk-link--no-visited-state"
+              (click)="handleRemoveSavedFile($event, i)"
               >Remove <span class="govuk-visually-hidden">the uploaded certificate {{ certificate.filename }}</span></a
             >
           </td>

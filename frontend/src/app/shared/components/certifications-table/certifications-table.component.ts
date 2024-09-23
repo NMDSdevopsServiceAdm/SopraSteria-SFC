@@ -10,11 +10,17 @@ export class CertificationsTableComponent implements OnInit {
   @Input() certificates: TrainingCertificate[] = [];
   @Input() filesToUpload: File[] = [];
   @Output() removeFileToUpload = new EventEmitter<number>();
+  @Output() removeSavedFile = new EventEmitter<number>();
 
   ngOnInit() {}
 
   public handleRemoveUploadFile(event: Event, index: number): void {
     event.preventDefault();
     this.removeFileToUpload.emit(index);
+  }
+
+  public handleRemoveSavedFile(event: Event, index: number): void {
+    event.preventDefault();
+    this.removeSavedFile.emit(index);
   }
 }
