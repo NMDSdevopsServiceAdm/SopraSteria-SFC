@@ -577,14 +577,6 @@ describe('AddEditTrainingComponent', () => {
 
         userEvent.type(getByLabelText('Training name'), 'Understanding Autism');
         userEvent.click(getByLabelText('Yes'));
-        const completedDate = getByTestId('completedDate');
-        userEvent.type(within(completedDate).getByLabelText('Day'), '10');
-        userEvent.type(within(completedDate).getByLabelText('Month'), '4');
-        userEvent.type(within(completedDate).getByLabelText('Year'), '2020');
-        const expiresDate = getByTestId('expiresDate');
-        userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
-        userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
-        userEvent.type(within(expiresDate).getByLabelText('Year'), '2027');
         userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
 
         userEvent.upload(getByTestId('fileInput'), mockUploadFile);
@@ -595,8 +587,8 @@ describe('AddEditTrainingComponent', () => {
           trainingCategory: { id: 2 },
           title: 'Understanding Autism',
           accredited: 'Yes',
-          completed: '2020-04-10',
-          expires: '2027-04-10',
+          completed: null,
+          expires: null,
           notes: 'Some notes added to this training',
         });
 

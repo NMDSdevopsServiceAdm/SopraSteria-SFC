@@ -129,7 +129,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected submit(record: any): void {
-    this.disableSubmitButton = true;
+    this.submitButtonDisabled = true;
     let submitTrainingRecord = this.trainingRecordId
       ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
       : this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
@@ -187,13 +187,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private uploadNewCertificate(trainingRecordResponse: any) {
-    let trainingRecordId: string;
-    if (this.trainingRecordId) {
-      trainingRecordId = this.trainingRecordId;
-    } else {
-      const { uid } = trainingRecordResponse as CreateTrainingRecordResponse;
-      trainingRecordId = uid;
-    }
+    const trainingRecordId = this.trainingRecordId ?? trainingRecordResponse.uid;
 
     return this.trainingService.addCertificateToTraining(
       this.workplace.uid,
@@ -217,6 +211,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   private onError(error) {
     console.log(error);
-    this.disableSubmitButton = false;
+    this.submitButtonDisabled = false;
   }
 }
