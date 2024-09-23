@@ -5,22 +5,22 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
+import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 import sinon from 'sinon';
 
-import { AddEditTrainingComponent } from './add-edit-training.component';
-import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
-import { TrainingCategoryService } from '@core/services/training-category.service';
-import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
+import { AddEditTrainingComponent } from './add-edit-training.component';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -71,6 +71,7 @@ describe('AddEditTrainingComponent', () => {
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
     const trainingService = injector.inject(TrainingService) as TrainingService;
+    const downloadCertificateSpy = spyOn(trainingService, 'downloadCertificate').and.returnValue(of(['abc123']));
 
     return {
       component,
@@ -87,6 +88,7 @@ describe('AddEditTrainingComponent', () => {
       workerService,
       alertServiceSpy,
       trainingService,
+      downloadCertificateSpy,
     };
   }
 
@@ -839,6 +841,69 @@ describe('AddEditTrainingComponent', () => {
       fixture.detectChanges();
 
       expect(queryByTestId('trainingCertificatesTable')).toBeFalsy();
+    });
+
+    describe('download buttons', () => {
+      const mockTrainingCertificate = {
+        uid: '396ae33f-a99b-4035-9f29-718529a54244',
+        filename: 'first_aid.pdf',
+        uploadDate: '2024-04-12T14:44:29.151Z',
+      };
+
+      const mockTrainingCertificate2 = {
+        uid: '315ae33f-a99b-1235-9f29-718529a15044',
+        filename: 'first_aid_advanced.pdf',
+        uploadDate: '2024-04-13T16:44:21.121Z',
+      };
+
+      it('should show Download button when there is an existing training certificate', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.trainingCertificates = [mockTrainingCertificate];
+
+        fixture.detectChanges();
+
+        const certificatesTable = getByTestId('trainingCertificatesTable');
+        const downloadButton = within(certificatesTable).getByText('Download');
+
+        expect(downloadButton).toBeTruthy();
+      });
+
+      it('should make call to downloadCertificate with required uids and file uid in array when Download button clicked', async () => {
+        const { component, fixture, getByTestId, downloadCertificateSpy } = await setup();
+        component.trainingCertificates = [mockTrainingCertificate];
+
+        fixture.detectChanges();
+
+        const certificatesTable = getByTestId('trainingCertificatesTable');
+        const downloadButton = within(certificatesTable).getByText('Download');
+        downloadButton.click();
+
+        expect(downloadCertificateSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          component.trainingRecordId,
+          [mockTrainingCertificate.uid],
+        );
+      });
+
+      it('should make call to downloadCertificate with all certificate file uids in array when Download all button clicked', async () => {
+        const { component, fixture, getByTestId, downloadCertificateSpy } = await setup();
+        component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
+
+        fixture.detectChanges();
+
+        const certificatesTable = getByTestId('trainingCertificatesTable');
+        const downloadButton = within(certificatesTable).getByText('Download all');
+        downloadButton.click();
+
+        expect(downloadCertificateSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          component.trainingRecordId,
+          [mockTrainingCertificate.uid, mockTrainingCertificate2.uid],
+        );
+      });
     });
 
     describe('files to be uploaded', () => {

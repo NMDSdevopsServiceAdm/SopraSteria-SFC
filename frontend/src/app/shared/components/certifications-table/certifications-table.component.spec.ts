@@ -93,6 +93,17 @@ describe('CertificationsTableComponent', () => {
 
         expect(within(certificationsTableHeader).queryByText('Download all')).toBeFalsy();
       });
+
+      it('should emit download event with no index when download all button clicked', async () => {
+        const { component, getByTestId } = await setup(multipleFiles);
+
+        const downloadCertificateEmitSpy = spyOn(component.downloadCertificate, 'emit');
+        const certificationsTableHeader = getByTestId('certificationsTableHeader');
+        const downloadAllButton = within(certificationsTableHeader).getByText('Download all');
+
+        downloadAllButton.click();
+        expect(downloadCertificateEmitSpy).toHaveBeenCalledWith(null);
+      });
     });
   });
 
