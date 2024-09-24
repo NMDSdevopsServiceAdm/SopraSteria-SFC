@@ -912,7 +912,7 @@ describe('AddEditTrainingComponent', () => {
         );
       });
 
-      it('should display singular version of error message when Download fails', async () => {
+      it('should display error message when Download fails', async () => {
         const { component, fixture, getByText, getByTestId, trainingService } = await setup();
 
         spyOn(trainingService, 'downloadCertificates').and.returnValue(of({ files: [] }));
@@ -925,11 +925,13 @@ describe('AddEditTrainingComponent', () => {
         downloadButton.click();
         fixture.detectChanges();
 
-        const expectedErrorMessage = getByText('Error downloading the certificate');
+        const expectedErrorMessage = getByText(
+          "There's a problem with this download. Try again later or contact us for help.",
+        );
         expect(expectedErrorMessage).toBeTruthy();
       });
 
-      it('should display plural version of error message when Download all fails', async () => {
+      it('should display error message when Download all fails', async () => {
         const { component, fixture, getByText, getByTestId, trainingService } = await setup();
 
         spyOn(trainingService, 'downloadCertificates').and.returnValue(of({ files: [] }));
@@ -942,7 +944,9 @@ describe('AddEditTrainingComponent', () => {
         downloadAllButton.click();
         fixture.detectChanges();
 
-        const expectedErrorMessage = getByText('Error downloading the certificates');
+        const expectedErrorMessage = getByText(
+          "There's a problem with this download. Try again later or contact us for help.",
+        );
         expect(expectedErrorMessage).toBeTruthy();
       });
     });

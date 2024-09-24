@@ -216,7 +216,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
       .subscribe((res) => {
         if (!res.files || res.files.length == 0) {
-          this.certificateErrors = [`Error downloading the certificate${filesToDownload.length > 1 ? 's' : ''}`];
+          this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
           return;
         }
         this.trainingService.triggerCertificateDownloads(res.files);
