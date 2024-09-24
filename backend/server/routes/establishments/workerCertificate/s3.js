@@ -1,4 +1,4 @@
-const { PutObjectCommand, S3Client, HeadObjectCommand } = require('@aws-sdk/client-s3');
+const { PutObjectCommand, GetObjectCommand, S3Client, HeadObjectCommand } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const config = require('../../../config/config');
@@ -16,22 +16,30 @@ const getS3Client = () => {
   return new S3Client(clientConfigs);
 };
 
+const s3Client = getS3Client();
+
 function getSignedUrlForUpload({ bucket, key, options }) {
-  const s3client = getS3Client();
   const putCommand = new PutObjectCommand({
     Bucket: bucket,
     Key: key,
   });
-  return getSignedUrl(s3client, putCommand, options);
+  return getSignedUrl(s3Client, putCommand, options);
 }
 
+const getSignedUrlForDownload = ({ bucket, key, options }) => {
+  const getCommand = new GetObjectCommand({
+    Bucket: bucket,
+    Key: key,
+  });
+  return getSignedUrl(s3Client, getCommand, options);
+};
+
 async function verifyEtag(bucket, key, etag) {
-  const s3client = getS3Client();
   const headCommand = new HeadObjectCommand({ Bucket: bucket, Key: key });
-  const response = await s3client.send(headCommand);
+  const response = await s3Client.send(headCommand);
   const etagFromS3 = response.ETag;
 
   return etagFromS3 === etag;
 }
 
-module.exports = { getS3Client, getSignedUrlForUpload, verifyEtag };
+module.exports = { getS3Client, getSignedUrlForUpload, getSignedUrlForDownload, verifyEtag };

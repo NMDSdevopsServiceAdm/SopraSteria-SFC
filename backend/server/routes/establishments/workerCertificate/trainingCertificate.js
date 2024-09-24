@@ -13,13 +13,13 @@ const downloadSignedUrlExpire = config.get('workerCertificate.downloadSignedUrlE
 
 const router = express.Router({ mergeParams: true });
 
-const makeFileKey = (establishmentId, fileId) => {
-  return `${establishmentId}/trainingCertificate/${fileId}`;
+const makeFileKey = (establishmentUid, workerId, trainingUid, fileId) => {
+  return `${establishmentUid}/${workerId}/trainingCertificate/${trainingUid}/${fileId}`;
 };
 
 const requestUploadUrl = async (req, res) => {
-  const { establishmentId } = req;
   const { files } = req.body;
+  const { id, workerId, trainingUid } = req.params;
   if (!files || !files.length) {
     return res.status(400).send('Missing `files` param in request body');
   }
@@ -33,13 +33,13 @@ const requestUploadUrl = async (req, res) => {
   for (const file of files) {
     const filename = file.filename;
     const fileId = uuidv4();
-    const fileKey = makeFileKey(establishmentId, fileId);
+    const key = makeFileKey(id, workerId, trainingUid, fileId);
     const signedUrl = await s3.getSignedUrlForUpload({
       bucket: certificateBucket,
-      key: fileKey,
+      key,
       options: { expiresIn: uploadSignedUrlExpire },
     });
-    responsePayload.push({ filename, signedUrl, fileId });
+    responsePayload.push({ filename, signedUrl, fileId, key });
   }
 
   return res.status(200).json({ files: responsePayload });
@@ -73,10 +73,10 @@ const confirmUpload = async (req, res) => {
   }
 
   for (const file of files) {
-    const { filename, fileId } = file;
+    const { filename, fileId, key } = file;
 
     try {
-      await models.trainingCertificates.addCertificate({ trainingRecordId, workerFk, filename, fileId });
+      await models.trainingCertificates.addCertificate({ trainingRecordId, workerFk, filename, fileId, key });
     } catch (err) {
       console.error(err);
       return res.status(500).send('Failed to add records to database');
@@ -89,8 +89,7 @@ const confirmUpload = async (req, res) => {
 const verifyEtagsForAllFiles = async (establishmentId, files) => {
   try {
     for (const file of files) {
-      const fileKey = makeFileKey(establishmentId, file.fileId);
-      const etagMatchS3Record = await s3.verifyEtag(certificateBucket, fileKey, file.etag);
+      const etagMatchS3Record = await s3.verifyEtag(certificateBucket, file.key, file.etag);
       if (!etagMatchS3Record) {
         console.error('Etags in the request does not match the record at AWS bucket');
         return false;
@@ -103,9 +102,33 @@ const verifyEtagsForAllFiles = async (establishmentId, files) => {
   return true;
 };
 
+const getPresignedUrlForCertificateDownload = async (req, res) => {
+  const { filesToDownload } = req.body;
+  const { id, workerId, trainingUid } = req.params;
+
+  if (!filesToDownload || !filesToDownload.length) {
+    return res.status(400).send('No files provided in request body');
+  }
+
+  const responsePayload = [];
+
+  for (const file of filesToDownload) {
+    const signedUrl = await s3.getSignedUrlForDownload({
+      bucket: certificateBucket,
+      key: makeFileKey(id, workerId, trainingUid, file.uid),
+      options: { expiresIn: downloadSignedUrlExpire },
+    });
+    responsePayload.push({ signedUrl, filename: file.filename });
+  }
+
+  return res.status(200).json({ files: responsePayload });
+};
+
 router.route('/').post(hasPermission('canEditWorker'), requestUploadUrl);
 router.route('/').put(hasPermission('canEditWorker'), confirmUpload);
+router.route('/download').post(hasPermission('canEditWorker'), getPresignedUrlForCertificateDownload);
 
 module.exports = router;
 module.exports.requestUploadUrl = requestUploadUrl;
 module.exports.confirmUpload = confirmUpload;
+module.exports.getPresignedUrlForCertificateDownload = getPresignedUrlForCertificateDownload;

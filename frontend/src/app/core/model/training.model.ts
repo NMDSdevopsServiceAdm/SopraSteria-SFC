@@ -24,10 +24,21 @@ export interface TrainingRecordRequest {
   notes?: string;
 }
 
+export interface CreateTrainingRecordResponse extends TrainingRecordRequest {
+  uid: string;
+  workerUid: string;
+  created: string;
+}
+
 export interface TrainingResponse {
   count: number;
   lastUpdated?: string;
   training: TrainingRecord[];
+}
+
+export interface CertificateDownload {
+  uid: string;
+  filename: string;
 }
 
 export interface TrainingCertificate {
@@ -122,7 +133,7 @@ export interface CertificateSignedUrlRequest {
 }
 
 export interface CertificateSignedUrlResponse {
-  files: { filename: string; fileId: string; signedUrl: string }[];
+  files: { filename: string; fileId: string; signedUrl: string; key: string }[];
 }
 
 export interface S3UploadResponse {
@@ -132,6 +143,7 @@ export interface FileInfoWithETag {
   filename: string;
   fileId: string;
   etag: string;
+  key: string;
 }
 
 export interface ConfirmUploadRequest {

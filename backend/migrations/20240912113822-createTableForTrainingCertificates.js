@@ -47,6 +47,10 @@ module.exports = {
           type: Sequelize.DataTypes.DATE,
           allowNull: true,
         },
+        Key: {
+          type: Sequelize.DataTypes.TEXT,
+          allowNull: false,
+        },
       },
       { schema: 'cqc' },
     );

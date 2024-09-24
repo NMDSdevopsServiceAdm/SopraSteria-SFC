@@ -3,13 +3,14 @@ import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import {
   allMandatoryTrainingCategories,
-  TrainingCategory,
-  SelectedTraining,
-  S3UploadResponse,
+  CertificateDownload,
   CertificateSignedUrlRequest,
   CertificateSignedUrlResponse,
   ConfirmUploadRequest,
   FileInfoWithETag,
+  S3UploadResponse,
+  SelectedTraining,
+  TrainingCategory,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
@@ -157,25 +158,75 @@ export class TrainingService {
     signedUrlResponse: CertificateSignedUrlResponse,
     filesToUpload: File[],
   ): Observable<FileInfoWithETag[]> {
-    const allUploadResults$ = signedUrlResponse.files.map(({ signedUrl, fileId, filename }, index) => {
+    const allUploadResults$ = signedUrlResponse.files.map(({ signedUrl, fileId, filename, key }, index) => {
       const fileToUpload = filesToUpload[index];
       if (!fileToUpload.name || fileToUpload.name !== filename) {
         throw new Error('Invalid response from backend');
       }
-      return this.uploadOneCertificateToS3(signedUrl, fileId, fileToUpload);
+      return this.uploadOneCertificateToS3(signedUrl, fileId, fileToUpload, key);
     });
 
     return forkJoin(allUploadResults$);
   }
 
-  private uploadOneCertificateToS3(signedUrl: string, fileId: string, uploadFile: File): Observable<FileInfoWithETag> {
+  private uploadOneCertificateToS3(
+    signedUrl: string,
+    fileId: string,
+    uploadFile: File,
+    key: string,
+  ): Observable<FileInfoWithETag> {
     return this.http.put<S3UploadResponse>(signedUrl, uploadFile, { observe: 'response' }).pipe(
       map((s3response) => ({
         etag: s3response?.headers?.get('etag'),
         fileId,
         filename: uploadFile.name,
+        key,
       })),
     );
+  }
+
+  public downloadCertificates(
+    workplaceUid: string,
+    workerUid: string,
+    trainingUid: string,
+    filesToDownload: CertificateDownload[],
+  ): Observable<any> {
+    return this.http.post<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate/download`,
+      { filesToDownload },
+    );
+  }
+
+  public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): void {
+    const downloadRequests = files.map((file) => this.http.get(file.signedUrl, { responseType: 'blob' }));
+
+    forkJoin(downloadRequests).subscribe((fileBlobs: Blob[]) => {
+      fileBlobs.forEach((blob, index) => {
+        this.triggerSingleCertificateDownload(blob, files[index].filename);
+      });
+    });
+  }
+
+  private triggerSingleCertificateDownload(fileBlob: Blob, filename: string): void {
+    const blobUrl = window.URL.createObjectURL(fileBlob);
+    const link = this.createHiddenDownloadLink(blobUrl, filename);
+
+    // Append the link to the body and click to trigger download
+    document.body.appendChild(link);
+    link.click();
+
+    // Remove the link
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(blobUrl);
+  }
+
+  private createHiddenDownloadLink(blobUrl: string, filename: string): HTMLAnchorElement {
+    const link = document.createElement('a');
+
+    link.href = blobUrl;
+    link.download = filename;
+    link.style.display = 'none';
+    return link;
   }
 
   private buildConfirmUploadRequestBody(allFileInfoWithETag: FileInfoWithETag[]): ConfirmUploadRequest {
