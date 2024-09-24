@@ -21,6 +21,7 @@ import { MockTrainingCategoryService, trainingCategories } from '@core/test-util
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { CertificationsTableComponent } from '@shared/components/certifications-table/certifications-table.component';
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
+import { trainingRecord } from '@core/test-utils/MockWorkerService';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -476,6 +477,27 @@ describe('AddEditTrainingComponent', () => {
       expect(trainingService.selectedTraining.trainingCategory).toBeNull();
     });
 
+    it('should disable the submit button to prevent it being triggered more than once', async () => {
+      const { component, fixture, getByText, getByLabelText, trainingService, createSpy } = await setup(null);
+
+      trainingService.setSelectedTrainingCategory({
+        id: 2,
+        seq: 20,
+        category: 'Autism',
+        trainingCategoryGroup: 'Specific conditions and disabilities',
+      });
+      component.ngOnInit();
+
+      userEvent.type(getByLabelText('Training name'), 'Some training');
+      userEvent.click(getByLabelText('No'));
+
+      const submitButton = getByText('Save record') as HTMLButtonElement;
+      userEvent.click(submitButton);
+      fixture.detectChanges();
+
+      expect(submitButton.disabled).toBe(true);
+    });
+
     describe('upload certificate of an existing training', () => {
       const mockUploadFile = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
 
@@ -531,6 +553,77 @@ describe('AddEditTrainingComponent', () => {
         fireEvent.click(getByText('Save and return'));
 
         expect(addCertificateToTrainingSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('add a new training record and upload certificate together', async () => {
+      const mockUploadFile = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
+
+      it('should call both `addCertificateToTraining` and `createTrainingRecord` if an upload file is selected', async () => {
+        const { component, fixture, getByText, getByLabelText, getByTestId, createSpy, routerSpy, trainingService } =
+          await setup(null);
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        component.trainingCategory = {
+          category: 'Autism',
+          id: 2,
+        };
+
+        fixture.detectChanges();
+
+        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining').and.returnValue(
+          of(null),
+        );
+
+        userEvent.type(getByLabelText('Training name'), 'Understanding Autism');
+        userEvent.click(getByLabelText('Yes'));
+        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile);
+        fireEvent.click(getByText('Save record'));
+        fixture.detectChanges();
+
+        expect(createSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+          trainingCategory: { id: 2 },
+          title: 'Understanding Autism',
+          accredited: 'Yes',
+          completed: null,
+          expires: null,
+          notes: 'Some notes added to this training',
+        });
+
+        expect(addCertificateToTrainingSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          trainingRecord.uid,
+          [mockUploadFile],
+        );
+
+        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+      });
+
+      it('should not call `addCertificateToTraining` when no upload file was selected', async () => {
+        const { component, fixture, getByText, getByLabelText, createSpy, routerSpy, trainingService } = await setup(
+          null,
+        );
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        component.trainingCategory = {
+          category: 'Autism',
+          id: 2,
+        };
+        fixture.detectChanges();
+
+        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining');
+
+        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        fireEvent.click(getByText('Save record'));
+
+        expect(createSpy).toHaveBeenCalled;
+
+        expect(addCertificateToTrainingSpy).not.toHaveBeenCalled;
+
+        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       });
     });
   });

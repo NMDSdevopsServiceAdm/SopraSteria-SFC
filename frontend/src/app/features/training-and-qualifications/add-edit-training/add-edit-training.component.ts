@@ -13,6 +13,7 @@ import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-tr
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { mergeMap } from 'rxjs/operators';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { CreateTrainingRecordResponse } from '@core/model/training.model';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -128,6 +129,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   protected submit(record: any): void {
+    this.submitButtonDisabled = true;
     let submitTrainingRecord = this.trainingRecordId
       ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
       : this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
@@ -185,13 +187,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private uploadNewCertificate(trainingRecordResponse: any) {
-    let trainingRecordId: string;
-    if (this.trainingRecordId) {
-      trainingRecordId = this.trainingRecordId;
-    } else {
-      // TODO: this is the case of adding new training with certificate
-      // extract trainingRecordId from trainingRecordResponse
-    }
+    const trainingRecordId = this.trainingRecordId ?? trainingRecordResponse.uid;
 
     return this.trainingService.addCertificateToTraining(
       this.workplace.uid,
@@ -215,5 +211,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   private onError(error) {
     console.log(error);
+    this.submitButtonDisabled = false;
   }
 }
