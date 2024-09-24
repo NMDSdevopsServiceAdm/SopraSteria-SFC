@@ -1,8 +1,8 @@
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { CertificationsTableComponent } from './certifications-table.component';
-import userEvent from '@testing-library/user-event';
 
 describe('CertificationsTableComponent', () => {
   let singleFile = [
@@ -93,6 +93,17 @@ describe('CertificationsTableComponent', () => {
 
         expect(within(certificationsTableHeader).queryByText('Download all')).toBeFalsy();
       });
+
+      it('should emit download event with no index when download all button clicked', async () => {
+        const { component, getByTestId } = await setup(multipleFiles);
+
+        const downloadCertificateEmitSpy = spyOn(component.downloadCertificate, 'emit');
+        const certificationsTableHeader = getByTestId('certificationsTableHeader');
+        const downloadAllButton = within(certificationsTableHeader).getByText('Download all');
+
+        downloadAllButton.click();
+        expect(downloadCertificateEmitSpy).toHaveBeenCalledWith(null);
+      });
     });
   });
 
@@ -114,6 +125,17 @@ describe('CertificationsTableComponent', () => {
     expect(getByTestId('certificate-row-0')).toBeTruthy();
     expect(getByTestId('certificate-row-1')).toBeTruthy();
     expect(getByTestId('certificate-row-2')).toBeTruthy();
+  });
+
+  it('should emit event when download button clicked with index of table row', async () => {
+    const { component, getByTestId } = await setup(multipleFiles);
+
+    const certificateDownloadEmitSpy = spyOn(component.downloadCertificate, 'emit');
+    const certificateRow = getByTestId('certificate-row-0');
+    const downloadButton = within(certificateRow).getByText('Download');
+    downloadButton.click();
+
+    expect(certificateDownloadEmitSpy).toHaveBeenCalledWith(0);
   });
 
   describe('Files to upload', () => {

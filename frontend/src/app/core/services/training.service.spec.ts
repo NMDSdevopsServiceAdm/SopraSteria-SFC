@@ -1,8 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import { environment } from 'src/environments/environment';
 
 import { TrainingService } from './training.service';
-import { environment } from 'src/environments/environment';
 
 describe('TrainingService', () => {
   let service: TrainingService;
@@ -144,11 +144,12 @@ describe('TrainingService', () => {
     });
 
     it('should call to backend to confirm upload complete', async () => {
+      const mockKey = 'abcd/adsadsadvfdv/123dsvf';
       service.addCertificateToTraining(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockUploadFiles).subscribe();
 
       const signedUrlRequest = http.expectOne(certificateEndpoint);
       signedUrlRequest.flush({
-        files: [{ filename: 'certificate.pdf', signedUrl: mockSignedUrl, fileId: mockFileId }],
+        files: [{ filename: 'certificate.pdf', signedUrl: mockSignedUrl, fileId: mockFileId, key: mockKey }],
       });
 
       const uploadToS3Request = http.expectOne(mockSignedUrl);
@@ -156,7 +157,7 @@ describe('TrainingService', () => {
 
       const confirmUploadRequest = http.expectOne(certificateEndpoint);
       const expectedconfirmUploadReqBody = {
-        files: [{ filename: mockUploadFiles[0].name, fileId: mockFileId, etag: mockEtagFromS3 }],
+        files: [{ filename: mockUploadFiles[0].name, fileId: mockFileId, etag: mockEtagFromS3, key: mockKey }],
       };
 
       expect(confirmUploadRequest.request.method).toBe('PUT');
@@ -169,12 +170,14 @@ describe('TrainingService', () => {
       const mockFileIds = ['fileId1', 'fileId2', 'fileId3'];
       const mockEtags = ['etag1', 'etag2', 'etag3'];
       const mockSignedUrls = mockFileIds.map((fileId) => `${mockSignedUrl}/${fileId}`);
+      const mockKeys = mockFileIds.map((fileId) => `${fileId}/mockKey`);
 
       const mockSignedUrlResponse = {
         files: mockUploadFilenames.map((filename, index) => ({
           filename,
           signedUrl: mockSignedUrls[index],
           fileId: mockFileIds[index],
+          key: mockKeys[index],
         })),
       };
 
@@ -187,9 +190,9 @@ describe('TrainingService', () => {
       };
       const expectedConfirmUploadReqBody = {
         files: [
-          { filename: mockUploadFiles[0].name, fileId: mockFileIds[0], etag: mockEtags[0] },
-          { filename: mockUploadFiles[1].name, fileId: mockFileIds[1], etag: mockEtags[1] },
-          { filename: mockUploadFiles[2].name, fileId: mockFileIds[2], etag: mockEtags[2] },
+          { filename: mockUploadFiles[0].name, fileId: mockFileIds[0], etag: mockEtags[0], key: mockKeys[0] },
+          { filename: mockUploadFiles[1].name, fileId: mockFileIds[1], etag: mockEtags[1], key: mockKeys[1] },
+          { filename: mockUploadFiles[2].name, fileId: mockFileIds[2], etag: mockEtags[2], key: mockKeys[2] },
         ],
       };
 
@@ -212,6 +215,64 @@ describe('TrainingService', () => {
         const confirmUploadRequest = http.expectOne({ method: 'PUT', url: certificateEndpoint });
         expect(confirmUploadRequest.request.body).toEqual(expectedConfirmUploadReqBody);
       });
+    });
+  });
+
+  describe('downloadCertificates', () => {
+    const mockWorkplaceUid = 'mockWorkplaceUid';
+    const mockWorkerUid = 'mockWorkerUid';
+    const mockTrainingUid = 'mockTrainingUid';
+
+    const mockFiles = [{ uid: 'mockCertificateUid123', filename: 'mockCertificateName' }];
+
+    const certificateDownloadEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/training/${mockTrainingUid}/certificate/download`;
+
+    it('should make call to expected backend endpoint', async () => {
+      service.downloadCertificates(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockFiles).subscribe();
+
+      const downloadRequest = http.expectOne(certificateDownloadEndpoint);
+      expect(downloadRequest.request.method).toBe('POST');
+    });
+
+    it('should have request body that contains file uid', async () => {
+      service.downloadCertificates(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockFiles).subscribe();
+
+      const downloadRequest = http.expectOne(certificateDownloadEndpoint);
+      const expectedRequestBody = { filesToDownload: mockFiles };
+
+      expect(downloadRequest.request.body).toEqual(expectedRequestBody);
+    });
+  });
+
+  describe('triggerCertificateDownloads', () => {
+    it('should download certificates by creating and triggering anchor tag, then cleaning DOM', () => {
+      const mockCertificates = [{ signedUrl: 'https://example.com/file1.pdf', filename: 'file1.pdf' }];
+      const mockBlob = new Blob(['file content'], { type: 'application/pdf' });
+      const mockBlobUrl = 'blob:http://signed-url-example.com/blob-url';
+
+      const createElementSpy = spyOn(document, 'createElement').and.callThrough();
+      const appendChildSpy = spyOn(document.body, 'appendChild').and.callThrough();
+      const removeChildSpy = spyOn(document.body, 'removeChild').and.callThrough();
+      const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL').and.callThrough();
+      spyOn(window.URL, 'createObjectURL').and.returnValue(mockBlobUrl);
+
+      service.triggerCertificateDownloads(mockCertificates);
+
+      const downloadReq = http.expectOne(mockCertificates[0].signedUrl);
+      downloadReq.flush(mockBlob);
+
+      // Assert anchor element appended
+      expect(createElementSpy).toHaveBeenCalledWith('a');
+      expect(appendChildSpy).toHaveBeenCalled();
+
+      // Assert anchor element has correct attributes
+      const createdAnchor = createElementSpy.calls.mostRecent().returnValue as HTMLAnchorElement;
+      expect(createdAnchor.href).toBe(mockBlobUrl);
+      expect(createdAnchor.download).toBe(mockCertificates[0].filename);
+
+      // Assert DOM is cleaned up after download
+      expect(revokeObjectURLSpy).toHaveBeenCalledWith(mockBlobUrl);
+      expect(removeChildSpy).toHaveBeenCalled();
     });
   });
 });

@@ -38,6 +38,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: '"UploadDate"',
       },
+      key: {
+        type: DataTypes.TEXT,
+        allowNull: false,
+        field: '"Key"',
+      },
     },
     {
       tableName: 'TrainingCertificates',
@@ -61,7 +66,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  TrainingCertificates.addCertificate = function ({ trainingRecordId, workerFk, filename, fileId }) {
+  TrainingCertificates.addCertificate = function ({ trainingRecordId, workerFk, filename, fileId, key }) {
     const timeNow = dayjs().format();
 
     return this.create({
@@ -70,6 +75,7 @@ module.exports = function (sequelize, DataTypes) {
       workerTrainingFk: trainingRecordId,
       filename: filename,
       uploadDate: timeNow,
+      key,
     });
   };
 

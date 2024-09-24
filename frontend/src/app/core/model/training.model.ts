@@ -36,6 +36,11 @@ export interface TrainingResponse {
   training: TrainingRecord[];
 }
 
+export interface CertificateDownload {
+  uid: string;
+  filename: string;
+}
+
 export interface TrainingCertificate {
   uid: string;
   filename: string;
@@ -128,7 +133,7 @@ export interface CertificateSignedUrlRequest {
 }
 
 export interface CertificateSignedUrlResponse {
-  files: { filename: string; fileId: string; signedUrl: string }[];
+  files: { filename: string; fileId: string; signedUrl: string; key: string }[];
 }
 
 export interface S3UploadResponse {
@@ -138,6 +143,7 @@ export interface FileInfoWithETag {
   filename: string;
   fileId: string;
   etag: string;
+  key: string;
 }
 
 export interface ConfirmUploadRequest {

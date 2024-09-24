@@ -206,7 +206,7 @@
                   </span>
                 </div>
                 <div id="uploadCertificate-errors">
-                  <app-validation-error-message *ngFor="let errorMessage of uploadFilesErrors" [errorMessage]="errorMessage"/>
+                  <app-validation-error-message *ngFor="let errorMessage of certificateErrors" [errorMessage]="errorMessage"/>
                 </div>
               </fieldset>
             </div>
@@ -216,6 +216,7 @@
               [certificates]="trainingCertificates"
               [filesToUpload]="filesToUpload"
               (removeFileToUpload)="removeFileToUpload($event)"
+              (downloadCertificate)="downloadCertificates($event)"
             ></app-certifications-table>
           </div>
         </div>

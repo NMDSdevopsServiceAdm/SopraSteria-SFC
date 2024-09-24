@@ -1,19 +1,20 @@
+import { HttpClient } from '@angular/common/http';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
+import { CertificateDownload, TrainingCertificate } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import dayjs from 'dayjs';
+import { mergeMap } from 'rxjs/operators';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
-import { TrainingCategoryService } from '@core/services/training-category.service';
-import { mergeMap } from 'rxjs/operators';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { CreateTrainingRecordResponse } from '@core/model/training.model';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -24,7 +25,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public establishmentUid: string;
   public workerId: string;
   private _filesToUpload: File[];
-  public uploadFilesErrors: string[] | null;
+  public certificateErrors: string[] | null;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -36,6 +37,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
+    protected http: HttpClient,
   ) {
     super(
       formBuilder,
@@ -155,11 +157,11 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   }
 
   private resetUploadFilesError(): void {
-    this.uploadFilesErrors = null;
+    this.certificateErrors = null;
   }
 
   public getUploadComponentAriaDescribedBy(): string {
-    if (this.uploadFilesErrors) {
+    if (this.certificateErrors) {
       return 'uploadCertificate-errors uploadCertificate-aria-text';
     } else if (this.filesToUpload?.length > 0) {
       return 'uploadCertificate-aria-text';
@@ -173,7 +175,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     const errors = CustomValidators.validateUploadCertificates(newFiles);
 
     if (errors) {
-      this.uploadFilesErrors = errors;
+      this.certificateErrors = errors;
       return;
     }
 
@@ -195,6 +197,29 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
       trainingRecordId,
       this.filesToUpload,
     );
+  }
+
+  public downloadCertificates(fileIndex: number): void {
+    const filesToDownload =
+      fileIndex != null
+        ? [this.formatForCertificateDownload(this.trainingCertificates[fileIndex])]
+        : this.trainingCertificates.map((certificate) => {
+            return this.formatForCertificateDownload(certificate);
+          });
+
+    this.trainingService
+      .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
+      .subscribe((res) => {
+        if (!res.files || res.files.length == 0) {
+          this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
+          return;
+        }
+        this.trainingService.triggerCertificateDownloads(res.files);
+      });
+  }
+
+  private formatForCertificateDownload(certificate: TrainingCertificate): CertificateDownload {
+    return { uid: certificate.uid, filename: certificate.filename };
   }
 
   private onSuccess() {
