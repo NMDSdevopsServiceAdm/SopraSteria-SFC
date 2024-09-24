@@ -6,10 +6,13 @@
         <th scope="col" class="govuk-table__header govuk-!-padding-bottom-1">Upload date</th>
         <th scope="col" class="govuk-table__header govuk-!-font-weight-regular govuk-!-padding-bottom-1">
           <ng-container *ngIf="certificates?.length > 1">
-            <a href="#" class="govuk-link govuk-link--no-visited-state">
+            <a
+              href="#"
+              class="govuk-link govuk-link--no-visited-state"
+              (click)="handleDownloadCertificate($event, null)"
+            >
               <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
                 class="govuk-!-margin-left-1"
-                (click)="handleDownloadCertificate($event, null)"
                 >Download all</span
               ></a
             >
@@ -45,10 +48,9 @@
             {{ certificate.uploadDate | date: "d MMM y, h:mmaaaaa'm'" }}
           </td>
           <td class="govuk-table__cell table__cell-download_button">
-            <a href="#" class="govuk-link govuk-link--no-visited-state">
+            <a href="#" class="govuk-link govuk-link--no-visited-state" (click)="handleDownloadCertificate($event, i)">
               <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
                 class="govuk-!-margin-left-1"
-                (click)="handleDownloadCertificate($event, i)"
                 >Download</span
               >
               <span class="govuk-visually-hidden">the certificate {{ certificate.filename }}</span>
