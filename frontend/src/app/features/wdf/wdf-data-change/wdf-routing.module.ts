@@ -82,7 +82,7 @@ const routes: Routes = [
   },
   {
     path: 'staff-record/:id',
-    resolve: { worker: WorkerResolver, establishment: WorkplaceResolver, jobs: JobsResolver },
+    resolve: { worker: WorkerResolver, establishment: WorkplaceResolver },
     children: [
       {
         path: '',
@@ -98,6 +98,7 @@ const routes: Routes = [
         path: 'main-job-role',
         component: MainJobRoleComponent,
         data: { title: 'Main Job Role' },
+        resolve: { jobs: JobsResolver },
       },
       {
         path: 'main-job-start-date',
@@ -279,7 +280,7 @@ const routes: Routes = [
           },
           {
             path: 'staff-record/:id',
-            resolve: { worker: WorkerResolver, establishment: WorkplaceResolver, jobs: JobsResolver },
+            resolve: { worker: WorkerResolver, establishment: WorkplaceResolver },
             canActivate: [HasPermissionsGuard],
             data: { permissions: ['canViewWdfReport'], title: 'Staff Record Summary' },
             children: [
@@ -297,6 +298,7 @@ const routes: Routes = [
                 path: 'main-job-role',
                 component: MainJobRoleComponent,
                 data: { title: 'Main Job Role' },
+                resolve: { jobs: JobsResolver },
               },
               {
                 path: 'main-job-start-date',

@@ -113,6 +113,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     EthnicityComponent,
     GenderComponent,
     HomePostcodeComponent,
+    MainJobRoleComponent,
     MainJobStartDateComponent,
     MentalHealthProfessionalComponent,
     NationalInsuranceNumberComponent,
