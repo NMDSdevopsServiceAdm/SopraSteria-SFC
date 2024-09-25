@@ -5,7 +5,7 @@ const models = require('../server/models/index');
 const jobs = [
   { id: 2, newTitle: 'Administrative', oldTitle: 'Administrative, office staff (non care-providing)' },
   { id: 11, newTitle: 'Community support and outreach work', oldTitle: 'Community, support and outreach work' },
-  { id: 14, newTitle: 'Managers (care-related, but not care-providing roles)', oldTitle: 'Managers and staff (care-related, but not care-providing)' },
+  { id: 14, newTitle: 'Manager (care-related, but not care-providing roles)', oldTitle: 'Managers and staff (care-related, but not care-providing)' },
   { id: 1, newTitle: 'Activities worker, co-ordinator', oldTitle: 'Activities worker, coordinator' },
   { id: 8, newTitle: 'Care co-ordinator', oldTitle: 'Care coordinator' }
 ]
