@@ -388,5 +388,15 @@ describe('NewTrainingComponent', async () => {
       const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
       expect(within(trainingRecordWithCertificateRow).getByText('Select a download')).toBeTruthy();
     });
+
+    it('should display Upload file button when training record has no certificates associated with it', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [];
+      fixture.detectChanges();
+
+      const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
+      expect(within(trainingRecordWithCertificateRow).getByText('Upload file')).toBeTruthy();
+    });
   });
 });

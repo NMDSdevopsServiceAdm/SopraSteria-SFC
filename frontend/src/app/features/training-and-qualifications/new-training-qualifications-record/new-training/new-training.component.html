@@ -110,6 +110,9 @@
                     Select a download
                   </a>
                 </span>
+                <span *ngIf="trainingRecord.trainingCertificates?.length == 0">
+                  <button href="#" class="govuk-button govuk-button--secondary">Upload file</button>
+                </span>
               </td>
             </tr>
           </tbody>
