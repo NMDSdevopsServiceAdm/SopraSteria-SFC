@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { NewTrainingComponent } from './new-training.component';
 
@@ -348,6 +348,45 @@ describe('NewTrainingComponent', async () => {
 
       expect(expiredAutismTrainingExpired).toBeFalsy();
       expect(expiredAutismTrainingExpiring).toBeTruthy();
+    });
+  });
+
+  describe('Training certificates', () => {
+    it('should display Download link when training record has one certificate associated with it', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [
+        {
+          filename: 'test.pdf',
+          uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+          uploadDate: '2024-09-20T08:57:45.000Z',
+        },
+      ];
+      fixture.detectChanges();
+
+      const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
+      expect(within(trainingRecordWithCertificateRow).getByText('Download')).toBeTruthy();
+    });
+
+    it('should display Select a download link when training record has more than one certificate associated with it', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [
+        {
+          filename: 'test.pdf',
+          uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+          uploadDate: '2024-09-20T08:57:45.000Z',
+        },
+        {
+          filename: 'test2.pdf',
+          uid: '1872ec19-510d-41de-995d-6abfd3ae888b',
+          uploadDate: '2024-09-19T08:57:45.000Z',
+        },
+      ];
+      fixture.detectChanges();
+
+      const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
+      expect(within(trainingRecordWithCertificateRow).getByText('Select a download')).toBeTruthy();
     });
   });
 });

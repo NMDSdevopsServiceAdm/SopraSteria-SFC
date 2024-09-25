@@ -85,7 +85,32 @@
                   Expires soon
                 </div>
               </td>
-              <td class="govuk-table__cell"></td>
+              <td class="govuk-table__cell">
+                <span *ngIf="trainingRecord.trainingCertificates?.length == 1">
+                  <a
+                    href="#"
+                    class="govuk-link govuk-link--no-visited-state"
+                    (click)="handleDownloadCertificate($event, i)"
+                  >
+                    <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
+                      class="govuk-!-margin-left-1"
+                      >Download</span
+                    >
+                    <span class="govuk-visually-hidden"
+                      >the certificate {{ trainingRecord.trainingCertificates[0].filename }}</span
+                    >
+                  </a>
+                </span>
+                <span *ngIf="trainingRecord.trainingCertificates?.length > 1">
+                  <a
+                    href="#"
+                    class="govuk-link govuk-link--no-visited-state"
+                    (click)="handleDownloadCertificate($event, i)"
+                  >
+                    Select a download
+                  </a>
+                </span>
+              </td>
             </tr>
           </tbody>
         </table>
