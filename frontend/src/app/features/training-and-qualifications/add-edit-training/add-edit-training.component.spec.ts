@@ -226,6 +226,40 @@ describe('AddEditTrainingComponent', () => {
       expect(workerServiceSpy).toHaveBeenCalledWith(workplace.uid, worker.uid, trainingRecordId);
     });
 
+    it('should open the notes section if there are some notes in record', async () => {
+      const mockTrainingWithNotes = {
+        trainingCategory: { id: 1, category: 'Communication' },
+        notes: 'some notes about this training',
+      };
+      const { component, fixture, workerService, getByTestId, getByText } = await setup();
+
+      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(mockTrainingWithNotes));
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Close notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
+      const notesTextArea = within(notesSection).getByRole('textbox', { name: 'Add a note' }) as HTMLTextAreaElement;
+      expect(notesTextArea.value).toEqual('some notes about this training');
+    });
+
+    it('should display the remaining character count correctly if there are some notes in record', async () => {
+      const mockTrainingWithNotes = {
+        trainingCategory: { id: 1, category: 'Communication' },
+        notes: 'some notes about this training',
+      };
+      const { component, fixture, workerService, getByText } = await setup();
+
+      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(mockTrainingWithNotes));
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const expectedRemainingCharCounts = component.notesMaxLength - 'some notes about this training'.length;
+      expect(getByText(`You have ${expectedRemainingCharCounts} characters remaining`)).toBeTruthy;
+    });
+
     it('should not prefill the form if there is a training record id but there is no training record', async () => {
       const { component, workerService } = await setup();
       spyOn(workerService, 'getTrainingRecord').and.returnValue(of(null));

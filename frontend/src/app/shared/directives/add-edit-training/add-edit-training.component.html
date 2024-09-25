@@ -230,7 +230,7 @@
                 <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
                 </span>
-                <button type="button" (click)="toggleNotesOpen()" class="govuk-accordion__show-all" aria-expanded="notesOpen">
+                <button type="button" (click)="toggleNotesOpen()" class="govuk-accordion__show-all" [attr.aria-expanded]="notesOpen">
                   <span class="govuk-accordion-nav__chevron" [class]="{'govuk-accordion-nav__chevron--up' : notesOpen, 'govuk-accordion-nav__chevron--down': !notesOpen} "></span>
                   <span class="govuk-accordion__show-all-text">{{ !notesOpen ? 'Open notes' : 'Close notes' }}</span>
                 </button>

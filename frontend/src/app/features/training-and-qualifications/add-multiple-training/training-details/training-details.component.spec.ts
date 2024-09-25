@@ -241,6 +241,28 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
   });
 
+  it('should set the notes section as open if there are some notes', async () => {
+    const { component, getByText, getByTestId } = await setup(false, true);
+
+    const { notes } = component.trainingService.selectedTraining;
+
+    const notesSection = getByTestId('notesSection');
+
+    expect(getByText('Close notes')).toBeTruthy();
+    expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
+    const notesTextArea = within(notesSection).getByRole('textbox', { name: 'Add a note' }) as HTMLTextAreaElement;
+    expect(notesTextArea.value).toEqual(notes);
+  });
+
+  it('should display the remaining character count correctly if there are some notes', async () => {
+    const { component, getByText } = await setup(false, true);
+
+    const { notes } = component.trainingService.selectedTraining;
+
+    const expectedRemainingCharCounts = component.notesMaxLength - notes.length;
+    expect(getByText(`You have ${expectedRemainingCharCounts} characters remaining`)).toBeTruthy;
+  });
+
   it('should not render certificate upload', async () => {
     const { queryByTestId } = await setup();
     const uploadSection = queryByTestId('uploadCertificate');
