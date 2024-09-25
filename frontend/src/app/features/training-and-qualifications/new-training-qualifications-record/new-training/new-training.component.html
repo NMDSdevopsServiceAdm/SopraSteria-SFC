@@ -15,14 +15,18 @@
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th scope="col" class="govuk-table__header" scope="col" style="width: 30%">Training name</th>
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 16.5%">Accredited</th>
+              <th scope="col" class="govuk-table__header" scope="col" style="width: 13.5%">Accredited</th>
               <th scope="col" class="govuk-table__header" scope="col" style="width: 20%">Completion date</th>
               <th scope="col" class="govuk-table__header" scope="col" style="width: 17.5%">Expiry date</th>
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 16%"></th>
+              <th scope="col" class="govuk-table__header" scope="col" style="width: 19%">Certificate</th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            <tr class="govuk-table__row" *ngFor="let trainingRecord of trainingCategory.trainingRecords">
+            <tr
+              class="govuk-table__row"
+              *ngFor="let trainingRecord of trainingCategory.trainingRecords"
+              [attr.data-testid]="trainingRecord.uid"
+            >
               <td class="govuk-table__cell">
                 <ng-container *ngIf="canEditWorker; else viewOnly">
                   <ng-container *ngIf="!trainingRecord.uid; else showLink"> - </ng-container>

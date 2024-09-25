@@ -1,14 +1,11 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { render } from '@testing-library/angular';
 
 import { NewTrainingComponent } from './new-training.component';
 
 describe('NewTrainingComponent', async () => {
-  let component: NewTrainingComponent;
-  let fixture: ComponentFixture<NewTrainingComponent>;
-
   const trainingCategories = [
     {
       category: 'Autism',
@@ -95,29 +92,35 @@ describe('NewTrainingComponent', async () => {
     },
   ];
 
-  beforeEach(() => {
-    TestBed.configureTestingModule({
+  async function setup(canEditWorker = true) {
+    const { fixture, getByTestId, getByLabelText } = await render(NewTrainingComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
       providers: [],
-    }).compileComponents();
-  });
+      componentProperties: {
+        canEditWorker,
+        trainingCategories: trainingCategories,
+        isMandatoryTraining: false,
+      },
+    });
+    const component = fixture.componentInstance;
 
-  beforeEach(() => {
-    fixture = TestBed.createComponent(NewTrainingComponent);
-    component = fixture.componentInstance;
-    component.canEditWorker = true;
-    component.trainingCategories = trainingCategories;
-    component.isMandatoryTraining = false;
-    fixture.detectChanges();
-  });
+    return {
+      component,
+      getByTestId,
+      getByLabelText,
+      fixture,
+    };
+  }
 
   it('should create', async () => {
+    const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
   describe('training record table contents', async () => {
     it('should render a category heading name for each training record category', async () => {
+      const { fixture } = await setup();
+
       const autismCategory = fixture.debugElement.query(By.css('[data-testid="category-Autism"]')).nativeElement;
       const communicationCategory = fixture.debugElement.query(
         By.css('[data-testid="category-Communication"]'),
@@ -130,8 +133,7 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should render missing training name when there is no title for a training record', async () => {
-      component.canEditWorker = true;
-      fixture.detectChanges();
+      const { fixture } = await setup();
 
       const healthTrainingTitle = fixture.debugElement.query(
         By.css('[data-testid="Title-someHealthUid"]'),
@@ -146,9 +148,8 @@ describe('NewTrainingComponent', async () => {
   });
 
   describe('training record links', async () => {
-    it('training title should have link to training records if you are an edit user', () => {
-      component.canEditWorker = true;
-      fixture.detectChanges();
+    it('training title should have link to training records if you are an edit user', async () => {
+      const { fixture } = await setup();
 
       const autismTrainingTitleLink = fixture.debugElement.query(
         By.css('[data-testid="Title-someAutismUid"]'),
@@ -193,9 +194,8 @@ describe('NewTrainingComponent', async () => {
       ).toBe('/training/someHealthUid2');
     });
 
-    it('training title should not link to training records if you are a read only user', () => {
-      component.canEditWorker = false;
-      fixture.detectChanges();
+    it('training title should not link to training records if you are a read only user', async () => {
+      const { fixture } = await setup(false);
 
       const autismTrainingTitleLink = fixture.debugElement.query(By.css('[data-testid="Title-no-link-someAutismUid"]'));
       const autismTraining2TitleLink = fixture.debugElement.query(
@@ -220,6 +220,8 @@ describe('NewTrainingComponent', async () => {
 
   describe('no training', async () => {
     it('should display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is true', async () => {
+      const { component, fixture } = await setup();
+
       component.trainingCategories = [];
       fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
@@ -229,6 +231,8 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should not display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is false', async () => {
+      const { component, fixture } = await setup();
+
       component.trainingCategories = [];
       component.canEditWorker = false;
       fixture.detectChanges();
@@ -238,6 +242,8 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true and canEditWorker is true', async () => {
+      const { component, fixture } = await setup();
+
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
@@ -250,6 +256,8 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should not display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true and canEditWorker is false', async () => {
+      const { component, fixture } = await setup();
+
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
@@ -263,6 +271,8 @@ describe('NewTrainingComponent', async () => {
 
   describe('expired flag', () => {
     it('should not show if there is no expiry date', async () => {
+      const { component, fixture } = await setup();
+
       component.trainingCategories[0].trainingRecords[0].expires = null;
       fixture.detectChanges();
 
@@ -278,6 +288,8 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should not show if expiry date has not passed', async () => {
+      const { component, fixture } = await setup();
+
       const today = new Date();
       const yearFromNow = today.setFullYear(today.getFullYear() + 1);
 
@@ -297,6 +309,8 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should show expired if expiry date has passed', async () => {
+      const { component, fixture } = await setup();
+
       const today = new Date();
       const yearBeforeNow = today.setFullYear(today.getFullYear() - 1);
 
@@ -316,6 +330,8 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should show expires soon', async () => {
+      const { component, fixture } = await setup();
+
       const today = new Date();
       const monthFromNow = today.setMonth(today.getMonth() + 1);
 
