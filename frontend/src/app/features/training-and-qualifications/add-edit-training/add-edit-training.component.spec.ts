@@ -1158,6 +1158,41 @@ describe('AddEditTrainingComponent', () => {
         fixture.detectChanges();
         expect(component.trainingCertificates.length).toBe(0);
       });
+
+      it('should call the training service when save and return is clicked', async () => {
+        const { component, fixture, getByTestId, getByText, trainingService } = await setup();
+
+        component.trainingCertificates = [
+          {
+            uid: 'uid-1',
+            filename: 'first_aid_v1.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-2',
+            filename: 'first_aid_v2.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+        ];
+
+        fixture.detectChanges();
+
+        const certificateRow = getByTestId('certificate-row-0');
+
+        const removeButtonForRow = within(certificateRow).getByText('Remove');
+        const trainingServiceSpy = spyOn(trainingService, 'deleteCertificates').and.callThrough();
+        fireEvent.click(removeButtonForRow);
+        fireEvent.click(getByText('Save and return'));
+
+        fixture.detectChanges();
+
+        expect(trainingServiceSpy).toHaveBeenCalledWith(
+          component.establishmentUid,
+          component.workerId,
+          component.trainingRecordId,
+          component.filesToRemove,
+        );
+      });
     });
   });
 });

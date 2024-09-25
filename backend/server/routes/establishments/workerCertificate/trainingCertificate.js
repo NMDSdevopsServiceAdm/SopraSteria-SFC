@@ -124,11 +124,60 @@ const getPresignedUrlForCertificateDownload = async (req, res) => {
   return res.status(200).json({ files: responsePayload });
 };
 
+const deleteCertificates = async (req, res) => {
+  const { filesToDelete } = req.body;
+  const { id, workerId, establishmentUid, trainingUid } = req.params;
+
+  if (!filesToDelete || !filesToDelete.length) {
+    return res.status(400).send('No files provided in request body');
+  }
+
+  let deletedFiles = [];
+  let filesToDeleteFromS3 = [];
+  let dbErrors = [];
+  let filesNotDeleted = [];
+
+  for (const file of filesToDelete) {
+    let deleteFromDb;
+    try {
+      deleteFromDb = await models.trainingCertificates.deleteCertificate(file.Key);
+    } catch (error) {
+      console.log(error);
+      dbErrors.push(error);
+    }
+
+    if (deleteFromDb) {
+      filesToDeleteFromS3.push({ Key: makeFileKey(id, workerId, trainingUid, file.uid) });
+    } else {
+      filesNotDeleted.push(makeFileKey(id, workerId, trainingUid, file.uid));
+    }
+  }
+
+  let deleteFromS3Response;
+
+  if (filesToDeleteFromS3.length > 0) {
+    deleteFromS3Response = await s3.deleteCertificatesFromBucket({
+      bucket: certificateBucket,
+      objects: filesToDeleteFromS3,
+    });
+  }
+
+  if (deleteFromS3Response?.Deleted) {
+    for (const fileDeletedFromS3 of deleteFromS3Response?.Deleted) {
+      deletedFiles.push(fileDeletedFromS3.Key);
+    }
+  }
+
+  return res.status(200).json({ deletedFiles, filesNotDeleted });
+};
+
 router.route('/').post(hasPermission('canEditWorker'), requestUploadUrl);
 router.route('/').put(hasPermission('canEditWorker'), confirmUpload);
 router.route('/download').post(hasPermission('canEditWorker'), getPresignedUrlForCertificateDownload);
+router.route('/delete').post(hasPermission('canEditWorker'), deleteCertificates);
 
 module.exports = router;
 module.exports.requestUploadUrl = requestUploadUrl;
 module.exports.confirmUpload = confirmUpload;
 module.exports.getPresignedUrlForCertificateDownload = getPresignedUrlForCertificateDownload;
+module.exports.deleteCertificates = deleteCertificates;

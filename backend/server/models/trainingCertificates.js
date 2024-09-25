@@ -79,5 +79,13 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  TrainingCertificates.deleteCertificate = async function (key) {
+    return await this.destroy({
+      where: {
+        key: key,
+      },
+    });
+  };
+
   return TrainingCertificates;
 };

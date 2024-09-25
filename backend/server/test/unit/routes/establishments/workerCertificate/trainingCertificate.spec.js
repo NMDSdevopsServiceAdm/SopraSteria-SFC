@@ -259,4 +259,83 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       expect(getSignedUrlForDownloadSpy).not.to.be.called;
     });
   });
+
+  describe('delete certificates', () => {
+    let res;
+    let stubDeleteFilesFromS3;
+    let stubDeleteCertificate;
+
+    beforeEach(() => {
+      mockFileUid = 'mockFileUid';
+      mockFileName = 'mockFileName';
+      req = httpMocks.createRequest({
+        method: 'POST',
+        url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/delete`,
+        body: { filesToDelete: [{ uid: mockFileUid, filename: mockFileName }] },
+        establishmentId: user.establishment.uid,
+        params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
+      });
+      res = httpMocks.createResponse();
+    });
+
+    it('should return 400 status and message if no files in req body', async () => {
+      req.body = {};
+
+      await trainingCertificateRoute.deleteCertificates(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.equal('No files provided in request body');
+    });
+
+    it('should return the key of the a deleted training certificate', async () => {
+      let mockKey = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid}`;
+      stubDeleteFilesFromS3 = sinon.stub().returns({ Deleted: [{ Key: mockKey }] });
+      stubDeleteCertificate = sinon.stub(models.trainingCertificates, 'deleteCertificate').returns(1);
+
+      await trainingCertificateRoute.deleteCertificates(req, res);
+      const actual = await res._getJSONData();
+
+      expect(res.statusCode).to.equal(200);
+      expect(actual).to.deep.equal({ deletedFiles: [mockKey], filesNotDeleted: [] });
+    });
+
+    it('should return the key of a training certificate not deleted from the database', async () => {
+      let mockKey = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid}`;
+      stubDeleteFilesFromS3 = sinon.stub().returns({ Deleted: [{ Key: mockKey }] });
+      stubDeleteCertificate = sinon.stub(models.trainingCertificates, 'deleteCertificate').returns(0);
+
+      await trainingCertificateRoute.deleteCertificates(req, res);
+      const actual = await res._getJSONData();
+
+      expect(res.statusCode).to.equal(200);
+      expect(actual).to.deep.equal({ deletedFiles: [], filesNotDeleted: [mockKey] });
+    });
+
+    it('should return both when a training certificate has been deleted and when one has not been deleted', async () => {
+      let mockFileUid1 = 'mockFileUid1';
+      let mockFileUid2 = 'mockFileUid2';
+
+      req.body = {
+        filesToDelete: [
+          { uid: mockFileUid1, filename: 'mockFileName1' },
+          { uid: mockFileUid2, filename: 'mockFileName2' },
+        ],
+      };
+
+      let mockKey1 = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid1}`;
+      let mockKey2 = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid2}`;
+
+      stubDeleteFilesFromS3 = sinon.stub().returns({ Deleted: [{ Key: mockKey1 }, { Key: mockKey2 }] });
+      stubDeleteCertificate = sinon.stub(models.trainingCertificates, 'deleteCertificate');
+
+      stubDeleteCertificate.onCall(0).returns(1);
+      stubDeleteCertificate.onCall(1).returns(0);
+
+      await trainingCertificateRoute.deleteCertificates(req, res);
+      const actual = await res._getJSONData();
+
+      expect(res.statusCode).to.equal(200);
+      expect(actual).to.deep.equal({ deletedFiles: [mockKey1], filesNotDeleted: [mockKey2] });
+    });
+  });
 });
