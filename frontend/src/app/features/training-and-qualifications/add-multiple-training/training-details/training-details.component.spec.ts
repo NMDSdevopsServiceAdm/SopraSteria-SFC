@@ -5,11 +5,13 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { SharedModule } from '@shared/shared.module';
@@ -19,8 +21,6 @@ import sinon from 'sinon';
 
 import { AddMultipleTrainingModule } from '../add-multiple-training.module';
 import { MultipleTrainingDetailsComponent } from './training-details.component';
-import { TrainingCategoryService } from '@core/services/training-category.service';
-import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 
 describe('MultipleTrainingDetailsComponent', () => {
   async function setup(
@@ -139,6 +139,8 @@ describe('MultipleTrainingDetailsComponent', () => {
       id: component.categories[0].id,
       category: component.categories[0].category,
     };
+    const openNotesButton = getByText('Open notes');
+    openNotesButton.click();
     fixture.detectChanges();
 
     userEvent.type(getByLabelText('Training name'), 'Training');
@@ -151,7 +153,7 @@ describe('MultipleTrainingDetailsComponent', () => {
     userEvent.type(within(expiryDate).getByLabelText('Day'), '1');
     userEvent.type(within(expiryDate).getByLabelText('Month'), '1');
     userEvent.type(within(expiryDate).getByLabelText('Year'), '2022');
-    userEvent.type(getByLabelText('Notes'), 'Notes for training');
+    userEvent.type(getByLabelText('Add a note'), 'Notes for training');
 
     const finishButton = getByText('Continue');
     userEvent.click(finishButton);
@@ -239,10 +241,56 @@ describe('MultipleTrainingDetailsComponent', () => {
     });
   });
 
+  it('should set the notes section as open if there are some notes', async () => {
+    const { component, getByText, getByTestId } = await setup(false, true);
+
+    const { notes } = component.trainingService.selectedTraining;
+
+    const notesSection = getByTestId('notesSection');
+
+    expect(getByText('Close notes')).toBeTruthy();
+    expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
+    const notesTextArea = within(notesSection).getByRole('textbox', { name: 'Add a note' }) as HTMLTextAreaElement;
+    expect(notesTextArea.value).toEqual(notes);
+  });
+
+  it('should display the remaining character count correctly if there are some notes', async () => {
+    const { component, getByText } = await setup(false, true);
+
+    const { notes } = component.trainingService.selectedTraining;
+
+    const expectedRemainingCharCounts = component.notesMaxLength - notes.length;
+    expect(getByText(`You have ${expectedRemainingCharCounts} characters remaining`)).toBeTruthy;
+  });
+
   it('should not render certificate upload', async () => {
     const { queryByTestId } = await setup();
     const uploadSection = queryByTestId('uploadCertificate');
     expect(uploadSection).toBeFalsy();
+  });
+
+  describe('Notes section', () => {
+    it('should have the notes section closed on page load', async () => {
+      const { getByText, getByTestId } = await setup();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Open notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).toContain('govuk-visually-hidden');
+    });
+
+    it('should display the notes section after clicking Open notes', async () => {
+      const { fixture, getByText, getByTestId } = await setup();
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
+
+      fixture.detectChanges();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Close notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
+    });
   });
 
   describe('errors', () => {
@@ -349,19 +397,47 @@ describe('MultipleTrainingDetailsComponent', () => {
       expect(getAllByText('Expiry date must be after date completed').length).toEqual(2);
     });
 
-    it('should show an error when notes input length is more than 1000 characters', async () => {
-      const { component, getByText, fixture, getAllByText } = await setup();
-      component.form.markAsDirty();
-      component.form
-        .get('notes')
-        .setValue(
-          'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
-        );
-      component.form.get('notes').markAsDirty();
-      const finishButton = getByText('Continue');
-      fireEvent.click(finishButton);
-      fixture.detectChanges();
-      expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
+    describe('notes errors', () => {
+      const veryLongString =
+        'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
+
+      it('should show an error message if the notes is over 1000 characters', async () => {
+        const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
+
+        component.previousUrl = ['/goToPreviousUrl'];
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
+        fixture.detectChanges();
+
+        userEvent.type(getByLabelText('Add a note'), veryLongString);
+
+        fireEvent.click(getByText('Continue'));
+        fixture.detectChanges();
+
+        expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
+      });
+
+      it('should open the notes section if the notes input is over 1000 characters and section is closed on submit', async () => {
+        const { fixture, getByText, getByLabelText, getByTestId } = await setup(null);
+
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
+        fixture.detectChanges();
+
+        userEvent.type(getByLabelText('Add a note'), veryLongString);
+
+        const closeNotesButton = getByText('Close notes');
+        closeNotesButton.click();
+        fixture.detectChanges();
+
+        fireEvent.click(getByText('Continue'));
+        fixture.detectChanges();
+
+        const notesSection = getByTestId('notesSection');
+
+        expect(getByText('Close notes')).toBeTruthy();
+        expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
+      });
     });
   });
 

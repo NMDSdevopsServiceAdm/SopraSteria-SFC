@@ -35,6 +35,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public workplace: Establishment;
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
+  public notesOpen = false;
   private titleMaxLength = 120;
   private titleMinLength = 3;
   public subscriptions: Subscription = new Subscription();
@@ -230,6 +231,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (!this.form.valid) {
+      if (this.form.controls.notes?.errors?.maxlength) {
+        this.notesOpen = true;
+      }
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
@@ -322,5 +326,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         'delete',
       ]);
     }
+  }
+
+  public toggleNotesOpen(): void {
+    this.notesOpen = !this.notesOpen;
   }
 }
