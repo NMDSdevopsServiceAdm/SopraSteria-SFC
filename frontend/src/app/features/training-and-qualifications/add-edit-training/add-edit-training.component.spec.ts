@@ -183,6 +183,30 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
+  describe('Notes section', () => {
+    it('should have the notes section closed on page load', async () => {
+      const { getByText, getByTestId } = await setup();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Open notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).toContain('govuk-visually-hidden');
+    });
+
+    it('should display the notes section after clicking Open notes', async () => {
+      const { fixture, getByText, getByTestId } = await setup();
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
+
+      fixture.detectChanges();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Close notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
+    });
+  });
+
   describe('fillForm', () => {
     it('should prefill the form if there is a training record id and there is a training record', async () => {
       const { component, workerService } = await setup();
@@ -354,9 +378,11 @@ describe('AddEditTrainingComponent', () => {
       const { component, fixture, getByText, getByLabelText, updateSpy, routerSpy, alertServiceSpy } = await setup();
 
       component.previousUrl = ['/goToPreviousUrl'];
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
       fixture.detectChanges();
 
-      userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+      userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
@@ -399,6 +425,8 @@ describe('AddEditTrainingComponent', () => {
         await setup(null);
 
       component.previousUrl = ['/goToPreviousUrl'];
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
       fixture.detectChanges();
 
       component.trainingCategory = {
@@ -416,7 +444,7 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
       userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
       userEvent.type(within(expiresDate).getByLabelText('Year'), '2022');
-      userEvent.type(getByLabelText('Notes'), 'Some notes for this training');
+      userEvent.type(getByLabelText('Add a note'), 'Some notes for this training');
 
       fireEvent.click(getByText('Save record'));
       fixture.detectChanges();
@@ -506,13 +534,15 @@ describe('AddEditTrainingComponent', () => {
           await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
         fixture.detectChanges();
 
         const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining').and.returnValue(
           of(null),
         );
 
-        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
         userEvent.upload(getByTestId('fileInput'), mockUploadFile);
         fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
@@ -545,11 +575,13 @@ describe('AddEditTrainingComponent', () => {
         const { component, fixture, getByText, getByLabelText, trainingService } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
         fixture.detectChanges();
 
         const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining');
 
-        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
         fireEvent.click(getByText('Save and return'));
 
         expect(addCertificateToTrainingSpy).not.toHaveBeenCalled();
@@ -577,7 +609,6 @@ describe('AddEditTrainingComponent', () => {
 
         userEvent.type(getByLabelText('Training name'), 'Understanding Autism');
         userEvent.click(getByLabelText('Yes'));
-        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
 
         userEvent.upload(getByTestId('fileInput'), mockUploadFile);
         fireEvent.click(getByText('Save record'));
@@ -589,7 +620,7 @@ describe('AddEditTrainingComponent', () => {
           accredited: 'Yes',
           completed: null,
           expires: null,
-          notes: 'Some notes added to this training',
+          notes: null,
         });
 
         expect(addCertificateToTrainingSpy).toHaveBeenCalledWith(
@@ -612,11 +643,13 @@ describe('AddEditTrainingComponent', () => {
           category: 'Autism',
           id: 2,
         };
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
         fixture.detectChanges();
 
         const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining');
 
-        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
         fireEvent.click(getByText('Save record'));
 
         expect(createSpy).toHaveBeenCalled;
@@ -812,21 +845,45 @@ describe('AddEditTrainingComponent', () => {
     });
 
     describe('notes errors', () => {
+      const veryLongString =
+        'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
+
       it('should show an error message if the notes is over 1000 characters', async () => {
         const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
         fixture.detectChanges();
 
-        const veryLongString =
-          'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
-
-        userEvent.type(getByLabelText('Notes'), veryLongString);
+        userEvent.type(getByLabelText('Add a note'), veryLongString);
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
         expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
+      });
+
+      it('should open the notes section if the notes input is over 1000 characters and section is closed on submit', async () => {
+        const { fixture, getByText, getByLabelText, getByTestId } = await setup(null);
+
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
+        fixture.detectChanges();
+
+        userEvent.type(getByLabelText('Add a note'), veryLongString);
+
+        const closeNotesButton = getByText('Close notes');
+        closeNotesButton.click();
+        fixture.detectChanges();
+
+        fireEvent.click(getByText('Save record'));
+        fixture.detectChanges();
+
+        const notesSection = getByTestId('notesSection');
+
+        expect(getByText('Close notes')).toBeTruthy();
+        expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
       });
     });
 
