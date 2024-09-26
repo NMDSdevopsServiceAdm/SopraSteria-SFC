@@ -1,6 +1,6 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TrainingRecordCategory } from '@core/model/training.model';
+import { TrainingCertificate, TrainingRecordCategory } from '@core/model/training.model';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 
 @Component({
@@ -13,6 +13,8 @@ export class NewTrainingComponent {
   @Input() public trainingType: string;
   @Input() public setReturnRoute: () => void;
   @Input() public canEditWorker: boolean;
+  @Output() public downloadFile = new EventEmitter<TrainingCertificate>();
+
   @ViewChild('content') public content: ElementRef;
   public workplaceUid: string;
 
@@ -20,5 +22,10 @@ export class NewTrainingComponent {
 
   ngOnInit() {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
+  }
+
+  handleDownloadCertificate(event, trainingCertificate: TrainingCertificate) {
+    event.preventDefault();
+    this.downloadFile.emit(trainingCertificate);
   }
 }

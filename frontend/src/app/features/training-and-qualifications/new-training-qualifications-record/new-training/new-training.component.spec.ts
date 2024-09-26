@@ -4,6 +4,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { render, within } from '@testing-library/angular';
 
 import { NewTrainingComponent } from './new-training.component';
+import userEvent from '@testing-library/user-event';
 
 describe('NewTrainingComponent', async () => {
   const trainingCategories = [
@@ -366,6 +367,28 @@ describe('NewTrainingComponent', async () => {
 
       const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
       expect(within(trainingRecordWithCertificateRow).getByText('Download')).toBeTruthy();
+    });
+
+    it('should trigger download file emitter when Download link is clicked', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [
+        {
+          filename: 'test.pdf',
+          uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+          uploadDate: '2024-09-20T08:57:45.000Z',
+        },
+      ];
+      fixture.detectChanges();
+
+      const downloadFileSpy = spyOn(component.downloadFile, 'emit');
+
+      const downloadLink = within(getByTestId('someAutismUid')).getByText('Download');
+
+      userEvent.click(downloadLink);
+      const expectedTrainingCertificate = component.trainingCategories[0].trainingRecords[0].trainingCertificates[0];
+
+      expect(downloadFileSpy).toHaveBeenCalledOnceWith(expectedTrainingCertificate);
     });
 
     it('should display Select a download link when training record has more than one certificate associated with it', async () => {
