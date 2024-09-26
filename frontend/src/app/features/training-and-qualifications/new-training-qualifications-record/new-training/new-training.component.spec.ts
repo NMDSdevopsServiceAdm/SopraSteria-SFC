@@ -389,6 +389,31 @@ describe('NewTrainingComponent', async () => {
       expect(within(trainingRecordWithCertificateRow).getByText('Select a download')).toBeTruthy();
     });
 
+    it('should have href of training record on Select a download link', async () => {
+      const { component, fixture, getByTestId } = await setup();
+
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [
+        {
+          filename: 'test.pdf',
+          uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+          uploadDate: '2024-09-20T08:57:45.000Z',
+        },
+        {
+          filename: 'test2.pdf',
+          uid: '1872ec19-510d-41de-995d-6abfd3ae888b',
+          uploadDate: '2024-09-19T08:57:45.000Z',
+        },
+      ];
+      fixture.detectChanges();
+
+      const trainingRecordUid = component.trainingCategories[0].trainingRecords[0].uid;
+
+      const trainingRecordWithCertificateRow = getByTestId(trainingRecordUid);
+      const selectADownloadLink = within(trainingRecordWithCertificateRow).getByText('Select a download');
+
+      expect(selectADownloadLink.getAttribute('href')).toEqual(`/training/${trainingRecordUid}`);
+    });
+
     it('should display Upload file button when training record has no certificates associated with it', async () => {
       const { component, fixture, getByTestId } = await setup();
 

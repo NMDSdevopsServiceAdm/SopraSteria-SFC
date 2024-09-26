@@ -102,11 +102,7 @@
                   </a>
                 </span>
                 <span *ngIf="trainingRecord.trainingCertificates?.length > 1">
-                  <a
-                    href="#"
-                    class="govuk-link govuk-link--no-visited-state"
-                    (click)="handleDownloadCertificate($event, i)"
-                  >
+                  <a [routerLink]="['../training', trainingRecord.uid]" class="govuk-link govuk-link--no-visited-state">
                     Select a download
                   </a>
                 </span>
