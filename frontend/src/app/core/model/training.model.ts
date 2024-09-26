@@ -70,6 +70,7 @@ export interface TrainingRecordCategory {
   category: string;
   id: number;
   trainingRecords: TrainingRecord[];
+  error?: string;
 }
 
 export interface TrainingRecords {

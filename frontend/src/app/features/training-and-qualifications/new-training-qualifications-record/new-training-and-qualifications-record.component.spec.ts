@@ -782,7 +782,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   });
 
   describe('certificates', () => {
-    fit('should download a certificate file when download link of a certificate row is clicked', async () => {
+    describe('Download button', () => {
       const mockTrainings = [
         {
           category: 'Health',
@@ -808,16 +808,57 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         },
       ];
 
-      const { getByTestId, component, trainingService } = await setup(false, true, mockTrainings);
-      const uidForTrainingRecord = 'someHealthuidWithCertificate';
+      fit('should download a certificate file when download link of a certificate row is clicked', async () => {
+        const { getByTestId, component, trainingService } = await setup(false, true, mockTrainings);
+        const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
-      const trainingRecordRow = getByTestId(uidForTrainingRecord);
-      const downloadLink = within(trainingRecordRow).getByText('Download');
+        const trainingRecordRow = getByTestId(uidForTrainingRecord);
+        const downloadLink = within(trainingRecordRow).getByText('Download');
 
-      const downloadCertificatesSpy = spyOn(trainingService, 'downloadCertificates');
+        const downloadCertificatesSpy = spyOn(trainingService, 'downloadCertificates');
 
-      userEvent.click(downloadLink);
-      expect(downloadCertificatesSpy).toHaveBeenCalled();
+        userEvent.click(downloadLink);
+        expect(downloadCertificatesSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          mockTrainings[0].trainingRecords[0].uid,
+          mockTrainings[0].trainingRecords[0].trainingCertificates,
+        );
+      });
+
+      fit('should call triggerCertificateDownloads with file returned from downloadCertificates', async () => {
+        const { getByTestId, trainingService } = await setup(false, true, mockTrainings);
+        const uidForTrainingRecord = 'someHealthuidWithCertificate';
+
+        const trainingRecordRow = getByTestId(uidForTrainingRecord);
+        const downloadLink = within(trainingRecordRow).getByText('Download');
+        const filesReturnedFromDownloadCertificates = [
+          { filename: 'test.pdf', signedUrl: 'signedUrl.com/1872ec19-510d-41de-995d-6abfd3ae888a' },
+        ];
+
+        const triggerCertificateDownloadsSpy = spyOn(trainingService, 'triggerCertificateDownloads');
+        spyOn(trainingService, 'downloadCertificates').and.returnValue(
+          of({ files: filesReturnedFromDownloadCertificates }),
+        );
+
+        userEvent.click(downloadLink);
+
+        expect(triggerCertificateDownloadsSpy).toHaveBeenCalledWith(filesReturnedFromDownloadCertificates);
+      });
+
+      // fit('should display an error message on the training category when certificate download fails', async () => {
+      //   const { getByTestId, trainingService, getByText } = await setup(false, true, mockTrainings);
+      //   const uidForTrainingRecord = 'someHealthuidWithCertificate';
+
+      //   const trainingRecordRow = getByTestId(uidForTrainingRecord);
+      //   const downloadLink = within(trainingRecordRow).getByText('Download');
+
+      //   spyOn(trainingService, 'downloadCertificates').and.throwError('400 No files provided in request body');
+
+      //   userEvent.click(downloadLink);
+
+      //   expect(getByText("There's a problem with this download. Try again later or contact us for help.")).toBeTruthy();
+      // });
     });
   });
 });

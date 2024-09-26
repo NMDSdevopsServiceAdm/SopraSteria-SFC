@@ -13,6 +13,7 @@ export class NewTrainingComponent {
   @Input() public trainingType: string;
   @Input() public setReturnRoute: () => void;
   @Input() public canEditWorker: boolean;
+  @Input() public certificateErrors: Record<string, string>;
   @Output() public downloadFile = new EventEmitter<TrainingRecord>();
 
   @ViewChild('content') public content: ElementRef;

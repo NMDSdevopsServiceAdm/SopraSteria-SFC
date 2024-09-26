@@ -5,6 +5,7 @@ import { render, within } from '@testing-library/angular';
 
 import { NewTrainingComponent } from './new-training.component';
 import userEvent from '@testing-library/user-event';
+import { SharedModule } from '@shared/shared.module';
 
 describe('NewTrainingComponent', async () => {
   const trainingCategories = [
@@ -95,7 +96,7 @@ describe('NewTrainingComponent', async () => {
 
   async function setup(canEditWorker = true) {
     const { fixture, getByTestId, getByLabelText } = await render(NewTrainingComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule, SharedModule],
       providers: [],
       componentProperties: {
         canEditWorker,
@@ -445,6 +446,15 @@ describe('NewTrainingComponent', async () => {
 
       const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
       expect(within(trainingRecordWithCertificateRow).getByText('Upload file')).toBeTruthy();
+    });
+
+    xit('should display an error message above the category when download certificate fails', async () => {
+      const { component, fixture, getByTestId } = await setup();
+      component.trainingCategories[0]['error'] = 'Failed to download certificate';
+      fixture.detectChanges();
+
+      const categorySection = getByTestId('Autism-section');
+      expect(within(categorySection).getByText('Failed to download certificate')).toBeTruthy();
     });
   });
 });

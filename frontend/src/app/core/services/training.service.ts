@@ -200,11 +200,18 @@ export class TrainingService {
   public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): void {
     const downloadRequests = files.map((file) => this.http.get(file.signedUrl, { responseType: 'blob' }));
 
-    forkJoin(downloadRequests).subscribe((fileBlobs: Blob[]) => {
-      fileBlobs.forEach((blob, index) => {
-        this.triggerSingleCertificateDownload(blob, files[index].filename);
-      });
-    });
+    forkJoin(downloadRequests).subscribe(
+      (fileBlobs: Blob[]) => {
+        fileBlobs.forEach((blob, index) => {
+          this.triggerSingleCertificateDownload(blob, files[index].filename);
+        });
+      },
+      (error) => {
+        console.log('======================= error ======================');
+        console.log(error);
+        throw error;
+      },
+    );
   }
 
   private triggerSingleCertificateDownload(fileBlob: Blob, filename: string): void {

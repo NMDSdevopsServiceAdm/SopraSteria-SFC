@@ -322,7 +322,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   public downloadTrainingCertificate(trainingRecord: TrainingRecord): void {
     // validate the trainingCertificates has length = 1
-
     this.trainingService
       .downloadCertificates(
         this.workplace.uid,
@@ -330,13 +329,17 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         trainingRecord.uid,
         trainingRecord.trainingCertificates,
       )
-      .subscribe();
-    // .subscribe((res) => {
-    //   if (!res.files || res.files.length == 0) {
-    //     this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
-    //     return;
-    //   }
-    //   this.trainingService.triggerCertificateDownloads(res.files);
-    // });
+      .subscribe(
+        (res) => {
+          // if (!res.files || res.files.length == 0) {
+          //   this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
+          //   return;
+          // }
+          this.trainingService.triggerCertificateDownloads(res.files);
+        },
+        (error) => {
+          console.log('error caught at downloadTrainingCertificate');
+        },
+      );
   }
 }
