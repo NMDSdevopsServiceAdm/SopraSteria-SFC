@@ -141,7 +141,7 @@ const deleteCertificates = async (req, res) => {
     let fileKey = makeFileKey(id, workerId, trainingUid, file.uid);
 
     try {
-      deleteFromDb = await models.trainingCertificates.deleteCertificate(fileKey);
+      deleteFromDb = await models.trainingCertificates.deleteCertificate(file.uid);
     } catch (error) {
       console.log(error);
       errors.push({ key: fileKey, error });

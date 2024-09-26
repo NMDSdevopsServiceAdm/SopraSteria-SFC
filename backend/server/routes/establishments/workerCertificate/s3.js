@@ -41,14 +41,13 @@ const getSignedUrlForDownload = ({ bucket, key, options }) => {
 };
 
 async function deleteCertificatesFromS3({ bucket, objects }) {
-  const s3client = getS3Client();
   const deleteCommand = new DeleteObjectsCommand({
     Bucket: bucket,
     Delete: { Objects: objects },
   });
 
   try {
-    const response = await s3client.send(deleteCommand);
+    const response = await s3Client.send(deleteCommand);
     return response;
   } catch (err) {
     console.error(err);

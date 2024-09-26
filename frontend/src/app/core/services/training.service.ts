@@ -250,7 +250,7 @@ export class TrainingService {
     workplaceUid: string,
     workerUid: string,
     trainingUid: string,
-    filesToDelete: Array<any>,
+    filesToDelete: TrainingCertificate[],
   ): Observable<any> {
     return this.http.post<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate/delete`,

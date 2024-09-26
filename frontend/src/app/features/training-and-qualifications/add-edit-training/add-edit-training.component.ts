@@ -25,7 +25,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public establishmentUid: string;
   public workerId: string;
   private _filesToUpload: File[];
-  public uploadFilesErrors: string[] | null;
   public filesToRemove: TrainingCertificate[] = [];
   public certificateErrors: string[] | null;
 
@@ -245,9 +244,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   private deleteTrainingCertificate(files) {
     this.trainingService
       .deleteCertificates(this.establishmentUid, this.workerId, this.trainingRecordId, files)
-      .subscribe((res) => {
-        console.log(res);
-      });
+      .subscribe((res) => {});
   }
 
   private onSuccess() {
