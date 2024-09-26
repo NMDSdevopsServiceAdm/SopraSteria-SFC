@@ -33,7 +33,7 @@ module.exports = function (sequelize, DataTypes) {
         values: [
           'Care providing roles',
           'Professional and related roles',
-          'Managerial and Supervisory roles',
+          'Managerial and supervisory roles',
           'IT, digital and date roles',
           'Other roles',
         ],
