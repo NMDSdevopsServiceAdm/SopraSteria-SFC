@@ -123,6 +123,10 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
               }),
               notes: this.trainingRecord.notes,
             });
+            if (this.trainingRecord?.notes?.length > 0) {
+              this.notesOpen = true;
+              this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
+            }
           }
         },
         (error) => {
