@@ -163,9 +163,14 @@ const deleteCertificates = async (req, res) => {
     });
   }
 
-  if (deleteFromS3Response?.Deleted) {
-    for (const fileDeletedFromS3 of deleteFromS3Response?.Deleted) {
+  if (deleteFromS3Response?.Deleted && deleteFromS3Response?.Deleted.length > 0) {
+    for (const fileDeletedFromS3 of deleteFromS3Response.Deleted) {
       deletedFiles.push(fileDeletedFromS3.Key);
+    }
+  }
+  if (deleteFromS3Response?.Errors && deleteFromS3Response?.Errors.length > 0) {
+    for (const errorFromFileDeletionFromS3 of deleteFromS3Response.Errors) {
+      errors.push({ key: errorFromFileDeletionFromS3.Key, error: { name: errorFromFileDeletionFromS3.Message } });
     }
   }
 

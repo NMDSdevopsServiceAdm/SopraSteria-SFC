@@ -262,7 +262,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
   describe('delete certificates', () => {
     let res;
-    let stubDeleteFilesFromS3;
+    let stubDeleteCertificatesFromS3;
     let stubDeleteCertificate;
     let errorMessage;
     let mockFileUid1;
@@ -290,7 +290,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       });
       res = httpMocks.createResponse();
       errorMessage = 'DatabaseError';
-      stubDeleteFilesFromS3 = sinon.stub();
+      stubDeleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
       stubDeleteCertificate = sinon.stub(models.trainingCertificates, 'deleteCertificate');
     });
 
@@ -305,7 +305,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
     it('should return the key of the a deleted training certificate', async () => {
       stubDeleteCertificate.returns(1);
-      stubDeleteFilesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
+      stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
 
       await trainingCertificateRoute.deleteCertificates(req, res);
       const actual = await res._getJSONData();
@@ -325,7 +325,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       stubDeleteCertificate.onCall(0).returns(1);
       stubDeleteCertificate.onCall(1).returns(0);
 
-      stubDeleteFilesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
+      stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
 
       await trainingCertificateRoute.deleteCertificates(req, res);
       const actual = await res._getJSONData();
@@ -338,16 +338,6 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     });
 
     describe('errors', () => {
-      it('should return the key of a single training certificate not deleted from the database', async () => {
-        stubDeleteFilesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
-
-        await trainingCertificateRoute.deleteCertificates(req, res);
-        const actual = await res._getJSONData();
-
-        expect(res.statusCode).to.equal(400);
-        expect(actual).to.deep.equal({ errors: [{ key: mockKey1, error: { name: 'not found' } }] });
-      });
-
       it('should return the key in the errors array if one has a database error', async () => {
         req.body = {
           filesToDelete: [
@@ -361,7 +351,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         stubDeleteCertificate.onCall(1).returns(0);
         stubDeleteCertificate.onCall(2).throws('DatabaseError');
 
-        stubDeleteFilesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
+        stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
 
         await trainingCertificateRoute.deleteCertificates(req, res);
         const actual = await res._getJSONData();
@@ -422,6 +412,34 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
               },
             },
           ],
+        });
+      });
+
+      it('should show in the errors obkect the key of a training certificate that has not been deleted from S3', async () => {
+        req.body = {
+          filesToDelete: [
+            { uid: mockFileUid1, filename: 'mockFileName1', key: mockKey1 },
+            { uid: mockFileUid2, filename: 'mockFileName2', key: mockKey2 },
+            { uid: mockFileUid3, filename: 'mockFileName3', key: mockKey3 },
+          ],
+        };
+
+        stubDeleteCertificate.onCall(0).returns(1);
+        stubDeleteCertificate.onCall(1).returns(1);
+        stubDeleteCertificate.onCall(2).returns(1);
+
+        stubDeleteCertificatesFromS3.returns({
+          Deleted: [{ Key: mockKey1 }, { Key: mockKey2 }],
+          Errors: [{ Key: mockKey3, Message: 'S3 error' }],
+        });
+
+        await trainingCertificateRoute.deleteCertificates(req, res);
+        const actual = await res._getJSONData();
+
+        expect(res.statusCode).to.equal(200);
+        expect(actual).to.deep.equal({
+          deletedFiles: [mockKey1, mockKey2],
+          errors: [{ key: mockKey3, error: { name: 'S3 error' } }],
         });
       });
     });
