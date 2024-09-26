@@ -215,6 +215,7 @@
       [isMandatoryTraining]="true"
       [canEditWorker]="canEditWorker"
       [setReturnRoute]="setReturnRoute"
+      (downloadFile)="downloadTrainingCertificate($event)"
     >
     </app-new-training>
     <app-new-training
@@ -222,6 +223,7 @@
       [trainingType]="'Non-mandatory training'"
       [canEditWorker]="canEditWorker"
       [setReturnRoute]="setReturnRoute"
+      (downloadFile)="downloadTrainingCertificate($event)"
     >
     </app-new-training>
     <app-new-qualifications [canEditWorker]="canEditWorker" [qualificationsByGroup]="qualificationsByGroup">

@@ -18,11 +18,14 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
+import userEvent from '@testing-library/user-event';
+import { Training, TrainingRecord } from '@core/model/training.model';
+import { TrainingService } from '@core/services/training.service';
 
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
@@ -105,7 +108,13 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                               expires: yesterday,
                               title: 'Autism training',
                               trainingCategory: { id: 2, category: 'Autism' },
-                              trainingCertificates: [],
+                              trainingCertificates: [
+                                {
+                                  filename: 'test certificate.pdf',
+                                  uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+                                  uploadDate: '2024-09-20T08:57:45.000Z',
+                                },
+                              ],
                               trainingStatus: 3,
                               uid: 'someAutismuid',
                             },
@@ -310,6 +319,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     spyOn(establishmentService, 'isOwnWorkplace').and.returnValue(isOwnWorkplace);
 
     const workerService = injector.inject(WorkerService) as WorkerService;
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+
     const workerSpy = spyOn(workerService, 'setReturnTo');
     workerSpy.and.callThrough();
 
@@ -328,6 +339,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       routerSpy,
       workerSpy,
       workerService,
+      trainingService,
       getByText,
       getAllByText,
       getByTestId,
@@ -766,6 +778,46 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component } = await setup(false, true, [], [], false, 'all-records', false);
 
       expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
+    });
+  });
+
+  describe('certificates', () => {
+    fit('should download a certificate file when download link of a certificate row is clicked', async () => {
+      const mockTrainings = [
+        {
+          category: 'Health',
+          id: 1,
+          trainingRecords: [
+            {
+              accredited: true,
+              completed: new Date('10/20/2021'),
+              expires: activeDate,
+              title: 'Health training',
+              trainingCategory: { id: 1, category: 'Health' },
+              trainingCertificates: [
+                {
+                  filename: 'test.pdf',
+                  uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+                  uploadDate: '2024-09-20T08:57:45.000Z',
+                },
+              ],
+              trainingStatus: 0,
+              uid: 'someHealthuidWithCertificate',
+            },
+          ] as TrainingRecord[],
+        },
+      ];
+
+      const { getByTestId, component, trainingService } = await setup(false, true, mockTrainings);
+      const uidForTrainingRecord = 'someHealthuidWithCertificate';
+
+      const trainingRecordRow = getByTestId(uidForTrainingRecord);
+      const downloadLink = within(trainingRecordRow).getByText('Download');
+
+      const downloadCertificatesSpy = spyOn(trainingService, 'downloadCertificates');
+
+      userEvent.click(downloadLink);
+      expect(downloadCertificatesSpy).toHaveBeenCalled();
     });
   });
 });

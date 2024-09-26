@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { TrainingRecordCategory } from '@core/model/training.model';
+import { TrainingCertificate, TrainingRecord, TrainingRecordCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -318,5 +318,25 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   public ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+  }
+
+  public downloadTrainingCertificate(trainingRecord: TrainingRecord): void {
+    // validate the trainingCertificates has length = 1
+
+    this.trainingService
+      .downloadCertificates(
+        this.workplace.uid,
+        this.worker.uid,
+        trainingRecord.uid,
+        trainingRecord.trainingCertificates,
+      )
+      .subscribe();
+    // .subscribe((res) => {
+    //   if (!res.files || res.files.length == 0) {
+    //     this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
+    //     return;
+    //   }
+    //   this.trainingService.triggerCertificateDownloads(res.files);
+    // });
   }
 }

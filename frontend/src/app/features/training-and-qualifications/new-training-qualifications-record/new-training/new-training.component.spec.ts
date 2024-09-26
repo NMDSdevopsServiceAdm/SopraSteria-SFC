@@ -369,7 +369,7 @@ describe('NewTrainingComponent', async () => {
       expect(within(trainingRecordWithCertificateRow).getByText('Download')).toBeTruthy();
     });
 
-    it('should trigger download file emitter when Download link is clicked', async () => {
+    fit('should trigger download file emitter when Download link is clicked', async () => {
       const { component, fixture, getByTestId } = await setup();
 
       component.trainingCategories[0].trainingRecords[0].trainingCertificates = [
@@ -386,9 +386,9 @@ describe('NewTrainingComponent', async () => {
       const downloadLink = within(getByTestId('someAutismUid')).getByText('Download');
 
       userEvent.click(downloadLink);
-      const expectedTrainingCertificate = component.trainingCategories[0].trainingRecords[0].trainingCertificates[0];
+      const expectedTrainingRecord = component.trainingCategories[0].trainingRecords[0];
 
-      expect(downloadFileSpy).toHaveBeenCalledOnceWith(expectedTrainingCertificate);
+      expect(downloadFileSpy).toHaveBeenCalledOnceWith(expectedTrainingRecord);
     });
 
     it('should display Select a download link when training record has more than one certificate associated with it', async () => {
