@@ -126,7 +126,7 @@ const getPresignedUrlForCertificateDownload = async (req, res) => {
 
 const deleteCertificates = async (req, res) => {
   const { filesToDelete } = req.body;
-  const { id, workerId, establishmentUid, trainingUid } = req.params;
+  const { id, workerId, trainingUid } = req.params;
 
   if (!filesToDelete || !filesToDelete.length) {
     return res.status(400).send('No files provided in request body');
@@ -134,29 +134,30 @@ const deleteCertificates = async (req, res) => {
 
   let deletedFiles = [];
   let filesToDeleteFromS3 = [];
-  let dbErrors = [];
-  let filesNotDeleted = [];
+  let errors = [];
 
   for (const file of filesToDelete) {
-    let deleteFromDb;
+    let deleteFromDb = null;
+    let fileKey = makeFileKey(id, workerId, trainingUid, file.uid);
+
     try {
-      deleteFromDb = await models.trainingCertificates.deleteCertificate(file.Key);
+      deleteFromDb = await models.trainingCertificates.deleteCertificate(fileKey);
     } catch (error) {
       console.log(error);
-      dbErrors.push(error);
+      errors.push({ key: fileKey, error });
     }
 
     if (deleteFromDb) {
-      filesToDeleteFromS3.push({ Key: makeFileKey(id, workerId, trainingUid, file.uid) });
-    } else {
-      filesNotDeleted.push(makeFileKey(id, workerId, trainingUid, file.uid));
+      filesToDeleteFromS3.push({ Key: fileKey });
+    } else if (deleteFromDb !== null) {
+      errors.push({ key: fileKey, error: { name: 'not found' } });
     }
   }
 
   let deleteFromS3Response;
 
   if (filesToDeleteFromS3.length > 0) {
-    deleteFromS3Response = await s3.deleteCertificatesFromBucket({
+    deleteFromS3Response = await s3.deleteCertificatesFromS3({
       bucket: certificateBucket,
       objects: filesToDeleteFromS3,
     });
@@ -168,7 +169,11 @@ const deleteCertificates = async (req, res) => {
     }
   }
 
-  return res.status(200).json({ deletedFiles, filesNotDeleted });
+  if (deletedFiles.length === 0 && errors.length > 0) {
+    return res.status(400).json({ errors });
+  } else {
+    return res.status(200).json({ deletedFiles, errors });
+  }
 };
 
 router.route('/').post(hasPermission('canEditWorker'), requestUploadUrl);

@@ -40,7 +40,7 @@ const getSignedUrlForDownload = ({ bucket, key, options }) => {
   return getSignedUrl(s3Client, getCommand, options);
 };
 
-async function deleteCertificatesFromBucket({ bucket, objects }) {
+async function deleteCertificatesFromS3({ bucket, objects }) {
   const s3client = getS3Client();
   const deleteCommand = new DeleteObjectsCommand({
     Bucket: bucket,
@@ -68,5 +68,5 @@ module.exports = {
   getSignedUrlForUpload,
   getSignedUrlForDownload,
   verifyEtag,
-  deleteCertificatesFromBucket,
+  deleteCertificatesFromS3,
 };
