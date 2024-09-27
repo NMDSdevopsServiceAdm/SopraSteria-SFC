@@ -19,12 +19,12 @@ import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockW
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 import userEvent from '@testing-library/user-event';
-import { Training, TrainingRecord } from '@core/model/training.model';
+import { TrainingRecord } from '@core/model/training.model';
 import { TrainingService } from '@core/services/training.service';
 
 describe('NewTrainingAndQualificationsRecordComponent', () => {
@@ -785,7 +785,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     describe('Download button', () => {
       const mockTrainings = [
         {
-          category: 'Health',
+          category: 'HealthWithCertificate',
           id: 1,
           trainingRecords: [
             {
@@ -793,7 +793,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
               completed: new Date('10/20/2021'),
               expires: activeDate,
               title: 'Health training',
-              trainingCategory: { id: 1, category: 'Health' },
+              trainingCategory: { id: 1, category: 'HealthWithCertificate' },
               trainingCertificates: [
                 {
                   filename: 'test.pdf',
@@ -848,19 +848,21 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         expect(triggerCertificateDownloadsSpy).toHaveBeenCalledWith(filesReturnedFromDownloadCertificates);
       });
 
-      // fit('should display an error message on the training category when certificate download fails', async () => {
-      //   const { getByTestId, trainingService, getByText } = await setup(false, true, mockTrainings);
-      //   const uidForTrainingRecord = 'someHealthuidWithCertificate';
+      it('should display an error message on the training category when certificate download fails', async () => {
+        const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, mockTrainings);
 
-      //   const trainingRecordRow = getByTestId(uidForTrainingRecord);
-      //   const downloadLink = within(trainingRecordRow).getByText('Download');
+        const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
-      //   spyOn(trainingService, 'downloadCertificates').and.throwError('400 No files provided in request body');
+        const trainingRecordRow = getByTestId(uidForTrainingRecord);
+        const downloadLink = within(trainingRecordRow).getByText('Download');
 
-      //   userEvent.click(downloadLink);
+        spyOn(trainingService, 'downloadCertificates').and.returnValue(throwError('403 forbidden'));
 
-      //   expect(getByText("There's a problem with this download. Try again later or contact us for help.")).toBeTruthy();
-      // });
+        userEvent.click(downloadLink);
+        fixture.detectChanges();
+
+        expect(getByText("There's a problem with this download. Try again later or contact us for help.")).toBeTruthy();
+      });
     });
   });
 });

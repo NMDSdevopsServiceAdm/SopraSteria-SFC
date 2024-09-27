@@ -45,6 +45,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     qualifications: 'qualifications',
   };
   public pdfCount: number;
+  public certificateErrors: Record<string, string> = {};
+
   constructor(
     private breadcrumbService: BreadcrumbService,
     private establishmentService: EstablishmentService,
@@ -330,13 +332,16 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         trainingRecord.uid,
         trainingRecord.trainingCertificates,
       )
-      .pipe(
-        catchError((error) => {
-          console.log(error);
-          console.log('error caught at downloadTrainingCertificate');
-          return of(null);
-        }),
-      )
-      .subscribe();
+      .subscribe(
+        () => {
+          this.certificateErrors = {};
+        },
+        (_error) => {
+          const categoryName = trainingRecord.trainingCategory.category;
+          this.certificateErrors = {
+            [categoryName]: "There's a problem with this download. Try again later or contact us for help.",
+          };
+        },
+      );
   }
 }

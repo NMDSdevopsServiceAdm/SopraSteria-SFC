@@ -94,7 +94,7 @@ describe('NewTrainingComponent', async () => {
     },
   ];
 
-  async function setup(canEditWorker = true) {
+  async function setup(canEditWorker = true, certificateErrors = null) {
     const { fixture, getByTestId, getByLabelText } = await render(NewTrainingComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, SharedModule],
       providers: [],
@@ -102,6 +102,7 @@ describe('NewTrainingComponent', async () => {
         canEditWorker,
         trainingCategories: trainingCategories,
         isMandatoryTraining: false,
+        certificateErrors,
       },
     });
     const component = fixture.componentInstance;
@@ -225,6 +226,7 @@ describe('NewTrainingComponent', async () => {
       const { component, fixture } = await setup();
 
       component.trainingCategories = [];
+      component.ngOnChanges();
       fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
 
@@ -249,6 +251,7 @@ describe('NewTrainingComponent', async () => {
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
+      component.ngOnChanges();
       fixture.detectChanges();
       const noMandatoryTrainingLink = fixture.debugElement.query(
         By.css('[data-testid="no-mandatory-training-link"]'),
@@ -264,6 +267,7 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.canEditWorker = false;
+      component.ngOnChanges();
       fixture.detectChanges();
       const noMandatoryTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
 
@@ -448,13 +452,18 @@ describe('NewTrainingComponent', async () => {
       expect(within(trainingRecordWithCertificateRow).getByText('Upload file')).toBeTruthy();
     });
 
-    xit('should display an error message above the category when download certificate fails', async () => {
-      const { component, fixture, getByTestId } = await setup();
-      component.trainingCategories[0]['error'] = 'Failed to download certificate';
-      fixture.detectChanges();
+    it('should display an error message above the category when download certificate fails', async () => {
+      const certificateErrors = {
+        Autism: "There's a problem with this download. Try again later or contact us for help.",
+      };
+      const { getByTestId } = await setup(true, certificateErrors);
 
       const categorySection = getByTestId('Autism-section');
-      expect(within(categorySection).getByText('Failed to download certificate')).toBeTruthy();
+      expect(
+        within(categorySection).getByText(
+          "There's a problem with this download. Try again later or contact us for help.",
+        ),
+      ).toBeTruthy();
     });
   });
 });

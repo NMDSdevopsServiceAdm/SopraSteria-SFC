@@ -12,10 +12,9 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import dayjs from 'dayjs';
-import { catchError, mergeMap } from 'rxjs/operators';
+import { mergeMap } from 'rxjs/operators';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'app-add-edit-training',
