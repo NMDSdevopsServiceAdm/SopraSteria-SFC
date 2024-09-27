@@ -292,17 +292,17 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       errorMessage = 'DatabaseError';
       stubDeleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
       stubDeleteCertificate = sinon.stub(models.trainingCertificates, 'deleteCertificate');
+      stubCountCertificatesToBeDeleted = sinon.stub(models.trainingCertificates, 'countCertificatesToBeDeleted');
     });
 
-    it('should return the key of the a deleted training certificate', async () => {
+    it('should return a 200 status when files successfully deleted', async () => {
       stubDeleteCertificate.returns(1);
       stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
+      stubCountCertificatesToBeDeleted.returns(1);
 
       await trainingCertificateRoute.deleteCertificates(req, res);
-      const actual = await res._getJSONData();
 
       expect(res.statusCode).to.equal(200);
-      expect(actual).to.deep.equal({ deletedFiles: [mockKey1], errors: [] });
     });
 
     describe('errors', () => {
@@ -315,7 +315,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         expect(res._getData()).to.equal('No files provided in request body');
       });
 
-      it('should return 500 if there was a database error', async () => {
+      it('should return 500 if there was a database error when calling countCertificatesToBeDeleted', async () => {
         req.body = {
           filesToDelete: [
             { uid: mockFileUid1, filename: 'mockFileName1' },
@@ -323,7 +323,22 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
             { uid: mockFileUid3, filename: 'mockFileName3' },
           ],
         };
+        stubCountCertificatesToBeDeleted.throws(errorMessage);
 
+        await trainingCertificateRoute.deleteCertificates(req, res);
+
+        expect(res.statusCode).to.equal(500);
+      });
+
+      it('should return 500 if there was a database error on DB deleteCertificate call', async () => {
+        req.body = {
+          filesToDelete: [
+            { uid: mockFileUid1, filename: 'mockFileName1' },
+            { uid: mockFileUid2, filename: 'mockFileName2' },
+            { uid: mockFileUid3, filename: 'mockFileName3' },
+          ],
+        };
+        stubCountCertificatesToBeDeleted.returns(3);
         stubDeleteCertificate.throws(errorMessage);
 
         await trainingCertificateRoute.deleteCertificates(req, res);
@@ -331,7 +346,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         expect(res.statusCode).to.equal(500);
       });
 
-      it('should return 400 if there were no records deleted from the database', async () => {
+      it('should return 400 status code if the number of records in database does not match request', async () => {
         req.body = {
           filesToDelete: [
             { uid: mockFileUid1, filename: 'mockFileName1' },
@@ -340,89 +355,13 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
           ],
         };
 
-        stubDeleteCertificate.returns(0);
+        stubCountCertificatesToBeDeleted.returns(3);
+        stubCountCertificatesToBeDeleted.returns(0);
 
         await trainingCertificateRoute.deleteCertificates(req, res);
 
         expect(res.statusCode).to.equal(400);
         expect(res._getData()).to.equal('Invalid request');
-      });
-
-      it("should return 400 if the amount of records deleted from the database doesn't match the amount requested", async () => {
-        req.body = {
-          filesToDelete: [
-            { uid: mockFileUid1, filename: 'mockFileName1' },
-            { uid: mockFileUid2, filename: 'mockFileName2' },
-            { uid: mockFileUid3, filename: 'mockFileName3' },
-          ],
-        };
-
-        stubDeleteCertificate.returns(2);
-
-        await trainingCertificateRoute.deleteCertificates(req, res);
-
-        expect(res.statusCode).to.equal(400);
-        expect(res._getData()).to.equal('Unable to delete requested records');
-      });
-
-      it('should show the deleted files and and file not deleted when one of the training certificate has not been deleted from S3', async () => {
-        req.body = {
-          filesToDelete: [
-            { uid: mockFileUid1, filename: 'mockFileName1', key: mockKey1 },
-            { uid: mockFileUid2, filename: 'mockFileName2', key: mockKey2 },
-            { uid: mockFileUid3, filename: 'mockFileName3', key: mockKey3 },
-          ],
-        };
-
-        stubDeleteCertificate.returns(3);
-
-        stubDeleteCertificatesFromS3.returns({
-          Deleted: [{ Key: mockKey1 }, { Key: mockKey2 }],
-          Errors: [{ Key: mockKey3, Message: 'S3 error' }],
-        });
-
-        await trainingCertificateRoute.deleteCertificates(req, res);
-        const actual = await res._getJSONData();
-
-        expect(res.statusCode).to.equal(200);
-        expect(actual).to.deep.equal({
-          deletedFiles: [mockKey1, mockKey2],
-          errors: [{ key: mockKey3, error: { name: 'S3 error' } }],
-        });
-      });
-
-      it('should show all the files not deleted from S3', async () => {
-        req.body = {
-          filesToDelete: [
-            { uid: mockFileUid1, filename: 'mockFileName1', key: mockKey1 },
-            { uid: mockFileUid2, filename: 'mockFileName2', key: mockKey2 },
-            { uid: mockFileUid3, filename: 'mockFileName3', key: mockKey3 },
-          ],
-        };
-
-        stubDeleteCertificate.returns(3);
-
-        stubDeleteCertificatesFromS3.returns({
-          Deleted: [],
-          Errors: [
-            { Key: mockKey1, Message: 'S3 error' },
-            { Key: mockKey2, Message: 'S3 error' },
-            { Key: mockKey3, Message: 'S3 error' },
-          ],
-        });
-
-        await trainingCertificateRoute.deleteCertificates(req, res);
-        const actual = await res._getJSONData();
-
-        expect(res.statusCode).to.equal(200);
-        expect(actual).to.deep.equal({
-          deletedFiles: [],
-          errors: [
-            { key: mockKey1, error: { name: 'S3 error' } },
-            { key: mockKey2, error: { name: 'S3 error' } },
-            { key: mockKey3, error: { name: 'S3 error' } },
-          ],
-        });
       });
     });
   });

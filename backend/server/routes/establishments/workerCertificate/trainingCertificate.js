@@ -132,11 +132,8 @@ const deleteCertificates = async (req, res) => {
     return res.status(400).send('No files provided in request body');
   }
 
-  let deletedFiles = [];
   let filesToDeleteFromS3 = [];
-  let errors = [];
   let filesToDeleteFromDatabase = [];
-  let noOfRecordsDeletedFromDatabase;
 
   for (const file of filesToDelete) {
     let fileKey = makeFileKey(id, workerId, trainingUid, file.uid);
@@ -146,38 +143,30 @@ const deleteCertificates = async (req, res) => {
   }
 
   try {
-    noOfRecordsDeletedFromDatabase = await models.trainingCertificates.deleteCertificate(filesToDeleteFromDatabase);
+    const noOfFilesFoundInDatabase = await models.trainingCertificates.countCertificatesToBeDeleted(
+      filesToDeleteFromDatabase,
+    );
+
+    if (noOfFilesFoundInDatabase !== filesToDeleteFromDatabase.length) {
+      return res.status(400).send('Invalid request');
+    }
+
+    await models.trainingCertificates.deleteCertificate(filesToDeleteFromDatabase);
   } catch (error) {
     console.log(error);
     return res.status(500).send();
   }
 
-  let deleteFromS3Response;
+  const deleteFromS3Response = await s3.deleteCertificatesFromS3({
+    bucket: certificateBucket,
+    objects: filesToDeleteFromS3,
+  });
 
-  if (noOfRecordsDeletedFromDatabase === 0) {
-    return res.status(400).send('Invalid request');
-  } else if (noOfRecordsDeletedFromDatabase === filesToDelete.length) {
-    deleteFromS3Response = await s3.deleteCertificatesFromS3({
-      bucket: certificateBucket,
-      objects: filesToDeleteFromS3,
-    });
-  } else {
-    return res.status(400).send('Unable to delete requested records');
+  if (deleteFromS3Response?.Errors?.length > 0) {
+    console.error(JSON.stringify(deleteFromS3Response.Errors));
   }
 
-  if (deleteFromS3Response?.Deleted && deleteFromS3Response?.Deleted.length > 0) {
-    for (const fileDeletedFromS3 of deleteFromS3Response.Deleted) {
-      deletedFiles.push(fileDeletedFromS3.Key);
-    }
-  }
-
-  if (deleteFromS3Response?.Errors && deleteFromS3Response?.Errors.length > 0) {
-    for (const errorFromFileDeletionFromS3 of deleteFromS3Response.Errors) {
-      errors.push({ key: errorFromFileDeletionFromS3.Key, error: { name: errorFromFileDeletionFromS3.Message } });
-    }
-  }
-
-  return res.status(200).json({ deletedFiles, errors });
+  return res.status(200).send();
 };
 
 router.route('/').post(hasPermission('canEditWorker'), requestUploadUrl);

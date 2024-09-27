@@ -87,5 +87,13 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  TrainingCertificates.countCertificatesToBeDeleted = async function (uids) {
+    return await this.count({
+      where: {
+        uid: uids,
+      },
+    });
+  };
+
   return TrainingCertificates;
 };
