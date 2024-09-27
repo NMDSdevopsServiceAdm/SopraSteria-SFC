@@ -1,4 +1,10 @@
-const { PutObjectCommand, GetObjectCommand, S3Client, HeadObjectCommand } = require('@aws-sdk/client-s3');
+const {
+  PutObjectCommand,
+  GetObjectCommand,
+  S3Client,
+  HeadObjectCommand,
+  DeleteObjectsCommand,
+} = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
 
 const config = require('../../../config/config');
@@ -34,6 +40,20 @@ const getSignedUrlForDownload = ({ bucket, key, options }) => {
   return getSignedUrl(s3Client, getCommand, options);
 };
 
+async function deleteCertificatesFromS3({ bucket, objects }) {
+  const deleteCommand = new DeleteObjectsCommand({
+    Bucket: bucket,
+    Delete: { Objects: objects },
+  });
+
+  try {
+    const response = await s3Client.send(deleteCommand);
+    return response;
+  } catch (err) {
+    console.error(err);
+  }
+}
+
 async function verifyEtag(bucket, key, etag) {
   const headCommand = new HeadObjectCommand({ Bucket: bucket, Key: key });
   const response = await s3Client.send(headCommand);
@@ -42,4 +62,10 @@ async function verifyEtag(bucket, key, etag) {
   return etagFromS3 === etag;
 }
 
-module.exports = { getS3Client, getSignedUrlForUpload, getSignedUrlForDownload, verifyEtag };
+module.exports = {
+  getS3Client,
+  getSignedUrlForUpload,
+  getSignedUrlForDownload,
+  verifyEtag,
+  deleteCertificatesFromS3,
+};

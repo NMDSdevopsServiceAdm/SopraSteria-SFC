@@ -1175,5 +1175,115 @@ describe('AddEditTrainingComponent', () => {
         expect(component.filesToUpload[0]).toEqual(mockUploadFile1);
       });
     });
+
+    describe('saved files to be removed', () => {
+      it('should remove a file from the table when the remove button is clicked', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.trainingCertificates = [
+          {
+            uid: 'uid-1',
+            filename: 'first_aid_v1.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-2',
+            filename: 'first_aid_v2.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-3',
+            filename: 'first_aid_v3.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+        ];
+
+        fixture.detectChanges();
+
+        const certificateRow2 = getByTestId('certificate-row-2');
+
+        const removeButtonForRow2 = within(certificateRow2).getByText('Remove');
+
+        fireEvent.click(removeButtonForRow2);
+
+        fixture.detectChanges();
+
+        expect(component.trainingCertificates.length).toBe(2);
+      });
+
+      it('should remove all file from the table when the remove button is clicked for all saved files', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.trainingCertificates = [
+          {
+            uid: 'uid-1',
+            filename: 'first_aid_v1.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-2',
+            filename: 'first_aid_v2.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-3',
+            filename: 'first_aid_v3.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+        ];
+
+        fixture.detectChanges();
+
+        const certificateRow0 = getByTestId('certificate-row-0');
+        const certificateRow1 = getByTestId('certificate-row-1');
+        const certificateRow2 = getByTestId('certificate-row-2');
+
+        const removeButtonForRow0 = within(certificateRow0).getByText('Remove');
+        const removeButtonForRow1 = within(certificateRow1).getByText('Remove');
+        const removeButtonForRow2 = within(certificateRow2).getByText('Remove');
+
+        fireEvent.click(removeButtonForRow0);
+        fireEvent.click(removeButtonForRow1);
+        fireEvent.click(removeButtonForRow2);
+
+        fixture.detectChanges();
+        expect(component.trainingCertificates.length).toBe(0);
+      });
+
+      it('should call the training service when save and return is clicked', async () => {
+        const { component, fixture, getByTestId, getByText, trainingService } = await setup();
+
+        component.trainingCertificates = [
+          {
+            uid: 'uid-1',
+            filename: 'first_aid_v1.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-2',
+            filename: 'first_aid_v2.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+        ];
+
+        fixture.detectChanges();
+
+        const certificateRow = getByTestId('certificate-row-0');
+
+        const removeButtonForRow = within(certificateRow).getByText('Remove');
+        const trainingServiceSpy = spyOn(trainingService, 'deleteCertificates').and.callThrough();
+        fireEvent.click(removeButtonForRow);
+        fireEvent.click(getByText('Save and return'));
+
+        fixture.detectChanges();
+
+        expect(trainingServiceSpy).toHaveBeenCalledWith(
+          component.establishmentUid,
+          component.workerId,
+          component.trainingRecordId,
+          component.filesToRemove,
+        );
+      });
+    });
   });
 });

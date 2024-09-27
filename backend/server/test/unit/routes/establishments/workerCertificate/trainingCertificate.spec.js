@@ -259,4 +259,110 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       expect(getSignedUrlForDownloadSpy).not.to.be.called;
     });
   });
+
+  describe('delete certificates', () => {
+    let res;
+    let stubDeleteCertificatesFromS3;
+    let stubDeleteCertificate;
+    let errorMessage;
+    let mockFileUid1;
+    let mockFileUid2;
+    let mockFileUid3;
+
+    let mockKey1;
+    let mockKey2;
+    let mockKey3;
+
+    beforeEach(() => {
+      mockFileUid1 = 'mockFileUid1';
+      mockFileUid2 = 'mockFileUid2';
+      mockFileUid3 = 'mockFileUid3';
+
+      mockKey1 = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid1}`;
+      mockKey2 = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid2}`;
+      mockKey3 = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid3}`;
+      req = httpMocks.createRequest({
+        method: 'POST',
+        url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/delete`,
+        body: { filesToDelete: [{ uid: mockFileUid1, filename: 'mockFileName1' }] },
+        establishmentId: user.establishment.uid,
+        params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
+      });
+      res = httpMocks.createResponse();
+      errorMessage = 'DatabaseError';
+      stubDeleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
+      stubDeleteCertificate = sinon.stub(models.trainingCertificates, 'deleteCertificate');
+      stubCountCertificatesToBeDeleted = sinon.stub(models.trainingCertificates, 'countCertificatesToBeDeleted');
+    });
+
+    it('should return a 200 status when files successfully deleted', async () => {
+      stubDeleteCertificate.returns(1);
+      stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
+      stubCountCertificatesToBeDeleted.returns(1);
+
+      await trainingCertificateRoute.deleteCertificates(req, res);
+
+      expect(res.statusCode).to.equal(200);
+    });
+
+    describe('errors', () => {
+      it('should return 400 status and message if no files in req body', async () => {
+        req.body = {};
+
+        await trainingCertificateRoute.deleteCertificates(req, res);
+
+        expect(res.statusCode).to.equal(400);
+        expect(res._getData()).to.equal('No files provided in request body');
+      });
+
+      it('should return 500 if there was a database error when calling countCertificatesToBeDeleted', async () => {
+        req.body = {
+          filesToDelete: [
+            { uid: mockFileUid1, filename: 'mockFileName1' },
+            { uid: mockFileUid2, filename: 'mockFileName2' },
+            { uid: mockFileUid3, filename: 'mockFileName3' },
+          ],
+        };
+        stubCountCertificatesToBeDeleted.throws(errorMessage);
+
+        await trainingCertificateRoute.deleteCertificates(req, res);
+
+        expect(res.statusCode).to.equal(500);
+      });
+
+      it('should return 500 if there was a database error on DB deleteCertificate call', async () => {
+        req.body = {
+          filesToDelete: [
+            { uid: mockFileUid1, filename: 'mockFileName1' },
+            { uid: mockFileUid2, filename: 'mockFileName2' },
+            { uid: mockFileUid3, filename: 'mockFileName3' },
+          ],
+        };
+        stubCountCertificatesToBeDeleted.returns(3);
+        stubDeleteCertificate.throws(errorMessage);
+
+        await trainingCertificateRoute.deleteCertificates(req, res);
+
+        expect(res.statusCode).to.equal(500);
+      });
+
+      it('should return 400 status code if the number of records in database does not match request', async () => {
+        req.body = {
+          filesToDelete: [
+            { uid: mockFileUid1, filename: 'mockFileName1' },
+            { uid: mockFileUid2, filename: 'mockFileName2' },
+            { uid: mockFileUid3, filename: 'mockFileName3' },
+          ],
+        };
+
+        stubCountCertificatesToBeDeleted.returns(3);
+        stubCountCertificatesToBeDeleted.returns(0);
+
+        await trainingCertificateRoute.deleteCertificates(req, res);
+
+        expect(res.statusCode).to.equal(400);
+        expect(res._getData()).to.equal('Invalid request');
+      });
+    });
+  });
 });

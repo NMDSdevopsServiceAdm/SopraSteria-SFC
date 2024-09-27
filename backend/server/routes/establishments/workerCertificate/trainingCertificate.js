@@ -124,11 +124,58 @@ const getPresignedUrlForCertificateDownload = async (req, res) => {
   return res.status(200).json({ files: responsePayload });
 };
 
+const deleteCertificates = async (req, res) => {
+  const { filesToDelete } = req.body;
+  const { id, workerId, trainingUid } = req.params;
+
+  if (!filesToDelete || !filesToDelete.length) {
+    return res.status(400).send('No files provided in request body');
+  }
+
+  let filesToDeleteFromS3 = [];
+  let filesToDeleteFromDatabase = [];
+
+  for (const file of filesToDelete) {
+    let fileKey = makeFileKey(id, workerId, trainingUid, file.uid);
+
+    filesToDeleteFromDatabase.push(file.uid);
+    filesToDeleteFromS3.push({ Key: fileKey });
+  }
+
+  try {
+    const noOfFilesFoundInDatabase = await models.trainingCertificates.countCertificatesToBeDeleted(
+      filesToDeleteFromDatabase,
+    );
+
+    if (noOfFilesFoundInDatabase !== filesToDeleteFromDatabase.length) {
+      return res.status(400).send('Invalid request');
+    }
+
+    await models.trainingCertificates.deleteCertificate(filesToDeleteFromDatabase);
+  } catch (error) {
+    console.log(error);
+    return res.status(500).send();
+  }
+
+  const deleteFromS3Response = await s3.deleteCertificatesFromS3({
+    bucket: certificateBucket,
+    objects: filesToDeleteFromS3,
+  });
+
+  if (deleteFromS3Response?.Errors?.length > 0) {
+    console.error(JSON.stringify(deleteFromS3Response.Errors));
+  }
+
+  return res.status(200).send();
+};
+
 router.route('/').post(hasPermission('canEditWorker'), requestUploadUrl);
 router.route('/').put(hasPermission('canEditWorker'), confirmUpload);
 router.route('/download').post(hasPermission('canEditWorker'), getPresignedUrlForCertificateDownload);
+router.route('/delete').post(hasPermission('canEditWorker'), deleteCertificates);
 
 module.exports = router;
 module.exports.requestUploadUrl = requestUploadUrl;
 module.exports.confirmUpload = confirmUpload;
 module.exports.getPresignedUrlForCertificateDownload = getPresignedUrlForCertificateDownload;
+module.exports.deleteCertificates = deleteCertificates;

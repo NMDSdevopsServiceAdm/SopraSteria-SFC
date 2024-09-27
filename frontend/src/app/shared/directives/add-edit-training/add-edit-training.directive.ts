@@ -49,7 +49,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public notesValue = '';
   public showChangeLink: boolean = false;
   public multipleTrainingDetails: boolean;
-  public trainingCertificates: TrainingCertificate[];
+  public trainingCertificates: TrainingCertificate[] = [];
   public submitButtonDisabled: boolean = false;
 
   constructor(

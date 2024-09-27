@@ -1,8 +1,8 @@
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { environment } from 'src/environments/environment';
-
 import { TrainingService } from './training.service';
+import { TrainingCertificate } from '@core/model/training.model';
 
 describe('TrainingService', () => {
   let service: TrainingService;
@@ -273,6 +273,31 @@ describe('TrainingService', () => {
       // Assert DOM is cleaned up after download
       expect(revokeObjectURLSpy).toHaveBeenCalledWith(mockBlobUrl);
       expect(removeChildSpy).toHaveBeenCalled();
+    });
+
+    describe('deleteCertificates', () => {
+      it('should call the endpoint for deleting training certificates', async () => {
+        const mockWorkplaceUid = 'mockWorkplaceUid';
+        const mockWorkerUid = 'mockWorkerUid';
+        const mockTrainingUid = 'mockTrainingUid';
+        const mockFilesToDelete = [
+          {
+            uid: 'uid-1',
+            filename: 'first_aid_v1.pdf',
+            uploadDate: '2024-09-23T11:02:10.000Z',
+          },
+        ];
+
+        const deleteCertificatesEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/training/${mockTrainingUid}/certificate/delete`;
+
+        service.deleteCertificates(mockWorkplaceUid, mockWorkerUid, mockTrainingUid, mockFilesToDelete).subscribe();
+
+        const deleteRequest = http.expectOne(deleteCertificatesEndpoint);
+        const expectedRequestBody = { filesToDelete: mockFilesToDelete };
+
+        expect(deleteRequest.request.method).toBe('POST');
+        expect(deleteRequest.request.body).toEqual(expectedRequestBody);
+      });
     });
   });
 });
