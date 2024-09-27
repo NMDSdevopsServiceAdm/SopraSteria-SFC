@@ -3,16 +3,16 @@
     <ng-container *ngIf="trainingCategoryToDisplay.length > 0; else noTraining">
       <h1 class="govuk-heading-l govuk-!-font-size-27">{{ trainingType }}</h1>
       <div *ngFor="let trainingCategory of trainingCategoryToDisplay" [attr.data-testid]="trainingCategory.category + '-section'">
-        <h2
+        <label
           [attr.data-testid]="'category-' + trainingCategory.category"
-          class="govuk-!-margin-bottom-2"
-        >{{ trainingCategory.category }}</h2>
-        <app-validation-error-message *ngIf="trainingCategory.error" [errorMessage]="trainingCategory.error" />
-
+          class="govuk-!-margin-bottom-2 govuk-heading-m"
+        >{{ trainingCategory.category }}</label>
+        <span aria-live="polite">
+          <app-validation-error-message *ngIf="trainingCategory.error" [errorMessage]="trainingCategory.error" />
+        </span>
         <table class="govuk-table govuk-!-margin-bottom-7">
           <caption
-            class="govuk-table__caption govuk-table__caption--m govuk-!-margin-bottom-2 govuk-visually-hidden"
-            [attr.data-testid]="'category-' + trainingCategory.category"
+            class="govuk-visually-hidden"
           >
             {{
               trainingCategory.category
@@ -113,7 +113,7 @@
                   </a>
                 </span>
                 <span *ngIf="trainingRecord.trainingCertificates?.length === 0">
-                  <app-select-upload-file accept=".pdf" buttonText="Upload file"/>
+                  <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0" />
                 </span>
               </td>
             </tr>
