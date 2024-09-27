@@ -294,15 +294,6 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       stubDeleteCertificate = sinon.stub(models.trainingCertificates, 'deleteCertificate');
     });
 
-    it('should return 400 status and message if no files in req body', async () => {
-      req.body = {};
-
-      await trainingCertificateRoute.deleteCertificates(req, res);
-
-      expect(res.statusCode).to.equal(400);
-      expect(res._getData()).to.equal('No files provided in request body');
-    });
-
     it('should return the key of the a deleted training certificate', async () => {
       stubDeleteCertificate.returns(1);
       stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
@@ -314,67 +305,17 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       expect(actual).to.deep.equal({ deletedFiles: [mockKey1], errors: [] });
     });
 
-    it('should return both when a training certificate has been deleted and when one has not been deleted', async () => {
-      req.body = {
-        filesToDelete: [
-          { uid: mockFileUid1, filename: 'mockFileName1' },
-          { uid: mockFileUid2, filename: 'mockFileName2' },
-        ],
-      };
-
-      stubDeleteCertificate.onCall(0).returns(1);
-      stubDeleteCertificate.onCall(1).returns(0);
-
-      stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
-
-      await trainingCertificateRoute.deleteCertificates(req, res);
-      const actual = await res._getJSONData();
-
-      expect(res.statusCode).to.equal(200);
-      expect(actual).to.deep.equal({
-        deletedFiles: [mockKey1],
-        errors: [{ key: mockKey2, error: { name: 'not found' } }],
-      });
-    });
-
     describe('errors', () => {
-      it('should return the key in the errors array if one has a database error', async () => {
-        req.body = {
-          filesToDelete: [
-            { uid: mockFileUid1, filename: 'mockFileName1', key: mockKey1 },
-            { uid: mockFileUid2, filename: 'mockFileName2', key: mockKey2 },
-            { uid: mockFileUid3, filename: 'mockFileName3', key: mockKey3 },
-          ],
-        };
-
-        stubDeleteCertificate.onCall(0).returns(1);
-        stubDeleteCertificate.onCall(1).returns(0);
-        stubDeleteCertificate.onCall(2).throws('DatabaseError');
-
-        stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
+      it('should return 400 status and message if no files in req body', async () => {
+        req.body = {};
 
         await trainingCertificateRoute.deleteCertificates(req, res);
-        const actual = await res._getJSONData();
 
-        expect(res.statusCode).to.equal(200);
-        expect(actual).to.deep.equal({
-          deletedFiles: [mockKey1],
-          errors: [
-            {
-              key: mockKey2,
-              error: { name: 'not found' },
-            },
-            {
-              key: mockKey3,
-              error: {
-                name: errorMessage,
-              },
-            },
-          ],
-        });
+        expect(res.statusCode).to.equal(400);
+        expect(res._getData()).to.equal('No files provided in request body');
       });
 
-      it('should return an error in the errors object if none have been deleted due to database error', async () => {
+      it('should return 500 if there was a database error', async () => {
         req.body = {
           filesToDelete: [
             { uid: mockFileUid1, filename: 'mockFileName1' },
@@ -383,39 +324,48 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
           ],
         };
 
-        stubDeleteCertificate.onCall(0).throws(errorMessage);
-        stubDeleteCertificate.onCall(1).throws(errorMessage);
-        stubDeleteCertificate.onCall(2).throws(errorMessage);
+        stubDeleteCertificate.throws(errorMessage);
 
         await trainingCertificateRoute.deleteCertificates(req, res);
-        const actual = await res._getJSONData();
 
-        expect(res.statusCode).to.equal(400);
-        expect(actual).to.deep.equal({
-          errors: [
-            {
-              key: mockKey1,
-              error: {
-                name: errorMessage,
-              },
-            },
-            {
-              key: mockKey2,
-              error: {
-                name: errorMessage,
-              },
-            },
-            {
-              key: mockKey3,
-              error: {
-                name: errorMessage,
-              },
-            },
-          ],
-        });
+        expect(res.statusCode).to.equal(500);
       });
 
-      it('should show in the errors obkect the key of a training certificate that has not been deleted from S3', async () => {
+      it('should return 400 if there were no records deleted from the database', async () => {
+        req.body = {
+          filesToDelete: [
+            { uid: mockFileUid1, filename: 'mockFileName1' },
+            { uid: mockFileUid2, filename: 'mockFileName2' },
+            { uid: mockFileUid3, filename: 'mockFileName3' },
+          ],
+        };
+
+        stubDeleteCertificate.returns(0);
+
+        await trainingCertificateRoute.deleteCertificates(req, res);
+
+        expect(res.statusCode).to.equal(400);
+        expect(res._getData()).to.equal('Invalid request');
+      });
+
+      it("should return 400 if the amount of records deleted from the database doesn't match the amount requested", async () => {
+        req.body = {
+          filesToDelete: [
+            { uid: mockFileUid1, filename: 'mockFileName1' },
+            { uid: mockFileUid2, filename: 'mockFileName2' },
+            { uid: mockFileUid3, filename: 'mockFileName3' },
+          ],
+        };
+
+        stubDeleteCertificate.returns(2);
+
+        await trainingCertificateRoute.deleteCertificates(req, res);
+
+        expect(res.statusCode).to.equal(400);
+        expect(res._getData()).to.equal('Unable to delete requested records');
+      });
+
+      it('should show the deleted files and and file not deleted when one of the training certificate has not been deleted from S3', async () => {
         req.body = {
           filesToDelete: [
             { uid: mockFileUid1, filename: 'mockFileName1', key: mockKey1 },
@@ -424,9 +374,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
           ],
         };
 
-        stubDeleteCertificate.onCall(0).returns(1);
-        stubDeleteCertificate.onCall(1).returns(1);
-        stubDeleteCertificate.onCall(2).returns(1);
+        stubDeleteCertificate.returns(3);
 
         stubDeleteCertificatesFromS3.returns({
           Deleted: [{ Key: mockKey1 }, { Key: mockKey2 }],
@@ -440,6 +388,40 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         expect(actual).to.deep.equal({
           deletedFiles: [mockKey1, mockKey2],
           errors: [{ key: mockKey3, error: { name: 'S3 error' } }],
+        });
+      });
+
+      it('should show all the files not deleted from S3', async () => {
+        req.body = {
+          filesToDelete: [
+            { uid: mockFileUid1, filename: 'mockFileName1', key: mockKey1 },
+            { uid: mockFileUid2, filename: 'mockFileName2', key: mockKey2 },
+            { uid: mockFileUid3, filename: 'mockFileName3', key: mockKey3 },
+          ],
+        };
+
+        stubDeleteCertificate.returns(3);
+
+        stubDeleteCertificatesFromS3.returns({
+          Deleted: [],
+          Errors: [
+            { Key: mockKey1, Message: 'S3 error' },
+            { Key: mockKey2, Message: 'S3 error' },
+            { Key: mockKey3, Message: 'S3 error' },
+          ],
+        });
+
+        await trainingCertificateRoute.deleteCertificates(req, res);
+        const actual = await res._getJSONData();
+
+        expect(res.statusCode).to.equal(200);
+        expect(actual).to.deep.equal({
+          deletedFiles: [],
+          errors: [
+            { key: mockKey1, error: { name: 'S3 error' } },
+            { key: mockKey2, error: { name: 'S3 error' } },
+            { key: mockKey3, error: { name: 'S3 error' } },
+          ],
         });
       });
     });
