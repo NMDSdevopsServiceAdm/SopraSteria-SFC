@@ -20,5 +20,12 @@ export class NewTrainingComponent {
 
   ngOnInit() {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
+
+    for (let i = 0; i < this.trainingCategories.length; i++) {
+      this.trainingCategories[i].trainingRecords = this.trainingCategories[i].trainingRecords.filter(x => x.trainingStatus !== this.trainingStatusService.MISSING);
+      if (this.trainingCategories[i].trainingRecords.length === 0) {
+        this.trainingCategories.splice(i, 1);
+      }
+    }
   }
 }
