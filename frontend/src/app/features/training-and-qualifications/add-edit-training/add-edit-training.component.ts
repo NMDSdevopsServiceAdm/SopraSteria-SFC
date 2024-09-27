@@ -12,9 +12,10 @@ import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import dayjs from 'dayjs';
-import { mergeMap } from 'rxjs/operators';
+import { catchError, mergeMap } from 'rxjs/operators';
 
 import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-add-edit-training',
@@ -209,13 +210,14 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
     this.trainingService
       .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
-      .subscribe((res) => {
-        if (!res.files || res.files.length == 0) {
+      .subscribe(
+        () => {
+          this.certificateErrors = [];
+        },
+        (_error) => {
           this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
-          return;
-        }
-        this.trainingService.triggerCertificateDownloads(res.files);
-      });
+        },
+      );
   }
 
   private formatForCertificateDownload(certificate: TrainingCertificate): CertificateDownload {

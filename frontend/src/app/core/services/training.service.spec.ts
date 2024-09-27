@@ -256,7 +256,7 @@ describe('TrainingService', () => {
       const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL').and.callThrough();
       spyOn(window.URL, 'createObjectURL').and.returnValue(mockBlobUrl);
 
-      service.triggerCertificateDownloads(mockCertificates);
+      service.triggerCertificateDownloads(mockCertificates).subscribe();
 
       const downloadReq = http.expectOne(mockCertificates[0].signedUrl);
       downloadReq.flush(mockBlob);

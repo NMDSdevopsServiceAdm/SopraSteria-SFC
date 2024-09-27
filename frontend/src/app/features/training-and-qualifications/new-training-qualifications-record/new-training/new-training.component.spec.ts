@@ -370,7 +370,7 @@ describe('NewTrainingComponent', async () => {
       expect(within(trainingRecordWithCertificateRow).getByText('Download')).toBeTruthy();
     });
 
-    fit('should trigger download file emitter when Download link is clicked', async () => {
+    it('should trigger download file emitter when Download link is clicked', async () => {
       const { component, fixture, getByTestId } = await setup();
 
       component.trainingCategories[0].trainingRecords[0].trainingCertificates = [

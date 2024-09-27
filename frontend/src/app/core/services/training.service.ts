@@ -4,17 +4,18 @@ import { Params } from '@angular/router';
 import {
   allMandatoryTrainingCategories,
   CertificateDownload,
-  CertificateSignedUrlRequest,
-  CertificateSignedUrlResponse,
+  UploadCertificateSignedUrlRequest,
+  UploadCertificateSignedUrlResponse,
   ConfirmUploadRequest,
   FileInfoWithETag,
   S3UploadResponse,
   SelectedTraining,
   TrainingCategory,
+  DownloadCertificateSignedUrlResponse,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
-import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, from, Observable } from 'rxjs';
+import { map, mergeAll, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -138,10 +139,10 @@ export class TrainingService {
 
   public addCertificateToTraining(workplaceUid: string, workerUid: string, trainingUid: string, filesToUpload: File[]) {
     const listOfFilenames = filesToUpload.map((file) => ({ filename: file.name }));
-    const requestBody: CertificateSignedUrlRequest = { files: listOfFilenames };
+    const requestBody: UploadCertificateSignedUrlRequest = { files: listOfFilenames };
 
     return this.http
-      .post<CertificateSignedUrlResponse>(
+      .post<UploadCertificateSignedUrlResponse>(
         `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`,
         requestBody,
       )
@@ -155,7 +156,7 @@ export class TrainingService {
   }
 
   private uploadAllCertificatestoS3(
-    signedUrlResponse: CertificateSignedUrlResponse,
+    signedUrlResponse: UploadCertificateSignedUrlResponse,
     filesToUpload: File[],
   ): Observable<FileInfoWithETag[]> {
     const allUploadResults$ = signedUrlResponse.files.map(({ signedUrl, fileId, filename, key }, index) => {
@@ -191,26 +192,41 @@ export class TrainingService {
     trainingUid: string,
     filesToDownload: CertificateDownload[],
   ): Observable<any> {
-    return this.http.post<any>(
+    return this.getCertificateDownloadUrls(workplaceUid, workerUid, trainingUid, filesToDownload).pipe(
+      mergeMap((res) => this.triggerCertificateDownloads(res['files'])),
+    );
+
+    // return this.http
+    //   .post<any>(
+    //     `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate/download`,
+    //     { filesToDownload },
+    //   )
+    //   .pipe(mergeMap((res) => this.triggerCertificateDownloads(res['files'])));
+  }
+
+  public getCertificateDownloadUrls(
+    workplaceUid: string,
+    workerUid: string,
+    trainingUid: string,
+    filesToDownload: CertificateDownload[],
+  ) {
+    return this.http.post<DownloadCertificateSignedUrlResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate/download`,
       { filesToDownload },
     );
   }
 
-  public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): void {
-    const downloadRequests = files.map((file) => this.http.get(file.signedUrl, { responseType: 'blob' }));
-
-    forkJoin(downloadRequests).subscribe(
-      (fileBlobs: Blob[]) => {
-        fileBlobs.forEach((blob, index) => {
-          this.triggerSingleCertificateDownload(blob, files[index].filename);
-        });
-      },
-      (error) => {
-        console.log('======================= error ======================');
-        console.log(error);
-        throw error;
-      },
+  public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): Observable<{
+    blob: Blob;
+    filename: string;
+  }> {
+    const downloadedBlobs = files.map((file) => this.http.get(file.signedUrl, { responseType: 'blob' }));
+    const blobsAndFilenames = downloadedBlobs.map((blob$, index) =>
+      blob$.pipe(map((blob) => ({ blob, filename: files[index].filename }))),
+    );
+    return from(blobsAndFilenames).pipe(
+      mergeAll(),
+      tap(({ blob, filename }) => this.triggerSingleCertificateDownload(blob, filename)),
     );
   }
 

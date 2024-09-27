@@ -14,7 +14,8 @@ import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { Subscription } from 'rxjs';
+import { of, Subscription } from 'rxjs';
+import { catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-new-training-and-qualifications-record',
@@ -329,17 +330,13 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         trainingRecord.uid,
         trainingRecord.trainingCertificates,
       )
-      .subscribe(
-        (res) => {
-          // if (!res.files || res.files.length == 0) {
-          //   this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
-          //   return;
-          // }
-          this.trainingService.triggerCertificateDownloads(res.files);
-        },
-        (error) => {
+      .pipe(
+        catchError((error) => {
+          console.log(error);
           console.log('error caught at downloadTrainingCertificate');
-        },
-      );
+          return of(null);
+        }),
+      )
+      .subscribe();
   }
 }
