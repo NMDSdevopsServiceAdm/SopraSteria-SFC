@@ -112,8 +112,8 @@
                     Select a download
                   </a>
                 </span>
-                <span *ngIf="trainingRecord.trainingCertificates?.length == 0">
-                  <button href="#" class="govuk-button govuk-button--secondary">Upload file</button>
+                <span *ngIf="trainingRecord.trainingCertificates?.length === 0">
+                  <app-select-upload-file accept=".pdf" buttonText="Upload file"/>
                 </span>
               </td>
             </tr>

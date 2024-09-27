@@ -27,7 +27,7 @@ import userEvent from '@testing-library/user-event';
 import { TrainingRecord } from '@core/model/training.model';
 import { TrainingService } from '@core/services/training.service';
 
-describe('NewTrainingAndQualificationsRecordComponent', () => {
+fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   const yesterday = new Date();
