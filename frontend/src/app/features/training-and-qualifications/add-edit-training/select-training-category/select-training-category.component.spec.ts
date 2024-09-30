@@ -1,25 +1,26 @@
-import { fireEvent, render } from '@testing-library/angular';
-import { BehaviorSubject } from 'rxjs';
-import { getTestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TrainingService } from '@core/services/training.service';
-import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import { getTestBed } from '@angular/core/testing';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
-import { RouterTestingModule } from '@angular/router/testing';
-import { WindowRef } from '@core/services/window.ref';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { WorkerService } from '@core/services/worker.service';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
-import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { Establishment } from '@core/model/establishment.model';
-import { SelectTrainingCategoryComponent } from './select-training-category.component';
-import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { fireEvent, render } from '@testing-library/angular';
+import { BehaviorSubject } from 'rxjs';
 import sinon from 'sinon';
+
+import { SelectTrainingCategoryComponent } from './select-training-category.component';
 
 describe('SelectTrainingCategoryComponent', () => {
   async function setup(prefill = false, qsParamGetMock = sinon.fake()) {
@@ -121,14 +122,14 @@ describe('SelectTrainingCategoryComponent', () => {
     expect(cancelLink).toBeTruthy();
   });
 
-  it('should show an accordian with the correct categories in', async () => {
+  it('should show an accordion with the correct categories in', async () => {
     const { component, getByTestId } = await setup(true);
     expect(component.categories).toEqual([
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
       { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
       { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
-    expect(getByTestId('accordian')).toBeTruthy();
+    expect(getByTestId('groupedAccordion')).toBeTruthy();
   });
 
   it('should call the training service and navigate to the details page', async () => {
@@ -194,5 +195,15 @@ describe('SelectTrainingCategoryComponent', () => {
     const { component } = await setup(true);
 
     expect(component.form.value).toEqual({ category: 1 });
+  });
+
+  it('should display example messages for each training group', async () => {
+    const { component, getByText } = await setup();
+
+    expect(getByText("Training like 'duty of care', 'safeguarding adults'")).toBeTruthy();
+    expect(getByText("Training like 'fire safety', 'first aid'")).toBeTruthy();
+    expect(getByText("Training like 'online safety and security', 'working with digital technology'")).toBeTruthy();
+    expect(getByText("Training like 'dementia care', 'Oliver McGowan Mandatory Training'")).toBeTruthy();
+    expect(getByText("Training like 'communication', 'leadership and management'")).toBeTruthy();
   });
 });

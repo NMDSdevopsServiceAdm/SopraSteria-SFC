@@ -49,9 +49,9 @@
       type="submit"
       class="govuk-button govuk-!-margin-right-9"
       (click)="onButtonClick(summaryActionType, true)"
-      [ngClass]="{ additionalHorizontalPadding: summaryContinue }"
+      [ngClass]="{ additionalHorizontalPadding: summaryContinue && !overrideCallToActionLabel }"
     >
-      {{ summaryContinue ? 'Save' : 'Save and return' }}
+      {{ overrideCallToActionLabel ? callToAction : summaryContinue ? 'Save' : 'Save and return' }}
     </button>
 
     <span class="govuk-visually-hidden">or</span>

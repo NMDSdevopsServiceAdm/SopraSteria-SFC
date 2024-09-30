@@ -409,3 +409,19 @@ export class MockEstablishmentServiceCheckCQCDetails extends MockEstablishmentSe
     return this.cqcDetailsBanner;
   }
 }
+
+@Injectable()
+export class MockEstablishmentServiceWithNoCapacities extends MockEstablishmentService {
+  public static factory() {
+    return (httpClient: HttpClient) => {
+      const service = new MockEstablishmentServiceWithNoCapacities(httpClient);
+      return service;
+    };
+  }
+
+  public getCapacity(establishmentId: any, all: boolean): Observable<any> {
+    return of({
+      allServiceCapacities: [],
+    });
+  }
+}

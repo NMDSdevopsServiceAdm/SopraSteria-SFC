@@ -41,7 +41,7 @@ export class QualificationFormComponent implements OnInit, OnDestroy {
     this.remainingCharacterCount = this.notesMaxLength;
     this.subscriptions.add(
       this.workerService
-        .getAvailableQualifcations(this.workplace.uid, this.worker.uid, this.type.value as QualificationType)
+        .getAvailableQualifications(this.workplace.uid, this.worker.uid, this.type.value as QualificationType)
         .subscribe(
           (qualifications) => {
             if (qualifications) {

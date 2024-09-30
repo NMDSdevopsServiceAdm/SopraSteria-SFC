@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const models = require('../../models');
 const authorization = require('../../utils/middleware/isNHSBSAAuthenticated');
-const { authLimiter } = require('../../utils/middleware/rateLimiting');
+const { nhsBsaApiLimiter } = require('../../utils/middleware/rateLimitingNHSBSAAPI');
 // WDF effective date
 const WdfCalculator = require('../../models/classes/wdfCalculator').WdfCalculator;
 
@@ -98,7 +98,7 @@ const calculatePercentageOfWorkersEligible = (workers) => {
   return Math.floor((numberOfEligibleWorkers / numberOfWorkers) * 100);
 };
 
-router.route('/:workplaceId').get(authLimiter, authorization.isAuthorised, nhsBsaApi);
+router.route('/:workplaceId').get(nhsBsaApiLimiter, authorization.isAuthorised, nhsBsaApi);
 module.exports = router;
 module.exports.nhsBsaApi = nhsBsaApi;
 module.exports.subsidiariesList = subsidiariesList;

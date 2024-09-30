@@ -17,6 +17,7 @@ import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { Contracts } from '@core/model/contracts.enum';
 
 export interface Reason {
   id: number;
@@ -29,6 +30,11 @@ interface LeaveReasonsResponse {
 
 interface TotalStaffRecordsResponse {
   total: number;
+}
+
+export interface NewWorkerMandatoryInfo {
+  nameOrId: string;
+  contract: Contracts;
 }
 
 @Injectable({
@@ -44,6 +50,7 @@ export class WorkerService {
   public worker$ = this._worker$.asObservable();
   public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
+  private _newWorkerMandatoryInfo: NewWorkerMandatoryInfo = null;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
@@ -166,7 +173,7 @@ export class WorkerService {
     );
   }
 
-  getAvailableQualifcations(workplaceUid: string, workerId: string, type: QualificationType) {
+  getAvailableQualifications(workplaceUid: string, workerId: string, type: QualificationType) {
     const params = new HttpParams().append('type', type);
 
     return this.http
@@ -289,5 +296,17 @@ export class WorkerService {
 
   public getLongTermAbsenceReasons(): Observable<Array<string>> {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/longTermAbsence`).pipe(map((res) => res.reasons));
+  }
+
+  public setNewWorkerMandatoryInfo(nameOrId: string, contract: Contracts): void {
+    this._newWorkerMandatoryInfo = { nameOrId, contract };
+  }
+
+  public get newWorkerMandatoryInfo(): NewWorkerMandatoryInfo {
+    return this._newWorkerMandatoryInfo;
+  }
+
+  public clearNewWorkerMandatoryInfo(): void {
+    this._newWorkerMandatoryInfo = null;
   }
 }
