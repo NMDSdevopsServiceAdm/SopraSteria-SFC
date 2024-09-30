@@ -241,10 +241,10 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     return { uid: certificate.uid, filename: certificate.filename };
   }
 
-  private deleteTrainingCertificate(files) {
+  private deleteTrainingCertificate(files: any) {
     this.trainingService
       .deleteCertificates(this.establishmentUid, this.workerId, this.trainingRecordId, files)
-      .subscribe((res) => {});
+      .subscribe(() => {});
   }
 
   private onSuccess() {
