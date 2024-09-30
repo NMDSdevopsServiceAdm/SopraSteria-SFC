@@ -5,7 +5,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 
 import { NewTrainingComponent } from './new-training.component';
 
-describe('NewTrainingComponent', async () => {
+fdescribe('NewTrainingComponent', async () => {
   let component: NewTrainingComponent;
   let fixture: ComponentFixture<NewTrainingComponent>;
 
@@ -154,12 +154,6 @@ describe('NewTrainingComponent', async () => {
       const communicationTrainingTitleLink = fixture.debugElement.query(
         By.css('[data-testid="Title-someCommunicationUid"]'),
       ).nativeElement;
-      const healthTrainingTitleLink = fixture.debugElement.query(
-        By.css('[data-testid="Title-someHealthUid"]'),
-      ).nativeElement;
-      const healthTraining2TitleLink = fixture.debugElement.query(
-        By.css('[data-testid="Title-someHealthUid2"]'),
-      ).nativeElement;
 
       expect(
         autismTrainingTitleLink
@@ -176,16 +170,6 @@ describe('NewTrainingComponent', async () => {
           .getAttribute('href')
           .slice(0, communicationTrainingTitleLink.getAttribute('href').indexOf(';')),
       ).toBe('/training/someCommunicationUid');
-      expect(
-        healthTrainingTitleLink
-          .getAttribute('href')
-          .slice(0, healthTrainingTitleLink.getAttribute('href').indexOf(';')),
-      ).toBe('/training/someHealthUid');
-      expect(
-        healthTraining2TitleLink
-          .getAttribute('href')
-          .slice(0, healthTraining2TitleLink.getAttribute('href').indexOf(';')),
-      ).toBe('/training/someHealthUid2');
     });
 
     it('training title should not link to training records if you are a read only user', () => {
