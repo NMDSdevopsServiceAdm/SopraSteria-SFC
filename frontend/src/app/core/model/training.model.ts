@@ -41,6 +41,11 @@ export interface CertificateDownload {
   filename: string;
 }
 
+export interface CertificateUpload {
+  files: File[];
+  trainingRecord: TrainingRecord;
+}
+
 export interface TrainingCertificate {
   uid: string;
   filename: string;

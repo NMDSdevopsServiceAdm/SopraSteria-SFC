@@ -1,6 +1,6 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { TrainingRecord, TrainingRecordCategory } from '@core/model/training.model';
+import { CertificateUpload, TrainingRecord, TrainingRecordCategory } from '@core/model/training.model';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 
 @Component({
@@ -15,6 +15,7 @@ export class NewTrainingComponent implements OnChanges {
   @Input() public canEditWorker: boolean;
   @Input() public certificateErrors: Record<string, string> = {};
   @Output() public downloadFile = new EventEmitter<TrainingRecord>();
+  @Output() public uploadFile = new EventEmitter<CertificateUpload>();
 
   public trainingCategoryToDisplay: (TrainingRecordCategory & { error?: string })[];
 
@@ -23,18 +24,22 @@ export class NewTrainingComponent implements OnChanges {
 
   constructor(protected trainingStatusService: TrainingStatusService, private route: ActivatedRoute) {}
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
     this.addErrorsToTrainingCategories();
   }
 
-  ngOnChanges() {
+  ngOnChanges(): void {
     this.addErrorsToTrainingCategories();
   }
 
-  handleDownloadCertificate(event, trainingRecord: TrainingRecord) {
+  handleDownloadCertificate(event: Event, trainingRecord: TrainingRecord) {
     event.preventDefault();
     this.downloadFile.emit(trainingRecord);
+  }
+
+  handleUploadCertificate(files: File[], trainingRecord: TrainingRecord) {
+    this.uploadFile.emit({ files, trainingRecord });
   }
 
   addErrorsToTrainingCategories() {

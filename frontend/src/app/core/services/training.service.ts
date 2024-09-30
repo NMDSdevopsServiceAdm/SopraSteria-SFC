@@ -195,13 +195,6 @@ export class TrainingService {
     return this.getCertificateDownloadUrls(workplaceUid, workerUid, trainingUid, filesToDownload).pipe(
       mergeMap((res) => this.triggerCertificateDownloads(res['files'])),
     );
-
-    // return this.http
-    //   .post<any>(
-    //     `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate/download`,
-    //     { filesToDownload },
-    //   )
-    //   .pipe(mergeMap((res) => this.triggerCertificateDownloads(res['files'])));
   }
 
   public getCertificateDownloadUrls(

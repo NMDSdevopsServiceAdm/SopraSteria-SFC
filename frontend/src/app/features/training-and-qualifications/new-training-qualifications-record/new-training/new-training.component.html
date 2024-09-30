@@ -113,7 +113,7 @@
                   </a>
                 </span>
                 <span *ngIf="trainingRecord.trainingCertificates?.length === 0">
-                  <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0" />
+                  <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0" (selectFiles)="handleUploadCertificate($event, trainingRecord)" />
                 </span>
               </td>
             </tr>

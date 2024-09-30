@@ -452,6 +452,25 @@ describe('NewTrainingComponent', async () => {
       expect(within(trainingRecordWithCertificateRow).getByText('Upload file')).toBeTruthy();
     });
 
+    it('should trigger the upload file emitter when a file is selected by the Upload file button', async () => {
+      const { component, fixture, getByTestId } = await setup();
+      const mockUploadFile = new File(['some file content'], 'certificate.pdf');
+      const uploadFileSpy = spyOn(component.uploadFile, 'emit');
+
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [];
+      fixture.detectChanges();
+
+      const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
+      const fileInput = within(trainingRecordWithCertificateRow).getByTestId('fileInput');
+
+      userEvent.upload(fileInput, [mockUploadFile]);
+
+      expect(uploadFileSpy).toHaveBeenCalledWith({
+        files: [mockUploadFile],
+        trainingRecord: component.trainingCategories[0].trainingRecords[0],
+      });
+    });
+
     it('should display an error message above the category when download certificate fails', async () => {
       const certificateErrors = {
         Autism: "There's a problem with this download. Try again later or contact us for help.",
