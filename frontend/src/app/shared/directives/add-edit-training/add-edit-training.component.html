@@ -182,10 +182,8 @@
         </div>
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <div
-              class="govuk-form-group govuk-!-margin-bottom-4"
-              data-testid="uploadCertificate"
-            >
+            <div class="govuk-form-group govuk-!-margin-bottom-4" data-testid="uploadCertificate">
+              <h2 class="govuk-!-margin-top-0 govuk-!-margin-bottom-2">Certificates</h2>
               <fieldset class="govuk-fieldset" aria-describedby="uploadCertificate-hint" role="group">
                 <label class="govuk-label govuk-!-font-weight-bold" for="uploadCertificate">
                   Upload a certificate
@@ -201,13 +199,21 @@
                     buttonClasses="govuk-!-margin-bottom-4 govuk-!-margin-right-2"
                     (selectFiles)="onSelectFiles($event)"
                     [aria-describedby]="getUploadComponentAriaDescribedBy()"
-                  />
-                  <span id="uploadCertificate-aria-text" class="govuk-body" aria-live="polite" [class.govuk-visually-hidden]="filesToUpload?.length > 0">
-                    {{filesToUpload?.length > 0 ? filesToUpload.length + " file chosen" : "No file chosen"}}
+                  ></app-select-upload-file>
+                  <span
+                    id="uploadCertificate-aria-text"
+                    class="govuk-body"
+                    aria-live="polite"
+                    [class.govuk-visually-hidden]="filesToUpload?.length > 0"
+                  >
+                    {{ filesToUpload?.length > 0 ? filesToUpload.length + ' file chosen' : 'No file chosen' }}
                   </span>
                 </div>
                 <div id="uploadCertificate-errors">
-                  <app-validation-error-message *ngFor="let errorMessage of certificateErrors" [errorMessage]="errorMessage"/>
+                  <app-validation-error-message
+                    *ngFor="let errorMessage of certificateErrors"
+                    [errorMessage]="errorMessage"
+                  ></app-validation-error-message>
                 </div>
               </fieldset>
             </div>
@@ -217,6 +223,7 @@
               [certificates]="trainingCertificates"
               [filesToUpload]="filesToUpload"
               (removeFileToUpload)="removeFileToUpload($event)"
+              (removeSavedFile)="removeSavedFile($event)"
               (downloadCertificate)="downloadCertificates($event)"
             ></app-certifications-table>
           </div>
@@ -225,46 +232,62 @@
           <div class="govuk-grid-column-two-thirds-from-desktop">
             <div class="govuk-character-count govuk-!-margin-bottom-4">
               <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
-                <label class="govuk-label" for="notes">Notes</label>
+                <label class="govuk-label govuk-!-font-weight-bold" for="notes"> Add a note </label>
                 <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
                   <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
                 </span>
+                <button
+                  type="button"
+                  (click)="toggleNotesOpen()"
+                  class="govuk-accordion__show-all"
+                  [attr.aria-expanded]="notesOpen"
+                >
+                  <span
+                    class="govuk-accordion-nav__chevron"
+                    [class]="{
+                      'govuk-accordion-nav__chevron--up': notesOpen,
+                      'govuk-accordion-nav__chevron--down': !notesOpen
+                    }"
+                  ></span>
+                  <span class="govuk-accordion__show-all-text">{{ !notesOpen ? 'Open notes' : 'Close notes' }}</span>
+                </button>
+                <div data-testid="notesSection" [ngClass]="{ 'govuk-visually-hidden': !notesOpen }">
+                  <textarea
+                    class="govuk-textarea"
+                    [class.govuk-textarea--error]="submitted && form.get('notes').invalid"
+                    [formControlName]="'notes'"
+                    id="notes"
+                    name="notes"
+                    rows="5"
+                    [value]="notesValue"
+                    (input)="handleOnInput($event)"
+                  ></textarea>
+                  <span
+                    class="govuk-character-count__message govuk-hint"
+                    [ngClass]="{
+                      'govuk-hint': remainingCharacterCount >= 0,
+                      'govuk-error-message': remainingCharacterCount < 0
+                    }"
+                    aria-live="polite"
+                  >
+                    <noscript> You can enter up to {{ notesMaxLength }} characters </noscript>
+                    <ng-container>
+                      You have {{ remainingCharacterCount | absoluteNumber | number }}
+                      {{
+                        remainingCharacterCount
+                          | absoluteNumber
+                          | i18nPlural
+                            : {
+                                '=1': 'character',
+                                other: 'characters'
+                              }
+                      }}
 
-                <textarea
-                  class="govuk-textarea"
-                  [class.govuk-textarea--error]="submitted && form.get('notes').invalid"
-                  [formControlName]="'notes'"
-                  id="notes"
-                  name="notes"
-                  rows="5"
-                  [value]="notesValue"
-                  (input)="handleOnInput($event)"
-                ></textarea>
+                      {{ remainingCharacterCount >= 0 ? 'remaining' : 'too many' }}
+                    </ng-container>
+                  </span>
+                </div>
               </div>
-              <span
-                class="govuk-character-count__message govuk-hint"
-                [ngClass]="{
-                  'govuk-hint': remainingCharacterCount >= 0,
-                  'govuk-error-message': remainingCharacterCount < 0
-                }"
-                aria-live="polite"
-              >
-                <noscript> You can enter up to {{ notesMaxLength }} characters </noscript>
-                <ng-container>
-                  You have {{ remainingCharacterCount | absoluteNumber | number }}
-                  {{
-                    remainingCharacterCount
-                      | absoluteNumber
-                      | i18nPlural
-                        : {
-                            '=1': 'character',
-                            other: 'characters'
-                          }
-                  }}
-
-                  {{ remainingCharacterCount >= 0 ? 'remaining' : 'too many' }}
-                </ng-container>
-              </span>
             </div>
           </div>
         </div>

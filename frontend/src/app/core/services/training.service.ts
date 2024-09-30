@@ -12,6 +12,7 @@ import {
   SelectedTraining,
   TrainingCategory,
   DownloadCertificateSignedUrlResponse,
+  TrainingCertificate,
 } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, forkJoin, from, Observable } from 'rxjs';
@@ -258,6 +259,18 @@ export class TrainingService {
     return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`,
       confirmUploadRequestBody,
+    );
+  }
+
+  public deleteCertificates(
+    workplaceUid: string,
+    workerUid: string,
+    trainingUid: string,
+    filesToDelete: TrainingCertificate[],
+  ): Observable<any> {
+    return this.http.post<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate/delete`,
+      { filesToDelete },
     );
   }
 }

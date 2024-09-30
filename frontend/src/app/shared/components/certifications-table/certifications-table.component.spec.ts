@@ -183,4 +183,17 @@ describe('CertificationsTableComponent', () => {
       expect(removeFileToUploadSpy).toHaveBeenCalledWith(1);
     });
   });
+
+  it('should call removeSavedFile with file index when the remove button for upload file is clicked', async () => {
+    const { getByTestId, component } = await setup(multipleFiles);
+
+    const removeFileRow = getByTestId('certificate-row-0');
+
+    const removeSavedFileSpy = spyOn(component.removeSavedFile, 'emit');
+
+    const removeButton = within(removeFileRow).getByText('Remove');
+    userEvent.click(removeButton);
+
+    expect(removeSavedFileSpy).toHaveBeenCalledWith(0);
+  });
 });

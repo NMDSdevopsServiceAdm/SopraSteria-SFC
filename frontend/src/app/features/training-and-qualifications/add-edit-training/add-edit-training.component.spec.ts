@@ -183,6 +183,30 @@ describe('AddEditTrainingComponent', () => {
     });
   });
 
+  describe('Notes section', () => {
+    it('should have the notes section closed on page load', async () => {
+      const { getByText, getByTestId } = await setup();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Open notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).toContain('govuk-visually-hidden');
+    });
+
+    it('should display the notes section after clicking Open notes', async () => {
+      const { fixture, getByText, getByTestId } = await setup();
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
+
+      fixture.detectChanges();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Close notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
+    });
+  });
+
   describe('fillForm', () => {
     it('should prefill the form if there is a training record id and there is a training record', async () => {
       const { component, workerService } = await setup();
@@ -200,6 +224,40 @@ describe('AddEditTrainingComponent', () => {
 
       expect(form.value).toEqual(expectedFormValue);
       expect(workerServiceSpy).toHaveBeenCalledWith(workplace.uid, worker.uid, trainingRecordId);
+    });
+
+    it('should open the notes section if there are some notes in record', async () => {
+      const mockTrainingWithNotes = {
+        trainingCategory: { id: 1, category: 'Communication' },
+        notes: 'some notes about this training',
+      };
+      const { component, fixture, workerService, getByTestId, getByText } = await setup();
+
+      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(mockTrainingWithNotes));
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Close notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
+      const notesTextArea = within(notesSection).getByRole('textbox', { name: 'Add a note' }) as HTMLTextAreaElement;
+      expect(notesTextArea.value).toEqual('some notes about this training');
+    });
+
+    it('should display the remaining character count correctly if there are some notes in record', async () => {
+      const mockTrainingWithNotes = {
+        trainingCategory: { id: 1, category: 'Communication' },
+        notes: 'some notes about this training',
+      };
+      const { component, fixture, workerService, getByText } = await setup();
+
+      spyOn(workerService, 'getTrainingRecord').and.returnValue(of(mockTrainingWithNotes));
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const expectedRemainingCharCounts = component.notesMaxLength - 'some notes about this training'.length;
+      expect(getByText(`You have ${expectedRemainingCharCounts} characters remaining`)).toBeTruthy;
     });
 
     it('should not prefill the form if there is a training record id but there is no training record', async () => {
@@ -354,9 +412,11 @@ describe('AddEditTrainingComponent', () => {
       const { component, fixture, getByText, getByLabelText, updateSpy, routerSpy, alertServiceSpy } = await setup();
 
       component.previousUrl = ['/goToPreviousUrl'];
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
       fixture.detectChanges();
 
-      userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+      userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
       fireEvent.click(getByText('Save and return'));
       fixture.detectChanges();
 
@@ -399,6 +459,8 @@ describe('AddEditTrainingComponent', () => {
         await setup(null);
 
       component.previousUrl = ['/goToPreviousUrl'];
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
       fixture.detectChanges();
 
       component.trainingCategory = {
@@ -416,7 +478,7 @@ describe('AddEditTrainingComponent', () => {
       userEvent.type(within(expiresDate).getByLabelText('Day'), '10');
       userEvent.type(within(expiresDate).getByLabelText('Month'), '4');
       userEvent.type(within(expiresDate).getByLabelText('Year'), '2022');
-      userEvent.type(getByLabelText('Notes'), 'Some notes for this training');
+      userEvent.type(getByLabelText('Add a note'), 'Some notes for this training');
 
       fireEvent.click(getByText('Save record'));
       fixture.detectChanges();
@@ -506,13 +568,15 @@ describe('AddEditTrainingComponent', () => {
           await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
         fixture.detectChanges();
 
         const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining').and.returnValue(
           of(null),
         );
 
-        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
         userEvent.upload(getByTestId('fileInput'), mockUploadFile);
         fireEvent.click(getByText('Save and return'));
         fixture.detectChanges();
@@ -545,11 +609,13 @@ describe('AddEditTrainingComponent', () => {
         const { component, fixture, getByText, getByLabelText, trainingService } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
         fixture.detectChanges();
 
         const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining');
 
-        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
         fireEvent.click(getByText('Save and return'));
 
         expect(addCertificateToTrainingSpy).not.toHaveBeenCalled();
@@ -577,7 +643,6 @@ describe('AddEditTrainingComponent', () => {
 
         userEvent.type(getByLabelText('Training name'), 'Understanding Autism');
         userEvent.click(getByLabelText('Yes'));
-        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
 
         userEvent.upload(getByTestId('fileInput'), mockUploadFile);
         fireEvent.click(getByText('Save record'));
@@ -589,7 +654,7 @@ describe('AddEditTrainingComponent', () => {
           accredited: 'Yes',
           completed: null,
           expires: null,
-          notes: 'Some notes added to this training',
+          notes: null,
         });
 
         expect(addCertificateToTrainingSpy).toHaveBeenCalledWith(
@@ -612,11 +677,13 @@ describe('AddEditTrainingComponent', () => {
           category: 'Autism',
           id: 2,
         };
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
         fixture.detectChanges();
 
         const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining');
 
-        userEvent.type(getByLabelText('Notes'), 'Some notes added to this training');
+        userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
         fireEvent.click(getByText('Save record'));
 
         expect(createSpy).toHaveBeenCalled;
@@ -812,21 +879,45 @@ describe('AddEditTrainingComponent', () => {
     });
 
     describe('notes errors', () => {
+      const veryLongString =
+        'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
+
       it('should show an error message if the notes is over 1000 characters', async () => {
         const { component, fixture, getByText, getByLabelText, getAllByText } = await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
         fixture.detectChanges();
 
-        const veryLongString =
-          'This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string. This is a very long string.';
-
-        userEvent.type(getByLabelText('Notes'), veryLongString);
+        userEvent.type(getByLabelText('Add a note'), veryLongString);
 
         fireEvent.click(getByText('Save record'));
         fixture.detectChanges();
 
         expect(getAllByText('Notes must be 1000 characters or fewer').length).toEqual(2);
+      });
+
+      it('should open the notes section if the notes input is over 1000 characters and section is closed on submit', async () => {
+        const { fixture, getByText, getByLabelText, getByTestId } = await setup(null);
+
+        const openNotesButton = getByText('Open notes');
+        openNotesButton.click();
+        fixture.detectChanges();
+
+        userEvent.type(getByLabelText('Add a note'), veryLongString);
+
+        const closeNotesButton = getByText('Close notes');
+        closeNotesButton.click();
+        fixture.detectChanges();
+
+        fireEvent.click(getByText('Save record'));
+        fixture.detectChanges();
+
+        const notesSection = getByTestId('notesSection');
+
+        expect(getByText('Close notes')).toBeTruthy();
+        expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
       });
     });
 
@@ -1082,6 +1173,116 @@ describe('AddEditTrainingComponent', () => {
         expect(within(certificationTable).queryByText(mockUploadFile1.name)).toBeTruthy();
         expect(component.filesToUpload).toHaveSize(1);
         expect(component.filesToUpload[0]).toEqual(mockUploadFile1);
+      });
+    });
+
+    describe('saved files to be removed', () => {
+      it('should remove a file from the table when the remove button is clicked', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.trainingCertificates = [
+          {
+            uid: 'uid-1',
+            filename: 'first_aid_v1.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-2',
+            filename: 'first_aid_v2.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-3',
+            filename: 'first_aid_v3.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+        ];
+
+        fixture.detectChanges();
+
+        const certificateRow2 = getByTestId('certificate-row-2');
+
+        const removeButtonForRow2 = within(certificateRow2).getByText('Remove');
+
+        fireEvent.click(removeButtonForRow2);
+
+        fixture.detectChanges();
+
+        expect(component.trainingCertificates.length).toBe(2);
+      });
+
+      it('should remove all file from the table when the remove button is clicked for all saved files', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.trainingCertificates = [
+          {
+            uid: 'uid-1',
+            filename: 'first_aid_v1.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-2',
+            filename: 'first_aid_v2.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-3',
+            filename: 'first_aid_v3.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+        ];
+
+        fixture.detectChanges();
+
+        const certificateRow0 = getByTestId('certificate-row-0');
+        const certificateRow1 = getByTestId('certificate-row-1');
+        const certificateRow2 = getByTestId('certificate-row-2');
+
+        const removeButtonForRow0 = within(certificateRow0).getByText('Remove');
+        const removeButtonForRow1 = within(certificateRow1).getByText('Remove');
+        const removeButtonForRow2 = within(certificateRow2).getByText('Remove');
+
+        fireEvent.click(removeButtonForRow0);
+        fireEvent.click(removeButtonForRow1);
+        fireEvent.click(removeButtonForRow2);
+
+        fixture.detectChanges();
+        expect(component.trainingCertificates.length).toBe(0);
+      });
+
+      it('should call the training service when save and return is clicked', async () => {
+        const { component, fixture, getByTestId, getByText, trainingService } = await setup();
+
+        component.trainingCertificates = [
+          {
+            uid: 'uid-1',
+            filename: 'first_aid_v1.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+          {
+            uid: 'uid-2',
+            filename: 'first_aid_v2.pdf',
+            uploadDate: '2024-04-12T14:44:29.151Z',
+          },
+        ];
+
+        fixture.detectChanges();
+
+        const certificateRow = getByTestId('certificate-row-0');
+
+        const removeButtonForRow = within(certificateRow).getByText('Remove');
+        const trainingServiceSpy = spyOn(trainingService, 'deleteCertificates').and.callThrough();
+        fireEvent.click(removeButtonForRow);
+        fireEvent.click(getByText('Save and return'));
+
+        fixture.detectChanges();
+
+        expect(trainingServiceSpy).toHaveBeenCalledWith(
+          component.establishmentUid,
+          component.workerId,
+          component.trainingRecordId,
+          component.filesToRemove,
+        );
       });
     });
   });

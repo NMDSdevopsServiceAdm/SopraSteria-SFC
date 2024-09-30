@@ -25,6 +25,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public establishmentUid: string;
   public workerId: string;
   private _filesToUpload: File[];
+  public filesToRemove: TrainingCertificate[] = [];
   public certificateErrors: string[] | null;
 
   constructor(
@@ -121,6 +122,10 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
               }),
               notes: this.trainingRecord.notes,
             });
+            if (this.trainingRecord?.notes?.length > 0) {
+              this.notesOpen = true;
+              this.remainingCharacterCount = this.notesMaxLength - this.trainingRecord.notes.length;
+            }
           }
         },
         (error) => {
@@ -130,11 +135,25 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     );
   }
 
+  public removeSavedFile(fileIndexToRemove: number): void {
+    let tempTrainingCertificates = this.trainingCertificates.filter(
+      (certificate, index) => index !== fileIndexToRemove,
+    );
+
+    this.filesToRemove.push(this.trainingCertificates[fileIndexToRemove]);
+
+    this.trainingCertificates = tempTrainingCertificates;
+  }
+
   protected submit(record: any): void {
     this.submitButtonDisabled = true;
     let submitTrainingRecord = this.trainingRecordId
       ? this.workerService.updateTrainingRecord(this.workplace.uid, this.worker.uid, this.trainingRecordId, record)
       : this.workerService.createTrainingRecord(this.workplace.uid, this.worker.uid, record);
+
+    if (this.filesToRemove?.length > 0) {
+      this.deleteTrainingCertificate(this.filesToRemove);
+    }
 
     if (this.filesToUpload?.length > 0) {
       submitTrainingRecord = submitTrainingRecord.pipe(mergeMap((response) => this.uploadNewCertificate(response)));
@@ -221,6 +240,12 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
   private formatForCertificateDownload(certificate: TrainingCertificate): CertificateDownload {
     return { uid: certificate.uid, filename: certificate.filename };
+  }
+
+  private deleteTrainingCertificate(files) {
+    this.trainingService
+      .deleteCertificates(this.establishmentUid, this.workerId, this.trainingRecordId, files)
+      .subscribe((res) => {});
   }
 
   private onSuccess() {
