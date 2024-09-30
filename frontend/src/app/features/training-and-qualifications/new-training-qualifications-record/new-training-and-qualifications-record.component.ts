@@ -326,7 +326,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   public downloadTrainingCertificate(trainingRecord: TrainingRecord): void {
-    // validate the trainingCertificates has length = 1
     this.trainingService
       .downloadCertificates(
         this.workplace.uid,
