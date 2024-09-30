@@ -157,11 +157,14 @@ describe('NewTrainingComponent', async () => {
       const autismTrainingTitleLink = fixture.debugElement.query(
         By.css('[data-testid="Title-someAutismUid"]'),
       ).nativeElement;
-      const autismTraining2TitleLink = fixture.debugElement.query(
-        By.css('[data-testid="Title-someAutismUid2"]'),
-      ).nativeElement;
       const communicationTrainingTitleLink = fixture.debugElement.query(
         By.css('[data-testid="Title-someCommunicationUid"]'),
+      ).nativeElement;
+      const healthTrainingTitleLink = fixture.debugElement.query(
+        By.css('[data-testid="Title-someHealthUid"]'),
+      ).nativeElement;
+      const healthTraining2TitleLink = fixture.debugElement.query(
+        By.css('[data-testid="Title-someHealthUid2"]'),
       ).nativeElement;
 
       expect(
@@ -170,24 +173,26 @@ describe('NewTrainingComponent', async () => {
           .slice(0, autismTrainingTitleLink.getAttribute('href').indexOf(';')),
       ).toBe('/training/someAutismUid');
       expect(
-        autismTraining2TitleLink
-          .getAttribute('href')
-          .slice(0, autismTraining2TitleLink.getAttribute('href').indexOf(';')),
-      ).toBe('/training/someAutismUid2');
-      expect(
         communicationTrainingTitleLink
           .getAttribute('href')
           .slice(0, communicationTrainingTitleLink.getAttribute('href').indexOf(';')),
       ).toBe('/training/someCommunicationUid');
+      expect(
+        healthTrainingTitleLink
+          .getAttribute('href')
+          .slice(0, healthTrainingTitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someHealthUid');
+      expect(
+        healthTraining2TitleLink
+          .getAttribute('href')
+          .slice(0, healthTraining2TitleLink.getAttribute('href').indexOf(';')),
+      ).toBe('/training/someHealthUid2');
     });
 
     it('training title should not link to training records if you are a read only user', async () => {
       const { fixture } = await setup(false);
 
       const autismTrainingTitleLink = fixture.debugElement.query(By.css('[data-testid="Title-no-link-someAutismUid"]'));
-      const autismTraining2TitleLink = fixture.debugElement.query(
-        By.css('[data-testid="Title-no-link-someAutismUid2"]'),
-      );
       const communicationTrainingTitleLink = fixture.debugElement.query(
         By.css('[data-testid="Title-no-link-someCommunicationUid"]'),
       );
@@ -198,7 +203,6 @@ describe('NewTrainingComponent', async () => {
 
       expect(autismTrainingTitleLink).toBeTruthy();
       expect(autismTrainingTitleLink).toBeTruthy();
-      expect(autismTraining2TitleLink).toBeTruthy();
       expect(communicationTrainingTitleLink).toBeTruthy();
       expect(healthTrainingTitleLink).toBeTruthy();
       expect(healthTraining2TitleLink).toBeTruthy();
