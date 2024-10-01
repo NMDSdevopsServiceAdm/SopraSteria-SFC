@@ -17,7 +17,7 @@ import { CertificationsTableComponent } from '@shared/components/certifications-
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import sinon from 'sinon';
 
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
@@ -1099,7 +1099,7 @@ describe('AddEditTrainingComponent', () => {
       it('should display error message when Download fails', async () => {
         const { component, fixture, getByText, getByTestId, trainingService } = await setup();
 
-        spyOn(trainingService, 'downloadCertificates').and.returnValue(of({ files: [] }));
+        spyOn(trainingService, 'downloadCertificates').and.returnValue(throwError('403 forbidden'));
         component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
 
         fixture.detectChanges();
@@ -1118,7 +1118,7 @@ describe('AddEditTrainingComponent', () => {
       it('should display error message when Download all fails', async () => {
         const { component, fixture, getByText, getByTestId, trainingService } = await setup();
 
-        spyOn(trainingService, 'downloadCertificates').and.returnValue(of({ files: [] }));
+        spyOn(trainingService, 'downloadCertificates').and.returnValue(throwError('some download error'));
         component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
 
         fixture.detectChanges();

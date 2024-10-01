@@ -228,13 +228,14 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
 
     this.trainingService
       .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
-      .subscribe((res) => {
-        if (!res.files || res.files.length == 0) {
+      .subscribe(
+        () => {
+          this.certificateErrors = [];
+        },
+        (_error) => {
           this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
-          return;
-        }
-        this.trainingService.triggerCertificateDownloads(res.files);
-      });
+        },
+      );
   }
 
   private formatForCertificateDownload(certificate: TrainingCertificate): CertificateDownload {
