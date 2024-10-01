@@ -13,34 +13,17 @@ import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-rec
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { DialogService } from '@core/services/dialog.service';
-import {
-  DownloadPdfTrainingAndQualificationComponent,
-} from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
+import { DownloadPdfTrainingAndQualificationComponent } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
 import { HealthAndCareVisaComponent } from '@features/workers/health-and-care-visa/health-and-care-visa.component';
 import { SharedModule } from '@shared/shared.module';
 
-import {
-  AddEditQualificationComponent,
-} from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
-import {
-  QualificationFormComponent,
-} from '../training-and-qualifications/add-edit-qualification/qualification-form/qualification-form.component';
+import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
 import { AddEditTrainingComponent } from '../training-and-qualifications/add-edit-training/add-edit-training.component';
-import {
-  DeleteRecordComponent,
-} from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
-import {
-  NewQualificationsComponent,
-} from '../training-and-qualifications/new-training-qualifications-record/new-qualifications/new-qualifications.component';
-import {
-  NewTrainingAndQualificationsRecordSummaryComponent,
-} from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
-import {
-  NewTrainingAndQualificationsRecordComponent,
-} from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
-import {
-  NewTrainingComponent,
-} from '../training-and-qualifications/new-training-qualifications-record/new-training/new-training.component';
+import { DeleteRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
+import { NewQualificationsComponent } from '../training-and-qualifications/new-training-qualifications-record/new-qualifications/new-qualifications.component';
+import { NewTrainingAndQualificationsRecordSummaryComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record-summary/new-training-and-qualifications-record-summary.component';
+import { NewTrainingAndQualificationsRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training-and-qualifications-record.component';
+import { NewTrainingComponent } from '../training-and-qualifications/new-training-qualifications-record/new-training/new-training.component';
 import { AdultSocialCareStartedComponent } from './adult-social-care-started/adult-social-care-started.component';
 import { ApprenticeshipTrainingComponent } from './apprenticeship-training/apprenticeship-training.component';
 import { AverageWeeklyHoursComponent } from './average-weekly-hours/average-weekly-hours.component';
@@ -60,9 +43,7 @@ import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/emplo
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
-import {
-  Level2AdultSocialCareCertificateComponent,
-} from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
 import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
@@ -78,9 +59,7 @@ import { OtherQualificationsComponent } from './other-qualifications/other-quali
 import { RecruitedFromComponent } from './recruited-from/recruited-from.component';
 import { SalaryComponent } from './salary/salary.component';
 import { SelectRecordTypeComponent } from './select-record-type/select-record-type.component';
-import {
-  SocialCareQualificationLevelComponent,
-} from './social-care-qualification-level/social-care-qualification-level.component';
+import { SocialCareQualificationLevelComponent } from './social-care-qualification-level/social-care-qualification-level.component';
 import { SocialCareQualificationComponent } from './social-care-qualification/social-care-qualification.component';
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
@@ -122,7 +101,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     NursingSpecialismComponent,
     OtherQualificationsComponent,
     OtherQualificationsLevelComponent,
-    QualificationFormComponent,
     RecruitedFromComponent,
     SalaryComponent,
     SocialCareQualificationComponent,

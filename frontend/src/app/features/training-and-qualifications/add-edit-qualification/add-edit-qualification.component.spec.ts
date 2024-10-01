@@ -14,7 +14,6 @@ import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
-import { QualificationFormComponent } from './qualification-form/qualification-form.component';
 
 describe('AddEditQualificationComponent', () => {
   async function setup(qualificationId = '1') {
@@ -43,7 +42,6 @@ describe('AddEditQualificationComponent', () => {
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
           { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         ],
-        declarations: [QualificationFormComponent],
       },
     );
 

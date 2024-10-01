@@ -1,6 +1,7 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { INT_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationRequest, QualificationResponse, QualificationType } from '@core/model/qualification.model';
@@ -31,6 +32,9 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
   public previousUrl: Array<string>;
+  public notesValue = '';
+  public remainingCharacterCount: number;
+  public intPattern = INT_PATTERN.toString();
 
   constructor(
     private trainingService: TrainingService,
@@ -58,6 +62,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.qualificationId = this.route.snapshot.params.qualificationId;
 
     this.buttonText = this.qualificationId ? 'Save and return' : 'Save record';
+    this.remainingCharacterCount = this.notesMaxLength;
+    this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
     if (this.qualificationId) {
       this.subscriptions.add(
@@ -87,10 +93,6 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.router.navigate(this.previousUrl);
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
-
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -116,6 +118,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
         ],
       },
     ];
+  }
+
+  public handleOnInput(event: Event): void {
+    this.notesValue = (<HTMLInputElement>event.target).value;
+    this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
   }
 
   public getFirstErrorMessage(item: string): string {
@@ -198,5 +205,9 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
