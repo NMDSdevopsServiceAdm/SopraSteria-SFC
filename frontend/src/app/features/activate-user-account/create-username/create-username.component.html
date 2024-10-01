@@ -16,8 +16,8 @@
 
         <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getUsername.errors">
           <label class="govuk-label" for="username"> Username </label>
-          <span id="username-hint" class="govuk-hint"
-            >You'll use this to sign in, so it needs to be unique to you.</span
+          <div id="username-hint" class="govuk-hint"
+            >You'll use this to sign in, so it needs to be unique to you.</div
           >
           <span *ngIf="submitted && getUsername.errors" id="username-error" class="govuk-error-message">
             <span class="govuk-visually-hidden">Error:</span>
@@ -36,10 +36,10 @@
         <div [formGroupName]="'passwordGroup'">
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getPassword.errors">
             <label class="govuk-label" for="createPasswordInput"> Password </label>
-            <span id="createPasswordInput-hint" class="govuk-hint">
+            <div id="createPasswordInput-hint" class="govuk-hint">
               Must be at least 8 characters long and have uppercase letters, lowercase letters, numbers and special
               characters like !, £.
-            </span>
+            </div>
             <span
               *ngIf="submitted && getPassword.errors"
               id="passwordGroup-createPasswordInput-error"
@@ -71,6 +71,7 @@
 
           <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && getConfirmPassword.errors">
             <label class="govuk-label" for="confirmPasswordInput"> Confirm password </label>
+
             <span
               *ngIf="submitted && getConfirmPassword.errors"
               id="passwordGroup-confirmPasswordInput-error"

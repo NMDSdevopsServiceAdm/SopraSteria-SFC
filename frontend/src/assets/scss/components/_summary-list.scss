@@ -45,12 +45,13 @@
   }
 }
 
-.govuk-summary-list__row--no-bottom-border {
+.govuk-summary-list__row.govuk-summary-list__row--no-bottom-border {
   .govuk-summary-list__key,
   .govuk-summary-list__value,
   .govuk-summary-list__actions {
     border-bottom: none;
   }
+  border-bottom: none;
 }
 
 .govuk-summary-list__row--no-bottom-padding {
