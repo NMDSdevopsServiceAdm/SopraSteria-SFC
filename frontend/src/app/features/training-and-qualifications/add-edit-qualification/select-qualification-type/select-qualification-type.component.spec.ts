@@ -1,32 +1,33 @@
-import { ComponentFixture, getTestBed, TestBed } from '@angular/core/testing';
-
+import { getTestBed } from '@angular/core/testing';
+import userEvent from '@testing-library/user-event';
 import { SelectQualificationTypeComponent } from './select-qualification-type.component';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { mockAvailableQualifications, MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { Establishment } from '@core/model/establishment.model';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SharedModule } from '@shared/shared.module';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { Worker } from '@core/model/worker.model';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
 import { QualificationService } from '@core/services/qualification.service';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of } from 'rxjs';
+import sinon from 'sinon';
+import { QualificationType } from '@core/model/qualification.model';
 
 fdescribe('SelectQualificationTypeComponent', () => {
-  let component: SelectQualificationTypeComponent;
-  let fixture: ComponentFixture<SelectQualificationTypeComponent>;
-
-  async function setup() {
+  async function setup({ accessedFromSummary = false } = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
+    const qsParamGetMock = sinon.fake();
 
     const { fixture, getByText, getAllByText, getByTestId, getByRole } = await render(
       SelectQualificationTypeComponent,
@@ -40,7 +41,7 @@ fdescribe('SelectQualificationTypeComponent', () => {
           FormBuilder,
           {
             provide: WorkerService,
-            useValue: { worker },
+            useFactory: MockWorkerService.factory(worker as Worker),
           },
           {
             provide: QualificationService,
@@ -55,9 +56,12 @@ fdescribe('SelectQualificationTypeComponent', () => {
                   establishment: establishment,
                   //         trainingCategories: trainingCategories,
                 },
-                //       queryParamMap: {
-                //         get: qsParamGetMock,
-                //       },
+                parent: {
+                  url: [{ path: accessedFromSummary ? 'qualification' : 'add-new-qualification' }],
+                },
+                queryParamMap: {
+                  get: qsParamGetMock,
+                },
               },
             },
           },
@@ -69,11 +73,13 @@ fdescribe('SelectQualificationTypeComponent', () => {
     const injector = getTestBed();
 
     const router = injector.inject(Router) as Router;
+    const workerService = injector.inject(WorkerService) as WorkerService;
+
     const qualificationService = injector.inject(QualificationService) as QualificationService;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, getByTestId, getByText, getByRole };
+    return { component, fixture, getByTestId, getByText, getByRole, routerSpy, workerService };
   }
 
   it('should create', async () => {
@@ -81,34 +87,63 @@ fdescribe('SelectQualificationTypeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the worker name as the section heading', async () => {
-    const { component, getByTestId } = await setup();
-    const sectionHeading = getByTestId('section-heading');
+  describe('appearance', async () => {
+    it('should show the worker name as the section heading', async () => {
+      const { component, getByTestId } = await setup();
+      const sectionHeading = getByTestId('section-heading');
 
-    expect(sectionHeading.textContent).toContain(component.worker.nameOrId);
+      expect(sectionHeading.textContent).toContain(component.worker.nameOrId);
+    });
+
+    it('should show the page heading', async () => {
+      const { getByText } = await setup();
+
+      const heading = getByText('Select the type of qualification you want to add');
+
+      expect(heading).toBeTruthy();
+    });
+
+    it('should show the Continue button when adding new qualification', async () => {
+      const { getByRole } = await setup();
+
+      const button = getByRole('button', { name: 'Continue' });
+
+      expect(button).toBeTruthy();
+    });
+
+    it('should show the cancel link', async () => {
+      const { getByText } = await setup();
+
+      const cancelLink = getByText('Cancel');
+
+      expect(cancelLink).toBeTruthy();
+    });
+
+    it('should show an accordion with the correct qualification groups', async () => {
+      const { fixture, getByTestId } = await setup();
+
+      const groupedAccordion = getByTestId('groupedAccordion');
+      expect(groupedAccordion).toBeTruthy();
+
+      await fixture.whenStable();
+      fixture.detectChanges();
+
+      const allQualificationTypes = Object.values(QualificationType);
+      allQualificationTypes.forEach((typeName) => {
+        expect(within(groupedAccordion).getByText(typeName)).toBeTruthy();
+      });
+    });
   });
 
-  it('should show the page heading', async () => {
-    const { getByText } = await setup();
+  describe('navigation', async () => {
+    it('should return to training and qualification page when cancel link is clicked', async () => {
+      const { getByText, routerSpy } = await setup();
 
-    const heading = getByText('Select the type of qualification you want to add');
+      const cancelLink = getByText('Cancel');
 
-    expect(heading).toBeTruthy();
-  });
+      userEvent.click(cancelLink);
 
-  it('should show the continue button', async () => {
-    const { getByRole } = await setup();
-
-    const button = getByRole('button', { name: 'Continue' });
-
-    expect(button).toBeTruthy();
-  });
-
-  it('should show the cancel link', async () => {
-    const { getByText } = await setup();
-
-    const cancelLink = getByText('Cancel');
-
-    expect(cancelLink).toBeTruthy();
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+    });
   });
 });

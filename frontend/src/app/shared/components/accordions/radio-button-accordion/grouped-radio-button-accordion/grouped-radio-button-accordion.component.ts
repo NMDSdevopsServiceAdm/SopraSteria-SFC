@@ -1,6 +1,17 @@
 import { Component, forwardRef, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
+export interface AccordionGroup {
+  title: string;
+  descriptionText: string;
+  open: boolean;
+  index: number;
+  items: {
+    id: number;
+    label: string;
+  }[];
+}
+
 @Component({
   selector: 'app-grouped-radio-button-accordion',
   templateUrl: './grouped-radio-button-accordion.component.html',
@@ -20,18 +31,7 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
   @Input() hasError: boolean = false;
   @Input() errorMessage: string;
   private _showAll: boolean;
-  @Input() set accordions(
-    value: {
-      title: string;
-      descriptionText: string;
-      open: boolean;
-      index: number;
-      items: {
-          id: number;
-          label: string;
-        }[];
-    }[],
-  ) {
+  @Input() set accordions(value: AccordionGroup[]) {
     this._accordions = value.map((x, index) => {
       return {
         ...x,
@@ -53,9 +53,9 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
     descriptionText: string;
     index: number;
     items: {
-        id: number;
-        label: string;
-      }[];
+      id: number;
+      label: string;
+    }[];
   }[];
 
   ngOnInit(): void {
