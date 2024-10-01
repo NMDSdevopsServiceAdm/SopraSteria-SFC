@@ -1,44 +1,15 @@
-<ng-container [formGroup]="group">
+<ng-container [formGroup]="form">
   <fieldset class="govuk-fieldset">
-    <legend class="govuk-fieldset__legend govuk-visually-hidden">
-      <h2 class="govuk-fieldset__heading">Qualification Type: {{ type.value }}</h2>
-    </legend>
-    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('qualification').invalid">
-      <label class="govuk-label" for="{{ type.key }}-qualification"> {{ type.value }} name </label>
-      <span
-        *ngIf="submitted && group.get('qualification').invalid"
-        id="{{ type.key }}-qualification-error"
-        class="govuk-error-message"
-      >
-        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('qualification') }}
-      </span>
-      <select
-        class="govuk-select"
-        [class.govuk-select--error]="submitted && group.get('qualification').invalid"
-        [formControlName]="'qualification'"
-        id="{{ type.key }}-qualification"
-        name="qualification"
-      >
-        <option [ngValue]="null">Select</option>
-        <option *ngIf="preselectedQualification" [value]="preselectedQualification.id">
-          {{ preselectedQualification.title }}
-        </option>
-        <option *ngFor="let qualification of qualifications" [value]="qualification.id">
-          {{ qualification.title }}
-        </option>
-      </select>
-    </div>
-
-    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('year').invalid">
-      <label class="govuk-label" for="{{ type.key }}-year"> Year achieved </label>
-      <span *ngIf="submitted && group.get('year').invalid" id="{{ type.key }}-year-error" class="govuk-error-message">
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('year').invalid">
+      <label class="govuk-label" for="year"> Year achieved </label>
+      <span *ngIf="submitted && form.get('year').invalid" id="year-error" class="govuk-error-message">
         <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('year') }}
       </span>
       <input
         class="govuk-input govuk-date-input__input govuk-input--width-4"
-        [class.govuk-input--error]="submitted && group.get('year').invalid"
+        [class.govuk-input--error]="submitted && form.get('year').invalid"
         [formControlName]="'year'"
-        id="{{ type.key }}-year"
+        id="year"
         name="year"
         type="number"
         [pattern]="intPattern"
@@ -46,20 +17,16 @@
     </div>
 
     <div class="govuk-character-count">
-      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && group.get('notes').invalid">
-        <label class="govuk-label" for="{{ type.key }}-notes"> Notes </label>
-        <span
-          *ngIf="submitted && group.get('notes').invalid"
-          id="{{ type.key }}-notes-error"
-          class="govuk-error-message"
-        >
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
+        <label class="govuk-label" for="notes"> Notes </label>
+        <span *ngIf="submitted && form.get('notes').invalid" id="notes-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('notes') }}
         </span>
         <textarea
           class="govuk-textarea govuk-grid-column-two-thirds-from-desktop"
-          [class.govuk-textarea--error]="submitted && group.get('notes').invalid"
+          [class.govuk-textarea--error]="submitted && form.get('notes').invalid"
           [formControlName]="'notes'"
-          id="{{ type.key }}-notes"
+          id="notes"
           name="notes"
           rows="5"
           [value]="notesValue"

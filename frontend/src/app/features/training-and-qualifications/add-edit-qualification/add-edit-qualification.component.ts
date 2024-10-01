@@ -20,7 +20,6 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public qualificationTypes: QualificationType[] = [];
-  public qualifications: any;
   public qualificationId: string;
   public buttonText: string;
   public record: QualificationResponse;
@@ -50,7 +49,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.trainingService.trainingOrQualificationPreviouslySelected = 'qualification';
 
     this.form = this.formBuilder.group({
-      type: [null, Validators.required],
+      year: [null, this.yearValidators],
+      notes: [null, Validators.maxLength(this.notesMaxLength)],
     });
 
     this.worker = this.workerService.worker;
@@ -59,42 +59,14 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
     this.buttonText = this.qualificationId ? 'Save and return' : 'Save record';
 
-    Object.keys(QualificationType).forEach((key) => {
-      this.qualificationTypes[key] = QualificationType[key];
-      this.form.addControl(key, this.createQualificationGroup());
-    });
-
-    this.subscriptions.add(
-      this.workerService
-        .getAvailableQualifications(this.workplace.uid, this.worker.uid, QualificationType.Award)
-        .subscribe(
-          (qualifications) => {
-            if (qualifications) {
-              this.qualifications = qualifications;
-            }
-          },
-          (error) => {
-            console.error(error.error);
-          },
-        ),
-    );
-
     if (this.qualificationId) {
       this.subscriptions.add(
         this.workerService.getQualification(this.workplace.uid, this.worker.uid, this.qualificationId).subscribe(
           (record) => {
             if (record) {
               this.record = record;
-              const typeKey = Object.keys(this.qualificationTypes).find(
-                (key) => this.qualificationTypes[key] === this.record.qualification.group,
-              );
 
               this.form.patchValue({
-                type: record.qualification.group,
-              });
-
-              this.form.get(typeKey).patchValue({
-                qualification: this.record.qualification.id,
                 year: this.record.year,
                 notes: this.record.notes,
               });
@@ -107,30 +79,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       );
     }
 
-    this.form.get('type').valueChanges.subscribe((value) => {
-      this.submitted = false;
-      Object.keys(QualificationType).forEach((key) => {
-        const group = this.form.get(key) as UntypedFormGroup;
-        const { qualification, year, notes } = group.controls;
-
-        qualification.clearValidators();
-        year.clearValidators();
-        notes.clearValidators();
-
-        if (value === QualificationType[key]) {
-          qualification.setValidators([Validators.required]);
-          year.setValidators(this.yearValidators);
-          notes.setValidators([Validators.maxLength(this.notesMaxLength)]);
-        }
-
-        qualification.updateValueAndValidity();
-        year.updateValueAndValidity();
-        notes.updateValueAndValidity();
-      });
-    });
-
     this.setupFormErrorsMap();
-
     this.setBackLink();
   }
 
@@ -145,66 +94,28 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'type',
+        item: 'year',
         type: [
           {
-            name: 'required',
-            message: 'Select the type of qualification',
+            name: 'min',
+            message: 'Year achieved must be this year or no more than 100 years ago',
+          },
+          {
+            name: 'max',
+            message: 'Year achieved must be this year or no more than 100 years ago',
+          },
+        ],
+      },
+      {
+        item: 'notes',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Notes must be ${this.notesMaxLength} characters or fewer`,
           },
         ],
       },
     ];
-
-    Object.keys(QualificationType).forEach((key) => {
-      this.formErrorsMap.push(
-        ...[
-          {
-            item: `${key}.qualification`,
-            type: [
-              {
-                name: 'required',
-                message: 'Select the qualification name',
-              },
-            ],
-          },
-          {
-            item: `${key}.year`,
-            type: [
-              {
-                name: 'min',
-                message: 'Year achieved must be this year or no more than 100 years ago',
-              },
-              {
-                name: 'max',
-                message: 'Year achieved must be this year or no more than 100 years ago',
-              },
-            ],
-          },
-          {
-            item: `${key}.notes`,
-            type: [
-              {
-                name: 'maxlength',
-                message: `Notes must be ${this.notesMaxLength} characters or fewer`,
-              },
-            ],
-          },
-        ],
-      );
-    });
-  }
-
-  private createQualificationGroup(): UntypedFormGroup {
-    return this.formBuilder.group(
-      {
-        qualification: null,
-        year: null,
-        notes: null,
-      },
-      {
-        updateOn: 'submit',
-      },
-    );
   }
 
   public getFirstErrorMessage(item: string): string {
@@ -222,13 +133,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const { type } = this.form.value;
-    const typeKey = Object.keys(this.qualificationTypes).find((key) => this.qualificationTypes[key] === type);
-    const group = this.form.get(typeKey) as UntypedFormGroup;
-    const { qualification, year, notes } = group.value;
+    const { year, notes } = this.form.value;
+    const qualification = '12';
 
     const record: QualificationRequest = {
-      type,
+      type: QualificationType.Certificate,
       qualification: {
         id: parseInt(qualification, 10),
       },

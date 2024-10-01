@@ -10,7 +10,7 @@ import { qualificationRecord } from '@core/test-utils/MockWorkerService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
@@ -131,95 +131,71 @@ describe('AddEditQualificationComponent', () => {
   });
 
   describe('notes', async () => {
-    it('should show label', async () => {
-      const { fixture, getByLabelText, getByTestId } = await setup(null);
+    it('should show number of characters label', async () => {
+      const { getByText } = await setup(null);
 
-      const degreeRadio = getByLabelText('Degree');
-      const conditionalForm = getByTestId('Degree');
-
-      fireEvent.click(degreeRadio);
-
-      fixture.detectChanges();
-      expect(within(conditionalForm).getByText('You have 500 characters remaining')).toBeTruthy();
+      expect(getByText('You have 500 characters remaining')).toBeTruthy();
     });
 
     it('should show a count of how many characters there are remaining until the limit of the notes input', async () => {
-      const { fixture, getByLabelText, getByTestId } = await setup(null);
+      const { fixture, getByLabelText, getByText } = await setup(null);
 
-      const degreeRadio = getByLabelText('Degree');
-      const conditionalForm = getByTestId('Degree');
-
-      fireEvent.click(degreeRadio);
+      const notesTextBox = getByLabelText('Notes');
+      userEvent.type(notesTextBox, 'aaaaa');
       fixture.detectChanges();
-      userEvent.type(within(conditionalForm).getByLabelText('Notes'), 'aaaaa');
-      fixture.detectChanges();
-      expect(within(conditionalForm).getByText('You have 495 characters remaining')).toBeTruthy();
+      expect(getByText('You have 495 characters remaining')).toBeTruthy();
     });
 
     it('should show by how many characters the user has exceeded the limit of the notes input', async () => {
-      const { fixture, getByLabelText, getByTestId } = await setup(null);
+      const { fixture, getByLabelText, getByText } = await setup(null);
 
-      const degreeRadio = getByLabelText('Degree');
-      const conditionalForm = getByTestId('Degree');
+      const notesTextBox = getByLabelText('Notes');
 
-      fireEvent.click(degreeRadio);
-      fixture.detectChanges();
       userEvent.type(
-        within(conditionalForm).getByLabelText('Notes'),
+        notesTextBox,
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      );
+      fixture.detectChanges();
+      expect(getByText('You have 4 characters too many')).toBeTruthy();
+    });
+
+    it('should show singular message when the user has exceeded the limit of the notes input by 1', async () => {
+      const { fixture, getByLabelText, getByText } = await setup(null);
+
+      const notesTextBox = getByLabelText('Notes');
+
+      userEvent.type(
+        notesTextBox,
         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
       );
       fixture.detectChanges();
-      expect(within(conditionalForm).getByText('You have 1 character too many')).toBeTruthy();
+      expect(getByText('You have 1 character too many')).toBeTruthy();
     });
   });
 
   describe('error messages', async () => {
-    it('should show error messages if no qualification type is selected', async () => {
-      const { getByText, getAllByText } = await setup(null);
-
-      fireEvent.click(getByText('Save record'));
-      expect(getAllByText('Select the type of qualification').length).toEqual(3);
-    });
-
-    it('should show error messages if no qualification name is selected', async () => {
-      const { fixture, getByLabelText, getByText, getAllByText } = await setup(null);
-
-      const degreeRadio = getByLabelText('Degree');
-      fireEvent.click(degreeRadio);
-      fixture.detectChanges();
-      fireEvent.click(getByText('Save record'));
-      expect(getAllByText('Select the qualification name').length).toEqual(2);
-    });
-
     it('should show error message if year achieved is more than 100 years ago', async () => {
-      const { fixture, getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
+      const { getByLabelText, getByText, getAllByText } = await setup(null);
 
       const pastDate = new Date();
       pastDate.setFullYear(pastDate.getFullYear() - 101);
+      const yearAchievedInput = getByLabelText('Year achieved');
 
-      const degreeRadio = getByLabelText('Degree');
-      const conditionalForm = getByTestId('Degree');
-      fireEvent.click(degreeRadio);
-      fixture.detectChanges();
-
-      userEvent.type(within(conditionalForm).getByLabelText('Year achieved'), `${pastDate.getFullYear()}`);
+      userEvent.type(yearAchievedInput, `${pastDate.getFullYear()}`);
       fireEvent.click(getByText('Save record'));
 
       expect(getAllByText('Year achieved must be this year or no more than 100 years ago').length).toEqual(2);
     });
 
     it('should show error message if year achieved is in the future', async () => {
-      const { fixture, getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
+      const { getByLabelText, getByText, getAllByText } = await setup(null);
 
       const futureDate = new Date();
       futureDate.setFullYear(futureDate.getFullYear() + 1);
 
-      const degreeRadio = getByLabelText('Degree');
-      const conditionalForm = getByTestId('Degree');
-      fireEvent.click(degreeRadio);
-      fixture.detectChanges();
+      const yearAchievedInput = getByLabelText('Year achieved');
 
-      userEvent.type(within(conditionalForm).getByLabelText('Year achieved'), `${futureDate.getFullYear()}`);
+      userEvent.type(yearAchievedInput, `${futureDate.getFullYear()}`);
       fireEvent.click(getByText('Save record'));
 
       expect(getAllByText('Year achieved must be this year or no more than 100 years ago').length).toEqual(2);
@@ -228,12 +204,10 @@ describe('AddEditQualificationComponent', () => {
     it('should show error messages if too many characters are entered into the notes input', async () => {
       const { fixture, getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
 
-      const degreeRadio = getByLabelText('Degree');
-      const conditionalForm = getByTestId('Degree');
-      fireEvent.click(degreeRadio);
-      fixture.detectChanges();
+      const notesBox = getByLabelText('Notes');
+
       userEvent.type(
-        within(conditionalForm).getByLabelText('Notes'),
+        notesBox,
         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
       );
       fireEvent.click(getByText('Save record'));
