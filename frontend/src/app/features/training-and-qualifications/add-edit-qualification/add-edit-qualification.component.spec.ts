@@ -3,6 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { QualificationResponse } from '@core/model/qualification.model';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -12,6 +13,7 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
 
@@ -49,6 +51,7 @@ describe('AddEditQualificationComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const workerService = injector.inject(WorkerService) as WorkerService;
 
     return {
       component,
@@ -59,6 +62,7 @@ describe('AddEditQualificationComponent', () => {
       getByLabelText,
       routerSpy,
       getAllByText,
+      workerService,
     };
   }
 
@@ -168,6 +172,50 @@ describe('AddEditQualificationComponent', () => {
       );
       fixture.detectChanges();
       expect(getByText('You have 1 character too many')).toBeTruthy();
+    });
+  });
+
+  describe('prefilling data for existing qualification', () => {
+    const mockQualificationData = {
+      created: '2024-10-01T08:53:35.143Z',
+      notes: 'ihoihio',
+      qualification: {
+        group: 'Degree',
+        id: 136,
+        level: '6',
+        title: 'Health and social care degree (level 6)',
+      },
+
+      uid: 'fd50276b-e27c-48a6-9015-f0c489302666',
+      updated: '2024-10-01T08:53:35.143Z',
+      updatedBy: 'duncan',
+      year: 1999,
+    } as QualificationResponse;
+
+    it('should prefill notes box with notes when existing notes', async () => {
+      const { component, workerService, fixture } = await setup('mockQualificationId');
+
+      spyOn(workerService, 'getQualification').and.returnValue(of(mockQualificationData));
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const notesBox = fixture.nativeElement.querySelector('#notes');
+
+      expect(notesBox.value).toEqual(mockQualificationData.notes);
+    });
+
+    it('should prefill year input box with year from existing qualification', async () => {
+      const { component, workerService, fixture } = await setup('mockQualificationId');
+
+      spyOn(workerService, 'getQualification').and.returnValue(of(mockQualificationData));
+
+      component.ngOnInit();
+      fixture.detectChanges();
+
+      const yearInput = fixture.nativeElement.querySelector('#year');
+
+      expect(yearInput.value).toEqual(mockQualificationData.year.toString());
     });
   });
 
