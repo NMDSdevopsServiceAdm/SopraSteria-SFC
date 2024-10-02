@@ -41,6 +41,11 @@ export interface CertificateDownload {
   filename: string;
 }
 
+export interface CertificateUpload {
+  files: File[];
+  trainingRecord: TrainingRecord;
+}
+
 export interface TrainingCertificate {
   uid: string;
   filename: string;
@@ -128,12 +133,16 @@ export interface TrainingRecordCategories {
   isMandatory: boolean;
 }
 
-export interface CertificateSignedUrlRequest {
+export interface UploadCertificateSignedUrlRequest {
   files: { filename: string }[];
 }
 
-export interface CertificateSignedUrlResponse {
+export interface UploadCertificateSignedUrlResponse {
   files: { filename: string; fileId: string; signedUrl: string; key: string }[];
+}
+
+export interface DownloadCertificateSignedUrlResponse {
+  files: { filename: string; signedUrl: string }[];
 }
 
 export interface S3UploadResponse {

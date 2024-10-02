@@ -11,6 +11,7 @@ export class SelectUploadFileComponent implements OnInit {
   @Input() buttonId: string | null = 'select-upload-file';
   @Input('aria-describedby') ariaDescribedBy: string | null;
   @Input() buttonText: string = 'Choose file';
+  @Input() buttonClasses: string = '';
 
   @Output() selectFiles = new EventEmitter<File[]>();
 
