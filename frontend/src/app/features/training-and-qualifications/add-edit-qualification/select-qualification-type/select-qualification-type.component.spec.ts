@@ -1,29 +1,31 @@
-import { getTestBed } from '@angular/core/testing';
-import userEvent from '@testing-library/user-event';
-import { SelectQualificationTypeComponent } from './select-qualification-type.component';
-import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
-import { Establishment } from '@core/model/establishment.model';
+import { BehaviorSubject } from 'rxjs';
+import sinon from 'sinon';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { SharedModule } from '@shared/shared.module';
+import { getTestBed } from '@angular/core/testing';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { render, within } from '@testing-library/angular';
-import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { Establishment } from '@core/model/establishment.model';
+import { QualificationType } from '@core/model/qualification.model';
+import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { QualificationService } from '@core/services/qualification.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { Worker } from '@core/model/worker.model';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import { QualificationService } from '@core/services/qualification.service';
-import { BehaviorSubject, of } from 'rxjs';
-import sinon from 'sinon';
-import { QualificationType } from '@core/model/qualification.model';
+import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { SharedModule } from '@shared/shared.module';
+import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
-fdescribe('SelectQualificationTypeComponent', () => {
+import { SelectQualificationTypeComponent } from './select-qualification-type.component';
+
+describe('SelectQualificationTypeComponent', () => {
   async function setup({ accessedFromSummary = false, prefilledCategory = null } = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();

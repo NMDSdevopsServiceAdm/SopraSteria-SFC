@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -15,7 +15,7 @@ import { AccordionGroup } from '@shared/components/accordions/radio-button-accor
   templateUrl: './select-qualification-type.component.html',
   styleUrls: ['./select-qualification-type.component.scss'],
 })
-export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
+export class SelectQualificationTypeComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted: boolean = false;
@@ -86,8 +86,8 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
     this.workerService
       .getAllAvailableQualifications(this.establishmentUid, this.workerUid)
       .subscribe((availableQualifications) => {
-        this.buildLookupDict(availableQualifications);
         this.qualificationGroups = this.sortQualificationsByGroup(availableQualifications);
+        this.buildLookupDict(availableQualifications);
       });
   }
 
@@ -121,7 +121,7 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
     return allQualsAsAccordionItems;
   }
 
-  private buildLookupDict(allQualifications: AvailableQualificationsResponse[]) {
+  private buildLookupDict(allQualifications: AvailableQualificationsResponse[]): void {
     this.qualificationTypeLookup = {};
     allQualifications.forEach((group) => {
       group.qualifications.forEach((qualification) => {
@@ -189,6 +189,4 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
     this.qualificationService.clearSelectedQualification();
     this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
-
-  ngOnDestroy(): void {}
 }
