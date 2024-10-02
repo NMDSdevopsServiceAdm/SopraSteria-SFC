@@ -306,9 +306,6 @@ const routes: Routes = [
                 path: '',
                 component: SelectQualificationTypeComponent,
                 data: { title: 'Add Qualification' },
-                //resolve: {
-                //  trainingCategories: TrainingCategoriesResolver,
-                //},
               },
               {
                 path: 'qualification-details',
@@ -596,9 +593,6 @@ const routes: Routes = [
             path: '',
             component: SelectQualificationTypeComponent,
             data: { title: 'Add Qualification' },
-            //resolve: {
-            //  trainingCategories: TrainingCategoriesResolver,
-            //},
           },
           {
             path: 'qualification-details',
