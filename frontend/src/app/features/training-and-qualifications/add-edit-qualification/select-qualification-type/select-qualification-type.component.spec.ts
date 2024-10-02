@@ -74,12 +74,23 @@ fdescribe('SelectQualificationTypeComponent', () => {
 
     const router = injector.inject(Router) as Router;
     const workerService = injector.inject(WorkerService) as WorkerService;
+    const currentRoute = injector.inject(ActivatedRoute) as ActivatedRoute;
 
     const qualificationService = injector.inject(QualificationService) as QualificationService;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByTestId, getByText, getByRole, routerSpy, workerService };
+    return {
+      component,
+      fixture,
+      getByTestId,
+      getByText,
+      getByRole,
+      routerSpy,
+      currentRoute,
+      workerService,
+      qualificationService,
+    };
   }
 
   it('should create', async () => {
@@ -87,7 +98,7 @@ fdescribe('SelectQualificationTypeComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('appearance', async () => {
+  describe('appearance', () => {
     it('should show the worker name as the section heading', async () => {
       const { component, getByTestId } = await setup();
       const sectionHeading = getByTestId('section-heading');
@@ -120,13 +131,10 @@ fdescribe('SelectQualificationTypeComponent', () => {
     });
 
     it('should show an accordion with the correct qualification groups', async () => {
-      const { fixture, getByTestId } = await setup();
+      const { getByTestId } = await setup();
 
       const groupedAccordion = getByTestId('groupedAccordion');
       expect(groupedAccordion).toBeTruthy();
-
-      await fixture.whenStable();
-      fixture.detectChanges();
 
       const allQualificationTypes = Object.values(QualificationType);
       allQualificationTypes.forEach((typeName) => {
@@ -135,7 +143,32 @@ fdescribe('SelectQualificationTypeComponent', () => {
     });
   });
 
-  describe('navigation', async () => {
+  describe('submit form', () => {
+    it('should store the selected qualification in qualificationService', async () => {
+      const { getByRole, getByText, qualificationService } = await setup();
+
+      userEvent.click(getByText('Apprenticeship'));
+      userEvent.click(getByText('Adult care worker (standard, level 2)'));
+      userEvent.click(getByRole('button', { name: 'Continue' }));
+
+      expect(qualificationService.selectedQualification).toEqual({
+        type: 'Apprenticeship' as QualificationType,
+        id: 121,
+      });
+    });
+
+    it('should navigate to the details page', async () => {
+      const { getByRole, getByText, currentRoute, routerSpy } = await setup();
+
+      userEvent.click(getByText('Award'));
+      userEvent.click(getByText('Advanced Award in Social Work (AASW, level 7)'));
+      userEvent.click(getByRole('button', { name: 'Continue' }));
+
+      expect(routerSpy).toHaveBeenCalledWith(['./qualification-details'], { relativeTo: currentRoute });
+    });
+  });
+
+  describe('navigation', () => {
     it('should return to training and qualification page when cancel link is clicked', async () => {
       const { getByText, routerSpy } = await setup();
 

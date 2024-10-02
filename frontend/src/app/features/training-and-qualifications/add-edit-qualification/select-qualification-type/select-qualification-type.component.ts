@@ -22,13 +22,14 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
   public title: string;
   public section: string;
   public submitButtonText: string;
-  public _qualificationGroups: AccordionGroup[];
   public formErrorsMap: Array<ErrorDetails>;
   public preFilledId: number;
   public error = false;
   public worker: Worker;
   public establishmentUid: string;
   public workerUid: string;
+  private _qualificationGroups: AccordionGroup[];
+  private qualificationTypeLookup: Record<number, QualificationType>;
 
   ngOnInit(): void {
     this.worker = this.workerService.worker;
@@ -84,8 +85,9 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
   private getAllAvailableQualifications(): void {
     this.workerService
       .getAllAvailableQualifications(this.establishmentUid, this.workerUid)
-      .subscribe((allQualifications) => {
-        this.qualificationGroups = this.sortQualificationsByGroup(allQualifications);
+      .subscribe((availableQualifications) => {
+        this.buildLookupDict(availableQualifications);
+        this.qualificationGroups = this.sortQualificationsByGroup(availableQualifications);
       });
   }
 
@@ -94,8 +96,8 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
     index: number,
   ): AccordionGroup {
     const { type, qualifications } = availableQualification;
-    const accordionItems = qualifications.map((qual) => {
-      return { id: qual.id, label: qual.title };
+    const accordionItems = qualifications.map((qualification) => {
+      return { id: qualification.id, label: qualification.title };
     });
 
     return {
@@ -119,10 +121,23 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
     return allQualsAsAccordionItems;
   }
 
+  private buildLookupDict(allQualifications: AvailableQualificationsResponse[]) {
+    this.qualificationTypeLookup = {};
+    allQualifications.forEach((group) => {
+      group.qualifications.forEach((qualification) => {
+        this.qualificationTypeLookup[qualification.id] = group.type;
+      });
+    });
+  }
+
+  private getQualificationTypeFromId(qualificationId: number): QualificationType {
+    return this.qualificationTypeLookup[qualificationId];
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
-        qualificationType: [null, Validators.required],
+        selectedQualification: [null, Validators.required],
       },
       { updateOn: 'submit' },
     );
@@ -136,10 +151,16 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
 
   public onSubmit(event: Event) {
     event.preventDefault();
+
+    const selectedId = this.form.value.selectedQualification;
+    const selectedType = this.qualificationTypeLookup[selectedId];
+    this.qualificationService.setSelectedQualification(selectedType, selectedId);
+    this.router.navigate(['./qualification-details'], { relativeTo: this.route });
   }
 
   public onCancel(event: Event) {
     event.preventDefault();
+    this.qualificationService.clearSelectedQualification();
     this.router.navigate(['/dashboard'], { fragment: 'training-and-qualifications' });
   }
 
