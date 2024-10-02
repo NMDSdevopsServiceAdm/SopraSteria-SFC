@@ -19,15 +19,18 @@ export class SelectQualificationTypeComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: FormGroup;
   public submitted: boolean = false;
+  public error = false;
+  public formErrorsMap: Array<ErrorDetails>;
+
   public title: string;
   public section: string;
   public submitButtonText: string;
-  public formErrorsMap: Array<ErrorDetails>;
   public preFilledId: number;
-  public error = false;
+
   public worker: Worker;
   public establishmentUid: string;
   public workerUid: string;
+
   private _qualificationGroups: AccordionGroup[] = [];
   private qualificationTypeLookup: Record<number, QualificationType>;
 

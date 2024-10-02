@@ -332,12 +332,6 @@ export const mockAvailableQualifications: AvailableQualificationsResponse[] = [
         code: 302,
       },
       {
-        id: 123,
-        title: 'Advanced apprenticeship in health and social care (framework, level 3)',
-        level: '3',
-        code: 303,
-      },
-      {
         id: 124,
         title: 'Degree registered nurse (standard, level 6)',
         level: '6',

@@ -26,7 +26,7 @@ import userEvent from '@testing-library/user-event';
 import { SelectQualificationTypeComponent } from './select-qualification-type.component';
 
 describe('SelectQualificationTypeComponent', () => {
-  async function setup({ accessedFromSummary = false, prefilledCategory = null } = {}) {
+  async function setup({ accessedFromSummary = false, prefillQualification = null } = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
     const qsParamGetMock = sinon.fake();
@@ -34,8 +34,8 @@ describe('SelectQualificationTypeComponent', () => {
     const injectedQualificationService = {
       provide: QualificationService,
     };
-    if (prefilledCategory) {
-      injectedQualificationService['useFactory'] = MockQualificationService.factory(prefilledCategory);
+    if (prefillQualification) {
+      injectedQualificationService['useFactory'] = MockQualificationService.factory(prefillQualification);
     } else {
       injectedQualificationService['useClass'] = MockQualificationService;
     }
@@ -194,8 +194,8 @@ describe('SelectQualificationTypeComponent', () => {
 
     describe('prefill form', () => {
       it('should pre-fill if there is a selected qualification type', async () => {
-        const prefilledCategory = { type: QualificationType.Award, id: 1 };
-        const { component, getByRole } = await setup({ prefilledCategory });
+        const prefillQualification = { type: QualificationType.Award, id: 1 };
+        const { component, getByRole } = await setup({ prefillQualification });
 
         expect(component.form.get('selectedQualification').value).toEqual(1);
 
@@ -208,14 +208,27 @@ describe('SelectQualificationTypeComponent', () => {
       });
     });
 
-    it('should return to training and qualification page when cancel link is clicked', async () => {
-      const { getByText, routerSpy } = await setup();
+    describe('cancel', () => {
+      it('should return to training and qualification page when cancel link is clicked', async () => {
+        const { getByText, routerSpy } = await setup();
 
-      const cancelLink = getByText('Cancel');
+        const cancelLink = getByText('Cancel');
 
-      userEvent.click(cancelLink);
+        userEvent.click(cancelLink);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+      });
+
+      it('should clear any selected qualification on cancel', async () => {
+        const { getByText, qualificationService } = await setup();
+        const qualificationServiceSpy = spyOn(qualificationService, 'clearSelectedQualification');
+
+        const cancelLink = getByText('Cancel');
+
+        userEvent.click(cancelLink);
+
+        expect(qualificationServiceSpy).toHaveBeenCalled();
+      });
     });
   });
 });
