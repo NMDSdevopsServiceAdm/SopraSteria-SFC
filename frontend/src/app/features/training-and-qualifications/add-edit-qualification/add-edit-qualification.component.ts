@@ -35,6 +35,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public notesValue = '';
   public remainingCharacterCount: number;
   public intPattern = INT_PATTERN.toString();
+  public notesOpen = false;
 
   constructor(
     private trainingService: TrainingService,
@@ -78,6 +79,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
               });
 
               if (this.record.notes?.length > 0) {
+                this.notesOpen = true;
                 this.remainingCharacterCount = this.notesMaxLength - this.record.notes.length;
               }
             }
@@ -140,6 +142,9 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.addErrorLinkFunctionality();
 
     if (!this.form.valid) {
+      if (this.form.controls.notes?.errors?.maxlength) {
+        this.notesOpen = true;
+      }
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
@@ -189,6 +194,10 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   private onError(error): void {
     console.log(error);
+  }
+
+  public toggleNotesOpen(): void {
+    this.notesOpen = !this.notesOpen;
   }
 
   protected navigateToDeleteQualificationRecord(): void {

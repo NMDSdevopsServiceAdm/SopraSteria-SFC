@@ -133,16 +133,46 @@ describe('AddEditQualificationComponent', () => {
   });
 
   describe('notes', async () => {
+    it('should have the notes section closed on page load', async () => {
+      const { getByText, getByTestId } = await setup();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Open notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).toContain('govuk-visually-hidden');
+    });
+
+    it('should display the notes section after clicking Open notes', async () => {
+      const { fixture, getByText, getByTestId } = await setup();
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
+
+      fixture.detectChanges();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Close notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
+    });
+
     it('should show number of characters label', async () => {
-      const { getByText } = await setup(null);
+      const { fixture, getByText } = await setup(null);
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
+
+      fixture.detectChanges();
 
       expect(getByText('You have 500 characters remaining')).toBeTruthy();
     });
 
     it('should show a count of how many characters there are remaining until the limit of the notes input', async () => {
       const { fixture, getByLabelText, getByText } = await setup(null);
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
 
-      const notesTextBox = getByLabelText('Notes');
+      fixture.detectChanges();
+
+      const notesTextBox = getByLabelText('Add a note');
       userEvent.type(notesTextBox, 'aaaaa');
       fixture.detectChanges();
       expect(getByText('You have 495 characters remaining')).toBeTruthy();
@@ -150,8 +180,12 @@ describe('AddEditQualificationComponent', () => {
 
     it('should show by how many characters the user has exceeded the limit of the notes input', async () => {
       const { fixture, getByLabelText, getByText } = await setup(null);
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
 
-      const notesTextBox = getByLabelText('Notes');
+      fixture.detectChanges();
+
+      const notesTextBox = getByLabelText('Add a note');
 
       userEvent.type(
         notesTextBox,
@@ -164,7 +198,12 @@ describe('AddEditQualificationComponent', () => {
     it('should show singular message when the user has exceeded the limit of the notes input by 1', async () => {
       const { fixture, getByLabelText, getByText } = await setup(null);
 
-      const notesTextBox = getByLabelText('Notes');
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
+
+      fixture.detectChanges();
+
+      const notesTextBox = getByLabelText('Add a note');
 
       userEvent.type(
         notesTextBox,
@@ -193,7 +232,9 @@ describe('AddEditQualificationComponent', () => {
     } as QualificationResponse;
 
     const setupWithExistingQualification = async () => {
-      const { component, workerService, fixture, getByText, queryByText } = await setup('mockQualificationId');
+      const { component, workerService, fixture, getByText, queryByText, getByTestId } = await setup(
+        'mockQualificationId',
+      );
 
       spyOn(workerService, 'getQualification').and.returnValue(of(mockQualificationData));
       const updateQualificationSpy = spyOn(workerService, 'updateQualification').and.returnValue(of(null));
@@ -201,7 +242,7 @@ describe('AddEditQualificationComponent', () => {
       component.ngOnInit();
       fixture.detectChanges();
 
-      return { component, workerService, fixture, getByText, queryByText, updateQualificationSpy };
+      return { component, workerService, fixture, getByText, queryByText, updateQualificationSpy, getByTestId };
     };
 
     it('should display qualification group and title', async () => {
@@ -217,11 +258,14 @@ describe('AddEditQualificationComponent', () => {
       expect(queryByText('Change')).toBeFalsy();
     });
 
-    it('should prefill notes box with notes and update character count when existing notes', async () => {
-      const { fixture, getByText } = await setupWithExistingQualification();
+    it('should prefill notes box, have reveal open and update character count when existing notes', async () => {
+      const { fixture, getByText, getByTestId } = await setupWithExistingQualification();
 
+      const notesSection = getByTestId('notesSection');
       const notesBox = fixture.nativeElement.querySelector('#notes');
 
+      expect(getByText('Close notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
       expect(notesBox.value).toEqual(mockQualificationData.notes);
       expect(getByText('You have 493 characters remaining')).toBeTruthy();
     });
@@ -287,9 +331,9 @@ describe('AddEditQualificationComponent', () => {
     });
 
     it('should show error messages if too many characters are entered into the notes input', async () => {
-      const { fixture, getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
+      const { getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
 
-      const notesBox = getByLabelText('Notes');
+      const notesBox = getByLabelText('Add a note');
 
       userEvent.type(
         notesBox,
@@ -297,6 +341,31 @@ describe('AddEditQualificationComponent', () => {
       );
       fireEvent.click(getByText('Save record'));
       expect(getAllByText('Notes must be 500 characters or fewer').length).toEqual(2);
+    });
+
+    it('should open the notes section if notes input error and section is closed on submit', async () => {
+      const { fixture, getByText, getByLabelText, getByTestId } = await setup(null);
+
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
+      fixture.detectChanges();
+
+      userEvent.type(
+        getByLabelText('Add a note'),
+        'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+      );
+
+      const closeNotesButton = getByText('Close notes');
+      closeNotesButton.click();
+      fixture.detectChanges();
+
+      fireEvent.click(getByText('Save record'));
+      fixture.detectChanges();
+
+      const notesSection = getByTestId('notesSection');
+
+      expect(getByText('Close notes')).toBeTruthy();
+      expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
     });
   });
 });
