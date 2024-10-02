@@ -192,13 +192,32 @@ describe('AddEditQualificationComponent', () => {
       year: 1999,
     } as QualificationResponse;
 
-    it('should prefill notes box with notes when existing notes', async () => {
-      const { component, workerService, fixture } = await setup('mockQualificationId');
+    const setupWithExistingQualification = async () => {
+      const { component, workerService, fixture, getByText, queryByText } = await setup('mockQualificationId');
 
       spyOn(workerService, 'getQualification').and.returnValue(of(mockQualificationData));
 
       component.ngOnInit();
       fixture.detectChanges();
+
+      return { component, workerService, fixture, getByText, queryByText };
+    };
+
+    it('should display qualification group and title', async () => {
+      const { getByText } = await setupWithExistingQualification();
+
+      expect(getByText('Type: ' + mockQualificationData.qualification.group)).toBeTruthy();
+      expect(getByText(mockQualificationData.qualification.title)).toBeTruthy();
+    });
+
+    it('should not have Change link when it is an existing qualification record', async () => {
+      const { queryByText } = await setupWithExistingQualification();
+
+      expect(queryByText('Change')).toBeFalsy();
+    });
+
+    it('should prefill notes box with notes when existing notes', async () => {
+      const { fixture } = await setupWithExistingQualification();
 
       const notesBox = fixture.nativeElement.querySelector('#notes');
 
@@ -206,12 +225,7 @@ describe('AddEditQualificationComponent', () => {
     });
 
     it('should prefill year input box with year from existing qualification', async () => {
-      const { component, workerService, fixture } = await setup('mockQualificationId');
-
-      spyOn(workerService, 'getQualification').and.returnValue(of(mockQualificationData));
-
-      component.ngOnInit();
-      fixture.detectChanges();
+      const { fixture } = await setupWithExistingQualification();
 
       const yearInput = fixture.nativeElement.querySelector('#year');
 
