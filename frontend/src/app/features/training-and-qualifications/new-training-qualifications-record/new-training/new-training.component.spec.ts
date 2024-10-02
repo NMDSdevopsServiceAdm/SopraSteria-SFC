@@ -242,5 +242,33 @@ describe('NewTrainingComponent', async () => {
 
       expect(noMandatoryTrainingLink).toBeFalsy();
     });
+
+    it('should display a no mandatory training for job role message when mandatory training is not required for the job role', () => {
+      component.trainingCategories = [];
+      component.isMandatoryTraining = true;
+      component.workplaceUid = '123';
+      component.missingMandatoryTraining = false;
+      fixture.detectChanges();
+      const mandatoryTrainingMissingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
+      const messageText = 'No mandatory training has been added for this job role yet.';
+      const mandatoryTrainingMessage = fixture.debugElement.query(debugElement => debugElement.nativeElement.textContent === messageText);
+
+      expect(mandatoryTrainingMessage).toBeTruthy();
+      expect(mandatoryTrainingMissingLink).toBeTruthy();
+    });
+
+    it('should display a no mandatory training for job role message when mandatory training is missing', () => {
+      component.trainingCategories = [];
+      component.isMandatoryTraining = true;
+      component.workplaceUid = '123';
+      component.missingMandatoryTraining = true;
+      fixture.detectChanges();
+      const mandatoryTrainingMissingLink = fixture.debugElement.query(By.css('[data-testid="mandatory-training-missing-link"]'));
+      const messageText = 'No mandatory training records have been added for this person yet.';
+      const mandatoryTrainingMessage = fixture.debugElement.query(debugElement => debugElement.nativeElement.textContent === messageText);
+
+      expect(mandatoryTrainingMessage).toBeTruthy();
+      expect(mandatoryTrainingMissingLink).toBeTruthy();
+    });
   });
 });
