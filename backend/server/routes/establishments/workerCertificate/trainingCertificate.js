@@ -176,20 +176,10 @@ const deleteCertificates = async (req, res) => {
     if (!deletionFromDatabase) {
       return res.status(500).send();
     }
-    //await models.trainingCertificates.deleteCertificate(filesToDeleteFromDatabase);
   } catch (error) {
     console.log(error);
     return res.status(500).send();
   }
-
-  // const deleteFromS3Response = await s3.deleteCertificatesFromS3({
-  //   bucket: certificateBucket,
-  //   objects: filesToDeleteFromS3,
-  // });
-
-  // if (deleteFromS3Response?.Errors?.length > 0) {
-  //   console.error(JSON.stringify(deleteFromS3Response.Errors));
-  // }
 
   await deleteCertificatesFromS3(filesToDeleteFromS3);
 
