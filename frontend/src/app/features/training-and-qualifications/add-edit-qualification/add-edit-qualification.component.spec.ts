@@ -217,12 +217,13 @@ describe('AddEditQualificationComponent', () => {
       expect(queryByText('Change')).toBeFalsy();
     });
 
-    it('should prefill notes box with notes when existing notes', async () => {
-      const { fixture } = await setupWithExistingQualification();
+    it('should prefill notes box with notes and update character count when existing notes', async () => {
+      const { fixture, getByText } = await setupWithExistingQualification();
 
       const notesBox = fixture.nativeElement.querySelector('#notes');
 
       expect(notesBox.value).toEqual(mockQualificationData.notes);
+      expect(getByText('You have 493 characters remaining')).toBeTruthy();
     });
 
     it('should prefill year input box with year from existing qualification', async () => {

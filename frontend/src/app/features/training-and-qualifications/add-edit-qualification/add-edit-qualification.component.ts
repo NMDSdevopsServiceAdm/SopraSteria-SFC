@@ -76,6 +76,10 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
                 year: this.record.year,
                 notes: this.record.notes,
               });
+
+              if (this.record.notes?.length > 0) {
+                this.remainingCharacterCount = this.notesMaxLength - this.record.notes.length;
+              }
             }
           },
           (error) => {
