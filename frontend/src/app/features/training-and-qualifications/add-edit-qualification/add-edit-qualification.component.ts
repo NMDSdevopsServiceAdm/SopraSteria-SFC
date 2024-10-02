@@ -144,9 +144,9 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     const qualification = '12';
 
     const record: QualificationRequest = {
-      type: QualificationType.Certificate,
+      type: this.record ? (this.record.qualification.group as QualificationType) : QualificationType.Certificate,
       qualification: {
-        id: parseInt(qualification, 10),
+        id: this.record ? this.record.qualification.id : parseInt(qualification, 10),
       },
       year,
       notes,

@@ -196,11 +196,12 @@ describe('AddEditQualificationComponent', () => {
       const { component, workerService, fixture, getByText, queryByText } = await setup('mockQualificationId');
 
       spyOn(workerService, 'getQualification').and.returnValue(of(mockQualificationData));
+      const updateQualificationSpy = spyOn(workerService, 'updateQualification').and.returnValue(of(null));
 
       component.ngOnInit();
       fixture.detectChanges();
 
-      return { component, workerService, fixture, getByText, queryByText };
+      return { component, workerService, fixture, getByText, queryByText, updateQualificationSpy };
     };
 
     it('should display qualification group and title', async () => {
@@ -230,6 +231,29 @@ describe('AddEditQualificationComponent', () => {
       const yearInput = fixture.nativeElement.querySelector('#year');
 
       expect(yearInput.value).toEqual(mockQualificationData.year.toString());
+    });
+
+    it('should make call to updateQualification with existing record details and updated fields when submitting for existing qual', async () => {
+      const { component, fixture, getByText, updateQualificationSpy } = await setupWithExistingQualification();
+
+      const yearInput = fixture.nativeElement.querySelector('#year');
+      userEvent.clear(yearInput);
+      userEvent.type(yearInput, '2023');
+
+      const saveButton = getByText('Save and return');
+      userEvent.click(saveButton);
+
+      expect(updateQualificationSpy).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+        component.qualificationId,
+        {
+          type: mockQualificationData.qualification.group,
+          qualification: { id: mockQualificationData.qualification.id },
+          year: 2023,
+          notes: mockQualificationData.notes,
+        },
+      );
     });
   });
 
