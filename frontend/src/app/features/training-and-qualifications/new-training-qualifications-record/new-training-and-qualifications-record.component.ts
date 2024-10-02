@@ -35,6 +35,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public nonMandatoryTrainingCount: number;
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
+  public missingMandatoryTraining: TrainingRecordCategory[] = [];
   public qualificationsByGroup: QualificationsByGroup;
   public lastUpdatedDate: Date;
   public fragmentsObject: any = {
@@ -142,7 +143,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   private setTraining(): void {
     const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
-    this.mandatoryTraining = this.createBlankMissingMandatoryTrainings(trainingRecords.mandatory);
+    this.mandatoryTraining = trainingRecords.mandatory;
+    this.missingMandatoryTraining = this.createBlankMissingMandatoryTrainings(trainingRecords.mandatory);
     this.sortTrainingAlphabetically(this.mandatoryTraining);
     this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
 
@@ -152,7 +154,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getStatus(this.mandatoryTraining);
     this.getStatus(this.nonMandatoryTraining);
 
-    this.populateActionsList(this.mandatoryTraining, 'Mandatory');
+    this.populateActionsList(this.missingMandatoryTraining, 'Mandatory');
     this.populateActionsList(this.nonMandatoryTraining, 'Non-mandatory');
 
     this.sortActionsList();
@@ -160,11 +162,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
   }
 
-  private createBlankMissingMandatoryTrainings(mandatoryTraining: TrainingRecordCategory[]) {
+  private createBlankMissingMandatoryTrainings(mandatoryTraining: TrainingRecordCategory[]): TrainingRecordCategory[] {
     const trainingCategoryIds = this.getMandatoryTrainingIds(mandatoryTraining);
     const missingMandatoryTrainings = this.filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds);
-    missingMandatoryTrainings.forEach((missingMandatoryTraining) => {
-      mandatoryTraining.push({
+    return missingMandatoryTrainings.map((missingMandatoryTraining) => {
+      return {
         category: missingMandatoryTraining.category,
         id: missingMandatoryTraining.trainingCategoryId,
         trainingRecords: [
@@ -180,9 +182,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
             updatedBy: null,
             expires: null,
             missing: true,
+            trainingStatus: 2,
           },
         ],
-      });
+      };
     });
     return mandatoryTraining;
   }

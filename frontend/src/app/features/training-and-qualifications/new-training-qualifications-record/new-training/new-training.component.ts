@@ -13,19 +13,14 @@ export class NewTrainingComponent {
   @Input() public trainingType: string;
   @Input() public setReturnRoute: () => void;
   @Input() public canEditWorker: boolean;
+  @Input() public missingMandatoryTraining = false;
   @ViewChild('content') public content: ElementRef;
   public workplaceUid: string;
 
   constructor(protected trainingStatusService: TrainingStatusService, private route: ActivatedRoute) {}
 
   ngOnInit() {
-    this.workplaceUid = this.route.snapshot.params.establishmentuid;
 
-    for (let i = 0; i < this.trainingCategories.length; i++) {
-      this.trainingCategories[i].trainingRecords = this.trainingCategories[i].trainingRecords.filter(x => x.trainingStatus !== this.trainingStatusService.MISSING);
-      if (this.trainingCategories[i].trainingRecords.length === 0) {
-        this.trainingCategories.splice(i, 1);
-      }
-    }
+    this.workplaceUid = this.route.snapshot.params.establishmentuid;
   }
 }
