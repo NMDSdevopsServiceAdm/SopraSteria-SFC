@@ -1,3 +1,4 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
 <form #formEl (ngSubmit)="onSubmit($event)" [formGroup]="form" novalidate>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
@@ -7,12 +8,14 @@
           <h1 class="govuk-fieldset__heading">{{ title }}</h1>
         </legend>
         <app-grouped-radio-button-accordion
+          *ngIf="qualificationGroups?.length > 0"
           formControlName="selectedQualification"
           [accordions]="qualificationGroups"
           textShowHideAll="categories"
           [preFilledId]="preFilledId"
           data-testid="groupedAccordion"
           [hasError]="submitted && error"
+          [errorMessage]="formErrorsMap[0].type[0].message"
         ></app-grouped-radio-button-accordion>
       </fieldset>
     </div>

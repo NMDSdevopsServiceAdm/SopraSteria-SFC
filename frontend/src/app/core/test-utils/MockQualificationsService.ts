@@ -1,5 +1,6 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { QualificationLevel } from '@core/model/qualification.model';
+import { QualificationLevel, QualificationType } from '@core/model/qualification.model';
 import { QualificationService } from '@core/services/qualification.service';
 import { Observable, of } from 'rxjs';
 
@@ -18,5 +19,15 @@ export class MockQualificationService extends QualificationService {
       { id: 9, level: 'Level 8 or above' },
       { id: 10, level: `Don't know` },
     ]);
+  }
+
+  public static factory(selectedQualification: { type: QualificationType; id: number }) {
+    return (httpClient: HttpClient) => {
+      const service = new QualificationService(httpClient);
+      const { type, id } = selectedQualification;
+      service.setSelectedQualification(type, id);
+
+      return service;
+    };
   }
 }

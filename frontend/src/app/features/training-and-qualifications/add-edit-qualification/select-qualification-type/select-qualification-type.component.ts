@@ -28,7 +28,7 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
   public worker: Worker;
   public establishmentUid: string;
   public workerUid: string;
-  private _qualificationGroups: AccordionGroup[];
+  private _qualificationGroups: AccordionGroup[] = [];
   private qualificationTypeLookup: Record<number, QualificationType>;
 
   ngOnInit(): void {
@@ -130,10 +130,6 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
     });
   }
 
-  private getQualificationTypeFromId(qualificationId: number): QualificationType {
-    return this.qualificationTypeLookup[qualificationId];
-  }
-
   private setupForm(): void {
     this.form = this.formBuilder.group(
       {
@@ -144,13 +140,43 @@ export class SelectQualificationTypeComponent implements OnInit, OnDestroy {
   }
 
   private prefillForm(): void {
-    this.preFilledId = 1;
+    if (this.qualificationService.selectedQualification) {
+      const selectedId = this.qualificationService.selectedQualification.id;
+
+      this.form.setValue({ selectedQualification: selectedId });
+      this.preFilledId = selectedId;
+    }
   }
 
-  private setupFormErrorsMap(): void {}
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'selectedQualification',
+        type: [
+          {
+            name: 'required',
+            message: 'Select the qualification type',
+          },
+        ],
+      },
+    ];
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
+  }
 
   public onSubmit(event: Event) {
     event.preventDefault();
+
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (this.form.invalid) {
+      this.error = true;
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
 
     const selectedId = this.form.value.selectedQualification;
     const selectedType = this.qualificationTypeLookup[selectedId];

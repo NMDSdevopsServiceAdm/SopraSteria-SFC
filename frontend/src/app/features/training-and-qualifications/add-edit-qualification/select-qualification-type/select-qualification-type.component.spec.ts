@@ -2,13 +2,13 @@ import { getTestBed } from '@angular/core/testing';
 import userEvent from '@testing-library/user-event';
 import { SelectQualificationTypeComponent } from './select-qualification-type.component';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { mockAvailableQualifications, MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { Establishment } from '@core/model/establishment.model';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { SharedModule } from '@shared/shared.module';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { render, within } from '@testing-library/angular';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
@@ -24,15 +24,31 @@ import sinon from 'sinon';
 import { QualificationType } from '@core/model/qualification.model';
 
 fdescribe('SelectQualificationTypeComponent', () => {
-  async function setup({ accessedFromSummary = false } = {}) {
+  async function setup({ accessedFromSummary = false, prefilledCategory = null } = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
     const qsParamGetMock = sinon.fake();
 
+    const injectedQualificationService = {
+      provide: QualificationService,
+    };
+    if (prefilledCategory) {
+      injectedQualificationService['useFactory'] = MockQualificationService.factory(prefilledCategory);
+    } else {
+      injectedQualificationService['useClass'] = MockQualificationService;
+    }
+
     const { fixture, getByText, getAllByText, getByTestId, getByRole } = await render(
       SelectQualificationTypeComponent,
       {
-        imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
+        imports: [
+          HttpClientTestingModule,
+          SharedModule,
+          RouterModule,
+          RouterTestingModule,
+          ReactiveFormsModule,
+          FormsModule,
+        ],
         declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
         providers: [
           BackLinkService,
@@ -43,10 +59,7 @@ fdescribe('SelectQualificationTypeComponent', () => {
             provide: WorkerService,
             useFactory: MockWorkerService.factory(worker as Worker),
           },
-          {
-            provide: QualificationService,
-            useClass: MockQualificationService,
-          },
+          injectedQualificationService,
           {
             provide: ActivatedRoute,
             useValue: {
@@ -54,7 +67,6 @@ fdescribe('SelectQualificationTypeComponent', () => {
               snapshot: {
                 data: {
                   establishment: establishment,
-                  //         trainingCategories: trainingCategories,
                 },
                 parent: {
                   url: [{ path: accessedFromSummary ? 'qualification' : 'add-new-qualification' }],
@@ -83,6 +95,7 @@ fdescribe('SelectQualificationTypeComponent', () => {
     return {
       component,
       fixture,
+      getAllByText,
       getByTestId,
       getByText,
       getByRole,
@@ -166,9 +179,33 @@ fdescribe('SelectQualificationTypeComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['./qualification-details'], { relativeTo: currentRoute });
     });
-  });
 
-  describe('navigation', () => {
+    it('should show an error when no qualification type selected', async () => {
+      const { component, fixture, getByRole, getAllByText } = await setup();
+
+      userEvent.click(getByRole('button', { name: 'Continue' }));
+      fixture.detectChanges();
+
+      expect(component.form.invalid).toBeTruthy();
+      expect(getAllByText('Select the qualification type').length).toEqual(2);
+    });
+
+    describe('prefill form', () => {
+      it('should pre-fill if there is a selected qualification type', async () => {
+        const prefilledCategory = { type: QualificationType.Award, id: 1 };
+        const { component, getByRole } = await setup({ prefilledCategory });
+
+        expect(component.form.get('selectedQualification').value).toEqual(1);
+
+        const radioButtonOfSelectedQual = getByRole('radio', {
+          name: 'Advanced Award in Social Work (AASW, level 7)',
+        }) as HTMLInputElement;
+
+        expect(radioButtonOfSelectedQual).toBeTruthy();
+        expect(radioButtonOfSelectedQual.checked).toBe(true);
+      });
+    });
+
     it('should return to training and qualification page when cancel link is clicked', async () => {
       const { getByText, routerSpy } = await setup();
 
