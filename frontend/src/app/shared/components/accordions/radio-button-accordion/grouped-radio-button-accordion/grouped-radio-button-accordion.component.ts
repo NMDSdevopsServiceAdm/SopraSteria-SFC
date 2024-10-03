@@ -106,7 +106,7 @@ export class GroupedRadioButtonAccordionComponent implements ControlValueAccesso
 
   public toggleAccordion(index) {
     this.accordions[index].open = !this._accordions[index].open;
-    this.showAll = !this._showAll;
+    this.showAll = this._accordions.every((accordion) => accordion.open);
   }
 
   @Input('value') _value = null;
