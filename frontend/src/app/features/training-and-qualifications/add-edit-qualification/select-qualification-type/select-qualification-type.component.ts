@@ -20,10 +20,6 @@ export class SelectQualificationTypeComponent implements OnInit {
   public submitted: boolean = false;
   public error = false;
   public formErrorsMap: Array<ErrorDetails>;
-
-  public title: string;
-  public section: string;
-  public submitButtonText: string;
   public preFilledId: number;
 
   public worker: Worker;
@@ -33,11 +29,18 @@ export class SelectQualificationTypeComponent implements OnInit {
   private _qualificationGroups: AccordionGroup[] = [];
   private qualificationLookup: Record<number, Qualification>;
 
+  constructor(
+    private formBuilder: FormBuilder,
+    private qualificationService: QualificationService,
+    private router: Router,
+    private backLinkService: BackLinkService,
+    private workerService: WorkerService,
+    private route: ActivatedRoute,
+    private errorSummaryService: ErrorSummaryService,
+  ) {}
+
   ngOnInit(): void {
     this.worker = this.workerService.worker;
-    this.setTitle();
-    this.setSectionHeading();
-    this.setButtonText();
     this.setBackLink();
     this.route.params.subscribe((params) => {
       if (params) {
@@ -49,27 +52,6 @@ export class SelectQualificationTypeComponent implements OnInit {
     this.setupForm();
     this.prefillForm();
     this.setupFormErrorsMap();
-  }
-
-  constructor(
-    protected formBuilder: FormBuilder,
-    protected qualificationService: QualificationService,
-    protected router: Router,
-    protected backLinkService: BackLinkService,
-    protected workerService: WorkerService,
-    protected route: ActivatedRoute,
-    protected errorSummaryService: ErrorSummaryService,
-  ) {}
-
-  protected setTitle(): void {
-    this.title = 'Select the type of qualification you want to add';
-  }
-
-  protected setSectionHeading(): void {
-    this.section = this.worker.nameOrId;
-  }
-  protected setButtonText(): void {
-    this.submitButtonText = 'Continue';
   }
 
   private setBackLink(): void {
