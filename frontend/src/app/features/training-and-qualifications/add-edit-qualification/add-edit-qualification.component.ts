@@ -4,7 +4,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { INT_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { QualificationRequest, QualificationResponse, QualificationType } from '@core/model/qualification.model';
+import {
+  Qualification,
+  QualificationRequest,
+  QualificationResponse,
+  QualificationType,
+} from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -37,7 +42,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public remainingCharacterCount: number;
   public intPattern = INT_PATTERN.toString();
   public notesOpen = false;
-  public selectedQualification: { group: QualificationType; id: number; title: string };
+  public selectedQualification: Qualification;
 
   constructor(
     private trainingService: TrainingService,

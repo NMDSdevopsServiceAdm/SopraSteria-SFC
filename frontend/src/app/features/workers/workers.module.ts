@@ -2,6 +2,7 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
@@ -136,6 +137,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     TrainingAndQualificationRecordsResolver,
     TrainingRecordsForCategoryResolver,
     MandatoryTrainingCategoriesResolver,
+    AvailableQualificationsResolver,
   ],
 })
 export class WorkersModule {}
