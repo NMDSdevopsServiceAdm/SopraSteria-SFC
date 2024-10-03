@@ -6,16 +6,11 @@
     </div>
   </div>
 </div>
-<div class="govuk-grid-row govuk-!-margin-bottom-3">
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l">
       {{ qualificationId ? 'Qualification record details' : 'Add qualification record details' }}
     </h1>
-    <span *ngIf="record || selectedQualification">
-      <h2 class="govuk-heading-m">Type: {{ record?.qualification?.group ?? selectedQualification.group }}</h2>
-      <p class="govuk-!-font-weight-bold govuk-!-margin-top-4 govuk-!-margin-bottom-1">Qualification</p>
-      <p class="govuk-!-margin-top-0">{{ record?.qualification?.title ?? selectedQualification.title }}</p>
-    </span>
   </div>
   <div class="govuk-grid-column-one-third">
     <a
@@ -31,6 +26,24 @@
     >
   </div>
 </div>
+<span *ngIf="record || selectedQualification">
+  <div class="govuk-grid-row govuk-!-margin-bottom-0">
+    <div class="govuk-grid-column-two-thirds">
+      <h2 class="govuk-heading-m">Type: {{ record?.qualification?.group ?? selectedQualification.group }}</h2>
+      <p class="govuk-!-font-weight-bold govuk-!-margin-top-4 govuk-!-margin-bottom-1">Qualification</p>
+    </div>
+  </div>
+  <div class="govuk-grid-row govuk-!-margin-top-0 govuk-!-margin-bottom-3">
+    <div class="govuk-grid-column-one-half">
+      <p class="govuk-!-margin-top-0">{{ record?.qualification?.title ?? selectedQualification.title }}</p>
+    </div>
+    <div *ngIf="selectedQualification" class="govuk-grid-column-one-half">
+      <p>
+        <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['../']">Change</a>
+      </p>
+    </div>
+  </div>
+</span>
 <form (ngSubmit)="onSubmit()" [formGroup]="form" #formEl>
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">

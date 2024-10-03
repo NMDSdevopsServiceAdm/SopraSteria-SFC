@@ -219,16 +219,24 @@ describe('AddEditQualificationComponent', () => {
   });
 
   describe('setting data from qualification service', () => {
+    const mockQualification = { group: QualificationType.NVQ, id: 10, title: 'Bla Bla bla' };
+
     it('should display qualification type and name when retrieved from service', async () => {
-      const mockQualification = { group: QualificationType.NVQ, id: 10, title: 'Bla Bla bla' };
       const { getByText } = await setup(null, mockQualification);
 
       expect(getByText(mockQualification.title)).toBeTruthy();
       expect(getByText('Type: ' + mockQualification.group)).toBeTruthy();
     });
 
+    it('should display change link', async () => {
+      const { getByText } = await setup(null, mockQualification);
+
+      const changeLink = getByText('Change');
+
+      expect(changeLink).toBeTruthy();
+    });
+
     it('should make call to createQualification with details from selectedQualification and updated fields when submitting for new qual', async () => {
-      const mockQualification = { group: QualificationType.NVQ, id: 10, title: 'Bla Bla bla' };
       const notes = 'Here are some test notes';
 
       const { component, fixture, getByText, workerService, getByLabelText } = await setup(null, mockQualification);
