@@ -103,6 +103,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   }
 
   protected navigateToPreviousPage(): void {
+    this.qualificationService.clearSelectedQualification();
     this.router.navigate(this.previousUrl);
   }
 

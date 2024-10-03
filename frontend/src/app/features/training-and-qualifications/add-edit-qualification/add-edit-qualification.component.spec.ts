@@ -283,6 +283,16 @@ describe('AddEditQualificationComponent', () => {
 
       expect(clearSelectedQualificationSpy).toHaveBeenCalled();
     });
+
+    it('should should clear selectedQualification in service on click of Cancel', async () => {
+      const { getByText, qualificationService } = await setup(null, mockQualification);
+
+      const clearSelectedQualificationSpy = spyOn(qualificationService, 'clearSelectedQualification');
+
+      fireEvent.click(getByText('Cancel'));
+
+      expect(clearSelectedQualificationSpy).toHaveBeenCalled();
+    });
   });
 
   describe('prefilling data for existing qualification', () => {
