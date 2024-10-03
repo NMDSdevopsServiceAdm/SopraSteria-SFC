@@ -2,18 +2,18 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { AvailableQualificationsResponse, QualificationType } from '@core/model/qualification.model';
+import { AvailableQualificationsResponse, Qualification, QualificationType } from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AccordionGroup } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { QualificationGroup } from '../../../../core/model/qualification.model';
 
 @Component({
   selector: 'app-select-qualification-type',
   templateUrl: './select-qualification-type.component.html',
-  styleUrls: ['./select-qualification-type.component.scss'],
 })
 export class SelectQualificationTypeComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -32,7 +32,7 @@ export class SelectQualificationTypeComponent implements OnInit {
   public workerUid: string;
 
   private _qualificationGroups: AccordionGroup[] = [];
-  private qualificationTypeLookup: Record<number, QualificationType>;
+  private qualificationLookup: Record<number, Qualification>;
 
   ngOnInit(): void {
     this.worker = this.workerService.worker;
@@ -125,10 +125,10 @@ export class SelectQualificationTypeComponent implements OnInit {
   }
 
   private buildLookupDict(allQualifications: AvailableQualificationsResponse[]): void {
-    this.qualificationTypeLookup = {};
+    this.qualificationLookup = {};
     allQualifications.forEach((group) => {
       group.qualifications.forEach((qualification) => {
-        this.qualificationTypeLookup[qualification.id] = group.type;
+        this.qualificationLookup[qualification.id] = { ...qualification, group: group.type };
       });
     });
   }
@@ -182,8 +182,8 @@ export class SelectQualificationTypeComponent implements OnInit {
     }
 
     const selectedId = this.form.value.selectedQualification;
-    const selectedType = this.qualificationTypeLookup[selectedId];
-    this.qualificationService.setSelectedQualification(selectedType, selectedId);
+    const { group, title } = this.qualificationLookup[selectedId];
+    this.qualificationService.setSelectedQualification(selectedId, title, group as QualificationType);
     this.router.navigate(['./qualification-details'], { relativeTo: this.route });
   }
 

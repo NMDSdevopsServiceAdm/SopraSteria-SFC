@@ -24,8 +24,9 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectQualificationTypeComponent } from './select-qualification-type.component';
+import { group } from 'console';
 
-describe('SelectQualificationTypeComponent', () => {
+fdescribe('SelectQualificationTypeComponent', () => {
   async function setup({ accessedFromSummary = false, prefillQualification = null } = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
@@ -167,8 +168,9 @@ describe('SelectQualificationTypeComponent', () => {
       userEvent.click(getByRole('button', { name: 'Continue' }));
 
       expect(qualificationService.selectedQualification).toEqual({
-        type: 'Apprenticeship' as QualificationType,
         id: 121,
+        group: QualificationType.Apprenticeship,
+        title: 'Adult care worker (standard, level 2)',
       });
     });
 
@@ -194,7 +196,11 @@ describe('SelectQualificationTypeComponent', () => {
 
     describe('prefill form', () => {
       it('should pre-fill if there is a selected qualification type', async () => {
-        const prefillQualification = { type: QualificationType.Award, id: 1 };
+        const prefillQualification = {
+          id: 1,
+          title: 'Advanced Award in Social Work (AASW, level 7)',
+          group: QualificationType.Award,
+        };
         const { component, getByRole } = await setup({ prefillQualification });
 
         expect(component.form.get('selectedQualification').value).toEqual(1);

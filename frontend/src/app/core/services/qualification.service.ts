@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { QualificationLevel, QualificationType } from '@core/model/qualification.model';
+import { Qualification, QualificationLevel, QualificationType } from '@core/model/qualification.model';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -9,7 +9,7 @@ import { environment } from 'src/environments/environment';
   providedIn: 'root',
 })
 export class QualificationService {
-  protected _selectedQualification: { type: QualificationType; id: number } = null;
+  protected _selectedQualification: Qualification = null;
 
   constructor(private http: HttpClient) {}
 
@@ -23,9 +23,9 @@ export class QualificationService {
     return this._selectedQualification;
   }
 
-  public setSelectedQualification(type: QualificationType, id: number) {
-    if (type && id) {
-      this._selectedQualification = { type, id };
+  public setSelectedQualification(id: number, title: string, group: QualificationType) {
+    if (id && title && group) {
+      this._selectedQualification = { id, title, group };
     }
   }
 
