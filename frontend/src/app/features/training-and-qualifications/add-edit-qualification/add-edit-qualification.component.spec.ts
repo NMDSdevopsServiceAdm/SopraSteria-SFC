@@ -48,6 +48,7 @@ describe('AddEditQualificationComponent', () => {
             provide: QualificationService,
             useValue: {
               selectedQualification: qualificationInService,
+              clearSelectedQualification: () => {},
             },
           },
         ],
@@ -59,6 +60,7 @@ describe('AddEditQualificationComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerService = injector.inject(WorkerService) as WorkerService;
+    const qualificationService = injector.inject(QualificationService) as QualificationService;
 
     return {
       component,
@@ -70,6 +72,7 @@ describe('AddEditQualificationComponent', () => {
       routerSpy,
       getAllByText,
       workerService,
+      qualificationService,
     };
   }
 
@@ -268,6 +271,17 @@ describe('AddEditQualificationComponent', () => {
         year: 2019,
         notes: notes,
       });
+    });
+
+    it('should should clear selectedQualification in service on submission', async () => {
+      const { getByText, workerService, qualificationService } = await setup(null, mockQualification);
+
+      spyOn(workerService, 'createQualification').and.returnValue(of(null));
+      const clearSelectedQualificationSpy = spyOn(qualificationService, 'clearSelectedQualification');
+
+      fireEvent.click(getByText('Save record'));
+
+      expect(clearSelectedQualificationSpy).toHaveBeenCalled();
     });
   });
 

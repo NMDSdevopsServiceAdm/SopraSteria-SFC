@@ -156,6 +156,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.qualificationService.clearSelectedQualification();
+
     const { year, notes } = this.form.value;
 
     const record: QualificationRequest = {
