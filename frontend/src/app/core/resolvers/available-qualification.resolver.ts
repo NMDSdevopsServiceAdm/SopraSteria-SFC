@@ -1,11 +1,11 @@
+import { of, Observable } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { AvailableQualificationsResponse } from '@core/model/qualification.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
-import { of } from 'rxjs';
-import { Observable } from 'rxjs-compat';
-import { catchError } from 'rxjs/operators';
 
 @Injectable()
 export class AvailableQualificationsResolver implements Resolve<AvailableQualificationsResponse[]> {

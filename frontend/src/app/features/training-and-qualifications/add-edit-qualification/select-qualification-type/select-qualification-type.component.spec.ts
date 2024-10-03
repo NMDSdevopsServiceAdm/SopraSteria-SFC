@@ -24,7 +24,7 @@ import userEvent from '@testing-library/user-event';
 
 import { SelectQualificationTypeComponent } from './select-qualification-type.component';
 
-fdescribe('SelectQualificationTypeComponent', () => {
+describe('SelectQualificationTypeComponent', () => {
   async function setup({ accessedFromSummary = false, prefillQualification = null } = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
