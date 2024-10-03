@@ -391,7 +391,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     const updatedData: TrainingAndQualificationRecords = await this.workerService
       .getAllTrainingAndQualificationRecords(this.workplace.uid, this.worker.uid)
       .toPromise();
-    const updatedTrainingData = updatedData.training;
-    this.setTraining(updatedTrainingData);
+    this.trainingRecords = updatedData.training;
+    this.setTraining();
   }
 }
