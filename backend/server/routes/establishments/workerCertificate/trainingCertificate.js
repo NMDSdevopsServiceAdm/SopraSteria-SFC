@@ -124,6 +124,27 @@ const getPresignedUrlForCertificateDownload = async (req, res) => {
   return res.status(200).json({ files: responsePayload });
 };
 
+const deleteRecordsFromDatabase = async (uids) => {
+  try {
+    await models.trainingCertificates.deleteCertificate(uids);
+    return true;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+};
+
+const deleteCertificatesFromS3 = async (filesToDeleteFromS3) => {
+  const deleteFromS3Response = await s3.deleteCertificatesFromS3({
+    bucket: certificateBucket,
+    objects: filesToDeleteFromS3,
+  });
+
+  if (deleteFromS3Response?.Errors?.length > 0) {
+    console.error(JSON.stringify(deleteFromS3Response.Errors));
+  }
+};
+
 const deleteCertificates = async (req, res) => {
   const { filesToDelete } = req.body;
   const { id, workerId, trainingUid } = req.params;
@@ -151,20 +172,16 @@ const deleteCertificates = async (req, res) => {
       return res.status(400).send('Invalid request');
     }
 
-    await models.trainingCertificates.deleteCertificate(filesToDeleteFromDatabase);
+    const deletionFromDatabase = await deleteRecordsFromDatabase(filesToDeleteFromDatabase);
+    if (!deletionFromDatabase) {
+      return res.status(500).send();
+    }
   } catch (error) {
     console.log(error);
     return res.status(500).send();
   }
 
-  const deleteFromS3Response = await s3.deleteCertificatesFromS3({
-    bucket: certificateBucket,
-    objects: filesToDeleteFromS3,
-  });
-
-  if (deleteFromS3Response?.Errors?.length > 0) {
-    console.error(JSON.stringify(deleteFromS3Response.Errors));
-  }
+  await deleteCertificatesFromS3(filesToDeleteFromS3);
 
   return res.status(200).send();
 };
@@ -179,3 +196,6 @@ module.exports.requestUploadUrl = requestUploadUrl;
 module.exports.confirmUpload = confirmUpload;
 module.exports.getPresignedUrlForCertificateDownload = getPresignedUrlForCertificateDownload;
 module.exports.deleteCertificates = deleteCertificates;
+module.exports.deleteRecordsFromDatabase = deleteRecordsFromDatabase;
+module.exports.deleteCertificatesFromS3 = deleteCertificatesFromS3;
+module.exports.makeFileKey = makeFileKey;

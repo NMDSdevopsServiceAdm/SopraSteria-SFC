@@ -1284,6 +1284,22 @@ describe('AddEditTrainingComponent', () => {
           component.filesToRemove,
         );
       });
+
+      it('should not call the training service when save and return is clicked and there are no files to remove ', async () => {
+        const { component, fixture, getByText, trainingService } = await setup();
+
+        component.trainingCertificates = [];
+
+        fixture.detectChanges();
+
+        const trainingServiceSpy = spyOn(trainingService, 'deleteCertificates').and.callThrough();
+
+        fireEvent.click(getByText('Save and return'));
+
+        fixture.detectChanges();
+
+        expect(trainingServiceSpy).not.toHaveBeenCalled();
+      });
     });
   });
 });
