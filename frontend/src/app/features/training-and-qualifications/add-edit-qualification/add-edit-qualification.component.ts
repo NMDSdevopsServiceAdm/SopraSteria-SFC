@@ -8,6 +8,7 @@ import { QualificationRequest, QualificationResponse, QualificationType } from '
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { QualificationService } from '@core/services/qualification.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
@@ -36,6 +37,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public remainingCharacterCount: number;
   public intPattern = INT_PATTERN.toString();
   public notesOpen = false;
+  public selectedQualification: { group: QualificationType; id: number; title: string };
 
   constructor(
     private trainingService: TrainingService,
@@ -44,7 +46,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,
-    protected backLinkService: BackLinkService,
+    private backLinkService: BackLinkService,
+    private qualificationService: QualificationService,
   ) {
     this.yearValidators = [Validators.max(dayjs().year()), Validators.min(dayjs().subtract(100, 'years').year())];
   }
@@ -89,6 +92,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
           },
         ),
       );
+    } else {
+      this.selectedQualification = this.qualificationService.selectedQualification;
     }
 
     this.setupFormErrorsMap();
@@ -150,12 +155,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     }
 
     const { year, notes } = this.form.value;
-    const qualification = '12';
 
     const record: QualificationRequest = {
-      type: this.record ? (this.record.qualification.group as QualificationType) : QualificationType.Certificate,
+      type: (this.record ? this.record.qualification.group : this.selectedQualification.group) as QualificationType,
       qualification: {
-        id: this.record ? this.record.qualification.id : parseInt(qualification, 10),
+        id: this.record ? this.record.qualification.id : this.selectedQualification.id,
       },
       year,
       notes,

@@ -3,7 +3,8 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { QualificationResponse } from '@core/model/qualification.model';
+import { QualificationResponse, QualificationType } from '@core/model/qualification.model';
+import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
@@ -18,7 +19,7 @@ import { of } from 'rxjs';
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
 
 describe('AddEditQualificationComponent', () => {
-  async function setup(qualificationId = '1') {
+  async function setup(qualificationId = '1', qualificationInService = null) {
     const { fixture, getByText, getByTestId, queryByText, getByLabelText, getAllByText } = await render(
       AddEditQualificationComponent,
       {
@@ -43,6 +44,12 @@ describe('AddEditQualificationComponent', () => {
           },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
           { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+          {
+            provide: QualificationService,
+            useValue: {
+              selectedQualification: qualificationInService,
+            },
+          },
         ],
       },
     );
@@ -107,10 +114,7 @@ describe('AddEditQualificationComponent', () => {
     });
 
     it('should not render the delete link when there is no qualification id', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.qualificationId = null;
-      fixture.detectChanges();
+      const { queryByText } = await setup(null);
 
       expect(queryByText('Delete this qualification record')).toBeFalsy();
     });
@@ -211,6 +215,43 @@ describe('AddEditQualificationComponent', () => {
       );
       fixture.detectChanges();
       expect(getByText('You have 1 character too many')).toBeTruthy();
+    });
+  });
+
+  describe('setting data from qualification service', () => {
+    it('should display qualification type and name when retrieved from service', async () => {
+      const mockQualification = { group: QualificationType.NVQ, id: 10, title: 'Bla Bla bla' };
+      const { getByText } = await setup(null, mockQualification);
+
+      expect(getByText(mockQualification.title)).toBeTruthy();
+      expect(getByText('Type: ' + mockQualification.group)).toBeTruthy();
+    });
+
+    it('should make call to createQualification with details from selectedQualification and updated fields when submitting for new qual', async () => {
+      const mockQualification = { group: QualificationType.NVQ, id: 10, title: 'Bla Bla bla' };
+      const notes = 'Here are some test notes';
+
+      const { component, fixture, getByText, workerService, getByLabelText } = await setup(null, mockQualification);
+
+      const createQualificationSpy = spyOn(workerService, 'createQualification').and.returnValue(of(null));
+
+      const yearInput = fixture.nativeElement.querySelector('#year');
+      userEvent.type(yearInput, '2019');
+
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
+      fixture.detectChanges();
+
+      userEvent.type(getByLabelText('Add a note'), notes);
+
+      fireEvent.click(getByText('Save record'));
+
+      expect(createQualificationSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        type: mockQualification.group,
+        qualification: { id: mockQualification.id },
+        year: 2019,
+        notes: notes,
+      });
     });
   });
 
@@ -331,12 +372,14 @@ describe('AddEditQualificationComponent', () => {
     });
 
     it('should show error messages if too many characters are entered into the notes input', async () => {
-      const { getByLabelText, getByText, getAllByText, getByTestId } = await setup(null);
+      const { fixture, getByLabelText, getByText, getAllByText } = await setup(null);
 
-      const notesBox = getByLabelText('Add a note');
+      const openNotesButton = getByText('Open notes');
+      openNotesButton.click();
+      fixture.detectChanges();
 
       userEvent.type(
-        notesBox,
+        getByLabelText('Add a note'),
         'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
       );
       fireEvent.click(getByText('Save record'));

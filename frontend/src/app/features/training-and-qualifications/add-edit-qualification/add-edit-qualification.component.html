@@ -11,10 +11,10 @@
     <h1 class="govuk-heading-l">
       {{ qualificationId ? 'Qualification record details' : 'Add qualification record details' }}
     </h1>
-    <span *ngIf="record">
-      <h2 class="govuk-heading-m">Type: {{ record.qualification?.group }}</h2>
+    <span *ngIf="record || selectedQualification">
+      <h2 class="govuk-heading-m">Type: {{ record?.qualification?.group ?? selectedQualification.group }}</h2>
       <p class="govuk-!-font-weight-bold govuk-!-margin-top-4 govuk-!-margin-bottom-1">Qualification</p>
-      <p class="govuk-!-margin-top-0">{{ record.qualification?.title }}</p>
+      <p class="govuk-!-margin-top-0">{{ record?.qualification?.title ?? selectedQualification.title }}</p>
     </span>
   </div>
   <div class="govuk-grid-column-one-third">
