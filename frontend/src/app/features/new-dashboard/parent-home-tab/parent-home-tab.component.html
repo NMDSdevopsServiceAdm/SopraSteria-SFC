@@ -111,7 +111,7 @@
           </p></app-card
         >
       </div>
-      <div class="govuk-grid-column-one-third asc-card-padding">
+      <div *ngIf="article" class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/news.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
