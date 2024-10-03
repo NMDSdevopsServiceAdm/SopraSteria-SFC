@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { CertificateUpload, TrainingRecord, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
+import { CertificateUpload, TrainingRecord, TrainingRecordCategory } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -73,9 +73,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.breadcrumbService.show(this.getBreadcrumbsJourney());
     this.setUpTabSubscription();
     this.updateTrainingExpiresSoonDate();
-    const trainingRecords: TrainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
-
-    this.setTraining(trainingRecords);
+    this.setTraining();
     this.setUpAlertSubscription();
     this.setReturnRoute();
     this.getPdfCount();

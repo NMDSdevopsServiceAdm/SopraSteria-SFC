@@ -262,7 +262,8 @@ describe('NewTrainingComponent', async () => {
       expect(noMandatoryTrainingLink).toBeFalsy();
     });
 
-    it('should display a no mandatory training for job role message when mandatory training is not required for the job role', () => {
+    it('should display a no mandatory training for job role message when mandatory training is not required for the job role', async () => {
+      const { component, fixture } = await setup();
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
@@ -276,7 +277,8 @@ describe('NewTrainingComponent', async () => {
       expect(mandatoryTrainingMissingLink).toBeTruthy();
     });
 
-    it('should display a no mandatory training for job role message when mandatory training is missing', () => {
+    it('should display a no mandatory training for job role message when mandatory training is missing', async () => {
+      const { component, fixture } = await setup();
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
