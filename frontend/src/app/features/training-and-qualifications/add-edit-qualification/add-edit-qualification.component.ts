@@ -92,8 +92,10 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
           },
         ),
       );
-    } else {
+    } else if (this.qualificationService.selectedQualification) {
       this.selectedQualification = this.qualificationService.selectedQualification;
+    } else {
+      this.router.navigate(['../']);
     }
 
     this.setupFormErrorsMap();

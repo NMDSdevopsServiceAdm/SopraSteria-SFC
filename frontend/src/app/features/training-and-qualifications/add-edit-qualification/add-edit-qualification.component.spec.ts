@@ -83,6 +83,14 @@ describe('AddEditQualificationComponent', () => {
     expect(getByText(component.worker.nameOrId, { exact: false })).toBeTruthy();
   });
 
+  it('should navigate back to select qualification page if no qualification ID or selectedQualification in service', async () => {
+    const { component, routerSpy } = await setup(null, null);
+
+    component.ngOnInit();
+
+    expect(routerSpy).toHaveBeenCalled();
+  });
+
   describe('title', () => {
     it('should render the Add qualification details title', async () => {
       const { component, fixture, getByText } = await setup();
