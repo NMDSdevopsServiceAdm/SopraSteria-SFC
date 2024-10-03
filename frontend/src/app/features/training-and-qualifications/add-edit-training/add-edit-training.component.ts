@@ -225,27 +225,30 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
         : this.trainingCertificates.map((certificate) => {
             return this.formatForCertificateDownload(certificate);
           });
-
-    this.trainingService
-      .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
-      .subscribe(
-        () => {
-          this.certificateErrors = [];
-        },
-        (_error) => {
-          this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
-        },
-      );
+    this.subscriptions.add(
+      this.trainingService
+        .downloadCertificates(this.workplace.uid, this.worker.uid, this.trainingRecordId, filesToDownload)
+        .subscribe(
+          () => {
+            this.certificateErrors = [];
+          },
+          (_error) => {
+            this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
+          },
+        ),
+    );
   }
 
   private formatForCertificateDownload(certificate: TrainingCertificate): CertificateDownload {
     return { uid: certificate.uid, filename: certificate.filename };
   }
 
-  private deleteTrainingCertificate(files: any) {
-    this.trainingService
-      .deleteCertificates(this.establishmentUid, this.workerId, this.trainingRecordId, files)
-      .subscribe(() => {});
+  private deleteTrainingCertificate(files: TrainingCertificate[]) {
+    this.subscriptions.add(
+      this.trainingService
+        .deleteCertificates(this.establishmentUid, this.workerId, this.trainingRecordId, files)
+        .subscribe(() => {}),
+    );
   }
 
   private onSuccess() {
