@@ -14,8 +14,8 @@ import { MultipleTrainingResponse, TrainingRecordRequest, TrainingResponse } fro
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
-import { BehaviorSubject, forkJoin, from, Observable, of } from 'rxjs';
-import { map, mergeMap } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Contracts } from '@core/model/contracts.enum';
 
