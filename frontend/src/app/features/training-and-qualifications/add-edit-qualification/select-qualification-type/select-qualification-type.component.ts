@@ -9,7 +9,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { AccordionGroup } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import { QualificationGroup } from '../../../../core/model/qualification.model';
 
 @Component({
   selector: 'app-select-qualification-type',
@@ -86,12 +85,9 @@ export class SelectQualificationTypeComponent implements OnInit {
   }
 
   private getAllAvailableQualifications(): void {
-    this.workerService
-      .getAllAvailableQualifications(this.establishmentUid, this.workerUid)
-      .subscribe((availableQualifications) => {
-        this.qualificationGroups = this.sortQualificationsByGroup(availableQualifications);
-        this.buildLookupDict(availableQualifications);
-      });
+    const availableQualifications: AvailableQualificationsResponse[] = this.route.snapshot.data.availableQualifications;
+    this.qualificationGroups = this.sortQualificationsByGroup(availableQualifications);
+    this.buildLookupDict(availableQualifications);
   }
 
   private convertToAccordionItems(

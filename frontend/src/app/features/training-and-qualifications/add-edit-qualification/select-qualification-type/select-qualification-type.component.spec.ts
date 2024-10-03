@@ -8,7 +8,6 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { QualificationType } from '@core/model/qualification.model';
-import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { QualificationService } from '@core/services/qualification.service';
@@ -16,7 +15,7 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { mockAvailableQualifications, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
@@ -24,7 +23,6 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectQualificationTypeComponent } from './select-qualification-type.component';
-import { group } from 'console';
 
 fdescribe('SelectQualificationTypeComponent', () => {
   async function setup({ accessedFromSummary = false, prefillQualification = null } = {}) {
@@ -60,7 +58,7 @@ fdescribe('SelectQualificationTypeComponent', () => {
           FormBuilder,
           {
             provide: WorkerService,
-            useFactory: MockWorkerService.factory(worker as Worker),
+            useValue: { worker },
           },
           injectedQualificationService,
           {
@@ -70,6 +68,7 @@ fdescribe('SelectQualificationTypeComponent', () => {
               snapshot: {
                 data: {
                   establishment: establishment,
+                  availableQualifications: mockAvailableQualifications,
                 },
                 parent: {
                   url: [{ path: accessedFromSummary ? 'qualification' : 'add-new-qualification' }],

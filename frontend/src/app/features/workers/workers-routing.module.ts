@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
@@ -301,6 +302,9 @@ const routes: Routes = [
           },
           {
             path: 'add-qualification',
+            resolve: {
+              availableQualifications: AvailableQualificationsResolver,
+            },
             children: [
               {
                 path: '',
@@ -326,6 +330,9 @@ const routes: Routes = [
                 path: 'select-qualification-type',
                 component: SelectQualificationTypeComponent,
                 data: { title: 'Select Qualification Type' },
+                resolve: {
+                  availableQualifications: AvailableQualificationsResolver,
+                },
               },
               {
                 path: 'delete',
@@ -588,6 +595,9 @@ const routes: Routes = [
       },
       {
         path: 'add-qualification',
+        resolve: {
+          availableQualifications: AvailableQualificationsResolver,
+        },
         children: [
           {
             path: '',
@@ -613,6 +623,9 @@ const routes: Routes = [
             path: 'select-qualification-type',
             component: SelectQualificationTypeComponent,
             data: { title: 'Select Qualification Type' },
+            resolve: {
+              availableQualifications: AvailableQualificationsResolver,
+            },
           },
           {
             path: 'delete',
