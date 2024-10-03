@@ -14,7 +14,7 @@ import { MultipleTrainingResponse, TrainingRecordRequest, TrainingResponse } fro
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Contracts } from '@core/model/contracts.enum';
@@ -184,6 +184,24 @@ export class WorkerService {
         },
       )
       .pipe(map((res) => res.qualifications));
+  }
+
+  getAllAvailableQualifications(
+    workplaceUid: string,
+    workerUid: string,
+  ): Observable<AvailableQualificationsResponse[]> {
+    const allQualificationTypes: QualificationType[] = Object.values(QualificationType);
+    const allResponses$ = allQualificationTypes.map((type) => {
+      const params = new HttpParams().append('type', type);
+      return this.http.get<AvailableQualificationsResponse>(
+        `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/qualification/available`,
+        {
+          params,
+        },
+      );
+    });
+
+    return forkJoin(allResponses$);
   }
 
   createQualification(workplaceUid: string, workerId: string, record: QualificationRequest) {
