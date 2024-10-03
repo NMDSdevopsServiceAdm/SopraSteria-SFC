@@ -49,6 +49,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   };
   public pdfCount: number;
   public certificateErrors: Record<string, string> = {}; // {categoryName: errorMessage}
+  private trainingRecords: any;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -111,6 +112,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
+    this.trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.trainingService.trainingOrQualificationPreviouslySelected = null;
@@ -149,30 +151,36 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   private setTraining(): void {
-    const trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
-    this.mandatoryTraining = trainingRecords.mandatory;
-    this.missingMandatoryTraining = this.createBlankMissingMandatoryTrainings(trainingRecords.mandatory);
-    this.sortTrainingAlphabetically(this.mandatoryTraining);
-    this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
+    this.setMandatoryTraining();
+    this.setNonMandatoryTraining();
 
-    this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
-    this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
-
-    this.getStatus(this.mandatoryTraining);
-    this.getStatus(this.nonMandatoryTraining);
-
+    this.populateActionsList(this.mandatoryTraining, 'Mandatory');
     this.populateActionsList(this.missingMandatoryTraining, 'Mandatory');
     this.populateActionsList(this.nonMandatoryTraining, 'Non-mandatory');
 
     this.sortActionsList();
 
-    this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
+    this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, this.trainingRecords?.lastUpdated]);
   }
 
-  private createBlankMissingMandatoryTrainings(mandatoryTraining: TrainingRecordCategory[]): TrainingRecordCategory[] {
+  private setMandatoryTraining() {
+    this.mandatoryTraining = this.trainingRecords.mandatory;
+    this.sortTrainingAlphabetically(this.mandatoryTraining);
+    this.createBlankMissingMandatoryTrainings(this.mandatoryTraining);
+    this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
+    this.getStatus(this.mandatoryTraining);
+  }
+
+  private setNonMandatoryTraining() {
+    this.nonMandatoryTraining = this.sortTrainingAlphabetically(this.trainingRecords.nonMandatory);
+    this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
+    this.getStatus(this.nonMandatoryTraining);
+  }
+
+  private createBlankMissingMandatoryTrainings(mandatoryTraining: TrainingRecordCategory[]): void {
     const trainingCategoryIds = this.getMandatoryTrainingIds(mandatoryTraining);
     const missingMandatoryTrainings = this.filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds);
-    return missingMandatoryTrainings.map((missingMandatoryTraining) => {
+    this.missingMandatoryTraining = missingMandatoryTrainings.map((missingMandatoryTraining) => {
       return {
         category: missingMandatoryTraining.category,
         id: missingMandatoryTraining.trainingCategoryId,
@@ -195,7 +203,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         ],
       };
     });
-    return mandatoryTraining;
   }
 
   private filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds: Array<number>): mandatoryTraining[] {
