@@ -268,6 +268,7 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.missingMandatoryTraining = false;
+      component.ngOnChanges();
       fixture.detectChanges();
       const mandatoryTrainingMissingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
       const messageText = 'No mandatory training has been added for this job role yet.';
@@ -283,6 +284,7 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.missingMandatoryTraining = true;
+      component.ngOnChanges();
       fixture.detectChanges();
       const mandatoryTrainingMissingLink = fixture.debugElement.query(By.css('[data-testid="mandatory-training-missing-link"]'));
       const messageText = 'No mandatory training records have been added for this person yet.';
