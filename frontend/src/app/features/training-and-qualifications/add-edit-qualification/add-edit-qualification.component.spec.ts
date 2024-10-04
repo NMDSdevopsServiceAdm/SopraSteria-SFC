@@ -312,6 +312,44 @@ describe('AddEditQualificationComponent', () => {
 
       expect(clearSelectedQualificationSpy).toHaveBeenCalled();
     });
+
+    it('should set title section to third when short qualification title (15 chars) to move Change link closer', async () => {
+      const mockQualificationWithShortTitle = { group: QualificationType.NVQ, id: 10, title: 'Worker safety 2' };
+
+      const { getByTestId } = await setup(null, mockQualificationWithShortTitle);
+
+      const titleSection = getByTestId('qualificationTitleSection');
+
+      expect(titleSection.getAttribute('class')).toContain('govuk-grid-column-one-third');
+    });
+
+    it('should set title section to half when mid length (45) qualification title', async () => {
+      const mockQualificationWithLongTitle = {
+        group: QualificationType.NVQ,
+        id: 10,
+        title: 'Worker safety and so on and so forth everyday',
+      };
+
+      const { getByTestId } = await setup(null, mockQualificationWithLongTitle);
+
+      const titleSection = getByTestId('qualificationTitleSection');
+
+      expect(titleSection.getAttribute('class')).toContain('govuk-grid-column-one-half');
+    });
+
+    it('should set title section to two thirds when long (55) qualification title', async () => {
+      const mockQualificationWithLongTitle = {
+        group: QualificationType.NVQ,
+        id: 10,
+        title: 'Worker safety and so on and so forth everyday excellent!',
+      };
+
+      const { getByTestId } = await setup(null, mockQualificationWithLongTitle);
+
+      const titleSection = getByTestId('qualificationTitleSection');
+
+      expect(titleSection.getAttribute('class')).toContain('govuk-grid-column-two-thirds');
+    });
   });
 
   describe('prefilling data for existing qualification', () => {

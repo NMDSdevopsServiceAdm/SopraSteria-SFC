@@ -44,6 +44,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public notesOpen = false;
   public selectedQualification: Qualification;
   public qualificationType: string;
+  public qualificationTitle: string;
 
   constructor(
     private trainingService: TrainingService,
@@ -82,6 +83,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
             if (record) {
               this.record = record;
               this.qualificationType = this.convertQualificationType(record.qualification.group);
+              this.qualificationTitle = record.qualification.title;
 
               this.form.patchValue({
                 year: this.record.year,
@@ -102,6 +104,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     } else if (this.qualificationService.selectedQualification) {
       this.selectedQualification = this.qualificationService.selectedQualification;
       this.qualificationType = this.convertQualificationType(this.selectedQualification.group);
+      this.qualificationTitle = this.selectedQualification.title;
     } else {
       this.router.navigate([
         `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/add-qualification`,

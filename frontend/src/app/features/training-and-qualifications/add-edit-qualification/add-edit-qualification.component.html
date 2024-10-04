@@ -34,12 +34,19 @@
     </div>
   </div>
   <div class="govuk-grid-row govuk-!-margin-top-0 govuk-!-margin-bottom-3">
-    <div class="govuk-grid-column-one-half">
-      <p class="govuk-!-margin-top-0">{{ record?.qualification?.title ?? selectedQualification.title }}</p>
+    <div
+      data-testid="qualificationTitleSection"
+      [ngClass]="{
+        'govuk-grid-column-one-third': qualificationTitle?.length < 30,
+        'govuk-grid-column-one-half': qualificationTitle?.length >= 30 && qualificationTitle?.length < 50,
+        'govuk-grid-column-two-thirds': qualificationTitle?.length >= 50,
+      }"
+    >
+      <p class="govuk-!-margin-top-0">{{ qualificationTitle }}</p>
     </div>
-    <div *ngIf="selectedQualification" class="govuk-grid-column-one-half">
+    <div *ngIf="selectedQualification" class="govuk-grid-column-one-third">
       <p>
-        <a class="govuk-link govuk-!-margin-left-4" [routerLink]="['../']">Change</a>
+        <a class="govuk-link" [routerLink]="['../']">Change</a>
       </p>
     </div>
   </div>
