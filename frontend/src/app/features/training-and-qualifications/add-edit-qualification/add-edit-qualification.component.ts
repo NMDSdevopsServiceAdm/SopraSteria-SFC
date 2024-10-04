@@ -22,6 +22,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-add-edit-qualification',
   templateUrl: './add-edit-qualification.component.html',
+  styleUrls: ['./add-edit-qualification.component.scss'],
 })
 export class AddEditQualificationComponent implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
