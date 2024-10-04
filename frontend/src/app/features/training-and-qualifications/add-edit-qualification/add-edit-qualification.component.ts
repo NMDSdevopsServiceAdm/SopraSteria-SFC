@@ -103,7 +103,9 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       this.selectedQualification = this.qualificationService.selectedQualification;
       this.qualificationType = this.convertQualificationType(this.selectedQualification.group);
     } else {
-      this.router.navigate(['../']);
+      this.router.navigate([
+        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/add-qualification`,
+      ]);
     }
 
     this.setupFormErrorsMap();

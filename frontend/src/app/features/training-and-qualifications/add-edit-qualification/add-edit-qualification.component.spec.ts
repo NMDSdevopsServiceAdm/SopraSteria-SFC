@@ -91,7 +91,9 @@ describe('AddEditQualificationComponent', () => {
 
     component.ngOnInit();
 
-    expect(routerSpy).toHaveBeenCalled();
+    expect(routerSpy).toHaveBeenCalledWith([
+      `/workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}/add-qualification`,
+    ]);
   });
 
   describe('title', () => {
