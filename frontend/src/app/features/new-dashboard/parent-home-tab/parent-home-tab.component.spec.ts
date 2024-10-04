@@ -50,6 +50,7 @@ describe('ParentHomeTabComponent', () => {
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
     permissions = [],
+    canAccessCms = true,
   ) => {
     const { fixture, queryAllByText, getByText, queryByText, getByTestId, queryByTestId } = await render(
       ParentHomeTabComponent,
@@ -76,8 +77,8 @@ describe('ParentHomeTabComponent', () => {
             useValue: {
               snapshot: {
                 data: {
-                  articleList,
-                  articles,
+                  articleList: canAccessCms ? articleList : null,
+                  articles: canAccessCms ? articles : null,
                   workers: {
                     workersCreatedDate: [],
                     workerCount: 0,
@@ -303,6 +304,14 @@ describe('ParentHomeTabComponent', () => {
 
       expect(ascWdsNewsLink).toBeTruthy();
       expect(ascWdsNewsLink.getAttribute('href')).toContain(articleList.data[0].slug);
+    });
+
+    it('should not show an ASC-WDS news card when user cannot access CMS', async () => {
+      const { queryByText } = await setup(false, Establishment, true, 9, [], false);
+
+      const ascWdsNewsLink = queryByText('ASC-WDS news');
+
+      expect(ascWdsNewsLink).toBeFalsy();
     });
   });
 
