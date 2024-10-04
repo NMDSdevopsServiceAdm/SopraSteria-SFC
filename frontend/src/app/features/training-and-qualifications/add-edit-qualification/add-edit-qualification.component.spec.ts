@@ -230,13 +230,30 @@ describe('AddEditQualificationComponent', () => {
   });
 
   describe('setting data from qualification service', () => {
-    const mockQualification = { group: QualificationType.NVQ, id: 10, title: 'Bla Bla bla' };
+    const mockQualification = { group: QualificationType.NVQ, id: 10, title: 'Worker safety qualification' };
 
     it('should display qualification type and name when retrieved from service', async () => {
       const { getByText } = await setup(null, mockQualification);
 
       expect(getByText(mockQualification.title)).toBeTruthy();
-      expect(getByText('Type: ' + mockQualification.group)).toBeTruthy();
+    });
+
+    [
+      { qualificationType: QualificationType.NVQ, expectedConversion: 'NVQ' },
+      { qualificationType: QualificationType.Other, expectedConversion: 'other type of qualification' },
+      { qualificationType: QualificationType.Certificate, expectedConversion: 'certificate' },
+      { qualificationType: QualificationType.Degree, expectedConversion: 'degree' },
+      { qualificationType: QualificationType.Award, expectedConversion: 'award' },
+      { qualificationType: QualificationType.Diploma, expectedConversion: 'diploma' },
+      { qualificationType: QualificationType.Apprenticeship, expectedConversion: 'apprenticeship' },
+    ].forEach(({ qualificationType, expectedConversion }) => {
+      it(`should convert the qualification group to be lowercase unless it's an acronym: '${qualificationType}' to '${expectedConversion}'`, async () => {
+        const mockQualificationWithType = { group: qualificationType, id: 10, title: 'Worker safety qualification' };
+
+        const { getByText } = await setup(null, mockQualificationWithType);
+
+        expect(getByText('Type: ' + expectedConversion)).toBeTruthy();
+      });
     });
 
     it('should display change link', async () => {
@@ -326,10 +343,10 @@ describe('AddEditQualificationComponent', () => {
       return { component, workerService, fixture, getByText, queryByText, updateQualificationSpy, getByTestId };
     };
 
-    it('should display qualification group and title', async () => {
+    it('should display qualification title and lower case group', async () => {
       const { getByText } = await setupWithExistingQualification();
 
-      expect(getByText('Type: ' + mockQualificationData.qualification.group)).toBeTruthy();
+      expect(getByText('Type: degree')).toBeTruthy();
       expect(getByText(mockQualificationData.qualification.title)).toBeTruthy();
     });
 

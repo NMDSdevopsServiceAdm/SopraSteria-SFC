@@ -43,6 +43,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public intPattern = INT_PATTERN.toString();
   public notesOpen = false;
   public selectedQualification: Qualification;
+  public qualificationType: string;
 
   constructor(
     private trainingService: TrainingService,
@@ -80,6 +81,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
           (record) => {
             if (record) {
               this.record = record;
+              this.qualificationType = this.convertQualificationType(record.qualification.group);
 
               this.form.patchValue({
                 year: this.record.year,
@@ -99,6 +101,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       );
     } else if (this.qualificationService.selectedQualification) {
       this.selectedQualification = this.qualificationService.selectedQualification;
+      this.qualificationType = this.convertQualificationType(this.selectedQualification.group);
     } else {
       this.router.navigate(['../']);
     }
@@ -204,6 +207,14 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
           this.workerService.alert = { type: 'success', message: 'Qualification record added' };
         }
       });
+  }
+
+  private convertQualificationType(qualificationType: string): string {
+    if (qualificationType === qualificationType.toUpperCase()) {
+      return qualificationType;
+    }
+
+    return qualificationType.charAt(0).toLowerCase() + qualificationType.slice(1);
   }
 
   private onError(error): void {
