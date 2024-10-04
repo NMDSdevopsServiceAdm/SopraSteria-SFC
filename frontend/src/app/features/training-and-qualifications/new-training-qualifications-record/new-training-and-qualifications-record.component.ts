@@ -150,6 +150,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   private setTraining(): void {
     this.setMandatoryTraining();
+    this.setMissingMandatoryTraining(this.mandatoryTraining);
     this.setNonMandatoryTraining();
 
     this.populateActionsList(this.mandatoryTraining, 'Mandatory');
@@ -164,7 +165,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   private setMandatoryTraining() {
     this.mandatoryTraining = this.trainingRecords.mandatory;
     this.sortTrainingAlphabetically(this.mandatoryTraining);
-    this.createBlankMissingMandatoryTrainings(this.mandatoryTraining);
     this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
     this.getStatus(this.mandatoryTraining);
   }
@@ -175,7 +175,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.getStatus(this.nonMandatoryTraining);
   }
 
-  private createBlankMissingMandatoryTrainings(mandatoryTraining: TrainingRecordCategory[]): void {
+  private setMissingMandatoryTraining(mandatoryTraining: TrainingRecordCategory[]): void {
     const trainingCategoryIds = this.getMandatoryTrainingIds(mandatoryTraining);
     const missingMandatoryTrainings = this.filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds);
     this.missingMandatoryTraining = missingMandatoryTrainings.map((missingMandatoryTraining) => {
