@@ -410,6 +410,11 @@ const config = convict({
       default: 'sfc-dev-worker-certificates',
       env: 'TRAINING_CERTIFICATES_S3_BUCKET_NAME',
     },
+    useAssumeRole: {
+      boolean: String,
+      default: false,
+      env: 'USE_ASSUME_ROLE',
+    },
     roleArn: {
       doc: 'IAM Role Arn for gaining access to the bucket',
       format: String,
