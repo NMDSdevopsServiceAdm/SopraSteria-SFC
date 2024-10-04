@@ -277,7 +277,7 @@ describe('NewTrainingComponent', async () => {
       expect(mandatoryTrainingMissingLink).toBeTruthy();
     });
 
-    it('should display a no mandatory training for job role message when mandatory training is missing', async () => {
+    it('should display a no mandatory training records added for worker message when mandatory training is missing', async () => {
       const { component, fixture } = await setup();
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
