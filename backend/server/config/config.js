@@ -414,6 +414,7 @@ const config = convict({
       doc: 'IAM Role Arn for gaining access to the bucket',
       format: String,
       default: '',
+      env: 'APP_RUNNER_INSTANCE_TRAINING_CERTIFICATES_S3_BUCKET_ROLE',
     },
     uploadSignedUrlExpire: {
       doc: 'The duration in seconds for the upload signed URL to expire',

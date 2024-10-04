@@ -38,6 +38,8 @@
   "private": true,
   "dependencies": {
     "@aws-sdk/client-s3": "^3.650.0",
+    "@aws-sdk/client-sts": "^3.664.0",
+    "@aws-sdk/credential-providers": "^3.664.0",
     "@aws-sdk/s3-request-presigner": "^3.650.0",
     "@babel/runtime": "^7.21.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
