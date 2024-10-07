@@ -15,26 +15,26 @@ const iamRoleArn = String(config.get('workerCertificate.roleArn'));
 const useAssumeRole = String(config.get('workerCertificate.useAssumeRole'));
 
 const getS3Client = async () => {
-  const clientConfigs = {
-    region,
-    signatureVersion: 'v4',
-  };
-  if (useAssumeRole && iamRoleArn) {
-    // assume role and add credentials to clientConfigs
-    const command = new AssumeRoleCommand({
-      RoleArn: iamRoleArn,
-      DurationSeconds: 900,
-    });
-    const stsClient = new STSClient();
-    const response = await stsClient.send(command);
-    clientConfigs['credentials'] = {
-      accessKeyId: response.Credentials.AccessKeyId,
-      secretAccessKey: response.Credentials.SecretAccessKey,
-      sessionToken: response.Credentials.SessionToken,
-    };
+  // const clientConfigs = {
+  //   region,
+  //   signatureVersion: 'v4',
+  // };
+  // if (useAssumeRole && iamRoleArn) {
+  //   // assume role and add credentials to clientConfigs
+  //   const command = new AssumeRoleCommand({
+  //     RoleArn: iamRoleArn,
+  //     DurationSeconds: 900,
+  //   });
+  //   const stsClient = new STSClient();
+  //   const response = await stsClient.send(command);
+  //   clientConfigs['credentials'] = {
+  //     accessKeyId: response.Credentials.AccessKeyId,
+  //     secretAccessKey: response.Credentials.SecretAccessKey,
+  //     sessionToken: response.Credentials.SessionToken,
+  //   };
 
-    return new S3Client(clientConfigs);
-  }
+  //   return new S3Client(clientConfigs);
+  // }
 
   const S3clientWithContainerRole = new S3Client({
     credentials: fromContainerMetadata({
@@ -48,7 +48,7 @@ const getS3Client = async () => {
   return S3clientWithContainerRole;
 };
 
-const s3Client = getS3Client();
+// const s3Client = getS3Client();
 
 async function getSignedUrlForUpload({ bucket, key, options }) {
   const s3Client = await getS3Client();
