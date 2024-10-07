@@ -32,13 +32,13 @@ const getS3Client = () => {
 
 const s3Client = getS3Client();
 
-async function getSignedUrlForUpload({ bucket, key, options }) {
+const getSignedUrlForUpload = ({ bucket, key, options }) => {
   const putCommand = new PutObjectCommand({
     Bucket: bucket,
     Key: key,
   });
   return getSignedUrl(s3Client, putCommand, options);
-}
+};
 
 const getSignedUrlForDownload = ({ bucket, key, options }) => {
   const getCommand = new GetObjectCommand({
@@ -48,7 +48,7 @@ const getSignedUrlForDownload = ({ bucket, key, options }) => {
   return getSignedUrl(s3Client, getCommand, options);
 };
 
-async function deleteCertificatesFromS3({ bucket, objects }) {
+const deleteCertificatesFromS3 = async ({ bucket, objects }) => {
   const deleteCommand = new DeleteObjectsCommand({
     Bucket: bucket,
     Delete: { Objects: objects },
@@ -60,15 +60,15 @@ async function deleteCertificatesFromS3({ bucket, objects }) {
   } catch (err) {
     console.error(err);
   }
-}
+};
 
-async function verifyEtag(bucket, key, etag) {
+const verifyEtag = async (bucket, key, etag) => {
   const headCommand = new HeadObjectCommand({ Bucket: bucket, Key: key });
   const response = await s3Client.send(headCommand);
   const etagFromS3 = response.ETag;
 
   return etagFromS3 === etag;
-}
+};
 
 module.exports = {
   getS3Client,
