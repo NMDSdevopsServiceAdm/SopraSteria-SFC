@@ -6,37 +6,21 @@ const {
   DeleteObjectsCommand,
 } = require('@aws-sdk/client-s3');
 const { getSignedUrl } = require('@aws-sdk/s3-request-presigner');
-const { AssumeRoleCommand, STSClient } = require('@aws-sdk/client-sts');
 const { fromContainerMetadata } = require('@aws-sdk/credential-providers');
 
 const config = require('../../../config/config');
 const region = String(config.get('workerCertificate.region'));
-const iamRoleArn = String(config.get('workerCertificate.roleArn'));
-const useAssumeRole = String(config.get('workerCertificate.useAssumeRole'));
+const env = String(config.get('env'));
 
-const getS3Client = async () => {
-  // const clientConfigs = {
-  //   region,
-  //   signatureVersion: 'v4',
-  // };
-  // if (useAssumeRole && iamRoleArn) {
-  //   // assume role and add credentials to clientConfigs
-  //   const command = new AssumeRoleCommand({
-  //     RoleArn: iamRoleArn,
-  //     DurationSeconds: 900,
-  //   });
-  //   const stsClient = new STSClient();
-  //   const response = await stsClient.send(command);
-  //   clientConfigs['credentials'] = {
-  //     accessKeyId: response.Credentials.AccessKeyId,
-  //     secretAccessKey: response.Credentials.SecretAccessKey,
-  //     sessionToken: response.Credentials.SessionToken,
-  //   };
+const getS3Client = () => {
+  if (env === 'localhost') {
+    return new S3Client({
+      region,
+      signatureVersion: 'v4',
+    });
+  }
 
-  //   return new S3Client(clientConfigs);
-  // }
-
-  const S3clientWithContainerRole = new S3Client({
+  return new S3Client({
     credentials: fromContainerMetadata({
       timeout: 1000,
       maxRetries: 0,
@@ -44,14 +28,11 @@ const getS3Client = async () => {
     region,
     signatureVersion: 'v4',
   });
-
-  return S3clientWithContainerRole;
 };
 
-// const s3Client = getS3Client();
+const s3Client = getS3Client();
 
 async function getSignedUrlForUpload({ bucket, key, options }) {
-  const s3Client = await getS3Client();
   const putCommand = new PutObjectCommand({
     Bucket: bucket,
     Key: key,
@@ -59,8 +40,7 @@ async function getSignedUrlForUpload({ bucket, key, options }) {
   return getSignedUrl(s3Client, putCommand, options);
 }
 
-const getSignedUrlForDownload = async ({ bucket, key, options }) => {
-  const s3Client = await getS3Client();
+const getSignedUrlForDownload = ({ bucket, key, options }) => {
   const getCommand = new GetObjectCommand({
     Bucket: bucket,
     Key: key,
@@ -69,7 +49,6 @@ const getSignedUrlForDownload = async ({ bucket, key, options }) => {
 };
 
 async function deleteCertificatesFromS3({ bucket, objects }) {
-  const s3Client = await getS3Client();
   const deleteCommand = new DeleteObjectsCommand({
     Bucket: bucket,
     Delete: { Objects: objects },
@@ -84,7 +63,6 @@ async function deleteCertificatesFromS3({ bucket, objects }) {
 }
 
 async function verifyEtag(bucket, key, etag) {
-  const s3Client = await getS3Client();
   const headCommand = new HeadObjectCommand({ Bucket: bucket, Key: key });
   const response = await s3Client.send(headCommand);
   const etagFromS3 = response.ETag;

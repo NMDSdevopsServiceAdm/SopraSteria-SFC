@@ -402,24 +402,13 @@ const config = convict({
       doc: 'AWS region override for worker certificate s3 bucket',
       format: String,
       default: 'eu-west-2',
-      env: 'TRAINING_CERTIFICATES_S3_BUCKET_REGION',
+      env: 'TRAIN_AND_QUALS_CERTS_S3_BUCKET_REGION',
     },
     bucketname: {
       doc: 'Bucket used to upload worker certificate',
       format: String,
       default: 'sfc-dev-worker-certificates',
-      env: 'TRAINING_CERTIFICATES_S3_BUCKET_NAME',
-    },
-    useAssumeRole: {
-      boolean: String,
-      default: false,
-      env: 'USE_ASSUME_ROLE',
-    },
-    roleArn: {
-      doc: 'IAM Role Arn for gaining access to the bucket',
-      format: String,
-      default: '',
-      env: 'APP_RUNNER_INSTANCE_TRAINING_CERTIFICATES_S3_BUCKET_ROLE',
+      env: 'TRAIN_AND_QUALS_CERTS_S3_BUCKET_NAME',
     },
     uploadSignedUrlExpire: {
       doc: 'The duration in seconds for the upload signed URL to expire',
