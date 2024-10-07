@@ -14,6 +14,7 @@ export class NewTrainingComponent implements OnChanges {
   @Input() public trainingType: string;
   @Input() public setReturnRoute: () => void;
   @Input() public canEditWorker: boolean;
+  @Input() public missingMandatoryTraining = false;
   @Input() public certificateErrors: Record<string, string> = {};
   @Output() public downloadFile = new EventEmitter<TrainingRecord>();
   @Output() public uploadFile = new EventEmitter<CertificateUpload>();

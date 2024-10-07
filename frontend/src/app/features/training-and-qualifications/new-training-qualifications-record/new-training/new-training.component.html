@@ -125,14 +125,26 @@
       <ng-container *ngIf="isMandatoryTraining; else notMandatoryTraining">
         <div class="govuk-!-margin-bottom-8">
           <h1 class="govuk-heading-l govuk-!-font-size-27 govuk-!-margin-bottom-3">Mandatory training</h1>
-          <p class="govuk-body">No mandatory training has been added for their job role yet.</p>
-          <a
-            *ngIf="canEditWorker"
-            class="govuk-link--no-visited-state govuk-!-font-size-19"
-            [attr.data-testid]="'no-mandatory-training-link'"
-            [routerLink]="['/workplace', workplaceUid, 'add-and-manage-mandatory-training']"
-            >Add and manage mandatory training categories</a
-          >
+          <ng-container *ngIf="missingMandatoryTraining; else notMissingTraining">
+            <p class="govuk-body">No mandatory training records have been added for this person yet.</p>
+            <a
+              *ngIf="canEditWorker"
+              class="govuk-link--no-visited-state govuk-!-font-size-19"
+              [attr.data-testid]="'mandatory-training-missing-link'"
+              [routerLink]="['../add-training']"
+              >Add a training record</a
+            >
+          </ng-container>
+          <ng-template #notMissingTraining>
+            <p class="govuk-body">No mandatory training has been added for this job role yet.</p>
+            <a
+              *ngIf="canEditWorker"
+              class="govuk-link--no-visited-state govuk-!-font-size-19"
+              [attr.data-testid]="'no-mandatory-training-link'"
+              [routerLink]="['/workplace', workplaceUid, 'add-and-manage-mandatory-training']"
+              >Add and manage mandatory training categories</a
+            >
+          </ng-template>
         </div>
       </ng-container>
       <ng-template #notMandatoryTraining>

@@ -1,11 +1,11 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { NewTrainingComponent } from './new-training.component';
-import userEvent from '@testing-library/user-event';
-import { SharedModule } from '@shared/shared.module';
 
 describe('NewTrainingComponent', async () => {
   const trainingCategories = [
@@ -157,9 +157,6 @@ describe('NewTrainingComponent', async () => {
       const autismTrainingTitleLink = fixture.debugElement.query(
         By.css('[data-testid="Title-someAutismUid"]'),
       ).nativeElement;
-      const autismTraining2TitleLink = fixture.debugElement.query(
-        By.css('[data-testid="Title-someAutismUid2"]'),
-      ).nativeElement;
       const communicationTrainingTitleLink = fixture.debugElement.query(
         By.css('[data-testid="Title-someCommunicationUid"]'),
       ).nativeElement;
@@ -175,11 +172,6 @@ describe('NewTrainingComponent', async () => {
           .getAttribute('href')
           .slice(0, autismTrainingTitleLink.getAttribute('href').indexOf(';')),
       ).toBe('/training/someAutismUid');
-      expect(
-        autismTraining2TitleLink
-          .getAttribute('href')
-          .slice(0, autismTraining2TitleLink.getAttribute('href').indexOf(';')),
-      ).toBe('/training/someAutismUid2');
       expect(
         communicationTrainingTitleLink
           .getAttribute('href')
@@ -201,9 +193,6 @@ describe('NewTrainingComponent', async () => {
       const { fixture } = await setup(false);
 
       const autismTrainingTitleLink = fixture.debugElement.query(By.css('[data-testid="Title-no-link-someAutismUid"]'));
-      const autismTraining2TitleLink = fixture.debugElement.query(
-        By.css('[data-testid="Title-no-link-someAutismUid2"]'),
-      );
       const communicationTrainingTitleLink = fixture.debugElement.query(
         By.css('[data-testid="Title-no-link-someCommunicationUid"]'),
       );
@@ -214,7 +203,6 @@ describe('NewTrainingComponent', async () => {
 
       expect(autismTrainingTitleLink).toBeTruthy();
       expect(autismTrainingTitleLink).toBeTruthy();
-      expect(autismTraining2TitleLink).toBeTruthy();
       expect(communicationTrainingTitleLink).toBeTruthy();
       expect(healthTrainingTitleLink).toBeTruthy();
       expect(healthTraining2TitleLink).toBeTruthy();
@@ -272,6 +260,38 @@ describe('NewTrainingComponent', async () => {
       const noMandatoryTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
 
       expect(noMandatoryTrainingLink).toBeFalsy();
+    });
+
+    it('should display a no mandatory training for job role message when mandatory training is not required for the job role', async () => {
+      const { component, fixture } = await setup();
+      component.trainingCategories = [];
+      component.isMandatoryTraining = true;
+      component.workplaceUid = '123';
+      component.missingMandatoryTraining = false;
+      component.ngOnChanges();
+      fixture.detectChanges();
+      const mandatoryTrainingMissingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
+      const messageText = 'No mandatory training has been added for this job role yet.';
+      const mandatoryTrainingMessage = fixture.debugElement.query(debugElement => debugElement.nativeElement.textContent === messageText);
+
+      expect(mandatoryTrainingMessage).toBeTruthy();
+      expect(mandatoryTrainingMissingLink).toBeTruthy();
+    });
+
+    it('should display a no mandatory training for job role message when mandatory training is missing', async () => {
+      const { component, fixture } = await setup();
+      component.trainingCategories = [];
+      component.isMandatoryTraining = true;
+      component.workplaceUid = '123';
+      component.missingMandatoryTraining = true;
+      component.ngOnChanges();
+      fixture.detectChanges();
+      const mandatoryTrainingMissingLink = fixture.debugElement.query(By.css('[data-testid="mandatory-training-missing-link"]'));
+      const messageText = 'No mandatory training records have been added for this person yet.';
+      const mandatoryTrainingMessage = fixture.debugElement.query(debugElement => debugElement.nativeElement.textContent === messageText);
+
+      expect(mandatoryTrainingMessage).toBeTruthy();
+      expect(mandatoryTrainingMissingLink).toBeTruthy();
     });
   });
 

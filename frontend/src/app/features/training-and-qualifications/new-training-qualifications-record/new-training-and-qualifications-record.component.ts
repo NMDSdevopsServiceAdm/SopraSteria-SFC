@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { CertificateUpload, TrainingRecord, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
+import { CertificateUpload, TrainingRecord, TrainingRecordCategory } from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -16,6 +16,7 @@ import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
+
 import { CustomValidators } from '../../../shared/validators/custom-form-validators';
 
 @Component({
@@ -37,6 +38,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public nonMandatoryTrainingCount: number;
   public nonMandatoryTraining: TrainingRecordCategory[];
   public mandatoryTraining: TrainingRecordCategory[];
+  public missingMandatoryTraining: TrainingRecordCategory[] = [];
   public qualificationsByGroup: QualificationsByGroup;
   public lastUpdatedDate: Date;
   public fragmentsObject: any = {
@@ -47,6 +49,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   };
   public pdfCount: number;
   public certificateErrors: Record<string, string> = {}; // {categoryName: errorMessage}
+  private trainingRecords: any;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -70,9 +73,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.breadcrumbService.show(this.getBreadcrumbsJourney());
     this.setUpTabSubscription();
     this.updateTrainingExpiresSoonDate();
-    const trainingRecords: TrainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
-
-    this.setTraining(trainingRecords);
+    this.setTraining();
     this.setUpAlertSubscription();
     this.setReturnRoute();
     this.getPdfCount();
@@ -109,6 +110,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
+    this.trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
     this.trainingService.trainingOrQualificationPreviouslySelected = null;
@@ -146,30 +148,38 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
   }
 
-  private setTraining(trainingRecords: TrainingRecords): void {
-    this.mandatoryTraining = this.createBlankMissingMandatoryTrainings(trainingRecords.mandatory);
-    this.sortTrainingAlphabetically(this.mandatoryTraining);
-    this.nonMandatoryTraining = this.sortTrainingAlphabetically(trainingRecords.nonMandatory);
-
-    this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
-    this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
-
-    this.getStatus(this.mandatoryTraining);
-    this.getStatus(this.nonMandatoryTraining);
+  private setTraining(): void {
+    this.setMandatoryTraining();
+    this.setMissingMandatoryTraining(this.mandatoryTraining);
+    this.setNonMandatoryTraining();
 
     this.populateActionsList(this.mandatoryTraining, 'Mandatory');
+    this.populateActionsList(this.missingMandatoryTraining, 'Mandatory');
     this.populateActionsList(this.nonMandatoryTraining, 'Non-mandatory');
 
     this.sortActionsList();
 
-    this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, trainingRecords?.lastUpdated]);
+    this.getLastUpdatedDate([this.qualificationsByGroup?.lastUpdated, this.trainingRecords?.lastUpdated]);
   }
 
-  private createBlankMissingMandatoryTrainings(mandatoryTraining: TrainingRecordCategory[]) {
+  private setMandatoryTraining() {
+    this.mandatoryTraining = this.trainingRecords.mandatory;
+    this.sortTrainingAlphabetically(this.mandatoryTraining);
+    this.mandatoryTrainingCount = this.getTrainingCount(this.mandatoryTraining);
+    this.getStatus(this.mandatoryTraining);
+  }
+
+  private setNonMandatoryTraining() {
+    this.nonMandatoryTraining = this.sortTrainingAlphabetically(this.trainingRecords.nonMandatory);
+    this.nonMandatoryTrainingCount = this.getTrainingCount(this.nonMandatoryTraining);
+    this.getStatus(this.nonMandatoryTraining);
+  }
+
+  private setMissingMandatoryTraining(mandatoryTraining: TrainingRecordCategory[]): void {
     const trainingCategoryIds = this.getMandatoryTrainingIds(mandatoryTraining);
     const missingMandatoryTrainings = this.filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds);
-    missingMandatoryTrainings.forEach((missingMandatoryTraining) => {
-      mandatoryTraining.push({
+    this.missingMandatoryTraining = missingMandatoryTrainings.map((missingMandatoryTraining) => {
+      return {
         category: missingMandatoryTraining.category,
         id: missingMandatoryTraining.trainingCategoryId,
         trainingRecords: [
@@ -186,11 +196,11 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
             updatedBy: null,
             expires: null,
             missing: true,
+            trainingStatus: 2,
           },
         ],
-      });
+      };
     });
-    return mandatoryTraining;
   }
 
   private filterTrainingCategoriesWhereTrainingExists(trainingCategoryIds: Array<number>): mandatoryTraining[] {
@@ -381,7 +391,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     const updatedData: TrainingAndQualificationRecords = await this.workerService
       .getAllTrainingAndQualificationRecords(this.workplace.uid, this.worker.uid)
       .toPromise();
-    const updatedTrainingData = updatedData.training;
-    this.setTraining(updatedTrainingData);
+    this.trainingRecords = updatedData.training;
+    this.setTraining();
   }
 }
