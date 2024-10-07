@@ -206,7 +206,6 @@
     </li>
   </ul>
 </div>
-
 <div class="govuk-grid-column-full">
   <app-new-training
     *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.mandatoryTraining"
@@ -215,6 +214,7 @@
     [isMandatoryTraining]="true"
     [canEditWorker]="canEditWorker"
     [setReturnRoute]="setReturnRoute"
+    [missingMandatoryTraining]="missingMandatoryTraining.length > 0"
     (downloadFile)="downloadTrainingCertificate($event)"
     (uploadFile)="uploadTrainingCertificate($event)"
     [certificateErrors]="certificateErrors"
