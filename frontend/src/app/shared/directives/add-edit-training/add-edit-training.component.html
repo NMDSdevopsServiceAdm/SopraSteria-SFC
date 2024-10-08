@@ -182,7 +182,8 @@
         </div>
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <div class="govuk-form-group govuk-!-margin-bottom-4" data-testid="uploadCertificate">
+            <app-select-upload-certificate [filesToUpload]="filesToUpload" (selectFiles)="onSelectFiles($event)" [certificateErrors]="certificateErrors" />
+            <!-- <div class="govuk-form-group govuk-!-margin-bottom-4" data-testid="uploadCertificate">
               <h2 class="govuk-!-margin-top-0 govuk-!-margin-bottom-2">Certificates</h2>
               <fieldset class="govuk-fieldset" aria-describedby="uploadCertificate-hint" role="group">
                 <label class="govuk-label govuk-!-font-weight-bold" for="uploadCertificate">
@@ -216,7 +217,7 @@
                   ></app-validation-error-message>
                 </div>
               </fieldset>
-            </div>
+            </div> -->
             <app-certifications-table
               *ngIf="trainingCertificates?.length > 0 || filesToUpload?.length > 0"
               data-testid="trainingCertificatesTable"
