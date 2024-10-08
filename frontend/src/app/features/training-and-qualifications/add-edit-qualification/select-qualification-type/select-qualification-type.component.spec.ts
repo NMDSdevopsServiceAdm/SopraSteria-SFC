@@ -1,6 +1,3 @@
-import { BehaviorSubject } from 'rxjs';
-import sinon from 'sinon';
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -16,11 +13,17 @@ import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
 import { mockAvailableQualifications, workerBuilder } from '@core/test-utils/MockWorkerService';
-import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import {
+  GroupedRadioButtonAccordionComponent,
+} from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import {
+  RadioButtonAccordionComponent,
+} from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { BehaviorSubject } from 'rxjs';
+import sinon from 'sinon';
 
 import { SelectQualificationTypeComponent } from './select-qualification-type.component';
 
@@ -215,13 +218,19 @@ describe('SelectQualificationTypeComponent', () => {
 
     describe('cancel', () => {
       it('should return to training and qualification page when cancel link is clicked', async () => {
-        const { getByText, routerSpy } = await setup();
+        const { component, getByText, routerSpy } = await setup();
 
         const cancelLink = getByText('Cancel');
 
         userEvent.click(cancelLink);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishmentUid,
+          'training-and-qualifications-record',
+          component.workerUid,
+          'training',
+        ]);
       });
 
       it('should clear any selected qualification on cancel', async () => {

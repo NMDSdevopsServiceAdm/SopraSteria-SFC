@@ -19,7 +19,6 @@ import { HealthAndCareVisaComponent } from '@features/workers/health-and-care-vi
 import { SharedModule } from '@shared/shared.module';
 
 import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
-import { QualificationFormComponent } from '../training-and-qualifications/add-edit-qualification/qualification-form/qualification-form.component';
 import { AddEditTrainingComponent } from '../training-and-qualifications/add-edit-training/add-edit-training.component';
 import { DeleteRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
 import { NewQualificationsComponent } from '../training-and-qualifications/new-training-qualifications-record/new-qualifications/new-qualifications.component';
@@ -103,7 +102,6 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     NursingSpecialismComponent,
     OtherQualificationsComponent,
     OtherQualificationsLevelComponent,
-    QualificationFormComponent,
     RecruitedFromComponent,
     SalaryComponent,
     SocialCareQualificationComponent,

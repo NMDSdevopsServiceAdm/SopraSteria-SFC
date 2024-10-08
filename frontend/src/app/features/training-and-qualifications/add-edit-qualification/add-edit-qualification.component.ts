@@ -1,12 +1,19 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { INT_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { QualificationRequest, QualificationResponse, QualificationType } from '@core/model/qualification.model';
+import {
+  Qualification,
+  QualificationRequest,
+  QualificationResponse,
+  QualificationType,
+} from '@core/model/qualification.model';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { QualificationService } from '@core/services/qualification.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
@@ -15,12 +22,12 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-add-edit-qualification',
   templateUrl: './add-edit-qualification.component.html',
+  styleUrls: ['./add-edit-qualification.component.scss'],
 })
 export class AddEditQualificationComponent implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public qualificationTypes: QualificationType[] = [];
-  public qualifications: any;
   public qualificationId: string;
   public buttonText: string;
   public record: QualificationResponse;
@@ -32,6 +39,13 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   private subscriptions: Subscription = new Subscription();
   public previousUrl: Array<string>;
+  public notesValue = '';
+  public remainingCharacterCount: number;
+  public intPattern = INT_PATTERN.toString();
+  public notesOpen = false;
+  public selectedQualification: Qualification;
+  public qualificationType: string;
+  public qualificationTitle: string;
 
   constructor(
     private trainingService: TrainingService,
@@ -40,7 +54,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,
-    protected backLinkService: BackLinkService,
+    private backLinkService: BackLinkService,
+    private qualificationService: QualificationService,
   ) {
     this.yearValidators = [Validators.max(dayjs().year()), Validators.min(dayjs().subtract(100, 'years').year())];
   }
@@ -50,7 +65,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.trainingService.trainingOrQualificationPreviouslySelected = 'qualification';
 
     this.form = this.formBuilder.group({
-      type: [null, Validators.required],
+      year: [null, this.yearValidators],
+      notes: [null, Validators.maxLength(this.notesMaxLength)],
     });
 
     this.worker = this.workerService.worker;
@@ -58,26 +74,8 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.qualificationId = this.route.snapshot.params.qualificationId;
 
     this.buttonText = this.qualificationId ? 'Save and return' : 'Save record';
-
-    Object.keys(QualificationType).forEach((key) => {
-      this.qualificationTypes[key] = QualificationType[key];
-      this.form.addControl(key, this.createQualificationGroup());
-    });
-
-    this.subscriptions.add(
-      this.workerService
-        .getAvailableQualifications(this.workplace.uid, this.worker.uid, QualificationType.Award)
-        .subscribe(
-          (qualifications) => {
-            if (qualifications) {
-              this.qualifications = qualifications;
-            }
-          },
-          (error) => {
-            console.error(error.error);
-          },
-        ),
-    );
+    this.remainingCharacterCount = this.notesMaxLength;
+    this.intPattern = this.intPattern.substring(1, this.intPattern.length - 1);
 
     if (this.qualificationId) {
       this.subscriptions.add(
@@ -85,19 +83,18 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
           (record) => {
             if (record) {
               this.record = record;
-              const typeKey = Object.keys(this.qualificationTypes).find(
-                (key) => this.qualificationTypes[key] === this.record.qualification.group,
-              );
+              this.qualificationType = this.convertQualificationType(record.qualification.group);
+              this.qualificationTitle = record.qualification.title;
 
               this.form.patchValue({
-                type: record.qualification.group,
-              });
-
-              this.form.get(typeKey).patchValue({
-                qualification: this.record.qualification.id,
                 year: this.record.year,
                 notes: this.record.notes,
               });
+
+              if (this.record.notes?.length > 0) {
+                this.notesOpen = true;
+                this.remainingCharacterCount = this.notesMaxLength - this.record.notes.length;
+              }
             }
           },
           (error) => {
@@ -105,106 +102,55 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
           },
         ),
       );
+    } else if (this.qualificationService.selectedQualification) {
+      this.selectedQualification = this.qualificationService.selectedQualification;
+      this.qualificationType = this.convertQualificationType(this.selectedQualification.group);
+      this.qualificationTitle = this.selectedQualification.title;
+    } else {
+      this.router.navigate([
+        `/workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}/add-qualification`,
+      ]);
     }
 
-    this.form.get('type').valueChanges.subscribe((value) => {
-      this.submitted = false;
-      Object.keys(QualificationType).forEach((key) => {
-        const group = this.form.get(key) as UntypedFormGroup;
-        const { qualification, year, notes } = group.controls;
-
-        qualification.clearValidators();
-        year.clearValidators();
-        notes.clearValidators();
-
-        if (value === QualificationType[key]) {
-          qualification.setValidators([Validators.required]);
-          year.setValidators(this.yearValidators);
-          notes.setValidators([Validators.maxLength(this.notesMaxLength)]);
-        }
-
-        qualification.updateValueAndValidity();
-        year.updateValueAndValidity();
-        notes.updateValueAndValidity();
-      });
-    });
-
     this.setupFormErrorsMap();
-
     this.setBackLink();
   }
 
   protected navigateToPreviousPage(): void {
+    this.qualificationService.clearSelectedQualification();
     this.router.navigate(this.previousUrl);
-  }
-
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
   }
 
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
-        item: 'type',
+        item: 'year',
         type: [
           {
-            name: 'required',
-            message: 'Select the type of qualification',
+            name: 'min',
+            message: 'Year achieved must be this year or no more than 100 years ago',
+          },
+          {
+            name: 'max',
+            message: 'Year achieved must be this year or no more than 100 years ago',
+          },
+        ],
+      },
+      {
+        item: 'notes',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Notes must be ${this.notesMaxLength} characters or fewer`,
           },
         ],
       },
     ];
-
-    Object.keys(QualificationType).forEach((key) => {
-      this.formErrorsMap.push(
-        ...[
-          {
-            item: `${key}.qualification`,
-            type: [
-              {
-                name: 'required',
-                message: 'Select the qualification name',
-              },
-            ],
-          },
-          {
-            item: `${key}.year`,
-            type: [
-              {
-                name: 'min',
-                message: 'Year achieved must be this year or no more than 100 years ago',
-              },
-              {
-                name: 'max',
-                message: 'Year achieved must be this year or no more than 100 years ago',
-              },
-            ],
-          },
-          {
-            item: `${key}.notes`,
-            type: [
-              {
-                name: 'maxlength',
-                message: `Notes must be ${this.notesMaxLength} characters or fewer`,
-              },
-            ],
-          },
-        ],
-      );
-    });
   }
 
-  private createQualificationGroup(): UntypedFormGroup {
-    return this.formBuilder.group(
-      {
-        qualification: null,
-        year: null,
-        notes: null,
-      },
-      {
-        updateOn: 'submit',
-      },
-    );
+  public handleOnInput(event: Event): void {
+    this.notesValue = (<HTMLInputElement>event.target).value;
+    this.remainingCharacterCount = this.notesMaxLength - this.notesValue.length;
   }
 
   public getFirstErrorMessage(item: string): string {
@@ -218,19 +164,21 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     this.addErrorLinkFunctionality();
 
     if (!this.form.valid) {
+      if (this.form.controls.notes?.errors?.maxlength) {
+        this.notesOpen = true;
+      }
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
 
-    const { type } = this.form.value;
-    const typeKey = Object.keys(this.qualificationTypes).find((key) => this.qualificationTypes[key] === type);
-    const group = this.form.get(typeKey) as UntypedFormGroup;
-    const { qualification, year, notes } = group.value;
+    this.qualificationService.clearSelectedQualification();
+
+    const { year, notes } = this.form.value;
 
     const record: QualificationRequest = {
-      type,
+      type: (this.record ? this.record.qualification.group : this.selectedQualification.group) as QualificationType,
       qualification: {
-        id: parseInt(qualification, 10),
+        id: this.record ? this.record.qualification.id : this.selectedQualification.id,
       },
       year,
       notes,
@@ -267,8 +215,20 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       });
   }
 
+  private convertQualificationType(qualificationType: string): string {
+    if (qualificationType === qualificationType.toUpperCase()) {
+      return qualificationType;
+    }
+
+    return qualificationType.charAt(0).toLowerCase() + qualificationType.slice(1);
+  }
+
   private onError(error): void {
     console.log(error);
+  }
+
+  public toggleNotesOpen(): void {
+    this.notesOpen = !this.notesOpen;
   }
 
   protected navigateToDeleteQualificationRecord(): void {
@@ -289,5 +249,9 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   protected setBackLink(): void {
     this.backLinkService.showBackLink();
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
