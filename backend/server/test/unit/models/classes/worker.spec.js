@@ -473,7 +473,7 @@ describe('Worker Class', () => {
       expect(s3DeleteCertificateSpy.callCount).to.equal(0);
     });
 
-    it('should call deleteCertificate on DB model with uids returned from getAllTrainingCertificateRecordsForWorker', async () => {
+    it('should call deleteCertificate on DB model with uids returned from getAllTrainingCertificateRecordsForWorker and pass in transaction', async () => {
       const trainingCertificates = trainingCertificatesReturnedFromDb();
 
       const getAllTrainingCertificateRecordsForWorkerSpy = sinon
@@ -482,14 +482,17 @@ describe('Worker Class', () => {
 
       const dbDeleteCertificateSpy = sinon.stub(models.trainingCertificates, 'deleteCertificate');
       sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3');
+      const transaction = await models.sequelize.transaction();
 
-      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker();
+      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker(transaction);
 
       expect(dbDeleteCertificateSpy.args[0][0]).to.deep.equal([
         trainingCertificates[0].uid,
         trainingCertificates[1].uid,
         trainingCertificates[2].uid,
       ]);
+
+      expect(dbDeleteCertificateSpy.args[0][1]).to.deep.equal(transaction);
     });
 
     it('should call deleteCertificatesFromS3 with keys returned from getAllTrainingCertificateRecordsForWorker', async () => {
@@ -501,8 +504,9 @@ describe('Worker Class', () => {
 
       sinon.stub(models.trainingCertificates, 'deleteCertificate');
       const s3DeleteCertificateSpy = sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3');
+      const transaction = await models.sequelize.transaction();
 
-      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker();
+      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker(transaction);
 
       expect(s3DeleteCertificateSpy.args[0][0]).to.deep.equal([
         { Key: trainingCertificates[0].key },

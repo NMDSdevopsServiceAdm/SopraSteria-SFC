@@ -1152,7 +1152,7 @@ class Worker extends EntityValidator {
           // TODO - to be confirmed
         }
 
-        this.deleteAllTrainingCertificatesAssociatedWithWorker();
+        this.deleteAllTrainingCertificatesAssociatedWithWorker(thisTransaction);
 
         // always recalculate WDF - if not bulk upload (this._status)
         if (this._status === null) {
@@ -1899,24 +1899,18 @@ class Worker extends EntityValidator {
     }
   }
 
-  async deleteAllTrainingCertificatesAssociatedWithWorker() {
-    try {
-      const trainingCertificates = await models.trainingCertificates.getAllTrainingCertificateRecordsForWorker(
-        this._id,
-      );
+  async deleteAllTrainingCertificatesAssociatedWithWorker(transaction) {
+    const trainingCertificates = await models.trainingCertificates.getAllTrainingCertificateRecordsForWorker(this._id);
 
-      if (!trainingCertificates.length) return;
+    if (!trainingCertificates.length) return;
 
-      const trainingCertificateUids = trainingCertificates.map((cert) => cert.uid);
-      const filesToDeleteFromS3 = trainingCertificates.map((cert) => {
-        return { Key: cert.key };
-      });
+    const trainingCertificateUids = trainingCertificates.map((cert) => cert.uid);
+    const filesToDeleteFromS3 = trainingCertificates.map((cert) => {
+      return { Key: cert.key };
+    });
 
-      await models.trainingCertificates.deleteCertificate(trainingCertificateUids);
-      await TrainingCertificateRoute.deleteCertificatesFromS3(filesToDeleteFromS3);
-    } catch (error) {
-      console.log(error);
-    }
+    await models.trainingCertificates.deleteCertificate(trainingCertificateUids, transaction);
+    await TrainingCertificateRoute.deleteCertificatesFromS3(filesToDeleteFromS3);
   }
 }
 
