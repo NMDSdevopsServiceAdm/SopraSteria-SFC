@@ -77,6 +77,7 @@
           <div class="govuk-grid-column-full">
             <app-select-upload-certificate (selectFiles)="onSelectFiles($event)" [certificateErrors]="certificateErrors"/>
             <app-certifications-table
+              *ngIf="qualificationCertificates?.length > 0 || filesToUpload?.length > 0"
               [certificates]="qualificationCertificates"
               data-testid="qualificationCertificatesTable"
               [filesToUpload]="filesToUpload"

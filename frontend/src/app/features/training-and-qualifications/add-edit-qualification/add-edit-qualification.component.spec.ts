@@ -20,7 +20,7 @@ import { AddEditQualificationComponent } from './add-edit-qualification.componen
 
 fdescribe('AddEditQualificationComponent', () => {
   async function setup(qualificationId = '1', qualificationInService = null) {
-    const { fixture, getByText, getByTestId, queryByText, getByLabelText, getAllByText } = await render(
+    const { fixture, getByText, getByTestId, queryByText, queryByTestId, getByLabelText, getAllByText } = await render(
       AddEditQualificationComponent,
       {
         imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -68,6 +68,7 @@ fdescribe('AddEditQualificationComponent', () => {
       getByText,
       getByTestId,
       queryByText,
+      queryByTestId,
       getByLabelText,
       routerSpy,
       getAllByText,
@@ -231,7 +232,7 @@ fdescribe('AddEditQualificationComponent', () => {
     });
   });
 
-  fdescribe('qualification certificates', () => {
+  describe('qualification certificates', () => {
     const mockQualification = { group: QualificationType.NVQ, id: 10, title: 'Worker safety qualification' };
     const mockUploadFile1 = new File(['file content'], 'worker safety 2023.pdf', { type: 'application/pdf' });
     const mockUploadFile2 = new File(['file content'], 'worker safety 2024.pdf', { type: 'application/pdf' });
@@ -297,6 +298,25 @@ fdescribe('AddEditQualificationComponent', () => {
         },
       ];
 
+      it('should show the table when there are certificates', async () => {
+        const { component, fixture, getByTestId } = await setup();
+
+        component.qualificationCertificates = savedCertificates;
+        fixture.detectChanges();
+
+        expect(getByTestId('qualificationCertificatesTable')).toBeTruthy();
+      });
+
+      it('should not show the table when there are no certificates', async () => {
+        const { component, fixture, queryByTestId } = await setup();
+
+        component.qualificationCertificates = [];
+
+        fixture.detectChanges();
+
+        expect(queryByTestId('qualificationCertificatesTable')).toBeFalsy();
+      });
+
       it('should display a row for each certificate', async () => {
         const { component, fixture, getByTestId } = await setup();
         component.qualificationCertificates = savedCertificates;
@@ -322,11 +342,26 @@ fdescribe('AddEditQualificationComponent', () => {
         const certificateRow2 = getByTestId('certificate-row-2');
         const removeButtonForRow2 = within(certificateRow2).getByText('Remove');
 
-        fireEvent.click(removeButtonForRow2);
+        userEvent.click(removeButtonForRow2);
         fixture.detectChanges();
 
         expect(component.qualificationCertificates.length).toBe(2);
         expect(queryByText(savedCertificates[2].filename)).toBeFalsy();
+      });
+
+      it('should not show the table when all files are removed', async () => {
+        const { component, fixture, getByText, queryByTestId } = await setup();
+        component.qualificationCertificates = savedCertificates;
+
+        fixture.autoDetectChanges();
+
+        savedCertificates.forEach((certificate) => {
+          const certificateRow = getByText(certificate.filename).parentElement;
+          const removeButton = within(certificateRow).getByText('Remove');
+          userEvent.click(removeButton);
+        });
+
+        expect(queryByTestId('qualificationCertificatesTable')).toBeFalsy();
       });
     });
   });
@@ -570,7 +605,7 @@ fdescribe('AddEditQualificationComponent', () => {
       expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
     });
 
-    fdescribe('uploadCertificate errors', () => {
+    describe('uploadCertificate errors', () => {
       it('should show an error message if the selected file is over 500 KB', async () => {
         const { fixture, getByTestId, getByText } = await setup(null);
 
