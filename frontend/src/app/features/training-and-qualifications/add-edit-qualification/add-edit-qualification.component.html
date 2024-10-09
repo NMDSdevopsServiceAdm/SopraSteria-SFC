@@ -75,7 +75,7 @@
           </div>
 
           <div class="govuk-grid-column-full">
-            <app-select-upload-certificate (selectFiles)="onSelectFiles($event)"/>
+            <app-select-upload-certificate (selectFiles)="onSelectFiles($event)" [certificateErrors]="certificateErrors"/>
             <app-certifications-table
               [certificates]="qualificationCertificates"
               data-testid="qualificationCertificatesTable"

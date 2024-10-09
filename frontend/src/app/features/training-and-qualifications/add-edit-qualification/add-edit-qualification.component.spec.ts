@@ -569,5 +569,68 @@ fdescribe('AddEditQualificationComponent', () => {
       expect(getByText('Close notes')).toBeTruthy();
       expect(notesSection.getAttribute('class')).not.toContain('govuk-visually-hidden');
     });
+
+    fdescribe('uploadCertificate errors', () => {
+      it('should show an error message if the selected file is over 500 KB', async () => {
+        const { fixture, getByTestId, getByText } = await setup(null);
+
+        const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
+        Object.defineProperty(mockUploadFile, 'size', {
+          value: 10 * 1024 * 1024, // 10MB
+        });
+
+        const fileInputButton = getByTestId('fileInput');
+
+        userEvent.upload(fileInputButton, mockUploadFile);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+      });
+
+      it('should show an error message if the selected file is not a pdf file', async () => {
+        const { fixture, getByTestId, getByText } = await setup(null);
+
+        const mockUploadFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+
+        const fileInputButton = getByTestId('fileInput');
+
+        userEvent.upload(fileInputButton, [mockUploadFile]);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+      });
+
+      it('should clear the error message when user select a valid file instead', async () => {
+        const { fixture, getByTestId, getByText, queryByText } = await setup(null);
+        fixture.autoDetectChanges();
+
+        const invalidFile = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+        const validFile = new File(['some file content'], 'certificate.pdf', { type: 'application/pdf' });
+
+        const fileInputButton = getByTestId('fileInput');
+        userEvent.upload(fileInputButton, [invalidFile]);
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+
+        userEvent.upload(fileInputButton, [validFile]);
+        expect(queryByText('The certificate must be a PDF file')).toBeFalsy();
+      });
+
+      it('should provide aria description to screen reader users when error happen', async () => {
+        const { fixture, getByTestId } = await setup(null);
+        fixture.autoDetectChanges();
+
+        const uploadSection = getByTestId('uploadCertificate');
+        const fileInput = getByTestId('fileInput');
+
+        userEvent.upload(fileInput, new File(['some file content'], 'non-pdf-file.csv'));
+
+        const uploadButton = within(uploadSection).getByRole('button', {
+          description: /Error: The certificate must be a PDF file/,
+        });
+        expect(uploadButton).toBeTruthy();
+      });
+    });
   });
 });
