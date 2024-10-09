@@ -1174,6 +1174,33 @@ describe('AddEditTrainingComponent', () => {
         expect(component.filesToUpload).toHaveSize(1);
         expect(component.filesToUpload[0]).toEqual(mockUploadFile1);
       });
+
+      xit('should allow a file to be added again after removal', async () => {
+        /* TODO: unskip this test when we bump up @testing-library/user-event to >= 14.0.0 in the future
+         *
+         * This test is skipped because the version of @testing-library/user-event we are using
+         * does not handle fileinput.value = '' or fileinput.files = null correctly.
+         */
+        const { component, fixture, getByText, getByTestId, queryByText } = await setup();
+        fixture.autoDetectChanges();
+
+        const fileInput = getByTestId('fileInput') as HTMLInputElement;
+        await userEvent.upload(fileInput, [mockUploadFile1]);
+
+        const certificateRow = getByText(mockUploadFile1.name).parentElement;
+        const removeButton = within(certificateRow).getByText('Remove');
+        await userEvent.click(removeButton);
+
+        expect(queryByText(mockUploadFile1.name)).toBeFalsy();
+        expect(component.filesToUpload).toEqual([]);
+        expect(fileInput.value).toBeFalsy();
+
+        // select the removed file again
+        await userEvent.upload(fileInput, [mockUploadFile1]);
+
+        expect(getByText(mockUploadFile1.name)).toBeTruthy();
+        expect(component.filesToUpload).toEqual([mockUploadFile1]);
+      });
     });
 
     describe('saved files to be removed', () => {
