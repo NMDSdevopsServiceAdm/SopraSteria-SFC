@@ -25,6 +25,8 @@ export class SelectUploadFileComponent implements OnInit {
     const selectedFiles = Array.from(event.target.files);
     if (selectedFiles?.length) {
       this.selectFiles.emit(selectedFiles);
+
+      event.target.value = '';
     }
   }
 }
