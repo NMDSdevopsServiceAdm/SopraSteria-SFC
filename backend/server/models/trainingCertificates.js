@@ -95,5 +95,13 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  TrainingCertificates.getAllTrainingCertificateRecordsForWorker = async function (workerFk) {
+    return await this.findAll({
+      where: {
+        workerFk,
+      },
+    });
+  };
+
   return TrainingCertificates;
 };
