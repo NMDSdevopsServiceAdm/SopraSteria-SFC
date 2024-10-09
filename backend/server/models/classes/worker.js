@@ -1152,7 +1152,7 @@ class Worker extends EntityValidator {
           // TODO - to be confirmed
         }
 
-        this.deleteAllTrainingCertificatesAssociatedWithWorker(thisTransaction);
+        await this.deleteAllTrainingCertificatesAssociatedWithWorker(thisTransaction);
 
         // always recalculate WDF - if not bulk upload (this._status)
         if (this._status === null) {
