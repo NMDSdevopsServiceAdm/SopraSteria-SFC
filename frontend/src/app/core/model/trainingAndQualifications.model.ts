@@ -1,5 +1,5 @@
-import { QualificationsByGroup } from './qualification.model';
-import { TrainingRecords } from './training.model';
+import { QualificationsByGroup, QualificationCertificate } from './qualification.model';
+import { TrainingRecords, TrainingCertificate } from './training.model';
 
 export interface TrainingAndQualificationRecords {
   qualifications: QualificationsByGroup;
@@ -14,3 +14,5 @@ export interface TrainingCounts {
   missingMandatoryTraining?: number;
   staffMissingMandatoryTraining?: number;
 }
+
+export type Certificate = TrainingCertificate | QualificationCertificate;

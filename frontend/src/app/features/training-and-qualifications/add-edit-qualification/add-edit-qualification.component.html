@@ -72,6 +72,16 @@
               [pattern]="intPattern"
             />
           </div>
+
+          <app-select-upload-certificate (selectFiles)="onSelectFiles($event)"/>
+          <app-certifications-table
+            [certificates]="qualificationCertificates"
+            data-testid="qualificationCertificatesTable"
+            [filesToUpload]="filesToUpload"
+            (removeFileToUpload)="removeFileToUpload($event)"
+            (removeSavedFile)="removeSavedFile($event)"
+          />
+
           <div class="govuk-character-count">
             <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('notes').invalid">
               <label class="govuk-label govuk-!-font-weight-bold" for="notes"> Add a note </label>
@@ -111,7 +121,7 @@
                     'govuk-error-message': remainingCharacterCount < 0
                   }"
                   aria-live="polite"
-                  ><noscript> You can enter up to {{ notesMaxLength }} characters }} </noscript>
+                  ><noscript> You can enter up to {{ notesMaxLength }} characters </noscript>
                   <ng-container>
                     You have {{ remainingCharacterCount | absoluteNumber | number }}
                     {{

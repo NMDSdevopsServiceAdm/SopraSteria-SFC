@@ -12,13 +12,13 @@ import { qualificationRecord } from '@core/test-utils/MockWorkerService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
 
-describe('AddEditQualificationComponent', () => {
+fdescribe('AddEditQualificationComponent', () => {
   async function setup(qualificationId = '1', qualificationInService = null) {
     const { fixture, getByText, getByTestId, queryByText, getByLabelText, getAllByText } = await render(
       AddEditQualificationComponent,
@@ -228,6 +228,106 @@ describe('AddEditQualificationComponent', () => {
       );
       fixture.detectChanges();
       expect(getByText('You have 1 character too many')).toBeTruthy();
+    });
+  });
+
+  fdescribe('qualification certificates', () => {
+    const mockQualification = { group: QualificationType.NVQ, id: 10, title: 'Worker safety qualification' };
+    const mockUploadFile1 = new File(['file content'], 'worker safety 2023.pdf', { type: 'application/pdf' });
+    const mockUploadFile2 = new File(['file content'], 'worker safety 2024.pdf', { type: 'application/pdf' });
+
+    describe('certificates to be uploaded', () => {
+      it('should add a new upload file to the certification table when a file is selected', async () => {
+        const { component, fixture, getByTestId } = await setup(null, mockQualification);
+        const uploadSection = getByTestId('uploadCertificate');
+        const fileInput = within(uploadSection).getByTestId('fileInput');
+
+        expect(fileInput).toBeTruthy();
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile1);
+        fixture.detectChanges();
+
+        const certificationTable = getByTestId('qualificationCertificatesTable');
+
+        expect(certificationTable).toBeTruthy();
+        expect(within(certificationTable).getByText(mockUploadFile1.name)).toBeTruthy();
+        expect(component.filesToUpload).toEqual([mockUploadFile1]);
+      });
+
+      it('should remove an upload file when its remove button is clicked', async () => {
+        const { component, fixture, getByTestId, getByText } = await setup();
+        fixture.autoDetectChanges();
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile1);
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile2);
+
+        const certificationTable = getByTestId('qualificationCertificatesTable');
+        expect(within(certificationTable).getByText(mockUploadFile1.name)).toBeTruthy();
+        expect(within(certificationTable).getByText(mockUploadFile2.name)).toBeTruthy();
+
+        const rowForFile1 = getByText(mockUploadFile1.name).parentElement;
+        const removeButtonForFile1 = within(rowForFile1).getByText('Remove');
+
+        userEvent.click(removeButtonForFile1);
+
+        expect(within(certificationTable).queryByText(mockUploadFile1.name)).toBeFalsy();
+
+        expect(within(certificationTable).queryByText(mockUploadFile2.name)).toBeTruthy();
+        expect(component.filesToUpload).toHaveSize(1);
+        expect(component.filesToUpload[0]).toEqual(mockUploadFile2);
+      });
+    });
+
+    describe('saved certificates', () => {
+      const savedCertificates = [
+        {
+          uid: 'uid-1',
+          filename: 'worker_safety_v1.pdf',
+          uploadDate: '2024-04-12T14:44:29.151Z',
+        },
+        {
+          uid: 'uid-2',
+          filename: 'worker_safety_v2.pdf',
+          uploadDate: '2024-04-12T14:44:29.151Z',
+        },
+        {
+          uid: 'uid-3',
+          filename: 'worker_safety_v3.pdf',
+          uploadDate: '2024-04-12T14:44:29.151Z',
+        },
+      ];
+
+      it('should display a row for each certificate', async () => {
+        const { component, fixture, getByTestId } = await setup();
+        component.qualificationCertificates = savedCertificates;
+
+        fixture.detectChanges();
+
+        savedCertificates.forEach((certificate, index) => {
+          const certificateRow = getByTestId(`certificate-row-${index}`);
+          expect(certificateRow).toBeTruthy();
+          expect(within(certificateRow).getByText(certificate.filename)).toBeTruthy();
+          expect(within(certificateRow).getByText('Download')).toBeTruthy();
+          expect(within(certificateRow).getByText('Remove')).toBeTruthy();
+        });
+      });
+
+      it('should remove a file from the table when the remove button is clicked', async () => {
+        const { component, fixture, getByTestId, queryByText } = await setup();
+
+        component.qualificationCertificates = savedCertificates;
+
+        fixture.detectChanges();
+
+        const certificateRow2 = getByTestId('certificate-row-2');
+        const removeButtonForRow2 = within(certificateRow2).getByText('Remove');
+
+        fireEvent.click(removeButtonForRow2);
+        fixture.detectChanges();
+
+        expect(component.qualificationCertificates.length).toBe(2);
+        expect(queryByText(savedCertificates[2].filename)).toBeFalsy();
+      });
     });
   });
 

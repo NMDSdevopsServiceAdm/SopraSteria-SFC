@@ -6,6 +6,7 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import {
   Qualification,
+  QualificationCertificate,
   QualificationRequest,
   QualificationResponse,
   QualificationType,
@@ -16,6 +17,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import dayjs from 'dayjs';
 import { Subscription } from 'rxjs';
 
@@ -46,6 +48,10 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public selectedQualification: Qualification;
   public qualificationType: string;
   public qualificationTitle: string;
+  public qualificationCertificates: QualificationCertificate[] = [];
+  private _filesToUpload: File[];
+  public filesToRemove: QualificationCertificate[] = [];
+  public certificateErrors: string[] | null;
 
   constructor(
     private trainingService: TrainingService,
@@ -229,6 +235,43 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   public toggleNotesOpen(): void {
     this.notesOpen = !this.notesOpen;
+  }
+
+  get filesToUpload(): File[] {
+    return this._filesToUpload ?? [];
+  }
+
+  private set filesToUpload(files: File[]) {
+    this._filesToUpload = files ?? [];
+  }
+
+  private resetUploadFilesError(): void {
+    this.certificateErrors = null;
+  }
+
+  public onSelectFiles(newFiles: File[]): void {
+    this.resetUploadFilesError();
+    const errors = CustomValidators.validateUploadCertificates(newFiles);
+
+    if (errors) {
+      this.certificateErrors = errors;
+      return;
+    }
+
+    const combinedFiles = [...newFiles, ...this.filesToUpload];
+    this.filesToUpload = combinedFiles;
+  }
+
+  public removeFileToUpload(fileIndexToRemove: number): void {
+    const filesToKeep = this.filesToUpload.filter((_file, index) => index !== fileIndexToRemove);
+    this.filesToUpload = filesToKeep;
+  }
+
+  public removeSavedFile(fileIndexToRemove: number): void {
+    this.filesToRemove.push(this.qualificationCertificates[fileIndexToRemove]);
+    this.qualificationCertificates = this.qualificationCertificates.filter(
+      (_certificate, index) => index !== fileIndexToRemove,
+    );
   }
 
   protected navigateToDeleteQualificationRecord(): void {
