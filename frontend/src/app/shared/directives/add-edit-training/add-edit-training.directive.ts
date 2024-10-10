@@ -5,7 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
+import {
+  TrainingCategory,
+  TrainingCertificate,
+  TrainingRecord,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
@@ -30,6 +35,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public workplace: Establishment;
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
+  public notesOpen = false;
   private titleMaxLength = 120;
   private titleMinLength = 3;
   public subscriptions: Subscription = new Subscription();
@@ -43,6 +49,8 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public notesValue = '';
   public showChangeLink: boolean = false;
   public multipleTrainingDetails: boolean;
+  public trainingCertificates: TrainingCertificate[] = [];
+  public submitButtonDisabled: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -223,6 +231,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (!this.form.valid) {
+      if (this.form.controls.notes?.errors?.maxlength) {
+        this.notesOpen = true;
+      }
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
@@ -315,5 +326,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         'delete',
       ]);
     }
+  }
+
+  public toggleNotesOpen(): void {
+    this.notesOpen = !this.notesOpen;
   }
 }

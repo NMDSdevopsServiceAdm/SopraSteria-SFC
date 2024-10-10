@@ -92,6 +92,10 @@ export class MultipleTrainingDetailsComponent extends AddEditTrainingDirective i
         title,
         category: trainingCategory.id,
       });
+      if (notes?.length > 0) {
+        this.notesOpen = true;
+        this.remainingCharacterCount = this.notesMaxLength - notes.length;
+      }
     }
   }
 

@@ -1,0 +1,19 @@
+<input
+  type="file"
+  class="select-upload-file-hidden"
+  [accept]="accept"
+  [multiple]="multiple"
+  data-testid="fileInput"
+  aria-label="Choose file"
+  (change)="handleChange($event)"
+  #hiddenFileInput
+/>
+<button
+  type="button"
+  (click)="hiddenFileInput.click()"
+  [id]="buttonId"
+  [class]="'govuk-button govuk-button--secondary ' + buttonClasses"
+  [attr.aria-describedby]="ariaDescribedBy"
+>
+  {{ buttonText }}
+</button>
