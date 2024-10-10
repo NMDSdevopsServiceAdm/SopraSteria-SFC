@@ -279,12 +279,11 @@ describe('ParentHomeTabComponent', () => {
       expect(bulkUploadLink).toBeFalsy();
     });
 
-    it('should show a card with a link that takes you to the wdf page', async () => {
+    it('should show the funding card with a link that takes you to the wdf page', async () => {
       const { getByText } = await setup();
 
-      const wdfLink = getByText('Does your data meet WDF requirements?');
+      const wdfLink = getByText('Does your data meet funding requirements?');
 
-      expect(wdfLink).toBeTruthy();
       expect(wdfLink.getAttribute('href')).toBe('/wdf');
     });
 
