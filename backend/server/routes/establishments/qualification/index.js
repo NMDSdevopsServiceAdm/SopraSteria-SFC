@@ -1,6 +1,7 @@
 // default route for Workers' qualification endpoint
 const express = require('express');
 const router = express.Router({ mergeParams: true });
+const QualificationCertificateRoute = require('../workerCertificate/qualificationCertificate');
 
 // all user functionality is encapsulated
 const Qualification = require('../../../models/classes/qualification').Qualification;
@@ -197,5 +198,6 @@ router.route('/available').get(hasPermission('canViewWorker'), availableQualific
 router.route('/:qualificationUid').get(hasPermission('canViewWorker'), viewQualification);
 router.route('/:qualificationUid').put(hasPermission('canEditWorker'), updateQualification);
 router.route('/:qualificationUid').delete(hasPermission('canEditWorker'), deleteQualification);
+router.use('/:trainingUid/certificate', QualificationCertificateRoute);
 
 module.exports = router;
