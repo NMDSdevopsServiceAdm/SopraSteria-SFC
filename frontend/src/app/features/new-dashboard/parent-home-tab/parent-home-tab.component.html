@@ -48,7 +48,7 @@
         >
       </div>
 
-      <div class="govuk-grid-column-one-third asc-card-padding">
+      <div *ngIf="canViewReports" class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/wdf.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
