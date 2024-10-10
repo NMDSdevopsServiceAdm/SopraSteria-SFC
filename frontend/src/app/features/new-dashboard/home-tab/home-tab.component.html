@@ -17,7 +17,7 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-grid-row">
-        <div *ngIf="canViewReports" class="govuk-grid-column-one-half">
+        <div *ngIf="canViewReports" class="govuk-grid-column-one-half govuk-!-padding-right-1">
           <app-card [image]="'/assets/images/wdf.svg'">
             <a
               class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
@@ -31,7 +31,7 @@
           >
         </div>
 
-        <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-column-one-half govuk-!-padding-left-1">
           <app-card [image]="'/assets/images/benchmarks.svg'">
             <a
               (click)="navigateToTab($event, 'benchmarks')"
