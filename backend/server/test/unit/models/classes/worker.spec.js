@@ -2,8 +2,9 @@ const expect = require('chai').expect;
 const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
 const sinon = require('sinon');
 
+const models = require('../../../../models');
 const Worker = require('../../../../models/classes/worker').Worker;
-const WdfCalculator = require('../../../../models/classes/wdfCalculator');
+const TrainingCertificateRoute = require('../../../../routes/establishments/workerCertificate/trainingCertificate');
 
 const worker = new Worker();
 
@@ -426,6 +427,92 @@ describe('Worker Class', () => {
         username: 'test',
         type: 'wdfEligible',
       });
+    });
+  });
+
+  describe('deleteAllTrainingCertificatesAssociatedWithWorker()', async () => {
+    let mockWorker;
+    const trainingCertificatesReturnedFromDb = () => {
+      return [
+        { uid: 'abc123', key: 'abc123/trainingCertificate/dasdsa12312' },
+        { uid: 'def456', key: 'def456/trainingCertificate/deass12092' },
+        { uid: 'ghi789', key: 'ghi789/trainingCertificate/da1412342' },
+      ];
+    };
+
+    beforeEach(() => {
+      mockWorker = new Worker();
+      mockWorker._id = 12345;
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should call getAllTrainingCertificateRecordsForWorker with worker ID', async () => {
+      const getAllTrainingCertificateRecordsForWorkerSpy = sinon
+        .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
+        .resolves([]);
+
+      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker();
+
+      expect(getAllTrainingCertificateRecordsForWorkerSpy.args[0][0]).to.equal(12345);
+    });
+
+    it('should not make DB or S3 deletion calls if no training certificates found', async () => {
+      const getAllTrainingCertificateRecordsForWorkerSpy = sinon
+        .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
+        .resolves([]);
+
+      const dbDeleteCertificateSpy = sinon.stub(models.trainingCertificates, 'deleteCertificate');
+      const s3DeleteCertificateSpy = sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3');
+
+      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker();
+
+      expect(dbDeleteCertificateSpy.callCount).to.equal(0);
+      expect(s3DeleteCertificateSpy.callCount).to.equal(0);
+    });
+
+    it('should call deleteCertificate on DB model with uids returned from getAllTrainingCertificateRecordsForWorker and pass in transaction', async () => {
+      const trainingCertificates = trainingCertificatesReturnedFromDb();
+
+      const getAllTrainingCertificateRecordsForWorkerSpy = sinon
+        .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
+        .resolves(trainingCertificates);
+
+      const dbDeleteCertificateSpy = sinon.stub(models.trainingCertificates, 'deleteCertificate');
+      sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3');
+      const transaction = await models.sequelize.transaction();
+
+      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker(transaction);
+
+      expect(dbDeleteCertificateSpy.args[0][0]).to.deep.equal([
+        trainingCertificates[0].uid,
+        trainingCertificates[1].uid,
+        trainingCertificates[2].uid,
+      ]);
+
+      expect(dbDeleteCertificateSpy.args[0][1]).to.deep.equal(transaction);
+    });
+
+    it('should call deleteCertificatesFromS3 with keys returned from getAllTrainingCertificateRecordsForWorker', async () => {
+      const trainingCertificates = trainingCertificatesReturnedFromDb();
+
+      const getAllTrainingCertificateRecordsForWorkerSpy = sinon
+        .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
+        .resolves(trainingCertificates);
+
+      sinon.stub(models.trainingCertificates, 'deleteCertificate');
+      const s3DeleteCertificateSpy = sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3');
+      const transaction = await models.sequelize.transaction();
+
+      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker(transaction);
+
+      expect(s3DeleteCertificateSpy.args[0][0]).to.deep.equal([
+        { Key: trainingCertificates[0].key },
+        { Key: trainingCertificates[1].key },
+        { Key: trainingCertificates[2].key },
+      ]);
     });
   });
 });
