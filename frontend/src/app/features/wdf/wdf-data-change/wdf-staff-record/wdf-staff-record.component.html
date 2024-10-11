@@ -18,18 +18,8 @@
       [wdfEndDate]="wdfEndDate"
     ></app-wdf-staff-record-status-message>
   </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <div class="govuk-button-group">
-        <a class="govuk-button" [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment">Close this staff record</a>
-        <app-wdf-pagination
-          style="margin-left: auto"
-          [workplaceUid]="workplaceUid"
-          [workerList]="workerList"
-        ></app-wdf-pagination>
-      </div>
-    </div>
-  </div>
+
+  <app-wdf-pagination [workplaceUid]="workplaceUid" [workerList]="workerList" [exitUrl]="exitUrl"></app-wdf-pagination>
 
   <app-staff-record-summary
     *ngIf="workplace && worker"
@@ -40,16 +30,5 @@
     (allFieldsConfirmed)="refreshUpdatedWorkerAndWdfEligibility()"
   ></app-staff-record-summary>
 
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      <div class="govuk-button-group">
-        <a class="govuk-button" [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment">Close this staff record</a>
-        <app-wdf-pagination
-          style="margin-left: auto"
-          [workplaceUid]="workplaceUid"
-          [workerList]="workerList"
-        ></app-wdf-pagination>
-      </div>
-    </div>
-  </div>
+  <app-wdf-pagination [workplaceUid]="workplaceUid" [workerList]="workerList" [exitUrl]="exitUrl"></app-wdf-pagination>
 </ng-container>

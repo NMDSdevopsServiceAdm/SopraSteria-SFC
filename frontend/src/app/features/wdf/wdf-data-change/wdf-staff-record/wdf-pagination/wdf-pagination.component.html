@@ -1,22 +1,31 @@
-<a
-  *ngIf="!isFirst"
-  class="asc-chevron-before govuk-button--link govuk-!-margin-right-4"
-  [routerLink]="
-    this.route.snapshot.params.establishmentuid
-      ? ['/wdf', 'workplaces', workplaceUid, 'staff-record', previousID]
-      : ['/wdf', 'staff-record', previousID]
-  "
-  [fragment]=""
-  >Previous staff record</a
->
-<a
-  *ngIf="!isLast"
-  class="asc-chevron-after govuk-button--link govuk-!-margin-left-6 govuk-!-margin-right-4"
-  [routerLink]="
-    this.route.snapshot.params.establishmentuid
-      ? ['/wdf', 'workplaces', workplaceUid, 'staff-record', nextID]
-      : ['/wdf', 'staff-record', nextID]
-  "
-  [fragment]=""
-  >Next staff record</a
->
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div class="govuk-button-group">
+      <a class="govuk-button" [routerLink]="exitUrl.url" [fragment]="exitUrl.fragment">Close this staff record</a>
+      <span style="margin-left: auto">
+        <a
+          *ngIf="!isFirst"
+          class="asc-chevron-before govuk-button--link govuk-!-margin-right-4"
+          [routerLink]="
+            this.route.snapshot.params.establishmentuid
+              ? ['/wdf', 'workplaces', workplaceUid, 'staff-record', previousID]
+              : ['/wdf', 'staff-record', previousID]
+          "
+          [fragment]=""
+          >Previous staff record</a
+        >
+        <a
+          *ngIf="!isLast"
+          class="asc-chevron-after govuk-button--link govuk-!-margin-left-6 govuk-!-margin-right-4"
+          [routerLink]="
+            this.route.snapshot.params.establishmentuid
+              ? ['/wdf', 'workplaces', workplaceUid, 'staff-record', nextID]
+              : ['/wdf', 'staff-record', nextID]
+          "
+          [fragment]=""
+          >Next staff record</a
+        >
+      </span>
+    </div>
+  </div>
+</div>
