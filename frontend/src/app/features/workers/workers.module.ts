@@ -68,6 +68,7 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -138,6 +139,8 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     TrainingRecordsForCategoryResolver,
     MandatoryTrainingCategoriesResolver,
     AvailableQualificationsResolver,
+    TrainingCertificateService,
+    QualificationCertificateService,
   ],
 })
 export class WorkersModule {}

@@ -46,8 +46,9 @@ export interface QualificationResponse {
   updated: string;
   updatedBy: string;
   qualification: Qualification;
-  year: number;
-  notes: string;
+  year?: number;
+  notes?: string;
+  qualificationCertificates?: QualificationCertificate[];
 }
 
 export interface Qualification {

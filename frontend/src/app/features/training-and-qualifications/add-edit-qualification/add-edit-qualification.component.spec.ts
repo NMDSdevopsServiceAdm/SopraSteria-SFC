@@ -14,12 +14,14 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
+import { QualificationCertificateService } from '@core/services/certificate.service';
+import { MockQualificationCertificateService } from '@core/test-utils/MockCertificationService';
 
 fdescribe('AddEditQualificationComponent', () => {
-  async function setup(qualificationId = '1', qualificationInService = null) {
+  async function setup(qualificationId = '1', qualificationInService = null, override: any = {}) {
     const { fixture, getByText, getByTestId, queryByText, queryByTestId, getByLabelText, getAllByText } = await render(
       AddEditQualificationComponent,
       {
@@ -51,6 +53,10 @@ fdescribe('AddEditQualificationComponent', () => {
               clearSelectedQualification: () => {},
             },
           },
+          {
+            provide: QualificationCertificateService,
+            useClass: MockQualificationCertificateService,
+          },
         ],
       },
     );
@@ -61,6 +67,7 @@ fdescribe('AddEditQualificationComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const workerService = injector.inject(WorkerService) as WorkerService;
     const qualificationService = injector.inject(QualificationService) as QualificationService;
+    const certificateService = injector.inject(QualificationCertificateService) as QualificationCertificateService;
 
     return {
       component,
@@ -74,8 +81,43 @@ fdescribe('AddEditQualificationComponent', () => {
       getAllByText,
       workerService,
       qualificationService,
+      certificateService,
     };
   }
+
+  const mockQualificationData = {
+    created: '2024-10-01T08:53:35.143Z',
+    notes: 'ihoihio',
+    qualification: {
+      group: 'Degree',
+      id: 136,
+      level: '6',
+      title: 'Health and social care degree (level 6)',
+    },
+
+    uid: 'fd50276b-e27c-48a6-9015-f0c489302666',
+    updated: '2024-10-01T08:53:35.143Z',
+    updatedBy: 'duncan',
+    year: 1999,
+  } as QualificationResponse;
+
+  const setupWithExistingQualification = async (override: any = {}) => {
+    const setupOutputs = await setup('mockQualificationId');
+
+    const { component, workerService, fixture } = setupOutputs;
+    const { qualificationCertificates } = override;
+    const mockGetQualificationResponse: QualificationResponse = qualificationCertificates
+      ? { ...mockQualificationData, qualificationCertificates }
+      : mockQualificationData;
+
+    spyOn(workerService, 'getQualification').and.returnValue(of(mockGetQualificationResponse));
+    const updateQualificationSpy = spyOn(workerService, 'updateQualification').and.returnValue(of(null));
+
+    component.ngOnInit();
+    fixture.detectChanges();
+
+    return { ...setupOutputs, updateQualificationSpy };
+  };
 
   it('should create', async () => {
     const { component } = await setup();
@@ -277,6 +319,70 @@ fdescribe('AddEditQualificationComponent', () => {
         expect(component.filesToUpload).toHaveSize(1);
         expect(component.filesToUpload[0]).toEqual(mockUploadFile2);
       });
+
+      it('should call certificateService with the selected files on form submit (for new qualification)', async () => {
+        const mockNewQualificationResponse = {
+          uid: 'newQualificationUid',
+          qualification: mockQualification,
+          created: '',
+          updated: '',
+          updatedBy: '',
+        };
+
+        const { component, fixture, getByTestId, getByText, certificateService, workerService } = await setup(
+          null,
+          mockQualification,
+        );
+
+        const addCertificatesSpy = spyOn(certificateService, 'addCertificates').and.returnValue(of('null'));
+        spyOn(workerService, 'createQualification').and.returnValue(of(mockNewQualificationResponse));
+        fixture.autoDetectChanges();
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile1);
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile2);
+
+        userEvent.click(getByText('Save record'));
+
+        expect(addCertificatesSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          mockNewQualificationResponse.uid,
+          [mockUploadFile1, mockUploadFile2],
+        );
+      });
+
+      it('should call certificateService with the selected files on form submit (for existing qualification)', async () => {
+        const mockGetQualificationResponse = {
+          uid: 'mockQualificationUid',
+          qualification: mockQualification,
+          created: '',
+          updated: '',
+          updatedBy: '',
+        };
+
+        const { component, fixture, getByTestId, getByText, certificateService, workerService } = await setup(
+          'mockQualificationUid',
+        );
+
+        const addCertificatesSpy = spyOn(certificateService, 'addCertificates').and.returnValue(of('null'));
+        spyOn(workerService, 'getQualification').and.returnValue(of(mockGetQualificationResponse));
+        spyOn(workerService, 'updateQualification').and.returnValue(of(null));
+
+        component.ngOnInit();
+        fixture.autoDetectChanges();
+
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile1);
+        userEvent.upload(getByTestId('fileInput'), mockUploadFile2);
+
+        userEvent.click(getByText('Save and return'));
+
+        expect(addCertificatesSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          component.qualificationId,
+          [mockUploadFile1, mockUploadFile2],
+        );
+      });
     });
 
     describe('saved certificates', () => {
@@ -298,30 +404,23 @@ fdescribe('AddEditQualificationComponent', () => {
         },
       ];
 
-      it('should show the table when there are certificates', async () => {
-        const { component, fixture, getByTestId } = await setup();
+      const setupWithSavedCertificates = () =>
+        setupWithExistingQualification({ qualificationCertificates: savedCertificates });
 
-        component.qualificationCertificates = savedCertificates;
-        fixture.detectChanges();
+      it('should show the table when there are certificates', async () => {
+        const { getByTestId } = await setupWithSavedCertificates();
 
         expect(getByTestId('qualificationCertificatesTable')).toBeTruthy();
       });
 
       it('should not show the table when there are no certificates', async () => {
-        const { component, fixture, queryByTestId } = await setup();
-
-        component.qualificationCertificates = [];
-
-        fixture.detectChanges();
+        const { queryByTestId } = await setup('mockQualificationId');
 
         expect(queryByTestId('qualificationCertificatesTable')).toBeFalsy();
       });
 
       it('should display a row for each certificate', async () => {
-        const { component, fixture, getByTestId } = await setup();
-        component.qualificationCertificates = savedCertificates;
-
-        fixture.detectChanges();
+        const { getByTestId } = await setupWithSavedCertificates();
 
         savedCertificates.forEach((certificate, index) => {
           const certificateRow = getByTestId(`certificate-row-${index}`);
@@ -332,36 +431,130 @@ fdescribe('AddEditQualificationComponent', () => {
         });
       });
 
-      it('should remove a file from the table when the remove button is clicked', async () => {
-        const { component, fixture, getByTestId, queryByText } = await setup();
+      describe('download certificates', () => {
+        it('should make call to downloadCertificates with required uids and file uid in array when Download button clicked', async () => {
+          const { component, fixture, getByTestId, certificateService } = await setupWithSavedCertificates();
 
-        component.qualificationCertificates = savedCertificates;
+          const downloadCertificatesSpy = spyOn(certificateService, 'downloadCertificates').and.returnValue(of(null));
 
-        fixture.detectChanges();
+          const certificatesTable = getByTestId('qualificationCertificatesTable');
+          const firstCertDownloadButton = within(certificatesTable).getAllByText('Download')[0];
+          firstCertDownloadButton.click();
 
-        const certificateRow2 = getByTestId('certificate-row-2');
-        const removeButtonForRow2 = within(certificateRow2).getByText('Remove');
-
-        userEvent.click(removeButtonForRow2);
-        fixture.detectChanges();
-
-        expect(component.qualificationCertificates.length).toBe(2);
-        expect(queryByText(savedCertificates[2].filename)).toBeFalsy();
-      });
-
-      it('should not show the table when all files are removed', async () => {
-        const { component, fixture, getByText, queryByTestId } = await setup();
-        component.qualificationCertificates = savedCertificates;
-
-        fixture.autoDetectChanges();
-
-        savedCertificates.forEach((certificate) => {
-          const certificateRow = getByText(certificate.filename).parentElement;
-          const removeButton = within(certificateRow).getByText('Remove');
-          userEvent.click(removeButton);
+          expect(downloadCertificatesSpy).toHaveBeenCalledWith(
+            component.workplace.uid,
+            component.worker.uid,
+            component.qualificationId,
+            [{ uid: savedCertificates[0].uid, filename: savedCertificates[0].filename }],
+          );
         });
 
-        expect(queryByTestId('qualificationCertificatesTable')).toBeFalsy();
+        it('should make call to downloadCertificates with all certificate file uids in array when Download all button clicked', async () => {
+          const { component, fixture, getByTestId, certificateService } = await setupWithSavedCertificates();
+
+          const downloadCertificatesSpy = spyOn(certificateService, 'downloadCertificates').and.returnValue(
+            of({ files: ['abc123'] }),
+          );
+
+          const certificatesTable = getByTestId('qualificationCertificatesTable');
+          const downloadButton = within(certificatesTable).getByText('Download all');
+          downloadButton.click();
+
+          expect(downloadCertificatesSpy).toHaveBeenCalledWith(
+            component.workplace.uid,
+            component.worker.uid,
+            component.qualificationId,
+            [
+              { uid: savedCertificates[0].uid, filename: savedCertificates[0].filename },
+              { uid: savedCertificates[1].uid, filename: savedCertificates[1].filename },
+              { uid: savedCertificates[2].uid, filename: savedCertificates[2].filename },
+            ],
+          );
+        });
+
+        it('should display error message when Download fails', async () => {
+          const { component, fixture, getByText, getByTestId, certificateService } = await setupWithSavedCertificates();
+
+          spyOn(certificateService, 'downloadCertificates').and.returnValue(throwError('403 forbidden'));
+          component.qualificationCertificates = savedCertificates;
+
+          const certificatesTable = getByTestId('qualificationCertificatesTable');
+          const downloadButton = within(certificatesTable).getAllByText('Download')[1];
+          downloadButton.click();
+          fixture.detectChanges();
+
+          const expectedErrorMessage = getByText(
+            "There's a problem with this download. Try again later or contact us for help.",
+          );
+          expect(expectedErrorMessage).toBeTruthy();
+        });
+
+        it('should display error message when Download all fails', async () => {
+          const { fixture, getByText, getByTestId, certificateService } = await setupWithSavedCertificates();
+
+          spyOn(certificateService, 'downloadCertificates').and.returnValue(throwError('some download error'));
+
+          const certificatesTable = getByTestId('qualificationCertificatesTable');
+          const downloadAllButton = within(certificatesTable).getByText('Download all');
+          downloadAllButton.click();
+          fixture.detectChanges();
+
+          const expectedErrorMessage = getByText(
+            "There's a problem with this download. Try again later or contact us for help.",
+          );
+          expect(expectedErrorMessage).toBeTruthy();
+        });
+      });
+
+      describe('remove certificates', () => {
+        it('should remove a file from the table when the remove button is clicked', async () => {
+          const { component, fixture, getByTestId, queryByText } = await setupWithSavedCertificates();
+
+          fixture.detectChanges();
+
+          const certificateRow2 = getByTestId('certificate-row-2');
+          const removeButtonForRow2 = within(certificateRow2).getByText('Remove');
+
+          userEvent.click(removeButtonForRow2);
+          fixture.detectChanges();
+
+          expect(component.qualificationCertificates.length).toBe(2);
+          expect(queryByText(savedCertificates[2].filename)).toBeFalsy();
+        });
+
+        it('should not show the table when all files are removed', async () => {
+          const { fixture, getByText, queryByTestId } = await setupWithSavedCertificates();
+
+          fixture.autoDetectChanges();
+
+          savedCertificates.forEach((certificate) => {
+            const certificateRow = getByText(certificate.filename).parentElement;
+            const removeButton = within(certificateRow).getByText('Remove');
+            userEvent.click(removeButton);
+          });
+
+          expect(queryByTestId('qualificationCertificatesTable')).toBeFalsy();
+        });
+
+        it('should call certificateService with the files to be removed', async () => {
+          const { component, fixture, getByTestId, getByText, certificateService } = await setupWithSavedCertificates();
+          fixture.autoDetectChanges();
+
+          const deleteCertificatesSpy = spyOn(certificateService, 'deleteCertificates').and.returnValue(of(null));
+
+          const certificateRow1 = getByTestId('certificate-row-1');
+          const removeButtonForRow1 = within(certificateRow1).getByText('Remove');
+
+          userEvent.click(removeButtonForRow1);
+          userEvent.click(getByText('Save and return'));
+
+          expect(deleteCertificatesSpy).toHaveBeenCalledWith(
+            component.workplace.uid,
+            component.worker.uid,
+            'mockQualificationId',
+            [savedCertificates[1]],
+          );
+        });
       });
     });
   });
@@ -450,36 +643,6 @@ fdescribe('AddEditQualificationComponent', () => {
   });
 
   describe('prefilling data for existing qualification', () => {
-    const mockQualificationData = {
-      created: '2024-10-01T08:53:35.143Z',
-      notes: 'ihoihio',
-      qualification: {
-        group: 'Degree',
-        id: 136,
-        level: '6',
-        title: 'Health and social care degree (level 6)',
-      },
-
-      uid: 'fd50276b-e27c-48a6-9015-f0c489302666',
-      updated: '2024-10-01T08:53:35.143Z',
-      updatedBy: 'duncan',
-      year: 1999,
-    } as QualificationResponse;
-
-    const setupWithExistingQualification = async () => {
-      const { component, workerService, fixture, getByText, queryByText, getByTestId } = await setup(
-        'mockQualificationId',
-      );
-
-      spyOn(workerService, 'getQualification').and.returnValue(of(mockQualificationData));
-      const updateQualificationSpy = spyOn(workerService, 'updateQualification').and.returnValue(of(null));
-
-      component.ngOnInit();
-      fixture.detectChanges();
-
-      return { component, workerService, fixture, getByText, queryByText, updateQualificationSpy, getByTestId };
-    };
-
     it('should display qualification title and lower case group', async () => {
       const { getByText } = await setupWithExistingQualification();
 
