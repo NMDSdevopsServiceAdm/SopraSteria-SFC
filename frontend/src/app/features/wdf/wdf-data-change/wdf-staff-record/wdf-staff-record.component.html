@@ -1,5 +1,5 @@
 <ng-container *ngIf="worker">
-  <div class="govuk-grid-row">
+  <div class="govuk-grid-row govuk-!-margin-bottom-4">
     <div class="govuk-grid-column-two-thirds">
       <h1 class="govuk-heading-l govuk-!-margin-bottom-5">
         <span class="govuk-caption-xl">{{ worker.nameOrId }}</span>
@@ -10,15 +10,13 @@
       <p>Last updated on {{ worker.updated | date: 'longDate' }}</p>
     </div>
   </div>
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <app-wdf-staff-record-status-message
-        [overallWdfEligibility]="overallWdfEligibility"
-        [worker]="updatedWorker"
-        [wdfStartDate]="wdfStartDate"
-        [wdfEndDate]="wdfEndDate"
-      ></app-wdf-staff-record-status-message>
-    </div>
+  <div class="govuk-!-margin-bottom-7">
+    <app-wdf-staff-record-status-message
+      [overallWdfEligibility]="overallWdfEligibility"
+      [worker]="updatedWorker"
+      [wdfStartDate]="wdfStartDate"
+      [wdfEndDate]="wdfEndDate"
+    ></app-wdf-staff-record-status-message>
   </div>
 
   <app-staff-record-summary
