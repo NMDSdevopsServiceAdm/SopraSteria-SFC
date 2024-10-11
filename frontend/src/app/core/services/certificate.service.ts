@@ -25,7 +25,7 @@ export class BaseCertificateService {
     }
   }
 
-  protected getCertificateEndpoint(workplaceUid: string, workerUid: string, recordUid: string): string {
+  protected certificateEndpoint(workplaceUid: string, workerUid: string, recordUid: string): string {
     throw new Error('Not implemented for base class');
   }
 
@@ -37,7 +37,7 @@ export class BaseCertificateService {
   ): Observable<any> {
     const listOfFilenames = filesToUpload.map((file) => ({ filename: file.name }));
     const requestBody: UploadCertificateSignedUrlRequest = { files: listOfFilenames };
-    const endpoint = this.getCertificateEndpoint(workplaceUid, workerUid, recordUid);
+    const endpoint = this.certificateEndpoint(workplaceUid, workerUid, recordUid);
 
     return this.http.post<UploadCertificateSignedUrlResponse>(endpoint, requestBody).pipe(
       mergeMap((response) => this.uploadAllCertificatestoS3(response, filesToUpload)),
@@ -89,7 +89,7 @@ export class BaseCertificateService {
     recordUid: string,
     confirmUploadRequestBody: ConfirmUploadRequest,
   ) {
-    const endpoint = this.getCertificateEndpoint(workplaceUid, workerUid, recordUid);
+    const endpoint = this.certificateEndpoint(workplaceUid, workerUid, recordUid);
     return this.http.put<any>(endpoint, confirmUploadRequestBody);
   }
 
@@ -110,7 +110,7 @@ export class BaseCertificateService {
     recordUid: string,
     filesToDownload: CertificateDownload[],
   ) {
-    const certificateEndpoint = this.getCertificateEndpoint(workplaceUid, workerUid, recordUid);
+    const certificateEndpoint = this.certificateEndpoint(workplaceUid, workerUid, recordUid);
     return this.http.post<DownloadCertificateSignedUrlResponse>(`${certificateEndpoint}/download`, { filesToDownload });
   }
 
@@ -156,21 +156,21 @@ export class BaseCertificateService {
     recordUid: string,
     filesToDelete: Certificate[],
   ): Observable<any> {
-    const certificateEndpoint = this.getCertificateEndpoint(workplaceUid, workerUid, recordUid);
+    const certificateEndpoint = this.certificateEndpoint(workplaceUid, workerUid, recordUid);
     return this.http.post<any>(`${certificateEndpoint}/delete`, { filesToDelete });
   }
 }
 
 @Injectable()
 export class TrainingCertificateService extends BaseCertificateService {
-  protected getCertificateEndpoint(workplaceUid: string, workerUid: string, trainingUid: string): string {
+  protected certificateEndpoint(workplaceUid: string, workerUid: string, trainingUid: string): string {
     return `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`;
   }
 }
 
 @Injectable()
 export class QualificationCertificateService extends BaseCertificateService {
-  protected getCertificateEndpoint(workplaceUid: string, workerUid: string, qualificationUid: string): string {
+  protected certificateEndpoint(workplaceUid: string, workerUid: string, qualificationUid: string): string {
     return `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/qualification/${qualificationUid}/certificate`;
   }
 }
