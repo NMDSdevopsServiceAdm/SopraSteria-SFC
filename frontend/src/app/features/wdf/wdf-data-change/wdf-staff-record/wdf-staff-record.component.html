@@ -13,7 +13,6 @@
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <app-wdf-staff-record-status-message
-        *ngIf="!updatedWorker.wdf.isEligible"
         [overallWdfEligibility]="overallWdfEligibility"
         [worker]="updatedWorker"
         [wdfStartDate]="wdfStartDate"

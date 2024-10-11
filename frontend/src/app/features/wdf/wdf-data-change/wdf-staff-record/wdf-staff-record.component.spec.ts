@@ -73,16 +73,15 @@ describe('WdfStaffRecordComponent', () => {
   it('should display the "not meeting requirements" message and red cross when user does not meet WDF requirements overall and current staff record does not', async () => {
     const { component, fixture, getByText } = await setup();
     const year = new Date().getFullYear();
-    const expectedStatusMessage = `This record does not meet the WDF ${year} to ${year + 1} requirements`;
+    const expectedStatusMessage = `This staff record does not meet funding requirements, ${year} to ${year + 1}`;
     const redCrossVisuallyHiddenMessage = 'Red cross';
 
     component.worker = workerBuilder() as Worker;
     component.updatedWorker = workerBuilder() as Worker;
 
-    component.exitUrl = { url: [] };
     component.overallWdfEligibility = false;
     component.wdfStartDate = `${year}-01-01`;
-    component.wdfEndDate = `${year+1}-01-01`;
+    component.wdfEndDate = `${year + 1}-01-01`;
     component.workerList = ['1', '2', '3', '4'];
 
     fixture.detectChanges();
@@ -91,29 +90,21 @@ describe('WdfStaffRecordComponent', () => {
     expect(getByText(expectedStatusMessage, { exact: false })).toBeTruthy();
   });
 
-  it('should not display the "not meeting requirements" or "update staff record" message when worker eligible', async () => {
+  it('should display the "meets funding requirements" message when worker is eligible', async () => {
     const { component, fixture, queryByText } = await setup();
     const year = new Date().getFullYear();
-    const redCrossStatusMessage = `This record does not meet the WDF ${year} to ${year + 1} requirements`;
-    const redCrossVisuallyHiddenMessage = 'Red cross';
-
-    const orangeFlagStatusMessage = 'Update this staff record to save yourself time next year';
-    const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
+    const meetsRequirementsMessage = `This staff record meets funding requirements, ${year} to ${year + 1}`;
+    const greenTickVisuallyHiddenMessage = 'Green tick';
 
     component.worker = workerWithWdf() as Worker;
     component.updatedWorker = workerWithWdf() as Worker;
 
-    component.exitUrl = { url: [] };
-    component.overallWdfEligibility = true;
     component.wdfStartDate = `${year}-01-01`;
-    component.wdfEndDate = `${year+1}-01-01`;
+    component.wdfEndDate = `${year + 1}-01-01`;
     component.workerList = ['1', '2', '3', '4'];
     fixture.detectChanges();
 
-    expect(queryByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeFalsy();
-    expect(queryByText(redCrossStatusMessage, { exact: false })).toBeFalsy();
-
-    expect(queryByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeFalsy();
-    expect(queryByText(orangeFlagStatusMessage, { exact: false })).toBeFalsy();
+    expect(queryByText(meetsRequirementsMessage)).toBeTruthy();
+    expect(queryByText(greenTickVisuallyHiddenMessage)).toBeTruthy();
   });
 });
