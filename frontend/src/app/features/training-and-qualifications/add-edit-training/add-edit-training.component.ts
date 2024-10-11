@@ -181,16 +181,6 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
     this.certificateErrors = null;
   }
 
-  public getUploadComponentAriaDescribedBy(): string {
-    if (this.certificateErrors) {
-      return 'uploadCertificate-errors uploadCertificate-aria-text';
-    } else if (this.filesToUpload?.length > 0) {
-      return 'uploadCertificate-aria-text';
-    } else {
-      return 'uploadCertificate-hint uploadCertificate-aria-text';
-    }
-  }
-
   public onSelectFiles(newFiles: File[]): void {
     this.resetUploadFilesError();
     const errors = CustomValidators.validateUploadCertificates(newFiles);
