@@ -351,28 +351,15 @@ describe('AddEditQualificationComponent', () => {
         );
       });
 
-      it('should call certificateService with the selected files on form submit (for existing qualification)', async () => {
-        const mockGetQualificationResponse = {
-          uid: 'mockQualificationUid',
-          qualification: mockQualification,
-          created: '',
-          updated: '',
-          updatedBy: '',
-        };
-
-        const { component, fixture, getByTestId, getByText, certificateService, workerService } = await setup(
-          'mockQualificationUid',
-        );
+      it('should call both `addCertificates` and `updateQualification` if an upload file is selected (for existing qualification)', async () => {
+        const { component, getByTestId, getByText, certificateService, getByLabelText, updateQualificationSpy } =
+          await setupWithExistingQualification();
 
         const addCertificatesSpy = spyOn(certificateService, 'addCertificates').and.returnValue(of('null'));
-        spyOn(workerService, 'getQualification').and.returnValue(of(mockGetQualificationResponse));
-        spyOn(workerService, 'updateQualification').and.returnValue(of(null));
-
-        component.ngOnInit();
-        fixture.autoDetectChanges();
 
         userEvent.upload(getByTestId('fileInput'), mockUploadFile1);
-        userEvent.upload(getByTestId('fileInput'), mockUploadFile2);
+        userEvent.clear(getByLabelText('Year achieved'));
+        userEvent.type(getByLabelText('Year achieved'), '2023');
 
         userEvent.click(getByText('Save and return'));
 
@@ -380,7 +367,14 @@ describe('AddEditQualificationComponent', () => {
           component.workplace.uid,
           component.worker.uid,
           component.qualificationId,
-          [mockUploadFile1, mockUploadFile2],
+          [mockUploadFile1],
+        );
+
+        expect(updateQualificationSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          component.qualificationId,
+          jasmine.objectContaining({ year: 2023 }),
         );
       });
     });
