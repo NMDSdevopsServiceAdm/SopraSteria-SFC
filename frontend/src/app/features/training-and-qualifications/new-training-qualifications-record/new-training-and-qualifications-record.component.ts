@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { TrainingCertificateService, QualificationCertificateService } from '@core/services/certificate.service';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { CertificateUpload, TrainingRecord, TrainingRecordCategory } from '@core/model/training.model';
@@ -15,9 +16,8 @@ import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
-
-import { CustomValidators } from '../../../shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-new-training-and-qualifications-record',
@@ -59,6 +59,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     private router: Router,
     private trainingStatusService: TrainingStatusService,
     private trainingService: TrainingService,
+    private trainingCertificateService: TrainingCertificateService,
+    private qualificationCertificateService: QualificationCertificateService,
     private workerService: WorkerService,
     private alertService: AlertService,
     public viewContainerRef: ViewContainerRef,
@@ -336,7 +338,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   public downloadTrainingCertificate(trainingRecord: TrainingRecord): void {
-    this.trainingService
+    this.trainingCertificateService
       .downloadCertificates(
         this.workplace.uid,
         this.worker.uid,
@@ -366,8 +368,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       return;
     }
 
-    this.trainingService
-      .addCertificateToTraining(this.workplace.uid, this.worker.uid, trainingRecord.uid, files)
+    this.trainingCertificateService
+      .addCertificates(this.workplace.uid, this.worker.uid, trainingRecord.uid, files)
       .subscribe(
         () => {
           this.certificateErrors = {};

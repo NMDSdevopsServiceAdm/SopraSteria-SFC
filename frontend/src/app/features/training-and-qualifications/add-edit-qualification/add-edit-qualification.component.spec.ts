@@ -20,7 +20,7 @@ import { AddEditQualificationComponent } from './add-edit-qualification.componen
 import { QualificationCertificateService } from '@core/services/certificate.service';
 import { MockQualificationCertificateService } from '@core/test-utils/MockCertificationService';
 
-fdescribe('AddEditQualificationComponent', () => {
+describe('AddEditQualificationComponent', () => {
   async function setup(qualificationId = '1', qualificationInService = null, override: any = {}) {
     const { fixture, getByText, getByTestId, queryByText, queryByTestId, getByLabelText, getAllByText } = await render(
       AddEditQualificationComponent,
