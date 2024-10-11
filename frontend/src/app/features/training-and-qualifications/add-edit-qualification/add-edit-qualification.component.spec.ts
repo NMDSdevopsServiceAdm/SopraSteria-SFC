@@ -377,6 +377,16 @@ describe('AddEditQualificationComponent', () => {
           jasmine.objectContaining({ year: 2023 }),
         );
       });
+
+      it('should disable the submit button to prevent it being triggered more than once', async () => {
+        const { fixture, getByText } = await setup(null);
+
+        const submitButton = getByText('Save record') as HTMLButtonElement;
+        userEvent.click(submitButton);
+        fixture.detectChanges();
+
+        expect(submitButton.disabled).toBe(true);
+      });
     });
 
     describe('saved certificates', () => {

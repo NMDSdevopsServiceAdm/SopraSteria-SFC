@@ -58,6 +58,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   private _filesToUpload: File[];
   public filesToRemove: QualificationCertificate[] = [];
   public certificateErrors: string[] | null;
+  public submitButtonDisabled: boolean = false;
 
   constructor(
     private trainingService: TrainingService,
@@ -205,6 +206,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.submitButtonDisabled = true;
     this.qualificationService.clearSelectedQualification();
 
     const { year, notes } = this.form.value;
@@ -299,6 +301,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   }
 
   private onError(error): void {
+    this.submitButtonDisabled = false;
     console.log(error);
   }
 
