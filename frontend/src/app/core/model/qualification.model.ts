@@ -1,4 +1,4 @@
-import { TrainingCertificate } from './training.model';
+import { Certificate } from './trainingAndQualifications.model';
 
 export enum QualificationType {
   NVQ = 'NVQ',
@@ -86,4 +86,4 @@ export interface BasicQualificationRecord {
   year: number;
 }
 
-export interface QualificationCertificate extends TrainingCertificate {}
+export interface QualificationCertificate extends Certificate {}

@@ -1,3 +1,5 @@
+import { Certificate } from './trainingAndQualifications.model';
+
 export interface TrainingCategory {
   id: number;
   seq: number;
@@ -46,11 +48,7 @@ export interface CertificateUpload {
   trainingRecord: TrainingRecord;
 }
 
-export interface TrainingCertificate {
-  uid: string;
-  filename: string;
-  uploadDate: string;
-}
+export interface TrainingCertificate extends Certificate {}
 
 export interface TrainingRecord {
   accredited?: boolean;

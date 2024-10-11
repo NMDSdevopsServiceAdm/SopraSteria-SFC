@@ -15,4 +15,8 @@ export interface TrainingCounts {
   staffMissingMandatoryTraining?: number;
 }
 
-export type Certificate = TrainingCertificate | QualificationCertificate;
+export interface Certificate {
+  uid: string;
+  filename: string;
+  uploadDate: string;
+}
