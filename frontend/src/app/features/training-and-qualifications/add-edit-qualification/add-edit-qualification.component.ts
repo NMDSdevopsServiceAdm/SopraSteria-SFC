@@ -113,23 +113,6 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
               if (this.record.qualificationCertificates) {
                 this.qualificationCertificates = this.record.qualificationCertificates;
               }
-
-              // add temporary mock data to check frontend appearance.
-              // to be removed when getQualification endpoint returns with the certs.
-              // if (this.record.qualificationCertificates === undefined) {
-              //   this.qualificationCertificates = [
-              //     {
-              //       uid: 'uid1',
-              //       filename: 'certificate 2023.pdf',
-              //       uploadDate: '2023-07-01T10:24:31Z',
-              //     },
-              //     {
-              //       uid: 'uid2',
-              //       filename: 'certificate 2024.pdf',
-              //       uploadDate: '2024-05-01T12:34:56Z',
-              //     },
-              //   ];
-              // }
             }
           },
           (error) => {
@@ -271,7 +254,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
 
   private getFilesToDownload(fileIndex: number | null): CertificateDownload[] {
     if (fileIndex !== null) {
-      return [this.qualificationCertificates[fileIndex]].map(this.formatForCertificateDownload);
+      return [this.formatForCertificateDownload(this.qualificationCertificates[fileIndex])];
     }
     return this.qualificationCertificates.map(this.formatForCertificateDownload);
   }
