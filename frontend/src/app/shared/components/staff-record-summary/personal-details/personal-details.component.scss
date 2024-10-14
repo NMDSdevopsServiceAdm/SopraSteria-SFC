@@ -1,17 +1,3 @@
-@import 'govuk-frontend/govuk/base';
-
 .govuk-summary-list__row-above-message {
   border-bottom: none;
-}
-
-.govuk-summary-list__message {
-  margin-bottom: 20px;
-  margin: 100px;
-  background-color: govuk-colour('light-grey');
-}
-
-.message-content {
-  white-space: nowrap;
-  overflow: visible;
-  padding: 10px;
 }

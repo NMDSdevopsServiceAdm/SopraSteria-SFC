@@ -21,6 +21,8 @@ import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplac
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
 import { SanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
 
+import { GroupedRadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { RadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { AddNoteComponent } from './components/add-note/add-note.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
@@ -70,6 +72,7 @@ import { EmploymentComponent } from './components/staff-record-summary/employmen
 import { PersonalDetailsComponent } from './components/staff-record-summary/personal-details/personal-details.component';
 import { QualificationsAndTrainingComponent } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
+import { WdfWarningMessageComponent } from './components/staff-record-summary/wdf-warning-message/wdf-warning-message.component';
 import { StaffRecordsTabComponent } from './components/staff-records-tab/staff-records-tab.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StatusComponent } from './components/status/status.component';
@@ -119,8 +122,6 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { RadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/radio-button-accordion.component';
-import { GroupedRadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -243,6 +244,7 @@ import { GroupedRadioButtonAccordionComponent } from './components/accordions/ra
     NavigateToWorkplaceDropdownComponent,
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
+    WdfWarningMessageComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -361,6 +363,7 @@ import { GroupedRadioButtonAccordionComponent } from './components/accordions/ra
     NavigateToWorkplaceDropdownComponent,
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
+    WdfWarningMessageComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

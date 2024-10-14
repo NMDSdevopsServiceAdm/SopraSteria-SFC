@@ -33,27 +33,7 @@
       ></app-summary-record-change>
     </dd>
   </div>
-  <ng-container *ngIf="wdfView && !worker.dateOfBirth">
-    <div class="govuk-summary-list__row govuk-summary-list__row-above-message govuk-summary-list__message-row">
-      <dt class="govuk-summary-list__key"></dt>
-      <dd class="govuk-summary-list__value govuk-summary-list__message">
-        <div class="message-content">
-          <img
-            alt="Red flag icon"
-            src="/assets/images/Red_flag-WDF_table_(1).svg"
-            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-          />
-          This information needs to be added
-        </div>
-      </dd>
-      <dd class="govuk-summary-list__value govuk-summary-list__message"></dd>
-    </div>
-    <div class="govuk-summary-list__row">
-      <dt class="govuk-!-padding-top-2"></dt>
-      <dd></dd>
-      <dd></dd>
-    </div>
-  </ng-container>
+  <app-wdf-warning-message *ngIf="wdfView && !worker.dateOfBirth"></app-wdf-warning-message>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">National Insurance number</dt>
