@@ -11,12 +11,15 @@
           </caption>
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 30%">Certificate name</th>
-              <th scope="col" class="govuk-table__header" scope="col" style="width: 16.5%">Year achieved</th>
+              <th scope="col" class="govuk-table__header" scope="col" style="width: 43.5%">
+                {{ qualificationType.group }} name
+              </th>
+              <th scope="col" class="govuk-table__header" scope="col" style="width: 37.5%">Year achieved</th>
+              <th scope="col" class="govuk-table__header" scope="col" style="width: 19%">Certificate</th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            <tr class="govuk-table__row" *ngFor="let qualificationRecord of qualificationType.records">
+            <tr class="govuk-table__row" [attr.data-testid]="qualificationRecord.uid" *ngFor="let qualificationRecord of qualificationType.records">
               <td class="govuk-table__cell">
                 <ng-container *ngIf="canEditWorker; else viewOnly">
                   <a
@@ -33,6 +36,31 @@
                 </ng-template>
               </td>
               <td class="govuk-table__cell">{{ qualificationRecord?.year ? qualificationRecord.year : '-' }}</td>
+              <td class="govuk-table__cell">
+                <span *ngIf="qualificationRecord.qualificationCertificates?.length == 1">
+                  <a
+                    href="#"
+                    class="govuk-link govuk-link--no-visited-state"
+                    (click)="handleDownloadCertificate($event, qualificationRecord)"
+                  >
+                    <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
+                      class="govuk-!-margin-left-1"
+                      >Download</span
+                    >
+                    <span class="govuk-visually-hidden"
+                      >the certificate {{ qualificationRecord.qualificationCertificates[0].filename }}</span
+                    >
+                  </a>
+                </span>
+                <span *ngIf="qualificationRecord.qualificationCertificates?.length > 1">
+                  <a [routerLink]="['../training', qualificationRecord.uid]" class="govuk-link govuk-link--no-visited-state">
+                    Select a download
+                  </a>
+                </span>
+                <span *ngIf="qualificationRecord.qualificationCertificates?.length === 0">
+                  <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1" (selectFiles)="handleUploadCertificate($event, qualificationRecord)" />
+                </span>
+              </td>
             </tr>
           </tbody>
         </table>
