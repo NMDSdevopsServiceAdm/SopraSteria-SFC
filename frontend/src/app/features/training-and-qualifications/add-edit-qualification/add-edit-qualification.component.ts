@@ -337,6 +337,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public removeFileToUpload(fileIndexToRemove: number): void {
     const filesToKeep = this.filesToUpload.filter((_file, index) => index !== fileIndexToRemove);
     this.filesToUpload = filesToKeep;
+    this.certificateErrors = [];
   }
 
   public removeSavedFile(fileIndexToRemove: number): void {

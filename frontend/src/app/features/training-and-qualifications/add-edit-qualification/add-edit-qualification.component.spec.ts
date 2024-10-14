@@ -379,7 +379,7 @@ describe('AddEditQualificationComponent', () => {
       });
 
       it('should disable the submit button to prevent it being triggered more than once', async () => {
-        const { fixture, getByText } = await setup(null);
+        const { fixture, getByText } = await setup(null, mockQualification);
 
         const submitButton = getByText('Save record') as HTMLButtonElement;
         userEvent.click(submitButton);
@@ -832,6 +832,23 @@ describe('AddEditQualificationComponent', () => {
           description: /Error: The certificate must be a PDF file/,
         });
         expect(uploadButton).toBeTruthy();
+      });
+
+      it('should clear any error message when remove button of an upload file is clicked', async () => {
+        const { fixture, getByTestId, getByText, queryByText } = await setup(null);
+        fixture.autoDetectChanges();
+
+        const mockUploadFileValid = new File(['some file content'], 'cerfificate.pdf', { type: 'application/pdf' });
+        const mockUploadFileInvalid = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+        userEvent.upload(getByTestId('fileInput'), [mockUploadFileValid]);
+        userEvent.upload(getByTestId('fileInput'), [mockUploadFileInvalid]);
+
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+
+        const removeButton = within(getByText('cerfificate.pdf').parentElement).getByText('Remove');
+        userEvent.click(removeButton);
+
+        expect(queryByText('The certificate must be a PDF file')).toBeFalsy();
       });
     });
   });

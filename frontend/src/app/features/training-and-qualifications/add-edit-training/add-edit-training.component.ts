@@ -197,6 +197,7 @@ export class AddEditTrainingComponent extends AddEditTrainingDirective implement
   public removeFileToUpload(fileIndexToRemove: number): void {
     const filesToKeep = this.filesToUpload.filter((_file, index) => index !== fileIndexToRemove);
     this.filesToUpload = filesToKeep;
+    this.certificateErrors = [];
   }
 
   private uploadNewCertificate(trainingRecordResponse: any) {
