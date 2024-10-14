@@ -1,20 +1,24 @@
+import { cloneDeep } from 'lodash';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Certificate } from '@core/model/trainingAndQualifications.model';
 import { qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { NewQualificationsComponent } from './new-qualifications.component';
 
-describe('NewQualificationsComponent', () => {
-  async function setup() {
-    const { fixture, getByText, getAllByText, queryByText } = await render(NewQualificationsComponent, {
+fdescribe('NewQualificationsComponent', () => {
+  async function setup(override: any = {}) {
+    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
       providers: [],
       componentProperties: {
         canEditWorker: true,
         qualificationsByGroup,
+        ...override,
       },
     });
 
@@ -26,6 +30,7 @@ describe('NewQualificationsComponent', () => {
       getByText,
       getAllByText,
       queryByText,
+      getByTestId,
     };
   }
 
@@ -34,11 +39,16 @@ describe('NewQualificationsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show qualification table headings for each type with records (2)', async () => {
-    const { getAllByText } = await setup();
+  it('should show qualification table headings for each type with records', async () => {
+    const { getByText } = await setup();
 
-    expect(getAllByText('Certificate name').length).toBe(2);
-    expect(getAllByText('Year achieved').length).toBe(2);
+    qualificationsByGroup.groups.forEach((qualificationGroup) => {
+      const typeName = qualificationGroup.group;
+      expect(getByText(`${typeName} name`)).toBeTruthy();
+      const tableHeaders = getByText(`${typeName} name`).parentElement;
+      expect(within(tableHeaders).getByText('Year achieved')).toBeTruthy;
+      expect(within(tableHeaders).getByText('Certificate')).toBeTruthy;
+    });
   });
 
   it('should show Health table row with details of record', async () => {
@@ -162,5 +172,45 @@ describe('NewQualificationsComponent', () => {
       const addQualificationLink = queryByText('Add a qualification record');
       expect(addQualificationLink).toBeFalsy();
     });
+  });
+
+  fdescribe('Qualification certificates', () => {
+    const setupWithCertificates = async (certificates: Certificate[]) => {
+      const qualificationsWithCertificate = cloneDeep(qualificationsByGroup);
+      qualificationsWithCertificate.groups[0].records[0].qualificationCertificates = certificates;
+      return setup({ qualificationsByGroup: qualificationsWithCertificate });
+    };
+
+    it('should display Download link when training record has one certificate associated with it', async () => {
+      const { getByTestId } = await setupWithCertificates([
+        { uid: 'certificate1uid', filename: 'Health 2024.pdf', uploadDate: '20240101T123456Z' },
+      ]);
+
+      const recordRow = getByTestId('firstHealthQualUid');
+      expect(within(recordRow).getByText('Download')).toBeTruthy();
+    });
+
+    it('should trigger download file emitter when Download link is clicked', async () => {});
+
+    it('should display Select a download link when training record has more than one certificate associated with it', async () => {
+      const { getByTestId } = await setupWithCertificates([
+        { uid: 'certificate1uid', filename: 'Health 2023.pdf', uploadDate: '20230101T123456Z' },
+        { uid: 'certificate2uid', filename: 'Health 2024.pdf', uploadDate: '20240101T234516Z' },
+      ]);
+
+      const recordRow = getByTestId('firstHealthQualUid');
+      expect(within(recordRow).getByText('Select a download')).toBeTruthy();
+    });
+
+    it('should have href of training record on Select a download link');
+
+    it('should display Upload file button when training record has no certificates associated with it', async () => {
+      const { getByTestId } = await setupWithCertificates([]);
+
+      const recordRow = getByTestId('firstHealthQualUid');
+      expect(within(recordRow).getByRole('button', { name: 'Upload file' })).toBeTruthy();
+    });
+
+    it('should trigger the upload file emitter when a file is selected by the Upload file button');
   });
 });

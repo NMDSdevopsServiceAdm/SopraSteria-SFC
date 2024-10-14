@@ -84,6 +84,7 @@ export interface BasicQualificationRecord {
   title: string;
   uid: string;
   year: number;
+  qualificationCertificates: QualificationCertificate[];
 }
 
 export interface QualificationCertificate extends Certificate {}
