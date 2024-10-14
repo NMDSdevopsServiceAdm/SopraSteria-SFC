@@ -112,6 +112,14 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
+
+    // add mock data for checking appearance
+    if (!this.qualificationsByGroup?.groups?.[0]?.records?.[0]?.qualificationCertificates) {
+      this.qualificationsByGroup.groups[0].records[0].qualificationCertificates = [
+        { uid: '1', filename: 'cert.pdf', uploadDate: '20240101' },
+      ];
+    }
+
     this.trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
