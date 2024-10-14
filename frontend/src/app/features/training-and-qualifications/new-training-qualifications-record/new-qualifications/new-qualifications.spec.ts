@@ -202,7 +202,16 @@ fdescribe('NewQualificationsComponent', () => {
       expect(within(recordRow).getByText('Select a download')).toBeTruthy();
     });
 
-    it('should have href of training record on Select a download link');
+    it('should have href of training record on Select a download link', async () => {
+      const { getByTestId } = await setupWithCertificates([
+        { uid: 'certificate1uid', filename: 'Health 2023.pdf', uploadDate: '20230101T123456Z' },
+        { uid: 'certificate2uid', filename: 'Health 2024.pdf', uploadDate: '20240101T234516Z' },
+      ]);
+
+      const recordRow = getByTestId('firstHealthQualUid');
+      const selectADownloadLink = within(recordRow).getByText('Select a download');
+      expect(selectADownloadLink.getAttribute('href')).toEqual(`/qualification/firstHealthQualUid`);
+    });
 
     it('should display Upload file button when training record has no certificates associated with it', async () => {
       const { getByTestId } = await setupWithCertificates([]);
