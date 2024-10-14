@@ -1,3 +1,5 @@
+import { Certificate } from './trainingAndQualifications.model';
+
 export enum QualificationType {
   NVQ = 'NVQ',
   Other = 'Other type of qualification',
@@ -44,8 +46,9 @@ export interface QualificationResponse {
   updated: string;
   updatedBy: string;
   qualification: Qualification;
-  year: number;
-  notes: string;
+  year?: number;
+  notes?: string;
+  qualificationCertificates?: QualificationCertificate[];
 }
 
 export interface Qualification {
@@ -82,3 +85,5 @@ export interface BasicQualificationRecord {
   uid: string;
   year: number;
 }
+
+export interface QualificationCertificate extends Certificate {}

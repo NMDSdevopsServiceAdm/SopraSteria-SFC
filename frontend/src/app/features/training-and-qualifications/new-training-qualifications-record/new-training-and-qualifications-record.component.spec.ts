@@ -27,6 +27,8 @@ import userEvent from '@testing-library/user-event';
 import { TrainingRecord, TrainingRecords } from '@core/model/training.model';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
+import { TrainingCertificateService } from '@core/services/certificate.service';
+import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
 
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
@@ -315,6 +317,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           { provide: EstablishmentService, useClass: MockEstablishmentService },
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           { provide: PermissionsService, useClass: MockPermissionsService },
+          { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
         ],
       },
     );
@@ -332,6 +335,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     const workerService = injector.inject(WorkerService) as WorkerService;
     const trainingService = injector.inject(TrainingService) as TrainingService;
+    const trainingCertificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
 
     const workerSpy = spyOn(workerService, 'setReturnTo');
     workerSpy.and.callThrough();
@@ -361,6 +365,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       alertSpy,
       pdfTrainingAndQualsService,
       parentSubsidiaryViewService,
+      trainingCertificateService,
     };
   }
 
@@ -821,13 +826,15 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       ];
 
       it('should download a certificate file when download link of a certificate row is clicked', async () => {
-        const { getByTestId, component, trainingService } = await setup(false, true, mockTrainings);
+        const { getByTestId, component, trainingCertificateService } = await setup(false, true, mockTrainings);
         const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
         const trainingRecordRow = getByTestId(uidForTrainingRecord);
         const downloadLink = within(trainingRecordRow).getByText('Download');
 
-        const downloadCertificatesSpy = spyOn(trainingService, 'downloadCertificates').and.returnValue(of(null));
+        const downloadCertificatesSpy = spyOn(trainingCertificateService, 'downloadCertificates').and.returnValue(
+          of(null),
+        );
 
         userEvent.click(downloadLink);
         expect(downloadCertificatesSpy).toHaveBeenCalledWith(
@@ -839,7 +846,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should call triggerCertificateDownloads with file returned from downloadCertificates', async () => {
-        const { getByTestId, trainingService } = await setup(false, true, mockTrainings);
+        const { getByTestId, trainingCertificateService } = await setup(false, true, mockTrainings);
         const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
         const trainingRecordRow = getByTestId(uidForTrainingRecord);
@@ -848,10 +855,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           { filename: 'test.pdf', signedUrl: 'signedUrl.com/1872ec19-510d-41de-995d-6abfd3ae888a' },
         ];
 
-        const triggerCertificateDownloadsSpy = spyOn(trainingService, 'triggerCertificateDownloads').and.returnValue(
-          of(null),
-        );
-        spyOn(trainingService, 'getCertificateDownloadUrls').and.returnValue(
+        const triggerCertificateDownloadsSpy = spyOn(
+          trainingCertificateService,
+          'triggerCertificateDownloads',
+        ).and.returnValue(of(null));
+        spyOn(trainingCertificateService, 'getCertificateDownloadUrls').and.returnValue(
           of({ files: filesReturnedFromDownloadCertificates }),
         );
 
@@ -861,14 +869,14 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should display an error message on the training category when certificate download fails', async () => {
-        const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, mockTrainings);
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, mockTrainings);
 
         const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
         const trainingRecordRow = getByTestId(uidForTrainingRecord);
         const downloadLink = within(trainingRecordRow).getByText('Download');
 
-        spyOn(trainingService, 'downloadCertificates').and.returnValue(throwError('403 forbidden'));
+        spyOn(trainingCertificateService, 'downloadCertificates').and.returnValue(throwError('403 forbidden'));
 
         userEvent.click(downloadLink);
         fixture.detectChanges();
@@ -881,8 +889,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const mockUploadFile = new File(['some file content'], 'certificate.pdf');
 
       it('should upload a file when a file is selected from Upload file button', async () => {
-        const { component, getByTestId, trainingService } = await setup(false, true, []);
-        const uploadCertificateSpy = spyOn(trainingService, 'addCertificateToTraining').and.returnValue(of(null));
+        const { component, getByTestId, trainingCertificateService } = await setup(false, true, []);
+        const uploadCertificateSpy = spyOn(trainingCertificateService, 'addCertificates').and.returnValue(of(null));
 
         const trainingRecordRow = getByTestId('someHealthuid');
 
@@ -901,8 +909,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       it('should show an error message when a non pdf file is selected', async () => {
         const invalidFile = new File(['some file content'], 'certificate.csv');
 
-        const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, []);
-        const uploadCertificateSpy = spyOn(trainingService, 'addCertificateToTraining');
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, []);
+        const uploadCertificateSpy = spyOn(trainingCertificateService, 'addCertificates');
 
         const trainingRecordRow = getByTestId('someHealthuid');
 
@@ -922,8 +930,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           value: 600 * 1024, // 600 KB
         });
 
-        const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, []);
-        const uploadCertificateSpy = spyOn(trainingService, 'addCertificateToTraining');
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, []);
+        const uploadCertificateSpy = spyOn(trainingCertificateService, 'addCertificates');
 
         const trainingRecordRow = getByTestId('someHealthuid');
 
@@ -938,7 +946,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should refresh the training record and display an alert of "Certificate uploaded" on successful upload', async () => {
-        const { fixture, alertSpy, getByTestId, workerService, trainingService } = await setup(false, true, []);
+        const { fixture, alertSpy, getByTestId, workerService, trainingCertificateService } = await setup(
+          false,
+          true,
+          [],
+        );
         const mockUpdatedData = {
           training: mockTrainingData,
           qualifications: { count: 0, groups: [], lastUpdated: null },
@@ -946,7 +958,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         const workerSpy = spyOn(workerService, 'getAllTrainingAndQualificationRecords').and.returnValue(
           of(mockUpdatedData),
         );
-        spyOn(trainingService, 'addCertificateToTraining').and.returnValue(of(null));
+        spyOn(trainingCertificateService, 'addCertificates').and.returnValue(of(null));
 
         const trainingRecordRow = getByTestId('someHealthuid');
         const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
@@ -963,8 +975,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should display an error message on the training category when certificate upload fails', async () => {
-        const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, []);
-        spyOn(trainingService, 'addCertificateToTraining').and.returnValue(throwError('failed to upload'));
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, []);
+        spyOn(trainingCertificateService, 'addCertificates').and.returnValue(throwError('failed to upload'));
 
         const trainingRecordRow = getByTestId('someHealthuid');
         const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
