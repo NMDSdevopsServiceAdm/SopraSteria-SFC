@@ -8,6 +8,7 @@ import { Contracts } from '@core/model/contracts.enum';
 import { Establishment } from '@core/model/establishment.model';
 import { Eligibility } from '@core/model/wdf.model';
 import { Worker, WorkerDays, WorkerEditResponse } from '@core/model/worker.model';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
@@ -21,10 +22,9 @@ import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
-import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('StaffRecordSummaryComponent', () => {
-  const setup = async () => {
+  const setup = async (overrides: any = {}) => {
     const { fixture, getByText, queryByText, getAllByText } = await render(StaffRecordSummaryComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
       providers: [
@@ -41,9 +41,9 @@ describe('StaffRecordSummaryComponent', () => {
         WdfConfirmFieldsService,
       ],
       componentProperties: {
-        wdfView: true,
+        wdfView: overrides.wdfView ?? true,
         workplace: establishmentBuilder() as Establishment,
-        worker: workerWithWdf() as Worker,
+        worker: overrides.worker ?? (workerWithWdf() as Worker),
       },
     });
 
@@ -775,6 +775,36 @@ describe('StaffRecordSummaryComponent', () => {
       fixture.detectChanges();
 
       expect(getByText('Meeting requirements')).toBeTruthy();
+    });
+  });
+
+  describe('Add this information messages for WDF', () => {
+    it('should show this information needs to be added message when worker is not eligible and needs to add DOB', async () => {
+      const worker = workerWithWdf() as Worker;
+      worker.dateOfBirth = null;
+      worker.wdf.isEligible = false;
+
+      const { getByText } = await setup();
+
+      expect(getByText('This information needs to be added')).toBeTruthy();
+    });
+
+    it('should not show this information needs to be added message when worker is not eligible but has added DOB', async () => {
+      const worker = workerWithWdf() as Worker;
+      worker.dateOfBirth = '01/01/1999';
+
+      const { queryByText } = await setup({ worker });
+
+      expect(queryByText('This information needs to be added')).toBeFalsy();
+    });
+
+    it('should not show this information needs to be added message when worker does not have DOB added but not in WDF view', async () => {
+      const worker = workerWithWdf() as Worker;
+      worker.dateOfBirth = '';
+
+      const { queryByText } = await setup({ worker, wdfView: false });
+
+      expect(queryByText('This information needs to be added')).toBeFalsy();
     });
   });
 

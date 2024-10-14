@@ -1,8 +1,11 @@
 <h2 class="govuk-heading-m">Personal details</h2>
 <dl class="govuk-summary-list asc-summarylist-border-top">
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key govuk-!-width-one-half">Date of birth</dt>
-    <dd class="govuk-summary-list__value govuk-list--inline govuk-!-padding-left-9">
+  <div
+    class="govuk-summary-list__row"
+    [ngClass]="{ 'govuk-summary-list__row-above-message': wdfView && !worker.dateOfBirth }"
+  >
+    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-right-0">Date of birth</dt>
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.dateOfBirth"
@@ -30,14 +33,35 @@
       ></app-summary-record-change>
     </dd>
   </div>
+  <ng-container *ngIf="wdfView && !worker.dateOfBirth">
+    <div class="govuk-summary-list__row govuk-summary-list__row-above-message govuk-summary-list__message-row">
+      <dt class="govuk-summary-list__key"></dt>
+      <dd class="govuk-summary-list__value govuk-summary-list__message">
+        <div class="message-content">
+          <img
+            alt="Red flag icon"
+            src="/assets/images/Red_flag-WDF_table_(1).svg"
+            class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
+          />
+          This information needs to be added
+        </div>
+      </dd>
+      <dd class="govuk-summary-list__value govuk-summary-list__message"></dd>
+    </div>
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-!-padding-top-2"></dt>
+      <dd></dd>
+      <dd></dd>
+    </div>
+  </ng-container>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">National Insurance number</dt>
     <ng-container *ngIf="!worker.nationalInsuranceNumber; else hasNino">
-      <dd class="govuk-summary-list__value govuk-!-padding-left-9">-</dd>
+      <dd class="govuk-summary-list__value govuk-!-padding-left-2">-</dd>
     </ng-container>
     <ng-template #hasNino>
-      <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+      <dd class="govuk-summary-list__value govuk-!-padding-left-2">
         <div class="govuk-!-display-inline-block govuk-!-width-one-third">
           {{ ninoHidden ? '*********' : worker.nationalInsuranceNumber }}
         </div>
@@ -63,7 +87,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Home postcode</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.postcode || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -79,7 +103,7 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Gender identity</dt>
 
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.gender"
@@ -100,7 +124,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Disabled</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ showDisability || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -115,7 +139,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Ethnic group</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ ethnicGroupData || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -130,7 +154,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Ethnic background</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ ethnicityData || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -145,7 +169,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Nationality</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.nationality"
@@ -170,7 +194,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayBritishCitizenship">
     <dt class="govuk-summary-list__key">British citizenship</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.britishCitizenship | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -185,7 +209,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Country of birth</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{
         worker.countryOfBirth?.other?.country !== null
           ? worker.countryOfBirth?.other?.country
@@ -204,7 +228,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayYearArrived">
     <dt class="govuk-summary-list__key">Year arrived in the UK</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
