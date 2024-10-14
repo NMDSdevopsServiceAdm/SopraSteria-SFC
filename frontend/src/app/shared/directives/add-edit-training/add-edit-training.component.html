@@ -205,7 +205,7 @@
                 <button
                   type="button"
                   (click)="toggleNotesOpen()"
-                  class="govuk-accordion__show-all"
+                  class="govuk-accordion__show-all govuk-!-margin-bottom-0"
                   [attr.aria-expanded]="notesOpen"
                 >
                   <span
@@ -217,7 +217,7 @@
                   ></span>
                   <span class="govuk-accordion__show-all-text">{{ !notesOpen ? 'Open notes' : 'Close notes' }}</span>
                 </button>
-                <div data-testid="notesSection" [ngClass]="{ 'govuk-visually-hidden': !notesOpen }">
+                <div data-testid="notesSection"  class="govuk-!-margin-top-3 govuk-!-padding-bottom-1" [ngClass]="{ 'govuk-visually-hidden': !notesOpen }">
                   <textarea
                     class="govuk-textarea"
                     [class.govuk-textarea--error]="submitted && form.get('notes').invalid"
