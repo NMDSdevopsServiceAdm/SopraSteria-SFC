@@ -25,7 +25,7 @@ import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
 describe('StaffRecordSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, queryByText, getAllByText } = await render(StaffRecordSummaryComponent, {
+    const { fixture, getByText, queryByText, getAllByText, getByAltText } = await render(StaffRecordSummaryComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
       providers: [
         InternationalRecruitmentService,
@@ -44,6 +44,7 @@ describe('StaffRecordSummaryComponent', () => {
         wdfView: overrides.wdfView ?? true,
         workplace: establishmentBuilder() as Establishment,
         worker: overrides.worker ?? (workerWithWdf() as Worker),
+        overallWdfEligibility: overrides.overallWdfEligibility ?? false,
       },
     });
 
@@ -52,7 +53,16 @@ describe('StaffRecordSummaryComponent', () => {
     const workerService = injector.inject(WorkerService) as WorkerService;
     const wdfConfirmFieldsService = injector.inject(WdfConfirmFieldsService) as WdfConfirmFieldsService;
 
-    return { component, fixture, getByText, queryByText, workerService, wdfConfirmFieldsService, getAllByText };
+    return {
+      component,
+      fixture,
+      getByText,
+      queryByText,
+      workerService,
+      wdfConfirmFieldsService,
+      getAllByText,
+      getByAltText,
+    };
   };
   const eligibleObject = {
     isEligible: Eligibility.YES,
@@ -784,9 +794,10 @@ describe('StaffRecordSummaryComponent', () => {
       worker.dateOfBirth = null;
       worker.wdf.isEligible = false;
 
-      const { getByText } = await setup();
+      const { getByText, getByAltText } = await setup();
 
       expect(getByText('This information needs to be added')).toBeTruthy();
+      expect(getByAltText('Red flag icon')).toBeTruthy();
     });
 
     it('should not show this information needs to be added message when worker is not eligible but has added DOB', async () => {
@@ -805,6 +816,16 @@ describe('StaffRecordSummaryComponent', () => {
       const { queryByText } = await setup({ worker, wdfView: false });
 
       expect(queryByText('This information needs to be added')).toBeFalsy();
+    });
+
+    it('should show add this information message when worker does not have DOB added but workplace has met WDF eligibility', async () => {
+      const worker = workerWithWdf() as Worker;
+      worker.dateOfBirth = '';
+
+      const { queryByText, getByAltText } = await setup({ worker, overallWdfEligibility: true });
+
+      expect(queryByText('Add this information')).toBeTruthy();
+      expect(getByAltText('Orange flag icon')).toBeTruthy();
     });
   });
 

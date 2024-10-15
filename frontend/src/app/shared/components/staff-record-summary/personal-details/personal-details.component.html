@@ -33,7 +33,10 @@
       ></app-summary-record-change>
     </dd>
   </div>
-  <app-wdf-warning-message *ngIf="wdfView && !worker.dateOfBirth"></app-wdf-warning-message>
+  <app-wdf-warning-message
+    *ngIf="wdfView && !worker.dateOfBirth"
+    [overallWdfEligibility]="overallWdfEligibility"
+  ></app-wdf-warning-message>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">National Insurance number</dt>
