@@ -1,7 +1,11 @@
 import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
-import { QualificationsByGroup } from '@core/model/qualification.model';
-import { BasicQualificationRecord } from '../../../../core/model/qualification.model';
-import { CertificateUpload } from '@core/model/training.model';
+import {
+  QualificationsByGroup,
+  QualificationCertificateDownloadEvent,
+  QualificationCertificateUploadEvent,
+  BasicQualificationRecord,
+  QualificationType,
+} from '@core/model/qualification.model';
 
 @Component({
   selector: 'app-new-qualifications',
@@ -11,7 +15,17 @@ export class NewQualificationsComponent {
   @Input() qualificationsByGroup: QualificationsByGroup;
   @Input() canEditWorker: boolean;
   @Input() public certificateErrors: Record<string, string> = {};
-  @Output() public downloadFile = new EventEmitter<BasicQualificationRecord>();
-  @Output() public uploadFile = new EventEmitter<CertificateUpload>();
+  @Output() public downloadFile = new EventEmitter<QualificationCertificateDownloadEvent>();
+  @Output() public uploadFile = new EventEmitter<QualificationCertificateUploadEvent>();
   @ViewChild('content') public content: ElementRef;
+
+  public handleDownloadCertificate(event: Event, qualificationRecord: BasicQualificationRecord) {
+    event.preventDefault();
+    this.downloadFile.emit({
+      recordType: 'qualification',
+      recordUid: qualificationRecord.uid,
+      qualificationType: 'Awards' as QualificationType,
+      filesToDownload: qualificationRecord.qualificationCertificates,
+    });
+  }
 }

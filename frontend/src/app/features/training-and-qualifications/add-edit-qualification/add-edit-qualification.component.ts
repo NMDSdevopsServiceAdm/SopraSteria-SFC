@@ -16,8 +16,7 @@ import {
   QualificationResponse,
   QualificationType,
 } from '@core/model/qualification.model';
-import { CertificateDownload } from '@core/model/training.model';
-import { Certificate } from '@core/model/trainingAndQualifications.model';
+import { Certificate, CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { QualificationCertificateService } from '@core/services/certificate.service';
