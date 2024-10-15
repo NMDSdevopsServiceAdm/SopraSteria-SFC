@@ -1,3 +1,5 @@
+const WorkerCertificateService = require('./workerCertificateService');
+
 const express = require('express');
 
 const models = require('../../../models');
@@ -6,7 +8,7 @@ const { hasPermission } = require('../../../utils/security/hasPermission');
 const router = express.Router({ mergeParams: true });
 
 const initialiseCertificateService = () => {
-  return new WorkerCertificateService(models.trainingCertificates, models.workerTraining, 'training');
+  return WorkerCertificateService.initialiseTraining();
 }
 
 const formatRequest = (req) => {

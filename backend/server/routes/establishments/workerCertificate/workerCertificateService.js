@@ -10,15 +10,28 @@ const uploadSignedUrlExpire = config.get('workerCertificate.uploadSignedUrlExpir
 const downloadSignedUrlExpire = config.get('workerCertificate.downloadSignedUrlExpire');
 const HttpError = require('../../../utils/errors/httpError');
 
-export class WorkerCertificateService {
+class WorkerCertificateService {
   certificatesModel;
   certificateTypeModel;
   recordType;
 
-  constructor(certificatesModel, certificateTypeModel, certificateType) {
-    this.certificatesModel = certificatesModel;
-    this.certificateTypeModel = certificateTypeModel;
-    this.recordType = this.recordType;
+  static initialiseQualifications = () => {
+    const service = new WorkerCertificateService();
+    service.certificatesModel = models.qualificationCertificates;
+    service.certificateTypeModel = models.workerQualifications;
+    service.recordType = 'qualification';
+    return service;
+  }
+
+  static initialiseTraining = () => {
+    const service = new WorkerCertificateService();
+    service.certificatesModel = models.trainingCertificates;
+    service.certificateTypeModel = models.workerTraining;
+    service.recordType = 'training';
+    return service;
+  }
+
+  constructor() {
   }
 
   makeFileKey = (establishmentUid, workerId, recordUid, fileId) => {
@@ -26,7 +39,6 @@ export class WorkerCertificateService {
   };
 
   requestUploadUrl = async ({files, params}) => {
-    const { files } = body;
     const { id, workerId, recordUid } = params;
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);
@@ -41,7 +53,7 @@ export class WorkerCertificateService {
     for (const file of files) {
       const filename = file.filename;
       const fileId = uuidv4();
-      const key = makeFileKey(id, workerId, recordUid, fileId);
+      const key = this.makeFileKey(id, workerId, recordUid, fileId);
       const signedUrl = await s3.getSignedUrlForUpload({
         bucket: certificateBucket,
         key,
@@ -50,13 +62,12 @@ export class WorkerCertificateService {
       responsePayload.push({ filename, signedUrl, fileId, key });
     }
 
-    return { files: responsePayload };
+    return responsePayload;
   };
 
   confirmUpload = async (req) => {
-    const { establishmentId } = req;
+    const { establishmentId, files } = req;
     const { recordUid } = req.params;
-    const { files } = req.body;
 
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);
@@ -70,12 +81,12 @@ export class WorkerCertificateService {
     });
 
     if (!record) {
-      throw new HttpError(`Failed to find related ${recordType} record`, 400);
+      throw new HttpError(`Failed to find related ${this.recordType} record`, 400);
     }
 
     const { workerFk, id } = record.dataValues;
 
-    const etagsMatchRecord = await verifyEtagsForAllFiles(establishmentId, files);
+    const etagsMatchRecord = await this.verifyEtagsForAllFiles(establishmentId, files);
     if (!etagsMatchRecord) {
       throw new HttpError('Failed to verify files on S3', 400);
     }
@@ -112,7 +123,7 @@ export class WorkerCertificateService {
     const { id, workerId, recordUid } = params;
 
     if (!files || !files.length) {
-      return res.status(400).send('No files provided in request body');
+      throw new HttpError('No files provided in request body', 400);
     }
 
     const responsePayload = [];
@@ -120,13 +131,13 @@ export class WorkerCertificateService {
     for (const file of files) {
       const signedUrl = await s3.getSignedUrlForDownload({
         bucket: certificateBucket,
-        key: makeFileKey(id, workerId, recordUid, file.uid),
+        key: this.makeFileKey(id, workerId, recordUid, file.uid),
         options: { expiresIn: downloadSignedUrlExpire },
       });
       responsePayload.push({ signedUrl, filename: file.filename });
     }
 
-    return responsePayload;
+    return { files: responsePayload };
   };
 
   deleteRecordsFromDatabase = async (uids) => {
@@ -134,7 +145,6 @@ export class WorkerCertificateService {
       await this.certificatesModel.deleteCertificate(uids);
       return true;
     } catch (error) {
-      console.log(error);
       return false;
     }
   };
@@ -150,19 +160,19 @@ export class WorkerCertificateService {
     }
   };
 
-  deleteCertificates = async (req, res) => {
-    const { filesToDelete } = req.body;
+  deleteCertificates = async (req) => {
+    const { files } = req;
     const { id, workerId, recordUid } = req.params;
 
-    if (!filesToDelete || !filesToDelete.length) {
+    if (!files || !files.length) {
       throw new HttpError('No files provided in request body', 400);
     }
 
     let filesToDeleteFromS3 = [];
     let filesToDeleteFromDatabase = [];
 
-    for (const file of filesToDelete) {
-      let fileKey = makeFileKey(id, workerId, recordUid, file.uid);
+    for (const file of files) {
+      let fileKey = this.makeFileKey(id, workerId, recordUid, file.uid);
 
       filesToDeleteFromDatabase.push(file.uid);
       filesToDeleteFromS3.push({ Key: fileKey });
@@ -177,15 +187,19 @@ export class WorkerCertificateService {
         throw new HttpError('Invalid request', 400);
       }
 
-      const deletionFromDatabase = await deleteRecordsFromDatabase(filesToDeleteFromDatabase);
+      const deletionFromDatabase = await this.deleteRecordsFromDatabase(filesToDeleteFromDatabase);
       if (!deletionFromDatabase) {
         throw new HttpError(undefined, 500);
       }
     } catch (error) {
-      console.log(error);
+      if (error.statusCode !== undefined) {
+        throw error;
+      }
       throw new HttpError(undefined, 500);
     }
 
-    await deleteCertificatesFromS3(filesToDeleteFromS3);
+    await this.deleteCertificatesFromS3(filesToDeleteFromS3);
   };
 }
+
+module.exports = WorkerCertificateService;

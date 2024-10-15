@@ -1,22 +1,24 @@
-const express = require('express');
+const WorkerCertificateService = require('./workerCertificateService');
 
+const express = require('express');
 const models = require('../../../models');
 
 const { hasPermission } = require('../../../utils/security/hasPermission');
 const router = express.Router({ mergeParams: true });
 
 const initialiseCertificateService = () => {
-  return new WorkerCertificateService(models.qualificationCertificates, models.workerQualifications, 'qualification');
+  return WorkerCertificateService.initialiseQualifications();
 }
 
 const formatRequest = (req) => {
     return {
-    files: req.body,
-    params: {
-      id: req.params.id,
-      workerId: req.params.workerId,
-      recordUid: req.params.trainingUid
-    }
+      files: req.body.files,
+      establishmentId: req.establishmentId,
+      params: {
+        id: req.params.id,
+        workerId: req.params.workerId,
+        recordUid: req.params.trainingUid
+      }
   };
 }
 

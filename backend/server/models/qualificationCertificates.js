@@ -95,5 +95,5 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  return QualificationsCertificates;
+  return QualificationCertificates;
 };
