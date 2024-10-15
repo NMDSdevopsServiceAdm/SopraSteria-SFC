@@ -797,6 +797,7 @@ describe('StaffRecordSummaryComponent', () => {
     [
       { name: 'dateOfBirth', validResponse: '01/01/1999' },
       { name: 'gender', validResponse: 'Male' },
+      { name: 'nationality', validResponse: { value: 'British' } },
     ].forEach((field) => {
       it(`should show this information needs to be added message when worker is not eligible and needs to add ${field.name}`, async () => {
         const worker = workerWithWdf() as Worker;

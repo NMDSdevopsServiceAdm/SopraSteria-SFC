@@ -147,20 +147,20 @@
     </dd>
   </div>
 
-  <div class="govuk-summary-list__row">
+  <div
+    class="govuk-summary-list__row"
+    [ngClass]="{
+      'govuk-summary-list__row-above-message':
+        wdfView && !(worker.nationality?.value || worker.nationality?.other?.nationality)
+    }"
+  >
     <dt class="govuk-summary-list__key">Nationality</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.nationality"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        {{
-          worker.nationality?.other?.nationality !== null
-            ? worker.nationality?.other?.nationality
-            : (worker.nationality?.value | closedEndedAnswer)
-        }}
-      </app-summary-record-value>
+      {{
+        worker.nationality?.other?.nationality !== null
+          ? worker.nationality?.other?.nationality
+          : (worker.nationality?.value | closedEndedAnswer)
+      }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
@@ -171,6 +171,11 @@
       ></app-summary-record-change>
     </dd>
   </div>
+  <app-wdf-warning-message
+    *ngIf="wdfView && !(worker.nationality?.value || worker.nationality?.other?.nationality)"
+    [overallWdfEligibility]="overallWdfEligibility"
+    data-testid="nationalityWdfWarning"
+  ></app-wdf-warning-message>
 
   <div class="govuk-summary-list__row" *ngIf="displayBritishCitizenship">
     <dt class="govuk-summary-list__key">British citizenship</dt>
