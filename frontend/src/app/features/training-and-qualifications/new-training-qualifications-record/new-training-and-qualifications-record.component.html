@@ -215,8 +215,8 @@
     [canEditWorker]="canEditWorker"
     [setReturnRoute]="setReturnRoute"
     [missingMandatoryTraining]="missingMandatoryTraining.length > 0"
-    (downloadFile)="downloadTrainingCertificate($event)"
-    (uploadFile)="uploadTrainingCertificate($event)"
+    (downloadFile)="downloadCertificate($event)"
+    (uploadFile)="uploadCertificate($event)"
     [certificateErrors]="certificateErrors"
   >
   </app-new-training>
@@ -226,8 +226,8 @@
     [trainingType]="'Non-mandatory training'"
     [canEditWorker]="canEditWorker"
     [setReturnRoute]="setReturnRoute"
-    (downloadFile)="downloadTrainingCertificate($event)"
-    (uploadFile)="uploadTrainingCertificate($event)"
+    (downloadFile)="downloadCertificate($event)"
+    (uploadFile)="uploadCertificate($event)"
     [certificateErrors]="certificateErrors"
   >
   </app-new-training>

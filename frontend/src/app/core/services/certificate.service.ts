@@ -5,7 +5,6 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
-  CertificateDownload,
   ConfirmUploadRequest,
   DownloadCertificateSignedUrlResponse,
   FileInfoWithETag,
@@ -13,7 +12,7 @@ import {
   UploadCertificateSignedUrlRequest,
   UploadCertificateSignedUrlResponse,
 } from '@core/model/training.model';
-import { Certificate } from '@core/model/trainingAndQualifications.model';
+import { Certificate, CertificateDownload } from '@core/model/trainingAndQualifications.model';
 
 @Injectable({
   providedIn: 'root',

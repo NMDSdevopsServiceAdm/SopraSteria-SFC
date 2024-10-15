@@ -3,7 +3,8 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
-import { CertificateDownload, TrainingCertificate } from '@core/model/training.model';
+import { TrainingCertificate } from '@core/model/training.model';
+import { CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCertificateService } from '@core/services/certificate.service';
@@ -11,11 +12,10 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
+import { AddEditTrainingDirective } from '@shared/directives/add-edit-training/add-edit-training.directive';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import dayjs from 'dayjs';
 import { mergeMap } from 'rxjs/operators';
-
-import { AddEditTrainingDirective } from '../../../shared/directives/add-edit-training/add-edit-training.directive';
 
 @Component({
   selector: 'app-add-edit-training',

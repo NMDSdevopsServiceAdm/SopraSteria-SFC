@@ -9,15 +9,16 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 
 import { NewQualificationsComponent } from './new-qualifications.component';
+import userEvent from '@testing-library/user-event';
 
-fdescribe('NewQualificationsComponent', () => {
+describe('NewQualificationsComponent', () => {
   async function setup(override: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
       providers: [],
       componentProperties: {
         canEditWorker: true,
-        qualificationsByGroup,
+        qualificationsByGroup: cloneDeep(qualificationsByGroup),
         ...override,
       },
     });
@@ -174,7 +175,7 @@ fdescribe('NewQualificationsComponent', () => {
     });
   });
 
-  fdescribe('Qualification certificates', () => {
+  describe('Qualification certificates', () => {
     const setupWithCertificates = async (certificates: Certificate[]) => {
       const qualificationsWithCertificate = cloneDeep(qualificationsByGroup);
       qualificationsWithCertificate.groups[0].records[0].qualificationCertificates = certificates;
@@ -190,7 +191,18 @@ fdescribe('NewQualificationsComponent', () => {
       expect(within(recordRow).getByText('Download')).toBeTruthy();
     });
 
-    it('should trigger download file emitter when Download link is clicked', async () => {});
+    it('should trigger download file emitter when Download link is clicked', async () => {
+      const { getByTestId, component } = await setupWithCertificates([
+        { uid: 'certificate1uid', filename: 'Health 2024.pdf', uploadDate: '20240101T123456Z' },
+      ]);
+      const downloadFileSpy = spyOn(component.downloadFile, 'emit');
+
+      const recordRow = getByTestId('firstHealthQualUid');
+      userEvent.click(within(recordRow).getByText('Download'));
+
+      expect(downloadFileSpy).toHaveBeenCalled();
+      // TODO: assert about argument
+    });
 
     it('should display Select a download link when training record has more than one certificate associated with it', async () => {
       const { getByTestId } = await setupWithCertificates([
