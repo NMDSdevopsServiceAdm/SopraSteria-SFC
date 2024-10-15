@@ -24,7 +24,7 @@ import { of, throwError } from 'rxjs';
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 import userEvent from '@testing-library/user-event';
-import { TrainingRecord, TrainingRecords } from '@core/model/training.model';
+import { TrainingRecord, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { TrainingCertificateService } from '@core/services/certificate.service';
@@ -112,15 +112,29 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
     ],
   };
 
-  async function setup(
-    otherJob = false,
-    careCert = true,
-    mandatoryTraining = [],
-    jobRoleMandatoryTraining = [],
-    noQualifications = false,
-    fragment = 'all-records',
-    isOwnWorkplace = true,
-  ) {
+  interface SetupProps {
+    otherJob: boolean;
+    careCert: boolean;
+    mandatoryTraining: TrainingRecordCategory[];
+    noQualifications: boolean;
+    fragment: 'all-records' | 'mandatory-training' | 'non-mandatory-training' | 'qualifications';
+    isOwnWorkplace: boolean;
+  }
+  const defaultProps: SetupProps = {
+    otherJob: false,
+    careCert: true,
+    mandatoryTraining: [],
+    noQualifications: false,
+    fragment: 'all-records',
+    isOwnWorkplace: true,
+  };
+
+  async function setup(props: Partial<SetupProps> = {}) {
+    const { otherJob, careCert, mandatoryTraining, noQualifications, fragment, isOwnWorkplace } = {
+      ...defaultProps,
+      ...props,
+    };
+
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -151,7 +165,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
                     careCertificate: careCert ? 'Yes, in progress or partially completed' : null,
                   },
                   trainingAndQualificationRecords: {
-                    training: { ...mockTrainingData, jobRoleMandatoryTraining, mandatory: mandatoryTraining },
+                    training: { ...mockTrainingData, mandatory: mandatoryTraining },
                     qualifications: noQualifications
                       ? { count: 0, groups: [], lastUpdated: null }
                       : qualificationsByGroup,
@@ -429,7 +443,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should show not answered if no care certificate value', async () => {
-      const { getByText } = await setup(false, false);
+      const { getByText } = await setup({ otherJob: false, careCert: false });
 
       expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
       expect(getByText('Not answered', { exact: false })).toBeTruthy();
@@ -640,7 +654,9 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
 
     describe('mandatory training tab', async () => {
       it('should show the Mandatory training tab as active when on training record page with fragment mandatory-training', async () => {
-        const { getByTestId } = await setup(false, true, [], [], false, 'mandatory-training');
+        const { getByTestId } = await setup({
+          fragment: 'mandatory-training',
+        });
 
         expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
         expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
@@ -657,7 +673,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should render 1 instances of the new-training component when on mandatory training tab', async () => {
-        const { fixture } = await setup(false, true, [], [], false, 'mandatory-training');
+        const { fixture } = await setup({ fragment: 'mandatory-training' });
 
         expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
       });
@@ -681,7 +697,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
 
     describe('non mandatory training tab', async () => {
       it('should show the non Mandatory training tab as active when on training record page with fragment non-mandatory-training', async () => {
-        const { getByTestId } = await setup(false, true, [], [], false, 'non-mandatory-training');
+        const { getByTestId } = await setup({ fragment: 'non-mandatory-training' });
 
         expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
         expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
@@ -694,7 +710,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should render 1 instances of the new-training component when on non mandatory training tab', async () => {
-        const { fixture } = await setup(false, true, [], [], false, 'non-mandatory-training');
+        const { fixture } = await setup({ fragment: 'non-mandatory-training' });
 
         expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
       });
@@ -718,7 +734,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
 
     describe('qualifications tab', async () => {
       it('should show the qualifications tab as active when on training record page with fragment qualifications', async () => {
-        const { getByTestId } = await setup(false, true, [], [], false, 'qualifications');
+        const { getByTestId } = await setup({ fragment: 'qualifications' });
 
         expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
         expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
@@ -735,7 +751,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should render 1 instances of the new-qualifications component when on qualification tab', async () => {
-        const { fixture } = await setup(false, true, [], [], false, 'non-mandatory-training');
+        const { fixture } = await setup({ fragment: 'non-mandatory-training' });
 
         expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
       });
@@ -792,7 +808,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should return all workplaces journey when is not own workplace and not in parent sub view', async () => {
-      const { component } = await setup(false, true, [], [], false, 'all-records', false);
+      const { component } = await setup({ isOwnWorkplace: false });
 
       expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
     });
@@ -800,7 +816,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
 
   describe('certificates', () => {
     describe('Download button', () => {
-      const mockTrainings = [
+      const mockTrainings: TrainingRecordCategory[] = [
         {
           category: 'HealthWithCertificate',
           id: 1,
@@ -826,7 +842,9 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       ];
 
       it('should download a certificate file when download link of a certificate row is clicked', async () => {
-        const { getByTestId, component, trainingCertificateService } = await setup(false, true, mockTrainings);
+        const { getByTestId, component, trainingCertificateService } = await setup({
+          mandatoryTraining: mockTrainings,
+        });
         const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
         const trainingRecordRow = getByTestId(uidForTrainingRecord);
@@ -846,7 +864,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should call triggerCertificateDownloads with file returned from downloadCertificates', async () => {
-        const { getByTestId, trainingCertificateService } = await setup(false, true, mockTrainings);
+        const { getByTestId, trainingCertificateService } = await setup({ mandatoryTraining: mockTrainings });
         const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
         const trainingRecordRow = getByTestId(uidForTrainingRecord);
@@ -869,7 +887,9 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should display an error message on the training category when certificate download fails', async () => {
-        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, mockTrainings);
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup({
+          mandatoryTraining: mockTrainings,
+        });
 
         const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
@@ -889,7 +909,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       const mockUploadFile = new File(['some file content'], 'certificate.pdf');
 
       it('should upload a file when a file is selected from Upload file button', async () => {
-        const { component, getByTestId, trainingCertificateService } = await setup(false, true, []);
+        const { component, getByTestId, trainingCertificateService } = await setup();
         const uploadCertificateSpy = spyOn(trainingCertificateService, 'addCertificates').and.returnValue(of(null));
 
         const trainingRecordRow = getByTestId('someHealthuid');
@@ -909,7 +929,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       it('should show an error message when a non pdf file is selected', async () => {
         const invalidFile = new File(['some file content'], 'certificate.csv');
 
-        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, []);
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup();
         const uploadCertificateSpy = spyOn(trainingCertificateService, 'addCertificates');
 
         const trainingRecordRow = getByTestId('someHealthuid');
@@ -930,7 +950,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
           value: 600 * 1024, // 600 KB
         });
 
-        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, []);
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup();
         const uploadCertificateSpy = spyOn(trainingCertificateService, 'addCertificates');
 
         const trainingRecordRow = getByTestId('someHealthuid');
@@ -946,11 +966,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should refresh the training record and display an alert of "Certificate uploaded" on successful upload', async () => {
-        const { fixture, alertSpy, getByTestId, workerService, trainingCertificateService } = await setup(
-          false,
-          true,
-          [],
-        );
+        const { fixture, alertSpy, getByTestId, workerService, trainingCertificateService } = await setup();
         const mockUpdatedData = {
           training: mockTrainingData,
           qualifications: { count: 0, groups: [], lastUpdated: null },
@@ -975,7 +991,7 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should display an error message on the training category when certificate upload fails', async () => {
-        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, []);
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup();
         spyOn(trainingCertificateService, 'addCertificates').and.returnValue(throwError('failed to upload'));
 
         const trainingRecordRow = getByTestId('someHealthuid');
