@@ -205,24 +205,24 @@ export const AllWorkers = [
 
 export const getAllWorkersResponse = { workers: AllWorkers, workerCount: AllWorkers.length };
 
-export const qualificationsByGroup = {
+export const qualificationsByGroup = Object.freeze({
   count: 3,
   lastUpdated: new Date('2020-01-02'),
   groups: [
     {
-      group: 'Health',
+      group: QualificationType.Award,
       records: [
         {
           year: 2020,
-          notes: 'This is a test note for the first row in the Health group',
-          title: 'Health qualification',
-          uid: 'firstHealthQualUid',
+          notes: 'This is a test note for the first row in the Award group',
+          title: 'Award qualification',
+          uid: 'firstAwardQualUid',
           qualificationCertificates: [],
         },
       ],
     },
     {
-      group: 'Certificate',
+      group: QualificationType.Certificate,
       records: [
         {
           year: 2021,
@@ -241,7 +241,7 @@ export const qualificationsByGroup = {
       ],
     },
   ],
-} as QualificationsByGroup;
+}) as QualificationsByGroup;
 
 export const mockAvailableQualifications: AvailableQualificationsResponse[] = [
   {

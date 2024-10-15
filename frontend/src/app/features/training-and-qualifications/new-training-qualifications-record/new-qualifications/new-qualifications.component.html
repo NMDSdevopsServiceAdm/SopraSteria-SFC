@@ -2,24 +2,24 @@
   <div class="govuk-grid-column-full">
     <ng-container *ngIf="qualificationsByGroup.count > 0; else noQualifications">
       <h1 class="govuk-heading-l govuk-!-font-size-27">Qualifications</h1>
-      <div *ngFor="let qualificationType of qualificationsByGroup.groups">
+      <div *ngFor="let qualificationGroup of qualificationsByGroup.groups">
         <table class="govuk-table">
           <caption class="govuk-table__caption govuk-table__caption--m">
             {{
-              qualificationType.group
+              qualificationGroup.group
             }}
           </caption>
           <thead class="govuk-table__head">
             <tr class="govuk-table__row">
               <th scope="col" class="govuk-table__header" scope="col" style="width: 43.5%">
-                {{ qualificationType.group }} name
+                {{ qualificationGroup.group }} name
               </th>
               <th scope="col" class="govuk-table__header" scope="col" style="width: 37.5%">Year achieved</th>
               <th scope="col" class="govuk-table__header" scope="col" style="width: 19%">Certificate</th>
             </tr>
           </thead>
           <tbody class="govuk-table__body">
-            <tr class="govuk-table__row" [attr.data-testid]="qualificationRecord.uid" *ngFor="let qualificationRecord of qualificationType.records">
+            <tr class="govuk-table__row" [attr.data-testid]="qualificationRecord.uid" *ngFor="let qualificationRecord of qualificationGroup.records">
               <td class="govuk-table__cell">
                 <ng-container *ngIf="canEditWorker; else viewOnly">
                   <a
@@ -41,7 +41,7 @@
                   <a
                     href="#"
                     class="govuk-link govuk-link--no-visited-state"
-                    (click)="handleDownloadCertificate($event, qualificationRecord)"
+                    (click)="handleDownloadCertificate($event, qualificationGroup, qualificationRecord)"
                   >
                     <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
                       class="govuk-!-margin-left-1"
@@ -58,7 +58,7 @@
                   </a>
                 </span>
                 <span *ngIf="qualificationRecord.qualificationCertificates?.length === 0">
-                  <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1" (selectFiles)="handleUploadCertificate($event, qualificationRecord)" />
+                  <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1" (selectFiles)="handleUploadCertificate($event, qualificationGroup, qualificationRecord)" />
                 </span>
               </td>
             </tr>

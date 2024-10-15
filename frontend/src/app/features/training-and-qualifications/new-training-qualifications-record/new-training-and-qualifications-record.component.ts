@@ -363,7 +363,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     const service = this.getCertificateService(event);
     const { recordUid, filesToDownload: files } = event;
 
-    service.downloadCertificates(this.workplace.uid, this.worker.uid, recordUid, files).subscribe(
+    const subscription = service.downloadCertificates(this.workplace.uid, this.worker.uid, recordUid, files).subscribe(
       () => {
         this.certificateErrors = {};
       },
@@ -374,6 +374,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         };
       },
     );
+    this.subscriptions.add(subscription);
   }
 
   public uploadCertificate(event: CertificateUploadEvent) {
@@ -388,7 +389,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     const service = this.getCertificateService(event);
 
-    service.addCertificates(this.workplace.uid, this.worker.uid, recordUid, files).subscribe(
+    const subscription = service.addCertificates(this.workplace.uid, this.worker.uid, recordUid, files).subscribe(
       () => {
         this.certificateErrors = {};
         this.refreshTraining().then(() => {
@@ -404,6 +405,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         };
       },
     );
+    this.subscriptions.add(subscription);
   }
 
   private async refreshTraining() {

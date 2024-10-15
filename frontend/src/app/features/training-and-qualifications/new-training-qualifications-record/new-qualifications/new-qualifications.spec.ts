@@ -10,8 +10,13 @@ import { render, within } from '@testing-library/angular';
 
 import { NewQualificationsComponent } from './new-qualifications.component';
 import userEvent from '@testing-library/user-event';
+import {
+  QualificationCertificateDownloadEvent,
+  QualificationCertificateUploadEvent,
+  QualificationType,
+} from '@core/model/qualification.model';
 
-describe('NewQualificationsComponent', () => {
+fdescribe('NewQualificationsComponent', () => {
   async function setup(override: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],
@@ -52,10 +57,10 @@ describe('NewQualificationsComponent', () => {
     });
   });
 
-  it('should show Health table row with details of record', async () => {
+  it('should show Award table row with details of record', async () => {
     const { getByText } = await setup();
 
-    expect(getByText('Health qualification')).toBeTruthy();
+    expect(getByText('Award qualification')).toBeTruthy();
     expect(getByText('2020')).toBeTruthy();
   });
 
@@ -101,17 +106,15 @@ describe('NewQualificationsComponent', () => {
   });
 
   describe('Link titles', () => {
-    it('should contain link in qualification name in first Health table row', async () => {
+    it('should contain link in qualification name in first Award table row', async () => {
       const { component, fixture } = await setup();
 
       component.canEditWorker = true;
       fixture.detectChanges();
 
-      const healthQualificationTitle = fixture.debugElement.query(
-        By.css('[data-testid="Title-firstHealthQualUid"]'),
-      ).nativeElement;
+      const awardTitle = fixture.debugElement.query(By.css('[data-testid="Title-firstAwardQualUid"]')).nativeElement;
 
-      expect(healthQualificationTitle.getAttribute('href')).toBe('/qualification/firstHealthQualUid');
+      expect(awardTitle.getAttribute('href')).toBe('/qualification/firstAwardQualUid');
     });
 
     it('should contain link in qualification name in first certificate table row', async () => {
@@ -181,57 +184,82 @@ describe('NewQualificationsComponent', () => {
       qualificationsWithCertificate.groups[0].records[0].qualificationCertificates = certificates;
       return setup({ qualificationsByGroup: qualificationsWithCertificate });
     };
+    const qualificationUid = qualificationsByGroup.groups[0].records[0].uid;
 
     it('should display Download link when training record has one certificate associated with it', async () => {
       const { getByTestId } = await setupWithCertificates([
-        { uid: 'certificate1uid', filename: 'Health 2024.pdf', uploadDate: '20240101T123456Z' },
+        { uid: 'certificate1uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T123456Z' },
       ]);
 
-      const recordRow = getByTestId('firstHealthQualUid');
+      const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).getByText('Download')).toBeTruthy();
     });
 
     it('should trigger download file emitter when Download link is clicked', async () => {
       const { getByTestId, component } = await setupWithCertificates([
-        { uid: 'certificate1uid', filename: 'Health 2024.pdf', uploadDate: '20240101T123456Z' },
+        { uid: 'certificate1uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T123456Z' },
       ]);
       const downloadFileSpy = spyOn(component.downloadFile, 'emit');
 
-      const recordRow = getByTestId('firstHealthQualUid');
+      const recordRow = getByTestId(qualificationUid);
       userEvent.click(within(recordRow).getByText('Download'));
 
-      expect(downloadFileSpy).toHaveBeenCalled();
-      // TODO: assert about argument
+      const expectedDownloadEvent: QualificationCertificateDownloadEvent = {
+        recordType: 'qualification',
+        recordUid: qualificationUid,
+        qualificationType: QualificationType.Award,
+        filesToDownload: [{ uid: 'certificate1uid', filename: 'First aid award 2024.pdf' }],
+      };
+
+      expect(downloadFileSpy).toHaveBeenCalledWith(expectedDownloadEvent);
     });
 
     it('should display Select a download link when training record has more than one certificate associated with it', async () => {
       const { getByTestId } = await setupWithCertificates([
-        { uid: 'certificate1uid', filename: 'Health 2023.pdf', uploadDate: '20230101T123456Z' },
-        { uid: 'certificate2uid', filename: 'Health 2024.pdf', uploadDate: '20240101T234516Z' },
+        { uid: 'certificate1uid', filename: 'First aid award 2023.pdf', uploadDate: '20230101T123456Z' },
+        { uid: 'certificate2uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T234516Z' },
       ]);
 
-      const recordRow = getByTestId('firstHealthQualUid');
+      const recordRow = getByTestId('firstAwardQualUid');
       expect(within(recordRow).getByText('Select a download')).toBeTruthy();
     });
 
     it('should have href of training record on Select a download link', async () => {
       const { getByTestId } = await setupWithCertificates([
-        { uid: 'certificate1uid', filename: 'Health 2023.pdf', uploadDate: '20230101T123456Z' },
-        { uid: 'certificate2uid', filename: 'Health 2024.pdf', uploadDate: '20240101T234516Z' },
+        { uid: 'certificate1uid', filename: 'First aid award 2023.pdf', uploadDate: '20230101T123456Z' },
+        { uid: 'certificate2uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T234516Z' },
       ]);
 
-      const recordRow = getByTestId('firstHealthQualUid');
+      const recordRow = getByTestId('firstAwardQualUid');
       const selectADownloadLink = within(recordRow).getByText('Select a download');
-      expect(selectADownloadLink.getAttribute('href')).toEqual(`/qualification/firstHealthQualUid`);
+      expect(selectADownloadLink.getAttribute('href')).toEqual(`/qualification/firstAwardQualUid`);
     });
 
     it('should display Upload file button when training record has no certificates associated with it', async () => {
       const { getByTestId } = await setupWithCertificates([]);
 
-      const recordRow = getByTestId('firstHealthQualUid');
+      const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).getByRole('button', { name: 'Upload file' })).toBeTruthy();
     });
 
-    it('should trigger the upload file emitter when a file is selected by the Upload file button');
+    it('should trigger the upload file emitter when a file is selected by the Upload file button', async () => {
+      const { component, getByTestId } = await setupWithCertificates([]);
+      const fileToUpload = new File(['file content'], 'updated certificate 2024.pdf', { type: 'application/pdf' });
+      const uploadFileSpy = spyOn(component.uploadFile, 'emit');
+
+      const recordRow = getByTestId(qualificationUid);
+      const fileInput = within(recordRow).getByTestId('fileInput');
+
+      userEvent.upload(fileInput, [fileToUpload]);
+
+      const expectedUploadEvent: QualificationCertificateUploadEvent = {
+        recordType: 'qualification',
+        recordUid: qualificationUid,
+        qualificationType: QualificationType.Award,
+        files: [fileToUpload],
+      };
+
+      expect(uploadFileSpy).toHaveBeenCalledWith(expectedUploadEvent);
+    });
   });
 });

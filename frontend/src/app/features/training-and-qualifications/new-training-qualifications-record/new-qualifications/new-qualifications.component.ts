@@ -5,6 +5,7 @@ import {
   QualificationCertificateUploadEvent,
   BasicQualificationRecord,
   QualificationType,
+  QualificationGroup,
 } from '@core/model/qualification.model';
 
 @Component({
@@ -19,13 +20,38 @@ export class NewQualificationsComponent {
   @Output() public uploadFile = new EventEmitter<QualificationCertificateUploadEvent>();
   @ViewChild('content') public content: ElementRef;
 
-  public handleDownloadCertificate(event: Event, qualificationRecord: BasicQualificationRecord) {
+  public handleDownloadCertificate(
+    event: Event,
+    qualificationGroup: QualificationGroup,
+    qualificationRecord: BasicQualificationRecord,
+  ) {
     event.preventDefault();
+
+    const filesToDownload = [
+      {
+        uid: qualificationRecord.qualificationCertificates[0].uid,
+        filename: qualificationRecord.qualificationCertificates[0].filename,
+      },
+    ];
+
     this.downloadFile.emit({
       recordType: 'qualification',
       recordUid: qualificationRecord.uid,
-      qualificationType: 'Awards' as QualificationType,
-      filesToDownload: qualificationRecord.qualificationCertificates,
+      qualificationType: qualificationGroup.group as QualificationType,
+      filesToDownload,
+    });
+  }
+
+  public handleUploadCertificate(
+    files: File[],
+    qualificationGroup: QualificationGroup,
+    qualificationRecord: BasicQualificationRecord,
+  ) {
+    this.uploadFile.emit({
+      recordType: 'qualification',
+      recordUid: qualificationRecord.uid,
+      qualificationType: qualificationGroup.group as QualificationType,
+      files,
     });
   }
 }

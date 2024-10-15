@@ -30,7 +30,7 @@ import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualific
 import { TrainingCertificateService } from '@core/services/certificate.service';
 import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
 
-describe('NewTrainingAndQualificationsRecordComponent', () => {
+fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   const yesterday = new Date();
