@@ -31,6 +31,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   public wdfEndDate: string;
   public workerList: string[];
   public isStandalone: boolean;
+  public workerUpdatedDate: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -80,6 +81,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
         this.workerService.setState(worker);
         this.worker = worker;
         this.updatedWorker = worker;
+        this.workerUpdatedDate = dayjs(worker.updated).format('D MMMM YYYY');
       }),
     );
   }
