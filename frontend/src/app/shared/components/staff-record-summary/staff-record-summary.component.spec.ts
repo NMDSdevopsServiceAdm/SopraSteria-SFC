@@ -798,13 +798,30 @@ describe('StaffRecordSummaryComponent', () => {
       { name: 'dateOfBirth', validResponse: '01/01/1999' },
       { name: 'gender', validResponse: 'Male' },
       { name: 'nationality', validResponse: { value: 'British' } },
+      { name: 'mainJobStartDate', validResponse: '01/01/2021' },
+      { name: 'recruitedFrom', validResponse: 'Agency' },
+      { name: 'daysSick', validResponse: 3 },
+      { name: 'zeroHoursContract', validResponse: 'Yes' },
+      { name: 'weeklyHoursAverage', validResponse: 35, overrides: [{ name: 'zeroHoursContract', response: 'Yes' }] },
+      { name: 'annualHourlyPay', validResponse: { value: 'Annually' } },
     ].forEach((field) => {
-      it(`should show this information needs to be added message when worker is not eligible and needs to add ${field.name}`, async () => {
+      const buildWorker = (field) => {
         const worker = workerWithWdf() as Worker;
-        worker[field.name] = null;
-        worker.wdf.isEligible = false;
 
-        const { getByTestId } = await setup();
+        if (field.overrides) {
+          field.overrides.forEach((override) => {
+            worker[override.name] = override.response;
+          });
+        }
+
+        return worker;
+      };
+
+      it(`should show this information needs to be added message when worker is not eligible and needs to add ${field.name}`, async () => {
+        const worker = buildWorker(field);
+        worker[field.name] = null;
+
+        const { getByTestId } = await setup({ worker });
 
         const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
 
@@ -813,7 +830,7 @@ describe('StaffRecordSummaryComponent', () => {
       });
 
       it(`should not show this information needs to be added message when worker is not eligible but has added ${field.name}`, async () => {
-        const worker = workerWithWdf() as Worker;
+        const worker = buildWorker(field);
         worker[field.name] = field.validResponse;
 
         const { queryByTestId } = await setup({ worker });
@@ -824,7 +841,7 @@ describe('StaffRecordSummaryComponent', () => {
       });
 
       it(`should not show this information needs to be added message when worker does not have ${field.name} added but not in WDF view`, async () => {
-        const worker = workerWithWdf() as Worker;
+        const worker = buildWorker(field);
         worker[field.name] = null;
 
         const { queryByTestId } = await setup({ worker, wdfView: false });
@@ -835,7 +852,7 @@ describe('StaffRecordSummaryComponent', () => {
       });
 
       it(`should show add this information message when worker does not have ${field.name} added but workplace has met WDF eligibility`, async () => {
-        const worker = workerWithWdf() as Worker;
+        const worker = buildWorker(field);
         worker[field.name] = null;
 
         const { getByTestId } = await setup({ worker, overallWdfEligibility: true });

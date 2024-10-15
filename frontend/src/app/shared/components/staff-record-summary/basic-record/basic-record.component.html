@@ -5,7 +5,7 @@
 >
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key govuk-!-padding-right-0 govuk-!-width-one-half">Name or ID number</dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-9': !mandatoryDetailsPage }">
+    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
       {{ worker.nameOrId }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -21,7 +21,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Contract type</dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-9': !mandatoryDetailsPage }">
+    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.contract"
@@ -50,7 +50,7 @@
 <dl class="govuk-summary-list asc-summarylist-border-top asc-summarylist-border-bottom">
   <div class="govuk-summary-list__row" data-testid="main-job-role-section">
     <dt class="govuk-summary-list__key govuk-!-padding-right-0 govuk-!-width-one-half">Main job role</dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-9': !mandatoryDetailsPage }">
+    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
       <app-summary-record-value
         [wdfView]="wdfView"
         [wdfValue]="worker.wdf?.mainJob"
