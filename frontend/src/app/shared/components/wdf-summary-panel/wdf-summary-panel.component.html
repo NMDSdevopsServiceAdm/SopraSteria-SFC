@@ -1,4 +1,4 @@
-<div class="govuk-width-container govuk-!-margin-top-4 govuk-!-margin-bottom-4 summary-box" data-testid="summaryPanel">
+<div class="govuk-width-container govuk-!-margin-top-0 govuk-!-margin-bottom-4 summary-box" data-testid="summaryPanel">
   <ng-container *ngFor="let section of sections; index as index">
     <div class="summary-section" [attr.data-testid]="section.fragment + '-row'">
       <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-!-font-size-24 summary-section__title">
@@ -22,7 +22,9 @@
           />
         </ng-template>
 
-        <a (click)="onClick($event, section.route, section.fragment)" href="#"> {{ section.message }}</a>
+        <a (click)="onClick($event, section.route, section.fragment)" href="#" class="govuk-link--no-visited-state">
+          {{ section.message }}</a
+        >
       </div>
     </div>
     <ng-container *ngIf="index < sections.length - 1">

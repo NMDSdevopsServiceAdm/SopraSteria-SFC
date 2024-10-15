@@ -5,27 +5,58 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
-import dayjs from 'dayjs';
+import { fireEvent, render, within } from '@testing-library/angular';
 
 import { WdfOverviewComponent } from './wdf-overview.component';
+import { getTestBed } from '@angular/core/testing';
+import { Router } from '@angular/router';
+import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
 
 describe('WdfOverviewComponent', () => {
-  const setup = async () => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfOverviewComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
-      providers: [
-        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
-        { provide: ReportService, useClass: MockReportService },
-      ],
-    });
-    const component = fixture.componentInstance;
+  const year = new Date().getFullYear();
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+  const meetingFundingMessage = `Your data has met the funding requirements for ${year} to ${year + 1}`;
+  const notMeetingFundingMessage = `Your data does not meet the funding requirements for ${year} to ${year + 1}`;
+
+  const defaulWdfEligibilityStatus = { overall: true, workplace: true, staff: true };
+
+  const setup = async (eligibilityStatus = {}, isParent = false, parentOverallWdfEligibility = false) => {
+    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
+      WdfOverviewComponent,
+      {
+        imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+        providers: [
+          { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+          {
+            provide: EstablishmentService,
+            useValue: {
+              primaryWorkplace: {
+                uid: 'some-uid',
+                isParent: isParent,
+                name: 'mock establishment name',
+                nmdsId: 'mock nmdsId',
+              },
+            },
+          },
+          {
+            provide: ReportService,
+            useFactory: MockReportService.factory(eligibilityStatus ? eligibilityStatus : defaulWdfEligibilityStatus),
+          },
+        ],
+        componentProperties: {
+          parentOverallWdfEligibility: parentOverallWdfEligibility,
+        },
+        declarations: [WdfSummaryPanel],
+      },
+    );
+    const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, routerSpy };
   };
 
   describe('Happy path', async () => {
@@ -44,142 +75,184 @@ describe('WdfOverviewComponent', () => {
       expect(getByText(expectedTitleCaption)).toBeTruthy();
     });
 
-    it('should display the correct timeframe for meeting WDF requirements', async () => {
+    it('should display the page with title the correct timeframe ', async () => {
       const { getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Your data has met the WDF ${year} to ${year + 1} requirements`;
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
+      const year = new Date().getFullYear();
+      const pageTitle = `Does your data meet funding requirements for ${year} to ${year + 1}?`;
+
+      expect(getByText(pageTitle)).toBeTruthy();
     });
 
-    it('should display the correct date for when the user became eligible', async () => {
+    it('should display a warning about eligibility', async () => {
       const { getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Your data met the requirements on 21 July ${year}`;
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
+      const eligibilityText =
+        "Your eligibility resets every year on 1 April, so you'll need to complete or update your data on or after this date.";
+
+      expect(getByText(eligibilityText)).toBeTruthy();
     });
 
-    it('should display the correct date for when WDF eligibility is valid until', async () => {
-      const { getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `and will continue to meet them until 31 March ${year + 1}.`;
+    it('should display the correct message with timeframe for meeting WDF requirements for the workplace', async () => {
+      const wdfStatus = { overall: false, workplace: true, staff: false };
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
+      const { getByTestId } = await setup(wdfStatus);
+
+      const workplaceRow = getByTestId('workplace-row');
+
+      expect(workplaceRow).toBeTruthy();
+      expect(within(workplaceRow).queryByText(notMeetingFundingMessage)).toBeFalsy();
+      expect(within(workplaceRow).getByText(meetingFundingMessage)).toBeTruthy();
+    });
+
+    it('should display the correct message with timeframe for meeting WDF requirements for staff', async () => {
+      const wdfStatus = { overall: false, workplace: false, staff: true };
+
+      const { getByTestId } = await setup(wdfStatus);
+
+      const staffRow = getByTestId('staff-row');
+
+      expect(staffRow).toBeTruthy();
+      expect(within(staffRow).queryByText(notMeetingFundingMessage)).toBeFalsy();
+      expect(within(staffRow).getByText(meetingFundingMessage)).toBeTruthy();
+    });
+
+    it('should not display the funding requirements inset text when requirements are met', async () => {
+      const wdfStatus = { overall: true, workplace: true, staff: true };
+
+      const { queryByTestId } = await setup(wdfStatus);
+
+      const fundingInsetText = queryByTestId('fundingInsetText');
+
+      expect(fundingInsetText).toBeFalsy();
+    });
+
+    it('should display data has met paragraph', async () => {
+      const wdfStatus = { overall: true, workplace: true, staff: true };
+
+      const { getByText, getByTestId } = await setup(wdfStatus);
+
+      const dataMetFundingParagraph = getByTestId('dataMetFunding');
+      const keepYourDataCurrentLink = getByText('Keep your data current');
+
+      expect(dataMetFundingParagraph).toBeTruthy();
+      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/wdf/data');
+    });
+
+    it('should navigate to your data when Check your data is clicked', async () => {
+      const { fixture, getByText, routerSpy } = await setup();
+
+      const checkYourDataButton = getByText('Check your data');
+      fireEvent.click(checkYourDataButton);
+      fixture.detectChanges();
+
+      expect(checkYourDataButton).toBeTruthy();
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'data']);
     });
   });
 
   describe('Unhappy path', async () => {
-    it('should not display the meeting requirements message when the user is not eligible', async () => {
-      const { component, fixture, queryByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Your data has met the WDF ${year} to ${year + 1} requirements`;
-      const requirementsMetMessage = 'Your data met the requirements on 21 July 2021';
+    it('should display the not meeting WDF requirements message for the workplace', async () => {
+      const wdfStatus = { overall: false, workplace: false, staff: true };
+      const { getByTestId } = await setup(wdfStatus);
 
-      component.overallWdfEligibility = false;
-      fixture.detectChanges();
+      const workplaceRow = getByTestId('workplace-row');
 
-      expect(queryByText(timeFrameSentence, { exact: false })).toBeFalsy();
-      expect(queryByText(requirementsMetMessage, { exact: false })).toBeFalsy();
+      expect(workplaceRow).toBeTruthy();
+      expect(within(workplaceRow).queryByText(meetingFundingMessage)).toBeFalsy();
+      expect(within(workplaceRow).getByText(notMeetingFundingMessage)).toBeTruthy();
     });
 
-    it('should display the not meeting requirements message when the user is not eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Your data does not meet the WDF ${year} to ${year + 1} requirements`;
-      const viewWdfLink = 'View your WDF data';
-      const viewWdfSentence = 'to see where it does not meet the requirements';
+    it('should display the not meeting WDF requirements message for staff', async () => {
+      const wdfStatus = { overall: false, workplace: true, staff: false };
+      const { getByTestId } = await setup(wdfStatus);
 
-      component.overallWdfEligibility = false;
-      fixture.detectChanges();
+      const staffRow = getByTestId('staff-row');
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
-      expect(getByText(viewWdfLink, { exact: false })).toBeTruthy();
-      expect(getByText(viewWdfSentence, { exact: false })).toBeTruthy();
+      expect(staffRow).toBeTruthy();
+      expect(within(staffRow).queryByText(meetingFundingMessage)).toBeFalsy();
+      expect(within(staffRow).getByText(notMeetingFundingMessage)).toBeTruthy();
+    });
+
+    it('should show the funding requirements inset text when requirements are met', async () => {
+      const wdfStatus = { overall: false, workplace: false, staff: false };
+      const { getByTestId } = await setup(wdfStatus);
+
+      const fundingInsetText = getByTestId('fundingInsetText');
+
+      expect(fundingInsetText).toBeTruthy();
     });
   });
 
   describe('Parent workplaces happy path', () => {
-    it('should display the correct timeframe for parents for meeting WDF requirements', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `All of your workplaces have met the WDF ${year} to ${year + 1} data requirements`;
+    it('should display the correct message with timeframe for meeting WDF requirements for all workplaces', async () => {
+      const wdfStatus = { overall: true, workplace: true, staff: true };
 
-      component.isParent = true;
-      component.parentOverallWdfEligibility = true;
-      fixture.detectChanges();
+      const { getByTestId } = await setup(wdfStatus, true, true);
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
+      const workplacesRow = getByTestId('workplaces-row');
+
+      expect(workplacesRow).toBeTruthy();
+      expect(within(workplacesRow).queryByText(notMeetingFundingMessage)).toBeFalsy();
+      expect(within(workplacesRow).getByText(meetingFundingMessage)).toBeTruthy();
     });
 
-    it('should display the correct date for when parent and all subs became eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Your workplaces' data met the requirements on 31 July ${year}`;
+    it('should display data has met paragraph', async () => {
+      const wdfStatus = { overall: true, workplace: true, staff: true };
 
-      component.isParent = true;
-      component.parentOverallWdfEligibility = true;
-      component.parentOverallEligibilityDate = dayjs(`${year}-07-31`).format('D MMMM YYYY');
-      fixture.detectChanges();
+      const { getByText, getByTestId } = await setup(wdfStatus, true, true);
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
+      const dataMetFundingParagraph = getByTestId('dataMetFunding');
+      const keepYourDataCurrentLink = getByText('Keep your data current');
+
+      expect(dataMetFundingParagraph).toBeTruthy();
+      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/wdf/data');
     });
 
-    it('should display the correct date for parents for when WDF eligibility is valid until', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `and will continue to meet them until 31 March ${year + 1}.`;
+    it('should not display the funding requirements inset text when requirements are met', async () => {
+      const wdfStatus = { overall: true, workplace: true, staff: true };
 
-      component.isParent = true;
-      component.parentOverallWdfEligibility = true;
-      fixture.detectChanges();
+      const { queryByTestId } = await setup(wdfStatus, true, true);
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
-    });
+      const fundingInsetText = queryByTestId('fundingInsetText');
 
-    it('should display the "View your workplaces" message when parent and all subs are eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const viewWorkplacesLink = 'View your workplaces';
-      const viewWorkplacesSentence = 'and keep your data up to date to save time next year';
-
-      component.isParent = true;
-      component.parentOverallWdfEligibility = true;
-      fixture.detectChanges();
-
-      expect(getByText(viewWorkplacesLink, { exact: false })).toBeTruthy();
-      expect(getByText(viewWorkplacesSentence, { exact: false })).toBeTruthy();
+      expect(fundingInsetText).toBeFalsy();
     });
   });
 
   describe('Parent workplaces unhappy path', () => {
-    it('should not display the meeting requirements message when the parent is not eligible', async () => {
-      const { component, fixture, queryByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `All of your workplaces have met the WDF ${year} to ${year + 1} data requirements`;
+    it('should display the correct message with timeframe for not meeting WDF requirements for all workplaces', async () => {
+      const wdfStatus = { overall: false, workplace: true, staff: true };
 
-      component.isParent = true;
-      component.parentOverallWdfEligibility = false;
-      fixture.detectChanges();
+      const { getByTestId } = await setup(wdfStatus, true, false);
 
-      expect(queryByText(timeFrameSentence, { exact: false })).toBeFalsy();
+      const workplacesRow = getByTestId('workplaces-row');
+
+      expect(workplacesRow).toBeTruthy();
+      expect(within(workplacesRow).getByText(notMeetingFundingMessage)).toBeTruthy();
+      expect(within(workplacesRow).queryByText(meetingFundingMessage)).toBeFalsy();
     });
 
-    it('should display the not meeting requirements message when the user is not eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const requirementsNotMetSentence = `Some of your workplaces' data does not meet the WDF ${year} to ${
-        year + 1
-      } requirements`;
-      const viewWorkplacesLink = 'View your workplaces';
-      const viewWorkplacesSentence = 'to see which have data that does not meet the requirements.';
+    it('should not display data has met paragraph', async () => {
+      const wdfStatus = { overall: false, workplace: false, staff: false };
 
-      component.isParent = true;
-      component.parentOverallWdfEligibility = false;
-      fixture.detectChanges();
+      const { queryByText, queryByTestId } = await setup(wdfStatus, true, false);
 
-      expect(getByText(requirementsNotMetSentence, { exact: false })).toBeTruthy();
-      expect(getByText(viewWorkplacesLink, { exact: false })).toBeTruthy();
-      expect(getByText(viewWorkplacesSentence, { exact: false })).toBeTruthy();
+      const dataMetFundingParagraph = queryByTestId('dataMetFunding');
+      const keepYourDataCurrentLink = queryByText('Keep your data current');
+
+      expect(dataMetFundingParagraph).toBeFalsy();
+      expect(keepYourDataCurrentLink).toBeFalsy();
+    });
+
+    it('should display the funding requirements inset text when requirements are not met', async () => {
+      const wdfStatus = { overall: false, workplace: true, staff: true };
+
+      const { queryByTestId } = await setup(wdfStatus, true, false);
+
+      const fundingInsetText = queryByTestId('fundingInsetText');
+
+      expect(fundingInsetText).toBeTruthy();
     });
   });
 
