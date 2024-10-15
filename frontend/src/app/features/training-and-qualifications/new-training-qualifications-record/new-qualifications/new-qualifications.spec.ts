@@ -16,7 +16,7 @@ import {
   QualificationType,
 } from '@core/model/qualification.model';
 
-fdescribe('NewQualificationsComponent', () => {
+describe('NewQualificationsComponent', () => {
   async function setup(override: any = {}) {
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(NewQualificationsComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule],

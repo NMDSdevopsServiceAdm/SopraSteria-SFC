@@ -235,6 +235,8 @@
     *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.qualifications"
     [canEditWorker]="canEditWorker"
     [qualificationsByGroup]="qualificationsByGroup"
+    (downloadFile)="downloadCertificate($event)"
+    (uploadFile)="uploadCertificate($event)"
   >
   </app-new-qualifications>
 </div>

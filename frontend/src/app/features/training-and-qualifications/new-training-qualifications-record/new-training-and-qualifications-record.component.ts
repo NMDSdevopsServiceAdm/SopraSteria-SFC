@@ -4,7 +4,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { TrainingCertificateService, QualificationCertificateService } from '@core/services/certificate.service';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { CertificateUpload, TrainingRecord, TrainingRecordCategory } from '@core/model/training.model';
+import { TrainingRecordCategory } from '@core/model/training.model';
 import {
   CertificateDownloadEvent,
   CertificateUploadEvent,
@@ -117,13 +117,13 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.worker = this.route.snapshot.data.worker;
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
 
-    // add mock data for checking appearance
-    if (!this.qualificationsByGroup?.groups?.[0]?.records?.[0]?.qualificationCertificates) {
-      this.qualificationsByGroup.groups[0].records[0].qualificationCertificates = [
-        { uid: '1', filename: 'cert.pdf', uploadDate: '20240101' },
-        { uid: '2', filename: 'cert.pdf', uploadDate: '20240101' },
-      ];
-    }
+    // mock data for checking appearance
+    // if (!this.qualificationsByGroup?.groups?.[0]?.records?.[0]?.qualificationCertificates) {
+    //   this.qualificationsByGroup.groups[0].records[0].qualificationCertificates = [
+    //     { uid: '1', filename: 'cert.pdf', uploadDate: '20240101' },
+    //     { uid: '2', filename: 'cert.pdf', uploadDate: '20240101' },
+    //   ];
+    // }
 
     this.trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
@@ -392,7 +392,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     const subscription = service.addCertificates(this.workplace.uid, this.worker.uid, recordUid, files).subscribe(
       () => {
         this.certificateErrors = {};
-        this.refreshTraining().then(() => {
+        this.refreshTrainingAndQualificationRecords().then(() => {
           this.alertService.addAlert({
             type: 'success',
             message: 'Certificate uploaded',
@@ -408,11 +408,12 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.subscriptions.add(subscription);
   }
 
-  private async refreshTraining() {
+  private async refreshTrainingAndQualificationRecords() {
     const updatedData: TrainingAndQualificationRecords = await this.workerService
       .getAllTrainingAndQualificationRecords(this.workplace.uid, this.worker.uid)
       .toPromise();
     this.trainingRecords = updatedData.training;
+    this.qualificationsByGroup = updatedData.qualifications;
     this.setTraining();
   }
 }
