@@ -6,23 +6,17 @@
   >
     <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-right-0">Date of birth</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.dateOfBirth"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
+      <div class="govuk-!-display-inline-block govuk-!-width-one-half">
+        <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
+        <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
+      </div>
+      <ng-container *ngIf="canViewNinoDob">
         <div class="govuk-!-display-inline-block govuk-!-width-one-half">
-          <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
-          <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
+          <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
+            >{{ dobHidden ? 'Show' : 'Hide' }}
+          </a>
         </div>
-        <ng-container *ngIf="canViewNinoDob">
-          <div class="govuk-!-display-inline-block govuk-!-width-one-half">
-            <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
-              >{{ dobHidden ? 'Show' : 'Hide' }}
-            </a>
-          </div>
-        </ng-container>
-      </app-summary-record-value>
+      </ng-container>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
@@ -36,6 +30,7 @@
   <app-wdf-warning-message
     *ngIf="wdfView && !worker.dateOfBirth"
     [overallWdfEligibility]="overallWdfEligibility"
+    data-testid="dateOfBirthWdfWarning"
   ></app-wdf-warning-message>
 
   <div class="govuk-summary-list__row">
@@ -83,17 +78,14 @@
     </dd>
   </div>
 
-  <div class="govuk-summary-list__row">
+  <div
+    class="govuk-summary-list__row"
+    [ngClass]="{ 'govuk-summary-list__row-above-message': wdfView && !worker.gender }"
+  >
     <dt class="govuk-summary-list__key">Gender identity</dt>
 
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.gender"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        {{ worker.gender || '-' | closedEndedAnswer }}
-      </app-summary-record-value>
+      {{ worker.gender || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
@@ -104,6 +96,11 @@
       ></app-summary-record-change>
     </dd>
   </div>
+  <app-wdf-warning-message
+    *ngIf="wdfView && !worker.gender"
+    [overallWdfEligibility]="overallWdfEligibility"
+    data-testid="genderWdfWarning"
+  ></app-wdf-warning-message>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Disabled</dt>

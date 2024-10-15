@@ -18,35 +18,38 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerService, workerWithWdf } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { StaffRecordSummaryComponent } from './staff-record-summary.component';
 
 describe('StaffRecordSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, queryByText, getAllByText, getByAltText } = await render(StaffRecordSummaryComponent, {
-      imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
-      providers: [
-        InternationalRecruitmentService,
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canEditWorker']),
-          deps: [HttpClient, Router, UserService],
+    const { fixture, getByText, queryByText, getAllByText, getByAltText, getByTestId, queryByTestId } = await render(
+      StaffRecordSummaryComponent,
+      {
+        imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
+        providers: [
+          InternationalRecruitmentService,
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(['canEditWorker']),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: WorkerService,
+            useClass: MockWorkerService,
+          },
+          WdfConfirmFieldsService,
+        ],
+        componentProperties: {
+          wdfView: overrides.wdfView ?? true,
+          workplace: establishmentBuilder() as Establishment,
+          worker: overrides.worker ?? (workerWithWdf() as Worker),
+          overallWdfEligibility: overrides.overallWdfEligibility ?? false,
         },
-        {
-          provide: WorkerService,
-          useClass: MockWorkerService,
-        },
-        WdfConfirmFieldsService,
-      ],
-      componentProperties: {
-        wdfView: overrides.wdfView ?? true,
-        workplace: establishmentBuilder() as Establishment,
-        worker: overrides.worker ?? (workerWithWdf() as Worker),
-        overallWdfEligibility: overrides.overallWdfEligibility ?? false,
       },
-    });
+    );
 
     const component = fixture.componentInstance;
     const injector = getTestBed();
@@ -62,6 +65,8 @@ describe('StaffRecordSummaryComponent', () => {
       wdfConfirmFieldsService,
       getAllByText,
       getByAltText,
+      getByTestId,
+      queryByTestId,
     };
   };
   const eligibleObject = {
@@ -788,44 +793,57 @@ describe('StaffRecordSummaryComponent', () => {
     });
   });
 
-  describe('Add this information messages for WDF', () => {
-    it('should show this information needs to be added message when worker is not eligible and needs to add DOB', async () => {
-      const worker = workerWithWdf() as Worker;
-      worker.dateOfBirth = null;
-      worker.wdf.isEligible = false;
+  describe('Add information messages for WDF', () => {
+    [
+      { name: 'dateOfBirth', validResponse: '01/01/1999' },
+      { name: 'gender', validResponse: 'Male' },
+    ].forEach((field) => {
+      it(`should show this information needs to be added message when worker is not eligible and needs to add ${field.name}`, async () => {
+        const worker = workerWithWdf() as Worker;
+        worker[field.name] = null;
+        worker.wdf.isEligible = false;
 
-      const { getByText, getByAltText } = await setup();
+        const { getByTestId } = await setup();
 
-      expect(getByText('This information needs to be added')).toBeTruthy();
-      expect(getByAltText('Red flag icon')).toBeTruthy();
-    });
+        const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
 
-    it('should not show this information needs to be added message when worker is not eligible but has added DOB', async () => {
-      const worker = workerWithWdf() as Worker;
-      worker.dateOfBirth = '01/01/1999';
+        expect(within(wdfWarningSection).getByText('This information needs to be added')).toBeTruthy();
+        expect(within(wdfWarningSection).getByAltText('Red flag icon')).toBeTruthy();
+      });
 
-      const { queryByText } = await setup({ worker });
+      it(`should not show this information needs to be added message when worker is not eligible but has added ${field.name}`, async () => {
+        const worker = workerWithWdf() as Worker;
+        worker[field.name] = field.validResponse;
 
-      expect(queryByText('This information needs to be added')).toBeFalsy();
-    });
+        const { queryByTestId } = await setup({ worker });
 
-    it('should not show this information needs to be added message when worker does not have DOB added but not in WDF view', async () => {
-      const worker = workerWithWdf() as Worker;
-      worker.dateOfBirth = '';
+        const wdfWarningSection = queryByTestId(field.name + 'WdfWarning');
 
-      const { queryByText } = await setup({ worker, wdfView: false });
+        expect(wdfWarningSection).toBeFalsy();
+      });
 
-      expect(queryByText('This information needs to be added')).toBeFalsy();
-    });
+      it(`should not show this information needs to be added message when worker does not have ${field.name} added but not in WDF view`, async () => {
+        const worker = workerWithWdf() as Worker;
+        worker[field.name] = null;
 
-    it('should show add this information message when worker does not have DOB added but workplace has met WDF eligibility', async () => {
-      const worker = workerWithWdf() as Worker;
-      worker.dateOfBirth = '';
+        const { queryByTestId } = await setup({ worker, wdfView: false });
 
-      const { queryByText, getByAltText } = await setup({ worker, overallWdfEligibility: true });
+        const wdfWarningSection = queryByTestId(field.name + 'WdfWarning');
 
-      expect(queryByText('Add this information')).toBeTruthy();
-      expect(getByAltText('Orange flag icon')).toBeTruthy();
+        expect(wdfWarningSection).toBeFalsy();
+      });
+
+      it(`should show add this information message when worker does not have ${field.name} added but workplace has met WDF eligibility`, async () => {
+        const worker = workerWithWdf() as Worker;
+        worker[field.name] = null;
+
+        const { getByTestId } = await setup({ worker, overallWdfEligibility: true });
+
+        const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
+
+        expect(within(wdfWarningSection).queryByText('Add this information')).toBeTruthy();
+        expect(within(wdfWarningSection).getByAltText('Orange flag icon')).toBeTruthy();
+      });
     });
   });
 
