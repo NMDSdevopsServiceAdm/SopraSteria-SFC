@@ -8,6 +8,7 @@ const MandatoryTraining = require('../../../models/classes/mandatoryTraining').M
 const TrainingCertificateRoute = require('../workerCertificate/trainingCertificate');
 
 const { hasPermission } = require('../../../utils/security/hasPermission');
+const WorkerCertificateService = require('../workerCertificate/workerCertificateService');
 
 // NOTE - the Worker route uses middleware to validate the given worker id against the known establishment
 //        prior to all training endpoints, thus ensuring we this necessary rigidity on Establishment/Worker relationship
@@ -171,33 +172,19 @@ const deleteTrainingRecord = async (req, res) => {
 
       const trainingCertificates = thisTrainingRecord?._trainingCertificates;
 
-      if (trainingCertificates?.length > 0) {
-        let trainingCertificatesfilesToDeleteFromS3 = [];
-        let trainingCertificatesUidsToDeleteFromDb = [];
+      const trainingCertificateService = WorkerCertificateService.initialiseTraining();
 
-        for (const trainingCertificate of trainingCertificates) {
-          let fileKey = TrainingCertificateRoute.makeFileKey(
-            establishmentUid,
-            workerUid,
-            trainingUid,
-            trainingCertificate.uid,
-          );
-
-          trainingCertificatesUidsToDeleteFromDb.push(trainingCertificate.uid);
-          trainingCertificatesfilesToDeleteFromS3.push({ Key: fileKey });
-        }
-
-        const deletedTrainingCertificatesFromDatabase = await TrainingCertificateRoute.deleteRecordsFromDatabase(
-          trainingCertificatesUidsToDeleteFromDb,
-        );
-
-        if (deletedTrainingCertificatesFromDatabase) {
-          await TrainingCertificateRoute.deleteCertificatesFromS3(trainingCertificatesfilesToDeleteFromS3);
-        } else {
-          console.log('Failed to delete training certificates');
-          return res.status(500).send();
+      const args = {
+        files: trainingCertificates,
+        params: {
+          establishmentUid: establishmentUid,
+          workerId: workerUid,
+          recordUid: trainingUid,
+          fileId: trainingCertificates.uid
         }
       }
+
+      trainingCertificateService.deleteCertificates(args);
 
       // by deleting after the restore we can be sure this training record belongs to the given worker
       const deleteSuccess = await thisTrainingRecord.delete();

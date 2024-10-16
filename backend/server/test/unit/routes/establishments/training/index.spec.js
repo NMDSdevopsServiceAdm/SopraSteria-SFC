@@ -10,6 +10,7 @@ const {
   mockTrainingRecordWithoutCertificates,
 } = require('../../../mockdata/training');
 const TrainingCertificateRoute = require('../../../../../routes/establishments/workerCertificate/trainingCertificate');
+const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
 
 describe('server/routes/establishments/training/index.js', () => {
   afterEach(() => {
@@ -43,13 +44,11 @@ describe('server/routes/establishments/training/index.js', () => {
 
       stubRestoredTrainingRecord = sinon.stub(trainingRecord, 'restore');
       stubFindTrainingRecord = sinon.stub(models.workerTraining, 'findOne');
-      sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3').returns([]);
       stubDestroyTrainingRecord = sinon.stub(models.workerTraining, 'destroy');
+      stubDeleteCertificates = sinon.stub(WorkerCertificateService.prototype, 'deleteCertificates');
     });
 
     it('should return with a status of 204 when the training record is deleted with training certificates', async () => {
-      stubRestoredTrainingRecord.returns(mockTrainingRecordWithCertificates);
-      stubFindTrainingRecord.returns(mockTrainingRecordWithCertificates);
       stubDeleteTrainingCertificatesFromDatabase.returns(true);
       stubDestroyTrainingRecord.returns(1);
 

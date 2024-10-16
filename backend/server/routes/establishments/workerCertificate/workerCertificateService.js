@@ -34,12 +34,12 @@ class WorkerCertificateService {
   constructor() {
   }
 
-  makeFileKey = (establishmentUid, workerId, recordUid, fileId) => {
-    return `${establishmentUid}/${workerId}/${this.recordType}Certificate/${recordUid}/${fileId}`;
+  makeFileKey = (establishmentUid, workerUid, recordUid, fileId) => {
+    return `${establishmentUid}/${workerUid}/${this.recordType}Certificate/${recordUid}/${fileId}`;
   };
 
   async requestUploadUrl({files, params}) {
-    const { id, workerId, recordUid } = params;
+    const { id, workerUid, recordUid } = params;
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);
     }
@@ -53,7 +53,7 @@ class WorkerCertificateService {
     for (const file of files) {
       const filename = file.filename;
       const fileId = uuidv4();
-      const key = this.makeFileKey(id, workerId, recordUid, fileId);
+      const key = this.makeFileKey(id, workerUid, recordUid, fileId);
       const signedUrl = await s3.getSignedUrlForUpload({
         bucket: certificateBucket,
         key,
@@ -66,8 +66,8 @@ class WorkerCertificateService {
   };
 
   async confirmUpload(req) {
-    const { establishmentId, files } = req;
-    const { recordUid } = req.params;
+    const { files } = req;
+    const { establishmentUid, recordUid } = req.params;
 
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);
@@ -86,7 +86,8 @@ class WorkerCertificateService {
 
     const { workerFk, id } = record.dataValues;
 
-    const etagsMatchRecord = await this.verifyEtagsForAllFiles(establishmentId, files);
+    const etagsMatchRecord = await this.verifyEtagsForAllFiles(files);
+
     if (!etagsMatchRecord) {
       throw new HttpError('Failed to verify files on S3', 400);
     }
@@ -102,7 +103,7 @@ class WorkerCertificateService {
     }
   };
 
-  verifyEtagsForAllFiles = async (establishmentId, files) => {
+  verifyEtagsForAllFiles = async (files) => {
     try {
       for (const file of files) {
         const etagMatchS3Record = await s3.verifyEtag(certificateBucket, file.key, file.etag);
@@ -119,7 +120,7 @@ class WorkerCertificateService {
   };
 
   async getPresignedUrlForCertificateDownload ({files, params}) {
-    const { id, workerId, recordUid } = params;
+    const { establishmentUid, workerUid, recordUid } = params;
 
     if (!files || !files.length) {
       throw new HttpError('No files provided in request body', 400);
@@ -130,7 +131,7 @@ class WorkerCertificateService {
     for (const file of files) {
       const signedUrl = await s3.getSignedUrlForDownload({
         bucket: certificateBucket,
-        key: this.makeFileKey(id, workerId, recordUid, file.uid),
+        key: this.makeFileKey(establishmentUid, workerUid, recordUid, file.uid),
         options: { expiresIn: downloadSignedUrlExpire },
       });
       responsePayload.push({ signedUrl, filename: file.filename });
@@ -161,7 +162,7 @@ class WorkerCertificateService {
 
   async deleteCertificates(req) {
     const { files } = req;
-    const { id, workerId, recordUid } = req.params;
+    const { establishmentUid, workerUid, recordUid } = req.params;
 
     if (!files || !files.length) {
       throw new HttpError('No files provided in request body', 400);
@@ -171,7 +172,7 @@ class WorkerCertificateService {
     let filesToDeleteFromDatabase = [];
 
     for (const file of files) {
-      let fileKey = this.makeFileKey(id, workerId, recordUid, file.uid);
+      let fileKey = this.makeFileKey(establishmentUid, workerUid, recordUid, file.uid);
 
       filesToDeleteFromDatabase.push(file.uid);
       filesToDeleteFromS3.push({ Key: fileKey });

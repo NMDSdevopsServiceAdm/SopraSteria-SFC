@@ -109,15 +109,14 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     });
 
     it('should call workerCertificateService.confirmUpload with the correct parameter format', async () => {
-      const req = createPutReq({ body: { files: ['fileName'] }, establishmentId: 'establishmentId', params: { id: 1, trainingUid: 3 } });
+      const req = createPutReq({ body: { files: ['fileName'] }, params: { id: 1, trainingUid: 3 } });
 
       await trainingCertificateRoute.confirmUpload(req, res);
 
       expect(stubConfirmUpload).to.have.been.calledWith({
         files: ['fileName'],
-        establishmentId: 'establishmentId',
         params: {
-          id: 1,
+          establishmentUid: 1,
           workerId: undefined,
           recordUid: 3
         }
@@ -161,7 +160,6 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         method: 'POST',
         url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/download`,
         body: { filesToDownload: [{ uid: mockFileUid, filename: mockFileName }] },
-        establishmentId: user.establishment.uid,
         params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
       });
       res = httpMocks.createResponse();
@@ -178,9 +176,8 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
       expect(stubPresignedCertificate).to.have.been.calledWith({
         files: [{ uid: mockFileUid, filename: mockFileName }],
-        establishmentId: user.establishment.uid,
         params: {
-          id: user.establishment.uid,
+          establishmentUid: user.establishment.uid,
           workerId: user.uid,
           recordUid: training.uid,
         }
@@ -229,7 +226,6 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         method: 'POST',
         url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/delete`,
         body: { filesToDelete: [{ uid: mockFileUid1, filename: 'mockFileName1' }] },
-        establishmentId: user.establishment.uid,
         params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
       });
       res = httpMocks.createResponse();
@@ -248,9 +244,8 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
       expect(stubDeleteCertificates).to.have.been.calledWith({
         files: [{ uid: mockFileUid1, filename: 'mockFileName1' }],
-        establishmentId: user.establishment.uid,
         params: {
-          id: user.establishment.uid,
+          establishmentUid: user.establishment.uid,
           workerId: user.uid,
           recordUid: training.uid,
         }

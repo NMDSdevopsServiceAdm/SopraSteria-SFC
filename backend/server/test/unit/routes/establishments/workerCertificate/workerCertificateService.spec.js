@@ -13,7 +13,7 @@ const WorkerCertificateService = require('../../../../../routes/establishments/w
 const HttpError = require('../../../../../utils/errors/httpError');
 const { mock } = require('node:test');
 
-describe('backend/server/routes/establishments/workerCertificate/qualificationCertificate.js', () => {
+describe('backend/server/routes/establishments/workerCertificate/workerCertificateService.js', () => {
   const user = buildUser();
   const qualification = qualificationBuilder();
 
@@ -94,14 +94,6 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
       createReq = (override) => {
         return { files: mockUploadFiles, params: { id: 1, workerId: 2, recordUid: 3 }, ...override};
       }
-
-      // it('should reply with a status of 200', async () => {
-      //   const req = createReq();
-
-      //   await qualificationCertificateRoute.confirmUpload(req);
-
-      //   expect(res.statusCode).to.equal(200);
-      // });
 
       it('should add a new record to database for each file', async () => {
         const req = createReq();
@@ -212,7 +204,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
       mockFileName = 'mockFileName';
       req = {
         files: [{ uid: mockFileUid, filename: mockFileName }],
-        params: { id: user.establishment.uid, workerId: user.uid, recordUid: qualification.uid },
+        params: { establishmentUid: user.establishment.uid, workerUid: user.uid, recordUid: qualification.uid },
       };
     });
 
@@ -232,7 +224,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
     it('should call getSignedUrlForDownload with key of formatted uids passed in params', async () => {
       await service.getPresignedUrlForCertificateDownload(req);
 
-      const expectedKey = `${req.params.id}/${req.params.workerId}/qualificationCertificate/${req.params.recordUid}/${mockFileUid}`;
+      const expectedKey = `${req.params.establishmentUid}/${req.params.workerUid}/qualificationCertificate/${req.params.recordUid}/${mockFileUid}`;
       expect(getSignedUrlForDownloadSpy.args[0][0].key).to.equal(expectedKey);
     });
 
@@ -275,8 +267,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
       mockKey3 = `${user.establishment.uid}/${user.uid}/qualificationCertificate/${qualification.uid}/${mockFileUid3}`;
       req = httpMocks.createRequest({
         files: [{ uid: mockFileUid1, filename: 'mockFileName1' }],
-        establishmentId: user.establishment.uid,
-        params: { id: user.establishment.uid, workerId: user.uid, recordUid: qualification.uid },
+        params: { establishmentUid: user.establishment.uid, workerUid: user.uid, recordUid: qualification.uid },
       });
       errorMessage = 'DatabaseError';
       stubDeleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
@@ -292,7 +283,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
 
       await service.deleteCertificates(req);
 
-      expect(stubDeleteCertificatesFromS3).to.be.calledWith({ bucket: bucketName, objects: [{ Key: `${req.params.id}/${req.params.workerId}/qualificationCertificate/${req.params.recordUid}/${mockFileUid1}` }] });
+      expect(stubDeleteCertificatesFromS3).to.be.calledWith({ bucket: bucketName, objects: [{ Key: `${req.params.establishmentUid}/${req.params.workerUid}/qualificationCertificate/${req.params.recordUid}/${mockFileUid1}` }] });
     });
 
     describe('errors', () => {
