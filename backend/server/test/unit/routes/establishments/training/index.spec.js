@@ -43,7 +43,6 @@ describe('server/routes/establishments/training/index.js', () => {
 
       stubRestoredTrainingRecord = sinon.stub(trainingRecord, 'restore');
       stubFindTrainingRecord = sinon.stub(models.workerTraining, 'findOne');
-      stubDeleteTrainingCertificatesFromDatabase = sinon.stub(TrainingCertificateRoute, 'deleteRecordsFromDatabase');
       sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3').returns([]);
       stubDestroyTrainingRecord = sinon.stub(models.workerTraining, 'destroy');
     });

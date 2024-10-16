@@ -12,15 +12,22 @@ const initialiseCertificateService = () => {
 }
 
 const formatRequest = (req) => {
-    return {
-    files: req.body,
+  const formatFilesArg = (body) => {
+    if (body.filesToDownload) return body.filesToDownload;
+    if (body.filesToDelete) return body.filesToDelete;
+    if (body.files) return body.files;
+  }
+
+  return {
+    files: formatFilesArg(req.body),
+    establishmentId: req.establishmentId,
     params: {
       id: req.params.id,
       workerId: req.params.workerId,
-      recordUid: req.params.trainingUid
+      recordUid: req.params.trainingUid,
     }
   };
-}
+};
 
 const requestUploadUrl = async (req, res) => {
   const certificateService = initialiseCertificateService();
@@ -38,8 +45,10 @@ const requestUploadUrl = async (req, res) => {
 const confirmUpload = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
+  const request = formatRequest(req);
+
   try {
-    await certificateService.confirmUpload();
+    await certificateService.confirmUpload(request);
     return res.status(200).send();
   } catch (err) {
     return res.status(err.statusCode).send(err.message);

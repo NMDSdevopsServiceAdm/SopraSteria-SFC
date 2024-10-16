@@ -38,7 +38,7 @@ class WorkerCertificateService {
     return `${establishmentUid}/${workerId}/${this.recordType}Certificate/${recordUid}/${fileId}`;
   };
 
-  requestUploadUrl = async ({files, params}) => {
+  async requestUploadUrl({files, params}) {
     const { id, workerId, recordUid } = params;
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);
@@ -65,7 +65,7 @@ class WorkerCertificateService {
     return responsePayload;
   };
 
-  confirmUpload = async (req) => {
+  async confirmUpload(req) {
     const { establishmentId, files } = req;
     const { recordUid } = req.params;
 
@@ -97,7 +97,6 @@ class WorkerCertificateService {
       try {
         await this.certificatesModel.addCertificate({ id, workerFk, filename, fileId, key });
       } catch (err) {
-        console.error(err);
         throw new HttpError('Failed to add records to database', 500);
       }
     }
@@ -119,7 +118,7 @@ class WorkerCertificateService {
     return true;
   };
 
-  getPresignedUrlForCertificateDownload = async ({files, params}) => {
+  async getPresignedUrlForCertificateDownload ({files, params}) {
     const { id, workerId, recordUid } = params;
 
     if (!files || !files.length) {
@@ -160,7 +159,7 @@ class WorkerCertificateService {
     }
   };
 
-  deleteCertificates = async (req) => {
+  async deleteCertificates(req) {
     const { files } = req;
     const { id, workerId, recordUid } = req.params;
 
