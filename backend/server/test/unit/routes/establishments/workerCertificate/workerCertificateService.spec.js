@@ -10,8 +10,6 @@ const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
 const config = require('../../../../../config/config');
 
 const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
-const HttpError = require('../../../../../utils/errors/httpError');
-const { mock } = require('node:test');
 
 describe('backend/server/routes/establishments/workerCertificate/workerCertificateService.js', () => {
   const user = buildUser();
@@ -245,7 +243,6 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
   });
 
   describe('delete certificates', () => {
-    let res;
     let stubDeleteCertificatesFromS3;
     let stubDeleteCertificate;
     let errorMessage;

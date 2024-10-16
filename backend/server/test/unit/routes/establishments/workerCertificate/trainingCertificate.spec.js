@@ -1,13 +1,10 @@
 const sinon = require('sinon');
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
-const uuid = require('uuid');
 
-const models = require('../../../../../models');
 const buildUser = require('../../../../factories/user');
 const { trainingBuilder } = require('../../../../factories/models');
 const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
-const config = require('../../../../../config/config');
 
 const trainingCertificateRoute = require('../../../../../routes/establishments/workerCertificate/trainingCertificate');
 const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
@@ -24,7 +21,6 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
   beforeEach(() => { });
 
   describe('requestUploadUrl', () => {
-    const mockUploadFiles = ['cert1.pdf', 'cert2.pdf'];
     const mockSignedUrl = 'http://localhost/mock-upload-url';
     let res;
 
@@ -84,11 +80,8 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       { filename: 'cert1.pdf', fileId: 'uuid1', etag: 'etag1', key: 'mockKey' },
       { filename: 'cert2.pdf', fileId: 'uuid2', etag: 'etag2', key: 'mockKey2' },
     ];
-    const mockWorkerFk = user.id;
-    const mockTrainingRecord = { dataValues: { workerFk: user.id, id: training.id } };
 
     let res;
-    let stubAddCertificate;
 
     beforeEach(() => {
       stubConfirmUpload = sinon.stub(WorkerCertificateService.prototype, "confirmUpload").returns();
@@ -205,7 +198,6 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
   describe('delete certificates', () => {
     let res;
-    let errorMessage;
     let mockFileUid1;
     let mockFileUid2;
     let mockFileUid3;

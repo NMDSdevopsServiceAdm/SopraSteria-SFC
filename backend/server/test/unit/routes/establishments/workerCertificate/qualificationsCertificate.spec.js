@@ -1,13 +1,9 @@
 const sinon = require('sinon');
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
-const uuid = require('uuid');
 
-const models = require('../../../../../models');
 const buildUser = require('../../../../factories/user');
 const { qualificationBuilder } = require('../../../../factories/models');
-const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
-const config = require('../../../../../config/config');
 
 const qualificationCertificateRoute = require('../../../../../routes/establishments/workerCertificate/qualificationCertificate');
 const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
@@ -24,8 +20,6 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
   beforeEach(() => { });
 
   describe('requestUploadUrl', () => {
-    const mockUploadFiles = ['cert1.pdf', 'cert2.pdf'];
-    const mockSignedUrl = 'http://localhost/mock-upload-url';
     let res;
 
     function createReq(override = {}) {
@@ -201,7 +195,6 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
 
   describe('delete certificates', () => {
     let res;
-    let errorMessage;
     let mockFileUid1;
     let mockFileUid2;
     let mockFileUid3;
