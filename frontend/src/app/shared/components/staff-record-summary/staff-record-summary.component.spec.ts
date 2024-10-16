@@ -804,6 +804,19 @@ describe('StaffRecordSummaryComponent', () => {
       { name: 'zeroHoursContract', validResponse: 'Yes' },
       { name: 'weeklyHoursAverage', validResponse: 35, overrides: [{ name: 'zeroHoursContract', response: 'Yes' }] },
       { name: 'annualHourlyPay', validResponse: { value: 'Annually' } },
+      { name: 'careCertificate', validResponse: { value: 'Yes, completed' } },
+      { name: 'qualificationInSocialCare', validResponse: 'Yes' },
+      {
+        name: 'socialCareQualification',
+        validResponse: 'Level 4',
+        overrides: [{ name: 'qualificationInSocialCare', response: 'Yes' }],
+      },
+      { name: 'otherQualification', validResponse: 'Yes' },
+      {
+        name: 'highestQualification',
+        validResponse: 'Level 4',
+        overrides: [{ name: 'otherQualification', response: 'Yes' }],
+      },
     ].forEach((field) => {
       const buildWorker = (field) => {
         const worker = workerWithWdf() as Worker;
