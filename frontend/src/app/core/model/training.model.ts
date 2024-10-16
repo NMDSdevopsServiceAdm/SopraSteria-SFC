@@ -38,11 +38,6 @@ export interface TrainingResponse {
   training: TrainingRecord[];
 }
 
-export interface CertificateUpload {
-  files: File[];
-  trainingRecord: TrainingRecord;
-}
-
 export interface TrainingCertificateDownloadEvent {
   recordType: 'training';
   recordUid: string;
