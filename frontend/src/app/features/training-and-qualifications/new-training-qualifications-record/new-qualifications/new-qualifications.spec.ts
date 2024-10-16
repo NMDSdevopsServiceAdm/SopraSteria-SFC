@@ -49,9 +49,9 @@ describe('NewQualificationsComponent', () => {
     const { getByText } = await setup();
 
     qualificationsByGroup.groups.forEach((qualificationGroup) => {
-      const typeName = qualificationGroup.group;
-      expect(getByText(`${typeName} name`)).toBeTruthy();
-      const tableHeaders = getByText(`${typeName} name`).parentElement;
+      const type = qualificationGroup.group;
+      expect(getByText(`${type} name`)).toBeTruthy();
+      const tableHeaders = getByText(`${type} name`).parentElement;
       expect(within(tableHeaders).getByText('Year achieved')).toBeTruthy;
       expect(within(tableHeaders).getByText('Certificate')).toBeTruthy;
     });

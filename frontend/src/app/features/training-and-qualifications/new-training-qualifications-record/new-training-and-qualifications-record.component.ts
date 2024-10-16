@@ -118,11 +118,15 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
 
     // mock data for checking appearance
-    // if (!this.qualificationsByGroup?.groups?.[0]?.records?.[0]?.qualificationCertificates) {
-    //   this.qualificationsByGroup.groups[0].records[0].qualificationCertificates = [
-    //     { uid: '1', filename: 'cert.pdf', uploadDate: '20240101' },
-    //     { uid: '2', filename: 'cert.pdf', uploadDate: '20240101' },
-    //   ];
+    // for (const group of this.qualificationsByGroup.groups) {
+    //   for (const record of group.records) {
+    //     if (!record.qualificationCertificates) {
+    //       record.qualificationCertificates = [
+    //         { uid: '1', filename: 'cert.pdf', uploadDate: '20240101' },
+    //         { uid: '2', filename: 'cert.pdf', uploadDate: '20240101' },
+    //       ];
+    //     }
+    //   }
     // }
 
     this.trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
@@ -360,20 +364,22 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   }
 
   public downloadCertificate(event: CertificateDownloadEvent) {
-    const service = this.getCertificateService(event);
+    const certificateService = this.getCertificateService(event);
     const { recordUid, filesToDownload: files } = event;
 
-    const subscription = service.downloadCertificates(this.workplace.uid, this.worker.uid, recordUid, files).subscribe(
-      () => {
-        this.certificateErrors = {};
-      },
-      (_error) => {
-        const categoryName = event.recordType === 'training' ? event.categoryName : event.qualificationType;
-        this.certificateErrors = {
-          [categoryName]: "There's a problem with this download. Try again later or contact us for help.",
-        };
-      },
-    );
+    const subscription = certificateService
+      .downloadCertificates(this.workplace.uid, this.worker.uid, recordUid, files)
+      .subscribe(
+        () => {
+          this.certificateErrors = {};
+        },
+        (_error) => {
+          const categoryName = event.recordType === 'training' ? event.categoryName : event.qualificationType;
+          this.certificateErrors = {
+            [categoryName]: "There's a problem with this download. Try again later or contact us for help.",
+          };
+        },
+      );
     this.subscriptions.add(subscription);
   }
 
@@ -387,24 +393,26 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       return;
     }
 
-    const service = this.getCertificateService(event);
+    const certificateService = this.getCertificateService(event);
 
-    const subscription = service.addCertificates(this.workplace.uid, this.worker.uid, recordUid, files).subscribe(
-      () => {
-        this.certificateErrors = {};
-        this.refreshTrainingAndQualificationRecords().then(() => {
-          this.alertService.addAlert({
-            type: 'success',
-            message: 'Certificate uploaded',
+    const subscription = certificateService
+      .addCertificates(this.workplace.uid, this.worker.uid, recordUid, files)
+      .subscribe(
+        () => {
+          this.certificateErrors = {};
+          this.refreshTrainingAndQualificationRecords().then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: 'Certificate uploaded',
+            });
           });
-        });
-      },
-      (_error) => {
-        this.certificateErrors = {
-          [categoryName]: "There's a problem with this upload. Try again later or contact us for help.",
-        };
-      },
-    );
+        },
+        (_error) => {
+          this.certificateErrors = {
+            [categoryName]: "There's a problem with this upload. Try again later or contact us for help.",
+          };
+        },
+      );
     this.subscriptions.add(subscription);
   }
 

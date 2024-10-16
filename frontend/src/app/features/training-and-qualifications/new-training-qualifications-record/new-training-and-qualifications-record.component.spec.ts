@@ -114,7 +114,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     ],
   };
 
-  interface SetupProps {
+  interface SetupOptions {
     otherJob: boolean;
     careCert: boolean;
     mandatoryTraining: TrainingRecordCategory[];
@@ -122,7 +122,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     isOwnWorkplace: boolean;
     qualifications: QualificationsByGroup;
   }
-  const defaultProps: SetupProps = {
+  const defaults: SetupOptions = {
     otherJob: false,
     careCert: true,
     mandatoryTraining: [],
@@ -131,10 +131,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     qualifications: { count: 0, groups: [], lastUpdated: qualificationsByGroup.lastUpdated },
   };
 
-  async function setup(props: Partial<SetupProps> = {}) {
+  async function setup(options: Partial<SetupOptions> = {}) {
     const { otherJob, careCert, mandatoryTraining, fragment, isOwnWorkplace, qualifications } = {
-      ...defaultProps,
-      ...props,
+      ...defaults,
+      ...options,
     };
 
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
@@ -661,9 +661,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     describe('mandatory training tab', async () => {
       it('should show the Mandatory training tab as active when on training record page with fragment mandatory-training', async () => {
-        const { getByTestId } = await setup({
-          fragment: 'mandatory-training',
-        });
+        const { getByTestId } = await setup({ fragment: 'mandatory-training' });
 
         expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
         expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
