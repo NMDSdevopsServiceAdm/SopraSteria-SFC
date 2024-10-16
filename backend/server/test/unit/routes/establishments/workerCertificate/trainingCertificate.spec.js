@@ -117,7 +117,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         files: ['fileName'],
         params: {
           establishmentUid: 1,
-          workerId: undefined,
+          workerUid: undefined,
           recordUid: 3
         }
       });
@@ -178,7 +178,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         files: [{ uid: mockFileUid, filename: mockFileName }],
         params: {
           establishmentUid: user.establishment.uid,
-          workerId: user.uid,
+          workerUid: user.uid,
           recordUid: training.uid,
         }
       });
@@ -246,7 +246,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
         files: [{ uid: mockFileUid1, filename: 'mockFileName1' }],
         params: {
           establishmentUid: user.establishment.uid,
-          workerId: user.uid,
+          workerUid: user.uid,
           recordUid: training.uid,
         }
       });

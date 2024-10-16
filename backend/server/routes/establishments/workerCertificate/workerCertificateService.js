@@ -39,7 +39,7 @@ class WorkerCertificateService {
   };
 
   async requestUploadUrl({files, params}) {
-    const { id, workerUid, recordUid } = params;
+    const { establishmentUid, workerUid, recordUid } = params;
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);
     }
@@ -53,7 +53,7 @@ class WorkerCertificateService {
     for (const file of files) {
       const filename = file.filename;
       const fileId = uuidv4();
-      const key = this.makeFileKey(id, workerUid, recordUid, fileId);
+      const key = this.makeFileKey(establishmentUid, workerUid, recordUid, fileId);
       const signedUrl = await s3.getSignedUrlForUpload({
         bucket: certificateBucket,
         key,

@@ -21,7 +21,7 @@ const formatRequest = (req) => {
     files: formatFilesArg(req.body),
     params: {
       establishmentUid: req.params.id,
-      workerId: req.params.workerId,
+      workerUid: req.params.workerId,
       recordUid: req.params.qualificationUid,
     }
   };
