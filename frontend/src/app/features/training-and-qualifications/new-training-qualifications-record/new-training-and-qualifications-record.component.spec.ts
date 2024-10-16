@@ -32,7 +32,7 @@ import { QualificationCertificateService, TrainingCertificateService } from '@co
 import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 
-fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
+describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
 
   const yesterday = new Date();
@@ -333,6 +333,8 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
           { provide: PermissionsService, useClass: MockPermissionsService },
           { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
           { provide: QualificationCertificateService, useClass: QualificationCertificateService },
+          // suppress the distracting error msg of "reading 'nativeElement'" from PdfTrainingAndQualificationService
+          { provide: PdfTrainingAndQualificationService, useValue: { BuildTrainingAndQualsPdf: () => {} } },
         ],
       },
     );
@@ -1013,8 +1015,6 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
 
   describe('qualification certificates', () => {
     const mockQualifications = cloneDeep(qualificationsByGroup);
-
-    const uidForRecordWithOneCert = mockQualifications.groups[0].records[0].uid;
     mockQualifications.groups[0].records[0].qualificationCertificates = [
       {
         filename: 'Award 2024.pdf',
@@ -1023,21 +1023,8 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
       },
     ];
 
-    const uidForRecordWithMultipleCerts = mockQualifications.groups[1].records[0].uid;
-    mockQualifications.groups[1].records[0].qualificationCertificates = [
-      {
-        filename: 'Certficate 2023.pdf',
-        uid: 'quals-cert-uid2',
-        uploadDate: '2023-09-20T08:57:45.000Z',
-      },
-      {
-        filename: 'Certficate 2024.pdf',
-        uid: 'quals-cert-uid3',
-        uploadDate: '2024-09-20T08:57:45.000Z',
-      },
-    ];
-
-    const uidForRecordWithNoCerts = mockQualifications.groups[1].records[1].uid;
+    const uidForRecordWithOneCert = mockQualifications.groups[0].records[0].uid;
+    const uidForRecordWithNoCerts = mockQualifications.groups[1].records[0].uid;
 
     const setupWithQualificationCerts = () => setup({ qualifications: mockQualifications });
 
@@ -1086,8 +1073,21 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
         expect(triggerCertificateDownloadsSpy).toHaveBeenCalledWith(filesReturnedFromDownloadCertificates);
       });
 
-      //TODO: fill in this test when working on error msgs
-      it('should display an error message on the training category when certificate download fails');
+      it('should display an error message on the training category when certificate download fails', async () => {
+        const { fixture, getByText, getByTestId, qualificationCertificateService } =
+          await setupWithQualificationCerts();
+        const recordRow = getByTestId(uidForRecordWithOneCert);
+        const downloadLink = within(recordRow).getByText('Download');
+
+        spyOn(qualificationCertificateService, 'downloadCertificates').and.returnValue(
+          throwError('404 file not found'),
+        );
+
+        userEvent.click(downloadLink);
+        fixture.detectChanges();
+
+        expect(getByText("There's a problem with this download. Try again later or contact us for help.")).toBeTruthy();
+      });
     });
 
     describe('Upload button', () => {
@@ -1113,15 +1113,52 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
         );
       });
 
-      it('should show an error message when a non pdf file is selected', async () => {});
+      it('should show an error message when a non pdf file is selected', async () => {
+        const invalidFile = new File(['some file content'], 'certificate.csv');
 
-      it('should show an error message when a file of > 500 KB is selected', async () => {});
+        const { fixture, getByText, getByTestId, qualificationCertificateService } =
+          await setupWithQualificationCerts();
+        const uploadCertificateSpy = spyOn(qualificationCertificateService, 'addCertificates');
+
+        const recordRow = getByTestId(uidForRecordWithNoCerts);
+
+        const uploadButton = within(recordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, invalidFile);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+        expect(uploadCertificateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should show an error message when a file of > 500 KB is selected', async () => {
+        const invalidFile = new File(['some file content'], 'certificate.pdf');
+        Object.defineProperty(invalidFile, 'size', {
+          value: 600 * 1024, // 600 KB
+        });
+
+        const { fixture, getByText, getByTestId, qualificationCertificateService } =
+          await setupWithQualificationCerts();
+        const uploadCertificateSpy = spyOn(qualificationCertificateService, 'addCertificates');
+
+        const recordRow = getByTestId(uidForRecordWithNoCerts);
+
+        const uploadButton = within(recordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, invalidFile);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+        expect(uploadCertificateSpy).not.toHaveBeenCalled();
+      });
 
       it('should refresh the qualification record and display an alert of "Certificate uploaded" on successful upload', async () => {
         const { fixture, alertSpy, getByTestId, workerService, qualificationCertificateService } =
           await setupWithQualificationCerts();
         const updatedQualifications: QualificationsByGroup = cloneDeep(mockQualifications);
-        updatedQualifications.groups[1].records[1].qualificationCertificates = [
+        updatedQualifications.groups[1].records[0].qualificationCertificates = [
           { uid: 'mock-uid', filename: mockUploadFile.name, uploadDate: '2024-10-15' },
         ];
 
@@ -1154,7 +1191,20 @@ fdescribe('NewTrainingAndQualificationsRecordComponent', () => {
         expect(within(updatedRow).getByText('Download')).toBeTruthy();
       });
 
-      it('should display an error message on the training category when certificate upload fails', async () => {});
+      it('should display an error message on the training category when certificate upload fails', async () => {
+        const { fixture, getByText, getByTestId, qualificationCertificateService } =
+          await setupWithQualificationCerts();
+        spyOn(qualificationCertificateService, 'addCertificates').and.returnValue(throwError('403 forbidden'));
+
+        const recordRow = getByTestId(uidForRecordWithNoCerts);
+        const uploadButton = within(recordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        fixture.detectChanges();
+
+        expect(getByText("There's a problem with this upload. Try again later or contact us for help.")).toBeTruthy();
+      });
     });
   });
 });
