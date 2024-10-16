@@ -261,5 +261,17 @@ describe('NewQualificationsComponent', () => {
 
       expect(uploadFileSpy).toHaveBeenCalledWith(expectedUploadEvent);
     });
+
+    it('should display an error message above the category when download certificate fails', async () => {
+      const certificateErrors = {
+        Award: "There's a problem with this download. Try again later or contact us for help.",
+      };
+      const { getByTestId } = await setup({ certificateErrors });
+
+      const awardSection = getByTestId('Award-section');
+      expect(
+        within(awardSection).getByText("There's a problem with this download. Try again later or contact us for help."),
+      ).toBeTruthy();
+    });
   });
 });

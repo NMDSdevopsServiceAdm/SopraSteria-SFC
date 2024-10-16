@@ -2,9 +2,13 @@
   <div class="govuk-grid-column-full">
     <ng-container *ngIf="qualificationsByGroup.count > 0; else noQualifications">
       <h1 class="govuk-heading-l govuk-!-font-size-27">Qualifications</h1>
-      <div *ngFor="let qualificationGroup of qualificationsByGroup.groups">
+      <div *ngFor="let qualificationGroup of qualificationsByGroup.groups" [attr.data-testid]="qualificationGroup.group + '-section'">
+        <label class="govuk-!-margin-bottom-2 govuk-heading-m" >{{ qualificationGroup.group }}</label>
+        <span aria-live="polite">
+          <app-validation-error-message *ngIf="certificateErrors?.[qualificationGroup.group]" [errorMessage]="certificateErrors[qualificationGroup.group]" />
+        </span>
         <table class="govuk-table">
-          <caption class="govuk-table__caption govuk-table__caption--m">
+          <caption class="govuk-visually-hidden">
             {{
               qualificationGroup.group
             }}
