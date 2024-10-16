@@ -1,4 +1,4 @@
-import { Certificate } from './trainingAndQualifications.model';
+import { Certificate, CertificateDownload } from './trainingAndQualifications.model';
 
 export enum QualificationType {
   NVQ = 'NVQ',
@@ -84,6 +84,21 @@ export interface BasicQualificationRecord {
   title: string;
   uid: string;
   year: number;
+  qualificationCertificates: QualificationCertificate[];
 }
 
 export interface QualificationCertificate extends Certificate {}
+
+export interface QualificationCertificateDownloadEvent {
+  recordType: 'qualification';
+  recordUid: string;
+  qualificationType: QualificationType;
+  filesToDownload: CertificateDownload[];
+}
+
+export interface QualificationCertificateUploadEvent {
+  recordType: 'qualification';
+  recordUid: string;
+  qualificationType: QualificationType;
+  files: File[];
+}

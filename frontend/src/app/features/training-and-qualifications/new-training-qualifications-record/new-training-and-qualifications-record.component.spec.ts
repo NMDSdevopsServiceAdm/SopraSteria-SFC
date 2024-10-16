@@ -20,15 +20,17 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import { of, throwError } from 'rxjs';
+import { cloneDeep } from 'lodash';
+import userEvent from '@testing-library/user-event';
 
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
-import userEvent from '@testing-library/user-event';
-import { TrainingRecord, TrainingRecords } from '@core/model/training.model';
+import { TrainingRecord, TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
-import { TrainingCertificateService } from '@core/services/certificate.service';
+import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
+import { QualificationsByGroup } from '@core/model/qualification.model';
 
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
@@ -112,15 +114,29 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     ],
   };
 
-  async function setup(
-    otherJob = false,
-    careCert = true,
-    mandatoryTraining = [],
-    jobRoleMandatoryTraining = [],
-    noQualifications = false,
-    fragment = 'all-records',
-    isOwnWorkplace = true,
-  ) {
+  interface SetupOptions {
+    otherJob: boolean;
+    careCert: boolean;
+    mandatoryTraining: TrainingRecordCategory[];
+    fragment: 'all-records' | 'mandatory-training' | 'non-mandatory-training' | 'qualifications';
+    isOwnWorkplace: boolean;
+    qualifications: QualificationsByGroup;
+  }
+  const defaults: SetupOptions = {
+    otherJob: false,
+    careCert: true,
+    mandatoryTraining: [],
+    fragment: 'all-records',
+    isOwnWorkplace: true,
+    qualifications: { count: 0, groups: [], lastUpdated: qualificationsByGroup.lastUpdated },
+  };
+
+  async function setup(options: Partial<SetupOptions> = {}) {
+    const { otherJob, careCert, mandatoryTraining, fragment, isOwnWorkplace, qualifications } = {
+      ...defaults,
+      ...options,
+    };
+
     const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(
       NewTrainingAndQualificationsRecordComponent,
       {
@@ -151,10 +167,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     careCertificate: careCert ? 'Yes, in progress or partially completed' : null,
                   },
                   trainingAndQualificationRecords: {
-                    training: { ...mockTrainingData, jobRoleMandatoryTraining, mandatory: mandatoryTraining },
-                    qualifications: noQualifications
-                      ? { count: 0, groups: [], lastUpdated: null }
-                      : qualificationsByGroup,
+                    training: { ...mockTrainingData, mandatory: mandatoryTraining },
+                    qualifications: qualifications,
                   },
                   expiresSoonAlertDate: {
                     expiresSoonAlertDate: '90',
@@ -318,6 +332,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           { provide: PermissionsService, useClass: MockPermissionsService },
           { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
+          { provide: QualificationCertificateService, useClass: QualificationCertificateService },
+          // suppress the distracting error msg of "reading 'nativeElement'" from PdfTrainingAndQualificationService
+          { provide: PdfTrainingAndQualificationService, useValue: { BuildTrainingAndQualsPdf: () => {} } },
         ],
       },
     );
@@ -336,6 +353,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     const workerService = injector.inject(WorkerService) as WorkerService;
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const trainingCertificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
+    const qualificationCertificateService = injector.inject(
+      QualificationCertificateService,
+    ) as QualificationCertificateService;
 
     const workerSpy = spyOn(workerService, 'setReturnTo');
     workerSpy.and.callThrough();
@@ -366,6 +386,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       pdfTrainingAndQualsService,
       parentSubsidiaryViewService,
       trainingCertificateService,
+      qualificationCertificateService,
     };
   }
 
@@ -429,7 +450,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should show not answered if no care certificate value', async () => {
-      const { getByText } = await setup(false, false);
+      const { getByText } = await setup({ otherJob: false, careCert: false });
 
       expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
       expect(getByText('Not answered', { exact: false })).toBeTruthy();
@@ -640,7 +661,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     describe('mandatory training tab', async () => {
       it('should show the Mandatory training tab as active when on training record page with fragment mandatory-training', async () => {
-        const { getByTestId } = await setup(false, true, [], [], false, 'mandatory-training');
+        const { getByTestId } = await setup({ fragment: 'mandatory-training' });
 
         expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
         expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
@@ -657,7 +678,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should render 1 instances of the new-training component when on mandatory training tab', async () => {
-        const { fixture } = await setup(false, true, [], [], false, 'mandatory-training');
+        const { fixture } = await setup({ fragment: 'mandatory-training' });
 
         expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
       });
@@ -681,7 +702,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     describe('non mandatory training tab', async () => {
       it('should show the non Mandatory training tab as active when on training record page with fragment non-mandatory-training', async () => {
-        const { getByTestId } = await setup(false, true, [], [], false, 'non-mandatory-training');
+        const { getByTestId } = await setup({ fragment: 'non-mandatory-training' });
 
         expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
         expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
@@ -694,7 +715,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should render 1 instances of the new-training component when on non mandatory training tab', async () => {
-        const { fixture } = await setup(false, true, [], [], false, 'non-mandatory-training');
+        const { fixture } = await setup({ fragment: 'non-mandatory-training' });
 
         expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
       });
@@ -718,7 +739,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     describe('qualifications tab', async () => {
       it('should show the qualifications tab as active when on training record page with fragment qualifications', async () => {
-        const { getByTestId } = await setup(false, true, [], [], false, 'qualifications');
+        const { getByTestId } = await setup({ fragment: 'qualifications' });
 
         expect(getByTestId('allRecordsTab').getAttribute('class')).not.toContain('asc-tabs__list-item--active');
         expect(getByTestId('allRecordsTabLink').getAttribute('class')).not.toContain('asc-tabs__link--active');
@@ -735,7 +756,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should render 1 instances of the new-qualifications component when on qualification tab', async () => {
-        const { fixture } = await setup(false, true, [], [], false, 'non-mandatory-training');
+        const { fixture } = await setup({ fragment: 'non-mandatory-training' });
 
         expect(fixture.debugElement.nativeElement.querySelector('app-new-training')).not.toBe(null);
       });
@@ -792,15 +813,15 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should return all workplaces journey when is not own workplace and not in parent sub view', async () => {
-      const { component } = await setup(false, true, [], [], false, 'all-records', false);
+      const { component } = await setup({ isOwnWorkplace: false });
 
       expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
     });
   });
 
-  describe('certificates', () => {
+  describe('training certificates', () => {
     describe('Download button', () => {
-      const mockTrainings = [
+      const mockTrainings: TrainingRecordCategory[] = [
         {
           category: 'HealthWithCertificate',
           id: 1,
@@ -826,7 +847,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       ];
 
       it('should download a certificate file when download link of a certificate row is clicked', async () => {
-        const { getByTestId, component, trainingCertificateService } = await setup(false, true, mockTrainings);
+        const { getByTestId, component, trainingCertificateService } = await setup({
+          mandatoryTraining: mockTrainings,
+        });
         const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
         const trainingRecordRow = getByTestId(uidForTrainingRecord);
@@ -846,7 +869,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should call triggerCertificateDownloads with file returned from downloadCertificates', async () => {
-        const { getByTestId, trainingCertificateService } = await setup(false, true, mockTrainings);
+        const { getByTestId, trainingCertificateService } = await setup({ mandatoryTraining: mockTrainings });
         const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
         const trainingRecordRow = getByTestId(uidForTrainingRecord);
@@ -869,7 +892,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should display an error message on the training category when certificate download fails', async () => {
-        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, mockTrainings);
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup({
+          mandatoryTraining: mockTrainings,
+        });
 
         const uidForTrainingRecord = 'someHealthuidWithCertificate';
 
@@ -889,7 +914,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const mockUploadFile = new File(['some file content'], 'certificate.pdf');
 
       it('should upload a file when a file is selected from Upload file button', async () => {
-        const { component, getByTestId, trainingCertificateService } = await setup(false, true, []);
+        const { component, getByTestId, trainingCertificateService } = await setup();
         const uploadCertificateSpy = spyOn(trainingCertificateService, 'addCertificates').and.returnValue(of(null));
 
         const trainingRecordRow = getByTestId('someHealthuid');
@@ -909,7 +934,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       it('should show an error message when a non pdf file is selected', async () => {
         const invalidFile = new File(['some file content'], 'certificate.csv');
 
-        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, []);
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup();
         const uploadCertificateSpy = spyOn(trainingCertificateService, 'addCertificates');
 
         const trainingRecordRow = getByTestId('someHealthuid');
@@ -930,7 +955,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           value: 600 * 1024, // 600 KB
         });
 
-        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, []);
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup();
         const uploadCertificateSpy = spyOn(trainingCertificateService, 'addCertificates');
 
         const trainingRecordRow = getByTestId('someHealthuid');
@@ -946,11 +971,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should refresh the training record and display an alert of "Certificate uploaded" on successful upload', async () => {
-        const { fixture, alertSpy, getByTestId, workerService, trainingCertificateService } = await setup(
-          false,
-          true,
-          [],
-        );
+        const { fixture, alertSpy, getByTestId, workerService, trainingCertificateService } = await setup();
         const mockUpdatedData = {
           training: mockTrainingData,
           qualifications: { count: 0, groups: [], lastUpdated: null },
@@ -975,11 +996,206 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
 
       it('should display an error message on the training category when certificate upload fails', async () => {
-        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup(false, true, []);
+        const { fixture, getByTestId, trainingCertificateService, getByText } = await setup();
         spyOn(trainingCertificateService, 'addCertificates').and.returnValue(throwError('failed to upload'));
 
         const trainingRecordRow = getByTestId('someHealthuid');
         const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        fixture.detectChanges();
+
+        expect(getByText("There's a problem with this upload. Try again later or contact us for help.")).toBeTruthy();
+      });
+    });
+  });
+
+  describe('qualification certificates', () => {
+    const mockQualifications = cloneDeep(qualificationsByGroup);
+    mockQualifications.groups[0].records[0].qualificationCertificates = [
+      {
+        filename: 'Award 2024.pdf',
+        uid: 'quals-cert-uid1',
+        uploadDate: '2024-09-20T08:57:45.000Z',
+      },
+    ];
+
+    const uidForRecordWithOneCert = mockQualifications.groups[0].records[0].uid;
+    const uidForRecordWithNoCerts = mockQualifications.groups[1].records[0].uid;
+
+    const setupWithQualificationCerts = () => setup({ qualifications: mockQualifications });
+
+    describe('Download button', () => {
+      it('should download a certificate file when download link of a certificate row is clicked', async () => {
+        const { component, getByTestId, qualificationCertificateService } = await setupWithQualificationCerts();
+        const recordRow = getByTestId(uidForRecordWithOneCert);
+        const downloadLink = within(recordRow).getByText('Download');
+
+        const downloadCertificatesSpy = spyOn(qualificationCertificateService, 'downloadCertificates').and.returnValue(
+          of(null),
+        );
+
+        userEvent.click(downloadLink);
+        expect(downloadCertificatesSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          uidForRecordWithOneCert,
+          [
+            {
+              filename: 'Award 2024.pdf',
+              uid: 'quals-cert-uid1',
+            },
+          ],
+        );
+      });
+
+      it('should call triggerCertificateDownloads with file returned from downloadCertificates', async () => {
+        const { getByTestId, qualificationCertificateService } = await setupWithQualificationCerts();
+
+        const recordRow = getByTestId(uidForRecordWithOneCert);
+        const downloadLink = within(recordRow).getByText('Download');
+        const filesReturnedFromDownloadCertificates = [{ filename: 'test.pdf', signedUrl: 'localhost/mock-sign-url' }];
+
+        const triggerCertificateDownloadsSpy = spyOn(
+          qualificationCertificateService,
+          'triggerCertificateDownloads',
+        ).and.returnValue(of(null));
+
+        spyOn(qualificationCertificateService, 'getCertificateDownloadUrls').and.returnValue(
+          of({ files: filesReturnedFromDownloadCertificates }),
+        );
+
+        userEvent.click(downloadLink);
+
+        expect(triggerCertificateDownloadsSpy).toHaveBeenCalledWith(filesReturnedFromDownloadCertificates);
+      });
+
+      it('should display an error message on the training category when certificate download fails', async () => {
+        const { fixture, getByText, getByTestId, qualificationCertificateService } =
+          await setupWithQualificationCerts();
+        const recordRow = getByTestId(uidForRecordWithOneCert);
+        const downloadLink = within(recordRow).getByText('Download');
+
+        spyOn(qualificationCertificateService, 'downloadCertificates').and.returnValue(
+          throwError('404 file not found'),
+        );
+
+        userEvent.click(downloadLink);
+        fixture.detectChanges();
+
+        expect(getByText("There's a problem with this download. Try again later or contact us for help.")).toBeTruthy();
+      });
+    });
+
+    describe('Upload button', () => {
+      const mockUploadFile = new File(['some file content'], 'certificate.pdf');
+
+      it('should upload a file when a file is selected from Upload file button', async () => {
+        const { component, getByTestId, qualificationCertificateService } = await setupWithQualificationCerts();
+        const uploadCertificateSpy = spyOn(qualificationCertificateService, 'addCertificates').and.returnValue(
+          of(null),
+        );
+
+        const recordRow = getByTestId(uidForRecordWithNoCerts);
+
+        const uploadButton = within(recordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        expect(uploadCertificateSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          uidForRecordWithNoCerts,
+          [mockUploadFile],
+        );
+      });
+
+      it('should show an error message when a non pdf file is selected', async () => {
+        const invalidFile = new File(['some file content'], 'certificate.csv');
+
+        const { fixture, getByText, getByTestId, qualificationCertificateService } =
+          await setupWithQualificationCerts();
+        const uploadCertificateSpy = spyOn(qualificationCertificateService, 'addCertificates');
+
+        const recordRow = getByTestId(uidForRecordWithNoCerts);
+
+        const uploadButton = within(recordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, invalidFile);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+        expect(uploadCertificateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should show an error message when a file of > 500 KB is selected', async () => {
+        const invalidFile = new File(['some file content'], 'certificate.pdf');
+        Object.defineProperty(invalidFile, 'size', {
+          value: 600 * 1024, // 600 KB
+        });
+
+        const { fixture, getByText, getByTestId, qualificationCertificateService } =
+          await setupWithQualificationCerts();
+        const uploadCertificateSpy = spyOn(qualificationCertificateService, 'addCertificates');
+
+        const recordRow = getByTestId(uidForRecordWithNoCerts);
+
+        const uploadButton = within(recordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, invalidFile);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+        expect(uploadCertificateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should refresh the qualification record and display an alert of "Certificate uploaded" on successful upload', async () => {
+        const { fixture, alertSpy, getByTestId, workerService, qualificationCertificateService } =
+          await setupWithQualificationCerts();
+        const updatedQualifications: QualificationsByGroup = cloneDeep(mockQualifications);
+        updatedQualifications.groups[1].records[0].qualificationCertificates = [
+          { uid: 'mock-uid', filename: mockUploadFile.name, uploadDate: '2024-10-15' },
+        ];
+
+        const mockUpdatedData = {
+          training: mockTrainingData,
+          qualifications: updatedQualifications,
+        } as TrainingAndQualificationRecords;
+
+        const workerSpy = spyOn(workerService, 'getAllTrainingAndQualificationRecords').and.returnValue(
+          of(mockUpdatedData),
+        );
+        spyOn(qualificationCertificateService, 'addCertificates').and.returnValue(of(null));
+
+        const recordRow = getByTestId(uidForRecordWithNoCerts);
+        const uploadButton = within(recordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        await fixture.whenStable();
+        fixture.detectChanges();
+
+        expect(workerSpy).toHaveBeenCalled();
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Certificate uploaded',
+        });
+
+        // the record that had no certs now should have one cert and display a download link
+        const updatedRow = getByTestId(uidForRecordWithNoCerts);
+        expect(within(updatedRow).getByText('Download')).toBeTruthy();
+      });
+
+      it('should display an error message on the training category when certificate upload fails', async () => {
+        const { fixture, getByText, getByTestId, qualificationCertificateService } =
+          await setupWithQualificationCerts();
+        spyOn(qualificationCertificateService, 'addCertificates').and.returnValue(throwError('403 forbidden'));
+
+        const recordRow = getByTestId(uidForRecordWithNoCerts);
+        const uploadButton = within(recordRow).getByTestId('fileInput');
 
         userEvent.upload(uploadButton, mockUploadFile);
 

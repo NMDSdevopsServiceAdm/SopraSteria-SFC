@@ -4,8 +4,12 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { TrainingCertificateService, QualificationCertificateService } from '@core/services/certificate.service';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { CertificateUpload, TrainingRecord, TrainingRecordCategory } from '@core/model/training.model';
-import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
+import { TrainingRecordCategory } from '@core/model/training.model';
+import {
+  CertificateDownloadEvent,
+  CertificateUploadEvent,
+  TrainingAndQualificationRecords,
+} from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -112,6 +116,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
+
     this.trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');
@@ -337,43 +342,53 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.subscriptions.unsubscribe();
   }
 
-  public downloadTrainingCertificate(trainingRecord: TrainingRecord): void {
-    this.trainingCertificateService
-      .downloadCertificates(
-        this.workplace.uid,
-        this.worker.uid,
-        trainingRecord.uid,
-        trainingRecord.trainingCertificates,
-      )
+  private getCertificateService(event: CertificateDownloadEvent | CertificateUploadEvent) {
+    switch (event.recordType) {
+      case 'qualification':
+        return this.qualificationCertificateService;
+      case 'training':
+        return this.trainingCertificateService;
+    }
+  }
+
+  public downloadCertificate(event: CertificateDownloadEvent) {
+    const certificateService = this.getCertificateService(event);
+    const { recordUid, filesToDownload: files } = event;
+
+    const subscription = certificateService
+      .downloadCertificates(this.workplace.uid, this.worker.uid, recordUid, files)
       .subscribe(
         () => {
           this.certificateErrors = {};
         },
         (_error) => {
-          const categoryName = trainingRecord.trainingCategory.category;
+          const categoryName = event.recordType === 'training' ? event.categoryName : event.qualificationType;
           this.certificateErrors = {
             [categoryName]: "There's a problem with this download. Try again later or contact us for help.",
           };
         },
       );
+    this.subscriptions.add(subscription);
   }
 
-  public uploadTrainingCertificate(event: CertificateUpload): void {
-    const { files, trainingRecord } = event;
+  public uploadCertificate(event: CertificateUploadEvent) {
+    const { recordUid, files } = event;
+    const categoryName = event.recordType === 'training' ? event.categoryName : event.qualificationType;
 
     const errors = CustomValidators.validateUploadCertificates(files);
     if (errors?.length > 0) {
-      const categoryName = trainingRecord.trainingCategory.category;
       this.certificateErrors = { [categoryName]: errors[0] };
       return;
     }
 
-    this.trainingCertificateService
-      .addCertificates(this.workplace.uid, this.worker.uid, trainingRecord.uid, files)
+    const certificateService = this.getCertificateService(event);
+
+    const subscription = certificateService
+      .addCertificates(this.workplace.uid, this.worker.uid, recordUid, files)
       .subscribe(
         () => {
           this.certificateErrors = {};
-          this.refreshTraining().then(() => {
+          this.refreshTrainingAndQualificationRecords().then(() => {
             this.alertService.addAlert({
               type: 'success',
               message: 'Certificate uploaded',
@@ -381,19 +396,20 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
           });
         },
         (_error) => {
-          const categoryName = trainingRecord.trainingCategory.category;
           this.certificateErrors = {
             [categoryName]: "There's a problem with this upload. Try again later or contact us for help.",
           };
         },
       );
+    this.subscriptions.add(subscription);
   }
 
-  private async refreshTraining() {
+  private async refreshTrainingAndQualificationRecords() {
     const updatedData: TrainingAndQualificationRecords = await this.workerService
       .getAllTrainingAndQualificationRecords(this.workplace.uid, this.worker.uid)
       .toPromise();
     this.trainingRecords = updatedData.training;
+    this.qualificationsByGroup = updatedData.qualifications;
     this.setTraining();
   }
 }

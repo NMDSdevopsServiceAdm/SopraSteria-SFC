@@ -1,4 +1,4 @@
-import { Certificate } from './trainingAndQualifications.model';
+import { Certificate, CertificateDownload } from './trainingAndQualifications.model';
 
 export interface TrainingCategory {
   id: number;
@@ -38,14 +38,18 @@ export interface TrainingResponse {
   training: TrainingRecord[];
 }
 
-export interface CertificateDownload {
-  uid: string;
-  filename: string;
+export interface TrainingCertificateDownloadEvent {
+  recordType: 'training';
+  recordUid: string;
+  categoryName: string;
+  filesToDownload: CertificateDownload[];
 }
 
-export interface CertificateUpload {
+export interface TrainingCertificateUploadEvent {
+  recordType: 'training';
+  recordUid: string;
+  categoryName: string;
   files: File[];
-  trainingRecord: TrainingRecord;
 }
 
 export interface TrainingCertificate extends Certificate {}
