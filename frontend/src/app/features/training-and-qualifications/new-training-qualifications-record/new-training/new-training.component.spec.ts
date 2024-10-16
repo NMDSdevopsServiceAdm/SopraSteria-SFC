@@ -215,7 +215,6 @@ describe('NewTrainingComponent', async () => {
       const { component, fixture } = await setup();
 
       component.trainingCategories = [];
-      component.ngOnChanges();
       fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
 
@@ -240,7 +239,6 @@ describe('NewTrainingComponent', async () => {
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
-      component.ngOnChanges();
       fixture.detectChanges();
       const noMandatoryTrainingLink = fixture.debugElement.query(
         By.css('[data-testid="no-mandatory-training-link"]'),
@@ -256,7 +254,6 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.canEditWorker = false;
-      component.ngOnChanges();
       fixture.detectChanges();
       const noMandatoryTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
 
@@ -269,7 +266,6 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.missingMandatoryTraining = false;
-      component.ngOnChanges();
       fixture.detectChanges();
       const mandatoryTrainingMissingLink = fixture.debugElement.query(
         By.css('[data-testid="no-mandatory-training-link"]'),
@@ -289,7 +285,6 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.missingMandatoryTraining = true;
-      component.ngOnChanges();
       fixture.detectChanges();
       const mandatoryTrainingMissingLink = fixture.debugElement.query(
         By.css('[data-testid="mandatory-training-missing-link"]'),

@@ -13,7 +13,7 @@ import { TrainingStatusService } from '@core/services/trainingStatus.service';
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.scss'],
 })
-export class NewTrainingComponent implements OnChanges {
+export class NewTrainingComponent {
   @Input() public trainingCategories: TrainingRecordCategory[];
   @Input() public isMandatoryTraining = false;
   @Input() public trainingType: string;
@@ -33,11 +33,6 @@ export class NewTrainingComponent implements OnChanges {
 
   ngOnInit(): void {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
-    this.addErrorsToTrainingCategories();
-  }
-
-  ngOnChanges(): void {
-    this.addErrorsToTrainingCategories();
   }
 
   handleDownloadCertificate(event: Event, trainingRecord: TrainingRecord) {
@@ -56,17 +51,6 @@ export class NewTrainingComponent implements OnChanges {
       recordUid: trainingRecord.uid,
       categoryName: trainingRecord.trainingCategory.category,
       files,
-    });
-  }
-
-  addErrorsToTrainingCategories() {
-    this.trainingCategoryToDisplay = this.trainingCategories.map((trainingCategory) => {
-      if (this.certificateErrors && trainingCategory.category in this.certificateErrors) {
-        const errorMessage = this.certificateErrors[trainingCategory.category];
-        return { ...trainingCategory, error: errorMessage };
-      } else {
-        return trainingCategory;
-      }
     });
   }
 }
