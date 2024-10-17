@@ -279,13 +279,20 @@ describe('ParentHomeTabComponent', () => {
       expect(bulkUploadLink).toBeFalsy();
     });
 
-    it('should show a card with a link that takes you to the wdf page', async () => {
-      const { getByText } = await setup();
+    it('should show the funding card with a link that takes you to the wdf page', async () => {
+      const { getByText } = await setup(false, Establishment, true, 9, ['canViewWdfReport']);
 
-      const wdfLink = getByText('Does your data meet WDF requirements?');
+      const wdfLink = getByText('Does your data meet funding requirements?');
 
-      expect(wdfLink).toBeTruthy();
       expect(wdfLink.getAttribute('href')).toBe('/wdf');
+    });
+
+    it('should not show the funding card if user does not have permission to view reports', async () => {
+      const { queryByText } = await setup();
+
+      const wdfLink = queryByText('Does your data meet funding requirements?');
+
+      expect(wdfLink).toBeFalsy();
     });
 
     it('should show a card with a link that takes you to the ASC-WDS certificate page', async () => {
