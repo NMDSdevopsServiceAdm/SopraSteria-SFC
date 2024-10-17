@@ -102,7 +102,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
         mockUploadFiles.forEach((file) => {
           expect(stubAddCertificate).to.have.been.calledWith({
-            id: qualification.id,
+            recordId: qualification.id,
             workerFk: mockWorkerFk,
             filename: file.filename,
             fileId: file.fileId,

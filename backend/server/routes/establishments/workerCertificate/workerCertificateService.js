@@ -84,7 +84,7 @@ class WorkerCertificateService {
       throw new HttpError(`Failed to find related ${this.recordType} record`, 400);
     }
 
-    const { workerFk, id } = record.dataValues;
+    const { workerFk, id: recordId } = record.dataValues;
 
     const etagsMatchRecord = await this.verifyEtagsForAllFiles(files);
 
@@ -96,8 +96,9 @@ class WorkerCertificateService {
       const { filename, fileId, key } = file;
 
       try {
-        await this.certificatesModel.addCertificate({ id, workerFk, filename, fileId, key });
+        await this.certificatesModel.addCertificate({ recordId, workerFk, filename, fileId, key });
       } catch (err) {
+        console.log(err);
         throw new HttpError('Failed to add records to database', 500);
       }
     }
