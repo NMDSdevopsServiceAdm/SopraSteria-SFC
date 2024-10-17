@@ -38,8 +38,7 @@ class WorkerCertificateService {
     return `${establishmentUid}/${workerUid}/${this.recordType}Certificate/${recordUid}/${fileId}`;
   };
 
-  async requestUploadUrl({files, params}) {
-    const { establishmentUid, workerUid, recordUid } = params;
+  async requestUploadUrl({files, establishmentUid, workerUid, recordUid}) {
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);
     }
@@ -65,10 +64,7 @@ class WorkerCertificateService {
     return responsePayload;
   };
 
-  async confirmUpload(req) {
-    const { files } = req;
-    const { recordUid } = req.params;
-
+  async confirmUpload(files, recordUid) {
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);
     }
@@ -120,9 +116,7 @@ class WorkerCertificateService {
     return true;
   };
 
-  async getPresignedUrlForCertificateDownload ({files, params}) {
-    const { establishmentUid, workerUid, recordUid } = params;
-
+  async getPresignedUrlForCertificateDownload (files, establishmentUid, workerUid, recordUid) {
     if (!files || !files.length) {
       throw new HttpError('No files provided in request body', 400);
     }
@@ -161,10 +155,7 @@ class WorkerCertificateService {
     }
   };
 
-  async deleteCertificates(req) {
-    const { files } = req;
-    const { establishmentUid, workerUid, recordUid } = req.params;
-
+  async deleteCertificates(files, establishmentUid, workerUid, recordUid) {
     if (!files || !files.length) {
       throw new HttpError('No files provided in request body', 400);
     }

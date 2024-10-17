@@ -106,14 +106,10 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
       await trainingCertificateRoute.confirmUpload(req, res);
 
-      expect(stubConfirmUpload).to.have.been.calledWith({
-        files: ['fileName'],
-        params: {
-          establishmentUid: 1,
-          workerUid: undefined,
-          recordUid: 3
-        }
-      });
+      expect(stubConfirmUpload).to.have.been.calledWith(
+        ['fileName'],
+        3
+      );
     })
 
     it('should reply with status code 400 when a HttpError is thrown with status code 400', async () => {
@@ -152,7 +148,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       req = httpMocks.createRequest({
         method: 'POST',
         url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/download`,
-        body: { filesToDownload: [{ uid: mockFileUid, filename: mockFileName }] },
+        body: { files: [{ uid: mockFileUid, filename: mockFileName }] },
         params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
       });
       res = httpMocks.createResponse();
@@ -167,14 +163,12 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     it('should call workerCertificateService.getPresignedUrlForCertificateDowload with the correct parameter format', async () => {
       await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
 
-      expect(stubPresignedCertificate).to.have.been.calledWith({
-        files: [{ uid: mockFileUid, filename: mockFileName }],
-        params: {
-          establishmentUid: user.establishment.uid,
-          workerUid: user.uid,
-          recordUid: training.uid,
-        }
-      });
+      expect(stubPresignedCertificate).to.have.been.calledWith(
+        [{ uid: mockFileUid, filename: mockFileName }],
+        user.establishment.uid,
+        user.uid,
+        training.uid,
+      );
     });
 
     it('should return reply with status code 400 when a HttpError is thrown with status code 400', async () => {
@@ -217,7 +211,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       req = httpMocks.createRequest({
         method: 'POST',
         url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/delete`,
-        body: { filesToDelete: [{ uid: mockFileUid1, filename: 'mockFileName1' }] },
+        body: { files: [{ uid: mockFileUid1, filename: 'mockFileName1' }] },
         params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
       });
       res = httpMocks.createResponse();
@@ -234,14 +228,12 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     it('should call workerCertificateService.deleteCertificates with the correct parameter format', async () => {
       await trainingCertificateRoute.deleteCertificates(req, res);
 
-      expect(stubDeleteCertificates).to.have.been.calledWith({
-        files: [{ uid: mockFileUid1, filename: 'mockFileName1' }],
-        params: {
-          establishmentUid: user.establishment.uid,
-          workerUid: user.uid,
-          recordUid: training.uid,
-        }
-      });
+      expect(stubDeleteCertificates).to.have.been.calledWith(
+        [{ uid: mockFileUid1, filename: 'mockFileName1' }],
+        user.establishment.uid,
+        user.uid,
+        training.uid,
+      );
     });
 
     describe('errors', () => {

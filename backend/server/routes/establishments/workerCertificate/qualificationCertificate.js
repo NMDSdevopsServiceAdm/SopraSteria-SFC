@@ -10,30 +10,11 @@ const initialiseCertificateService = () => {
   return WorkerCertificateService.initialiseQualifications();
 }
 
-const formatRequest = (req) => {
-  const formatFilesArg = (body) => {
-    if (body.filesToDownload) return body.filesToDownload;
-    if (body.filesToDelete) return body.filesToDelete;
-    if (body.files) return body.files;
-  }
-
-  return {
-    files: formatFilesArg(req.body),
-    params: {
-      establishmentUid: req.params.id,
-      workerUid: req.params.workerId,
-      recordUid: req.params.qualificationUid,
-    }
-  };
-};
-
 const requestUploadUrl = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
-  const request = formatRequest(req);
-
   try {
-    const responsePayload = await certificateService.requestUploadUrl(request);
+    const responsePayload = await certificateService.requestUploadUrl(req.body.files, req.params.id, req.params.workerId, req.params.qualificationUid);
     return res.status(200).json({ files: responsePayload });
   } catch (err) {
     return res.status(err.statusCode).send(err.message);
@@ -43,10 +24,8 @@ const requestUploadUrl = async (req, res) => {
 const confirmUpload = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
-  const request = formatRequest(req);
-
   try {
-    await certificateService.confirmUpload(request);
+    await certificateService.confirmUpload(req.body.files, req.params.qualificationUid);
     return res.status(200).send();
   } catch (err) {
     return res.status(err.statusCode).send(err.message);
@@ -56,10 +35,8 @@ const confirmUpload = async (req, res) => {
 const getPresignedUrlForCertificateDownload = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
-  const request = formatRequest(req);
-
   try {
-    const responsePayload = await certificateService.getPresignedUrlForCertificateDownload(request);
+    const responsePayload = await certificateService.getPresignedUrlForCertificateDownload(req.body.files, req.params.id, req.params.workerId, req.params.qualificationUid);
     return res.status(200).json({ files: responsePayload });
   } catch (err) {
     return res.status(err.statusCode).send(err.message);
@@ -68,10 +45,9 @@ const getPresignedUrlForCertificateDownload = async (req, res) => {
 
 const deleteCertificates = async (req, res) => {
   const certificateService = initialiseCertificateService();
-  const request = formatRequest(req);
 
   try {
-    await certificateService.deleteCertificates(request);
+    await certificateService.deleteCertificates(req.body.files, req.params.id, req.params.workerId, req.params.qualificationUid);
     return res.status(200).send();
   } catch (err) {
     return res.status(err.statusCode).send(err.message);
