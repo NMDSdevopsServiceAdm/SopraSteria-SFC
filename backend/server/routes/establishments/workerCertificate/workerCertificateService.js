@@ -67,7 +67,7 @@ class WorkerCertificateService {
 
   async confirmUpload(req) {
     const { files } = req;
-    const { establishmentUid, recordUid } = req.params;
+    const { recordUid } = req.params;
 
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);

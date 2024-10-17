@@ -19,7 +19,9 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     sinon.restore();
   });
 
-  beforeEach(() => {});
+  beforeEach(() => {
+    service = WorkerCertificateService.initialiseQualifications();
+  });
 
   describe('requestUploadUrl', () => {
     const mockUploadFiles = ['cert1.pdf', 'cert2.pdf'];
@@ -27,8 +29,6 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     let res;
 
     beforeEach(() => {
-      service = WorkerCertificateService.initialiseQualifications();
-
       mockRequestBody = { files: [{ filename: 'cert1.pdf' }, { filename: 'cert2.pdf' }], params: { id: 1, workerId: 2, recordUid: 3 } };
       sinon.stub(s3, 'getSignedUrlForUpload').returns(mockSignedUrl);
     });
@@ -71,6 +71,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       expect(error.statusCode).to.equal(400);
       expect(error.message).to.equal('Missing file name in request body');
     });
+  });
 
     describe('confirmUpload', () => {
       const mockUploadFiles = [
@@ -90,7 +91,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       });
 
       createReq = (override) => {
-        return { files: mockUploadFiles, params: { id: 1, workerId: 2, recordUid: 3 }, ...override};
+        return { files: mockUploadFiles, params: { establishmentUid: 1, workerId: 2, recordUid: 3 }, ...override};
       }
 
       it('should add a new record to database for each file', async () => {
@@ -131,7 +132,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         let error;
 
         try {
-          await service.confirmUpload(req, res);
+          await service.confirmUpload(req);
         } catch (err) {
           error = err;
         }
@@ -188,7 +189,6 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         expect(error.statusCode).to.equal(500);
       });
     });
-  });
 
   describe('getPresignedUrlForCertificateDownload', () => {
     const mockSignedUrl = 'http://localhost/mock-download-url';
@@ -209,7 +209,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     it('should return an array with signed url for download and file name in response', async () => {
       const actual = await service.getPresignedUrlForCertificateDownload(req);
 
-      expect(actual.files).to.deep.equal([{ signedUrl: mockSignedUrl, filename: mockFileName }]);
+      expect(actual).to.deep.equal([{ signedUrl: mockSignedUrl, filename: mockFileName }]);
     });
 
     it('should call getSignedUrlForDownload with bucket name from config', async () => {
