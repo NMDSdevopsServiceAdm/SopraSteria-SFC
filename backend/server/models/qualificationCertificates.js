@@ -2,8 +2,8 @@
 const dayjs = require('dayjs');
 
 module.exports = function (sequelize, DataTypes) {
-  const TrainingCertificates = sequelize.define(
-    'trainingCertificates',
+  const QualificationCertificates = sequelize.define(
+    'qualificationCertificates',
     {
       id: {
         type: DataTypes.INTEGER,
@@ -23,10 +23,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: '"WorkerFK"',
       },
-      workerTrainingFk: {
+      workerQualificationsFk: {
         type: DataTypes.INTEGER,
         allowNull: false,
-        field: '"WorkerTrainingFK"',
+        field: '"WorkerQualificationsFK"',
       },
       filename: {
         type: DataTypes.TEXT,
@@ -45,41 +45,41 @@ module.exports = function (sequelize, DataTypes) {
       },
     },
     {
-      tableName: 'TrainingCertificates',
+      tableName: 'QualificationCertificates',
       schema: 'cqc',
       createdAt: false,
       updatedAt: false,
     },
   );
 
-  TrainingCertificates.associate = (models) => {
-    TrainingCertificates.belongsTo(models.worker, {
+  QualificationCertificates.associate = (models) => {
+    QualificationCertificates.belongsTo(models.worker, {
       foreignKey: 'workerFk',
       targetKey: 'id',
       as: 'worker',
     });
 
-    TrainingCertificates.belongsTo(models.workerTraining, {
-      foreignKey: 'workerTrainingFk',
+    QualificationCertificates.belongsTo(models.workerQualifications, {
+      foreignKey: 'workerQualificationsFk',
       targetKey: 'id',
-      as: 'workerTraining',
+      as: 'workerQualifications',
     });
   };
 
-  TrainingCertificates.addCertificate = function ({ recordId, workerFk, filename, fileId, key }) {
+  QualificationCertificates.addCertificate = function ({ recordId, workerFk, filename, fileId, key }) {
     const timeNow = dayjs().format();
 
     return this.create({
       uid: fileId,
       workerFk: workerFk,
-      workerTrainingFk: recordId,
+      workerQualificationsFk: recordId,
       filename: filename,
       uploadDate: timeNow,
       key,
     });
   };
 
-  TrainingCertificates.deleteCertificate = async function (uids) {
+  QualificationCertificates.deleteCertificate = async function (uids) {
     return await this.destroy({
       where: {
         uid: uids,
@@ -87,7 +87,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  TrainingCertificates.countCertificatesToBeDeleted = async function (uids) {
+  QualificationCertificates.countCertificatesToBeDeleted = async function (uids) {
     return await this.count({
       where: {
         uid: uids,
@@ -95,5 +95,5 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  return TrainingCertificates;
+  return QualificationCertificates;
 };

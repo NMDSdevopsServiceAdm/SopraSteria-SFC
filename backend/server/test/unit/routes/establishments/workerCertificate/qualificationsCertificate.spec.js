@@ -3,16 +3,15 @@ const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
 
 const buildUser = require('../../../../factories/user');
-const { trainingBuilder } = require('../../../../factories/models');
-const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
+const { qualificationBuilder } = require('../../../../factories/models');
 
-const trainingCertificateRoute = require('../../../../../routes/establishments/workerCertificate/trainingCertificate');
+const qualificationCertificateRoute = require('../../../../../routes/establishments/workerCertificate/qualificationCertificate');
 const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
 const HttpError = require('../../../../../utils/errors/httpError');
 
-describe('backend/server/routes/establishments/workerCertificate/trainingCertificate.js', () => {
+describe('backend/server/routes/establishments/workerCertificate/qualificationCertificate.js', () => {
   const user = buildUser();
-  const training = trainingBuilder();
+  const qualification = qualificationBuilder();
 
   afterEach(() => {
     sinon.restore();
@@ -21,7 +20,6 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
   beforeEach(() => { });
 
   describe('requestUploadUrl', () => {
-    const mockSignedUrl = 'http://localhost/mock-upload-url';
     let res;
 
     function createReq(override = {}) {
@@ -29,7 +27,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
       const req = httpMocks.createRequest({
         method: 'POST',
-        url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate`,
+        url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/qualifications/${qualification.uid}/certificate`,
         body: mockRequestBody,
         establishmentId: user.establishment.uid,
         ...override,
@@ -39,7 +37,6 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     }
 
     beforeEach(() => {
-      sinon.stub(s3, 'getSignedUrlForUpload').returns(mockSignedUrl);
       responsePayload = [{ data: 'someData' }, { data: 'someData2' }];
       stubGetUrl = sinon.stub(WorkerCertificateService.prototype, "requestUploadUrl").returns(responsePayload);
       res = httpMocks.createResponse();
@@ -48,7 +45,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     it('should reply with a status of 200', async () => {
       const req = createReq();
 
-      await trainingCertificateRoute.requestUploadUrlEndpoint(req, res);
+      await qualificationCertificateRoute.requestUploadUrlEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
@@ -56,7 +53,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     it('should wrap the response data in a files property', async () => {
       const req = createReq();
 
-      await trainingCertificateRoute.requestUploadUrlEndpoint(req, res);
+      await qualificationCertificateRoute.requestUploadUrlEndpoint(req, res);
 
       const actual = await res._getJSONData();
 
@@ -68,7 +65,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
       stubGetUrl.throws(new HttpError('Test message', 400))
 
-      await trainingCertificateRoute.requestUploadUrlEndpoint(req, res);
+      await qualificationCertificateRoute.requestUploadUrlEndpoint(req, res);
 
       expect(res.statusCode).to.equal(400);
       expect(res._getData()).to.equal('Test message');
@@ -96,15 +93,15 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     it('should reply with a status of 200 when no exception is thrown', async () => {
       const req = createPutReq();
 
-      await trainingCertificateRoute.confirmUploadEndpoint(req, res);
+      await qualificationCertificateRoute.confirmUploadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
 
     it('should call workerCertificateService.confirmUpload with the correct parameter format', async () => {
-      const req = createPutReq({ body: { files: ['fileName'] }, params: { id: 1, trainingUid: 3 } });
+      const req = createPutReq({ body: { files: ['fileName'] }, params: { id: 1, qualificationUid: 3 } });
 
-      await trainingCertificateRoute.confirmUploadEndpoint(req, res);
+      await qualificationCertificateRoute.confirmUploadEndpoint(req, res);
 
       expect(stubConfirmUpload).to.have.been.calledWith(
         ['fileName'],
@@ -117,7 +114,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
       stubConfirmUpload.throws(new HttpError('Test exception 400', 400));
 
-      await trainingCertificateRoute.confirmUploadEndpoint(req, res);
+      await qualificationCertificateRoute.confirmUploadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(400);
       expect(res._getData()).to.equal('Test exception 400');
@@ -128,7 +125,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
       stubConfirmUpload.throws(new HttpError('Test exception 500', 500));
 
-      await trainingCertificateRoute.confirmUploadEndpoint(req, res);
+      await qualificationCertificateRoute.confirmUploadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(500);
       expect(res._getData()).to.equal('Test exception 500');
@@ -147,34 +144,34 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       mockFileName = 'mockFileName';
       req = httpMocks.createRequest({
         method: 'POST',
-        url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/download`,
+        url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/qualifications/${qualification.uid}/certificate/download`,
         body: { files: [{ uid: mockFileUid, filename: mockFileName }] },
-        params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
+        params: { id: user.establishment.uid, workerId: user.uid, qualificationUid: qualification.uid },
       });
       res = httpMocks.createResponse();
     });
 
     it('should reply with a status of 200 when no exception is thrown', async () => {
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
+      await qualificationCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
 
     it('should call workerCertificateService.getPresignedUrlForCertificateDowload with the correct parameter format', async () => {
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
+      await qualificationCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(stubPresignedCertificate).to.have.been.calledWith(
         [{ uid: mockFileUid, filename: mockFileName }],
         user.establishment.uid,
         user.uid,
-        training.uid,
-      );
+        qualification.uid,
+        );
     });
 
     it('should return reply with status code 400 when a HttpError is thrown with status code 400', async () => {
       stubPresignedCertificate.throws(new HttpError('Test exception', 400));
 
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
+      await qualificationCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(400);
       expect(res._getData()).to.equal('Test exception');
@@ -183,7 +180,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     it('should return reply with status code 500 when a HttpError is thrown with status code 500', async () => {
       stubPresignedCertificate.throws(new HttpError('Test exception', 500));
 
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
+      await qualificationCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(500);
       expect(res._getData()).to.equal('Test exception');
@@ -205,14 +202,14 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       mockFileUid2 = 'mockFileUid2';
       mockFileUid3 = 'mockFileUid3';
 
-      mockKey1 = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid1}`;
-      mockKey2 = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid2}`;
-      mockKey3 = `${user.establishment.uid}/${user.uid}/trainingCertificate/${training.uid}/${mockFileUid3}`;
+      mockKey1 = `${user.establishment.uid}/${user.uid}/qualificationsCertificate/${qualification.uid}/${mockFileUid1}`;
+      mockKey2 = `${user.establishment.uid}/${user.uid}/qualificationsCertificate/${qualification.uid}/${mockFileUid2}`;
+      mockKey3 = `${user.establishment.uid}/${user.uid}/qualificationsCertificate/${qualification.uid}/${mockFileUid3}`;
       req = httpMocks.createRequest({
         method: 'POST',
-        url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/delete`,
+        url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/qualifications/${qualification.uid}/certificate/delete`,
         body: { files: [{ uid: mockFileUid1, filename: 'mockFileName1' }] },
-        params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
+        params: { id: user.establishment.uid, workerId: user.uid, qualificationUid: qualification.uid },
       });
       res = httpMocks.createResponse();
       errorMessage = 'DatabaseError';
@@ -220,19 +217,19 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     });
 
     it('should return a 200 status when no exceptions are thrown', async () => {
-      await trainingCertificateRoute.deleteCertificatesEndpoint(req, res);
+      await qualificationCertificateRoute.deleteCertificatesEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
 
     it('should call workerCertificateService.deleteCertificates with the correct parameter format', async () => {
-      await trainingCertificateRoute.deleteCertificatesEndpoint(req, res);
+      await qualificationCertificateRoute.deleteCertificatesEndpoint(req, res);
 
       expect(stubDeleteCertificates).to.have.been.calledWith(
         [{ uid: mockFileUid1, filename: 'mockFileName1' }],
         user.establishment.uid,
         user.uid,
-        training.uid,
+        qualification.uid
       );
     });
 
@@ -240,7 +237,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       it('should return status code 400 when a HttpError is thrown with status code 400', async () => {
         stubDeleteCertificates.throws(new HttpError('Test exception', 400));
 
-        await trainingCertificateRoute.deleteCertificatesEndpoint(req, res);
+        await qualificationCertificateRoute.deleteCertificatesEndpoint(req, res);
 
         expect(res.statusCode).to.equal(400);
         expect(res._getData()).to.equal('Test exception');
@@ -249,7 +246,7 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       it('should return status code 500 when a HttpError is thrown with status code 500', async () => {
         stubDeleteCertificates.throws(new HttpError('Test exception', 500));
 
-        await trainingCertificateRoute.deleteCertificatesEndpoint(req, res);
+        await qualificationCertificateRoute.deleteCertificatesEndpoint(req, res);
 
         expect(res.statusCode).to.equal(500);
         expect(res._getData()).to.equal('Test exception');
