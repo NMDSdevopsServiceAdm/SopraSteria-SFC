@@ -66,13 +66,13 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  QualificationCertificates.addCertificate = function ({ qualificationRecordId, workerFk, filename, fileId, key }) {
+  QualificationCertificates.addCertificate = function ({ recordId, workerFk, filename, fileId, key }) {
     const timeNow = dayjs().format();
 
     return this.create({
       uid: fileId,
       workerFk: workerFk,
-      workerQualificationsFk: qualificationRecordId,
+      workerQualificationsFk: recordId,
       filename: filename,
       uploadDate: timeNow,
       key,

@@ -69,8 +69,6 @@ module.exports = function (sequelize, DataTypes) {
   TrainingCertificates.addCertificate = function ({ recordId, workerFk, filename, fileId, key }) {
     const timeNow = dayjs().format();
 
-    console.log(recordId);
-
     return this.create({
       uid: fileId,
       workerFk: workerFk,

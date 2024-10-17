@@ -198,6 +198,6 @@ router.route('/available').get(hasPermission('canViewWorker'), availableQualific
 router.route('/:qualificationUid').get(hasPermission('canViewWorker'), viewQualification);
 router.route('/:qualificationUid').put(hasPermission('canEditWorker'), updateQualification);
 router.route('/:qualificationUid').delete(hasPermission('canEditWorker'), deleteQualification);
-router.use('/:trainingUid/certificate', QualificationCertificateRoute);
+router.use('/:qualificationUid/certificate', QualificationCertificateRoute);
 
 module.exports = router;
