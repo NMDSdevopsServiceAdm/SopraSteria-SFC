@@ -45,7 +45,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
     it('should reply with a status of 200', async () => {
       const req = createReq();
 
-      await qualificationCertificateRoute.requestUploadUrl(req, res);
+      await qualificationCertificateRoute.requestUploadUrlEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
@@ -53,7 +53,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
     it('should wrap the response data in a files property', async () => {
       const req = createReq();
 
-      await qualificationCertificateRoute.requestUploadUrl(req, res);
+      await qualificationCertificateRoute.requestUploadUrlEndpoint(req, res);
 
       const actual = await res._getJSONData();
 
@@ -65,7 +65,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
 
       stubGetUrl.throws(new HttpError('Test message', 400))
 
-      await qualificationCertificateRoute.requestUploadUrl(req, res);
+      await qualificationCertificateRoute.requestUploadUrlEndpoint(req, res);
 
       expect(res.statusCode).to.equal(400);
       expect(res._getData()).to.equal('Test message');
@@ -93,7 +93,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
     it('should reply with a status of 200 when no exception is thrown', async () => {
       const req = createPutReq();
 
-      await qualificationCertificateRoute.confirmUpload(req, res);
+      await qualificationCertificateRoute.confirmUploadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
@@ -101,7 +101,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
     it('should call workerCertificateService.confirmUpload with the correct parameter format', async () => {
       const req = createPutReq({ body: { files: ['fileName'] }, params: { id: 1, qualificationUid: 3 } });
 
-      await qualificationCertificateRoute.confirmUpload(req, res);
+      await qualificationCertificateRoute.confirmUploadEndpoint(req, res);
 
       expect(stubConfirmUpload).to.have.been.calledWith(
         ['fileName'],
@@ -114,7 +114,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
 
       stubConfirmUpload.throws(new HttpError('Test exception 400', 400));
 
-      await qualificationCertificateRoute.confirmUpload(req, res);
+      await qualificationCertificateRoute.confirmUploadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(400);
       expect(res._getData()).to.equal('Test exception 400');
@@ -125,7 +125,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
 
       stubConfirmUpload.throws(new HttpError('Test exception 500', 500));
 
-      await qualificationCertificateRoute.confirmUpload(req, res);
+      await qualificationCertificateRoute.confirmUploadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(500);
       expect(res._getData()).to.equal('Test exception 500');
@@ -152,13 +152,13 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
     });
 
     it('should reply with a status of 200 when no exception is thrown', async () => {
-      await qualificationCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+      await qualificationCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
 
     it('should call workerCertificateService.getPresignedUrlForCertificateDowload with the correct parameter format', async () => {
-      await qualificationCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+      await qualificationCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(stubPresignedCertificate).to.have.been.calledWith(
         [{ uid: mockFileUid, filename: mockFileName }],
@@ -171,7 +171,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
     it('should return reply with status code 400 when a HttpError is thrown with status code 400', async () => {
       stubPresignedCertificate.throws(new HttpError('Test exception', 400));
 
-      await qualificationCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+      await qualificationCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(400);
       expect(res._getData()).to.equal('Test exception');
@@ -180,7 +180,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
     it('should return reply with status code 500 when a HttpError is thrown with status code 500', async () => {
       stubPresignedCertificate.throws(new HttpError('Test exception', 500));
 
-      await qualificationCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+      await qualificationCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(500);
       expect(res._getData()).to.equal('Test exception');
@@ -217,13 +217,13 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
     });
 
     it('should return a 200 status when no exceptions are thrown', async () => {
-      await qualificationCertificateRoute.deleteCertificates(req, res);
+      await qualificationCertificateRoute.deleteCertificatesEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
 
     it('should call workerCertificateService.deleteCertificates with the correct parameter format', async () => {
-      await qualificationCertificateRoute.deleteCertificates(req, res);
+      await qualificationCertificateRoute.deleteCertificatesEndpoint(req, res);
 
       expect(stubDeleteCertificates).to.have.been.calledWith(
         [{ uid: mockFileUid1, filename: 'mockFileName1' }],
@@ -237,7 +237,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
       it('should return status code 400 when a HttpError is thrown with status code 400', async () => {
         stubDeleteCertificates.throws(new HttpError('Test exception', 400));
 
-        await qualificationCertificateRoute.deleteCertificates(req, res);
+        await qualificationCertificateRoute.deleteCertificatesEndpoint(req, res);
 
         expect(res.statusCode).to.equal(400);
         expect(res._getData()).to.equal('Test exception');
@@ -246,7 +246,7 @@ describe('backend/server/routes/establishments/workerCertificate/qualificationCe
       it('should return status code 500 when a HttpError is thrown with status code 500', async () => {
         stubDeleteCertificates.throws(new HttpError('Test exception', 500));
 
-        await qualificationCertificateRoute.deleteCertificates(req, res);
+        await qualificationCertificateRoute.deleteCertificatesEndpoint(req, res);
 
         expect(res.statusCode).to.equal(500);
         expect(res._getData()).to.equal('Test exception');

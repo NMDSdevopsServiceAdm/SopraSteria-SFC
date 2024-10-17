@@ -11,7 +11,7 @@ const initialiseCertificateService = () => {
   return WorkerCertificateService.initialiseTraining();
 }
 
-const requestUploadUrl = async (req, res) => {
+const requestUploadUrlEndpoint = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
   try {
@@ -22,7 +22,7 @@ const requestUploadUrl = async (req, res) => {
   }
 };
 
-const confirmUpload = async (req, res) => {
+const confirmUploadEndpoint = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
   try {
@@ -33,7 +33,7 @@ const confirmUpload = async (req, res) => {
   }
 };
 
-const getPresignedUrlForCertificateDownload = async (req, res) => {
+const getPresignedUrlForCertificateDownloadEndpoint = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
   try {
@@ -44,7 +44,7 @@ const getPresignedUrlForCertificateDownload = async (req, res) => {
   }
 };
 
-const deleteCertificates = async (req, res) => {
+const deleteCertificatesEndpoint = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
   try {
@@ -55,13 +55,13 @@ const deleteCertificates = async (req, res) => {
   }
 };
 
-router.route('/').post(hasPermission('canEditWorker'), requestUploadUrl);
-router.route('/').put(hasPermission('canEditWorker'), confirmUpload);
-router.route('/download').post(hasPermission('canEditWorker'), getPresignedUrlForCertificateDownload);
-router.route('/delete').post(hasPermission('canEditWorker'), deleteCertificates);
+router.route('/').post(hasPermission('canEditWorker'), requestUploadUrlEndpoint);
+router.route('/').put(hasPermission('canEditWorker'), confirmUploadEndpoint);
+router.route('/download').post(hasPermission('canEditWorker'), getPresignedUrlForCertificateDownloadEndpoint);
+router.route('/delete').post(hasPermission('canEditWorker'), deleteCertificatesEndpoint);
 
 module.exports = router;
-module.exports.requestUploadUrl = requestUploadUrl;
-module.exports.confirmUpload = confirmUpload;
-module.exports.getPresignedUrlForCertificateDownload = getPresignedUrlForCertificateDownload;
-module.exports.deleteCertificates = deleteCertificates;
+module.exports.requestUploadUrlEndpoint = requestUploadUrlEndpoint;
+module.exports.confirmUploadEndpoint = confirmUploadEndpoint;
+module.exports.getPresignedUrlForCertificateDownloadEndpoint = getPresignedUrlForCertificateDownloadEndpoint;
+module.exports.deleteCertificatesEndpoint = deleteCertificatesEndpoint;
