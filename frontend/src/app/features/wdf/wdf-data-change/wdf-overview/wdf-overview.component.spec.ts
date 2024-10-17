@@ -7,18 +7,14 @@ import { ReportService } from '@core/services/report.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
-
+import { fireEvent, render } from '@testing-library/angular';
 import { WdfOverviewComponent } from './wdf-overview.component';
 import { getTestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
 
 describe('WdfOverviewComponent', () => {
-  const year = new Date().getFullYear();
-
-  const meetingFundingMessage = `Your data has met the funding requirements for ${year} to ${year + 1}`;
-  const notMeetingFundingMessage = `Your data does not meet the funding requirements for ${year} to ${year + 1}`;
+  const currentYear = new Date().getFullYear();
 
   const defaulWdfEligibilityStatus = { overall: true, workplace: true, staff: true };
 
@@ -47,6 +43,8 @@ describe('WdfOverviewComponent', () => {
         ],
         componentProperties: {
           parentOverallWdfEligibility: parentOverallWdfEligibility,
+          wdfStartDate: `1 April ${currentYear}`,
+          wdfEndDate: `31 March ${currentYear + 1}`,
         },
         declarations: [WdfSummaryPanel],
       },
@@ -78,8 +76,7 @@ describe('WdfOverviewComponent', () => {
     it('should display the page with title the correct timeframe ', async () => {
       const { getByText } = await setup();
 
-      const year = new Date().getFullYear();
-      const pageTitle = `Does your data meet funding requirements for ${year} to ${year + 1}?`;
+      const pageTitle = `Does your data meet funding requirements for ${currentYear} to ${currentYear + 1}?`;
 
       expect(getByText(pageTitle)).toBeTruthy();
     });
@@ -93,28 +90,24 @@ describe('WdfOverviewComponent', () => {
       expect(getByText(eligibilityText)).toBeTruthy();
     });
 
-    it('should display the correct message with timeframe for meeting WDF requirements for the workplace', async () => {
-      const wdfStatus = { overall: false, workplace: true, staff: false };
+    it('should display the summary panel', async () => {
+      const { getByTestId } = await setup();
 
-      const { getByTestId } = await setup(wdfStatus);
+      const summaryPanel = getByTestId('summaryPanel');
 
-      const workplaceRow = getByTestId('workplace-row');
-
-      expect(workplaceRow).toBeTruthy();
-      expect(within(workplaceRow).queryByText(notMeetingFundingMessage)).toBeFalsy();
-      expect(within(workplaceRow).getByText(meetingFundingMessage)).toBeTruthy();
+      expect(summaryPanel).toBeTruthy();
     });
 
-    it('should display the correct message with timeframe for meeting WDF requirements for staff', async () => {
-      const wdfStatus = { overall: false, workplace: false, staff: true };
+    it('should display the workplace and staff row but not all workplaces', async () => {
+      const { getByTestId, queryByTestId } = await setup();
 
-      const { getByTestId } = await setup(wdfStatus);
-
+      const workplaceRow = getByTestId('workplace-row');
       const staffRow = getByTestId('staff-row');
+      const workplacesRow = queryByTestId('workplaces-row');
 
+      expect(workplaceRow).toBeTruthy();
       expect(staffRow).toBeTruthy();
-      expect(within(staffRow).queryByText(notMeetingFundingMessage)).toBeFalsy();
-      expect(within(staffRow).getByText(meetingFundingMessage)).toBeTruthy();
+      expect(workplacesRow).toBeFalsy();
     });
 
     it('should not display the funding requirements inset text when requirements are met', async () => {
@@ -152,28 +145,6 @@ describe('WdfOverviewComponent', () => {
   });
 
   describe('Unhappy path', async () => {
-    it('should display the not meeting WDF requirements message for the workplace', async () => {
-      const wdfStatus = { overall: false, workplace: false, staff: true };
-      const { getByTestId } = await setup(wdfStatus);
-
-      const workplaceRow = getByTestId('workplace-row');
-
-      expect(workplaceRow).toBeTruthy();
-      expect(within(workplaceRow).queryByText(meetingFundingMessage)).toBeFalsy();
-      expect(within(workplaceRow).getByText(notMeetingFundingMessage)).toBeTruthy();
-    });
-
-    it('should display the not meeting WDF requirements message for staff', async () => {
-      const wdfStatus = { overall: false, workplace: true, staff: false };
-      const { getByTestId } = await setup(wdfStatus);
-
-      const staffRow = getByTestId('staff-row');
-
-      expect(staffRow).toBeTruthy();
-      expect(within(staffRow).queryByText(meetingFundingMessage)).toBeFalsy();
-      expect(within(staffRow).getByText(notMeetingFundingMessage)).toBeTruthy();
-    });
-
     it('should show the funding requirements inset text when requirements are met', async () => {
       const wdfStatus = { overall: false, workplace: false, staff: false };
       const { getByTestId } = await setup(wdfStatus);
@@ -185,16 +156,28 @@ describe('WdfOverviewComponent', () => {
   });
 
   describe('Parent workplaces happy path', () => {
-    it('should display the correct message with timeframe for meeting WDF requirements for all workplaces', async () => {
+    it('should display the summary panel', async () => {
       const wdfStatus = { overall: true, workplace: true, staff: true };
 
       const { getByTestId } = await setup(wdfStatus, true, true);
 
+      const summaryPanel = getByTestId('summaryPanel');
+
+      expect(summaryPanel).toBeTruthy();
+    });
+
+    it('should display the workplace, staff and your all workplaces rows', async () => {
+      const wdfStatus = { overall: true, workplace: true, staff: true };
+
+      const { getByTestId } = await setup(wdfStatus, true, true);
+
+      const workplaceRow = getByTestId('workplace-row');
+      const staffRow = getByTestId('staff-row');
       const workplacesRow = getByTestId('workplaces-row');
 
+      expect(workplaceRow).toBeTruthy();
+      expect(staffRow).toBeTruthy();
       expect(workplacesRow).toBeTruthy();
-      expect(within(workplacesRow).queryByText(notMeetingFundingMessage)).toBeFalsy();
-      expect(within(workplacesRow).getByText(meetingFundingMessage)).toBeTruthy();
     });
 
     it('should display data has met paragraph', async () => {
@@ -221,18 +204,6 @@ describe('WdfOverviewComponent', () => {
   });
 
   describe('Parent workplaces unhappy path', () => {
-    it('should display the correct message with timeframe for not meeting WDF requirements for all workplaces', async () => {
-      const wdfStatus = { overall: false, workplace: true, staff: true };
-
-      const { getByTestId } = await setup(wdfStatus, true, false);
-
-      const workplacesRow = getByTestId('workplaces-row');
-
-      expect(workplacesRow).toBeTruthy();
-      expect(within(workplacesRow).getByText(notMeetingFundingMessage)).toBeTruthy();
-      expect(within(workplacesRow).queryByText(meetingFundingMessage)).toBeFalsy();
-    });
-
     it('should not display data has met paragraph', async () => {
       const wdfStatus = { overall: false, workplace: false, staff: false };
 

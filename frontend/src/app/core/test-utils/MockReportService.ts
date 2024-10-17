@@ -16,7 +16,6 @@ export class MockReportService extends ReportService {
   public static factory(wdfObject: any) {
     return (httpClient: HttpClient, establishmentService: EstablishmentService) => {
       const service = new MockReportService(httpClient, establishmentService);
-      console.log(wdfObject);
       service._wdf = wdfObject;
       return service;
     };

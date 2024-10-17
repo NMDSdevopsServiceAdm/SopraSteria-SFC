@@ -12,6 +12,15 @@
             class="govuk-!-margin-right-2"
             data-testid="green-tick"
           />
+          <a
+            (click)="onClick($event, section.fragment)"
+            href="#"
+            class="govuk-link--no-visited-state"
+            data-testid="met-funding-message"
+          >
+            Your data has met the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }}
+          </a>
         </ng-container>
         <ng-template #redFlag>
           <img
@@ -20,11 +29,16 @@
             class="govuk-!-margin-right-2"
             data-testid="red-flag"
           />
+          <a
+            (click)="onClick($event, section.fragment)"
+            href="#"
+            class="govuk-link--no-visited-state"
+            data-testid="not-met-funding-message"
+          >
+            Your data does not meet the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }}
+          </a>
         </ng-template>
-
-        <a (click)="onClick($event, section.route, section.fragment)" href="#" class="govuk-link--no-visited-state">
-          {{ section.message }}</a
-        >
       </div>
     </div>
     <ng-container *ngIf="index < sections.length - 1">

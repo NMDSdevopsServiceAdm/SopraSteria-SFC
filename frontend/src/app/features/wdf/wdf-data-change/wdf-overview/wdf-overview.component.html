@@ -16,13 +16,21 @@
 </div>
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full-width">
-    <app-wdf-summary-panel [sections]="sections"></app-wdf-summary-panel>
+    <app-wdf-summary-panel
+      [wdfStartDate]="wdfStartDate"
+      [wdfEndDate]="wdfEndDate"
+      [workplaceWdfEligibilityStatus]="wdfEligibilityStatus.currentWorkplace"
+      [staffWdfEligibilityStatus]="wdfEligibilityStatus.currentStaff"
+      [parentOverallWdfEligibility]="parentOverallWdfEligibility"
+      [overallWdfEligibility]="overallWdfEligibility"
+      [isParent]="isParent"
+    ></app-wdf-summary-panel>
   </div>
 </div>
 <div class="govuk-grid-row govuk-!-margin-top-7">
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-three-quarters">
     <ng-container
-      *ngIf="(wdfEligibilityStatus.overall && !isParent) || (parentOverallWdfEligibility && isParent); else notEligible"
+      *ngIf="(overallWdfEligibility && !isParent) || (parentOverallWdfEligibility && isParent); else notEligible"
     >
       <div data-testid="dataMetFunding">
         <p>
@@ -30,7 +38,7 @@
           March {{ wdfEndDate | date: 'yyyy' }}. <a [routerLink]="['/wdf/data']">Keep your data current</a>, it might
           save you time next year.
         </p>
-        <p>
+        <p class="govuk-!-margin-bottom-6">
           <a href="#">
             View the ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
             {{ wdfEndDate | date: 'yyyy' }}</a
@@ -40,8 +48,7 @@
     </ng-container>
 
     <ng-template #notEligible>
-      <!-- <div class="govuk-inset-text thin-border"> -->
-      <div class="govuk-inset-text govuk-!-margin-top-0" data-testid="fundingInsetText">
+      <div class="govuk-inset-text thin-border govuk-!-margin-top-0" data-testid="fundingInsetText">
         <a href="#">
           The ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}</a
         >
@@ -52,13 +59,9 @@
 
     <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Find out more</h2>
     <p>
-      <a
-        href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx"
-        target="_blank"
-        >Learn more about the funds that you can claim from</a
-      >
+      <a href="#">Learn more about the funds that you can claim from</a>
     </p>
-    <div class="govuk-!-margin-top-7">
+    <div class="govuk-!-margin-top-8">
       <button type="button" class="govuk-button" data-module="govuk-button" (click)="viewYourData()">
         Check your data
       </button>
