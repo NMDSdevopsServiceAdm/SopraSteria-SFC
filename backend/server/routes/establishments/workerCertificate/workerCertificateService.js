@@ -138,7 +138,7 @@ class WorkerCertificateService {
       responsePayload.push({ signedUrl, filename: file.filename });
     }
 
-    return { files: responsePayload };
+    return responsePayload;
   };
 
   deleteRecordsFromDatabase = async (uids) => {
