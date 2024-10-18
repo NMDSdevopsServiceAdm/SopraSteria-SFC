@@ -110,7 +110,9 @@ export class BaseCertificateService {
     filesToDownload: CertificateDownload[],
   ) {
     const certificateEndpoint = this.certificateEndpoint(workplaceUid, workerUid, recordUid);
-    return this.http.post<DownloadCertificateSignedUrlResponse>(`${certificateEndpoint}/download`, { filesToDownload });
+    return this.http.post<DownloadCertificateSignedUrlResponse>(`${certificateEndpoint}/download`, {
+      files: filesToDownload,
+    });
   }
 
   public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): Observable<{
@@ -156,7 +158,7 @@ export class BaseCertificateService {
     filesToDelete: Certificate[],
   ): Observable<any> {
     const certificateEndpoint = this.certificateEndpoint(workplaceUid, workerUid, recordUid);
-    return this.http.post<any>(`${certificateEndpoint}/delete`, { filesToDelete });
+    return this.http.post<any>(`${certificateEndpoint}/delete`, { files: filesToDelete });
   }
 }
 
