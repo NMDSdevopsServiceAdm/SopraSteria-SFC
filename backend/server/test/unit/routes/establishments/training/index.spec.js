@@ -10,6 +10,7 @@ const {
   mockTrainingRecordWithoutCertificates,
 } = require('../../../mockdata/training');
 const TrainingCertificateRoute = require('../../../../../routes/establishments/workerCertificate/trainingCertificate');
+const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
 
 describe('server/routes/establishments/training/index.js', () => {
   afterEach(() => {
@@ -23,7 +24,6 @@ describe('server/routes/establishments/training/index.js', () => {
     let res;
     let stubFindTrainingRecord;
     let stubRestoredTrainingRecord;
-    let stubDeleteTrainingCertificatesFromDatabase;
     let stubDestroyTrainingRecord;
     let workerUid = mockTrainingRecordWithCertificates.workerUid;
     let trainingUid = mockTrainingRecordWithCertificates.uid;
@@ -43,15 +43,13 @@ describe('server/routes/establishments/training/index.js', () => {
 
       stubRestoredTrainingRecord = sinon.stub(trainingRecord, 'restore');
       stubFindTrainingRecord = sinon.stub(models.workerTraining, 'findOne');
-      stubDeleteTrainingCertificatesFromDatabase = sinon.stub(TrainingCertificateRoute, 'deleteRecordsFromDatabase');
-      sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3').returns([]);
       stubDestroyTrainingRecord = sinon.stub(models.workerTraining, 'destroy');
+      stubDeleteCertificates = sinon.stub(WorkerCertificateService.prototype, 'deleteCertificates').returns();
     });
 
     it('should return with a status of 204 when the training record is deleted with training certificates', async () => {
       stubRestoredTrainingRecord.returns(mockTrainingRecordWithCertificates);
       stubFindTrainingRecord.returns(mockTrainingRecordWithCertificates);
-      stubDeleteTrainingCertificatesFromDatabase.returns(true);
       stubDestroyTrainingRecord.returns(1);
 
       await deleteTrainingRecord(req, res);
@@ -100,23 +98,10 @@ describe('server/routes/establishments/training/index.js', () => {
         });
       });
 
-      describe('deleting certificates', () => {
-        it('should return with a status of 500 when there is an error deleting certificates from the database', async () => {
-          stubRestoredTrainingRecord.returns(mockTrainingRecordWithCertificates);
-          stubFindTrainingRecord.returns(mockTrainingRecordWithCertificates);
-          stubDeleteTrainingCertificatesFromDatabase.returns(false);
-
-          await deleteTrainingRecord(req, res);
-
-          expect(res.statusCode).to.equal(500);
-        });
-      });
-
       describe('deleting training record', () => {
         it('should return with a status of 404 when there is an error deleting the training record from the database', async () => {
           stubRestoredTrainingRecord.returns(mockTrainingRecordWithCertificates);
           stubFindTrainingRecord.returns(mockTrainingRecordWithCertificates);
-          stubDeleteTrainingCertificatesFromDatabase.returns(true);
           stubDestroyTrainingRecord.returns(0);
 
           await deleteTrainingRecord(req, res);

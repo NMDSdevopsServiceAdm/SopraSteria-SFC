@@ -86,6 +86,19 @@ const trainingBuilder = build('Training', {
   },
 });
 
+const qualificationBuilder = build('Qualification', {
+  fields: {
+    id: sequence(),
+    uid: fake((f) => f.datatype.uuid()),
+    title: fake((f) => f.lorem.sentence()),
+    expires: fake((f) => f.date.future(1).toISOString()),
+    categoryFk: perBuild(() => {
+      return categoryBuilder().id;
+    }),
+    completed: fake((f) => f.date.past(1).toISOString()),
+  },
+});
+
 const mandatoryTrainingBuilder = build('MandatoryTraining', {
   fields: {
     id: sequence(),
@@ -165,6 +178,7 @@ module.exports.workerBuilder = workerBuilder;
 module.exports.jobBuilder = jobBuilder;
 module.exports.categoryBuilder = categoryBuilder;
 module.exports.trainingBuilder = trainingBuilder;
+module.exports.qualificationBuilder = qualificationBuilder;
 module.exports.mandatoryTrainingBuilder = mandatoryTrainingBuilder;
 module.exports.workerBuilderWithWdf = workerBuilderWithWdf;
 module.exports.establishmentWithShareWith = establishmentWithShareWith;
