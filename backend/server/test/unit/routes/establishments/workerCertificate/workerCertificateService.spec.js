@@ -34,7 +34,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
 
     it('should include a signed url for upload and a uuid for each file', async () => {
-      const result = await service.requestUploadUrl(mockRequestBody);
+      const result = await service.requestUploadUrl(mockRequestBody.files, mockRequestBody.establishmentUid, mockRequestBody.workerUid, mockRequestBody.recordUid);
 
       expect(result).to.have.lengthOf(mockUploadFiles.length);
 
@@ -60,10 +60,8 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
 
     it('should throw a HttpError with status 400 if filename was missing in any of the files', async () => {
-      const request = { files: [{ filename: 'file1.pdf' }, { anotherItem: 'no file name' }], params: { id: 1, workerId: 2, recordUid: 3 } };
-
       try {
-        await service.requestUploadUrl(request);
+        await service.requestUploadUrl([{ filename: 'file1.pdf' }, { somethingElse: 'no file name' }], 1, 2, 3);
       } catch (err) {
         error = err;
       }

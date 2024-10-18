@@ -38,7 +38,7 @@ class WorkerCertificateService {
     return `${establishmentUid}/${workerUid}/${this.recordType}Certificate/${recordUid}/${fileId}`;
   };
 
-  async requestUploadUrl({files, establishmentUid, workerUid, recordUid}) {
+  async requestUploadUrl(files, establishmentUid, workerUid, recordUid) {
     if (!files || !files.length) {
       throw new HttpError('Missing `files` param in request body', 400);
     }
