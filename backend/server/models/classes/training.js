@@ -118,6 +118,9 @@ class Training extends EntityValidator {
   get uid() {
     return this._uid;
   }
+  set uid(uid) {
+    this._uid = uid;
+  }
   get created() {
     return this._created;
   }
@@ -188,7 +191,7 @@ class Training extends EntityValidator {
 
   // used by save to initialise a new Trainign Record; returns true if having initialised this Training Record
   _initialise() {
-    if (this._uid === null) {
+    if (!this._uid) {
       this._isNew = true;
       this._uid = uuidv4();
 
@@ -382,6 +385,10 @@ class Training extends EntityValidator {
       validatedTrainingRecord.expires = null;
     }
 
+    if (document.uid) {
+      validatedTrainingRecord.uid = document.uid;
+    }
+
     // notes
     if (document.notes) {
       // validate title
@@ -419,6 +426,7 @@ class Training extends EntityValidator {
       if (validatedTrainingRecord !== false) {
         this.category = validatedTrainingRecord.trainingCategory;
         this.title = validatedTrainingRecord.title;
+        this.uid = validatedTrainingRecord.uid;
         this.accredited = validatedTrainingRecord.accredited;
         this.completed = validatedTrainingRecord.completed
           ? validatedTrainingRecord.completed.toJSON().slice(0, 10)
