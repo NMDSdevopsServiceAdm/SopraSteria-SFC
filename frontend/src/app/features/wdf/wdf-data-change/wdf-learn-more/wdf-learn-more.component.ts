@@ -7,10 +7,10 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-wdf-find-out-more.component',
-  templateUrl: './wdf-find-out-more.component.html',
+  selector: 'app-wdf-learn-more.component',
+  templateUrl: './wdf-learn-more.component.html',
 })
-export class WdfFindOutMoreComponent implements OnInit {
+export class WdfLearnMoreComponent implements OnInit {
   public workplace: Establishment;
   public pages: Page;
 

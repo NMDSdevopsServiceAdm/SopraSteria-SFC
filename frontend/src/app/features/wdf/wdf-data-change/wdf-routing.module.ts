@@ -43,7 +43,7 @@ import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
-import { WdfFindOutMoreComponent } from './wdf-find-out-more/wdf-find-out-more.component';
+import { WdfLearnMoreComponent } from './wdf-learn-more/wdf-learn-more.component';
 import { PageResolver } from '@core/resolvers/page.resolver';
 
 const routes: Routes = [
@@ -63,8 +63,8 @@ const routes: Routes = [
     data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
   },
   {
-    path: 'find-out-more',
-    component: WdfFindOutMoreComponent,
+    path: 'learn-more',
+    component: WdfLearnMoreComponent,
     data: { title: 'Find Out More' },
     resolve: {
       pages: PageResolver,

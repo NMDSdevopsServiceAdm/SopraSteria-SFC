@@ -5,18 +5,18 @@ import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockPagesService } from '@core/test-utils/MockPagesService';
 import { fireEvent, render } from '@testing-library/angular';
-import { WdfFindOutMoreComponent } from './wdf-find-out-more.component';
+import { WdfLearnMoreComponent } from './wdf-learn-more.component';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 
-describe('WdfFindOutMore', () => {
+describe('WdfLearnMoreComponent', () => {
   const pages = MockPagesService.pagesFactory();
 
   async function setup() {
-    const { fixture, getByText, queryByText } = await render(WdfFindOutMoreComponent, {
+    const { fixture, getByText, queryByText } = await render(WdfLearnMoreComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -50,7 +50,7 @@ describe('WdfFindOutMore', () => {
     };
   }
 
-  it('should render a WdfFindOutMoreComponent', async () => {
+  it('should render a WdfLearnMoreComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
