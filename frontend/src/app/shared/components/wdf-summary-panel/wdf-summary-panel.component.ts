@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-wdf-summary-panel',
   templateUrl: './wdf-summary-panel.component.html',
-  styleUrls: ['./wdf-summary-panel.component.scss'],
+  styleUrls: ['../summary-section/summary-section.component.scss', './wdf-summary-panel.component.scss'],
 })
 export class WdfSummaryPanel implements OnInit, OnChanges {
   @Input() workplaceWdfEligibilityStatus: boolean;
