@@ -1,0 +1,48 @@
+<div class="govuk-width-container govuk-!-margin-top-0 govuk-!-margin-bottom-4 summary-box" data-testid="summaryPanel">
+  <ng-container *ngFor="let section of sections; index as index">
+    <div class="summary-section" [attr.data-testid]="section.fragment + '-row'">
+      <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-!-font-size-24 summary-section__title">
+        {{ section.title }}
+      </div>
+      <div class="govuk-!-margin-top-3 govuk-!-margin-bottom-3 govuk-body summary-section__summary-text">
+        <ng-container *ngIf="section.eligibility; else redFlag">
+          <img
+            src="/assets/images/tick-icon-green-24.svg"
+            alt="green-tick"
+            class="govuk-!-margin-right-2"
+            data-testid="green-tick"
+          />
+          <a
+            (click)="onClick($event, section.fragment)"
+            href="#"
+            class="govuk-link--no-visited-state"
+            data-testid="met-funding-message"
+          >
+            Your data has met the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }}
+          </a>
+        </ng-container>
+        <ng-template #redFlag>
+          <img
+            src="/assets/images/flag-red.svg"
+            alt="action-required-red-flag"
+            class="govuk-!-margin-right-2"
+            data-testid="red-flag"
+          />
+          <a
+            (click)="onClick($event, section.fragment)"
+            href="#"
+            class="govuk-link--no-visited-state"
+            data-testid="not-met-funding-message"
+          >
+            Your data does not meet the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }}
+          </a>
+        </ng-template>
+      </div>
+    </div>
+    <ng-container *ngIf="index < sections.length - 1">
+      <hr class="govuk-section-break govuk-section-break--visible govuk-!-margin-left-4 govuk-!-margin-right-4" />
+    </ng-container>
+  </ng-container>
+</div>

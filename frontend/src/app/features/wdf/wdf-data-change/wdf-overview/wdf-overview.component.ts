@@ -1,8 +1,10 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
+import { WdfEligibilityStatus } from '@core/model/wdf.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReportService } from '@core/services/report.service';
@@ -14,6 +16,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-wdf-overview',
   templateUrl: './wdf-overview.component.html',
+  styleUrls: ['../../../../shared/components/summary-section/summary-section.component.scss'],
 })
 export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
@@ -29,12 +32,16 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplaceUid: string;
   public workplaces = [];
   private subscriptions: Subscription = new Subscription();
+  public sections: any = [];
+  public staffOverallWdfEligibility: boolean;
+  public wdfEligibilityStatus: WdfEligibilityStatus = {};
 
   constructor(
     private establishmentService: EstablishmentService,
     private reportService: ReportService,
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
+    protected router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -81,6 +88,9 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
       this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
         this.report = report;
         this.overallWdfEligibility = report.wdf.overall;
+        this.wdfEligibilityStatus.overall = report.wdf.overall;
+        this.wdfEligibilityStatus.currentWorkplace = report.wdf.workplace;
+        this.wdfEligibilityStatus.currentStaff = report.wdf.staff;
         this.setDates(report);
       }),
     );
@@ -90,5 +100,9 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
     this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
     this.overallEligibilityDate = dayjs(report.wdf.overallWdfEligibility).format('D MMMM YYYY');
+  }
+
+  public viewYourData(): void {
+    this.router.navigate(['/wdf', 'data']);
   }
 }
