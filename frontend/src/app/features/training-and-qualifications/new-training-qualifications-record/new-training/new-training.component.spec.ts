@@ -6,6 +6,7 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { NewTrainingComponent } from './new-training.component';
+import { TrainingCertificateDownloadEvent, TrainingCertificateUploadEvent } from '@core/model/training.model';
 
 describe('NewTrainingComponent', async () => {
   const trainingCategories = [
@@ -214,7 +215,6 @@ describe('NewTrainingComponent', async () => {
       const { component, fixture } = await setup();
 
       component.trainingCategories = [];
-      component.ngOnChanges();
       fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
 
@@ -239,7 +239,6 @@ describe('NewTrainingComponent', async () => {
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
-      component.ngOnChanges();
       fixture.detectChanges();
       const noMandatoryTrainingLink = fixture.debugElement.query(
         By.css('[data-testid="no-mandatory-training-link"]'),
@@ -255,7 +254,6 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.canEditWorker = false;
-      component.ngOnChanges();
       fixture.detectChanges();
       const noMandatoryTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
 
@@ -268,11 +266,14 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.missingMandatoryTraining = false;
-      component.ngOnChanges();
       fixture.detectChanges();
-      const mandatoryTrainingMissingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
+      const mandatoryTrainingMissingLink = fixture.debugElement.query(
+        By.css('[data-testid="no-mandatory-training-link"]'),
+      );
       const messageText = 'No mandatory training has been added for this job role yet.';
-      const mandatoryTrainingMessage = fixture.debugElement.query(debugElement => debugElement.nativeElement.textContent === messageText);
+      const mandatoryTrainingMessage = fixture.debugElement.query(
+        (debugElement) => debugElement.nativeElement.textContent === messageText,
+      );
 
       expect(mandatoryTrainingMessage).toBeTruthy();
       expect(mandatoryTrainingMissingLink).toBeTruthy();
@@ -284,11 +285,14 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.missingMandatoryTraining = true;
-      component.ngOnChanges();
       fixture.detectChanges();
-      const mandatoryTrainingMissingLink = fixture.debugElement.query(By.css('[data-testid="mandatory-training-missing-link"]'));
+      const mandatoryTrainingMissingLink = fixture.debugElement.query(
+        By.css('[data-testid="mandatory-training-missing-link"]'),
+      );
       const messageText = 'No mandatory training records have been added for this person yet.';
-      const mandatoryTrainingMessage = fixture.debugElement.query(debugElement => debugElement.nativeElement.textContent === messageText);
+      const mandatoryTrainingMessage = fixture.debugElement.query(
+        (debugElement) => debugElement.nativeElement.textContent === messageText,
+      );
 
       expect(mandatoryTrainingMessage).toBeTruthy();
       expect(mandatoryTrainingMissingLink).toBeTruthy();
@@ -412,8 +416,14 @@ describe('NewTrainingComponent', async () => {
 
       userEvent.click(downloadLink);
       const expectedTrainingRecord = component.trainingCategories[0].trainingRecords[0];
+      const expectedDownloadEvent: TrainingCertificateDownloadEvent = {
+        recordType: 'training',
+        recordUid: expectedTrainingRecord.uid,
+        categoryName: expectedTrainingRecord.trainingCategory.category,
+        filesToDownload: expectedTrainingRecord.trainingCertificates,
+      };
 
-      expect(downloadFileSpy).toHaveBeenCalledOnceWith(expectedTrainingRecord);
+      expect(downloadFileSpy).toHaveBeenCalledOnceWith(expectedDownloadEvent);
     });
 
     it('should display Select a download link when training record has more than one certificate associated with it', async () => {
@@ -485,10 +495,15 @@ describe('NewTrainingComponent', async () => {
 
       userEvent.upload(fileInput, [mockUploadFile]);
 
-      expect(uploadFileSpy).toHaveBeenCalledWith({
+      const expectedTrainingRecord = component.trainingCategories[0].trainingRecords[0];
+      const expectedUploadEvent: TrainingCertificateUploadEvent = {
+        recordType: 'training',
+        recordUid: expectedTrainingRecord.uid,
+        categoryName: expectedTrainingRecord.trainingCategory.category,
         files: [mockUploadFile],
-        trainingRecord: component.trainingCategories[0].trainingRecords[0],
-      });
+      };
+
+      expect(uploadFileSpy).toHaveBeenCalledWith(expectedUploadEvent);
     });
 
     it('should display an error message above the category when download certificate fails', async () => {
