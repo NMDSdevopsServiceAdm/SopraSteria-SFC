@@ -13,7 +13,7 @@ enum Path {
 export const wdfJourney: JourneyRoute = {
   children: [
     {
-      title: 'Meeting funding requirements',
+      title: 'Meeting funding requirements?',
       path: Path.OVERVIEW,
       children: [
         {
@@ -35,42 +35,10 @@ export const wdfJourney: JourneyRoute = {
   ],
 };
 
-// ***********************************************
-// new breadcrumb for when new wdf design is live -> remove wdfParentJourney breadcrumb below
-// ***********************************************
-// export const wdfParentJourney: JourneyRoute = {
-//   children: [
-//     {
-//       title: 'Workplaces',
-//       path: Path.WORKPLACES,
-//       referrer: {
-//         path: Path.DASHBOARD,
-//         fragment: 'wdf',
-//       },
-//       children: [
-//         {
-//           title: 'WDF data',
-//           path: Path.PARENT_DATA,
-//           children: [
-//             {
-//               title: 'Staff record',
-//               path: Path.PARENT_STAFF_RECORD,
-//               referrer: {
-//                 path: Path.PARENT_DATA,
-//                 fragment: 'staff-records',
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//     },
-//   ],
-// };
-
 export const wdfParentJourney: JourneyRoute = {
   children: [
     {
-      title: 'Meeting funding requirements',
+      title: 'Meeting funding requirements?',
       path: Path.OVERVIEW,
       children: [
         {
