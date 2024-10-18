@@ -10,6 +10,7 @@ class TrainingCsvValidator {
     this.validationErrors = [];
     this.localeStId = null;
     this.uniqueWorkerId = null;
+    this.trainingUid = null;
     this.dateCompleted = null;
     this.expiry = null;
     this.description = null;
@@ -66,6 +67,7 @@ class TrainingCsvValidator {
   validate() {
     this._validateLocaleStId();
     this._validateUniqueWorkerId();
+    this._validateTrainingUid();
     this._validateDateCompleted();
     this._validateExpiry();
     this._validateDescription();
@@ -78,6 +80,7 @@ class TrainingCsvValidator {
     return {
       localId: this.localeStId,
       uniqueWorkerId: this.uniqueWorkerId,
+      uid: this.trainingUid ? this.trainingUid : undefined,
       completed: this.dateCompleted ? this.dateCompleted.format('DD/MM/YYYY') : undefined,
       expiry: this.expiry ? this.expiry.format('DD/MM/YYYY') : undefined,
       description: this.description,
@@ -93,6 +96,7 @@ class TrainingCsvValidator {
       trainingCategory: {
         id: this.category,
       },
+      uid: this.trainingUid ? this.trainingUid : undefined,
       completed: this.dateCompleted ? this.dateCompleted.format('YYYY-MM-DD') : undefined,
       expires: this.expiry ? this.expiry.format('YYYY-MM-DD') : undefined,
       title: this.description ? this.description : undefined,
@@ -123,6 +127,14 @@ class TrainingCsvValidator {
       return;
     }
     this._addValidationError('UNIQUE_WORKER_ID_ERROR', errMessage, this.currentLine.UNIQUEWORKERID, 'UNIQUEWORKERID');
+  }
+
+  _validateTrainingUid() {
+    const trainingUid = this.currentLine.TRAININGUID;
+    if (trainingUid) {
+      this.trainingUid = trainingUid;
+      return;
+    }
   }
 
   _validateDateCompleted() {

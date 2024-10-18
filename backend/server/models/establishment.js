@@ -1586,7 +1586,7 @@ module.exports = function (sequelize, DataTypes) {
           },
           include: [
             {
-              attributes: ['title', 'completed', 'expires', 'accredited', 'notes'],
+              attributes: ['title', 'completed', 'expires', 'accredited', 'notes', 'uid'],
               model: sequelize.models.workerTraining,
               as: 'workerTraining',
               include: {

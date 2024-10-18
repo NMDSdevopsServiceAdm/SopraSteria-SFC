@@ -1,6 +1,7 @@
 const trainingHeadersAsArray = [
   'LOCALESTID',
   'UNIQUEWORKERID',
+  'TRAININGUID',
   'CATEGORY',
   'DESCRIPTION',
   'DATECOMPLETED',

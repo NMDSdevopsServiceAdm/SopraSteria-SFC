@@ -2,11 +2,11 @@ const BUDI = require('../../../../models/BulkImport/BUDI').BUDI;
 const { csvQuote } = require('../../../../utils/bulkUploadUtils');
 
 const toCSV = (establishmentId, workerId, entity) => {
-  // ["LOCALESTID","UNIQUEWORKERID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
-
+  // ["LOCALESTID","UNIQUEWORKERID","TRAININGUID","CATEGORY","DESCRIPTION","DATECOMPLETED","EXPIRYDATE","ACCREDITED","NOTES"]
   const columns = [
     csvQuote(establishmentId),
     csvQuote(workerId),
+    csvQuote(entity.uid),
     BUDI.trainingCategory(BUDI.FROM_ASC, entity.category.id),
     entity.title ? csvQuote(entity.title) : '',
     convertDateFormatToDayMonthYearWithSlashes(entity.completed),

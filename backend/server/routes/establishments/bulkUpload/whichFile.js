@@ -9,8 +9,8 @@ const isWorkerFile = (fileAsString) => {
 };
 
 const isTrainingFile = (fileAsString) => {
-  const contentRegex = /LOCALESTID,UNIQUEWORKERID,CATEGORY,DESCRIPTION,DAT/;
-  return contentRegex.test(fileAsString.substring(0, 50));
+  const contentRegex = /LOCALESTID,UNIQUEWORKERID,TRAININGUID,CATEGORY,DESCRIPTION,DAT/;
+  return contentRegex.test(fileAsString.substring(0, 62));
 };
 
 const getFileType = (fileData) => {

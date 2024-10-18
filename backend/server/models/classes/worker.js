@@ -534,21 +534,28 @@ class Worker extends EntityValidator {
     try {
       // there is no change audit on training; simply delete all that is there and recreate
       if (this._trainingEntities && this._trainingEntities.length > 0) {
-        // delete all existing training records for this worker
-        await models.workerTraining.destroy({
-          where: {
-            workerFk: this._id,
-          },
-          transaction: externalTransaction,
-        });
-
-        // now create new training records
-        this._trainingEntities.forEach((currentTrainingRecord) => {
-          currentTrainingRecord.workerId = this._id;
-          currentTrainingRecord.workerUid = this._uid;
-          currentTrainingRecord.establishmentId = this._establishmentId;
-          newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
-        });
+        for (const currentTrainingRecord of this._trainingEntities) {
+          if (currentTrainingRecord._uid) {
+            // updating an existing training record
+            await models.workerTraining.update(
+              {
+                title: currentTrainingRecord._title,
+                notes: currentTrainingRecord._notes,
+              },
+              {
+                where: {
+                  uid: currentTrainingRecord._uid,
+                },
+              },
+            );
+          } else {
+            // if training _uid is empty, create a new training record
+            currentTrainingRecord.workerId = this._id;
+            currentTrainingRecord.workerUid = this._uid;
+            currentTrainingRecord.establishmentId = this._establishmentId;
+            newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
+          }
+        }
       }
 
       // there is no change audit on qualifications; simply delete all that is there and recreate
