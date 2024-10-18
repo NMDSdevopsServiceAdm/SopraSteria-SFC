@@ -8,41 +8,19 @@ enum Path {
   WORKPLACES = 'wdf/workplaces',
   PARENT_DATA = 'wdf/workplaces/:establishmentuid',
   PARENT_STAFF_RECORD = 'wdf/workplaces/:establishmentuid/staff-record/:id',
+  FIND_OUT_MORE = 'wdf/find-out-more',
 }
-
-// ***********************************************
-// new breadcrumb for when new wdf design is live -> remove wdfJourney breadcrumb below
-// ***********************************************
-// export const wdfJourney: JourneyRoute = {
-//   children: [
-//     {
-//       title: 'WDF data',
-//       path: Path.DATA,
-//       referrer: {
-//         path: Path.DASHBOARD,
-//         fragment: 'wdf',
-//       },
-//       fragment: 'staff-records',
-//       children: [
-//         {
-//           title: 'Staff record',
-//           path: Path.STAFF_RECORD,
-//           referrer: {
-//             path: Path.DATA,
-//             fragment: 'staff-records',
-//           },
-//         },
-//       ],
-//     },
-//   ],
-// };
 
 export const wdfJourney: JourneyRoute = {
   children: [
     {
-      title: 'WDF',
+      title: 'Meeting funding requirements?',
       path: Path.OVERVIEW,
       children: [
+        {
+          title: 'Find out more',
+          path: Path.FIND_OUT_MORE,
+        },
         {
           title: 'WDF data',
           path: Path.DATA,
@@ -62,42 +40,10 @@ export const wdfJourney: JourneyRoute = {
   ],
 };
 
-// ***********************************************
-// new breadcrumb for when new wdf design is live -> remove wdfParentJourney breadcrumb below
-// ***********************************************
-// export const wdfParentJourney: JourneyRoute = {
-//   children: [
-//     {
-//       title: 'Workplaces',
-//       path: Path.WORKPLACES,
-//       referrer: {
-//         path: Path.DASHBOARD,
-//         fragment: 'wdf',
-//       },
-//       children: [
-//         {
-//           title: 'WDF data',
-//           path: Path.PARENT_DATA,
-//           children: [
-//             {
-//               title: 'Staff record',
-//               path: Path.PARENT_STAFF_RECORD,
-//               referrer: {
-//                 path: Path.PARENT_DATA,
-//                 fragment: 'staff-records',
-//               },
-//             },
-//           ],
-//         },
-//       ],
-//     },
-//   ],
-// };
-
 export const wdfParentJourney: JourneyRoute = {
   children: [
     {
-      title: 'WDF',
+      title: 'Meeting funding requirements?',
       path: Path.OVERVIEW,
       children: [
         {
