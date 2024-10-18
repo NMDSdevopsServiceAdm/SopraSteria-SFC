@@ -174,17 +174,7 @@ const deleteTrainingRecord = async (req, res) => {
 
       const trainingCertificateService = WorkerCertificateService.initialiseTraining();
 
-      const args = {
-        files: trainingCertificates,
-        params: {
-          establishmentUid: establishmentUid,
-          workerId: workerUid,
-          recordUid: trainingUid,
-          fileId: trainingCertificates.uid
-        }
-      }
-
-      trainingCertificateService.deleteCertificates(args);
+      trainingCertificateService.deleteCertificates(trainingCertificates, establishmentUid, workerUid, trainingUid);
 
       // by deleting after the restore we can be sure this training record belongs to the given worker
       const deleteSuccess = await thisTrainingRecord.delete();
