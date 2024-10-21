@@ -16,9 +16,7 @@ import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summar
 describe('WdfOverviewComponent', () => {
   const currentYear = new Date().getFullYear();
 
-  const defaulWdfEligibilityStatus = { overall: true, workplace: true, staff: true };
-
-  const setup = async (eligibilityStatus = {}, isParent = false, parentOverallWdfEligibility = false) => {
+  const setup = async (overrides: any = {}) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
       WdfOverviewComponent,
       {
@@ -30,21 +28,21 @@ describe('WdfOverviewComponent', () => {
             useValue: {
               primaryWorkplace: {
                 uid: 'some-uid',
-                isParent: isParent,
                 name: 'mock establishment name',
                 nmdsId: 'mock nmdsId',
+                isParent: overrides?.isParent,
               },
             },
           },
           {
             provide: ReportService,
-            useFactory: MockReportService.factory(eligibilityStatus ? eligibilityStatus : defaulWdfEligibilityStatus),
+            useFactory: MockReportService.factory(overrides),
           },
         ],
         componentProperties: {
-          parentOverallWdfEligibility: parentOverallWdfEligibility,
           wdfStartDate: `1 April ${currentYear}`,
           wdfEndDate: `31 March ${currentYear + 1}`,
+          parentOverallWdfEligibility: overrides?.parentOverallWdfEligibility,
         },
         declarations: [WdfSummaryPanel],
       },
@@ -111,9 +109,15 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should not display the funding requirements inset text when requirements are met', async () => {
-      const wdfStatus = { overall: true, workplace: true, staff: true };
+      const overrides = {
+        wdf: {
+          overall: true,
+          workplace: true,
+          staff: true,
+        },
+      };
 
-      const { queryByTestId } = await setup(wdfStatus);
+      const { queryByTestId } = await setup(overrides);
 
       const fundingInsetText = queryByTestId('fundingInsetText');
 
@@ -121,9 +125,15 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should display data has met paragraph', async () => {
-      const wdfStatus = { overall: true, workplace: true, staff: true };
+      const overrides = {
+        wdf: {
+          overall: true,
+          workplace: true,
+          staff: true,
+        },
+      };
 
-      const { getByText, getByTestId } = await setup(wdfStatus);
+      const { getByText, getByTestId } = await setup(overrides);
 
       const dataMetFundingParagraph = getByTestId('dataMetFunding');
       const keepYourDataCurrentLink = getByText('Keep your data current');
@@ -145,9 +155,17 @@ describe('WdfOverviewComponent', () => {
   });
 
   describe('Unhappy path', async () => {
-    it('should show the funding requirements inset text when requirements are met', async () => {
-      const wdfStatus = { overall: false, workplace: false, staff: false };
-      const { getByTestId } = await setup(wdfStatus);
+    it('should show the funding requirements inset text when requirements are not met', async () => {
+      const overrides = {
+        wdf: {
+          overall: false,
+          workplace: false,
+          staff: false,
+        },
+        isParent: false,
+        parentOverallWdfEligibility: false,
+      };
+      const { getByTestId } = await setup(overrides);
 
       const fundingInsetText = getByTestId('fundingInsetText');
 
@@ -157,9 +175,13 @@ describe('WdfOverviewComponent', () => {
 
   describe('Parent workplaces happy path', () => {
     it('should display the summary panel', async () => {
-      const wdfStatus = { overall: true, workplace: true, staff: true };
+      const overrides = {
+        wdf: { overall: true, workplace: true, staff: true },
+        isParent: true,
+        parentOverallWdfEligibility: true,
+      };
 
-      const { getByTestId } = await setup(wdfStatus, true, true);
+      const { getByTestId } = await setup(overrides);
 
       const summaryPanel = getByTestId('summaryPanel');
 
@@ -167,9 +189,13 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should display the workplace, staff and your all workplaces rows', async () => {
-      const wdfStatus = { overall: true, workplace: true, staff: true };
+      const overrides = {
+        wdf: { overall: true, workplace: true, staff: true },
+        isParent: true,
+        parentOverallWdfEligibility: true,
+      };
 
-      const { getByTestId } = await setup(wdfStatus, true, true);
+      const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
       const staffRow = getByTestId('staff-row');
@@ -181,9 +207,13 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should display data has met paragraph', async () => {
-      const wdfStatus = { overall: true, workplace: true, staff: true };
+      const overrides = {
+        wdf: { overall: true, workplace: true, staff: true },
+        isParent: true,
+        parentOverallWdfEligibility: true,
+      };
 
-      const { getByText, getByTestId } = await setup(wdfStatus, true, true);
+      const { getByText, getByTestId } = await setup(overrides);
 
       const dataMetFundingParagraph = getByTestId('dataMetFunding');
       const keepYourDataCurrentLink = getByText('Keep your data current');
@@ -193,9 +223,13 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should not display the funding requirements inset text when requirements are met', async () => {
-      const wdfStatus = { overall: true, workplace: true, staff: true };
+      const overrides = {
+        wdf: { overall: true, workplace: true, staff: true },
+        isParent: true,
+        parentOverallWdfEligibility: true,
+      };
 
-      const { queryByTestId } = await setup(wdfStatus, true, true);
+      const { queryByTestId } = await setup(overrides);
 
       const fundingInsetText = queryByTestId('fundingInsetText');
 
@@ -205,9 +239,13 @@ describe('WdfOverviewComponent', () => {
 
   describe('Parent workplaces unhappy path', () => {
     it('should not display data has met paragraph', async () => {
-      const wdfStatus = { overall: false, workplace: false, staff: false };
+      const overrides = {
+        wdf: { overall: false, workplace: false, staff: false },
+        isParent: true,
+        parentOverallWdfEligibility: false,
+      };
 
-      const { queryByText, queryByTestId } = await setup(wdfStatus, true, false);
+      const { queryByText, queryByTestId } = await setup(overrides);
 
       const dataMetFundingParagraph = queryByTestId('dataMetFunding');
       const keepYourDataCurrentLink = queryByText('Keep your data current');
@@ -217,9 +255,13 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should display the funding requirements inset text when requirements are not met', async () => {
-      const wdfStatus = { overall: false, workplace: true, staff: true };
+      const overrides = {
+        wdf: { overall: false, workplace: true, staff: true },
+        isParent: true,
+        parentOverallWdfEligibility: false,
+      };
 
-      const { queryByTestId } = await setup(wdfStatus, true, false);
+      const { queryByTestId } = await setup(overrides);
 
       const fundingInsetText = queryByTestId('fundingInsetText');
 
@@ -229,9 +271,12 @@ describe('WdfOverviewComponent', () => {
 
   describe('getParentAndSubs', async () => {
     it('should calculate parentOverallWdfEligibility to be true if all workplaces are eligible', async () => {
-      const { component, fixture } = await setup();
+      const overrides = {
+        isParent: true,
+      };
 
-      component.isParent = true;
+      const { component, fixture } = await setup(overrides);
+
       component.workplaces = [
         { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
         { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
@@ -244,9 +289,12 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should calculate parentOverallWdfEligibility to be false if a workplace is ineligible', async () => {
-      const { component, fixture } = await setup();
+      const overrides = {
+        isParent: true,
+      };
 
-      component.isParent = true;
+      const { component, fixture } = await setup(overrides);
+
       component.workplaces = [
         { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
         { wdf: { overall: false, overallWdfEligibility: '' } },
@@ -259,10 +307,13 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should correctly calculate parentOverallEligibilityDate if all workplaces are eligible', async () => {
-      const { component, fixture } = await setup();
+      const overrides = {
+        isParent: true,
+        parentOverallWdfEligibility: true,
+      };
 
-      component.isParent = true;
-      component.parentOverallWdfEligibility = true;
+      const { component, fixture } = await setup(overrides);
+
       component.workplaces = [
         { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
         { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },

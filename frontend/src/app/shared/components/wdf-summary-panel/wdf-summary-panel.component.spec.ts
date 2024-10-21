@@ -11,34 +11,18 @@ describe('WdfSummaryPanel', () => {
   const currentYear = new Date().getFullYear();
 
   const messages = {
-    fundingMet: 'Your data has met the funding requirements for 2024 to 2025',
-    fundingNotMet: 'Your data does not meet the funding requirements for 2024 to 2025',
+    fundingMet: `Your data has met the funding requirements for ${currentYear} to ${currentYear + 1}`,
+    fundingNotMet: `Your data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`,
   };
 
-  let isWorkplaceWdfEligibile = false;
-  let isStaffWdfEligibile = false;
-  let isParentOverallWdfEligibile = false;
-  let isWorkplaceAParent = false;
-  let isOverallWdfEligibile = false;
-
-  const setup = async (
-    workplaceWdfEligibilityStatus = isWorkplaceWdfEligibile,
-    staffWdfEligibilityStatus = isStaffWdfEligibile,
-    parentOverallWdfEligibility = isParentOverallWdfEligibile,
-    isParent = isWorkplaceAParent,
-    overallWdfEligibility = isOverallWdfEligibile,
-  ) => {
+  const setup = async (overrides: any = {}) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(WdfSummaryPanel, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
       providers: [],
       componentProperties: {
-        workplaceWdfEligibilityStatus: workplaceWdfEligibilityStatus,
-        staffWdfEligibilityStatus: staffWdfEligibilityStatus,
         wdfStartDate: `1 April ${currentYear}`,
         wdfEndDate: `31 March ${currentYear + 1}`,
-        isParent: isParent,
-        parentOverallWdfEligibility: parentOverallWdfEligibility,
-        overallWdfEligibility: overallWdfEligibility,
+        ...overrides,
       },
     });
     const component = fixture.componentInstance;
@@ -58,10 +42,12 @@ describe('WdfSummaryPanel', () => {
 
   describe('meeting funding requirements', () => {
     it('should display the correct message with timeframe for meeting WDF requirements for the workplace', async () => {
-      isWorkplaceWdfEligibile = true;
-      isOverallWdfEligibile = false;
+      const overrides = {
+        workplaceWdfEligibilityStatus: true,
+        overallWdfEligibility: false,
+      };
 
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
 
@@ -72,10 +58,12 @@ describe('WdfSummaryPanel', () => {
     });
 
     it('should display the correct message with timeframe for meeting WDF requirements for the workplace if overall has met but workplace hasn\t', async () => {
-      isWorkplaceWdfEligibile = false;
-      isOverallWdfEligibile = true;
+      const overrides = {
+        workplaceWdfEligibilityStatus: false,
+        overallWdfEligibility: true,
+      };
 
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
 
@@ -86,10 +74,12 @@ describe('WdfSummaryPanel', () => {
     });
 
     it('should display the correct message with timeframe for meeting WDF requirements for staff', async () => {
-      isStaffWdfEligibile = true;
-      isOverallWdfEligibile = false;
+      const overrides = {
+        staffWdfEligibilityStatus: true,
+        overallWdfEligibility: false,
+      };
 
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(overrides);
 
       const staffRow = getByTestId('staff-row');
 
@@ -100,10 +90,12 @@ describe('WdfSummaryPanel', () => {
     });
 
     it("should display the correct message with timeframe for meeting WDF requirements for staff if overall has met but staff hasn't", async () => {
-      isStaffWdfEligibile = false;
-      isOverallWdfEligibile = true;
+      const overrides = {
+        staffWdfEligibilityStatus: false,
+        overallWdfEligibility: true,
+      };
 
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(overrides);
 
       const staffRow = getByTestId('staff-row');
 
@@ -114,10 +106,12 @@ describe('WdfSummaryPanel', () => {
     });
 
     it('should display the correct message with timeframe for meeting WDF requirements for all other workplaces', async () => {
-      isWorkplaceAParent = true;
-      isParentOverallWdfEligibile = true;
+      const overrides = {
+        parentOverallWdfEligibility: true,
+        isParent: true,
+      };
 
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(overrides);
 
       const workplacesRow = getByTestId('workplaces-row');
 
@@ -129,9 +123,11 @@ describe('WdfSummaryPanel', () => {
 
     describe('funding message links', () => {
       it('should navigate to workplace when clicked', async () => {
-        isWorkplaceWdfEligibile = true;
+        const overrides = {
+          workplaceWdfEligibilityStatus: true,
+        };
 
-        const { fixture, getByTestId, routerSpy } = await setup();
+        const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
         const workplaceRow = getByTestId('workplace-row');
 
@@ -146,9 +142,11 @@ describe('WdfSummaryPanel', () => {
       });
 
       it('should navigate to staff when clicked', async () => {
-        isStaffWdfEligibile = true;
+        const overrides = {
+          staffWdfEligibilityStatus: true,
+        };
 
-        const { fixture, getByTestId, routerSpy } = await setup();
+        const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
         const staffRow = getByTestId('staff-row');
 
@@ -163,10 +161,12 @@ describe('WdfSummaryPanel', () => {
       });
 
       it('should navigate to all workplaces when clicked', async () => {
-        isWorkplaceAParent = true;
-        isParentOverallWdfEligibile = true;
+        const overrides = {
+          parentOverallWdfEligibility: true,
+          isParent: true,
+        };
 
-        const { fixture, getByTestId, routerSpy } = await setup();
+        const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
         const workplacesRow = getByTestId('workplaces-row');
 
@@ -184,11 +184,13 @@ describe('WdfSummaryPanel', () => {
 
   describe('not meeting funding requirements', () => {
     it('should display the not meeting WDF requirements message for the workplace', async () => {
-      isWorkplaceWdfEligibile = false;
-      isStaffWdfEligibile = false;
-      isOverallWdfEligibile = false;
+      const overrides = {
+        workplaceWdfEligibilityStatus: false,
+        staffWdfEligibilityStatus: false,
+        overallWdfEligibility: false,
+      };
 
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(overrides);
 
       const workplaceRow = getByTestId('workplace-row');
 
@@ -199,11 +201,13 @@ describe('WdfSummaryPanel', () => {
     });
 
     it('should display the not meeting WDF requirements message for staff', async () => {
-      isWorkplaceWdfEligibile = false;
-      isStaffWdfEligibile = false;
-      isOverallWdfEligibile = false;
+      const overrides = {
+        workplaceWdfEligibilityStatus: false,
+        staffWdfEligibilityStatus: false,
+        overallWdfEligibility: false,
+      };
 
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(overrides);
 
       const staffRow = getByTestId('staff-row');
 
@@ -214,13 +218,15 @@ describe('WdfSummaryPanel', () => {
     });
 
     it('should display the not meeting WDF requirements message for all other workplaces', async () => {
-      isWorkplaceWdfEligibile = false;
-      isStaffWdfEligibile = false;
-      isWorkplaceAParent = true;
-      isParentOverallWdfEligibile = false;
-      isOverallWdfEligibile = false;
+      const overrides = {
+        workplaceWdfEligibilityStatus: false,
+        staffWdfEligibilityStatus: false,
+        parentOverallWdfEligibility: false,
+        isParent: true,
+        overallWdfEligibility: false,
+      };
 
-      const { getByTestId } = await setup();
+      const { getByTestId } = await setup(overrides);
 
       const workplacesRow = getByTestId('workplaces-row');
 
@@ -232,10 +238,12 @@ describe('WdfSummaryPanel', () => {
 
     describe('funding message links', () => {
       it('should navigate to workplace when clicked', async () => {
-        isWorkplaceWdfEligibile = false;
-        isOverallWdfEligibile = false;
+        const overrides = {
+          workplaceWdfEligibilityStatus: false,
+          overallWdfEligibility: false,
+        };
 
-        const { fixture, getByTestId, routerSpy } = await setup();
+        const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
         const workplaceRow = getByTestId('workplace-row');
 
@@ -250,10 +258,12 @@ describe('WdfSummaryPanel', () => {
       });
 
       it('should navigate to staff when clicked', async () => {
-        isStaffWdfEligibile = false;
-        isOverallWdfEligibile = false;
+        const overrides = {
+          staffWdfEligibilityStatus: false,
+          overallWdfEligibility: false,
+        };
 
-        const { fixture, getByTestId, routerSpy } = await setup();
+        const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
         const staffRow = getByTestId('staff-row');
 
@@ -268,10 +278,12 @@ describe('WdfSummaryPanel', () => {
       });
 
       it('should navigate to all workplaces when clicked', async () => {
-        isWorkplaceAParent = true;
-        isParentOverallWdfEligibile = false;
+        const overrides = {
+          parentOverallWdfEligibility: false,
+          isParent: true,
+        };
 
-        const { fixture, getByTestId, routerSpy } = await setup();
+        const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
         const workplacesRow = getByTestId('workplaces-row');
 

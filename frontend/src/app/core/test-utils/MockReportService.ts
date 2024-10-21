@@ -7,16 +7,12 @@ import { Observable, of } from 'rxjs';
 
 @Injectable()
 export class MockReportService extends ReportService {
-  private _wdf = {
-    overall: true,
-    workplace: true,
-    staff: true,
-  };
+  private overrides: any = {};
 
-  public static factory(wdfObject: any) {
+  public static factory(overrides: any) {
     return (httpClient: HttpClient, establishmentService: EstablishmentService) => {
       const service = new MockReportService(httpClient, establishmentService);
-      service._wdf = wdfObject;
+      service.overrides = overrides;
       return service;
     };
   }
@@ -34,12 +30,13 @@ export class MockReportService extends ReportService {
       timestamp: dateString,
       effectiveFrom: dateString,
       wdf: {
-        overall: this._wdf.overall,
+        overall: true,
         overallWdfEligibility: dateString,
-        workplace: this._wdf.workplace,
-        staff: this._wdf.staff,
+        workplace: true,
+        staff: true,
       },
       customEffectiveFrom: true,
+      ...this.overrides,
     });
   }
 }
