@@ -65,7 +65,7 @@ const routes: Routes = [
   {
     path: 'learn-more',
     component: WdfLearnMoreComponent,
-    data: { title: 'Find Out More' },
+    data: { title: 'Learn More' },
     resolve: {
       pages: PageResolver,
     },
