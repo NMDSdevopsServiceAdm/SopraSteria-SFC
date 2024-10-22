@@ -1205,4 +1205,12 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
     });
   });
+
+  describe('download all certificates', () => {
+    it('should display a link for downloading all certificates', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Download all their training and qualifications certificates')).toBeTruthy();
+    });
+  });
 });

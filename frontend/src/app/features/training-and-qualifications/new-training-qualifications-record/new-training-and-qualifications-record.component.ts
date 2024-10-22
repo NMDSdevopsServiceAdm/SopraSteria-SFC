@@ -404,6 +404,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.subscriptions.add(subscription);
   }
 
+  public downloadAllCertificates(event: Event) {
+    event.preventDefault();
+  }
+
   private async refreshTrainingAndQualificationRecords() {
     const updatedData: TrainingAndQualificationRecords = await this.workerService
       .getAllTrainingAndQualificationRecords(this.workplace.uid, this.worker.uid)
