@@ -792,7 +792,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       fixture.detectChanges();
 
-      fireEvent.click(getByText('Download training and qualifications', { exact: false }));
+      fireEvent.click(getByText('Download this training and qualifications summary'));
 
       expect(downloadFunctionSpy).toHaveBeenCalled();
       expect(pdfTrainingAndQualsServiceSpy).toHaveBeenCalled();
