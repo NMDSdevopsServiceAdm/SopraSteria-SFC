@@ -14,12 +14,15 @@ export class PagesService {
 
   public getPage(slug: string): Observable<Pages> {
     let params = new HttpParams();
-    const slugFilter = {
+
+    const filter = {
       slug: { _eq: slug },
+      status: { _eq: 'published' },
     };
-    params = params.set('filter', JSON.stringify(slugFilter));
+
+    params = params.set('filter', JSON.stringify(filter));
     params = params.set('limit', '1');
-    params = params.set('fields', 'content,title');
+    params = params.set('fields', 'content,title,status');
 
     return this.http.get<Pages>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
