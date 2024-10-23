@@ -1,10 +1,12 @@
+import { from, merge, Subscription } from 'rxjs';
+import { mergeMap, toArray } from 'rxjs/operators';
+
 import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { TrainingCertificateService, QualificationCertificateService } from '@core/services/certificate.service';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { TrainingRecordCategory } from '@core/model/training.model';
+import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import {
   CertificateDownloadEvent,
   CertificateUploadEvent,
@@ -13,15 +15,16 @@ import {
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FileUtil } from '@core/utils/file-util';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-training-and-qualifications-record',
@@ -53,7 +56,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   };
   public pdfCount: number;
   public certificateErrors: Record<string, string> = {}; // {categoryName: errorMessage}
-  private trainingRecords: any;
+  private trainingRecords: TrainingRecords;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -406,6 +409,27 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
   public downloadAllCertificates(event: Event) {
     event.preventDefault();
+
+    const allTrainingCerts = this.trainingCertificateService.downloadAllCertificatesAsBlobs(
+      this.workplace.uid,
+      this.worker.uid,
+    );
+    const allQualificationCerts = this.qualificationCertificateService.downloadAllCertificatesAsBlobs(
+      this.workplace.uid,
+      this.worker.uid,
+    );
+
+    const downloadAllCertificatesAsZip = merge(allTrainingCerts, allQualificationCerts).pipe(
+      toArray(),
+      mergeMap((allFileBlobs) => from(FileUtil.triggerDownloadFilesAsZip(allFileBlobs, 'all certificates.zip'))),
+    );
+
+    downloadAllCertificatesAsZip.subscribe(
+      () => {
+        console.log('finished download');
+      },
+      (err) => console.error('error handled at component:', err),
+    );
   }
 
   private async refreshTrainingAndQualificationRecords() {

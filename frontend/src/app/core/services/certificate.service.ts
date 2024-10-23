@@ -1,5 +1,5 @@
 import { forkJoin, from, Observable } from 'rxjs';
-import { map, mergeAll, mergeMap, tap } from 'rxjs/operators';
+import { concatMap, filter, map, mergeAll, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { HttpClient } from '@angular/common/http';
@@ -9,10 +9,15 @@ import {
   DownloadCertificateSignedUrlResponse,
   FileInfoWithETag,
   S3UploadResponse,
+  TrainingCertificate,
+  TrainingRecord,
+  TrainingResponse,
   UploadCertificateSignedUrlRequest,
   UploadCertificateSignedUrlResponse,
 } from '@core/model/training.model';
 import { Certificate, CertificateDownload } from '@core/model/trainingAndQualifications.model';
+import { FileUtil, NamedFileBlob } from '@core/utils/file-util';
+import { Qualification, QualificationCertificate, QualificationsResponse } from '@core/model/qualification.model';
 
 @Injectable({
   providedIn: 'root',
@@ -24,7 +29,21 @@ export class BaseCertificateService {
     }
   }
 
+  recordType: string;
+
+  protected recordsEndpoint(workplaceUid: string, workerUid: string): string {
+    throw new Error('Not implemented for base class');
+  }
+
   protected certificateEndpoint(workplaceUid: string, workerUid: string, recordUid: string): string {
+    throw new Error('Not implemented for base class');
+  }
+
+  protected getAllRecords(workplaceUid: string, workerUid: string): Observable<Qualification[] | TrainingRecord[]> {
+    throw new Error('Not implemented for base class');
+  }
+
+  protected getCertificatesFromRecord(record: Qualification | TrainingRecord): Certificate[] {
     throw new Error('Not implemented for base class');
   }
 
@@ -103,6 +122,38 @@ export class BaseCertificateService {
     );
   }
 
+  public downloadAllCertificatesAsBlobs(workplaceUid: string, workerUid: string): Observable<NamedFileBlob> {
+    return this.getAllRecords(workplaceUid, workerUid).pipe(
+      mergeAll(),
+      filter((record) => this.getCertificatesFromRecord(record).length > 0),
+      concatMap((record) =>
+        this.downloadCertificatesAsBlobs(workplaceUid, workerUid, record.uid, this.getCertificatesFromRecord(record)),
+      ),
+      map((file) => this.addFolderName(file)),
+    );
+  }
+
+  protected addFolderName(file: NamedFileBlob): NamedFileBlob {
+    const { filename, fileBlob } = file;
+    return { filename: `${this.recordType} certificates/${filename}`, fileBlob };
+  }
+
+  public downloadCertificatesAsBlobs(
+    workplaceUid: string,
+    workerUid: string,
+    recordUid: string,
+    filesToDownload: CertificateDownload[],
+  ): Observable<NamedFileBlob> {
+    // TODO: Delete this before PR
+    // uncomment this to test frontend without actually downloading from S3
+    // return from(filesToDownload.map((file) => ({ fileBlob: new Blob(['abc']), filename: file.filename })));
+
+    return this.getCertificateDownloadUrls(workplaceUid, workerUid, recordUid, filesToDownload).pipe(
+      mergeMap((res) => this.downloadBlobsFromBucket(res['files'])),
+      mergeAll(),
+    );
+  }
+
   public getCertificateDownloadUrls(
     workplaceUid: string,
     workerUid: string,
@@ -115,40 +166,22 @@ export class BaseCertificateService {
     });
   }
 
-  public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): Observable<{
-    blob: Blob;
-    filename: string;
-  }> {
-    const downloadedBlobs = files.map((file) => this.http.get(file.signedUrl, { responseType: 'blob' }));
-    const blobsAndFilenames = downloadedBlobs.map((blob$, index) =>
-      blob$.pipe(map((blob) => ({ blob, filename: files[index].filename }))),
-    );
+  public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): Observable<any> {
+    const blobsAndFilenames = this.downloadBlobsFromBucket(files);
+
     return from(blobsAndFilenames).pipe(
       mergeAll(),
-      tap(({ blob, filename }) => this.triggerSingleCertificateDownload(blob, filename)),
+      tap(({ fileBlob, filename }) => FileUtil.triggerSingleFileDownload(fileBlob, filename)),
     );
   }
 
-  private triggerSingleCertificateDownload(fileBlob: Blob, filename: string): void {
-    const blobUrl = window.URL.createObjectURL(fileBlob);
-    const link = this.createHiddenDownloadLink(blobUrl, filename);
+  public downloadBlobsFromBucket(files: { signedUrl: string; filename: string }[]): Observable<NamedFileBlob>[] {
+    const downloadedBlobs = files.map((file) => this.http.get(file.signedUrl, { responseType: 'blob' }));
+    const blobsAndFilenames = downloadedBlobs.map((fileBlob$, index) =>
+      fileBlob$.pipe(map((fileBlob) => ({ fileBlob, filename: files[index].filename }))),
+    );
 
-    // Append the link to the body and click to trigger download
-    document.body.appendChild(link);
-    link.click();
-
-    // Remove the link
-    document.body.removeChild(link);
-    window.URL.revokeObjectURL(blobUrl);
-  }
-
-  private createHiddenDownloadLink(blobUrl: string, filename: string): HTMLAnchorElement {
-    const link = document.createElement('a');
-
-    link.href = blobUrl;
-    link.download = filename;
-    link.style.display = 'none';
-    return link;
+    return blobsAndFilenames;
   }
 
   public deleteCertificates(
@@ -164,14 +197,46 @@ export class BaseCertificateService {
 
 @Injectable()
 export class TrainingCertificateService extends BaseCertificateService {
+  recordType = 'training';
+
+  protected recordsEndpoint(workplaceUid: string, workerUid: string): string {
+    return `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training`;
+  }
+
   protected certificateEndpoint(workplaceUid: string, workerUid: string, trainingUid: string): string {
-    return `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/training/${trainingUid}/certificate`;
+    const recordsEndpoint = this.recordsEndpoint(workplaceUid, workerUid);
+    return `${recordsEndpoint}/${trainingUid}/certificate`;
+  }
+
+  protected getAllRecords(workplaceUid: string, workerUid: string): Observable<TrainingRecord[]> {
+    const recordsEndpoint = this.recordsEndpoint(workplaceUid, workerUid);
+    return this.http.get(recordsEndpoint).pipe(map((response: TrainingResponse) => response.training));
+  }
+
+  protected getCertificatesFromRecord(record: TrainingRecord): TrainingCertificate[] {
+    return record?.trainingCertificates ?? [];
   }
 }
 
 @Injectable()
 export class QualificationCertificateService extends BaseCertificateService {
+  recordType = 'qualification';
+
+  protected recordsEndpoint(workplaceUid: string, workerUid: string): string {
+    return `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/qualification`;
+  }
+
   protected certificateEndpoint(workplaceUid: string, workerUid: string, qualificationUid: string): string {
-    return `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/qualification/${qualificationUid}/certificate`;
+    const recordsEndpoint = this.recordsEndpoint(workplaceUid, workerUid);
+    return `${recordsEndpoint}/${qualificationUid}/certificate`;
+  }
+
+  protected getAllRecords(workplaceUid: string, workerUid: string): Observable<Qualification[]> {
+    const recordsEndpoint = this.recordsEndpoint(workplaceUid, workerUid);
+    return this.http.get(recordsEndpoint).pipe(map((response: QualificationsResponse) => response.qualifications));
+  }
+
+  protected getCertificatesFromRecord(record: Qualification): QualificationCertificate[] {
+    return record?.qualificationCertificates ?? [];
   }
 }

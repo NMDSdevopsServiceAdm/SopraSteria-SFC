@@ -1,11 +1,20 @@
+import { toArray } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import {
+  mockQualificationRecordsResponse,
+  mockTrainingRecordsResponse,
+  qualificationUidsWithCerts,
+  qualificationUidsWithoutCerts as qualificationUidsNoCerts,
+  trainingUidsWithCerts,
+  trainingUidsWithoutCerts as trainingUidsNoCerts,
+} from '@core/test-utils/MockCertificationService';
 
 import { QualificationCertificateService, TrainingCertificateService } from './certificate.service';
 
-describe('CertificateService', () => {
+fdescribe('CertificateService', () => {
   const testConfigs = [
     {
       certificateType: 'training',
@@ -214,6 +223,86 @@ describe('CertificateService', () => {
         });
       });
 
+      fdescribe('downloadAllCertificatesAsBlobs', () => {
+        const mockWorkplaceUid = 'mockWorkplaceUid';
+        const mockWorkerUid = 'mockWorkerUid';
+
+        const recordsEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/${certificateType}`;
+
+        const mockRecordsResponse =
+          certificateType === 'training' ? mockTrainingRecordsResponse : mockQualificationRecordsResponse;
+        const recordsHavingCertificates =
+          certificateType === 'training' ? trainingUidsWithCerts : qualificationUidsWithCerts;
+        const recordsWithoutCertificates =
+          certificateType === 'training' ? trainingUidsNoCerts : qualificationUidsNoCerts;
+
+        it('should query the backend to get all training / qualification records for the worker', async () => {
+          service.downloadAllCertificatesAsBlobs(mockWorkplaceUid, mockWorkerUid).subscribe();
+
+          http.expectOne(recordsEndpoint);
+        });
+
+        it('should request backend for signedUrls and download every certificates as blobs', async () => {
+          service.downloadAllCertificatesAsBlobs(mockWorkplaceUid, mockWorkerUid).subscribe();
+
+          http.expectOne(recordsEndpoint).flush(mockRecordsResponse);
+
+          recordsHavingCertificates.forEach((recordUid) => {
+            const certificateDownloadEndpoint = `${recordsEndpoint}/${recordUid}/certificate/download`;
+            const mockresponse = {
+              files: [
+                { signedUrl: `https://localhost/${recordUid}-1.pdf`, filename: `${recordUid}-1.pdf` },
+                { signedUrl: `https://localhost/${recordUid}-2.pdf`, filename: `${recordUid}-2.pdf` },
+              ],
+            };
+            http.expectOne({ url: certificateDownloadEndpoint, method: 'POST' }).flush(mockresponse);
+
+            http.expectOne(`https://localhost/${recordUid}-1.pdf`).flush(new Blob(['mock blob file']));
+            http.expectOne(`https://localhost/${recordUid}-2.pdf`).flush(new Blob(['mock blob file']));
+          });
+
+          recordsWithoutCertificates.forEach((recordUid) => {
+            const certificateDownloadEndpoint = `${recordsEndpoint}/${recordUid}/certificate/download`;
+            http.expectNone(certificateDownloadEndpoint);
+          });
+        });
+
+        it('should return an observable for every certificates as file blobs', async () => {
+          const returnedObservable = service.downloadAllCertificatesAsBlobs(mockWorkplaceUid, mockWorkerUid);
+          const promise = returnedObservable.pipe(toArray()).toPromise();
+
+          http.expectOne(recordsEndpoint).flush(mockRecordsResponse);
+
+          recordsHavingCertificates.forEach((recordUid) => {
+            const certificateDownloadEndpoint = `${recordsEndpoint}/${recordUid}/certificate/download`;
+            const mockResponse = {
+              files: [
+                { signedUrl: `https://localhost/${recordUid}-1.pdf`, filename: `${recordUid}-1.pdf` },
+                { signedUrl: `https://localhost/${recordUid}-2.pdf`, filename: `${recordUid}-2.pdf` },
+              ],
+            };
+            http.expectOne({ url: certificateDownloadEndpoint, method: 'POST' }).flush(mockResponse);
+
+            http.expectOne(`https://localhost/${recordUid}-1.pdf`).flush(new Blob(['mock blob file']));
+            http.expectOne(`https://localhost/${recordUid}-2.pdf`).flush(new Blob(['mock blob file']));
+          });
+
+          const allFileBlobs = await promise;
+          expect(allFileBlobs.length).toEqual(4);
+
+          for (const recordUid of recordsHavingCertificates) {
+            expect(allFileBlobs).toContain({
+              filename: `${certificateType} certificates/${recordUid}-1.pdf`,
+              fileBlob: jasmine.anything(),
+            });
+            expect(allFileBlobs).toContain({
+              filename: `${certificateType} certificates/${recordUid}-2.pdf`,
+              fileBlob: jasmine.anything(),
+            });
+          }
+        });
+      });
+
       describe('deleteCertificates', () => {
         it('should call the endpoint for deleting training certificates', async () => {
           const mockWorkplaceUid = 'mockWorkplaceUid';
@@ -227,7 +316,7 @@ describe('CertificateService', () => {
             },
           ];
 
-          const deleteCertificatesEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/${certificateType}/${mockRecordUid}/certificate/delete`;
+          const deleteCertificatesEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/${certificateType}`;
 
           service.deleteCertificates(mockWorkplaceUid, mockWorkerUid, mockRecordUid, mockFilesToDelete).subscribe();
 
