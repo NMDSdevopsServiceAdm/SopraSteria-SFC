@@ -1,5 +1,10 @@
 import { BlobReader, BlobWriter, ZipWriter } from '@zip.js/zip.js';
 
+export interface NamedFileBlob {
+  fileBlob: Blob;
+  filename: string;
+}
+
 export class FileUtil {
   public static getFileName(response) {
     const filenameRegEx = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
@@ -7,28 +12,22 @@ export class FileUtil {
     return filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
   }
 
-  public static async downloadFilesAsZip(files: { filename: string; blob: Blob }[], nameOfZipFile: string) {
-    // const x = forkJoin(blobsAndFilenames).pipe(
-    //   tap((files) => FileUtil.downloadFilesAsZip(files, 'all-certificates.zip')),
-    // );
-
-    // return x;
-
-    const zippedFileAsBlob = await this.zipFiles(files);
-    this.triggerSingleFileDownload(zippedFileAsBlob, nameOfZipFile);
+  public static async triggerDownloadFilesAsZip(files: NamedFileBlob[], nameOfZippedFile: string) {
+    const zippedFileAsBlob = await this.zipFilesAsBlob(files);
+    this.triggerSingleFileDownload(zippedFileAsBlob, nameOfZippedFile);
   }
 
-  public static async zipFiles(files: Array<{ filename: string; blob: Blob }>): Promise<Blob> {
+  public static async zipFilesAsBlob(files: NamedFileBlob[]): Promise<Blob> {
     const filenameUsed = new Set();
 
     const zipWriter = new ZipWriter(new BlobWriter('application/zip'));
     for (const file of files) {
-      let { filename, blob } = file;
+      let { filename, fileBlob } = file;
 
       while (filenameUsed.has(filename)) {
         filename = this.makeAnotherFilename(filename);
       }
-      await zipWriter.add(filename, new BlobReader(blob));
+      await zipWriter.add(filename, new BlobReader(fileBlob));
 
       filenameUsed.add(filename);
     }
@@ -36,19 +35,20 @@ export class FileUtil {
     return zippedFileBlob;
   }
 
-  private static makeAnotherFilename(filename: string): string {
+  public static makeAnotherFilename(filename: string): string {
     /*
-      Append a number to filename to avoid filename collision causing error in zip
-      "filename.pdf" --> "filename (1).pdf"
-      "filename (1).pdf" --> "filename (2).pdf"
-    */
+     * Append a number to filename to avoid filename collision causing error during zip
+     * "filename.pdf" --> "filename (1).pdf"
+     * "filename (1).pdf" --> "filename (2).pdf"
+     */
     const basename = filename.slice(0, filename.lastIndexOf('.'));
     const extname = filename.slice(filename.lastIndexOf('.') + 1);
+    const findNumberInBracket = /\(([0-9]{1,2})\)$/;
 
-    const sameFilenameCount = basename.match(/\(([0-9]+)\)$/);
+    const sameFilenameCount = basename.match(findNumberInBracket);
     if (sameFilenameCount) {
       const newNumber = Number(sameFilenameCount[1]) + 1;
-      const newBasename = basename.replace(/(\([0-9]+\))$/, `(${newNumber})`);
+      const newBasename = basename.replace(findNumberInBracket, `(${newNumber})`);
       return `${newBasename}.${extname}`;
     }
 

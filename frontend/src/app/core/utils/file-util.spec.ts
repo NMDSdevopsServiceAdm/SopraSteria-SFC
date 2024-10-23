@@ -2,18 +2,18 @@ import { FileUtil } from './file-util';
 import { BlobReader, ZipReader } from '@zip.js/zip.js';
 
 fdescribe('FileUtil', () => {
-  describe('zipFileBlobs', () => {
+  describe('zipFilesAsBlob', () => {
     const mockFiles = [
-      { filename: 'training/First Aid.pdf', blob: new Blob(['first aid'], { type: 'application/pdf' }) },
-      { filename: 'training/First Aid 2024.pdf', blob: new Blob(['First Aid 2024'], { type: 'application/pdf' }) },
+      { filename: 'training/First Aid.pdf', fileBlob: new Blob(['first aid'], { type: 'application/pdf' }) },
+      { filename: 'training/First Aid 2024.pdf', fileBlob: new Blob(['First Aid 2024'], { type: 'application/pdf' }) },
       {
         filename: 'qualification/Level 2 Care Cert.pdf',
-        blob: new Blob(['Level 2 Care Cert'], { type: 'application/pdf' }),
+        fileBlob: new Blob(['Level 2 Care Cert'], { type: 'application/pdf' }),
       },
     ];
 
     it('should zip all given file blobs into one zip file and return as a single file blob', async () => {
-      const zippedBlob = await FileUtil.zipFiles(mockFiles);
+      const zippedBlob = await FileUtil.zipFilesAsBlob(mockFiles);
       expect(zippedBlob).toBeInstanceOf(Blob);
 
       const contentsOfZipFile = await new ZipReader(new BlobReader(zippedBlob)).getEntries();
@@ -28,11 +28,11 @@ fdescribe('FileUtil', () => {
     it('should be able to handle same filenames', async () => {
       const mockFileWithSameFileNames = [
         ...mockFiles,
-        { filename: 'training/First Aid.pdf', blob: new Blob(['another first aid'], { type: 'application/pdf' }) },
-        { filename: 'training/First Aid.pdf', blob: new Blob(['3rd first aid'], { type: 'application/pdf' }) },
+        { filename: 'training/First Aid.pdf', fileBlob: new Blob(['another first aid'], { type: 'application/pdf' }) },
+        { filename: 'training/First Aid.pdf', fileBlob: new Blob(['3rd first aid'], { type: 'application/pdf' }) },
       ];
 
-      const zippedBlob = await FileUtil.zipFiles(mockFileWithSameFileNames);
+      const zippedBlob = await FileUtil.zipFilesAsBlob(mockFileWithSameFileNames);
 
       const contentsOfZipFile = await new ZipReader(new BlobReader(zippedBlob)).getEntries();
       expect(contentsOfZipFile).toHaveSize(5);
@@ -41,6 +41,26 @@ fdescribe('FileUtil', () => {
       expect(fileNamesInZipFile).toContain('training/First Aid.pdf');
       expect(fileNamesInZipFile).toContain('training/First Aid (1).pdf');
       expect(fileNamesInZipFile).toContain('training/First Aid (2).pdf');
+    });
+  });
+
+  describe('makeAnotherFilename', () => {
+    const testCases = [
+      { inputFilename: 'certificate.pdf', expected: 'certificate (1).pdf' },
+      { inputFilename: 'certificate (1).pdf', expected: 'certificate (2).pdf' },
+      { inputFilename: 'certificate (2).pdf', expected: 'certificate (3).pdf' },
+      { inputFilename: 'certificate (9).pdf', expected: 'certificate (10).pdf' },
+      { inputFilename: 'certificate (10).pdf', expected: 'certificate (11).pdf' },
+      { inputFilename: 'certificate 1.pdf', expected: 'certificate 1 (1).pdf' },
+      { inputFilename: 'certificate (2023).pdf', expected: 'certificate (2023) (1).pdf' },
+      { inputFilename: 'Adult care worker (level 1).pdf', expected: 'Adult care worker (level 1) (1).pdf' },
+    ];
+
+    testCases.forEach(({ inputFilename, expected }) => {
+      it(`should give a new filename as expected:  ${inputFilename} --> ${expected}`, () => {
+        const actual = FileUtil.makeAnotherFilename(inputFilename);
+        expect(actual).toEqual(expected);
+      });
     });
   });
 
