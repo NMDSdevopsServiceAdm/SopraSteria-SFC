@@ -180,7 +180,7 @@ const deleteQualificationRecord = async (req, res) => {
 
       const qualificationCertificateService = WorkerCertificateService.initialiseQualifications();
 
-      qualificationCertificateService.deleteCertificates(qualificationCertificates, establishmentUid, workerUid, qualificationUid);
+      await qualificationCertificateService.deleteCertificates(qualificationCertificates, establishmentUid, workerUid, qualificationUid);
 
       // by deleting after the restore we can be sure this qualification record belongs to the given worker
       const deleteSuccess = await thisQualificationRecord.delete();
