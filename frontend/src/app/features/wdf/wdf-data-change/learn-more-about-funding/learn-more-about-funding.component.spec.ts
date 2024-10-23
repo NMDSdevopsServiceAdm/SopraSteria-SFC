@@ -4,19 +4,19 @@ import { PagesService } from '@core/services/pages.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockPagesService } from '@core/test-utils/MockPagesService';
-import { fireEvent, render } from '@testing-library/angular';
-import { FundingLearnMoreComponent } from './funding-learn-more.component';
+import { render } from '@testing-library/angular';
+import { LearnMoreAboutFundingComponent } from './learn-more-about-funding.component';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 
-describe('FundingLearnMoreComponent', () => {
+describe('LearnMoreAboutFundingComponent', () => {
   const pages = MockPagesService.pagesFactory();
 
   async function setup() {
-    const { fixture, getByText, queryByText } = await render(FundingLearnMoreComponent, {
+    const { fixture, getByText, queryByText } = await render(LearnMoreAboutFundingComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -72,16 +72,12 @@ describe('FundingLearnMoreComponent', () => {
     expect(getByText(expectedTitleCaption)).toBeTruthy();
   });
 
-  it("should navigate to funding main page when 'Does your data meet funding requirements?' is clicked", async () => {
-    const { fixture, getByText, routerSpy } = await setup();
+  it("should show a button with the text 'Does your data meet funding requirements?'", async () => {
+    const { getByText } = await setup();
 
     const button = getByText('Does your data meet funding requirements?');
 
-    fireEvent.click(button);
-    fixture.detectChanges();
-
     expect(button).toBeTruthy();
-    expect(routerSpy).toHaveBeenCalledWith(['/wdf']);
   });
 
   it('should display the content of the cms page', async () => {

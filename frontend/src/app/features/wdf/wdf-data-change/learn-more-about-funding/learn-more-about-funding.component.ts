@@ -7,10 +7,10 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-funding-learn-more.component',
-  templateUrl: './funding-learn-more.component.html',
+  selector: 'app-learn-more-about-funding.component',
+  templateUrl: './learn-more-about-funding.component.html',
 })
-export class FundingLearnMoreComponent implements OnInit {
+export class LearnMoreAboutFundingComponent implements OnInit {
   public workplace: Establishment;
   public pages: Page;
 
@@ -25,9 +25,5 @@ export class FundingLearnMoreComponent implements OnInit {
     this.breadcrumbService.show(JourneyType.WDF);
     this.workplace = this.establishmentService.establishment;
     this.pages = this.route.snapshot.data.pages?.data[0];
-  }
-
-  public viewWdfMainPage(): void {
-    this.router.navigate(['/wdf']);
   }
 }

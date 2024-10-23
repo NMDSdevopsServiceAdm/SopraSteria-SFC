@@ -43,7 +43,7 @@ import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
-import { FundingLearnMoreComponent } from './funding-learn-more/funding-learn-more.component';
+import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn-more-about-funding.component';
 import { PageResolver } from '@core/resolvers/page.resolver';
 
 const routes: Routes = [
@@ -64,7 +64,7 @@ const routes: Routes = [
   },
   {
     path: 'learn-more',
-    component: FundingLearnMoreComponent,
+    component: LearnMoreAboutFundingComponent,
     data: { title: 'Learn More' },
     resolve: {
       pages: PageResolver,
