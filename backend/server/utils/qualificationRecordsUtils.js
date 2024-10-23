@@ -12,6 +12,7 @@ const addRecordGroupToSortedQualifications = (sortedQualifications, record) => {
     year: record.year,
     notes: record.notes,
     uid: record.uid,
+    qualificationCertificates: record.qualificationCertificates,
   };
 
   const existingGroup = sortedQualifications.groups.find((obj) => obj.group === record.qualification.group);

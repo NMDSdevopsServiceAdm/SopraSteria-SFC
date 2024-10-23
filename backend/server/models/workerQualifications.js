@@ -79,6 +79,12 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'qualification',
     });
+    WorkerQualifications.hasMany(models.qualificationCertificates, {
+      foreignKey: 'workerQualificationsFk',
+      sourceKey: 'id',
+      as: 'qualificationCertificates',
+      onDelete: 'CASCADE',
+    });
   };
 
   return WorkerQualifications;
