@@ -176,7 +176,7 @@ describe('CertificateService', () => {
           service.downloadCertificates(mockWorkplaceUid, mockWorkerUid, mockRecordUid, mockFiles).subscribe();
 
           const downloadRequest = http.expectOne(certificateDownloadEndpoint);
-          const expectedRequestBody = { filesToDownload: mockFiles };
+          const expectedRequestBody = { files: mockFiles };
 
           expect(downloadRequest.request.body).toEqual(expectedRequestBody);
         });
@@ -232,7 +232,7 @@ describe('CertificateService', () => {
           service.deleteCertificates(mockWorkplaceUid, mockWorkerUid, mockRecordUid, mockFilesToDelete).subscribe();
 
           const deleteRequest = http.expectOne(deleteCertificatesEndpoint);
-          const expectedRequestBody = { filesToDelete: mockFilesToDelete };
+          const expectedRequestBody = { files: mockFilesToDelete };
 
           expect(deleteRequest.request.method).toBe('POST');
           expect(deleteRequest.request.body).toEqual(expectedRequestBody);
