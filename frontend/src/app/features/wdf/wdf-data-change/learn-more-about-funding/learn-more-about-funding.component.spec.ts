@@ -4,7 +4,7 @@ import { PagesService } from '@core/services/pages.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockPagesService } from '@core/test-utils/MockPagesService';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import { LearnMoreAboutFundingComponent } from './learn-more-about-funding.component';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -72,12 +72,16 @@ describe('LearnMoreAboutFundingComponent', () => {
     expect(getByText(expectedTitleCaption)).toBeTruthy();
   });
 
-  it("should show a button with the text 'Does your data meet funding requirements?'", async () => {
-    const { getByText } = await setup();
+  it("should navigate to wdf main page when 'Does your data meet funding requirements?' is clicked", async () => {
+    const { fixture, getByText, routerSpy } = await setup();
 
     const button = getByText('Does your data meet funding requirements?');
 
+    fireEvent.click(button);
+    fixture.detectChanges();
+
     expect(button).toBeTruthy();
+    expect(routerSpy).toHaveBeenCalledWith(['/wdf']);
   });
 
   it('should display the content of the cms page', async () => {

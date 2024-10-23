@@ -26,4 +26,8 @@ export class LearnMoreAboutFundingComponent implements OnInit {
     this.workplace = this.establishmentService.establishment;
     this.pages = this.route.snapshot.data.pages?.data[0];
   }
+
+  public viewWdfMainPage(): void {
+    this.router.navigate(['/wdf']);
+  }
 }
