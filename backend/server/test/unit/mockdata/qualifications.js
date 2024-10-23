@@ -158,3 +158,47 @@ exports.expectedQualificationsSortedByGroup = {
     },
   ],
 };
+
+exports.mockQualificationsRecordWithoutCertificates = {
+  uid: 'fa8f6b14-efd8-4622-b679-14df36202957',
+  workerUid: '32fa83f9-dc21-4685-82d4-021024c0d5fe',
+  qualification: {
+    id: 82,
+    group: 'Diploma',
+    title: 'Health and Social Care - Dementia',
+    level: '2',
+  },
+  year: 2014,
+  notes: 'test note',
+  created: '2021-10-21T14:38:57.449Z',
+  updated: '2021-10-21T14:38:57.449Z',
+  updatedBy: 'greenj',
+};
+
+exports.mockQualificationsRecordWithCertificates = {
+  uid: 'fa8f6b14-efd8-4622-b679-14df36202957',
+  workerUid: '32fa83f9-dc21-4685-82d4-021024c0d5fe',
+  qualification: {
+    id: 82,
+    group: 'Diploma',
+    title: 'Health and Social Care - Dementia',
+    level: '2',
+  },
+  year: 2014,
+  notes: 'test note',
+  created: '2021-10-21T14:38:57.449Z',
+  updated: '2021-10-21T14:38:57.449Z',
+  updatedBy: 'greenj',
+  trainingCertificates: [
+    {
+      uid: 'uid-1',
+      filename: 'communication_v1.pdf',
+      uploadDate: '2024-04-12T14:44:29.151Z',
+    },
+    {
+      uid: 'uid-2',
+      filename: 'communication_v2.pdf',
+      uploadDate: '2024-04-12T14:44:29.151Z',
+    },
+  ],
+};
