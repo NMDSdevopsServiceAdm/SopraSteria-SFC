@@ -5,18 +5,18 @@ import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockPagesService } from '@core/test-utils/MockPagesService';
 import { fireEvent, render } from '@testing-library/angular';
-import { WdfLearnMoreComponent } from './wdf-learn-more.component';
+import { FundingLearnMoreComponent } from './funding-learn-more.component';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 
-describe('WdfLearnMoreComponent', () => {
+describe('FundingLearnMoreComponent', () => {
   const pages = MockPagesService.pagesFactory();
 
   async function setup() {
-    const { fixture, getByText, queryByText } = await render(WdfLearnMoreComponent, {
+    const { fixture, getByText, queryByText } = await render(FundingLearnMoreComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -72,7 +72,7 @@ describe('WdfLearnMoreComponent', () => {
     expect(getByText(expectedTitleCaption)).toBeTruthy();
   });
 
-  it("should navigate to wdf main page when 'Does your data meet funding requirements?' is clicked", async () => {
+  it("should navigate to funding main page when 'Does your data meet funding requirements?' is clicked", async () => {
     const { fixture, getByText, routerSpy } = await setup();
 
     const button = getByText('Does your data meet funding requirements?');
