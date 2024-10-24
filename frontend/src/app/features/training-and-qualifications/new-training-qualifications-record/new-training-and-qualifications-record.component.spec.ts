@@ -1240,13 +1240,13 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     it('should call saveFilesAsZip with all the certificates', async () => {
       const { component, getByText } = await setup();
+      const expectedZipFileName = `all certificates - ${component.worker.nameOrId}.zip`;
 
       const fileUtilSpy = spyOn(FileUtil, 'saveFilesAsZip').and.callThrough();
 
       const downloadAllButton = getByText('Download all their training and qualifications certificates');
       userEvent.click(downloadAllButton);
 
-      const expectedZipFileName = `all certificates - ${component.worker.nameOrId}.zip`;
       expect(fileUtilSpy).toHaveBeenCalled();
 
       const contentsOfZipFile = fileUtilSpy.calls.mostRecent().args[0];
@@ -1270,6 +1270,20 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           }),
         );
       });
+    });
+
+    it('should not start a new download if already downloading all certificates in background', async () => {
+      const { getByText, trainingCertificateService, qualificationCertificateService } = await setup();
+
+      const downloadAllButton = getByText('Download all their training and qualifications certificates');
+      spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+      spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+
+      userEvent.click(downloadAllButton);
+      userEvent.click(downloadAllButton);
+
+      expect(trainingCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledTimes(1);
+      expect(qualificationCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledTimes(1);
     });
   });
 });

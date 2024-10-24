@@ -57,6 +57,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public pdfCount: number;
   public certificateErrors: Record<string, string> = {}; // {categoryName: errorMessage}
   private trainingRecords: TrainingRecords;
+  private downloadingAllCertsInBackground = false;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -410,11 +411,17 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
   public downloadAllCertificates(event: Event) {
     event.preventDefault();
 
-    const allTrainingCerts = this.trainingCertificateService.downloadAllCertificatesAsBlobs(
+    if (this.downloadingAllCertsInBackground) {
+      return;
+    }
+
+    this.downloadingAllCertsInBackground = true;
+
+    const allTrainingCerts$ = this.trainingCertificateService.downloadAllCertificatesAsBlobs(
       this.workplace.uid,
       this.worker.uid,
     );
-    const allQualificationCerts = this.qualificationCertificateService.downloadAllCertificatesAsBlobs(
+    const allQualificationCerts$ = this.qualificationCertificateService.downloadAllCertificatesAsBlobs(
       this.workplace.uid,
       this.worker.uid,
     );
@@ -423,17 +430,21 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       ? `all certificates - ${this.worker.nameOrId}.zip`
       : 'all certificates.zip';
 
-    const downloadAllCertificatesAsZip = merge(allTrainingCerts, allQualificationCerts).pipe(
+    const downloadAllCertificatesAsZip$ = merge(allTrainingCerts$, allQualificationCerts$).pipe(
       toArray(),
       mergeMap((allFileBlobs) => from(FileUtil.saveFilesAsZip(allFileBlobs, zipFileName))),
     );
 
     this.subscriptions.add(
-      downloadAllCertificatesAsZip.subscribe(
+      downloadAllCertificatesAsZip$.subscribe(
         () => {
-          console.log('finished download at: ', new Date());
+          console.log('Finished download at: ', new Date());
+          this.downloadingAllCertsInBackground = false;
         },
-        (err) => console.error('error handled at component:', err),
+        (err) => {
+          console.error('Error handled at component: ', err);
+          this.downloadingAllCertsInBackground = false;
+        },
       ),
     );
   }
