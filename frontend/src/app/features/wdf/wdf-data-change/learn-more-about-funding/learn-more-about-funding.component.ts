@@ -7,7 +7,7 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'app-learn-more-about-funding.component',
+  selector: 'app-learn-more-about-funding',
   templateUrl: './learn-more-about-funding.component.html',
 })
 export class LearnMoreAboutFundingComponent implements OnInit {
