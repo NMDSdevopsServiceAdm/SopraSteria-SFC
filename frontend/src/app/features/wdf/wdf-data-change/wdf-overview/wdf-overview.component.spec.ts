@@ -152,6 +152,15 @@ describe('WdfOverviewComponent', () => {
       expect(checkYourDataButton).toBeTruthy();
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'data']);
     });
+
+    it('should show the learn more link', async () => {
+      const { getByText } = await setup();
+
+      const learnMoreLink = getByText('Learn more about the funds that you can claim from');
+
+      expect(learnMoreLink).toBeTruthy();
+      expect(learnMoreLink.getAttribute('href')).toEqual('/wdf/learn-more');
+    });
   });
 
   describe('Unhappy path', async () => {

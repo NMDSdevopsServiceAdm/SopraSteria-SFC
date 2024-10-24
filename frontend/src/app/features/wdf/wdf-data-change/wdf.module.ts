@@ -19,6 +19,7 @@ import { WdfStaffSummaryComponent } from './wdf-staff-summary/wdf-staff-summary.
 import { WdfWorkplacesSummaryTableComponent } from './wdf-workplaces-summary-table/wdf-workplaces-summary-table.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn-more-about-funding.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WdfRoutingModule],
@@ -34,6 +35,7 @@ import { JobsResolver } from '@core/resolvers/jobs.resolver';
     WdfWorkplacesSummaryTableComponent,
     WdfParentStatusMessageComponent,
     WdfOverviewComponent,
+    LearnMoreAboutFundingComponent,
   ],
   providers: [WorkerResolver, WorkplaceResolver, JobsResolver],
 })
