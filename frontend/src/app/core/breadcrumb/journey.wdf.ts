@@ -9,6 +9,7 @@ enum Path {
   PARENT_DATA = 'wdf/workplaces/:establishmentuid',
   PARENT_STAFF_RECORD = 'wdf/workplaces/:establishmentuid/staff-record/:id',
   LEARN_MORE = 'wdf/learn-more',
+  FUNDING_REQUIREMENTS = 'wdf/funding-requirements',
 }
 
 export const wdfJourney: JourneyRoute = {
@@ -20,6 +21,10 @@ export const wdfJourney: JourneyRoute = {
         {
           title: 'Learn more',
           path: Path.LEARN_MORE,
+        },
+        {
+          title: 'Funding requirements',
+          path: Path.FUNDING_REQUIREMENTS,
         },
         {
           title: 'WDF data',
