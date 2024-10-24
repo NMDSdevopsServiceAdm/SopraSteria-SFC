@@ -7,7 +7,7 @@ import { ReportService } from '@core/services/report.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { WdfOverviewComponent } from './wdf-overview.component';
 import { getTestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -179,6 +179,32 @@ describe('WdfOverviewComponent', () => {
       const fundingInsetText = getByTestId('fundingInsetText');
 
       expect(fundingInsetText).toBeTruthy();
+    });
+
+    it('should show the funding requirements link', async () => {
+      const overrides = {
+        wdf: {
+          overall: false,
+          workplace: false,
+          staff: false,
+        },
+        isParent: false,
+        parentOverallWdfEligibility: false,
+      };
+
+      const { component, getByTestId } = await setup(overrides);
+
+      const wdfStartYear = new Date(component.wdfStartDate).getFullYear();
+      const wdfEndYear = new Date(component.wdfEndDate).getFullYear();
+
+      const fundingInsetText = getByTestId('fundingInsetText');
+
+      const fundingRequirementsLink = within(fundingInsetText).getByText(
+        `The ASC-WDS funding requirements for ${wdfStartYear} to ${wdfEndYear}`,
+      );
+
+      expect(fundingRequirementsLink).toBeTruthy();
+      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/wdf/funding-requirements');
     });
   });
 

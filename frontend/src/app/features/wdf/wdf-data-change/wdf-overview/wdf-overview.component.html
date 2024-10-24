@@ -49,7 +49,7 @@
 
     <ng-template #notEligible>
       <div class="govuk-inset-text thin-border govuk-!-margin-top-0" data-testid="fundingInsetText">
-        <a href="#">
+        <a [routerLink]="['/wdf/funding-requirements']">
           The ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}</a
         >
         are exactly the same for both the Workforce Development Fund (WDF) and the Learning and Development Support
