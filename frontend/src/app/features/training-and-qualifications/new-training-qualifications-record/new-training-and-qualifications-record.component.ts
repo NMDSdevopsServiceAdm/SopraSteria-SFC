@@ -425,14 +425,16 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
 
     const downloadAllCertificatesAsZip = merge(allTrainingCerts, allQualificationCerts).pipe(
       toArray(),
-      mergeMap((allFileBlobs) => from(FileUtil.downloadFilesAsZip(allFileBlobs, zipFileName))),
+      mergeMap((allFileBlobs) => from(FileUtil.saveFilesAsZip(allFileBlobs, zipFileName))),
     );
 
-    downloadAllCertificatesAsZip.subscribe(
-      () => {
-        console.log('finished download at: ', new Date());
-      },
-      (err) => console.error('error handled at component:', err),
+    this.subscriptions.add(
+      downloadAllCertificatesAsZip.subscribe(
+        () => {
+          console.log('finished download at: ', new Date());
+        },
+        (err) => console.error('error handled at component:', err),
+      ),
     );
   }
 

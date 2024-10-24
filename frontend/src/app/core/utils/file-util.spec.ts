@@ -2,16 +2,66 @@ import { FileUtil } from './file-util';
 import { BlobReader, ZipReader } from '@zip.js/zip.js';
 
 describe('FileUtil', () => {
-  describe('zipFilesAsBlob', () => {
-    const mockFiles = [
-      { filename: 'training/First Aid.pdf', fileBlob: new Blob(['first aid'], { type: 'application/pdf' }) },
-      { filename: 'training/First Aid 2024.pdf', fileBlob: new Blob(['First Aid 2024'], { type: 'application/pdf' }) },
-      {
-        filename: 'qualification/Level 2 Care Cert.pdf',
-        fileBlob: new Blob(['Level 2 Care Cert'], { type: 'application/pdf' }),
-      },
-    ];
+  const mockFiles = [
+    { filename: 'training/First Aid.pdf', fileBlob: new Blob(['first aid'], { type: 'application/pdf' }) },
+    { filename: 'training/First Aid 2024.pdf', fileBlob: new Blob(['First Aid 2024'], { type: 'application/pdf' }) },
+    {
+      filename: 'qualification/Level 2 Care Cert.pdf',
+      fileBlob: new Blob(['Level 2 Care Cert'], { type: 'application/pdf' }),
+    },
+  ];
 
+  describe('triggerSingleFileDownload', () => {
+    it('should download files by creating and triggering anchor tag, then cleaning DOM', () => {
+      const mockCertificates = [{ signedUrl: 'https://example.com/file1.pdf', filename: 'file1.pdf' }];
+      const mockBlob = new Blob(['file content'], { type: 'application/pdf' });
+      const mockBlobUrl = 'blob:http://signed-url-example.com/blob-url';
+
+      const createElementSpy = spyOn(document, 'createElement').and.callThrough();
+      const appendChildSpy = spyOn(document.body, 'appendChild').and.callThrough();
+      const removeChildSpy = spyOn(document.body, 'removeChild').and.callThrough();
+      const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL').and.callThrough();
+      spyOn(window.URL, 'createObjectURL').and.returnValue(mockBlobUrl);
+
+      FileUtil.triggerSingleFileDownload(mockBlob, mockCertificates[0].filename);
+
+      // Assert anchor element appended
+      expect(createElementSpy).toHaveBeenCalledWith('a');
+      expect(appendChildSpy).toHaveBeenCalled();
+
+      // Assert anchor element has correct attributes
+      const createdAnchor = createElementSpy.calls.mostRecent().returnValue as HTMLAnchorElement;
+      expect(createdAnchor.href).toBe(mockBlobUrl);
+      expect(createdAnchor.download).toBe(mockCertificates[0].filename);
+
+      // Assert DOM is cleaned up after download
+      expect(revokeObjectURLSpy).toHaveBeenCalledWith(mockBlobUrl);
+      expect(removeChildSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('saveFilesAsZip', () => {
+    it('should do nothing if the input files array is empty', async () => {
+      const triggerDownloadSpy = spyOn(FileUtil, 'triggerSingleFileDownload');
+
+      await FileUtil.saveFilesAsZip([], 'zipped file.zip');
+      expect(triggerDownloadSpy).not.toHaveBeenCalled();
+    });
+
+    it('should zip all the given files as a blob, then trigger a download of the zipped file', async () => {
+      const zipFilesAsBlobSpy = spyOn(FileUtil, 'zipFilesAsBlob').and.callThrough();
+      const triggerDownloadSpy = spyOn(FileUtil, 'triggerSingleFileDownload');
+
+      await FileUtil.saveFilesAsZip(mockFiles, 'zipped file.zip');
+
+      expect(zipFilesAsBlobSpy).toHaveBeenCalledWith(mockFiles);
+
+      const zippedBlob = await zipFilesAsBlobSpy.calls.mostRecent().returnValue;
+      expect(triggerDownloadSpy).toHaveBeenCalledWith(zippedBlob, 'zipped file.zip');
+    });
+  });
+
+  describe('zipFilesAsBlob', () => {
     it('should zip all given file blobs into one zip file and return as a single file blob', async () => {
       const zippedBlob = await FileUtil.zipFilesAsBlob(mockFiles);
       expect(zippedBlob).toBeInstanceOf(Blob);
@@ -61,35 +111,6 @@ describe('FileUtil', () => {
         const actual = FileUtil.makeAnotherFilename(inputFilename);
         expect(actual).toEqual(expected);
       });
-    });
-  });
-
-  describe('triggerSingleFileDownload', () => {
-    it('should download certificates by creating and triggering anchor tag, then cleaning DOM', () => {
-      const mockCertificates = [{ signedUrl: 'https://example.com/file1.pdf', filename: 'file1.pdf' }];
-      const mockBlob = new Blob(['file content'], { type: 'application/pdf' });
-      const mockBlobUrl = 'blob:http://signed-url-example.com/blob-url';
-
-      const createElementSpy = spyOn(document, 'createElement').and.callThrough();
-      const appendChildSpy = spyOn(document.body, 'appendChild').and.callThrough();
-      const removeChildSpy = spyOn(document.body, 'removeChild').and.callThrough();
-      const revokeObjectURLSpy = spyOn(window.URL, 'revokeObjectURL').and.callThrough();
-      spyOn(window.URL, 'createObjectURL').and.returnValue(mockBlobUrl);
-
-      FileUtil.triggerSingleFileDownload(mockBlob, mockCertificates[0].filename);
-
-      // Assert anchor element appended
-      expect(createElementSpy).toHaveBeenCalledWith('a');
-      expect(appendChildSpy).toHaveBeenCalled();
-
-      // Assert anchor element has correct attributes
-      const createdAnchor = createElementSpy.calls.mostRecent().returnValue as HTMLAnchorElement;
-      expect(createdAnchor.href).toBe(mockBlobUrl);
-      expect(createdAnchor.download).toBe(mockCertificates[0].filename);
-
-      // Assert DOM is cleaned up after download
-      expect(revokeObjectURLSpy).toHaveBeenCalledWith(mockBlobUrl);
-      expect(removeChildSpy).toHaveBeenCalled();
     });
   });
 });

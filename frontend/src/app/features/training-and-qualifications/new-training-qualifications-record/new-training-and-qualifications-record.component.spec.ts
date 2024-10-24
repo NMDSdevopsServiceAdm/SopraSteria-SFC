@@ -1212,7 +1212,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
   });
 
-  fdescribe('download all certificates', () => {
+  describe('download all certificates', () => {
     it('should display a link for downloading all certificates', async () => {
       const { getByText } = await setup();
 
@@ -1238,10 +1238,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       );
     });
 
-    it('should call downloadFilesAsZip with all the certificates', async () => {
+    it('should call saveFilesAsZip with all the certificates', async () => {
       const { component, getByText } = await setup();
 
-      const fileUtilSpy = spyOn(FileUtil, 'downloadFilesAsZip').and.callThrough();
+      const fileUtilSpy = spyOn(FileUtil, 'saveFilesAsZip').and.callThrough();
 
       const downloadAllButton = getByText('Download all their training and qualifications certificates');
       userEvent.click(downloadAllButton);
