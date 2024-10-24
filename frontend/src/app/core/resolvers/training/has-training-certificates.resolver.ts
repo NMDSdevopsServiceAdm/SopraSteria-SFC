@@ -12,7 +12,8 @@ export class HasTrainingCertificatesResolver implements Resolve<any> {
 
   resolve() {
     const workplaceUid = this.establishmentService.primaryWorkplace.uid;
-    this.establishmentService.workplaceOrSubHasTrainingCertificates(workplaceUid).pipe(
+
+    return this.establishmentService.workplaceOrSubHasTrainingCertificates(workplaceUid).pipe(
       take(1),
       catchError(() => {
         return of(null);
