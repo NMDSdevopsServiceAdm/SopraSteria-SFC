@@ -1,5 +1,5 @@
 import { from, merge, Subscription } from 'rxjs';
-import { mergeMap, toArray } from 'rxjs/operators';
+import { mergeMap, tap, toArray } from 'rxjs/operators';
 
 import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -419,14 +419,18 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
       this.worker.uid,
     );
 
+    const zipFileName = this.worker.nameOrId
+      ? `all certificates - ${this.worker.nameOrId}.zip`
+      : 'all certificates.zip';
+
     const downloadAllCertificatesAsZip = merge(allTrainingCerts, allQualificationCerts).pipe(
       toArray(),
-      mergeMap((allFileBlobs) => from(FileUtil.triggerDownloadFilesAsZip(allFileBlobs, 'all certificates.zip'))),
+      mergeMap((allFileBlobs) => from(FileUtil.downloadFilesAsZip(allFileBlobs, zipFileName))),
     );
 
     downloadAllCertificatesAsZip.subscribe(
       () => {
-        console.log('finished download');
+        console.log('finished download at: ', new Date());
       },
       (err) => console.error('error handled at component:', err),
     );

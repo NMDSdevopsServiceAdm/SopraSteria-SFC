@@ -23,7 +23,7 @@ import sinon from 'sinon';
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
 import { AddEditTrainingComponent } from './add-edit-training.component';
 import { TrainingCertificateService } from '@core/services/certificate.service';
-import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
+import { MockTrainingCertificateService } from '@core/test-utils/MockCertificateService';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {

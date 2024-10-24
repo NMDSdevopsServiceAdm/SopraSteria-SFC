@@ -4,36 +4,29 @@ import { Injectable } from '@angular/core';
 import { TrainingResponse } from '@core/model/training.model';
 import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { QualificationsResponse } from '@core/model/qualification.model';
+import { Certificate, CertificateDownload } from '@core/model/trainingAndQualifications.model';
+import { build, fake } from '@jackfranklin/test-data-bot';
 
-const mockWorkplaceUid = 'mockWorkplaceUid';
 const mockWorkerUid = 'mockWorkerUid';
-const mockRecordUid = 'mockRecordUid';
 
-export const mockCertificatesA = [
-  {
-    filename: 'Certificate 2023.pdf',
-    uid: 'uid1',
-    uploadDate: '2024-09-20T08:57:45.000Z',
+const certificateBuilder = build<Certificate>({
+  fields: {
+    filename: fake((f) => f.lorem.word() + '.pdf'),
+    uid: fake((f) => f.datatype.uuid()),
+    uploadDate: fake((f) => f.date.recent().toISOString()),
   },
-  {
-    filename: 'Certificate 2024.pdf',
-    uid: 'uid2',
-    uploadDate: '2024-09-20T08:57:45.000Z',
-  },
-];
+});
 
-export const mockCertificatesB = [
-  {
-    filename: 'Certificate 2022.pdf',
-    uid: 'uid3',
-    uploadDate: '2024-09-20T08:57:45.000Z',
-  },
-  {
-    filename: 'Certificate 2023.pdf',
-    uid: 'uid4',
-    uploadDate: '2024-09-20T08:57:45.000Z',
-  },
-];
+const buildCertificates = (howMany: number): Certificate[] => {
+  return Array(howMany).fill('').map(certificateBuilder);
+};
+
+const mockTrainingCertA = buildCertificates(1);
+const mockTrainingCertsB = buildCertificates(3);
+const mockQualificationCertsA = buildCertificates(1);
+const mockQualificationCertsB = buildCertificates(3);
+export const mockTrainingCertificates = [...mockTrainingCertA, ...mockTrainingCertsB];
+export const mockQualificationCertificates = [...mockQualificationCertsA, ...mockQualificationCertsB];
 
 export const mockTrainingRecordsResponse: TrainingResponse = {
   workerUid: mockWorkerUid,
@@ -61,7 +54,7 @@ export const mockTrainingRecordsResponse: TrainingResponse = {
     {
       uid: 'uid-training-with-certs',
       trainingCategory: { id: 1, category: 'Activity provision, wellbeing' },
-      trainingCertificates: mockCertificatesA,
+      trainingCertificates: mockTrainingCertA,
       title: 'Training with certs',
       created: new Date(),
       updated: new Date(),
@@ -70,7 +63,7 @@ export const mockTrainingRecordsResponse: TrainingResponse = {
     {
       uid: 'uid-another-training-with-certs',
       trainingCategory: { id: 13, category: 'Duty of care' },
-      trainingCertificates: mockCertificatesB,
+      trainingCertificates: mockTrainingCertsB,
       title: 'another training with certs',
       created: new Date(),
       updated: new Date(),
@@ -97,13 +90,13 @@ export const mockQualificationRecordsResponse: QualificationsResponse = {
       id: 2,
       uid: 'qual-with-some-certs',
       qualification: {},
-      qualificationCertificates: mockCertificatesA,
+      qualificationCertificates: mockQualificationCertsA,
     },
     {
       id: 3,
       uid: 'another-qual-with-some-certs',
       qualification: {},
-      qualificationCertificates: mockCertificatesB,
+      qualificationCertificates: mockQualificationCertsB,
     },
   ],
 };
@@ -111,11 +104,34 @@ export const mockQualificationRecordsResponse: QualificationsResponse = {
 export const qualificationUidsWithCerts = ['qual-with-some-certs', 'another-qual-with-some-certs'];
 export const qualificationUidsWithoutCerts = ['qual-with-no-certs'];
 
+const mockGetCertificateDownloadUrls = (
+  workplaceUid: string,
+  workerUid: string,
+  recordUid: string,
+  filesToDownload: CertificateDownload[],
+) => {
+  const mockResponsePayload = filesToDownload.map((file) => ({
+    filename: file.filename,
+    signedUrl: `https://localhost/${file.uid}`,
+  }));
+  return of({ files: mockResponsePayload });
+};
+
+const mockDownloadBlobsFromBucket = (files: { signedUrl: string; filename: string }[]) => {
+  return files.map((file) =>
+    of({ fileBlob: new Blob(['mockdata'], { type: 'application/pdf' }), filename: file.filename }),
+  );
+};
+
 @Injectable()
 export class MockTrainingCertificateService extends TrainingCertificateService {
   protected getAllRecords(workplaceUid: string, workerUid: string) {
     return of(mockTrainingRecordsResponse.training);
   }
+
+  public getCertificateDownloadUrls = mockGetCertificateDownloadUrls;
+
+  public downloadBlobsFromBucket = mockDownloadBlobsFromBucket;
 }
 
 @Injectable()
@@ -123,4 +139,8 @@ export class MockQualificationCertificateService extends QualificationCertificat
   protected getAllRecords(workplaceUid: string, workerUid: string) {
     return of(mockQualificationRecordsResponse.qualifications);
   }
+
+  public getCertificateDownloadUrls = mockGetCertificateDownloadUrls;
+
+  public downloadBlobsFromBucket = mockDownloadBlobsFromBucket;
 }

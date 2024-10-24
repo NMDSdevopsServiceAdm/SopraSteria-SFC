@@ -1,7 +1,7 @@
 import { FileUtil } from './file-util';
 import { BlobReader, ZipReader } from '@zip.js/zip.js';
 
-fdescribe('FileUtil', () => {
+describe('FileUtil', () => {
   describe('zipFilesAsBlob', () => {
     const mockFiles = [
       { filename: 'training/First Aid.pdf', fileBlob: new Blob(['first aid'], { type: 'application/pdf' }) },

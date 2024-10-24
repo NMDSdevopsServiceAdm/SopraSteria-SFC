@@ -10,11 +10,11 @@ import {
   qualificationUidsWithoutCerts as qualificationUidsNoCerts,
   trainingUidsWithCerts,
   trainingUidsWithoutCerts as trainingUidsNoCerts,
-} from '@core/test-utils/MockCertificationService';
+} from '@core/test-utils/MockCertificateService';
 
 import { QualificationCertificateService, TrainingCertificateService } from './certificate.service';
 
-fdescribe('CertificateService', () => {
+describe('CertificateService', () => {
   const testConfigs = [
     {
       certificateType: 'training',
@@ -223,7 +223,7 @@ fdescribe('CertificateService', () => {
         });
       });
 
-      fdescribe('downloadAllCertificatesAsBlobs', () => {
+      describe('downloadAllCertificatesAsBlobs', () => {
         const mockWorkplaceUid = 'mockWorkplaceUid';
         const mockWorkerUid = 'mockWorkerUid';
 
@@ -316,7 +316,7 @@ fdescribe('CertificateService', () => {
             },
           ];
 
-          const deleteCertificatesEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/${certificateType}`;
+          const deleteCertificatesEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/${certificateType}/${mockRecordUid}/certificate/delete`;
 
           service.deleteCertificates(mockWorkplaceUid, mockWorkerUid, mockRecordUid, mockFilesToDelete).subscribe();
 

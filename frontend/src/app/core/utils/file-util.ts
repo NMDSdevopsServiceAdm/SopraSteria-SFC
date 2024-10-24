@@ -12,7 +12,7 @@ export class FileUtil {
     return filenameMatches && filenameMatches.length > 1 ? filenameMatches[1] : null;
   }
 
-  public static async triggerDownloadFilesAsZip(files: NamedFileBlob[], nameOfZippedFile: string) {
+  public static async downloadFilesAsZip(files: NamedFileBlob[], nameOfZippedFile: string) {
     const zippedFileAsBlob = await this.zipFilesAsBlob(files);
     this.triggerSingleFileDownload(zippedFileAsBlob, nameOfZippedFile);
   }
@@ -32,6 +32,7 @@ export class FileUtil {
       filenameUsed.add(filename);
     }
     const zippedFileBlob = await zipWriter.close();
+
     return zippedFileBlob;
   }
 

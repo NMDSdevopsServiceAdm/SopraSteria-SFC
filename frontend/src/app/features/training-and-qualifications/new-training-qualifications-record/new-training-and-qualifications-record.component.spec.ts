@@ -29,8 +29,14 @@ import { TrainingRecord, TrainingRecordCategory, TrainingRecords } from '@core/m
 import { TrainingService } from '@core/services/training.service';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
-import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
+import {
+  MockQualificationCertificateService,
+  MockTrainingCertificateService,
+  mockTrainingCertificates,
+} from '@core/test-utils/MockCertificateService';
 import { QualificationsByGroup } from '@core/model/qualification.model';
+import { FileUtil } from '@core/utils/file-util';
+import { mockQualificationCertificates } from '../../../core/test-utils/MockCertificateService';
 
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
@@ -332,7 +338,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           { provide: PermissionsService, useClass: MockPermissionsService },
           { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
-          { provide: QualificationCertificateService, useClass: QualificationCertificateService },
+          { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
           // suppress the distracting error msg of "reading 'nativeElement'" from PdfTrainingAndQualificationService
           { provide: PdfTrainingAndQualificationService, useValue: { BuildTrainingAndQualsPdf: () => {} } },
         ],
@@ -1206,11 +1212,64 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
   });
 
-  describe('download all certificates', () => {
+  fdescribe('download all certificates', () => {
     it('should display a link for downloading all certificates', async () => {
       const { getByText } = await setup();
 
       expect(getByText('Download all their training and qualifications certificates')).toBeTruthy();
+    });
+
+    it('should download all certificates for the worker when clicked', async () => {
+      const { component, getByText, trainingCertificateService, qualificationCertificateService } = await setup();
+
+      spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+      spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+
+      const downloadAllButton = getByText('Download all their training and qualifications certificates');
+      userEvent.click(downloadAllButton);
+
+      expect(trainingCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+      );
+      expect(qualificationCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+      );
+    });
+
+    it('should call downloadFilesAsZip with all the certificates', async () => {
+      const { component, getByText } = await setup();
+
+      const fileUtilSpy = spyOn(FileUtil, 'downloadFilesAsZip').and.callThrough();
+
+      const downloadAllButton = getByText('Download all their training and qualifications certificates');
+      userEvent.click(downloadAllButton);
+
+      const expectedZipFileName = `all certificates - ${component.worker.nameOrId}.zip`;
+      expect(fileUtilSpy).toHaveBeenCalled();
+
+      const contentsOfZipFile = fileUtilSpy.calls.mostRecent().args[0];
+      const nameOfZipFile = fileUtilSpy.calls.mostRecent().args[1];
+
+      expect(nameOfZipFile).toEqual(expectedZipFileName);
+
+      mockTrainingCertificates.forEach((certificate) => {
+        expect(contentsOfZipFile).toContain(
+          jasmine.objectContaining({
+            filename: 'training certificates/' + certificate.filename,
+            fileBlob: jasmine.anything(),
+          }),
+        );
+      });
+      mockQualificationCertificates.forEach((certificate) => {
+        expect(contentsOfZipFile).toContain(
+          jasmine.objectContaining({
+            filename: 'qualification certificates/' + certificate.filename,
+            fileBlob: jasmine.anything(),
+          }),
+        );
+      });
     });
   });
 });

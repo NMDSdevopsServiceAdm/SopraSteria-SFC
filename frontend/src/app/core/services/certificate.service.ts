@@ -159,7 +159,7 @@ export class BaseCertificateService {
     workerUid: string,
     recordUid: string,
     filesToDownload: CertificateDownload[],
-  ) {
+  ): Observable<DownloadCertificateSignedUrlResponse> {
     const certificateEndpoint = this.certificateEndpoint(workplaceUid, workerUid, recordUid);
     return this.http.post<DownloadCertificateSignedUrlResponse>(`${certificateEndpoint}/download`, {
       files: filesToDownload,
