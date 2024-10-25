@@ -22,16 +22,10 @@
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Contract type</dt>
     <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.contract"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        <ng-container *ngIf="showPoolBankTag; else notPoolBankTag">Pool, Bank</ng-container>
-        <ng-template #notPoolBankTag>
-          {{ worker.contract }}
-        </ng-template>
-      </app-summary-record-value>
+      <ng-container *ngIf="showPoolBankTag; else notPoolBankTag">Pool, Bank</ng-container>
+      <ng-template #notPoolBankTag>
+        {{ worker.contract }}
+      </ng-template>
       <app-wdf-field-confirmation
         *ngIf="
           canEditWorker &&
@@ -51,18 +45,12 @@
   <div class="govuk-summary-list__row" data-testid="main-job-role-section">
     <dt class="govuk-summary-list__key govuk-!-padding-right-0 govuk-!-width-one-half">Main job role</dt>
     <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.mainJob"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        <ng-container *ngIf="worker.mainJob.other; else title">
-          <span>{{ worker.mainJob.other }}</span>
-        </ng-container>
-        <ng-template #title>
-          <span>{{ worker.mainJob.title }}</span>
-        </ng-template>
-      </app-summary-record-value>
+      <ng-container *ngIf="worker.mainJob.other; else title">
+        <span>{{ worker.mainJob.other }}</span>
+      </ng-container>
+      <ng-template #title>
+        <span>{{ worker.mainJob.title }}</span>
+      </ng-template>
       <app-wdf-field-confirmation
         *ngIf="
           canEditWorker &&
