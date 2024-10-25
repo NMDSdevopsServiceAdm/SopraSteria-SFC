@@ -3,7 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { getTestBed, TestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BulkUploadFileType, ValidatedFile, ValidatedFileType } from '@core/model/bulk-upload.model';
+import { BulkUploadFileType, ValidatedFile } from '@core/model/bulk-upload.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -22,6 +22,7 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { BulkUploadModule } from '@features/bulk-upload/bulk-upload.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { BehaviorSubject, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 
@@ -29,7 +30,7 @@ import { DragAndDropFilesListComponent } from './drag-and-drop-files-list.compon
 
 describe('DragAndDropFilesListComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByTestId, getByText, queryByText } = await render(DragAndDropFilesListComponent, {
+    const { fixture, getByTestId, getByText, queryByText, getAllByText } = await render(DragAndDropFilesListComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, BulkUploadModule],
       providers: [
         {
@@ -73,6 +74,7 @@ describe('DragAndDropFilesListComponent', () => {
       getByTestId,
       getByText,
       queryByText,
+      getAllByText,
       establishmentService,
       router,
       http,
@@ -400,31 +402,13 @@ describe('DragAndDropFilesListComponent', () => {
   });
 
   describe('Displaying training certificate deletion warning message', () => {
-    const generateFile = (fileType: ValidatedFileType): ValidatedFile => {
-      return {
-        errors: 0,
-        filename: 'filename',
-        fileType,
-        key: '1',
-        records: 10,
-        size: 100,
-        uploaded: '',
-        warnings: 2,
-        username: 'user',
-      };
-    };
-
-    const trainingFile = generateFile('Training');
-    const workplaceFile = generateFile('Establishment');
-    const workerFile = generateFile('Worker');
-
     const trainingCertificateDeletionWarningMessage =
       'Warning: Any training certificates you have added for workers will be deleted when you bulk upload training';
 
     it('should display deletion warning message when user has training file uploaded and has training certificates', async () => {
       const overrides = {
         bulkUploadService: {
-          uploadedFiles$: new BehaviorSubject([workplaceFile, workerFile, trainingFile]),
+          uploadedFiles$: new BehaviorSubject([EstablishmentFile, TrainingFile, WorkerFile]),
           getBulkUploadStatus: () => new BehaviorSubject(''),
         },
         hasTrainingCertificates: true,
@@ -438,7 +422,7 @@ describe('DragAndDropFilesListComponent', () => {
     it('should not display deletion message when user has training file uploaded but has no training certificates', async () => {
       const overrides = {
         bulkUploadService: {
-          uploadedFiles$: new BehaviorSubject([workplaceFile, workerFile, trainingFile]),
+          uploadedFiles$: new BehaviorSubject([EstablishmentFile, TrainingFile, WorkerFile]),
           getBulkUploadStatus: () => new BehaviorSubject(''),
         },
         hasTrainingCertificates: false,
@@ -452,7 +436,7 @@ describe('DragAndDropFilesListComponent', () => {
     it('should not display deletion message when user has training certificates but has not uploaded training file', async () => {
       const overrides = {
         bulkUploadService: {
-          uploadedFiles$: new BehaviorSubject([workplaceFile, workerFile]),
+          uploadedFiles$: new BehaviorSubject([EstablishmentFile, WorkerFile]),
           getBulkUploadStatus: () => new BehaviorSubject(''),
         },
         hasTrainingCertificates: true,
@@ -461,6 +445,46 @@ describe('DragAndDropFilesListComponent', () => {
       const { queryByText } = await setup(overrides);
 
       expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeFalsy();
+    });
+
+    it('should remove deletion warning message when user deletes training file', async () => {
+      const overrides = {
+        bulkUploadService: {
+          uploadedFiles$: new BehaviorSubject([EstablishmentFile, WorkerFile, TrainingFile]),
+          getBulkUploadStatus: () => new BehaviorSubject(''),
+        },
+        hasTrainingCertificates: true,
+      };
+
+      const { fixture, getAllByText, queryByText } = await setup(overrides);
+
+      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeTruthy();
+
+      const fileDeleteButtons = getAllByText('Delete');
+      userEvent.click(fileDeleteButtons[2]);
+
+      fixture.detectChanges();
+      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeFalsy();
+    });
+
+    it('should not remove deletion warning message when user deletes a file which is not training', async () => {
+      const overrides = {
+        bulkUploadService: {
+          uploadedFiles$: new BehaviorSubject([EstablishmentFile, WorkerFile, TrainingFile]),
+          getBulkUploadStatus: () => new BehaviorSubject(''),
+        },
+        hasTrainingCertificates: true,
+      };
+
+      const { fixture, getAllByText, queryByText } = await setup(overrides);
+
+      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeTruthy();
+
+      const fileDeleteButtons = getAllByText('Delete');
+      userEvent.click(fileDeleteButtons[0]);
+
+      fixture.detectChanges();
+      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeTruthy();
     });
   });
 });

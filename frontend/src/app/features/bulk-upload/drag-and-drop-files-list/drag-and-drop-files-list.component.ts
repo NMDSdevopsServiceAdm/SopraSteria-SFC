@@ -239,6 +239,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
     this.preValidationErrorMessage = '';
 
     this.bulkUploadService.deleteFile(this.establishmentService.primaryWorkplace.uid, fileName).subscribe();
+    this.showDeletionWarningIfAnyWorkplacesHaveTrainingCertificates();
   }
 
   /**
