@@ -124,6 +124,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     otherJob: boolean;
     careCert: boolean;
     mandatoryTraining: TrainingRecordCategory[];
+    nonMandatoryTraining: TrainingRecordCategory[];
     fragment: 'all-records' | 'mandatory-training' | 'non-mandatory-training' | 'qualifications';
     isOwnWorkplace: boolean;
     qualifications: QualificationsByGroup;
@@ -132,13 +133,14 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     otherJob: false,
     careCert: true,
     mandatoryTraining: [],
+    nonMandatoryTraining: mockTrainingData.nonMandatory,
     fragment: 'all-records',
     isOwnWorkplace: true,
     qualifications: { count: 0, groups: [], lastUpdated: qualificationsByGroup.lastUpdated },
   };
 
   async function setup(options: Partial<SetupOptions> = {}) {
-    const { otherJob, careCert, mandatoryTraining, fragment, isOwnWorkplace, qualifications } = {
+    const { otherJob, careCert, mandatoryTraining, nonMandatoryTraining, fragment, isOwnWorkplace, qualifications } = {
       ...defaults,
       ...options,
     };
@@ -173,7 +175,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     careCertificate: careCert ? 'Yes, in progress or partially completed' : null,
                   },
                   trainingAndQualificationRecords: {
-                    training: { ...mockTrainingData, mandatory: mandatoryTraining },
+                    training: {
+                      ...mockTrainingData,
+                      mandatory: mandatoryTraining,
+                      nonMandatory: nonMandatoryTraining,
+                    },
                     qualifications: qualifications,
                   },
                   expiresSoonAlertDate: {
@@ -794,8 +800,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         'BuildTrainingAndQualsPdf',
       ).and.callThrough();
 
-      component.pdfCount = 1;
-
       fixture.detectChanges();
 
       fireEvent.click(getByText('Download this training and qualifications summary'));
@@ -1219,7 +1223,20 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(getByText('Download all their training and qualifications certificates')).toBeTruthy();
     });
 
-    it('should download all certificates for the worker when clicked', async () => {
+    it('should not display the download all link if worker has got no certificates', async () => {
+      const nonMandatorytrainingWithNoCerts = cloneDeep(mockTrainingData.nonMandatory);
+      nonMandatorytrainingWithNoCerts.forEach((category) =>
+        category.trainingRecords.forEach((record) => (record.trainingCertificates = [])),
+      );
+
+      const { queryByText } = await setup({
+        nonMandatoryTraining: nonMandatorytrainingWithNoCerts,
+      });
+
+      expect(queryByText('Download all their training and qualifications certificates')).toBeFalsy();
+    });
+
+    it('should download all training and qualification certificates for the worker when clicked', async () => {
       const { component, getByText, trainingCertificateService, qualificationCertificateService } = await setup();
 
       spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
@@ -1238,7 +1255,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       );
     });
 
-    it('should call saveFilesAsZip with all the certificates', async () => {
+    it('should call saveFilesAsZip with all the downloaded certificates', async () => {
       const { component, getByText } = await setup();
       const expectedZipFileName = `all certificates - ${component.worker.nameOrId}.zip`;
 
@@ -1272,7 +1289,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       });
     });
 
-    it('should not start a new download if already downloading all certificates in background', async () => {
+    it('should not start a new download on click if still downloading certificates in the background', async () => {
       const { getByText, trainingCertificateService, qualificationCertificateService } = await setup();
 
       const downloadAllButton = getByText('Download all their training and qualifications certificates');

@@ -94,7 +94,8 @@
     role="button"
     draggable="false"
     (click)="downloadAllCertificates($event)"
-    href="#"
+    href="./all-certificates.zip"
+    *ngIf="workerHasCertificate"
   >
     <img alt="" src="/assets/images/icon-download.svg" />
     <span class="govuk-!-margin-left-1"> Download all their training and qualifications certificates </span>

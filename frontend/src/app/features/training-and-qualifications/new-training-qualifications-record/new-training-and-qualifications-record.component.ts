@@ -54,10 +54,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     nonMandatoryTraining: 'non-mandatory-training',
     qualifications: 'qualifications',
   };
-  public pdfCount: number;
   public certificateErrors: Record<string, string> = {}; // {categoryName: errorMessage}
   private trainingRecords: TrainingRecords;
   private downloadingAllCertsInBackground = false;
+  public workerHasCertificate = false;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -84,9 +84,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setUpTabSubscription();
     this.updateTrainingExpiresSoonDate();
     this.setTraining();
+    this.checkWorkerHasCertificateOrNot();
     this.setUpAlertSubscription();
     this.setReturnRoute();
-    this.getPdfCount();
   }
 
   public async downloadAsPDF(save: boolean = true) {
@@ -107,13 +107,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     } catch (error) {
       console.error(error);
     }
-  }
-
-  private async getPdfCount() {
-    const pdf = await this.downloadAsPDF(false);
-    const numberOfPages = pdf?.getNumberOfPages();
-
-    return (this.pdfCount = numberOfPages);
   }
 
   private setPageData(): void {
@@ -456,5 +449,18 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.trainingRecords = updatedData.training;
     this.qualificationsByGroup = updatedData.qualifications;
     this.setTraining();
+    this.checkWorkerHasCertificateOrNot();
+  }
+
+  private checkWorkerHasCertificateOrNot() {
+    const allTrainingRecords = [...this.trainingRecords.mandatory, ...this.trainingRecords.nonMandatory];
+    const hasTrainingCertificate = allTrainingRecords.some((record) =>
+      record?.trainingRecords?.some((record) => record?.trainingCertificates?.length > 0),
+    );
+    const hasQualificationCertificate = this.qualificationsByGroup.groups.some((group) =>
+      group?.records?.some((record) => record?.qualificationCertificates?.length > 0),
+    );
+
+    this.workerHasCertificate = hasTrainingCertificate || hasQualificationCertificate;
   }
 }
