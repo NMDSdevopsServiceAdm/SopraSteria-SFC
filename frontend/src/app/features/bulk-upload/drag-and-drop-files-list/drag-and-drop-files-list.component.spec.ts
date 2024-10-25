@@ -409,7 +409,6 @@ describe('DragAndDropFilesListComponent', () => {
       const overrides = {
         bulkUploadService: {
           uploadedFiles$: new BehaviorSubject([EstablishmentFile, TrainingFile, WorkerFile]),
-          getBulkUploadStatus: () => new BehaviorSubject(''),
         },
         hasTrainingCertificates: true,
       };
@@ -423,7 +422,6 @@ describe('DragAndDropFilesListComponent', () => {
       const overrides = {
         bulkUploadService: {
           uploadedFiles$: new BehaviorSubject([EstablishmentFile, TrainingFile, WorkerFile]),
-          getBulkUploadStatus: () => new BehaviorSubject(''),
         },
         hasTrainingCertificates: false,
       };
@@ -437,7 +435,6 @@ describe('DragAndDropFilesListComponent', () => {
       const overrides = {
         bulkUploadService: {
           uploadedFiles$: new BehaviorSubject([EstablishmentFile, WorkerFile]),
-          getBulkUploadStatus: () => new BehaviorSubject(''),
         },
         hasTrainingCertificates: true,
       };
@@ -451,7 +448,6 @@ describe('DragAndDropFilesListComponent', () => {
       const overrides = {
         bulkUploadService: {
           uploadedFiles$: new BehaviorSubject([EstablishmentFile, WorkerFile, TrainingFile]),
-          getBulkUploadStatus: () => new BehaviorSubject(''),
         },
         hasTrainingCertificates: true,
       };
@@ -471,7 +467,6 @@ describe('DragAndDropFilesListComponent', () => {
       const overrides = {
         bulkUploadService: {
           uploadedFiles$: new BehaviorSubject([EstablishmentFile, WorkerFile, TrainingFile]),
-          getBulkUploadStatus: () => new BehaviorSubject(''),
         },
         hasTrainingCertificates: true,
       };

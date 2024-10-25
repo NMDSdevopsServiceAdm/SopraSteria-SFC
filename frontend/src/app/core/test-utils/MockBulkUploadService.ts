@@ -90,6 +90,10 @@ export class MockBulkUploadService extends BulkUploadService {
   public nextMissingReferencesNavigation(): string[] {
     return ['1'];
   }
+
+  public getBulkUploadStatus(establishmentUid): Observable<string> {
+    return of('');
+  }
 }
 
 const ValidatedFileBuilder = build('ValidatedFile', {
