@@ -2,7 +2,6 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 const models = require('../../../../models');
-const { describe } = require('node:test');
 //include Qualification class
 const Qualification = require('../../../../models/classes/qualification').Qualification;
 
@@ -48,7 +47,7 @@ let workerQualificationRecords = {
 }
 
 describe('/server/models/class/qualification.js', () => {
-  stubFindWorkerQualificationRecord;
+  let stubFindWorkerQualificationRecord;
 
   beforeEach(() => {
     sinon.stub(Qualification, 'fetch').callsFake(() => {
