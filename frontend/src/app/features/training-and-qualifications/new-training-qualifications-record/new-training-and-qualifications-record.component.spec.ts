@@ -1220,7 +1220,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     it('should display a link for downloading all certificates', async () => {
       const { getByText } = await setup();
 
-      expect(getByText('Download all their training and qualifications certificates')).toBeTruthy();
+      expect(getByText('Download all their training and qualification certificates')).toBeTruthy();
     });
 
     it('should not display the download all link if worker has got no certificates', async () => {
@@ -1233,7 +1233,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         nonMandatoryTraining: nonMandatorytrainingWithNoCerts,
       });
 
-      expect(queryByText('Download all their training and qualifications certificates')).toBeFalsy();
+      expect(queryByText('Download all their training and qualification certificates')).toBeFalsy();
     });
 
     it('should download all training and qualification certificates for the worker when clicked', async () => {
@@ -1242,7 +1242,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
       spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
 
-      const downloadAllButton = getByText('Download all their training and qualifications certificates');
+      const downloadAllButton = getByText('Download all their training and qualification certificates');
       userEvent.click(downloadAllButton);
 
       expect(trainingCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledWith(
@@ -1261,7 +1261,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
       const fileUtilSpy = spyOn(FileUtil, 'saveFilesAsZip').and.callThrough();
 
-      const downloadAllButton = getByText('Download all their training and qualifications certificates');
+      const downloadAllButton = getByText('Download all their training and qualification certificates');
       userEvent.click(downloadAllButton);
 
       expect(fileUtilSpy).toHaveBeenCalled();
@@ -1292,7 +1292,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     it('should not start a new download on click if still downloading certificates in the background', async () => {
       const { getByText, trainingCertificateService, qualificationCertificateService } = await setup();
 
-      const downloadAllButton = getByText('Download all their training and qualifications certificates');
+      const downloadAllButton = getByText('Download all their training and qualification certificates');
       spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
       spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
 
