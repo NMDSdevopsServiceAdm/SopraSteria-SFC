@@ -602,7 +602,7 @@ class Qualification extends EntityValidator {
       // typically errors when making changes to model or database schema!
       this._log(Qualification.LOG_ERROR, err);
 
-      throw new Error(`Failed to load Qualification record with uid (${this.uid})`);
+      throw new Error(`Failed to load Qualification record with uid (${uid})`);
     }
   }
 
