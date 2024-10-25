@@ -44,7 +44,7 @@ export class BaseCertificateService {
     throw new Error('Not implemented for base class');
   }
 
-  protected getCertificatesFromRecord(record: Qualification | TrainingRecord): Certificate[] {
+  protected certificatesInRecord(record: Qualification | TrainingRecord): Certificate[] {
     throw new Error('Not implemented for base class');
   }
 
@@ -123,34 +123,6 @@ export class BaseCertificateService {
     );
   }
 
-  public downloadAllCertificatesAsBlobs(workplaceUid: string, workerUid: string): Observable<NamedFileBlob> {
-    return this.getAllRecords(workplaceUid, workerUid).pipe(
-      mergeAll(),
-      filter((record) => this.getCertificatesFromRecord(record).length > 0),
-      concatMap((record) =>
-        this.downloadCertificatesAsBlobs(workplaceUid, workerUid, record.uid, this.getCertificatesFromRecord(record)),
-      ),
-      map((file) => this.addFolderName(file)),
-    );
-  }
-
-  protected addFolderName(file: NamedFileBlob): NamedFileBlob {
-    const { filename, fileBlob } = file;
-    return { filename: `${capitalize(this.recordType)} certificates/${filename}`, fileBlob };
-  }
-
-  public downloadCertificatesAsBlobs(
-    workplaceUid: string,
-    workerUid: string,
-    recordUid: string,
-    filesToDownload: CertificateDownload[],
-  ): Observable<NamedFileBlob> {
-    return this.getCertificateDownloadUrls(workplaceUid, workerUid, recordUid, filesToDownload).pipe(
-      mergeMap((res) => this.downloadBlobsFromBucket(res['files'])),
-      mergeAll(),
-    );
-  }
-
   public getCertificateDownloadUrls(
     workplaceUid: string,
     workerUid: string,
@@ -179,6 +151,39 @@ export class BaseCertificateService {
     );
 
     return blobsAndFilenames;
+  }
+
+  public downloadAllCertificatesAsBlobs(workplaceUid: string, workerUid: string): Observable<NamedFileBlob> {
+    return this.getAllRecords(workplaceUid, workerUid).pipe(
+      mergeAll(),
+      filter((record) => this.certificatesInRecord(record).length > 0),
+      concatMap((record) =>
+        this.downloadCertificatesForOneRecordAsBlobs(
+          workplaceUid,
+          workerUid,
+          record.uid,
+          this.certificatesInRecord(record),
+        ),
+      ),
+      map((file) => this.addFolderName(file)),
+    );
+  }
+
+  public downloadCertificatesForOneRecordAsBlobs(
+    workplaceUid: string,
+    workerUid: string,
+    recordUid: string,
+    filesToDownload: CertificateDownload[],
+  ): Observable<NamedFileBlob> {
+    return this.getCertificateDownloadUrls(workplaceUid, workerUid, recordUid, filesToDownload).pipe(
+      mergeMap((res) => this.downloadBlobsFromBucket(res['files'])),
+      mergeAll(),
+    );
+  }
+
+  protected addFolderName(file: NamedFileBlob): NamedFileBlob {
+    const { filename, fileBlob } = file;
+    return { filename: `${capitalize(this.recordType)} certificates/${filename}`, fileBlob };
   }
 
   public deleteCertificates(
@@ -210,7 +215,7 @@ export class TrainingCertificateService extends BaseCertificateService {
     return this.http.get(recordsEndpoint).pipe(map((response: TrainingResponse) => response.training));
   }
 
-  protected getCertificatesFromRecord(record: TrainingRecord): TrainingCertificate[] {
+  protected certificatesInRecord(record: TrainingRecord): TrainingCertificate[] {
     return record?.trainingCertificates ?? [];
   }
 }
@@ -233,7 +238,7 @@ export class QualificationCertificateService extends BaseCertificateService {
     return this.http.get(recordsEndpoint).pipe(map((response: QualificationsResponse) => response.qualifications));
   }
 
-  protected getCertificatesFromRecord(record: Qualification): QualificationCertificate[] {
+  protected certificatesInRecord(record: Qualification): QualificationCertificate[] {
     return record?.qualificationCertificates ?? [];
   }
 }

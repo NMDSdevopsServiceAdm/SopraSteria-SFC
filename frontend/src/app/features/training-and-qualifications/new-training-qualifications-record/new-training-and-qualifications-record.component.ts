@@ -431,11 +431,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.subscriptions.add(
       downloadAllCertificatesAsZip$.subscribe(
         () => {
-          console.log('Finished download at: ', new Date());
           this.downloadingAllCertsInBackground = false;
         },
         (err) => {
-          console.error('Error handled at component: ', err);
+          console.error('Error occurred when downloading all certificates: ', err);
           this.downloadingAllCertsInBackground = false;
         },
       ),

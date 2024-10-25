@@ -15,7 +15,7 @@ import {
 import { QualificationCertificateService, TrainingCertificateService } from './certificate.service';
 import { mockCertificateFileBlob } from '../test-utils/MockCertificateService';
 
-fdescribe('CertificateService', () => {
+describe('CertificateService', () => {
   const testConfigs = [
     {
       certificateType: 'training',
