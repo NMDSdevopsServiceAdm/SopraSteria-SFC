@@ -539,7 +539,7 @@ describe('Worker Class', () => {
 
       await mockWorker.saveAssociatedEntities(savedBy, bulkUploaded, transaction);
 
-      expect(deleteCertificatesSpy).to.have.been.calledWith(mockWorker._id);
+      expect(deleteCertificatesSpy).to.have.been.calledWith(transaction);
       expect(trainingDestroySpy).to.have.been.calledWith({
         where: { workerFk: mockWorker._id },
         transaction: transaction,

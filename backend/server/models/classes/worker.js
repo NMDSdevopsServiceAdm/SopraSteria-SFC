@@ -535,7 +535,7 @@ class Worker extends EntityValidator {
       if (this._trainingEntities && this._trainingEntities.length > 0) {
         // delete all existing training records for this worker and create new records
 
-        await this.deleteAllTrainingCertificatesAssociatedWithWorker(this._id);
+        await this.deleteAllTrainingCertificatesAssociatedWithWorker(externalTransaction);
         await models.workerTraining.destroy({
           where: {
             workerFk: this._id,
