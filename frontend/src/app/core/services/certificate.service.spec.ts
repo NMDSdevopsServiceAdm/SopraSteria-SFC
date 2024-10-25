@@ -252,16 +252,17 @@ describe('CertificateService', () => {
             const certificateDownloadEndpoint = `${recordsEndpoint}/${recordUid}/certificate/download`;
             const mockresponse = {
               files: [
-                { signedUrl: `https://localhost/${recordUid}-1.pdf`, filename: `${recordUid}-1.pdf` },
-                { signedUrl: `https://localhost/${recordUid}-2.pdf`, filename: `${recordUid}-2.pdf` },
+                { signedUrl: `https://mocks3endpoint/${recordUid}-1.pdf`, filename: `${recordUid}-1.pdf` },
+                { signedUrl: `https://mocks3endpoint/${recordUid}-2.pdf`, filename: `${recordUid}-2.pdf` },
               ],
             };
             http.expectOne({ url: certificateDownloadEndpoint, method: 'POST' }).flush(mockresponse);
 
-            http.expectOne(`https://localhost/${recordUid}-1.pdf`).flush(new Blob(['mock blob file']));
-            http.expectOne(`https://localhost/${recordUid}-2.pdf`).flush(new Blob(['mock blob file']));
+            http.expectOne(`https://mocks3endpoint/${recordUid}-1.pdf`).flush(mockCertificateFileBlob);
+            http.expectOne(`https://mocks3endpoint/${recordUid}-2.pdf`).flush(mockCertificateFileBlob);
           });
 
+          // should not call certificate download endpoint for records that have no certificates
           recordsWithoutCertificates.forEach((recordUid) => {
             const certificateDownloadEndpoint = `${recordsEndpoint}/${recordUid}/certificate/download`;
             http.expectNone(certificateDownloadEndpoint);
@@ -278,14 +279,14 @@ describe('CertificateService', () => {
             const certificateDownloadEndpoint = `${recordsEndpoint}/${recordUid}/certificate/download`;
             const mockResponse = {
               files: [
-                { signedUrl: `https://localhost/${recordUid}-1.pdf`, filename: `${recordUid}-1.pdf` },
-                { signedUrl: `https://localhost/${recordUid}-2.pdf`, filename: `${recordUid}-2.pdf` },
+                { signedUrl: `https://mocks3endpoint/${recordUid}-1.pdf`, filename: `${recordUid}-1.pdf` },
+                { signedUrl: `https://mocks3endpoint/${recordUid}-2.pdf`, filename: `${recordUid}-2.pdf` },
               ],
             };
             http.expectOne({ url: certificateDownloadEndpoint, method: 'POST' }).flush(mockResponse);
 
-            http.expectOne(`https://localhost/${recordUid}-1.pdf`).flush(mockCertificateFileBlob);
-            http.expectOne(`https://localhost/${recordUid}-2.pdf`).flush(mockCertificateFileBlob);
+            http.expectOne(`https://mocks3endpoint/${recordUid}-1.pdf`).flush(mockCertificateFileBlob);
+            http.expectOne(`https://mocks3endpoint/${recordUid}-2.pdf`).flush(mockCertificateFileBlob);
           });
 
           const allFileBlobs = await promise;

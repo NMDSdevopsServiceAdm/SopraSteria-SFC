@@ -142,7 +142,6 @@ export class PdfTrainingAndQualificationService {
       scale,
       width,
       windowWidth: width,
-      imageTimeout: 0,
       ignoreElements: (element: HTMLElement) => {
         // ignore svg as jspdf does not support svg in html and will cause other contents to render incorrectly
         return element.tagName.toLowerCase() === 'img' && element.getAttribute('src')?.endsWith('.svg');

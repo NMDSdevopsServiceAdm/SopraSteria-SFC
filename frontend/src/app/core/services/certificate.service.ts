@@ -6,17 +6,15 @@ import { environment } from 'src/environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Qualification, QualificationCertificate, QualificationsResponse } from '@core/model/qualification.model';
+import { TrainingCertificate, TrainingRecord, TrainingResponse } from '@core/model/training.model';
 import {
   ConfirmUploadRequest,
   DownloadCertificateSignedUrlResponse,
   FileInfoWithETag,
   S3UploadResponse,
-  TrainingCertificate,
-  TrainingRecord,
-  TrainingResponse,
   UploadCertificateSignedUrlRequest,
   UploadCertificateSignedUrlResponse,
-} from '@core/model/training.model';
+} from '@core/model/trainingAndQualifications.model';
 import { Certificate, CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { FileUtil, NamedFileBlob } from '@core/utils/file-util';
 
