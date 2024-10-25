@@ -9,6 +9,7 @@ const QualificationDuplicateException = require('../../../models/classes/qualifi
   .QualificationDuplicateException;
 
 const { hasPermission } = require('../../../utils/security/hasPermission');
+const WorkerCertificateService = require('../workerCertificate/workerCertificateService');
 
 // NOTE - the Worker route uses middleware to validate the given worker id against the known establishment
 //        prior to all qualification endpoints, thus ensuring we this necessary rigidity on Establishment/Worker relationship
@@ -160,10 +161,11 @@ const updateQualification = async (req, res) => {
 };
 
 // deletes requested qualification record using the qualification uid
-const deleteQualification = async (req, res) => {
+const deleteQualificationRecord = async (req, res) => {
   const establishmentId = req.establishmentId;
   const qualificationUid = req.params.qualificationUid;
   const workerUid = req.params.workerId;
+  const establishmentUid = req.params.id;
 
   const thisQualificationRecord = new Qualification(establishmentId, workerUid);
 
@@ -174,13 +176,19 @@ const deleteQualification = async (req, res) => {
     if (await thisQualificationRecord.restore(qualificationUid)) {
       // TODO: JSON validation
 
+      const qualificationCertificates = thisQualificationRecord?._qualificationCertificates;
+
+      const qualificationCertificateService = WorkerCertificateService.initialiseQualifications();
+
+      await qualificationCertificateService.deleteCertificates(qualificationCertificates, establishmentUid, workerUid, qualificationUid);
+
       // by deleting after the restore we can be sure this qualification record belongs to the given worker
       const deleteSuccess = await thisQualificationRecord.delete();
 
       if (deleteSuccess) {
         return res.status(204).json();
       } else {
-        return res.status(404).json('Not Found');
+        return res.status(404).send('Not Found');
       }
     } else {
       // not found worker
@@ -197,7 +205,8 @@ router.route('/').post(hasPermission('canEditWorker'), createQualification);
 router.route('/available').get(hasPermission('canViewWorker'), availableQualifications);
 router.route('/:qualificationUid').get(hasPermission('canViewWorker'), viewQualification);
 router.route('/:qualificationUid').put(hasPermission('canEditWorker'), updateQualification);
-router.route('/:qualificationUid').delete(hasPermission('canEditWorker'), deleteQualification);
+router.route('/:qualificationUid').delete(hasPermission('canEditWorker'), deleteQualificationRecord);
 router.use('/:qualificationUid/certificate', QualificationCertificateRoute);
 
 module.exports = router;
+module.exports.deleteQualificationRecord = deleteQualificationRecord;

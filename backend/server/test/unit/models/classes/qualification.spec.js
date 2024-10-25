@@ -1,6 +1,8 @@
 'use strict';
 const expect = require('chai').expect;
 const sinon = require('sinon');
+const models = require('../../../../models');
+const { describe } = require('node:test');
 //include Qualification class
 const Qualification = require('../../../../models/classes/qualification').Qualification;
 
@@ -46,15 +48,20 @@ let workerQualificationRecords = {
 }
 
 describe('/server/models/class/qualification.js', () => {
+  stubFindWorkerQualificationRecord;
+
+  beforeEach(() => {
+    sinon.stub(Qualification, 'fetch').callsFake(() => {
+      return workerQualificationRecords;
+    });
+    stubFindWorkerQualificationRecord = sinon.stub(models.workerQualifications, 'findOne').returns(workerQualificationRecords);
+  });
+
+  afterEach(() => {
+    sinon.restore();
+  });
+
   describe('getQualsCounts', () => {
-    beforeEach(() => {
-      sinon.stub(Qualification, 'fetch').callsFake(() => {
-        return workerQualificationRecords;
-      })
-    });
-    afterEach(() => {
-      sinon.restore();
-    });
 
     it('should return updated worker records : Qualification.getQualsCounts', async () => {
       const updateWorkerRecords = await Qualification.getQualsCounts(establishmentId, workerRecords);
@@ -70,6 +77,64 @@ describe('/server/models/class/qualification.js', () => {
         expect(updateWorkerRecords[0]).to.have.property('qualificationCount');
         expect(updateWorkerRecords[0].qualificationCount).to.equal(0);
       }
+    });
+  });
+
+  describe('restore', () => {
+    describe('errors', () => {
+      it('should throw an exception when qualification UID is an invalid format', async () => {
+        const qualification = new Qualification(1, 2);
+        let error;
+
+        try {
+          await qualification.restore('Some invalid UID');
+        } catch (err) {
+          error = err;
+        }
+
+        expect(error.message).to.equal('Failed to restore');
+      });
+
+      it('should throw an exception when establishmentId is null', async () => {
+        const qualification = new Qualification(null, 2);
+        let error;
+
+        try {
+          await qualification.restore("5bc1270a-4343-4d99-89e2-30ee62766c89");
+        } catch (err) {
+          error = err;
+        }
+
+        expect(error.message).to.equal('Failed to restore');
+      });
+
+      it('should throw an exception when WorkerUid is null', async () => {
+        const qualification = new Qualification(1, null);
+        let error;
+
+        try {
+          await qualification.restore("5bc1270a-4343-4d99-89e2-30ee62766c89");
+        } catch (err) {
+          error = err;
+        }
+
+        expect(error.message).to.equal('Failed to restore');
+      });
+
+      it('should throw an exception when failed to load record', async () => {
+        const qualification = new Qualification(1, 2);
+        const testUid = "5bc1270a-4343-4d99-89e2-30ee62766c89";
+        stubFindWorkerQualificationRecord.throws();
+        let error;
+
+        try {
+          await qualification.restore(testUid);
+        } catch (err) {
+          error = err;
+        }
+
+        expect(error.message).to.equal(`Failed to load Qualification record with uid (${testUid})`);
+      });
     });
   });
 });

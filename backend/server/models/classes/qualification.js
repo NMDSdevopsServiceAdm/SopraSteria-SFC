@@ -140,6 +140,11 @@ class Qualification extends EntityValidator {
   get created() {
     return this._created;
   }
+
+  get qualificationCertificates() {
+    return this._qualificationCertificates;
+  }
+
   get updated() {
     return this._updated;
   }
@@ -164,6 +169,9 @@ class Qualification extends EntityValidator {
 
   set qualification(qualification) {
     this._qualification = qualification;
+  }
+  set qualificationCertificates(qualificationCertificates) {
+    this._qualificationCertificates = qualificationCertificates;
   }
   set year(year) {
     this._year = year;
@@ -584,6 +592,7 @@ class Qualification extends EntityValidator {
         this._created = fetchResults.created;
         this._updated = fetchResults.updated;
         this._updatedBy = fetchResults.updatedBy;
+        this._qualificationCertificates = fetchResults.qualificationCertificates;
 
         return true;
       }
