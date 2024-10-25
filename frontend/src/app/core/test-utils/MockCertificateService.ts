@@ -25,6 +25,7 @@ const mockTrainingCertA = buildCertificates(1);
 const mockTrainingCertsB = buildCertificates(3);
 const mockQualificationCertsA = buildCertificates(1);
 const mockQualificationCertsB = buildCertificates(3);
+export const mockCertificateFileBlob = new Blob(['mockdata'], { type: 'application/pdf' });
 export const mockTrainingCertificates = [...mockTrainingCertA, ...mockTrainingCertsB];
 export const mockQualificationCertificates = [...mockQualificationCertsA, ...mockQualificationCertsB];
 
@@ -118,9 +119,7 @@ const mockGetCertificateDownloadUrls = (
 };
 
 const mockDownloadBlobsFromBucket = (files: { signedUrl: string; filename: string }[]) => {
-  return files.map((file) =>
-    of({ fileBlob: new Blob(['mockdata'], { type: 'application/pdf' }), filename: file.filename }),
-  );
+  return files.map((file) => of({ fileBlob: mockCertificateFileBlob, filename: file.filename }));
 };
 
 @Injectable()

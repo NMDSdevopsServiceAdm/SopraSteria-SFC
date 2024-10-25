@@ -1,9 +1,11 @@
+import { capitalize } from 'lodash';
 import { forkJoin, from, Observable } from 'rxjs';
 import { concatMap, filter, map, mergeAll, mergeMap, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import { Qualification, QualificationCertificate, QualificationsResponse } from '@core/model/qualification.model';
 import {
   ConfirmUploadRequest,
   DownloadCertificateSignedUrlResponse,
@@ -17,7 +19,6 @@ import {
 } from '@core/model/training.model';
 import { Certificate, CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { FileUtil, NamedFileBlob } from '@core/utils/file-util';
-import { Qualification, QualificationCertificate, QualificationsResponse } from '@core/model/qualification.model';
 
 @Injectable({
   providedIn: 'root',
@@ -135,7 +136,7 @@ export class BaseCertificateService {
 
   protected addFolderName(file: NamedFileBlob): NamedFileBlob {
     const { filename, fileBlob } = file;
-    return { filename: `${this.recordType} certificates/${filename}`, fileBlob };
+    return { filename: `${capitalize(this.recordType)} certificates/${filename}`, fileBlob };
   }
 
   public downloadCertificatesAsBlobs(
@@ -144,10 +145,6 @@ export class BaseCertificateService {
     recordUid: string,
     filesToDownload: CertificateDownload[],
   ): Observable<NamedFileBlob> {
-    // TODO: Delete this before PR
-    // uncomment this to test frontend without actually downloading from S3
-    // return from(filesToDownload.map((file) => ({ fileBlob: new Blob(['abc']), filename: file.filename })));
-
     return this.getCertificateDownloadUrls(workplaceUid, workerUid, recordUid, filesToDownload).pipe(
       mergeMap((res) => this.downloadBlobsFromBucket(res['files'])),
       mergeAll(),
@@ -166,7 +163,7 @@ export class BaseCertificateService {
     });
   }
 
-  public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): Observable<any> {
+  public triggerCertificateDownloads(files: { signedUrl: string; filename: string }[]): Observable<NamedFileBlob> {
     const blobsAndFilenames = this.downloadBlobsFromBucket(files);
 
     return from(blobsAndFilenames).pipe(

@@ -420,8 +420,8 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     );
 
     const zipFileName = this.worker.nameOrId
-      ? `all certificates - ${this.worker.nameOrId}.zip`
-      : 'all certificates.zip';
+      ? `All certificates - ${this.worker.nameOrId}.zip`
+      : 'All certificates.zip';
 
     const downloadAllCertificatesAsZip$ = merge(allTrainingCerts$, allQualificationCerts$).pipe(
       toArray(),

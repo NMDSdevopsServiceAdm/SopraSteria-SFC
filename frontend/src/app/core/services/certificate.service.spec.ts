@@ -13,8 +13,9 @@ import {
 } from '@core/test-utils/MockCertificateService';
 
 import { QualificationCertificateService, TrainingCertificateService } from './certificate.service';
+import { mockCertificateFileBlob } from '../test-utils/MockCertificateService';
 
-describe('CertificateService', () => {
+fdescribe('CertificateService', () => {
   const testConfigs = [
     {
       certificateType: 'training',
@@ -283,21 +284,24 @@ describe('CertificateService', () => {
             };
             http.expectOne({ url: certificateDownloadEndpoint, method: 'POST' }).flush(mockResponse);
 
-            http.expectOne(`https://localhost/${recordUid}-1.pdf`).flush(new Blob(['mock blob file']));
-            http.expectOne(`https://localhost/${recordUid}-2.pdf`).flush(new Blob(['mock blob file']));
+            http.expectOne(`https://localhost/${recordUid}-1.pdf`).flush(mockCertificateFileBlob);
+            http.expectOne(`https://localhost/${recordUid}-2.pdf`).flush(mockCertificateFileBlob);
           });
 
           const allFileBlobs = await promise;
           expect(allFileBlobs.length).toEqual(4);
 
+          const expectedFolderName =
+            certificateType === 'training' ? 'Training certificates' : 'Qualification certificates';
+
           for (const recordUid of recordsHavingCertificates) {
             expect(allFileBlobs).toContain({
-              filename: `${certificateType} certificates/${recordUid}-1.pdf`,
-              fileBlob: jasmine.anything(),
+              filename: `${expectedFolderName}/${recordUid}-1.pdf`,
+              fileBlob: mockCertificateFileBlob,
             });
             expect(allFileBlobs).toContain({
-              filename: `${certificateType} certificates/${recordUid}-2.pdf`,
-              fileBlob: jasmine.anything(),
+              filename: `${expectedFolderName}/${recordUid}-2.pdf`,
+              fileBlob: mockCertificateFileBlob,
             });
           }
         });

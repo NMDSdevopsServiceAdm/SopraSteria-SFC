@@ -32,6 +32,7 @@ import { QualificationCertificateService, TrainingCertificateService } from '@co
 import {
   MockQualificationCertificateService,
   MockTrainingCertificateService,
+  mockCertificateFileBlob,
   mockTrainingCertificates,
 } from '@core/test-utils/MockCertificateService';
 import { QualificationsByGroup } from '@core/model/qualification.model';
@@ -1257,7 +1258,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
     it('should call saveFilesAsZip with all the downloaded certificates', async () => {
       const { component, getByText } = await setup();
-      const expectedZipFileName = `all certificates - ${component.worker.nameOrId}.zip`;
+      const expectedZipFileName = `All certificates - ${component.worker.nameOrId}.zip`;
 
       const fileUtilSpy = spyOn(FileUtil, 'saveFilesAsZip').and.callThrough();
 
@@ -1274,16 +1275,16 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       mockTrainingCertificates.forEach((certificate) => {
         expect(contentsOfZipFile).toContain(
           jasmine.objectContaining({
-            filename: 'training certificates/' + certificate.filename,
-            fileBlob: jasmine.anything(),
+            filename: 'Training certificates/' + certificate.filename,
+            fileBlob: mockCertificateFileBlob,
           }),
         );
       });
       mockQualificationCertificates.forEach((certificate) => {
         expect(contentsOfZipFile).toContain(
           jasmine.objectContaining({
-            filename: 'qualification certificates/' + certificate.filename,
-            fileBlob: jasmine.anything(),
+            filename: 'Qualification certificates/' + certificate.filename,
+            fileBlob: mockCertificateFileBlob,
           }),
         );
       });
