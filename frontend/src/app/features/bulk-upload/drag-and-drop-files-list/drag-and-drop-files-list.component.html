@@ -58,6 +58,11 @@
 <ng-container *ngIf="preValidationErrorMessage">
   <app-validation-error-message [errorMessage]="preValidationErrorMessage"></app-validation-error-message>
 </ng-container>
+<ng-container *ngIf="showTrainingCertificateDeletionWarning">
+  <p class="govuk-error-message">
+    Warning: Any training certificates you have added for workers will be deleted when you bulk upload training
+  </p>
+</ng-container>
 
 <div class="govuk-!-margin-top-6">
   <ng-container *ngIf="!validationComplete; else completeUpload">

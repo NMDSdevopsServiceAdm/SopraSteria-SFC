@@ -30,6 +30,7 @@ import { take, tap } from 'rxjs/operators';
 })
 export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   @Input() public sanitise: boolean;
+  @Input() public hasTrainingCertificates: boolean;
   private subscriptions: Subscription = new Subscription();
   public bulkUploadFileTypeEnum = BulkUploadFileType;
   public preValidationError: boolean;
@@ -46,6 +47,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
   public preValidationErrorMessage = '';
   public showPreValidateErrorMessage = false;
   public disableButton = false;
+  public showTrainingCertificateDeletionWarning: boolean;
 
   constructor(
     private bulkUploadService: BulkUploadService,
@@ -259,6 +261,7 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
 
         this.uploadedFiles = uploadedFiles;
         this.totalErrors = this.uploadedFiles.map((f) => f.errors).reduce((p, c) => c + p);
+        this.showDeletionWarningIfAnyWorkplacesHaveTrainingCertificates();
 
         if (['PASSED', 'WARNINGS', 'FAILED'].includes(state)) {
           this.validationComplete = true;
@@ -294,10 +297,16 @@ export class DragAndDropFilesListComponent implements OnInit, OnDestroy {
             this.checkForMandatoryFiles(response);
             this.uploadedFiles = response;
             this.disableButton = false;
+            this.showDeletionWarningIfAnyWorkplacesHaveTrainingCertificates();
           },
           (response: HttpErrorResponse) => this.bulkUploadService.serverError$.next(response.error.message),
         ),
     );
+  }
+
+  private showDeletionWarningIfAnyWorkplacesHaveTrainingCertificates(): void {
+    const trainingFileUploaded = this.uploadedFiles.some((file) => file.fileType === BulkUploadFileType.Training);
+    this.showTrainingCertificateDeletionWarning = trainingFileUploaded && this.hasTrainingCertificates;
   }
 
   private checkForMandatoryFiles(response: ValidatedFile[]): void {
