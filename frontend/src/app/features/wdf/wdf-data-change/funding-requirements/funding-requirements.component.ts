@@ -33,23 +33,19 @@ export class FundingRequirementsComponent implements OnInit {
     this.breadcrumbService.show(JourneyType.WDF);
     this.workplace = this.establishmentService.establishment;
     this.pages = this.route.snapshot.data.pages?.data[0];
-    this.getWdfReport();
+    this.getWdfReportForDates();
   }
 
-  private getWdfReport(): void {
+  private getWdfReportForDates(): void {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
-        this.setDates(report);
+        this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
+        this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
       }),
     );
   }
 
-  private setDates(report: WDFReport): void {
-    this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
-    this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
-  }
-
-  public viewMainFundingPage(): void {
+  public viewFundingOverviewPage(): void {
     this.router.navigate(['/wdf']);
   }
 

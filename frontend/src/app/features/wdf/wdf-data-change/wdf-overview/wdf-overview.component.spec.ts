@@ -161,6 +161,22 @@ describe('WdfOverviewComponent', () => {
       expect(learnMoreLink).toBeTruthy();
       expect(learnMoreLink.getAttribute('href')).toEqual('/wdf/learn-more');
     });
+
+    it('should show the funding requirements link', async () => {
+      const { component, getByTestId } = await setup();
+
+      const wdfStartYear = new Date(component.wdfStartDate).getFullYear();
+      const wdfEndYear = new Date(component.wdfEndDate).getFullYear();
+
+      const dataMetFundingParagraph = getByTestId('dataMetFunding');
+
+      const fundingRequirementsLink = within(dataMetFundingParagraph).getByText(
+        `View the ASC-WDS funding requirements for ${wdfStartYear} to ${wdfEndYear}`,
+      );
+
+      expect(fundingRequirementsLink).toBeTruthy();
+      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/wdf/funding-requirements');
+    });
   });
 
   describe('Unhappy path', async () => {

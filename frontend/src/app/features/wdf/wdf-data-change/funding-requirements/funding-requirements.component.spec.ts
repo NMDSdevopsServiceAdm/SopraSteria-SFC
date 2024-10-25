@@ -101,7 +101,7 @@ describe('FundingRequirementsComponent', () => {
     expect(getByText(pages.data[0].content)).toBeTruthy();
   });
 
-  it("should navigate to wdf main page when 'Does your data meet funding requirements?' is clicked", async () => {
+  it("should navigate to the funding main page when 'Does your data meet funding requirements?' is clicked", async () => {
     const { fixture, getByText, routerSpy } = await setup();
 
     const button = getByText('Does your data meet funding requirements?');
