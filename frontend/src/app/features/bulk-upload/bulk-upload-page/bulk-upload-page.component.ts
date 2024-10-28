@@ -39,7 +39,7 @@ export class BulkUploadPageComponent implements OnInit, OnDestroy {
 
     this.canViewNinoDob = this.permissionsService.can(this.establishment.uid, 'canViewNinoDob');
     this.isAdmin = isAdminRole(this.route.snapshot.data.loggedInUser.role);
-    this.hasTrainingCertificates = this.route.snapshot.data.hasTrainingCertificates.hasTrainingCertificates;
+    this.hasTrainingCertificates = this.route.snapshot.data.hasTrainingCertificates?.hasTrainingCertificates;
     this.sanitise = !this.canViewNinoDob || this.isAdmin;
   }
 
