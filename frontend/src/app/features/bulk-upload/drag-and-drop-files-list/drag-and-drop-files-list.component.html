@@ -59,8 +59,12 @@
   <app-validation-error-message [errorMessage]="preValidationErrorMessage"></app-validation-error-message>
 </ng-container>
 <ng-container *ngIf="showTrainingCertificateDeletionWarning">
-  <p class="govuk-error-message">
-    Warning: Any training certificates you have added for workers will be deleted when you bulk upload training
+  <p class="govuk-error-message govuk-!-width-two-thirds">
+    Warning: If you've added training certificates to your training records, the certificates will be deleted when you
+    upload the training file.
+  </p>
+  <p class="govuk-error-message govuk-!-width-two-thirds">
+    To keep the certificates, remove the training file from this bulk upload.
   </p>
 </ng-container>
 

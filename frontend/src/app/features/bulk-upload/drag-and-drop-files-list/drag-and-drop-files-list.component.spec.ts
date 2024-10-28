@@ -402,8 +402,10 @@ describe('DragAndDropFilesListComponent', () => {
   });
 
   describe('Displaying training certificate deletion warning message', () => {
-    const trainingCertificateDeletionWarningMessage =
-      'Warning: Any training certificates you have added for workers will be deleted when you bulk upload training';
+    const trainingCertificateDeletionWarningMessageLine1 =
+      "Warning: If you've added training certificates to your training records, the certificates will be deleted when you upload the training file.";
+    const trainingCertificateDeletionWarningMessageLine2 =
+      'To keep the certificates, remove the training file from this bulk upload.';
 
     it('should display deletion warning message when user has training file uploaded and has training certificates', async () => {
       const overrides = {
@@ -415,7 +417,8 @@ describe('DragAndDropFilesListComponent', () => {
 
       const { getByText } = await setup(overrides);
 
-      expect(getByText(trainingCertificateDeletionWarningMessage)).toBeTruthy();
+      expect(getByText(trainingCertificateDeletionWarningMessageLine1)).toBeTruthy();
+      expect(getByText(trainingCertificateDeletionWarningMessageLine2)).toBeTruthy();
     });
 
     it('should not display deletion message when user has training file uploaded but has no training certificates', async () => {
@@ -428,7 +431,8 @@ describe('DragAndDropFilesListComponent', () => {
 
       const { queryByText } = await setup(overrides);
 
-      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeFalsy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine1)).toBeFalsy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine2)).toBeFalsy();
     });
 
     it('should not display deletion message when user has training certificates but has not uploaded training file', async () => {
@@ -441,7 +445,8 @@ describe('DragAndDropFilesListComponent', () => {
 
       const { queryByText } = await setup(overrides);
 
-      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeFalsy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine1)).toBeFalsy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine2)).toBeFalsy();
     });
 
     it('should remove deletion warning message when user deletes training file', async () => {
@@ -454,13 +459,15 @@ describe('DragAndDropFilesListComponent', () => {
 
       const { fixture, getAllByText, queryByText } = await setup(overrides);
 
-      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeTruthy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine1)).toBeTruthy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine2)).toBeTruthy();
 
       const fileDeleteButtons = getAllByText('Delete');
       userEvent.click(fileDeleteButtons[2]);
 
       fixture.detectChanges();
-      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeFalsy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine1)).toBeFalsy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine2)).toBeFalsy();
     });
 
     it('should not remove deletion warning message when user deletes a file which is not training', async () => {
@@ -473,13 +480,14 @@ describe('DragAndDropFilesListComponent', () => {
 
       const { fixture, getAllByText, queryByText } = await setup(overrides);
 
-      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeTruthy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine1)).toBeTruthy();
 
       const fileDeleteButtons = getAllByText('Delete');
       userEvent.click(fileDeleteButtons[0]);
 
       fixture.detectChanges();
-      expect(queryByText(trainingCertificateDeletionWarningMessage)).toBeTruthy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine1)).toBeTruthy();
+      expect(queryByText(trainingCertificateDeletionWarningMessageLine2)).toBeTruthy();
     });
   });
 });
