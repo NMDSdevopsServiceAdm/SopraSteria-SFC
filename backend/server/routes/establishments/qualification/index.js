@@ -5,8 +5,8 @@ const QualificationCertificateRoute = require('../workerCertificate/qualificatio
 
 // all user functionality is encapsulated
 const Qualification = require('../../../models/classes/qualification').Qualification;
-const QualificationDuplicateException = require('../../../models/classes/qualification')
-  .QualificationDuplicateException;
+const QualificationDuplicateException =
+  require('../../../models/classes/qualification').QualificationDuplicateException;
 
 const { hasPermission } = require('../../../utils/security/hasPermission');
 const WorkerCertificateService = require('../workerCertificate/workerCertificateService');
@@ -180,7 +180,14 @@ const deleteQualificationRecord = async (req, res) => {
 
       const qualificationCertificateService = WorkerCertificateService.initialiseQualifications();
 
-      await qualificationCertificateService.deleteCertificates(qualificationCertificates, establishmentUid, workerUid, qualificationUid);
+      if (qualificationCertificates?.length) {
+        await qualificationCertificateService.deleteCertificates(
+          qualificationCertificates,
+          establishmentUid,
+          workerUid,
+          qualificationUid,
+        );
+      }
 
       // by deleting after the restore we can be sure this qualification record belongs to the given worker
       const deleteSuccess = await thisQualificationRecord.delete();
