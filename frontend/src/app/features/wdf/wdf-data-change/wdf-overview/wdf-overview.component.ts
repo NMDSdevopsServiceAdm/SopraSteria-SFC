@@ -1,5 +1,5 @@
 import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
@@ -42,6 +42,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
     protected router: Router,
+    public route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
@@ -103,6 +104,6 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   }
 
   public viewYourData(): void {
-    this.router.navigate(['/wdf', 'data']);
+    this.router.navigate(['data'], { relativeTo: this.route });
   }
 }

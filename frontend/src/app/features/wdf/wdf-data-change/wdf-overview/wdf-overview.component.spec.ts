@@ -7,7 +7,7 @@ import { ReportService } from '@core/services/report.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { WdfOverviewComponent } from './wdf-overview.component';
 import { getTestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
@@ -52,7 +52,16 @@ describe('WdfOverviewComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, routerSpy };
+    return {
+      component,
+      fixture,
+      getByText,
+      getAllByText,
+      getByTestId,
+      queryByText,
+      queryByTestId,
+      routerSpy,
+    };
   };
 
   describe('Happy path', async () => {
@@ -139,18 +148,18 @@ describe('WdfOverviewComponent', () => {
       const keepYourDataCurrentLink = getByText('Keep your data current');
 
       expect(dataMetFundingParagraph).toBeTruthy();
-      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/wdf/data');
+      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/data');
     });
 
     it('should navigate to your data when Check your data is clicked', async () => {
-      const { fixture, getByText, routerSpy } = await setup();
+      const { component, fixture, getByText, routerSpy } = await setup();
 
       const checkYourDataButton = getByText('Check your data');
       fireEvent.click(checkYourDataButton);
       fixture.detectChanges();
 
       expect(checkYourDataButton).toBeTruthy();
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'data']);
+      expect(routerSpy).toHaveBeenCalledWith(['data'], { relativeTo: component.route });
     });
 
     it('should show the learn more link', async () => {
@@ -159,7 +168,23 @@ describe('WdfOverviewComponent', () => {
       const learnMoreLink = getByText('Learn more about the funds that you can claim from');
 
       expect(learnMoreLink).toBeTruthy();
-      expect(learnMoreLink.getAttribute('href')).toEqual('/wdf/learn-more');
+      expect(learnMoreLink.getAttribute('href')).toEqual('/learn-more');
+    });
+
+    it('should show the funding requirements link', async () => {
+      const { component, getByTestId } = await setup();
+
+      const wdfStartYear = new Date(component.wdfStartDate).getFullYear();
+      const wdfEndYear = new Date(component.wdfEndDate).getFullYear();
+
+      const dataMetFundingParagraph = getByTestId('dataMetFunding');
+
+      const fundingRequirementsLink = within(dataMetFundingParagraph).getByText(
+        `View the ASC-WDS funding requirements for ${wdfStartYear} to ${wdfEndYear}`,
+      );
+
+      expect(fundingRequirementsLink).toBeTruthy();
+      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/funding-requirements');
     });
   });
 
@@ -179,6 +204,32 @@ describe('WdfOverviewComponent', () => {
       const fundingInsetText = getByTestId('fundingInsetText');
 
       expect(fundingInsetText).toBeTruthy();
+    });
+
+    it('should show the funding requirements link', async () => {
+      const overrides = {
+        wdf: {
+          overall: false,
+          workplace: false,
+          staff: false,
+        },
+        isParent: false,
+        parentOverallWdfEligibility: false,
+      };
+
+      const { component, getByTestId } = await setup(overrides);
+
+      const wdfStartYear = new Date(component.wdfStartDate).getFullYear();
+      const wdfEndYear = new Date(component.wdfEndDate).getFullYear();
+
+      const fundingInsetText = getByTestId('fundingInsetText');
+
+      const fundingRequirementsLink = within(fundingInsetText).getByText(
+        `The ASC-WDS funding requirements for ${wdfStartYear} to ${wdfEndYear}`,
+      );
+
+      expect(fundingRequirementsLink).toBeTruthy();
+      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/funding-requirements');
     });
   });
 
@@ -228,7 +279,7 @@ describe('WdfOverviewComponent', () => {
       const keepYourDataCurrentLink = getByText('Keep your data current');
 
       expect(dataMetFundingParagraph).toBeTruthy();
-      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/wdf/data');
+      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/data');
     });
 
     it('should not display the funding requirements inset text when requirements are met', async () => {
