@@ -35,11 +35,11 @@
       <div data-testid="dataMetFunding">
         <p>
           Your data met the funding requirements on {{ overallEligibilityDate }} and will continue to meet them until 31
-          March {{ wdfEndDate | date: 'yyyy' }}. <a [routerLink]="['/wdf/data']">Keep your data current</a>, it might
-          save you time next year.
+          March {{ wdfEndDate | date: 'yyyy' }}.
+          <a [routerLink]="['data']" [relativeTo]="route">Keep your data current</a>, it might save you time next year.
         </p>
         <p class="govuk-!-margin-bottom-6">
-          <a [routerLink]="['/wdf/funding-requirements']">
+          <a [routerLink]="['funding-requirements']" [relativeTo]="route">
             View the ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
             {{ wdfEndDate | date: 'yyyy' }}</a
           >
@@ -49,7 +49,7 @@
 
     <ng-template #notEligible>
       <div class="govuk-inset-text thin-border govuk-!-margin-top-0" data-testid="fundingInsetText">
-        <a [routerLink]="['/wdf/funding-requirements']">
+        <a [routerLink]="['funding-requirements']" [relativeTo]="route">
           The ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}</a
         >
         are exactly the same for both the Workforce Development Fund (WDF) and the Learning and Development Support
@@ -59,7 +59,7 @@
 
     <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Find out more</h2>
     <p>
-      <a [routerLink]="['/wdf/learn-more']">Learn more about the funds that you can claim from</a>
+      <a [routerLink]="['learn-more']" [relativeTo]="route">Learn more about the funds that you can claim from</a>
     </p>
     <div class="govuk-!-margin-top-8">
       <button type="button" class="govuk-button" data-module="govuk-button" (click)="viewYourData()">

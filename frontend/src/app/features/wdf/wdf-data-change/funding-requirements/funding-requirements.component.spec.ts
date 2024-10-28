@@ -102,7 +102,7 @@ describe('FundingRequirementsComponent', () => {
   });
 
   it("should navigate to the funding main page when 'Does your data meet funding requirements?' is clicked", async () => {
-    const { fixture, getByText, routerSpy } = await setup();
+    const { component, fixture, getByText, routerSpy } = await setup();
 
     const button = getByText('Does your data meet funding requirements?');
 
@@ -110,6 +110,6 @@ describe('FundingRequirementsComponent', () => {
     fixture.detectChanges();
 
     expect(button).toBeTruthy();
-    expect(routerSpy).toHaveBeenCalledWith(['/wdf']);
+    expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
   });
 });

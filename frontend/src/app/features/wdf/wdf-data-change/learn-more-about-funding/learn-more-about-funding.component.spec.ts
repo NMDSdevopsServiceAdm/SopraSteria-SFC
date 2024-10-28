@@ -73,7 +73,7 @@ describe('LearnMoreAboutFundingComponent', () => {
   });
 
   it("should navigate to wdf main page when 'Does your data meet funding requirements?' is clicked", async () => {
-    const { fixture, getByText, routerSpy } = await setup();
+    const { component, fixture, getByText, routerSpy } = await setup();
 
     const button = getByText('Does your data meet funding requirements?');
 
@@ -81,7 +81,7 @@ describe('LearnMoreAboutFundingComponent', () => {
     fixture.detectChanges();
 
     expect(button).toBeTruthy();
-    expect(routerSpy).toHaveBeenCalledWith(['/wdf']);
+    expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
   });
 
   it('should display the content of the cms page', async () => {

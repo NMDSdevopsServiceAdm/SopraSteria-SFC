@@ -17,7 +17,7 @@ export class LearnMoreAboutFundingComponent implements OnInit {
   constructor(
     private establishmentService: EstablishmentService,
     private breadcrumbService: BreadcrumbService,
-    private route: ActivatedRoute,
+    public route: ActivatedRoute,
     protected router: Router,
   ) {}
 
@@ -27,7 +27,7 @@ export class LearnMoreAboutFundingComponent implements OnInit {
     this.pages = this.route.snapshot.data.pages?.data[0];
   }
 
-  public viewWdfMainPage(): void {
-    this.router.navigate(['/wdf']);
+  public viewFundingOverviewPage(): void {
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 }

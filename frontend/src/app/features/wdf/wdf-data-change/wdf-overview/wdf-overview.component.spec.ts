@@ -52,7 +52,16 @@ describe('WdfOverviewComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId, routerSpy };
+    return {
+      component,
+      fixture,
+      getByText,
+      getAllByText,
+      getByTestId,
+      queryByText,
+      queryByTestId,
+      routerSpy,
+    };
   };
 
   describe('Happy path', async () => {
@@ -139,18 +148,18 @@ describe('WdfOverviewComponent', () => {
       const keepYourDataCurrentLink = getByText('Keep your data current');
 
       expect(dataMetFundingParagraph).toBeTruthy();
-      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/wdf/data');
+      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/data');
     });
 
     it('should navigate to your data when Check your data is clicked', async () => {
-      const { fixture, getByText, routerSpy } = await setup();
+      const { component, fixture, getByText, routerSpy } = await setup();
 
       const checkYourDataButton = getByText('Check your data');
       fireEvent.click(checkYourDataButton);
       fixture.detectChanges();
 
       expect(checkYourDataButton).toBeTruthy();
-      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'data']);
+      expect(routerSpy).toHaveBeenCalledWith(['data'], { relativeTo: component.route });
     });
 
     it('should show the learn more link', async () => {
@@ -159,7 +168,7 @@ describe('WdfOverviewComponent', () => {
       const learnMoreLink = getByText('Learn more about the funds that you can claim from');
 
       expect(learnMoreLink).toBeTruthy();
-      expect(learnMoreLink.getAttribute('href')).toEqual('/wdf/learn-more');
+      expect(learnMoreLink.getAttribute('href')).toEqual('/learn-more');
     });
 
     it('should show the funding requirements link', async () => {
@@ -175,7 +184,7 @@ describe('WdfOverviewComponent', () => {
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
-      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/wdf/funding-requirements');
+      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/funding-requirements');
     });
   });
 
@@ -220,7 +229,7 @@ describe('WdfOverviewComponent', () => {
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
-      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/wdf/funding-requirements');
+      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/funding-requirements');
     });
   });
 
@@ -270,7 +279,7 @@ describe('WdfOverviewComponent', () => {
       const keepYourDataCurrentLink = getByText('Keep your data current');
 
       expect(dataMetFundingParagraph).toBeTruthy();
-      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/wdf/data');
+      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/data');
     });
 
     it('should not display the funding requirements inset text when requirements are met', async () => {

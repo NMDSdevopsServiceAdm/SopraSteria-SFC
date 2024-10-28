@@ -25,7 +25,7 @@ export class FundingRequirementsComponent implements OnInit {
     private establishmentService: EstablishmentService,
     private reportService: ReportService,
     private breadcrumbService: BreadcrumbService,
-    private route: ActivatedRoute,
+    public route: ActivatedRoute,
     protected router: Router,
   ) {}
 
@@ -46,7 +46,7 @@ export class FundingRequirementsComponent implements OnInit {
   }
 
   public viewFundingOverviewPage(): void {
-    this.router.navigate(['/wdf']);
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   ngOnDestroy(): void {
