@@ -1,10 +1,12 @@
+import { from, merge, Subscription } from 'rxjs';
+import { mergeMap, tap, toArray } from 'rxjs/operators';
+
 import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { TrainingCertificateService, QualificationCertificateService } from '@core/services/certificate.service';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
-import { TrainingRecordCategory } from '@core/model/training.model';
+import { TrainingRecordCategory, TrainingRecords } from '@core/model/training.model';
 import {
   CertificateDownloadEvent,
   CertificateUploadEvent,
@@ -13,15 +15,16 @@ import {
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { TrainingService } from '@core/services/training.service';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FileUtil } from '@core/utils/file-util';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-new-training-and-qualifications-record',
@@ -51,9 +54,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     nonMandatoryTraining: 'non-mandatory-training',
     qualifications: 'qualifications',
   };
-  public pdfCount: number;
   public certificateErrors: Record<string, string> = {}; // {categoryName: errorMessage}
-  private trainingRecords: any;
+  private trainingRecords: TrainingRecords;
+  private downloadingAllCertsInBackground = false;
+  public workerHasCertificate = false;
 
   constructor(
     private breadcrumbService: BreadcrumbService,
@@ -80,9 +84,9 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setUpTabSubscription();
     this.updateTrainingExpiresSoonDate();
     this.setTraining();
+    this.checkWorkerHasCertificateOrNot();
     this.setUpAlertSubscription();
     this.setReturnRoute();
-    this.getPdfCount();
   }
 
   public async downloadAsPDF(save: boolean = true) {
@@ -103,13 +107,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     } catch (error) {
       console.error(error);
     }
-  }
-
-  private async getPdfCount() {
-    const pdf = await this.downloadAsPDF(false);
-    const numberOfPages = pdf?.getNumberOfPages();
-
-    return (this.pdfCount = numberOfPages);
   }
 
   private setPageData(): void {
@@ -404,6 +401,46 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.subscriptions.add(subscription);
   }
 
+  public downloadAllCertificates(event: Event) {
+    event.preventDefault();
+
+    if (this.downloadingAllCertsInBackground) {
+      return;
+    }
+
+    this.downloadingAllCertsInBackground = true;
+
+    const allTrainingCerts$ = this.trainingCertificateService.downloadAllCertificatesAsBlobs(
+      this.workplace.uid,
+      this.worker.uid,
+    );
+    const allQualificationCerts$ = this.qualificationCertificateService.downloadAllCertificatesAsBlobs(
+      this.workplace.uid,
+      this.worker.uid,
+    );
+
+    const zipFileName = this.worker.nameOrId
+      ? `All certificates - ${this.worker.nameOrId}.zip`
+      : 'All certificates.zip';
+
+    const downloadAllCertificatesAsZip$ = merge(allTrainingCerts$, allQualificationCerts$).pipe(
+      toArray(),
+      mergeMap((allFileBlobs) => from(FileUtil.saveFilesAsZip(allFileBlobs, zipFileName))),
+    );
+
+    this.subscriptions.add(
+      downloadAllCertificatesAsZip$.subscribe(
+        () => {
+          this.downloadingAllCertsInBackground = false;
+        },
+        (err) => {
+          console.error('Error occurred when downloading all certificates: ', err);
+          this.downloadingAllCertsInBackground = false;
+        },
+      ),
+    );
+  }
+
   private async refreshTrainingAndQualificationRecords() {
     const updatedData: TrainingAndQualificationRecords = await this.workerService
       .getAllTrainingAndQualificationRecords(this.workplace.uid, this.worker.uid)
@@ -411,5 +448,18 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.trainingRecords = updatedData.training;
     this.qualificationsByGroup = updatedData.qualifications;
     this.setTraining();
+    this.checkWorkerHasCertificateOrNot();
+  }
+
+  private checkWorkerHasCertificateOrNot() {
+    const allTrainingRecords = [...this.trainingRecords.mandatory, ...this.trainingRecords.nonMandatory];
+    const hasTrainingCertificate = allTrainingRecords.some((record) =>
+      record?.trainingRecords?.some((record) => record?.trainingCertificates?.length > 0),
+    );
+    const hasQualificationCertificate = this.qualificationsByGroup.groups.some((group) =>
+      group?.records?.some((record) => record?.qualificationCertificates?.length > 0),
+    );
+
+    this.workerHasCertificate = hasTrainingCertificate || hasQualificationCertificate;
   }
 }

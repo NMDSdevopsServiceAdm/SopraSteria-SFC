@@ -18,7 +18,7 @@ import { of, throwError } from 'rxjs';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
 import { QualificationCertificateService } from '@core/services/certificate.service';
-import { MockQualificationCertificateService } from '@core/test-utils/MockCertificationService';
+import { MockQualificationCertificateService } from '@core/test-utils/MockCertificateService';
 
 describe('AddEditQualificationComponent', () => {
   async function setup(qualificationId = '1', qualificationInService = null, override: any = {}) {

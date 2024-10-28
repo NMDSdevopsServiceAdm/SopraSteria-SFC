@@ -1,9 +1,19 @@
+import { toArray } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
+import {
+  mockQualificationRecordsResponse,
+  mockTrainingRecordsResponse,
+  qualificationUidsWithCerts,
+  qualificationUidsWithoutCerts as qualificationUidsNoCerts,
+  trainingUidsWithCerts,
+  trainingUidsWithoutCerts as trainingUidsNoCerts,
+} from '@core/test-utils/MockCertificateService';
 
 import { QualificationCertificateService, TrainingCertificateService } from './certificate.service';
+import { mockCertificateFileBlob } from '../test-utils/MockCertificateService';
 
 describe('CertificateService', () => {
   const testConfigs = [
@@ -211,6 +221,90 @@ describe('CertificateService', () => {
           // Assert DOM is cleaned up after download
           expect(revokeObjectURLSpy).toHaveBeenCalledWith(mockBlobUrl);
           expect(removeChildSpy).toHaveBeenCalled();
+        });
+      });
+
+      describe('downloadAllCertificatesAsBlobs', () => {
+        const mockWorkplaceUid = 'mockWorkplaceUid';
+        const mockWorkerUid = 'mockWorkerUid';
+
+        const recordsEndpoint = `${environment.appRunnerEndpoint}/api/establishment/${mockWorkplaceUid}/worker/${mockWorkerUid}/${certificateType}`;
+
+        const mockRecordsResponse =
+          certificateType === 'training' ? mockTrainingRecordsResponse : mockQualificationRecordsResponse;
+        const recordsHavingCertificates =
+          certificateType === 'training' ? trainingUidsWithCerts : qualificationUidsWithCerts;
+        const recordsWithoutCertificates =
+          certificateType === 'training' ? trainingUidsNoCerts : qualificationUidsNoCerts;
+
+        it('should query the backend to get all training / qualification records for the worker', async () => {
+          service.downloadAllCertificatesAsBlobs(mockWorkplaceUid, mockWorkerUid).subscribe();
+
+          http.expectOne(recordsEndpoint);
+        });
+
+        it('should request backend for signedUrls and download every certificates as blobs', async () => {
+          service.downloadAllCertificatesAsBlobs(mockWorkplaceUid, mockWorkerUid).subscribe();
+
+          http.expectOne(recordsEndpoint).flush(mockRecordsResponse);
+
+          recordsHavingCertificates.forEach((recordUid) => {
+            const certificateDownloadEndpoint = `${recordsEndpoint}/${recordUid}/certificate/download`;
+            const mockresponse = {
+              files: [
+                { signedUrl: `https://mocks3endpoint/${recordUid}-1.pdf`, filename: `${recordUid}-1.pdf` },
+                { signedUrl: `https://mocks3endpoint/${recordUid}-2.pdf`, filename: `${recordUid}-2.pdf` },
+              ],
+            };
+            http.expectOne({ url: certificateDownloadEndpoint, method: 'POST' }).flush(mockresponse);
+
+            http.expectOne(`https://mocks3endpoint/${recordUid}-1.pdf`).flush(mockCertificateFileBlob);
+            http.expectOne(`https://mocks3endpoint/${recordUid}-2.pdf`).flush(mockCertificateFileBlob);
+          });
+
+          // should not call certificate download endpoint for records that have no certificates
+          recordsWithoutCertificates.forEach((recordUid) => {
+            const certificateDownloadEndpoint = `${recordsEndpoint}/${recordUid}/certificate/download`;
+            http.expectNone(certificateDownloadEndpoint);
+          });
+        });
+
+        it('should return an observable for every certificates as file blobs', async () => {
+          const returnedObservable = service.downloadAllCertificatesAsBlobs(mockWorkplaceUid, mockWorkerUid);
+          const promise = returnedObservable.pipe(toArray()).toPromise();
+
+          http.expectOne(recordsEndpoint).flush(mockRecordsResponse);
+
+          recordsHavingCertificates.forEach((recordUid) => {
+            const certificateDownloadEndpoint = `${recordsEndpoint}/${recordUid}/certificate/download`;
+            const mockResponse = {
+              files: [
+                { signedUrl: `https://mocks3endpoint/${recordUid}-1.pdf`, filename: `${recordUid}-1.pdf` },
+                { signedUrl: `https://mocks3endpoint/${recordUid}-2.pdf`, filename: `${recordUid}-2.pdf` },
+              ],
+            };
+            http.expectOne({ url: certificateDownloadEndpoint, method: 'POST' }).flush(mockResponse);
+
+            http.expectOne(`https://mocks3endpoint/${recordUid}-1.pdf`).flush(mockCertificateFileBlob);
+            http.expectOne(`https://mocks3endpoint/${recordUid}-2.pdf`).flush(mockCertificateFileBlob);
+          });
+
+          const allFileBlobs = await promise;
+          expect(allFileBlobs.length).toEqual(4);
+
+          const expectedFolderName =
+            certificateType === 'training' ? 'Training certificates' : 'Qualification certificates';
+
+          for (const recordUid of recordsHavingCertificates) {
+            expect(allFileBlobs).toContain({
+              filename: `${expectedFolderName}/${recordUid}-1.pdf`,
+              fileBlob: mockCertificateFileBlob,
+            });
+            expect(allFileBlobs).toContain({
+              filename: `${expectedFolderName}/${recordUid}-2.pdf`,
+              fileBlob: mockCertificateFileBlob,
+            });
+          }
         });
       });
 

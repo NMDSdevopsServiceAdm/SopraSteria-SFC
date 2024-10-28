@@ -85,12 +85,23 @@
   *ngIf="mandatoryTraining.length + nonMandatoryTraining.length + qualificationsByGroup.count"
   class="govuk-!-margin-bottom-8"
 >
-  <app-download-pdf-traininf-and-qualification
+  <app-download-pdf-training-and-qualification
     [linkUrl]="'/trainingAndQualification.pdf'"
     (downloadPDF)="downloadAsPDF()"
-    [pdfCount]="pdfCount"
-  ></app-download-pdf-traininf-and-qualification>
+  ></app-download-pdf-training-and-qualification>
+  <a
+    class="govuk-list govuk-list--inline govuk__flex govuk__width-fit-content govuk__align-items-flex-start govuk-!-margin-bottom-0"
+    role="button"
+    draggable="false"
+    (click)="downloadAllCertificates($event)"
+    href="./all-certificates.zip"
+    *ngIf="workerHasCertificate"
+  >
+    <img alt="" src="/assets/images/icon-download.svg" />
+    <span class="govuk-!-margin-left-1"> Download all their training and qualification certificates </span>
+  </a>
 </div>
+
 <div *ngIf="actionsListData.length > 0" class="govuk-grid-row govuk-!-margin-top-6">
   <div class="govuk-grid-column-full">
     <table class="govuk-table">
