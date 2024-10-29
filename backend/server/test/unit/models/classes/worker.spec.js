@@ -5,6 +5,7 @@ const sinon = require('sinon');
 const models = require('../../../../models');
 const Worker = require('../../../../models/classes/worker').Worker;
 const TrainingCertificateRoute = require('../../../../routes/establishments/workerCertificate/trainingCertificate');
+const { Training } = require('../../../../models/classes/training');
 
 const worker = new Worker();
 
@@ -460,9 +461,7 @@ describe('Worker Class', () => {
     });
 
     it('should not make DB or S3 deletion calls if no training certificates found', async () => {
-      const getAllTrainingCertificateRecordsForWorkerSpy = sinon
-        .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
-        .resolves([]);
+      sinon.stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker').resolves([]);
 
       const dbDeleteCertificateSpy = sinon.stub(models.trainingCertificates, 'deleteCertificate');
       const s3DeleteCertificateSpy = sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3');
@@ -476,7 +475,7 @@ describe('Worker Class', () => {
     it('should call deleteCertificate on DB model with uids returned from getAllTrainingCertificateRecordsForWorker and pass in transaction', async () => {
       const trainingCertificates = trainingCertificatesReturnedFromDb();
 
-      const getAllTrainingCertificateRecordsForWorkerSpy = sinon
+      sinon
         .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
         .resolves(trainingCertificates);
 
@@ -498,7 +497,7 @@ describe('Worker Class', () => {
     it('should call deleteCertificatesFromS3 with keys returned from getAllTrainingCertificateRecordsForWorker', async () => {
       const trainingCertificates = trainingCertificatesReturnedFromDb();
 
-      const getAllTrainingCertificateRecordsForWorkerSpy = sinon
+      sinon
         .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
         .resolves(trainingCertificates);
 
@@ -513,6 +512,51 @@ describe('Worker Class', () => {
         { Key: trainingCertificates[1].key },
         { Key: trainingCertificates[2].key },
       ]);
+    });
+  });
+
+  describe('saveAssociatedEntities', async () => {
+    let mockWorker;
+
+    beforeEach(() => {
+      mockWorker = new Worker();
+      mockWorker._id = 12345;
+      mockWorker._uid = 'ba1260d8-1791-484c-ac92-c1da2a96dabb';
+    });
+
+    it('should delete certificates, destroy all training records in database and save new records when training records in trainingEntities', async () => {
+      const savedBy = 'mockUser';
+      const bulkUploaded = false;
+      const transaction = await models.sequelize.transaction();
+
+      const deleteCertificatesSpy = sinon.stub(mockWorker, 'deleteAllTrainingCertificatesAssociatedWithWorker');
+      const trainingDestroySpy = sinon.stub(models.workerTraining, 'destroy').resolves(true);
+      const training = new Training(123, mockWorker._uid);
+
+      const trainingSaveSpy = sinon.stub(training, 'save').resolves(true);
+
+      mockWorker.associateTraining(training);
+
+      await mockWorker.saveAssociatedEntities(savedBy, bulkUploaded, transaction);
+
+      expect(deleteCertificatesSpy).to.have.been.calledWith(transaction);
+      expect(trainingDestroySpy).to.have.been.calledWith({
+        where: { workerFk: mockWorker._id },
+        transaction: transaction,
+      });
+      expect(trainingSaveSpy).to.have.been.calledWith(savedBy, bulkUploaded, 0, transaction);
+    });
+
+    it('should not make calls to delete certificates or destroy training records when no training records in trainingEntities', async () => {
+      const deleteCertificatesSpy = sinon.stub(mockWorker, 'deleteAllTrainingCertificatesAssociatedWithWorker');
+      const trainingDestroySpy = sinon.stub(models.workerTraining, 'destroy').resolves(true);
+
+      const transaction = await models.sequelize.transaction();
+
+      await mockWorker.saveAssociatedEntities('mockUser', false, transaction);
+
+      expect(deleteCertificatesSpy).not.to.have.been.called;
+      expect(trainingDestroySpy).to.not.have.been.called;
     });
   });
 });

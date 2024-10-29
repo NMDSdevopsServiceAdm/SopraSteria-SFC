@@ -532,9 +532,10 @@ class Worker extends EntityValidator {
     const newTrainingPromises = [];
 
     try {
-      // there is no change audit on training; simply delete all that is there and recreate
       if (this._trainingEntities && this._trainingEntities.length > 0) {
-        // delete all existing training records for this worker
+        // delete all existing training records for this worker and create new records
+
+        await this.deleteAllTrainingCertificatesAssociatedWithWorker(externalTransaction);
         await models.workerTraining.destroy({
           where: {
             workerFk: this._id,
@@ -542,7 +543,6 @@ class Worker extends EntityValidator {
           transaction: externalTransaction,
         });
 
-        // now create new training records
         this._trainingEntities.forEach((currentTrainingRecord) => {
           currentTrainingRecord.workerId = this._id;
           currentTrainingRecord.workerUid = this._uid;

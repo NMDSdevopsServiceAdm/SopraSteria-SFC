@@ -66,6 +66,7 @@ describe('BulkUploadPageComponent', () => {
                 loggedInUser: { role },
                 dataChange,
                 dataChangeLastUpdated,
+                hasTrainingCertificates: { hasTrainingCertificates: true },
               },
             },
           },
