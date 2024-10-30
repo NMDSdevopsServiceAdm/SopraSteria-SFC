@@ -165,6 +165,10 @@
   border: none;
 }
 
+.govuk-summary-list__row-above-message {
+  border-bottom: none;
+}
+
 .asc-warning-banner {
   background-color: rgba(govuk-colour('orange'), 0.12);
 

@@ -6,7 +6,6 @@ import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
 @Component({
   selector: 'app-personal-details',
   templateUrl: './personal-details.component.html',
-  styleUrls: ['./personal-details.component.scss'],
 })
 export class PersonalDetailsComponent extends StaffRecordSummaryComponent {
   @Input() wdfView = false;
