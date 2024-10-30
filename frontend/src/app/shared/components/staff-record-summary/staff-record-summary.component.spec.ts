@@ -86,6 +86,24 @@ describe('StaffRecordSummaryComponent', () => {
     updatedSinceEffectiveDate: false,
   };
 
+  const buildWorker = (workerOverrides) => {
+    const worker = workerWithWdf() as Worker;
+
+    if (workerOverrides.overrides) {
+      workerOverrides.overrides.forEach((override) => {
+        worker[override.name] = override.response;
+      });
+    }
+
+    if (workerOverrides.wdf) {
+      workerOverrides.wdf.forEach((field) => {
+        worker.wdf[field.name] = field.response;
+      });
+    }
+
+    return worker;
+  };
+
   it('should render a StaffRecordSummaryComponent', async () => {
     const { component } = await setup();
 
@@ -459,74 +477,75 @@ describe('StaffRecordSummaryComponent', () => {
     expect(getByText('Meeting requirements')).toBeTruthy();
   });
 
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Main Job Role', async () => {
-    const { component, fixture, getByText } = await setup();
+  describe('WdfFieldConfirmation for main job role', () => {
+    const worker = buildWorker({
+      fields: [
+        { name: 'mainJob', response: { jobId: 10, title: 'Care Worker' } },
+        { name: 'contract', response: Contracts.Permanent },
+      ],
+      wdf: [
+        {
+          name: 'mainJob',
+          response: {
+            isEligible: Eligibility.YES,
+            updatedSinceEffectiveDate: false,
+          },
+        },
+      ],
+    });
 
-    component.worker.wdf.mainJob.isEligible = Eligibility.YES;
-    component.worker.wdf.mainJob.updatedSinceEffectiveDate = false;
-    component.worker.mainJob = { jobId: 10, title: 'Care Worker' };
-    component.worker.contract = Contracts.Permanent;
+    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Main Job Role', async () => {
+      const { getByText } = await setup({ worker });
 
-    fixture.detectChanges();
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
 
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Main Job Role', async () => {
+      const { fixture, getByText } = await setup({ worker });
+
+      const yesItIsButton = getByText('Yes, it is', { exact: false });
+      yesItIsButton.click();
+
+      fixture.detectChanges();
+
+      expect(getByText('Meeting requirements')).toBeTruthy();
+    });
   });
 
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Main Job Role', async () => {
-    const { component, fixture, getByText } = await setup();
+  describe('WdfFieldConfirmation for main job role', () => {
+    const worker = buildWorker({
+      fields: [{ name: 'contract', response: Contracts.Permanent }],
+      wdf: [
+        {
+          name: 'contract',
+          response: {
+            isEligible: Eligibility.YES,
+            updatedSinceEffectiveDate: false,
+          },
+        },
+      ],
+    });
 
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
+    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Contract', async () => {
+      const { getByText } = await setup({ worker });
 
-    component.worker.wdf.mainJob.isEligible = Eligibility.YES;
-    component.worker.wdf.mainJob.updatedSinceEffectiveDate = false;
-    component.worker.mainJob = { jobId: 10, title: 'Care Worker' };
-    component.worker.contract = Contracts.Permanent;
+      expect(getByText('Is this still correct?')).toBeTruthy();
+      expect(getByText('Yes, it is')).toBeTruthy();
+      expect(getByText('No, change it')).toBeTruthy();
+    });
 
-    fixture.detectChanges();
+    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Contract', async () => {
+      const { fixture, getByText } = await setup({ worker });
 
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
+      const yesItIsButton = getByText('Yes, it is', { exact: false });
+      yesItIsButton.click();
 
-    fixture.detectChanges();
+      fixture.detectChanges();
 
-    expect(getByText('Meeting requirements')).toBeTruthy();
-  });
-
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Contract', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.contract.isEligible = Eligibility.YES;
-    component.worker.wdf.contract.updatedSinceEffectiveDate = false;
-    component.worker.contract = Contracts.Permanent;
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Contract', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-    component.worker.wdf.contract.isEligible = Eligibility.YES;
-    component.worker.wdf.contract.updatedSinceEffectiveDate = false;
-    component.worker.contract = Contracts.Permanent;
-
-    fixture.detectChanges();
-
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
-
-    fixture.detectChanges();
-
-    expect(getByText('Meeting requirements')).toBeTruthy();
+      expect(getByText('Meeting requirements')).toBeTruthy();
+    });
   });
 
   it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Highest level of social care qualification', async () => {
@@ -818,18 +837,6 @@ describe('StaffRecordSummaryComponent', () => {
         overrides: [{ name: 'otherQualification', response: 'Yes' }],
       },
     ].forEach((field) => {
-      const buildWorker = (field) => {
-        const worker = workerWithWdf() as Worker;
-
-        if (field.overrides) {
-          field.overrides.forEach((override) => {
-            worker[override.name] = override.response;
-          });
-        }
-
-        return worker;
-      };
-
       it(`should show this information needs to be added message when worker is not eligible and needs to add ${field.name}`, async () => {
         const worker = buildWorker(field);
         worker[field.name] = null;

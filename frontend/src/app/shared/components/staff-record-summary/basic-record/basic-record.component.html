@@ -4,7 +4,7 @@
   data-testid="name-and-contract-section"
 >
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key govuk-!-padding-right-0 govuk-!-width-one-third">Name or ID number</dt>
+    <dt class="govuk-summary-list__key govuk-!-padding-right-0">Name or ID number</dt>
     <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
       {{ worker.nameOrId }}
     </dd>
@@ -29,12 +29,7 @@
     </dd>
   </div>
   <app-wdf-field-confirmation
-    *ngIf="
-      canEditWorker &&
-      wdfView &&
-      worker.wdf?.contract.isEligible === 'Yes' &&
-      !worker.wdf?.contract.updatedSinceEffectiveDate
-    "
+    *ngIf="showWdfConfirmations.contract"
     [changeLink]="getRoutePath('staff-details', wdfView)"
     (fieldConfirmation)="this.confirmField('contract')"
     [workerUid]="worker.uid"
@@ -42,10 +37,16 @@
 </dl>
 
 <dl class="govuk-summary-list asc-summarylist-border-top asc-summarylist-border-bottom">
-  <div class="govuk-summary-list__row" data-testid="main-job-role-section">
-    <dt class="govuk-summary-list__key govuk-!-padding-right-0 govuk-!-width-one-third">Main job role</dt>
+  <div
+    class="govuk-summary-list__row"
+    [ngClass]="{
+      'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.mainJob
+    }"
+    data-testid="main-job-role-section"
+  >
+    <dt class="govuk-summary-list__key govuk-!-padding-right-0">Main job role</dt>
     <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
-      <ng-container *ngIf="worker.mainJob.other; else title">
+      <ng-container *ngIf="worker.mainJob?.other; else title">
         <span>{{ worker.mainJob.other }}</span>
       </ng-container>
       <ng-template #title>
@@ -54,6 +55,7 @@
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="!showWdfConfirmations.mainJob"
         [explanationText]="' basic record details'"
         [link]="
           mandatoryDetailsPage ? getMandatoryDetailsRoute('main-job-role') : getRoutePath('main-job-role', wdfView)
@@ -63,12 +65,7 @@
     </dd>
   </div>
   <app-wdf-field-confirmation
-    *ngIf="
-      canEditWorker &&
-      wdfView &&
-      worker.wdf?.mainJob.isEligible === 'Yes' &&
-      !worker.wdf?.mainJob.updatedSinceEffectiveDate
-    "
+    *ngIf="showWdfConfirmations.mainJob"
     [changeLink]="getRoutePath('main-job-role', wdfView)"
     (fieldConfirmation)="this.confirmField('mainJob')"
     [workerUid]="worker.uid"
