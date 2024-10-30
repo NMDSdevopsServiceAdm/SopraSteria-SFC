@@ -10,11 +10,11 @@ const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
 const config = require('../../../../../config/config');
 
 const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
-const { it } = require('node:test');
 
-describe.only('backend/server/routes/establishments/workerCertificate/workerCertificateService.js', () => {
+describe('backend/server/routes/establishments/workerCertificate/workerCertificateService.js', () => {
   const user = buildUser();
   const qualification = qualificationBuilder();
+  let service;
 
   afterEach(() => {
     sinon.restore();
@@ -432,16 +432,67 @@ describe.only('backend/server/routes/establishments/workerCertificate/workerCert
   });
 
   describe('findParentRecord / verifyParentRecordExists', () => {
-    it('should return a training / qualification record for the given id');
+    afterEach(() => {
+      sinon.restore();
+    });
 
-    it('should throw an error if cannot find a record that belongs to the given worker');
+    it('should return a training / qualification record for the given id', async () => {
+      sinon.stub(models.workerQualifications, 'findOne').resolves({ workerFk: user.id, id: qualification.id });
+
+      const actual = await service.findParentRecord(qualification.uid, user.uid);
+      expect(actual).to.deep.equal({ workerFk: user.id, id: qualification.id });
+    });
+
+    it('should throw an error if cannot find a record that belongs to the given worker', async () => {
+      sinon.stub(models.workerQualifications, 'findOne').resolves(null);
+
+      try {
+        await service.findParentRecord(qualification.uid, user.uid);
+      } catch (err) {
+        error = err;
+      }
+      expect(error.statusCode).to.equal(400);
+      expect(error.message).to.equal('Failed to find related qualification record');
+    });
   });
 
   describe('getFileKeys', () => {
-    it('should return an array that contain every key for the given certificate records');
+    const mockFileIds = ['mock-file-id-1', 'mock-file-id-2', 'mock-file-id-3'];
+    const mockRecords = [
+      { uid: 'mock-file-id-1', key: 'file-key-formock-file-id-1' },
+      { uid: 'mock-file-id-2', key: 'file-key-formock-file-id-2' },
+      { uid: 'mock-file-id-3', key: 'file-key-formock-file-id-3' },
+    ];
 
-    it('should throw an error if certificate records are not found');
+    it('should return an array that contain every key for the given certificate records', async () => {
+      sinon.stub(models.qualificationCertificates, 'findAll').resolves(mockRecords);
 
-    it('should throw an error if the number of certificate records found does not match the number of given ids');
+      const actual = await service.getFileKeys(qualification.uid, mockFileIds);
+      expect(actual).to.deep.equal(mockRecords);
+    });
+
+    it('should throw an error if certificate records are not found', async () => {
+      sinon.stub(models.qualificationCertificates, 'findAll').resolves([]);
+
+      try {
+        await service.getFileKeys(qualification.uid, mockFileIds);
+      } catch (err) {
+        error = err;
+      }
+      expect(error.statusCode).to.equal(400);
+      expect(error.message).to.equal('Failed to find related qualification certificate records');
+    });
+
+    it('should throw an error if the number of certificate records found does not match the number of given ids', async () => {
+      sinon.stub(models.qualificationCertificates, 'findAll').resolves(mockRecords.slice(0, 1));
+
+      try {
+        await service.getFileKeys(qualification.uid, mockFileIds);
+      } catch (err) {
+        error = err;
+      }
+      expect(error.statusCode).to.equal(400);
+      expect(error.message).to.equal('Failed to find related qualification certificate records');
+    });
   });
 });
