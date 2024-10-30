@@ -1,14 +1,14 @@
 <span class="govuk-!-margin-bottom-0 govuk__flex govuk__nowrap">
   <ng-container *ngIf="currentWdfEligibility">
-    <img class="govuk-!-margin-right-1" src="/assets/images/tick-icon.svg" alt="" />
+    <img class="govuk-!-margin-right-1" src="/assets/images/tick-icon.svg" alt="" data-testid="green-tick" />
     <span class="govuk-visually-hidden">Green tick</span>Meeting
   </ng-container>
   <ng-container *ngIf="overallWdfEligibility && !currentWdfEligibility">
-    <img class="govuk-!-margin-right-1" src="/assets/images/flag-orange.svg" alt="" />
+    <img class="govuk-!-margin-right-1" src="/assets/images/flag-orange.svg" alt="" data-testid="orange-flag" />
     <span class="govuk-visually-hidden">Orange warning flag</span>Not meeting
   </ng-container>
   <ng-container *ngIf="!overallWdfEligibility && !currentWdfEligibility">
-    <img class="govuk-!-margin-right-1" src="/assets/images/cross-icon.svg" alt="" />
+    <img class="govuk-!-margin-right-1" src="/assets/images/flag-red.svg" alt="" data-testid="red-flag" />
     <span class="govuk-visually-hidden">Red cross</span>Not meeting
   </ng-container>
 </span>
