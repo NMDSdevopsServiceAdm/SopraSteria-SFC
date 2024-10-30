@@ -4,11 +4,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingRecord, TrainingRecords } from '@core/model/training.model';
+import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -19,14 +22,11 @@ import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockW
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { of, throwError } from 'rxjs';
 
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
-import userEvent from '@testing-library/user-event';
-import { TrainingRecord, TrainingRecords } from '@core/model/training.model';
-import { TrainingService } from '@core/services/training.service';
-import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 
 describe('NewTrainingAndQualificationsRecordComponent', () => {
   const workplace = establishmentBuilder() as Establishment;
@@ -960,6 +960,34 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           type: 'success',
           message: 'Certificate uploaded',
         });
+      });
+
+      it('should reset the actions list with returned training data when file successfully uploaded', async () => {
+        const { fixture, getByTestId, workerService, trainingService } = await setup(false, true, []);
+        const mockUpdatedData = {
+          training: mockTrainingData,
+          qualifications: { count: 0, groups: [], lastUpdated: null },
+        } as TrainingAndQualificationRecords;
+        spyOn(workerService, 'getAllTrainingAndQualificationRecords').and.returnValue(of(mockUpdatedData));
+        spyOn(trainingService, 'addCertificateToTraining').and.returnValue(of(null));
+
+        const trainingRecordRow = getByTestId('someHealthuid');
+        const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        await fixture.whenStable();
+
+        const actionsListTable = getByTestId('actions-list-table');
+        const actionListTableRows = actionsListTable.querySelectorAll('tr');
+
+        const rowOne = actionListTableRows[1];
+        expect(rowOne.cells['0'].innerHTML).toBe('Autism');
+
+        const rowTwo = actionListTableRows[2];
+        expect(rowTwo.cells['0'].innerHTML).toBe('Coshh');
+
+        expect(actionListTableRows.length).toBe(3);
       });
 
       it('should display an error message on the training category when certificate upload fails', async () => {
