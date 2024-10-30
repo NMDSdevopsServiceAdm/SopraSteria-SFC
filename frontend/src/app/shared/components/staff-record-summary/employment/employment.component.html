@@ -39,7 +39,7 @@
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row-above-message': wdfView && !worker.mainJobStartDate
+      'asc-summary-list__row-no-bottom-border': wdfView && !worker.mainJobStartDate
     }"
   >
     <dt class="govuk-summary-list__key govuk-!-width-one-half">Date started in main job role</dt>
@@ -138,7 +138,7 @@
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row-above-message': wdfView && !worker.recruitedFrom
+      'asc-summary-list__row-no-bottom-border': wdfView && !worker.recruitedFrom
     }"
   >
     <dt class="govuk-summary-list__key">Recruited from</dt>
@@ -187,7 +187,7 @@
     *ngIf="displayDaysSickness"
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row-above-message': wdfView && !worker.daysSick
+      'asc-summary-list__row-no-bottom-border': wdfView && !worker.daysSick
     }"
   >
     <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
@@ -227,7 +227,7 @@
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row-above-message': wdfView && !worker.zeroHoursContract
+      'asc-summary-list__row-no-bottom-border': wdfView && !worker.zeroHoursContract
     }"
   >
     <dt class="govuk-summary-list__key">Zero hours contract</dt>
@@ -272,7 +272,7 @@
     *ngIf="displayAverageWeeklyHours"
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row-above-message':
+      'asc-summary-list__row-no-bottom-border':
         wdfView &&
         (worker.weeklyHoursAverage === null ||
           (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null))
@@ -334,7 +334,7 @@
     *ngIf="displayWeeklyContractedHours"
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row-above-message':
+      'asc-summary-list__row-no-bottom-border':
         wdfView &&
         (worker.weeklyHoursContracted === null ||
           (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null))
@@ -395,7 +395,7 @@
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row-above-message': wdfView && !worker.annualHourlyPay
+      'asc-summary-list__row-no-bottom-border': wdfView && !worker.annualHourlyPay
     }"
   >
     <dt class="govuk-summary-list__key">Hourly pay or annual salary</dt>
