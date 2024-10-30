@@ -10,8 +10,9 @@ const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
 const config = require('../../../../../config/config');
 
 const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
+const { it } = require('node:test');
 
-describe('backend/server/routes/establishments/workerCertificate/workerCertificateService.js', () => {
+describe.only('backend/server/routes/establishments/workerCertificate/workerCertificateService.js', () => {
   const user = buildUser();
   const qualification = qualificationBuilder();
 
@@ -29,12 +30,20 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     let res;
 
     beforeEach(() => {
-      mockRequestBody = { files: [{ filename: 'cert1.pdf' }, { filename: 'cert2.pdf' }], params: { id: 1, workerId: 2, recordUid: 3 } };
+      mockRequestBody = {
+        files: [{ filename: 'cert1.pdf' }, { filename: 'cert2.pdf' }],
+        params: { id: 1, workerId: 2, recordUid: 3 },
+      };
       sinon.stub(s3, 'getSignedUrlForUpload').returns(mockSignedUrl);
     });
 
     it('should include a signed url for upload and a uuid for each file', async () => {
-      const result = await service.requestUploadUrl(mockRequestBody.files, mockRequestBody.establishmentUid, mockRequestBody.workerUid, mockRequestBody.recordUid);
+      const result = await service.requestUploadUrl(
+        mockRequestBody.files,
+        mockRequestBody.establishmentUid,
+        mockRequestBody.workerUid,
+        mockRequestBody.recordUid,
+      );
 
       expect(result).to.have.lengthOf(mockUploadFiles.length);
 
@@ -71,122 +80,122 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
   });
 
-    describe('confirmUpload', () => {
-      const mockUploadFiles = [
-        { filename: 'cert1.pdf', fileId: 'uuid1', etag: 'etag1', key: 'mockKey' },
-        { filename: 'cert2.pdf', fileId: 'uuid2', etag: 'etag2', key: 'mockKey2' },
-      ];
-      const mockWorkerFk = user.id;
-      const mockQualificationRecord = { dataValues: { workerFk: user.id, id: qualification.id } };
+  describe('confirmUpload', () => {
+    const mockUploadFiles = [
+      { filename: 'cert1.pdf', fileId: 'uuid1', etag: 'etag1', key: 'mockKey' },
+      { filename: 'cert2.pdf', fileId: 'uuid2', etag: 'etag2', key: 'mockKey2' },
+    ];
+    const mockWorkerFk = user.id;
+    const mockQualificationRecord = { dataValues: { workerFk: user.id, id: qualification.id } };
 
-      let stubAddCertificate;
+    let stubAddCertificate;
 
-      beforeEach(() => {
-        stubWorkerQualifications = sinon.stub(models.workerQualifications, 'findOne').returns(mockQualificationRecord);
-        sinon.stub(s3, 'verifyEtag').returns(true);
-        stubAddCertificate = sinon.stub(models.qualificationCertificates, 'addCertificate');
-        sinon.stub(console, 'error'); // mute error log
-      });
+    beforeEach(() => {
+      stubWorkerQualifications = sinon.stub(models.workerQualifications, 'findOne').returns(mockQualificationRecord);
+      sinon.stub(s3, 'verifyEtag').returns(true);
+      stubAddCertificate = sinon.stub(models.qualificationCertificates, 'addCertificate');
+      sinon.stub(console, 'error'); // mute error log
+    });
 
-      createReq = (override) => {
-        return { files: mockUploadFiles, params: { establishmentUid: 1, workerId: 2, recordUid: 3 }, ...override};
-      }
+    createReq = (override) => {
+      return { files: mockUploadFiles, params: { establishmentUid: 1, workerId: 2, recordUid: 3 }, ...override };
+    };
 
-      it('should add a new record to database for each file', async () => {
-        const req = createReq();
+    it('should add a new record to database for each file', async () => {
+      const req = createReq();
 
-        await service.confirmUpload(req.files, req.params.qualificationUid);
+      await service.confirmUpload(req.files, req.params.qualificationUid);
 
-        expect(stubAddCertificate).to.have.been.callCount(mockUploadFiles.length);
+      expect(stubAddCertificate).to.have.been.callCount(mockUploadFiles.length);
 
-        mockUploadFiles.forEach((file) => {
-          expect(stubAddCertificate).to.have.been.calledWith({
-            recordId: qualification.id,
-            workerFk: mockWorkerFk,
-            filename: file.filename,
-            fileId: file.fileId,
-            key: file.key,
-          });
+      mockUploadFiles.forEach((file) => {
+        expect(stubAddCertificate).to.have.been.calledWith({
+          recordId: qualification.id,
+          workerFk: mockWorkerFk,
+          filename: file.filename,
+          fileId: file.fileId,
+          key: file.key,
         });
       });
-
-      it('should reply with status 400 if file param was missing', async () => {
-        const req = createReq({files: []});
-        let error;
-        try {
-          await service.confirmUpload(req.files, req.params.qualificationUid);
-        } catch (err) {
-          error = err;
-        }
-        expect(error.statusCode).to.equal(400);
-        expect(stubAddCertificate).not.to.be.called;
-      });
-
-      it(`should reply with status 400 if qualification record does not exist in database`, async () => {
-        models.workerQualifications.findOne.restore();
-        sinon.stub(models.workerQualifications, 'findOne').returns(null);
-
-        const req = createReq();
-        let error;
-
-        try {
-          await service.confirmUpload(req.files, req.params.qualificationUid);
-        } catch (err) {
-          error = err;
-        }
-        expect(error.statusCode).to.equal(400);
-        expect(stubAddCertificate).not.to.be.called;
-      });
-
-      it(`should reply with status 400 if etag from request does not match the etag on s3`, async () => {
-        s3.verifyEtag.restore();
-        sinon.stub(s3, 'verifyEtag').returns(false);
-
-        const req = createReq();
-        let error;
-
-        try {
-          await service.confirmUpload(req.files, req.params.qualificationUid);
-        } catch (err) {
-          error = err;
-        }
-
-        expect(error.statusCode).to.equal(400);
-        expect(stubAddCertificate).not.to.be.called;
-      });
-
-      it('should reply with status 400 if the file does not exist on s3', async () => {
-        s3.verifyEtag.restore();
-        sinon.stub(s3, 'verifyEtag').throws('403: UnknownError');
-
-        const req = createReq();
-        let error;
-
-        try {
-          await service.confirmUpload(req.files, req.params.recordUid);
-        } catch (err) {
-          error = err;
-        }
-
-        expect(error.statusCode).to.equal(400);
-        expect(stubAddCertificate).not.to.be.called;
-      });
-
-      it('should reply with status 500 if failed to add new certificate record to database', async () => {
-        stubAddCertificate.throws('DatabaseError');
-
-        const req = createReq();
-        let error;
-
-        try {
-          await service.confirmUpload(req.files, req.params.recordUid);
-        } catch (err) {
-          error = err;
-        }
-
-        expect(error.statusCode).to.equal(500);
-      });
     });
+
+    it('should reply with status 400 if file param was missing', async () => {
+      const req = createReq({ files: [] });
+      let error;
+      try {
+        await service.confirmUpload(req.files, req.params.qualificationUid);
+      } catch (err) {
+        error = err;
+      }
+      expect(error.statusCode).to.equal(400);
+      expect(stubAddCertificate).not.to.be.called;
+    });
+
+    it(`should reply with status 400 if qualification record does not exist in database`, async () => {
+      models.workerQualifications.findOne.restore();
+      sinon.stub(models.workerQualifications, 'findOne').returns(null);
+
+      const req = createReq();
+      let error;
+
+      try {
+        await service.confirmUpload(req.files, req.params.qualificationUid);
+      } catch (err) {
+        error = err;
+      }
+      expect(error.statusCode).to.equal(400);
+      expect(stubAddCertificate).not.to.be.called;
+    });
+
+    it(`should reply with status 400 if etag from request does not match the etag on s3`, async () => {
+      s3.verifyEtag.restore();
+      sinon.stub(s3, 'verifyEtag').returns(false);
+
+      const req = createReq();
+      let error;
+
+      try {
+        await service.confirmUpload(req.files, req.params.qualificationUid);
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error.statusCode).to.equal(400);
+      expect(stubAddCertificate).not.to.be.called;
+    });
+
+    it('should reply with status 400 if the file does not exist on s3', async () => {
+      s3.verifyEtag.restore();
+      sinon.stub(s3, 'verifyEtag').throws('403: UnknownError');
+
+      const req = createReq();
+      let error;
+
+      try {
+        await service.confirmUpload(req.files, req.params.recordUid);
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error.statusCode).to.equal(400);
+      expect(stubAddCertificate).not.to.be.called;
+    });
+
+    it('should reply with status 500 if failed to add new certificate record to database', async () => {
+      stubAddCertificate.throws('DatabaseError');
+
+      const req = createReq();
+      let error;
+
+      try {
+        await service.confirmUpload(req.files, req.params.recordUid);
+      } catch (err) {
+        error = err;
+      }
+
+      expect(error.statusCode).to.equal(500);
+    });
+  });
 
   describe('getPresignedUrlForCertificateDownload', () => {
     const mockSignedUrl = 'http://localhost/mock-download-url';
@@ -196,6 +205,14 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
     beforeEach(() => {
       getSignedUrlForDownloadSpy = sinon.stub(s3, 'getSignedUrlForDownload').returns(mockSignedUrl);
+      sinon.stub(service, 'verifyParentRecordExists').resolves();
+      sinon.stub(service, 'getFileKeys').callsFake((recordUid, fileIds) => {
+        return fileIds.map((fileId) => ({
+          uid: fileId,
+          key: `${user.establishment.uid}/${user.uid}/qualificationCertificate/${recordUid}/${fileId}`,
+        }));
+      });
+
       mockFileUid = 'mockFileUid';
       mockFileName = 'mockFileName';
       req = {
@@ -205,7 +222,12 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
 
     it('should return an array with signed url for download and file name in response', async () => {
-      const actual = await service.getPresignedUrlForCertificateDownload(req.files, req.params.establishmentUid, req.params.workerUid, req.params.recordUid);
+      const actual = await service.getPresignedUrlForCertificateDownload(
+        req.files,
+        req.params.establishmentUid,
+        req.params.workerUid,
+        req.params.recordUid,
+      );
 
       expect(actual).to.deep.equal([{ signedUrl: mockSignedUrl, filename: mockFileName }]);
     });
@@ -213,12 +235,22 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     it('should call getSignedUrlForDownload with bucket name from config', async () => {
       const bucketName = config.get('workerCertificate.bucketname');
 
-      await service.getPresignedUrlForCertificateDownload(req.files, req.params.establishmentUid, req.params.workerUid, req.params.recordUid);
+      await service.getPresignedUrlForCertificateDownload(
+        req.files,
+        req.params.establishmentUid,
+        req.params.workerUid,
+        req.params.recordUid,
+      );
       expect(getSignedUrlForDownloadSpy.args[0][0].bucket).to.equal(bucketName);
     });
 
     it('should call getSignedUrlForDownload with key of formatted uids passed in params', async () => {
-      await service.getPresignedUrlForCertificateDownload(req.files, req.params.establishmentUid, req.params.workerUid, req.params.recordUid);
+      await service.getPresignedUrlForCertificateDownload(
+        req.files,
+        req.params.establishmentUid,
+        req.params.workerUid,
+        req.params.recordUid,
+      );
 
       const expectedKey = `${req.params.establishmentUid}/${req.params.workerUid}/qualificationCertificate/${req.params.recordUid}/${mockFileUid}`;
       expect(getSignedUrlForDownloadSpy.args[0][0].key).to.equal(expectedKey);
@@ -229,7 +261,12 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
       let error;
       try {
-        await service.getPresignedUrlForCertificateDownload(req.files, req.params.establishmentUid, req.params.workerUid, req.params.recordUid);
+        await service.getPresignedUrlForCertificateDownload(
+          req.files,
+          req.params.establishmentUid,
+          req.params.workerUid,
+          req.params.recordUid,
+        );
       } catch (err) {
         error = err;
       }
@@ -268,6 +305,14 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       stubDeleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
       stubDeleteCertificate = sinon.stub(models.qualificationCertificates, 'deleteCertificate');
       stubCountCertificatesToBeDeleted = sinon.stub(models.qualificationCertificates, 'countCertificatesToBeDeleted');
+
+      sinon.stub(service, 'verifyParentRecordExists').resolves();
+      sinon.stub(service, 'getFileKeys').callsFake((recordUid, fileIds) => {
+        return fileIds.map((fileId) => ({
+          uid: fileId,
+          key: `${user.establishment.uid}/${user.uid}/qualificationCertificate/${recordUid}/${fileId}`,
+        }));
+      });
     });
 
     it('should delete certificate from S3', async () => {
@@ -276,9 +321,21 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
       stubCountCertificatesToBeDeleted.returns(1);
 
-      await service.deleteCertificates(req.files, req.params.establishmentUid, req.params.workerUid, req.params.recordUid);
+      await service.deleteCertificates(
+        req.files,
+        req.params.establishmentUid,
+        req.params.workerUid,
+        req.params.recordUid,
+      );
 
-      expect(stubDeleteCertificatesFromS3).to.be.calledWith({ bucket: bucketName, objects: [{ Key: `${req.params.establishmentUid}/${req.params.workerUid}/qualificationCertificate/${req.params.recordUid}/${mockFileUid1}` }] });
+      expect(stubDeleteCertificatesFromS3).to.be.calledWith({
+        bucket: bucketName,
+        objects: [
+          {
+            Key: `${req.params.establishmentUid}/${req.params.workerUid}/qualificationCertificate/${req.params.recordUid}/${mockFileUid1}`,
+          },
+        ],
+      });
     });
 
     describe('errors', () => {
@@ -287,7 +344,12 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         let error;
 
         try {
-          await service.deleteCertificates(req.files, req.params.establishmentUid, req.params.workerUid, req.params.recordUid);
+          await service.deleteCertificates(
+            req.files,
+            req.params.establishmentUid,
+            req.params.workerUid,
+            req.params.recordUid,
+          );
         } catch (err) {
           error = err;
         }
@@ -306,7 +368,12 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         let error;
 
         try {
-          await service.deleteCertificates(req.files, req.params.establishmentUid, req.params.workerUid, req.params.recordUid);
+          await service.deleteCertificates(
+            req.files,
+            req.params.establishmentUid,
+            req.params.workerUid,
+            req.params.recordUid,
+          );
         } catch (err) {
           error = err;
         }
@@ -316,16 +383,21 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
       it('should throw a HttpError with status code 500 if there was a database error on DB deleteCertificate call', async () => {
         req.files = [
-            { uid: mockFileUid1, filename: 'mockFileName1' },
-            { uid: mockFileUid2, filename: 'mockFileName2' },
-            { uid: mockFileUid3, filename: 'mockFileName3' },
-          ];
+          { uid: mockFileUid1, filename: 'mockFileName1' },
+          { uid: mockFileUid2, filename: 'mockFileName2' },
+          { uid: mockFileUid3, filename: 'mockFileName3' },
+        ];
         stubCountCertificatesToBeDeleted.returns(3);
         stubDeleteCertificate.throws(errorMessage);
         let error;
 
         try {
-          await service.deleteCertificates(req.files, req.params.establishmentUid, req.params.workerUid, req.params.recordUid);
+          await service.deleteCertificates(
+            req.files,
+            req.params.establishmentUid,
+            req.params.workerUid,
+            req.params.recordUid,
+          );
         } catch (err) {
           error = err;
         }
@@ -335,15 +407,20 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
       it('should throw a HttpError with status code 400 if the number of records in database does not match request', async () => {
         req.files = [
-            { uid: mockFileUid1, filename: 'mockFileName1' },
-            { uid: mockFileUid2, filename: 'mockFileName2' },
-            { uid: mockFileUid3, filename: 'mockFileName3' },
+          { uid: mockFileUid1, filename: 'mockFileName1' },
+          { uid: mockFileUid2, filename: 'mockFileName2' },
+          { uid: mockFileUid3, filename: 'mockFileName3' },
         ];
 
         stubCountCertificatesToBeDeleted.returns(1);
 
         try {
-          await service.deleteCertificates(req.files, req.params.establishmentUid, req.params.workerUid, req.params.recordUid);
+          await service.deleteCertificates(
+            req.files,
+            req.params.establishmentUid,
+            req.params.workerUid,
+            req.params.recordUid,
+          );
         } catch (err) {
           error = err;
         }
@@ -352,5 +429,19 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         expect(error.message).to.equal('Invalid request');
       });
     });
+  });
+
+  describe('findParentRecord / verifyParentRecordExists', () => {
+    it('should return a training / qualification record for the given id');
+
+    it('should throw an error if cannot find a record that belongs to the given worker');
+  });
+
+  describe('getFileKeys', () => {
+    it('should return an array that contain every key for the given certificate records');
+
+    it('should throw an error if certificate records are not found');
+
+    it('should throw an error if the number of certificate records found does not match the number of given ids');
   });
 });

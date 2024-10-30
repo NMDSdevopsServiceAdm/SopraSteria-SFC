@@ -42,7 +42,7 @@ const buildMockWorkerQualification = (override = {}) => {
   });
 };
 
-describe.only('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () => {
+describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () => {
   const mockWorkerId = '100';
   const mockWorkerUid = uuidv4();
   const mockEstablishmentId = '210';
