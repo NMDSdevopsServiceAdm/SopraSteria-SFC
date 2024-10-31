@@ -363,9 +363,12 @@ class Worker extends EntityValidator {
       }
 
       if (document.transferStaffRecord) {
-        console.log('============= detect transferStaffRecord ========== ');
-        console.log(document.transferStaffRecord, 'the new workplace this worker should move to');
         this._transferStaffRecord = document.transferStaffRecord;
+      }
+
+      if (document._newWorkplaceId) {
+        console.log('_newWorkplaceId received on worker.load()');
+        this._newWorkplaceId = document._newWorkplaceId;
       }
 
       // Consequential updates when one value means another should be empty or null
@@ -760,23 +763,8 @@ class Worker extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
           };
 
-          if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord) {
-            const establishmentFk = await models.establishment.findOne({
-              attributes: ['id'],
-              where: {
-                LocalIdentifierValue: this.transferStaffRecord,
-                [Op.or]: [
-                  {
-                    id: this.establishmentId,
-                  },
-                  {
-                    parentId: this.establishmentId,
-                  },
-                ],
-              },
-            });
-
-            updateDocument.establishmentFk = establishmentFk.id;
+          if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord && this._newWorkplaceId) {
+            updateDocument.establishmentFk = this._newWorkplaceId;
           }
 
           if (this._changeLocalIdentifer) {
@@ -1384,8 +1372,12 @@ class Worker extends EntityValidator {
         myDefaultJSON.status = this._status;
       }
 
-      if (this._transferStaffRecord != null) {
+      if (this._transferStaffRecord !== null) {
         myDefaultJSON.transferStaffRecord = this._transferStaffRecord;
+      }
+
+      if (this._newWorkplaceId !== null) {
+        myDefaultJSON._newWorkplaceId = this._newWorkplaceId;
       }
 
       // TODO: JSON schema validation
