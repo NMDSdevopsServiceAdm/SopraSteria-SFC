@@ -11,6 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 uuidv4();
 
 // database models
+const { Op } = require('sequelize');
 const models = require('../index');
 
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
@@ -616,13 +617,6 @@ class Worker extends EntityValidator {
       return;
     }
 
-    if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord) {
-      console.log('calling save on a worker which have transferStaffRecord filled');
-      console.log(this.transferStaffRecord, '<--- new workplace that this worker should move to');
-      // either we add a UPDATE workplaceFk call to externalTransaction here,
-      // or we return early and handle the workplaceFk update elsewhere
-    }
-
     if (!this.uid) {
       this._log(Worker.LOG_ERROR, 'Not able to save an unknown uid');
       throw new WorkerExceptions.WorkerSaveException(
@@ -770,6 +764,25 @@ class Worker extends EntityValidator {
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
           };
+
+          if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord) {
+            const establishmentFk = await models.establishment.findOne({
+              attributes: ['id'],
+              where: {
+                LocalIdentifierValue: this.transferStaffRecord,
+                [Op.or]: [
+                  {
+                    id: this.establishmentId,
+                  },
+                  {
+                    parentId: this.establishmentId,
+                  },
+                ],
+              },
+            });
+
+            updateDocument.establishmentFk = establishmentFk.id;
+          }
 
           if (this._changeLocalIdentifer) {
             // during bulk upload only, if the change local identifier value is set, then when saving this worker, update it's local identifier;
