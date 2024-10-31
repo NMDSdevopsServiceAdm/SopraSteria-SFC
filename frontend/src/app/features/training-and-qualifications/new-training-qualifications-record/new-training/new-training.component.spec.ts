@@ -1,12 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
+import { TrainingCertificateDownloadEvent, TrainingCertificateUploadEvent } from '@core/model/training.model';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { NewTrainingComponent } from './new-training.component';
-import { TrainingCertificateDownloadEvent, TrainingCertificateUploadEvent } from '@core/model/training.model';
 
 describe('NewTrainingComponent', async () => {
   const trainingCategories = [
@@ -215,6 +215,7 @@ describe('NewTrainingComponent', async () => {
       const { component, fixture } = await setup();
 
       component.trainingCategories = [];
+      component.ngOnChanges();
       fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
 
@@ -239,6 +240,7 @@ describe('NewTrainingComponent', async () => {
       component.trainingCategories = [];
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
+      component.ngOnChanges();
       fixture.detectChanges();
       const noMandatoryTrainingLink = fixture.debugElement.query(
         By.css('[data-testid="no-mandatory-training-link"]'),
@@ -254,6 +256,7 @@ describe('NewTrainingComponent', async () => {
       component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.canEditWorker = false;
+      component.ngOnChanges();
       fixture.detectChanges();
       const noMandatoryTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-mandatory-training-link"]'));
 
@@ -272,8 +275,10 @@ describe('NewTrainingComponent', async () => {
       );
       const messageText = 'No mandatory training has been added for this job role yet.';
       const mandatoryTrainingMessage = fixture.debugElement.query(
-        (debugElement) => debugElement.nativeElement.textContent === messageText,
+        debugElement => debugElement.nativeElement.textContent === messageText
       );
+
+      console.log(mandatoryTrainingMessage);
 
       expect(mandatoryTrainingMessage).toBeTruthy();
       expect(mandatoryTrainingMissingLink).toBeTruthy();

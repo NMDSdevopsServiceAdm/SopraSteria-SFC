@@ -4,11 +4,13 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
+import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { trainingRecord } from '@core/test-utils/MockWorkerService';
@@ -22,8 +24,6 @@ import sinon from 'sinon';
 
 import { SelectUploadFileComponent } from '../../../shared/components/select-upload-file/select-upload-file.component';
 import { AddEditTrainingComponent } from './add-edit-training.component';
-import { TrainingCertificateService } from '@core/services/certificate.service';
-import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
 
 describe('AddEditTrainingComponent', () => {
   async function setup(trainingRecordId = '1', qsParamGetMock = sinon.fake()) {
@@ -357,6 +357,61 @@ describe('AddEditTrainingComponent', () => {
       fireEvent.click(cancelButton);
       fixture.detectChanges();
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard?view=categories#training-and-qualifications']);
+    });
+  });
+
+  describe('Upload file button', () => {
+    it('should render a file input element', async () => {
+      const { getByTestId } = await setup(null);
+
+      const uploadSection = getByTestId('uploadCertificate');
+      expect(uploadSection).toBeTruthy();
+
+      const fileInput = within(uploadSection).getByTestId('fileInput');
+      expect(fileInput).toBeTruthy();
+    });
+
+    it('should render "No file chosen" beside the file input', async () => {
+      const { getByTestId } = await setup(null);
+
+      const uploadSection = getByTestId('uploadCertificate');
+
+      const text = within(uploadSection).getByText('No file chosen');
+      expect(text).toBeTruthy();
+    });
+
+    it('should not render "No file chosen" when a file is chosen', async () => {
+      const { fixture, getByTestId } = await setup(null);
+
+      const uploadSection = getByTestId('uploadCertificate');
+      const fileInput = getByTestId('fileInput');
+
+      userEvent.upload(fileInput, new File(['some file content'], 'cert.pdf'));
+
+      fixture.detectChanges();
+
+      const text = within(uploadSection).queryByText('No file chosen');
+      expect(text).toBeFalsy();
+    });
+
+    it('should provide aria description to screen reader users', async () => {
+      const { fixture, getByTestId } = await setup(null);
+      fixture.autoDetectChanges();
+
+      const uploadSection = getByTestId('uploadCertificate');
+      const fileInput = getByTestId('fileInput');
+
+      let uploadButton = within(uploadSection).getByRole('button', {
+        description: /The certificate must be a PDF file that's no larger than 500KB/,
+      });
+      expect(uploadButton).toBeTruthy();
+
+      userEvent.upload(fileInput, new File(['some file content'], 'cert.pdf'));
+
+      uploadButton = within(uploadSection).getByRole('button', {
+        description: '1 file chosen',
+      });
+      expect(uploadButton).toBeTruthy();
     });
   });
 

@@ -1,8 +1,8 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import {
-  TrainingCertificateUploadEvent,
   TrainingCertificateDownloadEvent,
+  TrainingCertificateUploadEvent,
   TrainingRecord,
   TrainingRecordCategory,
 } from '@core/model/training.model';
@@ -13,7 +13,7 @@ import { TrainingStatusService } from '@core/services/trainingStatus.service';
   templateUrl: './new-training.component.html',
   styleUrls: ['./new-training.component.scss'],
 })
-export class NewTrainingComponent {
+export class NewTrainingComponent implements OnChanges {
   @Input() public trainingCategories: TrainingRecordCategory[];
   @Input() public isMandatoryTraining = false;
   @Input() public trainingType: string;
@@ -31,8 +31,24 @@ export class NewTrainingComponent {
 
   constructor(protected trainingStatusService: TrainingStatusService, private route: ActivatedRoute) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
+    this.addErrorsToTrainingCategories();
+  }
+
+  ngOnChanges(): void {
+    this.addErrorsToTrainingCategories();
+  }
+
+  addErrorsToTrainingCategories() {
+    this.trainingCategoryToDisplay = this.trainingCategories.map((trainingCategory) => {
+      if (this.certificateErrors && trainingCategory.category in this.certificateErrors) {
+        const errorMessage = this.certificateErrors[trainingCategory.category];
+        return { ...trainingCategory, error: errorMessage };
+      } else {
+        return trainingCategory;
+      }
+    });
   }
 
   handleDownloadCertificate(event: Event, trainingRecord: TrainingRecord) {

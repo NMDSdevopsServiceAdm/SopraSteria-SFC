@@ -1,6 +1,6 @@
 <div class="govuk-grid-row" #content>
   <div class="govuk-grid-column-full">
-    <ng-container *ngIf="trainingCategories.length > 0; else noTraining">
+    <ng-container *ngIf="trainingCategoryToDisplay.length > 0; else noTraining">
       <h1 class="govuk-heading-l govuk-!-font-size-27">{{ trainingType }}</h1>
       <div *ngFor="let trainingCategory of trainingCategories" [attr.data-testid]="trainingCategory.category + '-section'">
         <label

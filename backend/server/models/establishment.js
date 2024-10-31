@@ -2395,5 +2395,39 @@ module.exports = function (sequelize, DataTypes) {
     return await this.findAll(nhsBsaApiQuery({ parentId }));
   };
 
+  Establishment.getTrainingCertificatesForWorkplaceAndAnySubs = async function (workplaceId) {
+    return await this.findAll({
+      where: {
+        [Op.or]: [
+          {
+            id: workplaceId,
+          },
+          {
+            parentId: workplaceId,
+            dataOwner: 'Parent',
+          },
+        ],
+      },
+      include: {
+        model: sequelize.models.worker,
+        attributes: ['id'],
+        as: 'workers',
+        where: {
+          archived: false,
+        },
+        include: {
+          model: sequelize.models.workerTraining,
+          as: 'workerTraining',
+          attributes: ['id'],
+          include: {
+            model: sequelize.models.trainingCertificates,
+            as: 'trainingCertificates',
+            attributes: ['id'],
+          },
+        },
+      },
+    });
+  };
+
   return Establishment;
 };

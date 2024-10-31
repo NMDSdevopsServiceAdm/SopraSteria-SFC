@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -143,13 +144,18 @@ describe('CertificationsTableComponent', () => {
       (filename) => new File(['some file content'], filename, { type: 'application/pdf' }),
     );
 
-    it('should show the file names for the new files to be uploaded', async () => {
+ it("should show the file name, today's date and remove link for the new files to be uploaded", async () => {
       const { getByTestId } = await setup([], mockUploadFiles);
+
+      const datePipe = new DatePipe('en-GB');
+      const todayFormatted = datePipe.transform(new Date(), 'd MMM y');
 
       mockUploadFiles.forEach((file, index) => {
         const uploadFileRow = getByTestId(`upload-file-row-${index}`);
         expect(uploadFileRow).toBeTruthy();
         expect(within(uploadFileRow).getByText(file.name)).toBeTruthy();
+        expect(within(uploadFileRow).getByText(todayFormatted)).toBeTruthy();
+
         expect(within(uploadFileRow).getByText('Remove')).toBeTruthy();
       });
     });

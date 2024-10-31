@@ -13,7 +13,11 @@ export class CertificationsTableComponent implements OnInit {
   @Output() removeSavedFile = new EventEmitter<number>();
   @Output() downloadCertificate = new EventEmitter<number>();
 
-  ngOnInit() {}
+  public dateToday: Date;
+
+  ngOnInit() {
+    this.dateToday = new Date();
+  }
 
   public handleRemoveUploadFile(event: Event, index: number): void {
     event.preventDefault();

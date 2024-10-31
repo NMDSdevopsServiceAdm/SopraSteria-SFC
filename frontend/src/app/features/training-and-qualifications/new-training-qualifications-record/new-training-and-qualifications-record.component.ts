@@ -1,7 +1,6 @@
 import { Component, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
-import { TrainingCertificateService, QualificationCertificateService } from '@core/services/certificate.service';
 import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { QualificationsByGroup } from '@core/model/qualification.model';
 import { TrainingRecordCategory } from '@core/model/training.model';
@@ -13,6 +12,7 @@ import {
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -116,7 +116,6 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.worker = this.route.snapshot.data.worker;
     this.qualificationsByGroup = this.route.snapshot.data.trainingAndQualificationRecords.qualifications;
-
     this.trainingRecords = this.route.snapshot.data.trainingAndQualificationRecords.training;
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.canViewWorker = this.permissionsService.can(this.workplace.uid, 'canViewWorker');

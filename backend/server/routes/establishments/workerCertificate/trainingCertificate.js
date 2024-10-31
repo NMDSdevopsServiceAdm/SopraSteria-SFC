@@ -1,7 +1,6 @@
 const WorkerCertificateService = require('./workerCertificateService');
 
 const express = require('express');
-
 const models = require('../../../models');
 
 const { hasPermission } = require('../../../utils/security/hasPermission');
