@@ -916,10 +916,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         expect(uploadCertificateSpy).not.toHaveBeenCalled();
       });
 
-      it('should show an error message when a file of > 500 KB is selected', async () => {
+      it('should show an error message when a file of > 5MB is selected', async () => {
         const invalidFile = new File(['some file content'], 'certificate.pdf');
         Object.defineProperty(invalidFile, 'size', {
-          value: 600 * 1024, // 600 KB
+          value: 6 * 1024 * 1024, // 6MB
         });
 
         const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, []);
@@ -933,7 +933,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+        expect(getByText('The certificate must be no larger than 5MB')).toBeTruthy();
         expect(uploadCertificateSpy).not.toHaveBeenCalled();
       });
 

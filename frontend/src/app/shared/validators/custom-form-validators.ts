@@ -132,10 +132,10 @@ export class CustomValidators extends Validators {
 
   static validateUploadCertificates(files: File[]): string[] | null {
     let errors = [];
-    const maxFileSize = 500 * 1024;
+    const maxFileSize = 5 * 1024 * 1024;
 
     if (files.some((file) => file.size > maxFileSize)) {
-      errors.push('The certificate must be no larger than 500KB');
+      errors.push('The certificate must be no larger than 5MB');
     }
 
     if (files.some((file) => !file.name.toLowerCase().endsWith('.pdf'))) {
