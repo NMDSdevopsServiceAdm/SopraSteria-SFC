@@ -9,21 +9,40 @@ const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker
 
   const isCqcRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
 
-  await crossValidateTransferStaffRecord(myEstablishments, JSONWorker);
-
   _crossValidateMainJobRole(csvWorkerSchemaErrors, isCqcRegulated, JSONWorker);
 };
 
-const crossValidateTransferStaffRecord = async (myEstablishments, JSONWorker) => {
-  if (!JSONWorker.transferStaffRecord) {
-    return;
-  }
-  console.log(JSONWorker.transferStaffRecord, '<--- new workerplace');
-  console.log(JSONWorker.localId, '<--- previous workplace');
-  console.log(JSONWorker.uniqueWorkerId, '<--- uniqueWorkerId');
+const crossValidateTransferStaffRecord = async (csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments) => {
+  const relatedEstablishmentIds = myEstablishments.map((establishment) => establishment.id);
 
-  // we can do something here to validate that this worker exists in the old workplace,
-  // and that the uniqueworkerid isn't duplicated in new workplace
+  for (const establishment of Object.values(myAPIEstablishments)) {
+    if (!establishment._workerEntities) {
+      continue;
+    }
+
+    for (const workerEntity of Object.values(establishment._workerEntities)) {
+      if (workerEntity.transferStaffRecord && workerEntity.status === 'UPDATE') {
+        const newWorkplaceLocalRef = workerEntity.transferStaffRecord;
+        const newWorkplaceId = await getNewWorkplaceId(newWorkplaceLocalRef, relatedEstablishmentIds);
+        // TODO: add error to csvWorkerSchemaErrors if newWorkplaceId is null;
+        workerEntity._newWorkplaceId = newWorkplaceId;
+      }
+    }
+  }
+};
+
+const getNewWorkplaceId = async (newWorkplaceLocalRef, relatedEstablishmentIds) => {
+  const newWorkplaceFound = await models.establishment.findOne({
+    where: {
+      LocalIdentifierValue: newWorkplaceLocalRef,
+      id: relatedEstablishmentIds,
+    },
+  });
+  if (newWorkplaceFound) {
+    return newWorkplaceFound.id;
+  }
+
+  return null;
 };
 
 const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWorker) => {
@@ -71,5 +90,6 @@ const workerNotChanged = (JSONWorker) => !['NEW', 'UPDATE'].includes(JSONWorker.
 module.exports = {
   crossValidate,
   _crossValidateMainJobRole,
+  crossValidateTransferStaffRecord,
   _isCQCRegulated,
 };
