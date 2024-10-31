@@ -4,8 +4,13 @@ const isWorkerFile = (fileAsString) => {
   //TODO investiagte
   const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
   const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,/;
+  const contentRegex3 = /LOCALESTID,UNIQUEWORKERID,TRANSFERSTAFFRECORD,STATUS,DISPLAYID,/;
 
-  return contentRegex1.test(fileAsString.substring(0, 50)) || contentRegex2.test(fileAsString.substring(0, 50));
+  return (
+    contentRegex1.test(fileAsString.substring(0, 50)) ||
+    contentRegex2.test(fileAsString.substring(0, 50)) ||
+    contentRegex3.test(fileAsString)
+  );
 };
 
 const isTrainingFile = (fileAsString) => {

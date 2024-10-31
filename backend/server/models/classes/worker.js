@@ -72,6 +72,8 @@ class Worker extends EntityValidator {
 
     // bulk upload status - this is never stored in database
     this._status = bulkUploadStatus;
+
+    this._transferStaffRecord = null;
   }
 
   // returns true if valid establishment id
@@ -188,6 +190,10 @@ class Worker extends EntityValidator {
 
   get status() {
     return this._status;
+  }
+
+  get transferStaffRecord() {
+    return this._transferStaffRecord;
   }
 
   get contract() {
@@ -350,6 +356,12 @@ class Worker extends EntityValidator {
       // bulk upload status
       if (document.status) {
         this._status = document.status;
+      }
+
+      if (document.transferStaffRecord) {
+        console.log('============= detect transferStaffRecord ========== ');
+        console.log(document.transferStaffRecord, 'the new workplace this worker should move to');
+        this._transferStaffRecord = document.transferStaffRecord;
       }
 
       // Consequential updates when one value means another should be empty or null
@@ -602,6 +614,13 @@ class Worker extends EntityValidator {
     // with bulk upload, if this entity's status is "UNCHECKED", do not save it
     if (this._status === 'UNCHECKED') {
       return;
+    }
+
+    if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord) {
+      console.log('calling save on a worker which have transferStaffRecord filled');
+      console.log(this.transferStaffRecord, '<--- new workplace that this worker should move to');
+      // either we add a UPDATE workplaceFk call to externalTransaction here,
+      // or we return early and handle the workplaceFk update elsewhere
     }
 
     if (!this.uid) {
@@ -1354,6 +1373,10 @@ class Worker extends EntityValidator {
       // bulk upload status
       if (this._status !== null) {
         myDefaultJSON.status = this._status;
+      }
+
+      if (this._transferStaffRecord != null) {
+        myDefaultJSON.transferStaffRecord = this._transferStaffRecord;
       }
 
       // TODO: JSON schema validation

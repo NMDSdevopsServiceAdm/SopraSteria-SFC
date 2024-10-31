@@ -9,7 +9,21 @@ const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker
 
   const isCqcRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
 
+  await crossValidateTransferStaffRecord(myEstablishments, JSONWorker);
+
   _crossValidateMainJobRole(csvWorkerSchemaErrors, isCqcRegulated, JSONWorker);
+};
+
+const crossValidateTransferStaffRecord = async (myEstablishments, JSONWorker) => {
+  if (!JSONWorker.transferStaffRecord) {
+    return;
+  }
+  console.log(JSONWorker.transferStaffRecord, '<--- new workerplace');
+  console.log(JSONWorker.localId, '<--- previous workplace');
+  console.log(JSONWorker.uniqueWorkerId, '<--- uniqueWorkerId');
+
+  // we can do something here to validate that this worker exists in the old workplace,
+  // and that the uniqueworkerid isn't duplicated in new workplace
 };
 
 const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWorker) => {

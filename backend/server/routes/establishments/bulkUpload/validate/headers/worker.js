@@ -1,11 +1,21 @@
-const { workerHeadersWithCHGUNIQUEWRKID, workerHeadersWithoutCHGUNIQUEWRKID } = require('../../data/workerHeaders');
+const {
+  workerHeadersWithCHGUNIQUEWRKID,
+  workerHeadersWithoutCHGUNIQUEWRKID,
+  workerHeadersWithTransferStaff,
+} = require('../../data/workerHeaders');
 
 const validateWorkerHeaders = (headers) => {
   const matchesWithChgUnique = headers.startsWith(workerHeadersWithCHGUNIQUEWRKID);
   const matchesWithoutChgUnique = headers.startsWith(workerHeadersWithoutCHGUNIQUEWRKID);
+  const matchesWithTransferStaff = headers.startsWith(workerHeadersWithTransferStaff);
 
-  if (!matchesWithChgUnique && !matchesWithoutChgUnique) {
+  if (!matchesWithChgUnique && !matchesWithoutChgUnique && !matchesWithTransferStaff) {
     return false;
+  }
+
+  if (matchesWithTransferStaff) {
+    // temp shortcut
+    return true;
   }
 
   const additionalQualsHeaders = matchesWithChgUnique

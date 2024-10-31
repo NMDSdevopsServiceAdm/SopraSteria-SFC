@@ -20,6 +20,7 @@ class WorkerCsvValidator {
     this._status = null;
     this._key = null;
     this._establishmentKey = null;
+    this._transferStaffRecord = null;
 
     this._NINumber = null;
     this._postCode = null;
@@ -403,6 +404,10 @@ class WorkerCsvValidator {
     return this._changeUniqueWorkerId;
   }
 
+  get transferStaffRecord() {
+    return this._transferStaffRecord;
+  }
+
   get contractType() {
     return this._contractType;
   }
@@ -769,6 +774,28 @@ class WorkerCsvValidator {
       this._status = myStatus;
       return true;
     }
+  }
+
+  _validateTransferStaffRecord() {
+    const newWorkplaceLocalId = this._currentLine.TRANSFERSTAFFRECORD;
+
+    const workerExists = !!this._currentWorker;
+    if (newWorkplaceLocalId && !workerExists) {
+      this._validationErrors.push({
+        name: this._currentLine.LOCALESTID,
+        worker: this._currentLine.UNIQUEWORKERID,
+        lineNumber: this._lineNumber,
+        errCode: WorkerCsvValidator.TRANSFERSTAFFRECORD_ERROR,
+        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        error: `TRANSFERSTAFFRECORD is provided but cannot find the worker in the old workplace`,
+        source: myStatus,
+        column: 'TRANSFERSTAFFRECORD',
+      });
+      return false;
+    }
+
+    this._transferStaffRecord = newWorkplaceLocalId;
+    return true;
   }
 
   _validateDisplayId() {
@@ -2861,6 +2888,7 @@ class WorkerCsvValidator {
     status = !this._validateLocalId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateChangeUniqueWorkerId() ? false : status;
+    status = !this._validateTransferStaffRecord() ? false : status;
     status = !this._validateDisplayId() ? false : status;
     status = !this._validateStatus() ? false : status;
     status = !this._validateDaysSickChanged() ? false : status;
@@ -2946,6 +2974,7 @@ class WorkerCsvValidator {
       status: this._status,
       uniqueWorkerId: this._uniqueWorkerId,
       changeUniqueWorker: this._changeUniqueWorkerId ? this._changeUniqueWorkerId : undefined,
+      transferStaffRecord: this._transferStaffRecord ? this._transferStaffRecord : undefined,
       displayId: this._displayId,
       niNumber: this._NINumber ? this._NINumber : undefined,
       postcode: this._postCode ? this._postCode : undefined,
@@ -3021,6 +3050,7 @@ class WorkerCsvValidator {
       // the minimum to create a new worker
       localIdentifier: this._uniqueWorkerId,
       status: this._status,
+      transferStaffRecord: this._transferStaffRecord ? this._transferStaffRecord : undefined,
       nameOrId: this._displayId,
       contract: this._contractType,
       mainJob: {
