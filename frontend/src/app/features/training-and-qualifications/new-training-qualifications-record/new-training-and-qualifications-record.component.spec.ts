@@ -314,7 +314,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           },
           { provide: EstablishmentService, useClass: MockEstablishmentService },
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-          { provide: PermissionsService, useClass: MockPermissionsService },
+          { provide: PermissionsService, useFactory: MockPermissionsService.factory(['canEditWorker']) },
         ],
       },
     );
@@ -387,21 +387,13 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should display the View staff record button', async () => {
-      const { component, getByText, fixture } = await setup();
-
-      component.canEditWorker = true;
-
-      fixture.detectChanges();
+      const { getByText } = await setup();
 
       expect(getByText('View staff record', { exact: false })).toBeTruthy();
     });
 
     it('should have correct href on the View staff record button', async () => {
-      const { component, getByText, fixture } = await setup();
-
-      component.canEditWorker = true;
-
-      fixture.detectChanges();
+      const { component, getByText } = await setup();
 
       const viewStaffRecordButton = getByText('View staff record', { exact: false });
 
@@ -462,7 +454,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component, fixture, getByText } = await setup();
 
       component.worker.longTermAbsence = null;
-      component.canEditWorker = true;
       fixture.detectChanges();
 
       expect(getByText('Flag long-term absence')).toBeTruthy();
@@ -472,7 +463,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component, fixture, getByTestId, routerSpy } = await setup();
 
       component.worker.longTermAbsence = null;
-      component.canEditWorker = true;
       fixture.detectChanges();
 
       const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
@@ -550,7 +540,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should render Autism as an expired training without an update link if canEditWorker is false', async () => {
-      const { fixture } = await setup();
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
       const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
       const rowOne = actionListTableRows[1];
       expect(rowOne.cells['0'].innerHTML).toBe('Autism');
@@ -573,7 +567,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should render Coshh as an expiring soon training without an update link if canEditWorker is false', async () => {
-      const { fixture } = await setup();
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
       const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
       const rowTwo = actionListTableRows[2];
       expect(rowTwo.cells['0'].innerHTML).toBe('Coshh');
