@@ -246,6 +246,20 @@ class WorkerCertificateService {
 
     await this.deleteCertificatesFromS3(filesToDeleteFromS3);
   }
+
+  async deleteCertificatesWithTransaction(certificateRecords, externalTransaction) {
+    if (!certificateRecords || certificateRecords.length < 1 || !externalTransaction) {
+      return;
+    }
+
+    const filesToDeleteFromS3 = certificateRecords.map((record) => ({ Key: record.key }));
+    const certificateRecordUids = certificateRecords.map((record) => record.uid);
+
+    externalTransaction.afterCommit(() => {
+      this.deleteCertificatesFromS3(filesToDeleteFromS3);
+    });
+    await this.certificatesModel.destroy({ where: { uid: certificateRecordUids }, transaction: externalTransaction });
+  }
 }
 
 module.exports = WorkerCertificateService;

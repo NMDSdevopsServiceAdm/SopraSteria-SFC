@@ -1,6 +1,7 @@
 const { compact } = require('lodash');
 
 const models = require('../../index');
+const WorkerCertificateService = require('../../../routes/establishments/workerCertificate/workerCertificateService');
 
 class BulkUploadQualificationHelper {
   constructor({ workerId, workerUid, establishmentId, savedBy, bulkUploaded = true, externalTransaction }) {
@@ -10,6 +11,7 @@ class BulkUploadQualificationHelper {
     this.savedBy = savedBy;
     this.bulkUploaded = bulkUploaded;
     this.externalTransaction = externalTransaction;
+    this.qualificationCertificateService = WorkerCertificateService.initialiseQualifications();
   }
 
   async processQualificationsEntities(qualificationsEntities) {
@@ -42,7 +44,7 @@ class BulkUploadQualificationHelper {
 
     for (const qualification of allExistingQualifications) {
       if (!bulkUploadQualificationFks.includes(qualification.qualificationFk)) {
-        console.log('delete current qualification: ', qualification._id);
+        console.log('delete current qualification: ', qualification.id);
         promisesToReturn.push(this.deleteQualification(qualification));
       }
     }
@@ -72,8 +74,16 @@ class BulkUploadQualificationHelper {
     return existingRecord.save({ transaction: this.externalTransaction });
   }
 
-  deleteQualification(existingRecord) {
-    throw new Error('to be implemented when feat/1544 is in place');
+  async deleteQualification(existingRecord) {
+    const certificatesFound = await existingRecord.getQualificationCertificates();
+    if (certificatesFound) {
+      this.qualificationCertificateService.deleteCertificatesWithTransaction(
+        certificatesFound,
+        this.externalTransaction,
+      );
+    }
+
+    return existingRecord.destroy({ transaction: this.externalTransaction });
   }
 }
 

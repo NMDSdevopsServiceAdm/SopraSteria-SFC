@@ -553,18 +553,17 @@ class Worker extends EntityValidator {
         });
       }
 
-      if (this._qualificationsEntities && this._qualificationsEntities.length > 0) {
-        const helper = new BulkUploadQualificationHelper({
-          workerId: this._id,
-          workerUid: this._uid,
-          establishmentId: this._establishmentId,
-          savedBy,
-          bulkUploaded,
-          externalTransaction,
-        });
-        const promisesToPush = await helper.processQualificationsEntities(this._qualificationsEntities);
-        qualificationChangePromises.push(...promisesToPush);
-      }
+      const qualificationHelper = new BulkUploadQualificationHelper({
+        workerId: this._id,
+        workerUid: this._uid,
+        establishmentId: this._establishmentId,
+        savedBy,
+        bulkUploaded,
+        externalTransaction,
+      });
+      const qualificationEntities = this._qualificationsEntities ? this._qualificationsEntities : [];
+      const promisesToPush = await qualificationHelper.processQualificationsEntities(qualificationEntities);
+      qualificationChangePromises.push(...promisesToPush);
 
       await Promise.all(newTrainingPromises);
       await Promise.all(qualificationChangePromises);

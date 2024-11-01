@@ -206,4 +206,12 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
       expect(returnedPromise).to.equal(mockExistingRecord.save.returnValues[0]);
     });
   });
+
+  describe('deleteQualification', () => {
+    // TODO: implement tests for deleting qualification
+
+    it('should delete the qualification record from database');
+
+    it('should call deleteCertificatesWithTransaction if there are any certificates attached to this qualification');
+  });
 });

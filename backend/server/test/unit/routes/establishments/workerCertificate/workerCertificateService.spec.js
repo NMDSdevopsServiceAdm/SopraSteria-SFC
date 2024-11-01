@@ -495,4 +495,48 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       expect(error.message).to.equal('Failed to find related qualification certificate records');
     });
   });
+
+  describe('deleteCertificatesWithTransaction', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    const mockCertificateRecords = [
+      new models.qualificationCertificates({ key: 'file-key-1', uid: 'file-uid-1' }),
+      new models.qualificationCertificates({ key: 'file-key-2', uid: 'file-uid-2' }),
+      new models.qualificationCertificates({ key: 'file-key-3', uid: 'file-uid-3' }),
+    ];
+
+    it('should delete every certificate records that are passed in', async () => {
+      const stubDeleteCertificate = sinon.stub(models.qualificationCertificates, 'destroy');
+      const mockExternalTransaction = { mockTransaction: '', afterCommit: sinon.stub() };
+
+      await service.deleteCertificatesWithTransaction(mockCertificateRecords, mockExternalTransaction);
+
+      expect(stubDeleteCertificate).to.have.been.calledWith({
+        where: { uid: ['file-uid-1', 'file-uid-2', 'file-uid-3'] },
+        transaction: mockExternalTransaction,
+      });
+    });
+
+    it("should register a deleteCertificatesFromS3 call to the transaction's after commit hook", async () => {
+      sinon.stub(models.qualificationCertificates, 'destroy');
+      const stubDeleteCertificatesFromS3 = sinon.stub(service, 'deleteCertificatesFromS3');
+      const mockExternalTransaction = { mockTransaction: '', afterCommit: sinon.stub() };
+
+      await service.deleteCertificatesWithTransaction(mockCertificateRecords, mockExternalTransaction);
+
+      expect(mockExternalTransaction.afterCommit).to.have.been.called;
+
+      // emulate the afterCommit call being triggered when database operation complete;
+      const registeredCall = mockExternalTransaction.afterCommit.args[0][0];
+      registeredCall();
+
+      expect(stubDeleteCertificatesFromS3).to.have.been.calledWith([
+        { Key: 'file-key-1' },
+        { Key: 'file-key-2' },
+        { Key: 'file-key-3' },
+      ]);
+    });
+  });
 });
