@@ -1,20 +1,19 @@
-import { cloneDeep } from 'lodash';
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { By } from '@angular/platform-browser';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Certificate } from '@core/model/trainingAndQualifications.model';
-import { qualificationsByGroup } from '@core/test-utils/MockWorkerService';
-import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
-
-import { NewQualificationsComponent } from './new-qualifications.component';
-import userEvent from '@testing-library/user-event';
 import {
   QualificationCertificateDownloadEvent,
   QualificationCertificateUploadEvent,
   QualificationType,
 } from '@core/model/qualification.model';
+import { Certificate } from '@core/model/trainingAndQualifications.model';
+import { qualificationsByGroup } from '@core/test-utils/MockWorkerService';
+import { SharedModule } from '@shared/shared.module';
+import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+import { cloneDeep } from 'lodash';
+
+import { NewQualificationsComponent } from './new-qualifications.component';
 
 describe('NewQualificationsComponent', () => {
   async function setup(override: any = {}) {
@@ -179,26 +178,37 @@ describe('NewQualificationsComponent', () => {
   });
 
   describe('Qualification certificates', () => {
-    const setupWithCertificates = async (certificates: Certificate[]) => {
+    const setupWithCertificates = async (certificates: Certificate[], canEditWorker: boolean = true) => {
       const qualificationsWithCertificate = cloneDeep(qualificationsByGroup);
       qualificationsWithCertificate.groups[0].records[0].qualificationCertificates = certificates;
-      return setup({ qualificationsByGroup: qualificationsWithCertificate });
+      return setup({ qualificationsByGroup: qualificationsWithCertificate, canEditWorker });
     };
     const qualificationUid = qualificationsByGroup.groups[0].records[0].uid;
+    const singleQualificationCertificate = () => [
+      { uid: 'certificate1uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T123456Z' },
+    ];
+
+    const multipleQualificationCertificates = () => [
+      { uid: 'certificate1uid', filename: 'First aid award 2023.pdf', uploadDate: '20230101T123456Z' },
+      { uid: 'certificate2uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T234516Z' },
+    ];
 
     it('should display Download link when training record has one certificate associated with it', async () => {
-      const { getByTestId } = await setupWithCertificates([
-        { uid: 'certificate1uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T123456Z' },
-      ]);
+      const { getByTestId } = await setupWithCertificates(singleQualificationCertificate());
 
       const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).getByText('Download')).toBeTruthy();
     });
 
+    it('should not display Download link when training record has one certificate associated with it but user does not have edit permissions', async () => {
+      const { getByTestId } = await setupWithCertificates(singleQualificationCertificate(), false);
+
+      const recordRow = getByTestId(qualificationUid);
+      expect(within(recordRow).queryByText('Download')).toBeFalsy();
+    });
+
     it('should trigger download file emitter when Download link is clicked', async () => {
-      const { getByTestId, component } = await setupWithCertificates([
-        { uid: 'certificate1uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T123456Z' },
-      ]);
+      const { getByTestId, component } = await setupWithCertificates(singleQualificationCertificate());
       const downloadFileSpy = spyOn(component.downloadFile, 'emit');
 
       const recordRow = getByTestId(qualificationUid);
@@ -215,20 +225,21 @@ describe('NewQualificationsComponent', () => {
     });
 
     it('should display Select a download link when training record has more than one certificate associated with it', async () => {
-      const { getByTestId } = await setupWithCertificates([
-        { uid: 'certificate1uid', filename: 'First aid award 2023.pdf', uploadDate: '20230101T123456Z' },
-        { uid: 'certificate2uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T234516Z' },
-      ]);
+      const { getByTestId } = await setupWithCertificates(multipleQualificationCertificates());
 
       const recordRow = getByTestId('firstAwardQualUid');
       expect(within(recordRow).getByText('Select a download')).toBeTruthy();
     });
 
+    it('should not display Select a download link when training record has more than one certificate associated with it but user does not have edit permissions', async () => {
+      const { getByTestId } = await setupWithCertificates(multipleQualificationCertificates(), false);
+
+      const recordRow = getByTestId('firstAwardQualUid');
+      expect(within(recordRow).queryByText('Select a download')).toBeFalsy();
+    });
+
     it('should have href of training record on Select a download link', async () => {
-      const { getByTestId } = await setupWithCertificates([
-        { uid: 'certificate1uid', filename: 'First aid award 2023.pdf', uploadDate: '20230101T123456Z' },
-        { uid: 'certificate2uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T234516Z' },
-      ]);
+      const { getByTestId } = await setupWithCertificates(multipleQualificationCertificates());
 
       const recordRow = getByTestId('firstAwardQualUid');
       const selectADownloadLink = within(recordRow).getByText('Select a download');
@@ -240,6 +251,13 @@ describe('NewQualificationsComponent', () => {
 
       const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).getByRole('button', { name: 'Upload file' })).toBeTruthy();
+    });
+
+    it('should not display Upload file button when training record has no certificates associated with it but user does not have edit permissions', async () => {
+      const { getByTestId } = await setupWithCertificates([], false);
+
+      const recordRow = getByTestId(qualificationUid);
+      expect(within(recordRow).queryByRole('button', { name: 'Upload file' })).toBeFalsy();
     });
 
     it('should trigger the upload file emitter when a file is selected by the Upload file button', async () => {

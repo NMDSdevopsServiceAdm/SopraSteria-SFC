@@ -41,29 +41,31 @@
               </td>
               <td class="govuk-table__cell">{{ qualificationRecord?.year ? qualificationRecord.year : '-' }}</td>
               <td class="govuk-table__cell">
-                <span *ngIf="qualificationRecord.qualificationCertificates?.length == 1">
-                  <a
-                    href="#"
-                    class="govuk-link govuk-link--no-visited-state"
-                    (click)="handleDownloadCertificate($event, qualificationGroup, qualificationRecord)"
-                  >
-                    <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
-                      class="govuk-!-margin-left-1"
-                      >Download</span
+                <ng-container *ngIf="canEditWorker">
+                  <span *ngIf="qualificationRecord.qualificationCertificates?.length == 1">
+                    <a
+                      href="#"
+                      class="govuk-link govuk-link--no-visited-state"
+                      (click)="handleDownloadCertificate($event, qualificationGroup, qualificationRecord)"
                     >
-                    <span class="govuk-visually-hidden"
-                      >the certificate {{ qualificationRecord.qualificationCertificates[0].filename }}</span
-                    >
-                  </a>
-                </span>
-                <span *ngIf="qualificationRecord.qualificationCertificates?.length > 1">
-                  <a [routerLink]="['../qualification', qualificationRecord.uid]" class="govuk-link govuk-link--no-visited-state">
-                    Select a download
-                  </a>
-                </span>
-                <span *ngIf="qualificationRecord.qualificationCertificates?.length === 0">
-                  <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1" (selectFiles)="handleUploadCertificate($event, qualificationGroup, qualificationRecord)" />
-                </span>
+                      <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
+                        class="govuk-!-margin-left-1"
+                        >Download</span
+                      >
+                      <span class="govuk-visually-hidden"
+                        >the certificate {{ qualificationRecord.qualificationCertificates[0].filename }}</span
+                      >
+                    </a>
+                  </span>
+                  <span *ngIf="qualificationRecord.qualificationCertificates?.length > 1">
+                    <a [routerLink]="['../qualification', qualificationRecord.uid]" class="govuk-link govuk-link--no-visited-state">
+                      Select a download
+                    </a>
+                  </span>
+                  <span *ngIf="qualificationRecord.qualificationCertificates?.length === 0">
+                    <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1" (selectFiles)="handleUploadCertificate($event, qualificationGroup, qualificationRecord)" />
+                  </span>
+                </ng-container>
               </td>
             </tr>
           </tbody>
