@@ -156,7 +156,7 @@ describe('NewQualificationsComponent', () => {
     });
   });
 
-  describe('no training', () => {
+  describe('no qualification', () => {
     it('should render an add a qualification link if canEditWorker is true', async () => {
       const { fixture, component, getByText } = await setup();
       component.qualificationsByGroup.count = 0;
@@ -193,14 +193,14 @@ describe('NewQualificationsComponent', () => {
       { uid: 'certificate2uid', filename: 'First aid award 2024.pdf', uploadDate: '20240101T234516Z' },
     ];
 
-    it('should display Download link when training record has one certificate associated with it', async () => {
+    it('should display Download link when qualification record has one certificate associated with it', async () => {
       const { getByTestId } = await setupWithCertificates(singleQualificationCertificate());
 
       const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).getByText('Download')).toBeTruthy();
     });
 
-    it('should not display Download link when training record has one certificate associated with it but user does not have edit permissions', async () => {
+    it('should not display Download link when qualification record has one certificate associated with it but user does not have edit permissions', async () => {
       const { getByTestId } = await setupWithCertificates(singleQualificationCertificate(), false);
 
       const recordRow = getByTestId(qualificationUid);
@@ -224,21 +224,21 @@ describe('NewQualificationsComponent', () => {
       expect(downloadFileSpy).toHaveBeenCalledWith(expectedDownloadEvent);
     });
 
-    it('should display Select a download link when training record has more than one certificate associated with it', async () => {
+    it('should display Select a download link when qualification record has more than one certificate associated with it', async () => {
       const { getByTestId } = await setupWithCertificates(multipleQualificationCertificates());
 
       const recordRow = getByTestId('firstAwardQualUid');
       expect(within(recordRow).getByText('Select a download')).toBeTruthy();
     });
 
-    it('should not display Select a download link when training record has more than one certificate associated with it but user does not have edit permissions', async () => {
+    it('should not display Select a download link when qualification record has more than one certificate associated with it but user does not have edit permissions', async () => {
       const { getByTestId } = await setupWithCertificates(multipleQualificationCertificates(), false);
 
       const recordRow = getByTestId('firstAwardQualUid');
       expect(within(recordRow).queryByText('Select a download')).toBeFalsy();
     });
 
-    it('should have href of training record on Select a download link', async () => {
+    it('should have href of qualification record on Select a download link', async () => {
       const { getByTestId } = await setupWithCertificates(multipleQualificationCertificates());
 
       const recordRow = getByTestId('firstAwardQualUid');
@@ -246,14 +246,14 @@ describe('NewQualificationsComponent', () => {
       expect(selectADownloadLink.getAttribute('href')).toEqual(`/qualification/firstAwardQualUid`);
     });
 
-    it('should display Upload file button when training record has no certificates associated with it', async () => {
+    it('should display Upload file button when qualification record has no certificates associated with it', async () => {
       const { getByTestId } = await setupWithCertificates([]);
 
       const recordRow = getByTestId(qualificationUid);
       expect(within(recordRow).getByRole('button', { name: 'Upload file' })).toBeTruthy();
     });
 
-    it('should not display Upload file button when training record has no certificates associated with it but user does not have edit permissions', async () => {
+    it('should not display Upload file button when qualification record has no certificates associated with it but user does not have edit permissions', async () => {
       const { getByTestId } = await setupWithCertificates([], false);
 
       const recordRow = getByTestId(qualificationUid);
