@@ -10,7 +10,7 @@ import { TrainingCategoryService } from '@core/services/training-category.servic
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
-import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
+import { MockTrainingCertificateService } from '@core/test-utils/MockCertificateService';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { trainingRecord } from '@core/test-utils/MockWorkerService';

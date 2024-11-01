@@ -18,10 +18,16 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockTrainingCertificateService } from '@core/test-utils/MockCertificationService';
+import {
+  mockCertificateFileBlob,
+  MockQualificationCertificateService,
+  mockTrainingCertificates,
+  MockTrainingCertificateService,
+} from '@core/test-utils/MockCertificateService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockWorkerService';
+import { FileUtil } from '@core/utils/file-util';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -29,6 +35,7 @@ import userEvent from '@testing-library/user-event';
 import { cloneDeep } from 'lodash';
 import { of, throwError } from 'rxjs';
 
+import { mockQualificationCertificates } from '../../../core/test-utils/MockCertificateService';
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
 
@@ -118,6 +125,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     otherJob: boolean;
     careCert: boolean;
     mandatoryTraining: TrainingRecordCategory[];
+    nonMandatoryTraining: TrainingRecordCategory[];
     fragment: 'all-records' | 'mandatory-training' | 'non-mandatory-training' | 'qualifications';
     isOwnWorkplace: boolean;
     qualifications: QualificationsByGroup;
@@ -126,13 +134,14 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     otherJob: false,
     careCert: true,
     mandatoryTraining: [],
+    nonMandatoryTraining: mockTrainingData.nonMandatory,
     fragment: 'all-records',
     isOwnWorkplace: true,
     qualifications: { count: 0, groups: [], lastUpdated: qualificationsByGroup.lastUpdated },
   };
 
   async function setup(options: Partial<SetupOptions> = {}) {
-    const { otherJob, careCert, mandatoryTraining, fragment, isOwnWorkplace, qualifications } = {
+    const { otherJob, careCert, mandatoryTraining, nonMandatoryTraining, fragment, isOwnWorkplace, qualifications } = {
       ...defaults,
       ...options,
     };
@@ -167,7 +176,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     careCertificate: careCert ? 'Yes, in progress or partially completed' : null,
                   },
                   trainingAndQualificationRecords: {
-                    training: { ...mockTrainingData, mandatory: mandatoryTraining },
+                    training: {
+                      ...mockTrainingData,
+                      mandatory: mandatoryTraining,
+                      nonMandatory: nonMandatoryTraining,
+                    },
                     qualifications: qualifications,
                   },
                   expiresSoonAlertDate: {
@@ -332,7 +345,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
           { provide: PermissionsService, useClass: MockPermissionsService },
           { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
-          { provide: QualificationCertificateService, useClass: QualificationCertificateService },
+          { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
           // suppress the distracting error msg of "reading 'nativeElement'" from PdfTrainingAndQualificationService
           { provide: PdfTrainingAndQualificationService, useValue: { BuildTrainingAndQualsPdf: () => {} } },
         ],
@@ -788,11 +801,9 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         'BuildTrainingAndQualsPdf',
       ).and.callThrough();
 
-      component.pdfCount = 1;
-
       fixture.detectChanges();
 
-      fireEvent.click(getByText('Download training and qualifications', { exact: false }));
+      fireEvent.click(getByText('Download this training and qualifications summary'));
 
       expect(downloadFunctionSpy).toHaveBeenCalled();
       expect(pdfTrainingAndQualsServiceSpy).toHaveBeenCalled();
@@ -1203,6 +1214,94 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
         expect(getByText("There's a problem with this upload. Try again later or contact us for help.")).toBeTruthy();
       });
+    });
+  });
+
+  describe('download all certificates', () => {
+    it('should display a link for downloading all certificates', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Download all their training and qualification certificates')).toBeTruthy();
+    });
+
+    it('should not display the download all link if worker has got no certificates', async () => {
+      const nonMandatorytrainingWithNoCerts = cloneDeep(mockTrainingData.nonMandatory);
+      nonMandatorytrainingWithNoCerts.forEach((category) =>
+        category.trainingRecords.forEach((record) => (record.trainingCertificates = [])),
+      );
+
+      const { queryByText } = await setup({
+        nonMandatoryTraining: nonMandatorytrainingWithNoCerts,
+      });
+
+      expect(queryByText('Download all their training and qualification certificates')).toBeFalsy();
+    });
+
+    it('should download all training and qualification certificates for the worker when clicked', async () => {
+      const { component, getByText, trainingCertificateService, qualificationCertificateService } = await setup();
+
+      spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+      spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+
+      const downloadAllButton = getByText('Download all their training and qualification certificates');
+      userEvent.click(downloadAllButton);
+
+      expect(trainingCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+      );
+      expect(qualificationCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledWith(
+        component.workplace.uid,
+        component.worker.uid,
+      );
+    });
+
+    it('should call saveFilesAsZip with all the downloaded certificates', async () => {
+      const { component, getByText } = await setup();
+      const expectedZipFileName = `All certificates - ${component.worker.nameOrId}.zip`;
+
+      const fileUtilSpy = spyOn(FileUtil, 'saveFilesAsZip').and.callThrough();
+
+      const downloadAllButton = getByText('Download all their training and qualification certificates');
+      userEvent.click(downloadAllButton);
+
+      expect(fileUtilSpy).toHaveBeenCalled();
+
+      const contentsOfZipFile = fileUtilSpy.calls.mostRecent().args[0];
+      const nameOfZipFile = fileUtilSpy.calls.mostRecent().args[1];
+
+      expect(nameOfZipFile).toEqual(expectedZipFileName);
+
+      mockTrainingCertificates.forEach((certificate) => {
+        expect(contentsOfZipFile).toContain(
+          jasmine.objectContaining({
+            filename: 'Training certificates/' + certificate.filename,
+            fileBlob: mockCertificateFileBlob,
+          }),
+        );
+      });
+      mockQualificationCertificates.forEach((certificate) => {
+        expect(contentsOfZipFile).toContain(
+          jasmine.objectContaining({
+            filename: 'Qualification certificates/' + certificate.filename,
+            fileBlob: mockCertificateFileBlob,
+          }),
+        );
+      });
+    });
+
+    it('should not start a new download on click if still downloading certificates in the background', async () => {
+      const { getByText, trainingCertificateService, qualificationCertificateService } = await setup();
+
+      const downloadAllButton = getByText('Download all their training and qualification certificates');
+      spyOn(trainingCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+      spyOn(qualificationCertificateService, 'downloadAllCertificatesAsBlobs').and.callThrough();
+
+      userEvent.click(downloadAllButton);
+      userEvent.click(downloadAllButton);
+
+      expect(trainingCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledTimes(1);
+      expect(qualificationCertificateService.downloadAllCertificatesAsBlobs).toHaveBeenCalledTimes(1);
     });
   });
 });

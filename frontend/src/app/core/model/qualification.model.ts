@@ -35,6 +35,7 @@ export interface QualificationRequest {
 }
 
 export interface QualificationsResponse {
+  workerUid: string;
   count: number;
   lastUpdated?: string;
   qualifications: Qualification[];
@@ -66,6 +67,7 @@ export interface Qualification {
     title?: string;
     group?: string;
   };
+  qualificationCertificates?: QualificationCertificate[];
 }
 
 export interface QualificationsByGroup {
