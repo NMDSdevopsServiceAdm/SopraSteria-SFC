@@ -95,15 +95,16 @@ describe('NewTrainingComponent', async () => {
     },
   ];
 
-  async function setup(canEditWorker = true, certificateErrors = null) {
+  async function setup(override: any = {}) {
     const { fixture, getByTestId, getByLabelText } = await render(NewTrainingComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, SharedModule],
       providers: [],
       componentProperties: {
-        canEditWorker,
+        canEditWorker: true,
         trainingCategories: trainingCategories,
         isMandatoryTraining: false,
-        certificateErrors,
+        certificateErrors: null,
+        ...override
       },
     });
     const component = fixture.componentInstance;
@@ -191,7 +192,7 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('training title should not link to training records if you are a read only user', async () => {
-      const { fixture } = await setup(false);
+      const { fixture } = await setup({ canEditWorker: false });
 
       const autismTrainingTitleLink = fixture.debugElement.query(By.css('[data-testid="Title-no-link-someAutismUid"]'));
       const communicationTrainingTitleLink = fixture.debugElement.query(
@@ -212,11 +213,8 @@ describe('NewTrainingComponent', async () => {
 
   describe('no training', async () => {
     it('should display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is true', async () => {
-      const { component, fixture } = await setup();
+      const { fixture } = await setup({ trainingCategories: [] });
 
-      component.trainingCategories = [];
-      component.ngOnChanges();
-      fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]')).nativeElement;
 
       expect(noTrainingLink).toBeTruthy();
@@ -224,21 +222,16 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should not display a no training found link when there is no training and isMandatoryTraining is false and canEditWorker is false', async () => {
-      const { component, fixture } = await setup();
+      const { fixture } = await setup({ trainingCategories: [], canEditWorker: false });
 
-      component.trainingCategories = [];
-      component.canEditWorker = false;
-      fixture.detectChanges();
       const noTrainingLink = fixture.debugElement.query(By.css('[data-testid="no-training-link"]'));
 
       expect(noTrainingLink).toBeFalsy();
     });
 
     it('should display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true and canEditWorker is true', async () => {
-      const { component, fixture } = await setup();
+      const { component, fixture } = await setup({ trainingCategories: [], isMandatoryTraining: true});
 
-      component.trainingCategories = [];
-      component.isMandatoryTraining = true;
       component.workplaceUid = '123';
       component.ngOnChanges();
       fixture.detectChanges();
@@ -264,12 +257,11 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should display a no mandatory training for job role message when mandatory training is not required for the job role', async () => {
-      const { component, fixture } = await setup();
-      component.trainingCategories = [];
-      component.isMandatoryTraining = true;
+      const { component, fixture } = await setup({ trainingCategories: [], isMandatoryTraining: true, missingMandatoryTraining: false });
+
       component.workplaceUid = '123';
-      component.missingMandatoryTraining = false;
       fixture.detectChanges();
+
       const mandatoryTrainingMissingLink = fixture.debugElement.query(
         By.css('[data-testid="no-mandatory-training-link"]'),
       );
@@ -285,12 +277,11 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should display a no mandatory training for job role message when mandatory training is missing', async () => {
-      const { component, fixture } = await setup();
-      component.trainingCategories = [];
-      component.isMandatoryTraining = true;
+      const { component, fixture } = await setup({ trainingCategories: [], isMandatoryTraining: true, missingMandatoryTraining: true});
+
       component.workplaceUid = '123';
-      component.missingMandatoryTraining = true;
       fixture.detectChanges();
+
       const mandatoryTrainingMissingLink = fixture.debugElement.query(
         By.css('[data-testid="mandatory-training-missing-link"]'),
       );
@@ -515,7 +506,7 @@ describe('NewTrainingComponent', async () => {
       const certificateErrors = {
         Autism: "There's a problem with this download. Try again later or contact us for help.",
       };
-      const { getByTestId } = await setup(true, certificateErrors);
+      const { getByTestId } = await setup({ certificateErrors });
 
       const categorySection = getByTestId('Autism-section');
       expect(

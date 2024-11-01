@@ -25,7 +25,7 @@
       <ng-container *ngFor="let file of filesToUpload; let i = index">
         <tr class="govuk-table__row" [attr.data-testid]="'upload-file-row-' + i">
           <td class="govuk-table__cell table__cell-file_name govuk-!-font-weight-regular">{{ file.name }}</td>
-          <td class="govuk-table__cell table__cell-date">-</td>
+          <td class="govuk-table__cell table__cell-date">{{ dateToday | date: 'd MMM y' }}</td>
           <td class="govuk-table__cell table__cell-download_button"></td>
           <td class="govuk-table__cell table__cell-cancel_button">
             <a
