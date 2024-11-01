@@ -785,11 +785,12 @@ class WorkerCsvValidator {
         name: this._currentLine.LOCALESTID,
         worker: this._currentLine.UNIQUEWORKERID,
         lineNumber: this._lineNumber,
-        errCode: WorkerCsvValidator.TRANSFERSTAFFRECORD_ERROR,
-        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        // for spike purpose, just use an existing error type
+        errCode: WorkerCsvValidator.DISPLAY_ID_ERROR,
+        errType: 'DISPLAY_ID_ERROR',
         error: `TRANSFERSTAFFRECORD is provided but cannot find the worker in the old workplace`,
-        source: myStatus,
-        column: 'TRANSFERSTAFFRECORD',
+        source: this._currentLine.LOCALESTID,
+        column: 'LOCALESTID',
       });
       return false;
     }

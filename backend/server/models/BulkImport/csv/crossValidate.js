@@ -12,26 +12,59 @@ const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker
   _crossValidateMainJobRole(csvWorkerSchemaErrors, isCqcRegulated, JSONWorker);
 };
 
-const crossValidateTransferStaffRecord = async (csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments) => {
+const crossValidateTransferStaffRecord = async (
+  csvWorkerSchemaErrors,
+  myAPIEstablishments,
+  myEstablishments,
+  myJSONWorkers,
+) => {
   const relatedEstablishmentIds = myEstablishments.map((establishment) => establishment.id);
 
-  for (const establishment of Object.values(myAPIEstablishments)) {
-    if (!establishment._workerEntities) {
+  for (const JSONworker of myJSONWorkers) {
+    if (JSONworker.status !== 'UPDATE' || !JSONworker.transferStaffRecord) {
       continue;
     }
 
-    for (const workerEntity of Object.values(establishment._workerEntities)) {
-      if (workerEntity.transferStaffRecord && workerEntity.status === 'UPDATE') {
-        const newWorkplaceLocalRef = workerEntity.transferStaffRecord;
-        const newWorkplaceId = await getNewWorkplaceId(newWorkplaceLocalRef, relatedEstablishmentIds);
-        // TODO: add error to csvWorkerSchemaErrors if newWorkplaceId is null;
-        workerEntity._newWorkplaceId = newWorkplaceId;
-      }
-    }
+    await _crossValidateTransferStaffRecordForWorker(
+      csvWorkerSchemaErrors,
+      relatedEstablishmentIds,
+      myAPIEstablishments,
+      JSONworker,
+    );
   }
 };
 
-const getNewWorkplaceId = async (newWorkplaceLocalRef, relatedEstablishmentIds) => {
+const _crossValidateTransferStaffRecordForWorker = async (
+  csvWorkerSchemaErrors,
+  relatedEstablishmentIds,
+  myAPIEstablishments,
+  JSONworker,
+) => {
+  const oldWorkplaceLocalRef = JSONworker.localId;
+  const newWorkplaceLocalRef = JSONworker.transferStaffRecord;
+  const newWorkplaceId = await _getNewWorkplaceId(newWorkplaceLocalRef, relatedEstablishmentIds);
+
+  if (newWorkplaceId === null) {
+    _addErrorForNewWorkplaceNotFound(csvWorkerSchemaErrors, JSONworker);
+    return;
+  }
+
+  const sameLocalIdExistInNewWorkplace = await _checkDuplicateLocalIdInNewWorkplace(
+    newWorkplaceId,
+    JSONworker.uniqueWorkerId,
+  );
+
+  if (sameLocalIdExistInNewWorkplace) {
+    _addErrorForSameLocalIdExistInNewWorkplace(csvWorkerSchemaErrors, JSONworker);
+    return;
+  }
+
+  const keyInApiEstablishments = JSONworker.uniqueWorkerId.replace(/\s/g, '');
+  const workerEntity = myAPIEstablishments[oldWorkplaceLocalRef]._workerEntities[keyInApiEstablishments];
+  workerEntity._newWorkplaceId = newWorkplaceId;
+};
+
+const _getNewWorkplaceId = async (newWorkplaceLocalRef, relatedEstablishmentIds) => {
   const newWorkplaceFound = await models.establishment.findOne({
     where: {
       LocalIdentifierValue: newWorkplaceLocalRef,
@@ -43,6 +76,61 @@ const getNewWorkplaceId = async (newWorkplaceLocalRef, relatedEstablishmentIds) 
   }
 
   return null;
+};
+
+const _checkDuplicateLocalIdInNewWorkplace = async (newWorkplaceId, uniqueWorkerId) => {
+  const uniqueWorkerIdHasWhitespace = /\s/g.test(uniqueWorkerId);
+
+  if (uniqueWorkerIdHasWhitespace) {
+    // Handle special cases when uniqueWorkerId includes whitespace.
+    // As the legacy code does a /\s/g replacement in same places, we need to consider the case of local id collision with whitespaces stripped.
+    const allWorkersInNewWorkplace = await models.worker.findAll({
+      attributes: ['LocalIdentifierValue'],
+      where: {
+        establishmentFk: newWorkplaceId,
+      },
+      raw: true,
+    });
+    const allRefsWithoutWhitespaces = allWorkersInNewWorkplace
+      .filter((worker) => worker?.LocalIdentifierValue)
+      .map((worker) => worker.LocalIdentifierValue.replace(/\s/g, ''));
+
+    return allRefsWithoutWhitespaces.includes(uniqueWorkerId.replace(/\s/g, ''));
+  }
+
+  const sameLocalIdFound = await models.worker.findOne({
+    where: {
+      LocalIdentifierValue: uniqueWorkerId,
+      establishmentFk: newWorkplaceId,
+    },
+  });
+  return !!sameLocalIdFound;
+};
+
+const _addErrorForNewWorkplaceNotFound = (csvWorkerSchemaErrors, JSONWorker) => {
+  csvWorkerSchemaErrors.unshift({
+    worker: JSONWorker.uniqueWorkerId,
+    name: JSONWorker.localId,
+    lineNumber: JSONWorker.lineNumber,
+    errCode: 99998,
+    errType: 'TRANSFERSTAFFRECORD_ERROR',
+    source: JSONWorker.transferStaffRecord,
+    column: 'TRANSFERSTAFFRECORD',
+    error: 'Cannot find an existing workplace with the localId provided in TRANSFERSTAFFRECORD',
+  });
+};
+
+const _addErrorForSameLocalIdExistInNewWorkplace = (csvWorkerSchemaErrors, JSONWorker) => {
+  csvWorkerSchemaErrors.unshift({
+    worker: JSONWorker.uniqueWorkerId,
+    name: JSONWorker.localId,
+    lineNumber: JSONWorker.lineNumber,
+    errCode: 99999,
+    errType: 'TRANSFERSTAFFRECORD_ERROR',
+    source: JSONWorker.uniqueWorkerId,
+    column: 'TRANSFERSTAFFRECORD',
+    error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD.',
+  });
 };
 
 const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWorker) => {
