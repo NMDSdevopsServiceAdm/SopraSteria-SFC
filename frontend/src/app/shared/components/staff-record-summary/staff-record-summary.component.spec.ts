@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -33,7 +33,7 @@ describe('StaffRecordSummaryComponent', () => {
           InternationalRecruitmentService,
           {
             provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(['canEditWorker']),
+            useFactory: MockPermissionsService.factory(overrides.permissions ?? ['canEditWorker']),
             deps: [HttpClient, Router, UserService],
           },
           {
@@ -54,6 +54,8 @@ describe('StaffRecordSummaryComponent', () => {
     const component = fixture.componentInstance;
     const injector = getTestBed();
     const workerService = injector.inject(WorkerService) as WorkerService;
+    spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
+
     const wdfConfirmFieldsService = injector.inject(WdfConfirmFieldsService) as WdfConfirmFieldsService;
 
     return {
@@ -113,7 +115,6 @@ describe('StaffRecordSummaryComponent', () => {
   describe('updateFieldsWhichDontRequireConfirmation()', () => {
     it('should update worker if there are auto fields which have not been updated and are eligible', async () => {
       const { component, fixture, workerService } = await setup();
-      spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
 
       component.worker.wdf.dateOfBirth = eligibleButNotUpdatedObject;
 
@@ -125,7 +126,6 @@ describe('StaffRecordSummaryComponent', () => {
 
     it('should NOT auto update the worker when confirm field is called after all fields are updated and eligible', async () => {
       const { component, fixture, workerService } = await setup();
-      spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
 
       component.worker.wdf.dateOfBirth = eligibleObject;
       fixture.detectChanges();
@@ -140,7 +140,6 @@ describe('StaffRecordSummaryComponent', () => {
 
     it('should update the worker for careCertificate if its Yes, completed and not updated', async () => {
       const { component, fixture, workerService } = await setup();
-      spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
 
       component.worker.wdf.careCertificate = eligibleButNotUpdatedObject;
       component.worker.careCertificate = 'Yes, completed';
@@ -155,7 +154,6 @@ describe('StaffRecordSummaryComponent', () => {
 
     it('should NOT update the worker for careCertificate if it is No and not updated', async () => {
       const { component, fixture, workerService } = await setup();
-      spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
 
       component.worker.wdf.careCertificate = eligibleButNotUpdatedObject;
       component.worker.careCertificate = 'No';
@@ -171,7 +169,6 @@ describe('StaffRecordSummaryComponent', () => {
 
     it('should update the worker for qualificationInSocialCare if it is Yes and not updated', async () => {
       const { component, fixture, workerService } = await setup();
-      spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
 
       component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
       component.worker.qualificationInSocialCare = 'Yes';
@@ -187,7 +184,6 @@ describe('StaffRecordSummaryComponent', () => {
 
     it('should NOT update the worker for qualificationInSocialCare if it is NO and not updated', async () => {
       const { component, fixture, workerService } = await setup();
-      spyOn(workerService, 'updateWorker').and.returnValue(of({ uid: '123' } as WorkerEditResponse));
 
       component.worker.wdf.qualificationInSocialCare = eligibleButNotUpdatedObject;
       component.worker.qualificationInSocialCare = 'NO';
@@ -245,257 +241,13 @@ describe('StaffRecordSummaryComponent', () => {
     });
   });
 
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Date Started', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.mainJobStartDate.isEligible = Eligibility.YES;
-    component.worker.wdf.mainJobStartDate.updatedSinceEffectiveDate = false;
-    component.worker.mainJobStartDate = '2020-01-12';
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it('should not show WdfFieldConfirmation component when fields do not need to be confirmed', async () => {
-    const { queryByText } = await setup();
-
-    expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
-    expect(queryByText('Yes, it is')).toBeFalsy();
-    expect(queryByText('No, change it')).toBeFalsy();
-  });
-
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Date Started', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-    component.worker.wdf.mainJobStartDate.isEligible = Eligibility.YES;
-    component.worker.wdf.mainJobStartDate.updatedSinceEffectiveDate = false;
-    component.worker.mainJobStartDate = '2020-01-12';
-
-    fixture.detectChanges();
-
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
-
-    fixture.detectChanges();
-
-    expect(getByText('Meeting requirements')).toBeTruthy();
-  });
-
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Sickness in last 12 Months', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.daysSick.isEligible = Eligibility.YES;
-    component.worker.wdf.daysSick.updatedSinceEffectiveDate = false;
-    component.worker.contract = Contracts.Permanent;
-    const myWorkerDay: WorkerDays = {
-      days: 4,
-      value: null,
-    };
-    component.worker.daysSick = myWorkerDay;
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Sickness in the last 12 months', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-    component.worker.wdf.daysSick.isEligible = Eligibility.YES;
-    component.worker.wdf.daysSick.updatedSinceEffectiveDate = false;
-    component.worker.contract = Contracts.Permanent;
-    const myWorkerDay: WorkerDays = {
-      days: 4,
-      value: null,
-    };
-    component.worker.daysSick = myWorkerDay;
-
-    fixture.detectChanges();
-
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
-
-    fixture.detectChanges();
-
-    expect(getByText('Meeting requirements')).toBeTruthy();
-  });
-
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Zero hours contracts', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.zeroHoursContract.isEligible = Eligibility.YES;
-    component.worker.wdf.zeroHoursContract.updatedSinceEffectiveDate = false;
-    component.worker.zeroHoursContract = 'Yes';
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Zero hour contracts', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-    component.worker.wdf.zeroHoursContract.isEligible = Eligibility.YES;
-    component.worker.wdf.zeroHoursContract.updatedSinceEffectiveDate = false;
-    component.worker.zeroHoursContract = 'Yes';
-
-    fixture.detectChanges();
-
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
-
-    fixture.detectChanges();
-
-    expect(getByText('Meeting requirements')).toBeTruthy();
-  });
-
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Contracted weekly hours', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.weeklyHoursContracted.isEligible = Eligibility.YES;
-    component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
-    component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
-    component.worker.contract = Contracts.Permanent;
-    component.worker.zeroHoursContract = 'No';
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Contracted weekly hours', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-    component.worker.wdf.weeklyHoursContracted.isEligible = Eligibility.YES;
-    component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
-    component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
-    component.worker.contract = Contracts.Permanent;
-    component.worker.zeroHoursContract = 'No';
-
-    fixture.detectChanges();
-
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
-
-    fixture.detectChanges();
-
-    expect(getByText('Meeting requirements')).toBeTruthy();
-  });
-
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Average weekly working hours', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
-    component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
-    component.worker.zeroHoursContract = 'Yes';
-    component.worker.weeklyHoursAverage = { value: 'Yes', hours: 30 };
-    component.worker.contract = Contracts.Agency;
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Average weekly working hours', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-    component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
-    component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
-    component.worker.zeroHoursContract = 'Yes';
-    component.worker.weeklyHoursAverage = { value: 'Yes', hours: 30 };
-    component.worker.contract = Contracts.Agency;
-
-    fixture.detectChanges();
-
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
-
-    fixture.detectChanges();
-
-    expect(getByText('Meeting requirements')).toBeTruthy();
-  });
-
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Salary', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.annualHourlyPay.isEligible = Eligibility.YES;
-    component.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate = false;
-    component.worker.annualHourlyPay = { value: 'Annually', rate: 24000 };
-    component.worker.contract = Contracts.Permanent;
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Salary', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-    component.worker.wdf.annualHourlyPay.isEligible = Eligibility.YES;
-    component.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate = false;
-    component.worker.annualHourlyPay = { value: 'Annually', rate: 24000 };
-    component.worker.contract = Contracts.Permanent;
-
-    fixture.detectChanges();
-
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
-
-    fixture.detectChanges();
-
-    expect(getByText('Meeting requirements')).toBeTruthy();
-  });
-
-  [
-    {
-      name: 'mainJob',
-      fields: [
-        { name: 'mainJob', response: { jobId: 10, title: 'Care Worker' } },
-        { name: 'contract', response: Contracts.Permanent },
-      ],
-    },
-    {
-      name: 'contract',
-      fields: [{ name: 'contract', response: Contracts.Permanent }],
-    },
-  ].forEach((scenario) => {
-    describe(`WdfFieldConfirmation for ${scenario.name}`, () => {
-      const worker = buildWorker({
-        fields: scenario.fields,
+  describe('WdfFieldConfirmation', () => {
+    const buildWorkerWithFieldNotUpdatedSinceEffectiveDate = (fields) => {
+      return buildWorker({
+        overrides: fields,
         wdf: [
           {
-            name: scenario.name,
+            name: fields[0].name,
             response: {
               isEligible: Eligibility.YES,
               updatedSinceEffectiveDate: false,
@@ -503,289 +255,248 @@ describe('StaffRecordSummaryComponent', () => {
           },
         ],
       });
+    };
 
-      it(`should show WdfFieldConfirmation component when is eligible but needs to be confirmed for ${scenario.name}`, async () => {
-        const { getByText } = await setup({ worker });
+    it('should not show WdfFieldConfirmation component when fields do not need to be confirmed', async () => {
+      const { queryByText } = await setup();
 
-        expect(getByText('Is this still correct?')).toBeTruthy();
-        expect(getByText('Yes, it is')).toBeTruthy();
-        expect(getByText('No, change it')).toBeTruthy();
-      });
-
-      it(`should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for ${scenario.name}`, async () => {
-        const { fixture, getByText } = await setup({ worker });
-
-        const yesItIsButton = getByText('Yes, it is', { exact: false });
-        yesItIsButton.click();
-
-        fixture.detectChanges();
-
-        expect(getByText('Meeting requirements')).toBeTruthy();
-      });
-    });
-  });
-
-  it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Highest level of social care qualification', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.socialCareQualification.isEligible = Eligibility.YES;
-    component.worker.wdf.socialCareQualification.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = 'Yes';
-    component.worker.socialCareQualification = { qualificationId: 4, title: 'Level 3' };
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Highest level of social care qualification', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-    component.worker.wdf.socialCareQualification.isEligible = Eligibility.YES;
-    component.worker.wdf.socialCareQualification.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = 'Yes';
-    component.worker.socialCareQualification = { qualificationId: 4, title: 'Level 3' };
-
-    fixture.detectChanges();
-
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
-
-    fixture.detectChanges();
-
-    expect(getByText('Meeting requirements')).toBeTruthy();
-  });
-
-  it('should show WdfFieldConfirmation component when is eligible, set to no but needs to be confirmed for Any social care qualification', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
-    component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = 'No';
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it("should show WdfFieldConfirmation component when is eligible, set to Don't know but needs to be confirmed for Any social care qualification", async () => {
-    const { component, fixture, getByText } = await setup();
-
-    component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
-    component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = "Don't know";
-
-    fixture.detectChanges();
-
-    expect(getByText('Is this still correct?')).toBeTruthy();
-    expect(getByText('Yes, it is')).toBeTruthy();
-    expect(getByText('No, change it')).toBeTruthy();
-  });
-
-  it('should not show WdfFieldConfirmation component when is eligible and needs to be confirmed but is set to Yes for Any social care qualification', async () => {
-    const { component, fixture, queryByText } = await setup();
-
-    component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
-    component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = 'Yes';
-
-    fixture.detectChanges();
-
-    expect(queryByText('Is this still correct?')).toBeFalsy();
-    expect(queryByText('Yes, it is')).toBeFalsy();
-    expect(queryByText('No, change it')).toBeFalsy();
-  });
-
-  it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Any social care qualification', async () => {
-    const { component, fixture, getByText } = await setup();
-
-    const workerService = TestBed.inject(WorkerService);
-    spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-    component.worker.wdf.qualificationInSocialCare.isEligible = Eligibility.YES;
-    component.worker.wdf.qualificationInSocialCare.updatedSinceEffectiveDate = false;
-    component.worker.qualificationInSocialCare = "Don't know";
-
-    fixture.detectChanges();
-
-    const yesItIsButton = getByText('Yes, it is', { exact: false });
-    yesItIsButton.click();
-
-    fixture.detectChanges();
-
-    expect(getByText('Meeting requirements')).toBeTruthy();
-  });
-
-  describe('Field confirmation for Started or completed Care Certificate', () => {
-    it('should show WdfFieldConfirmation component when is eligible(set to No) but needs to be confirmed for Started or completed Care Certificate', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
-      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
-      component.worker.careCertificate = 'No';
-
-      fixture.detectChanges();
-
-      expect(getByText('Is this still correct?')).toBeTruthy();
-      expect(getByText('Yes, it is')).toBeTruthy();
-      expect(getByText('No, change it')).toBeTruthy();
-    });
-
-    it('should show WdfFieldConfirmation component when is eligible(set to Yes, in progress or partially completed) but needs to be confirmed for Started or completed Care Certificate', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
-      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
-      component.worker.careCertificate = 'Yes, in progress or partially completed';
-
-      fixture.detectChanges();
-
-      expect(getByText('Is this still correct?')).toBeTruthy();
-      expect(getByText('Yes, it is')).toBeTruthy();
-      expect(getByText('No, change it')).toBeTruthy();
-    });
-
-    it('should not show WdfFieldConfirmation component when is eligible and needs to be confirmed but is set to Yes for Any social care qualification', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
-      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
-      component.worker.careCertificate = 'Yes, completed';
-
-      fixture.detectChanges();
-
-      expect(queryByText('Is this still correct?')).toBeFalsy();
+      expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
       expect(queryByText('Yes, it is')).toBeFalsy();
       expect(queryByText('No, change it')).toBeFalsy();
     });
 
-    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Started or completed Care Certificate', async () => {
-      const { component, fixture, getByText } = await setup();
+    [
+      {
+        name: 'Main job role',
+        fields: [
+          { name: 'mainJob', response: { jobId: 10, title: 'Care Worker' } },
+          { name: 'contract', response: Contracts.Permanent },
+        ],
+      },
+      {
+        name: 'Contract type',
+        fields: [{ name: 'contract', response: Contracts.Permanent }],
+      },
+      {
+        name: 'Date started in main job role',
+        fields: [{ name: 'mainJobStartDate', response: '2020-01-12' }],
+      },
+      {
+        name: 'Days sickness in last 12 months',
+        fields: [
+          {
+            name: 'daysSick',
+            response: {
+              days: 4,
+              value: null,
+            } as WorkerDays,
+          },
+          { name: 'contract', response: Contracts.Permanent },
+        ],
+      },
+      {
+        name: 'Zero hours contract',
+        fields: [
+          {
+            name: 'zeroHoursContract',
+            response: 'Yes',
+          },
+        ],
+      },
+      {
+        name: 'Highest level of social care qualification',
+        fields: [
+          {
+            name: 'socialCareQualification',
+            response: { qualificationId: 4, title: 'Level 3' },
+          },
+          {
+            name: 'qualificationInSocialCare',
+            response: 'Yes',
+          },
+        ],
+      },
+      {
+        name: 'Has a social care qualification when answer No',
+        fields: [
+          {
+            name: 'qualificationInSocialCare',
+            response: 'No',
+          },
+        ],
+      },
+      {
+        name: "Has a social care qualification when answer Don't know",
+        fields: [
+          {
+            name: 'qualificationInSocialCare',
+            response: "Don't know",
+          },
+        ],
+      },
+      {
+        name: "Started or completed Care Certificate when answered 'No'",
+        fields: [
+          {
+            name: 'careCertificate',
+            response: 'No',
+          },
+        ],
+      },
+      {
+        name: "Started or completed Care Certificate when answered 'Yes, in progress or partially completed'",
+        fields: [
+          {
+            name: 'careCertificate',
+            response: 'Yes, in progress or partially completed',
+          },
+        ],
+      },
+      {
+        name: 'Highest level of non-social care qualification',
+        fields: [
+          {
+            name: 'highestQualification',
+            response: { qualificationId: 5, title: 'Level 4' },
+          },
+          {
+            name: 'otherQualification',
+            response: 'Yes',
+          },
+        ],
+      },
+      {
+        name: 'Salary',
+        fields: [
+          {
+            name: 'annualHourlyPay',
+            response: { value: 'Annually', rate: 24000 },
+          },
+          {
+            name: 'contract',
+            response: Contracts.Permanent,
+          },
+        ],
+      },
+      {
+        name: 'Average weekly working hours',
+        fields: [
+          {
+            name: 'weeklyHoursAverage',
+            response: { value: 'Yes', hours: 30 },
+          },
+          {
+            name: 'contract',
+            response: Contracts.Agency,
+          },
+          {
+            name: 'zeroHoursContract',
+            response: 'Yes',
+          },
+        ],
+      },
+      {
+        name: 'Contracted weekly hours',
+        fields: [
+          {
+            name: 'weeklyHoursContracted',
+            response: { value: 'Yes', hours: 30 },
+          },
+          {
+            name: 'contract',
+            response: Contracts.Permanent,
+          },
+          {
+            name: 'zeroHoursContract',
+            response: 'No',
+          },
+        ],
+      },
+      {
+        name: "Non-social care qualification when answered 'No'",
+        fields: [
+          {
+            name: 'otherQualification',
+            response: 'No',
+          },
+        ],
+      },
+      {
+        name: "Non-social care qualification when answered 'No'",
+        fields: [
+          {
+            name: 'otherQualification',
+            response: "Don't know",
+          },
+        ],
+      },
+    ].forEach((scenario) => {
+      describe(scenario.name, () => {
+        const worker = buildWorkerWithFieldNotUpdatedSinceEffectiveDate(scenario.fields);
 
-      const workerService = TestBed.inject(WorkerService);
-      spyOn(workerService, 'updateWorker').and.returnValue(of(null));
+        it('should display when is eligible but needs to be confirmed', async () => {
+          const { queryByText } = await setup({ worker });
 
-      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
-      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
-      component.worker.careCertificate = 'No';
+          expect(queryByText('Is this still correct?')).toBeTruthy();
+          expect(queryByText('Yes, it is')).toBeTruthy();
+          expect(queryByText('No, change it')).toBeTruthy();
+        });
 
-      fixture.detectChanges();
+        it("should show meeting requirements message when 'Yes it is' is clicked", async () => {
+          const { fixture, queryByText } = await setup({ worker });
 
-      const yesItIsButton = getByText('Yes, it is', { exact: false });
-      yesItIsButton.click();
+          const yesItIsButton = queryByText('Yes, it is', { exact: false });
+          yesItIsButton.click();
 
-      fixture.detectChanges();
+          fixture.detectChanges();
 
-      expect(getByText('Meeting requirements')).toBeTruthy();
+          expect(queryByText('Meeting requirements')).toBeTruthy();
+        });
+
+        it('should not display when user does not have edit permissions', async () => {
+          const { queryByText } = await setup({ worker, permissions: [] });
+
+          expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
+          expect(queryByText('Yes, it is')).toBeFalsy();
+          expect(queryByText('No, change it')).toBeFalsy();
+        });
+      });
     });
-  });
 
-  describe('Field confirmation for Non-social care qualification', () => {
-    it('should show WdfFieldConfirmation component when is eligible(set to No) but needs to be confirmed for Non-social care qualification', async () => {
-      const { component, fixture, getByText } = await setup();
+    describe('Responses where confirmation is not required', () => {
+      it("should not show when 'Has a social care qualification' is set to Yes", async () => {
+        const { queryByText } = await setup({
+          worker: buildWorkerWithFieldNotUpdatedSinceEffectiveDate([
+            { name: 'qualificationInSocialCare', response: 'Yes' },
+          ]),
+        });
 
-      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
-      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
-      component.worker.otherQualification = 'No';
+        expect(queryByText('Is this still correct?')).toBeFalsy();
+        expect(queryByText('Yes, it is')).toBeFalsy();
+        expect(queryByText('No, change it')).toBeFalsy();
+      });
 
-      fixture.detectChanges();
+      it("should not show when Care Certificate answered with 'Yes, completed'", async () => {
+        const { queryByText } = await setup({
+          worker: buildWorkerWithFieldNotUpdatedSinceEffectiveDate([
+            { name: 'careCertificate', response: 'Yes, completed' },
+          ]),
+        });
 
-      expect(getByText('Is this still correct?')).toBeTruthy();
-      expect(getByText('Yes, it is')).toBeTruthy();
-      expect(getByText('No, change it')).toBeTruthy();
-    });
+        expect(queryByText('Is this still correct?')).toBeFalsy();
+        expect(queryByText('Yes, it is')).toBeFalsy();
+        expect(queryByText('No, change it')).toBeFalsy();
+      });
 
-    it("should show WdfFieldConfirmation component when is eligible(set to Don't know) but needs to be confirmed for Non-social care qualification", async () => {
-      const { component, fixture, getByText } = await setup();
+      it('should not show when Non-social care qualification is set to Yes', async () => {
+        const { queryByText } = await setup({
+          worker: buildWorkerWithFieldNotUpdatedSinceEffectiveDate([{ name: 'otherQualification', response: 'Yes' }]),
+        });
 
-      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
-      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
-      component.worker.otherQualification = "Don't know";
-
-      fixture.detectChanges();
-
-      expect(getByText('Is this still correct?')).toBeTruthy();
-      expect(getByText('Yes, it is')).toBeTruthy();
-      expect(getByText('No, change it')).toBeTruthy();
-    });
-
-    it('should not show WdfFieldConfirmation component when is eligible and needs to be confirmed but is set to Yes for Non-social care qualification', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
-      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
-      component.worker.otherQualification = 'Yes';
-
-      fixture.detectChanges();
-
-      expect(queryByText('Is this still correct?')).toBeFalsy();
-      expect(queryByText('Yes, it is')).toBeFalsy();
-      expect(queryByText('No, change it')).toBeFalsy();
-    });
-
-    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Non-social care qualification', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      const workerService = TestBed.inject(WorkerService);
-      spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
-      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
-      component.worker.otherQualification = 'No';
-
-      fixture.detectChanges();
-
-      const yesItIsButton = getByText('Yes, it is', { exact: false });
-      yesItIsButton.click();
-
-      fixture.detectChanges();
-
-      expect(getByText('Meeting requirements')).toBeTruthy();
-    });
-  });
-
-  describe('Field confirmation for Highest level of non-social care qualification', () => {
-    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Highest level of non-social care qualification', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      component.worker.otherQualification = 'Yes';
-      component.worker.highestQualification = { qualificationId: 5, title: 'Level 4' };
-      component.worker.wdf.highestQualification.isEligible = Eligibility.YES;
-      component.worker.wdf.highestQualification.updatedSinceEffectiveDate = false;
-
-      fixture.detectChanges();
-
-      expect(getByText('Is this still correct?')).toBeTruthy();
-      expect(getByText('Yes, it is')).toBeTruthy();
-      expect(getByText('No, change it')).toBeTruthy();
-    });
-
-    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Highest level of non-social care qualification', async () => {
-      const { component, fixture, getByText } = await setup();
-
-      const workerService = TestBed.inject(WorkerService);
-      spyOn(workerService, 'updateWorker').and.returnValue(of(null));
-
-      component.worker.otherQualification = 'Yes';
-      component.worker.highestQualification = { qualificationId: 5, title: 'Level 4' };
-      component.worker.wdf.highestQualification.isEligible = Eligibility.YES;
-      component.worker.wdf.highestQualification.updatedSinceEffectiveDate = false;
-
-      fixture.detectChanges();
-
-      const yesItIsButton = getByText('Yes, it is', { exact: false });
-      yesItIsButton.click();
-
-      fixture.detectChanges();
-
-      expect(getByText('Meeting requirements')).toBeTruthy();
+        expect(queryByText('Is this still correct?')).toBeFalsy();
+        expect(queryByText('Yes, it is')).toBeFalsy();
+        expect(queryByText('No, change it')).toBeFalsy();
+      });
     });
   });
 
@@ -859,104 +570,6 @@ describe('StaffRecordSummaryComponent', () => {
         expect(within(wdfWarningSection).queryByText('Add this information')).toBeTruthy();
         expect(within(wdfWarningSection).getByAltText('Orange flag icon')).toBeTruthy();
       });
-    });
-  });
-
-  describe('Permission check for workers who do not have permission to edit fields', () => {
-    it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for basic record fields', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.worker.wdf.mainJob.isEligible = Eligibility.YES;
-      component.worker.wdf.mainJob.updatedSinceEffectiveDate = false;
-      component.worker.mainJob = { jobId: 10, title: 'Care Worker' };
-
-      component.worker.contract = Contracts.Permanent;
-      component.worker.wdf.contract.isEligible = Eligibility.YES;
-      component.worker.wdf.contract.updatedSinceEffectiveDate = false;
-
-      component.canEditWorker = false;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
-      expect(queryByText('Yes, it is')).toBeFalsy();
-      expect(queryByText('No, change it')).toBeFalsy();
-    });
-
-    it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for employment fields', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.worker.contract = Contracts.Permanent;
-      component.worker.wdf.daysSick.isEligible = Eligibility.YES;
-      component.worker.wdf.daysSick.updatedSinceEffectiveDate = false;
-      const myWorkerDay: WorkerDays = {
-        days: 4,
-        value: null,
-      };
-      component.worker.daysSick = myWorkerDay;
-
-      component.worker.wdf.weeklyHoursContracted.isEligible = Eligibility.YES;
-      component.worker.wdf.weeklyHoursContracted.updatedSinceEffectiveDate = false;
-      component.worker.weeklyHoursContracted = { value: 'Yes', hours: 30 };
-
-      component.worker.wdf.annualHourlyPay.isEligible = Eligibility.YES;
-      component.worker.wdf.annualHourlyPay.updatedSinceEffectiveDate = false;
-      component.worker.annualHourlyPay = { value: 'Annually', rate: 24000 };
-
-      component.canEditWorker = false;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
-      expect(queryByText('Yes, it is')).toBeFalsy();
-      expect(queryByText('No, change it')).toBeFalsy();
-    });
-
-    it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for employment fields with zero hours', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.worker.wdf.weeklyHoursAverage.isEligible = Eligibility.YES;
-      component.worker.wdf.weeklyHoursAverage.updatedSinceEffectiveDate = false;
-      component.worker.zeroHoursContract = 'Yes';
-      component.worker.weeklyHoursAverage = { value: 'Yes', hours: 30 };
-      component.worker.contract = Contracts.Agency;
-
-      component.canEditWorker = false;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
-      expect(queryByText('Yes, it is')).toBeFalsy();
-      expect(queryByText('No, change it')).toBeFalsy();
-    });
-
-    it('when a user does not have edit permissions then they should not see the Wdf Field Confirmation component for qualification fields', async () => {
-      const { component, fixture, queryByText } = await setup();
-
-      component.worker.wdf.socialCareQualification.isEligible = Eligibility.YES;
-      component.worker.wdf.socialCareQualification.updatedSinceEffectiveDate = false;
-      component.worker.qualificationInSocialCare = 'Yes';
-      component.worker.socialCareQualification = { qualificationId: 4, title: 'Level 3' };
-
-      component.worker.wdf.careCertificate.isEligible = Eligibility.YES;
-      component.worker.wdf.careCertificate.updatedSinceEffectiveDate = false;
-      component.worker.careCertificate = 'No';
-
-      component.worker.wdf.otherQualification.isEligible = Eligibility.YES;
-      component.worker.wdf.otherQualification.updatedSinceEffectiveDate = false;
-      component.worker.otherQualification = 'Yes';
-
-      component.worker.highestQualification = { qualificationId: 5, title: 'Level 4' };
-      component.worker.wdf.highestQualification.isEligible = Eligibility.YES;
-      component.worker.wdf.highestQualification.updatedSinceEffectiveDate = false;
-
-      component.canEditWorker = false;
-
-      fixture.detectChanges();
-
-      expect(queryByText('Is this still correct?', { exact: false })).toBeFalsy();
-      expect(queryByText('Yes, it is')).toBeFalsy();
-      expect(queryByText('No, change it')).toBeFalsy();
     });
   });
 
