@@ -131,7 +131,7 @@ const validateBulkUploadFiles = async (req, files) => {
     }),
   );
 
-  await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments);
+  await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, myJSONWorkers);
 
   // Prepare validation results
 
