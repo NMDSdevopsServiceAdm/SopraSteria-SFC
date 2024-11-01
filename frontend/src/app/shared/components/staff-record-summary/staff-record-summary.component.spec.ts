@@ -477,74 +477,51 @@ describe('StaffRecordSummaryComponent', () => {
     expect(getByText('Meeting requirements')).toBeTruthy();
   });
 
-  describe('WdfFieldConfirmation for main job role', () => {
-    const worker = buildWorker({
+  [
+    {
+      name: 'mainJob',
       fields: [
         { name: 'mainJob', response: { jobId: 10, title: 'Care Worker' } },
         { name: 'contract', response: Contracts.Permanent },
       ],
-      wdf: [
-        {
-          name: 'mainJob',
-          response: {
-            isEligible: Eligibility.YES,
-            updatedSinceEffectiveDate: false,
-          },
-        },
-      ],
-    });
-
-    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Main Job Role', async () => {
-      const { getByText } = await setup({ worker });
-
-      expect(getByText('Is this still correct?')).toBeTruthy();
-      expect(getByText('Yes, it is')).toBeTruthy();
-      expect(getByText('No, change it')).toBeTruthy();
-    });
-
-    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Main Job Role', async () => {
-      const { fixture, getByText } = await setup({ worker });
-
-      const yesItIsButton = getByText('Yes, it is', { exact: false });
-      yesItIsButton.click();
-
-      fixture.detectChanges();
-
-      expect(getByText('Meeting requirements')).toBeTruthy();
-    });
-  });
-
-  describe('WdfFieldConfirmation for main job role', () => {
-    const worker = buildWorker({
+    },
+    {
+      name: 'contract',
       fields: [{ name: 'contract', response: Contracts.Permanent }],
-      wdf: [
-        {
-          name: 'contract',
-          response: {
-            isEligible: Eligibility.YES,
-            updatedSinceEffectiveDate: false,
+    },
+  ].forEach((scenario) => {
+    describe(`WdfFieldConfirmation for ${scenario.name}`, () => {
+      const worker = buildWorker({
+        fields: scenario.fields,
+        wdf: [
+          {
+            name: scenario.name,
+            response: {
+              isEligible: Eligibility.YES,
+              updatedSinceEffectiveDate: false,
+            },
           },
-        },
-      ],
-    });
+        ],
+      });
 
-    it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Contract', async () => {
-      const { getByText } = await setup({ worker });
+      it(`should show WdfFieldConfirmation component when is eligible but needs to be confirmed for ${scenario.name}`, async () => {
+        const { getByText } = await setup({ worker });
 
-      expect(getByText('Is this still correct?')).toBeTruthy();
-      expect(getByText('Yes, it is')).toBeTruthy();
-      expect(getByText('No, change it')).toBeTruthy();
-    });
+        expect(getByText('Is this still correct?')).toBeTruthy();
+        expect(getByText('Yes, it is')).toBeTruthy();
+        expect(getByText('No, change it')).toBeTruthy();
+      });
 
-    it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Contract', async () => {
-      const { fixture, getByText } = await setup({ worker });
+      it(`should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for ${scenario.name}`, async () => {
+        const { fixture, getByText } = await setup({ worker });
 
-      const yesItIsButton = getByText('Yes, it is', { exact: false });
-      yesItIsButton.click();
+        const yesItIsButton = getByText('Yes, it is', { exact: false });
+        yesItIsButton.click();
 
-      fixture.detectChanges();
+        fixture.detectChanges();
 
-      expect(getByText('Meeting requirements')).toBeTruthy();
+        expect(getByText('Meeting requirements')).toBeTruthy();
+      });
     });
   });
 
