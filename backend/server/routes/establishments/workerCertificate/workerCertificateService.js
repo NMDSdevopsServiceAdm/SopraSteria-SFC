@@ -135,9 +135,9 @@ class WorkerCertificateService {
     return responsePayload;
   };
 
-  deleteRecordsFromDatabase = async (uids) => {
+  deleteRecordsFromDatabase = async (uids, transaction) => {
     try {
-      await this.certificatesModel.deleteCertificate(uids);
+      await this.certificatesModel.deleteCertificate(uids, transaction);
       return true;
     } catch (error) {
       return false;
@@ -154,6 +154,23 @@ class WorkerCertificateService {
       console.error(JSON.stringify(deleteFromS3Response.Errors));
     }
   };
+
+  async deleteAllCertificates(workerUid, transaction) {
+    const certificates = this.certificatesModel.getAllCertificateRecordsForWorker(workerUid);
+
+    console.log(certificates.length);
+
+    if (!certificates.length) return;
+    const certificateUids = certificates.map((cert) => cert.uid);
+    const filesToDeleteFromS3 = certificates.map((cert) => {
+      return { Key: cert.key };
+    });
+
+    console.log(certificateUids);
+
+    await this.certificatesModel.deleteCertificate(certificateUids, transaction);
+    await this.deleteCertificatesFromS3(filesToDeleteFromS3);
+  }
 
   async deleteCertificates(files, establishmentUid, workerUid, recordUid) {
     if (!files || !files.length) {

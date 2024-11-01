@@ -28,6 +28,7 @@ const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_DOCUMENT;
 
 const TrainingCertificateRoute = require('../../routes/establishments/workerCertificate/trainingCertificate');
+const WorkerCertificateService = require('../../routes/establishments/workerCertificate/workerCertificateService');
 
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
@@ -1152,7 +1153,7 @@ class Worker extends EntityValidator {
           // TODO - to be confirmed
         }
 
-        await this.deleteAllTrainingCertificatesAssociatedWithWorker(thisTransaction);
+        await this.deleteAllTrainingCertificatesAssociatedWithWorker(this._establishmentId, this._uid, thisTransaction);
 
         // always recalculate WDF - if not bulk upload (this._status)
         if (this._status === null) {
@@ -1900,17 +1901,22 @@ class Worker extends EntityValidator {
   }
 
   async deleteAllTrainingCertificatesAssociatedWithWorker(transaction) {
-    const trainingCertificates = await models.trainingCertificates.getAllTrainingCertificateRecordsForWorker(this._id);
+    // const trainingCertificates = await models.trainingCertificates.getAllTrainingCertificateRecordsForWorker(this._id);
 
-    if (!trainingCertificates.length) return;
+    const workerTrainingCertificateService = WorkerCertificateService.initialiseTraining();
+    await workerTrainingCertificateService.deleteAllCertificates(this._id, transaction);
 
-    const trainingCertificateUids = trainingCertificates.map((cert) => cert.uid);
-    const filesToDeleteFromS3 = trainingCertificates.map((cert) => {
-      return { Key: cert.key };
-    });
+    // *******
 
-    await models.trainingCertificates.deleteCertificate(trainingCertificateUids, transaction);
-    await TrainingCertificateRoute.deleteCertificatesFromS3(filesToDeleteFromS3);
+    // if (!trainingCertificates.length) return;
+
+    // const trainingCertificateUids = trainingCertificates.map((cert) => cert.uid);
+    // const filesToDeleteFromS3 = trainingCertificates.map((cert) => {
+    //   return { Key: cert.key };
+    // });
+
+    // await models.trainingCertificates.deleteCertificate(trainingCertificateUids, transaction);
+    // await TrainingCertificateRoute.deleteCertificatesFromS3(filesToDeleteFromS3);
   }
 }
 
