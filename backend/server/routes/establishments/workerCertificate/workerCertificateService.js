@@ -156,9 +156,7 @@ class WorkerCertificateService {
   };
 
   async deleteAllCertificates(workerUid, transaction) {
-    const certificates = this.certificatesModel.getAllCertificateRecordsForWorker(workerUid);
-
-    console.log(certificates.length);
+    const certificates = await this.certificatesModel.getAllCertificateRecordsForWorker(workerUid);
 
     if (!certificates.length) return;
     const certificateUids = certificates.map((cert) => cert.uid);
@@ -166,7 +164,7 @@ class WorkerCertificateService {
       return { Key: cert.key };
     });
 
-    console.log(certificateUids);
+    console.log(filesToDeleteFromS3);
 
     await this.certificatesModel.deleteCertificate(certificateUids, transaction);
     await this.deleteCertificatesFromS3(filesToDeleteFromS3);

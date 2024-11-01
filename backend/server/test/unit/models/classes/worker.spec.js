@@ -449,7 +449,7 @@ describe('Worker Class', () => {
       stubs = {
         getWorkerCertificateServiceInstance: sinon.stub(WorkerCertificateService, 'initialiseTraining').returns(new WorkerCertificateService()),
         deleteAllCertificates: sinon.stub(WorkerCertificateService.prototype, 'deleteAllCertificates'),
-        getTrainingCertificates: sinon.stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker').resolves(trainingCertificatesReturnedFromDb),
+        getTrainingCertificates: sinon.stub(models.trainingCertificates, 'getAllCertificateRecordsForWorker').resolves(trainingCertificatesReturnedFromDb),
       }
     });
 

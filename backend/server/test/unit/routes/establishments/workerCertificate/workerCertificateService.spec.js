@@ -358,7 +358,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
   });
 
-  describe.only('deleteAllCertificates', () => {
+  describe('deleteAllCertificates', () => {
     const trainingCertificatesReturnedFromDb = [
       { uid: 'abc123', key: 'abc123/trainingCertificate/dasdsa12312' },
       { uid: 'def456', key: 'def456/trainingCertificate/deass12092' },
@@ -378,7 +378,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         expect(stubs.getAllTrainingCertificatesForUser).to.be.calledWith(12345);
       });
 
-      it.only('should not make DB or S3 deletion calls if no training certificates found', async () => {
+      it('should not make DB or S3 deletion calls if no training certificates found', async () => {
         stubs.getAllTrainingCertificatesForUser.resolves([]);
 
         const transaction = models.sequelize.transaction();
@@ -388,11 +388,9 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         expect(stubs.deleteCertificatesFromS3).to.not.have.been.called;
       });
 
-      it.only('should call deleteCertificate on DB model with uids returned from getAllTrainingCertificateRecordsForWorker and pass in transaction', async () => {
+      it('should call deleteCertificate on DB model with uids returned from getAllTrainingCertificateRecordsForWorker and pass in transaction', async () => {
         const transaction = await models.sequelize.transaction();
         await services.training.deleteAllCertificates(12345, transaction);
-
-        console.log(stubs.deleteTrainingCertificatesFromDb.args);
 
         expect(stubs.deleteTrainingCertificatesFromDb.args[0][0]).to.deep.equal([
           trainingCertificatesReturnedFromDb[0].uid,
@@ -400,19 +398,25 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
           trainingCertificatesReturnedFromDb[2].uid,
         ]);
 
-        expect(dbDeleteCertificateSpy.args[0][1]).to.deep.equal(transaction);
+        expect(stubs.deleteTrainingCertificatesFromDb.args[0][1]).to.deep.equal(transaction);
       });
 
       it('should call deleteCertificatesFromS3 with keys returned from getAllTrainingCertificateRecordsForWorker', async () => {
+        const bucketName = config.get('workerCertificate.bucketname');
         const transaction = await models.sequelize.transaction();
 
-        await services.training.deleteAllTrainingCertificatesAssociatedWithWorker(12345, transaction);
+        await services.training.deleteAllCertificates(12345, transaction);
 
-        expect(stubs.deleteCertificatesFromS3.args[0][0]).to.deep.equal([
-          { Key: trainingCertificates[0].key },
-          { Key: trainingCertificates[1].key },
-          { Key: trainingCertificates[2].key },
-        ]);
+        console.log(stubs.deleteCertificatesFromS3.args[0][0]);
+
+        expect(stubs.deleteCertificatesFromS3.args[0][0]).to.deep.equal({
+          bucket: bucketName,
+          objects: [
+            { Key: trainingCertificatesReturnedFromDb[0].key },
+            { Key: trainingCertificatesReturnedFromDb[1].key },
+            { Key: trainingCertificatesReturnedFromDb[2].key },
+          ]
+        });
       });
     });
 
