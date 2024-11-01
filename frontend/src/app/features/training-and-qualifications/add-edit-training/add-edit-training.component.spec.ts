@@ -402,7 +402,7 @@ describe('AddEditTrainingComponent', () => {
       const fileInput = getByTestId('fileInput');
 
       let uploadButton = within(uploadSection).getByRole('button', {
-        description: /The certificate must be a PDF file that's no larger than 500KB/,
+        description: /The certificate must be a PDF file that's no larger than 5MB/,
       });
       expect(uploadButton).toBeTruthy();
 
@@ -926,7 +926,7 @@ describe('AddEditTrainingComponent', () => {
     });
 
     describe('uploadCertificate errors', () => {
-      it('should show an error message if the selected file is over 500 KB', async () => {
+      it('should show an error message if the selected file is over 5MB', async () => {
         const { fixture, getByTestId, getByText } = await setup(null);
 
         const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
@@ -941,7 +941,7 @@ describe('AddEditTrainingComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+        expect(getByText('The certificate must be no larger than 5MB')).toBeTruthy();
       });
 
       it('should show an error message if the selected file is not a pdf file', async () => {

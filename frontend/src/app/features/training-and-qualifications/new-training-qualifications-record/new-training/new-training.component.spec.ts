@@ -104,7 +104,7 @@ describe('NewTrainingComponent', async () => {
         trainingCategories: trainingCategories,
         isMandatoryTraining: false,
         certificateErrors: null,
-        ...override
+        ...override,
       },
     });
     const component = fixture.componentInstance;
@@ -230,7 +230,7 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should display a no mandatory training found link when there is no mandatory training and isMandatoryTraining is true and canEditWorker is true', async () => {
-      const { component, fixture } = await setup({ trainingCategories: [], isMandatoryTraining: true});
+      const { component, fixture } = await setup({ trainingCategories: [], isMandatoryTraining: true });
 
       component.workplaceUid = '123';
       component.ngOnChanges();
@@ -257,7 +257,11 @@ describe('NewTrainingComponent', async () => {
     });
 
     it('should display a no mandatory training for job role message when mandatory training is not required for the job role', async () => {
-      const { component, fixture } = await setup({ trainingCategories: [], isMandatoryTraining: true, missingMandatoryTraining: false });
+      const { component, fixture } = await setup({
+        trainingCategories: [],
+        isMandatoryTraining: true,
+        missingMandatoryTraining: false,
+      });
 
       component.workplaceUid = '123';
       fixture.detectChanges();
@@ -267,17 +271,19 @@ describe('NewTrainingComponent', async () => {
       );
       const messageText = 'No mandatory training has been added for this job role yet.';
       const mandatoryTrainingMessage = fixture.debugElement.query(
-        debugElement => debugElement.nativeElement.textContent === messageText
+        (debugElement) => debugElement.nativeElement.textContent === messageText,
       );
-
-      console.log(mandatoryTrainingMessage);
 
       expect(mandatoryTrainingMessage).toBeTruthy();
       expect(mandatoryTrainingMissingLink).toBeTruthy();
     });
 
     it('should display a no mandatory training for job role message when mandatory training is missing', async () => {
-      const { component, fixture } = await setup({ trainingCategories: [], isMandatoryTraining: true, missingMandatoryTraining: true});
+      const { component, fixture } = await setup({
+        trainingCategories: [],
+        isMandatoryTraining: true,
+        missingMandatoryTraining: true,
+      });
 
       component.workplaceUid = '123';
       fixture.detectChanges();
@@ -378,32 +384,51 @@ describe('NewTrainingComponent', async () => {
   });
 
   describe('Training certificates', () => {
+    const singleTrainingCertificate = () => [
+      {
+        filename: 'test.pdf',
+        uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+        uploadDate: '2024-09-20T08:57:45.000Z',
+      },
+    ];
+
+    const multipleTrainingCertificates = () => [
+      {
+        filename: 'test.pdf',
+        uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+        uploadDate: '2024-09-20T08:57:45.000Z',
+      },
+      {
+        filename: 'test2.pdf',
+        uid: '1872ec19-510d-41de-995d-6abfd3ae888b',
+        uploadDate: '2024-09-19T08:57:45.000Z',
+      },
+    ];
+
     it('should display Download link when training record has one certificate associated with it', async () => {
       const { component, fixture, getByTestId } = await setup();
 
-      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [
-        {
-          filename: 'test.pdf',
-          uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
-          uploadDate: '2024-09-20T08:57:45.000Z',
-        },
-      ];
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = singleTrainingCertificate();
       fixture.detectChanges();
 
       const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
       expect(within(trainingRecordWithCertificateRow).getByText('Download')).toBeTruthy();
     });
 
+    it('should not display Download link when training record has one certificate associated with it but user does not have edit permissions', async () => {
+      const { component, fixture, getByTestId } = await setup({ canEditWorker: false });
+
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = singleTrainingCertificate();
+      fixture.detectChanges();
+
+      const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
+      expect(within(trainingRecordWithCertificateRow).queryByText('Download')).toBeFalsy();
+    });
+
     it('should trigger download file emitter when Download link is clicked', async () => {
       const { component, fixture, getByTestId } = await setup();
 
-      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [
-        {
-          filename: 'test.pdf',
-          uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
-          uploadDate: '2024-09-20T08:57:45.000Z',
-        },
-      ];
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = singleTrainingCertificate();
       fixture.detectChanges();
 
       const downloadFileSpy = spyOn(component.downloadFile, 'emit');
@@ -425,39 +450,27 @@ describe('NewTrainingComponent', async () => {
     it('should display Select a download link when training record has more than one certificate associated with it', async () => {
       const { component, fixture, getByTestId } = await setup();
 
-      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [
-        {
-          filename: 'test.pdf',
-          uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
-          uploadDate: '2024-09-20T08:57:45.000Z',
-        },
-        {
-          filename: 'test2.pdf',
-          uid: '1872ec19-510d-41de-995d-6abfd3ae888b',
-          uploadDate: '2024-09-19T08:57:45.000Z',
-        },
-      ];
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = multipleTrainingCertificates();
       fixture.detectChanges();
 
       const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
       expect(within(trainingRecordWithCertificateRow).getByText('Select a download')).toBeTruthy();
     });
 
+    it('should not display Select a download link when training record has more than one certificate associated with it but user does not have edit permissions', async () => {
+      const { component, fixture, getByTestId } = await setup({ canEditWorker: false });
+
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = multipleTrainingCertificates();
+      fixture.detectChanges();
+
+      const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
+      expect(within(trainingRecordWithCertificateRow).queryByText('Select a download')).toBeFalsy();
+    });
+
     it('should have href of training record on Select a download link', async () => {
       const { component, fixture, getByTestId } = await setup();
 
-      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [
-        {
-          filename: 'test.pdf',
-          uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
-          uploadDate: '2024-09-20T08:57:45.000Z',
-        },
-        {
-          filename: 'test2.pdf',
-          uid: '1872ec19-510d-41de-995d-6abfd3ae888b',
-          uploadDate: '2024-09-19T08:57:45.000Z',
-        },
-      ];
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = multipleTrainingCertificates();
       fixture.detectChanges();
 
       const trainingRecordUid = component.trainingCategories[0].trainingRecords[0].uid;
@@ -476,6 +489,16 @@ describe('NewTrainingComponent', async () => {
 
       const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
       expect(within(trainingRecordWithCertificateRow).getByText('Upload file')).toBeTruthy();
+    });
+
+    it('should not display Upload file button when training record has no certificates associated with it but user does not have edit permissions', async () => {
+      const { component, fixture, getByTestId } = await setup({ canEditWorker: false });
+
+      component.trainingCategories[0].trainingRecords[0].trainingCertificates = [];
+      fixture.detectChanges();
+
+      const trainingRecordWithCertificateRow = getByTestId('someAutismUid');
+      expect(within(trainingRecordWithCertificateRow).queryByText('Upload file')).toBeFalsy();
     });
 
     it('should trigger the upload file emitter when a file is selected by the Upload file button', async () => {

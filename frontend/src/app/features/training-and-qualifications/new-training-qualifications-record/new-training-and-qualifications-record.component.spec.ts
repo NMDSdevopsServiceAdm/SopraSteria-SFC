@@ -343,7 +343,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           },
           { provide: EstablishmentService, useClass: MockEstablishmentService },
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-          { provide: PermissionsService, useClass: MockPermissionsService },
+          { provide: PermissionsService, useFactory: MockPermissionsService.factory(['canEditWorker']) },
           { provide: TrainingCertificateService, useClass: MockTrainingCertificateService },
           { provide: QualificationCertificateService, useClass: MockQualificationCertificateService },
           // suppress the distracting error msg of "reading 'nativeElement'" from PdfTrainingAndQualificationService
@@ -426,21 +426,13 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should display the View staff record button', async () => {
-      const { component, getByText, fixture } = await setup();
-
-      component.canEditWorker = true;
-
-      fixture.detectChanges();
+      const { getByText } = await setup();
 
       expect(getByText('View staff record', { exact: false })).toBeTruthy();
     });
 
     it('should have correct href on the View staff record button', async () => {
-      const { component, getByText, fixture } = await setup();
-
-      component.canEditWorker = true;
-
-      fixture.detectChanges();
+      const { component, getByText } = await setup();
 
       const viewStaffRecordButton = getByText('View staff record', { exact: false });
 
@@ -501,7 +493,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component, fixture, getByText } = await setup();
 
       component.worker.longTermAbsence = null;
-      component.canEditWorker = true;
       fixture.detectChanges();
 
       expect(getByText('Flag long-term absence')).toBeTruthy();
@@ -511,7 +502,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component, fixture, getByTestId, routerSpy } = await setup();
 
       component.worker.longTermAbsence = null;
-      component.canEditWorker = true;
       fixture.detectChanges();
 
       const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
@@ -589,7 +579,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should render Autism as an expired training without an update link if canEditWorker is false', async () => {
-      const { fixture } = await setup();
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
       const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
       const rowOne = actionListTableRows[1];
       expect(rowOne.cells['0'].innerHTML).toBe('Autism');
@@ -612,7 +606,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should render Coshh as an expiring soon training without an update link if canEditWorker is false', async () => {
-      const { fixture } = await setup();
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
       const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
       const rowTwo = actionListTableRows[2];
       expect(rowTwo.cells['0'].innerHTML).toBe('Coshh');
@@ -960,10 +958,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         expect(uploadCertificateSpy).not.toHaveBeenCalled();
       });
 
-      it('should show an error message when a file of > 500 KB is selected', async () => {
+      it('should show an error message when a file of > 5MB is selected', async () => {
         const invalidFile = new File(['some file content'], 'certificate.pdf');
         Object.defineProperty(invalidFile, 'size', {
-          value: 600 * 1024, // 600 KB
+          value: 6 * 1024 * 1024, // 6MB
         });
 
         const { fixture, getByTestId, trainingCertificateService, getByText } = await setup();
@@ -977,7 +975,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+        expect(getByText('The certificate must be no larger than 5MB')).toBeTruthy();
         expect(uploadCertificateSpy).not.toHaveBeenCalled();
       });
 
@@ -1004,6 +1002,36 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           type: 'success',
           message: 'Certificate uploaded',
         });
+      });
+
+      it('should reset the actions list with returned training data when file successfully uploaded', async () => {
+        const { fixture, getByTestId, workerService, trainingCertificateService } = await setup({
+          mandatoryTraining: [],
+        });
+        const mockUpdatedData = {
+          training: mockTrainingData,
+          qualifications: { count: 0, groups: [], lastUpdated: null },
+        } as TrainingAndQualificationRecords;
+        spyOn(workerService, 'getAllTrainingAndQualificationRecords').and.returnValue(of(mockUpdatedData));
+        spyOn(trainingCertificateService, 'addCertificates').and.returnValue(of(null));
+
+        const trainingRecordRow = getByTestId('someHealthuid');
+        const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        await fixture.whenStable();
+
+        const actionsListTable = getByTestId('actions-list-table');
+        const actionListTableRows = actionsListTable.querySelectorAll('tr');
+
+        const rowOne = actionListTableRows[1];
+        expect(rowOne.cells['0'].innerHTML).toBe('Autism');
+
+        const rowTwo = actionListTableRows[2];
+        expect(rowTwo.cells['0'].innerHTML).toBe('Coshh');
+
+        expect(actionListTableRows.length).toBe(3);
       });
 
       it('should display an error message on the training category when certificate upload fails', async () => {
@@ -1141,10 +1169,10 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
         expect(uploadCertificateSpy).not.toHaveBeenCalled();
       });
 
-      it('should show an error message when a file of > 500 KB is selected', async () => {
+      it('should show an error message when a file of > 5MB is selected', async () => {
         const invalidFile = new File(['some file content'], 'certificate.pdf');
         Object.defineProperty(invalidFile, 'size', {
-          value: 600 * 1024, // 600 KB
+          value: 6 * 1024 * 1024, // 6MB
         });
 
         const { fixture, getByText, getByTestId, qualificationCertificateService } =
@@ -1159,7 +1187,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+        expect(getByText('The certificate must be no larger than 5MB')).toBeTruthy();
         expect(uploadCertificateSpy).not.toHaveBeenCalled();
       });
 

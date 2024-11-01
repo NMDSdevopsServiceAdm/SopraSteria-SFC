@@ -92,29 +92,31 @@
                 </div>
               </td>
               <td class="govuk-table__cell">
-                <span *ngIf="trainingRecord.trainingCertificates?.length == 1">
-                  <a
-                    href="#"
-                    class="govuk-link govuk-link--no-visited-state"
-                    (click)="handleDownloadCertificate($event, trainingRecord)"
-                  >
-                    <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
-                      class="govuk-!-margin-left-1"
-                      >Download</span
+                <ng-container *ngIf="canEditWorker">
+                  <span *ngIf="trainingRecord.trainingCertificates?.length == 1">
+                    <a
+                      href="#"
+                      class="govuk-link govuk-link--no-visited-state"
+                      (click)="handleDownloadCertificate($event, trainingRecord)"
                     >
-                    <span class="govuk-visually-hidden"
-                      >the certificate {{ trainingRecord.trainingCertificates[0].filename }}</span
-                    >
-                  </a>
-                </span>
-                <span *ngIf="trainingRecord.trainingCertificates?.length > 1">
-                  <a [routerLink]="['../training', trainingRecord.uid]" class="govuk-link govuk-link--no-visited-state">
-                    Select a download
-                  </a>
-                </span>
-                <span *ngIf="trainingRecord.trainingCertificates?.length === 0">
-                  <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1" (selectFiles)="handleUploadCertificate($event, trainingRecord)" />
-                </span>
+                      <img alt="" src="/assets/images/icon-download.svg" class="govuk-util__vertical-align-bottom" /><span
+                        class="govuk-!-margin-left-1"
+                        >Download</span
+                      >
+                      <span class="govuk-visually-hidden"
+                        >the certificate {{ trainingRecord.trainingCertificates[0].filename }}</span
+                      >
+                    </a>
+                  </span>
+                  <span *ngIf="trainingRecord.trainingCertificates?.length > 1">
+                    <a [routerLink]="['../training', trainingRecord.uid]" class="govuk-link govuk-link--no-visited-state">
+                      Select a download
+                    </a>
+                  </span>
+                  <span *ngIf="trainingRecord.trainingCertificates?.length === 0">
+                    <app-select-upload-file accept=".pdf" buttonText="Upload file" buttonClasses="govuk-!-margin-bottom-0 govuk-!-padding-top-1 govuk-!-padding-bottom-1" (selectFiles)="handleUploadCertificate($event, trainingRecord)" />
+                  </span>
+                </ng-container>
               </td>
             </tr>
           </tbody>

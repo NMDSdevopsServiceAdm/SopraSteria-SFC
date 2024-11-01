@@ -156,6 +156,7 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
     this.setMissingMandatoryTraining(this.mandatoryTraining);
     this.setNonMandatoryTraining();
 
+    this.clearActionsList();
     this.populateActionsList(this.mandatoryTraining, 'Mandatory');
     this.populateActionsList(this.missingMandatoryTraining, 'Mandatory');
     this.populateActionsList(this.nonMandatoryTraining, 'Non-mandatory');
@@ -254,6 +255,10 @@ export class NewTrainingAndQualificationsRecordComponent implements OnInit, OnDe
         );
       });
     });
+  }
+
+  private clearActionsList(): void {
+    this.actionsListData = [];
   }
 
   private populateActionsList(trainingCategories: any, typeOfTraining: string): void {

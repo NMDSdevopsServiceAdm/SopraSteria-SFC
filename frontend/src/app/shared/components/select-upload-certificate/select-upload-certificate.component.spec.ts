@@ -1,8 +1,8 @@
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { SelectUploadCertificateComponent } from './select-upload-certificate.component';
-import userEvent from '@testing-library/user-event';
 
 describe('SelectUploadCertificateComponent', () => {
   let filesToUpload = [];
@@ -81,7 +81,7 @@ describe('SelectUploadCertificateComponent', () => {
       const fileInput = getByTestId('fileInput');
 
       let uploadButton = within(uploadSection).getByRole('button', {
-        description: /The certificate must be a PDF file that's no larger than 500KB/,
+        description: /The certificate must be a PDF file that's no larger than 5MB/,
       });
       expect(uploadButton).toBeTruthy();
 

@@ -4,9 +4,11 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { QualificationResponse, QualificationType } from '@core/model/qualification.model';
+import { QualificationCertificateService } from '@core/services/certificate.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
+import { MockQualificationCertificateService } from '@core/test-utils/MockCertificateService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { qualificationRecord } from '@core/test-utils/MockWorkerService';
 import { MockWorkerServiceWithWorker } from '@core/test-utils/MockWorkerServiceWithWorker';
@@ -17,8 +19,6 @@ import userEvent from '@testing-library/user-event';
 import { of, throwError } from 'rxjs';
 
 import { AddEditQualificationComponent } from './add-edit-qualification.component';
-import { QualificationCertificateService } from '@core/services/certificate.service';
-import { MockQualificationCertificateService } from '@core/test-utils/MockCertificateService';
 
 describe('AddEditQualificationComponent', () => {
   async function setup(qualificationId = '1', qualificationInService = null, override: any = {}) {
@@ -773,7 +773,7 @@ describe('AddEditQualificationComponent', () => {
     });
 
     describe('uploadCertificate errors', () => {
-      it('should show an error message if the selected file is over 500 KB', async () => {
+      it('should show an error message if the selected file is over 5MB', async () => {
         const { fixture, getByTestId, getByText } = await setup(null);
 
         const mockUploadFile = new File(['some file content'], 'large-file.pdf', { type: 'application/pdf' });
@@ -787,7 +787,7 @@ describe('AddEditQualificationComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('The certificate must be no larger than 500KB')).toBeTruthy();
+        expect(getByText('The certificate must be no larger than 5MB')).toBeTruthy();
       });
 
       it('should show an error message if the selected file is not a pdf file', async () => {
