@@ -164,8 +164,6 @@ class WorkerCertificateService {
       return { Key: cert.key };
     });
 
-    console.log(filesToDeleteFromS3);
-
     await this.certificatesModel.deleteCertificate(certificateUids, transaction);
     await this.deleteCertificatesFromS3(filesToDeleteFromS3);
   }

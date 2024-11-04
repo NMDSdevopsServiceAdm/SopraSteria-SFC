@@ -189,6 +189,9 @@ const deleteTrainingRecord = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
+    if (err.statusCode && err.message) {
+      return res.status(err.statusCode).send(err.message);
+    }
     return res.status(500).send();
   }
 };
