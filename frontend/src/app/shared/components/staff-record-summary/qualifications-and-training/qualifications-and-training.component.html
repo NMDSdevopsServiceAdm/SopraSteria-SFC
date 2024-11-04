@@ -149,6 +149,7 @@
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="!showWdfConfirmations.otherQualification"
         [explanationText]="' other qualifications'"
         [link]="getRoutePath('other-qualifications', wdfView)"
         [hasData]="!!worker.otherQualification"
