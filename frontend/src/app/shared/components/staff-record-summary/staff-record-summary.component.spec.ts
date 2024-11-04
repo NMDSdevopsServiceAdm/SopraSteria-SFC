@@ -507,7 +507,7 @@ describe('StaffRecordSummaryComponent', () => {
       { name: 'nationality', validResponse: { value: 'British' } },
       { name: 'mainJobStartDate', validResponse: '01/01/2021' },
       { name: 'recruitedFrom', validResponse: 'Agency' },
-      { name: 'daysSick', validResponse: 3 },
+      { name: 'daysSick', validResponse: 3, overrides: [{ name: 'contract', response: Contracts.Permanent }] },
       { name: 'zeroHoursContract', validResponse: 'Yes' },
       { name: 'weeklyHoursAverage', validResponse: 35, overrides: [{ name: 'zeroHoursContract', response: 'Yes' }] },
       { name: 'annualHourlyPay', validResponse: { value: 'Annually' } },

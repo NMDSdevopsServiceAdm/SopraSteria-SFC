@@ -70,11 +70,11 @@ describe('WdfStaffRecordComponent', () => {
     expect(getByText(expectedStatusMessage, { exact: false })).toBeTruthy();
   });
 
-  it('should display the "not meeting requirements" message and red cross when user does not meet WDF requirements overall and current staff record does not', async () => {
+  it('should display the "not meeting requirements" message and red flag when user does not meet WDF requirements overall and current staff record does not', async () => {
     const { component, fixture, getByText } = await setup();
     const year = new Date().getFullYear();
     const expectedStatusMessage = `This staff record does not meet funding requirements, ${year} to ${year + 1}`;
-    const redCrossVisuallyHiddenMessage = 'Red cross';
+    const redFlagVisuallyHiddenMessage = 'Red flag';
 
     component.worker = workerBuilder() as Worker;
     component.updatedWorker = workerBuilder() as Worker;
@@ -86,7 +86,7 @@ describe('WdfStaffRecordComponent', () => {
 
     fixture.detectChanges();
 
-    expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+    expect(getByText(redFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
     expect(getByText(expectedStatusMessage, { exact: false })).toBeTruthy();
   });
 
