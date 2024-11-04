@@ -55,7 +55,6 @@ class BulkUploadQualificationHelper {
   createNewQualification(entityFromBulkUpload) {
     entityFromBulkUpload.workerId = this.workerId;
     entityFromBulkUpload.workerUid = this.workerUid;
-    entityFromBulkUpload._workerUid = this.workerUid;
     entityFromBulkUpload.establishmentId = this.establishmentId;
 
     return entityFromBulkUpload.save(this.savedBy, this.bulkUploaded, 0, this.externalTransaction);
