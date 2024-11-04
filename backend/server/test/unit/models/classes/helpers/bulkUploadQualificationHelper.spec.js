@@ -69,7 +69,7 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
     expect(helper instanceof BulkUploadQualificationHelper).to.be.true;
   });
 
-  describe('makePromisesForQualificationsEntities', () => {
+  describe('processQualificationsEntities', () => {
     let mockExistingQualifications = [];
     let mockQualificationsEntities = [];
     const helper = setupHelper();
@@ -171,15 +171,15 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
       expect(entityFromBulkUpload.workerUid).to.equal(mockWorkerUid);
       expect(entityFromBulkUpload.establishmentId).to.equal(mockEstablishmentId);
 
+      expect(returnedPromise).to.be.a('promise');
+
+      await returnedPromise;
       expect(entityFromBulkUpload.save).to.have.been.calledWith(
         mockSavedBy,
         mockBulkUploaded,
         0,
         mockExternalTransaction,
       );
-
-      expect(returnedPromise).to.be.a('promise');
-      expect(returnedPromise).to.equal(entityFromBulkUpload.save.returnValues[0]);
     });
   });
 
@@ -232,8 +232,10 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
       const mockExistingRecord = buildMockWorkerQualification();
       sinon.stub(mockExistingRecord, 'getQualificationCertificates').returns([]);
 
-      await helper.deleteQualification(mockExistingRecord);
+      const returnedPromise = helper.deleteQualification(mockExistingRecord);
+      expect(returnedPromise).to.be.a('promise');
 
+      await returnedPromise;
       expect(mockExistingRecord.destroy).to.have.been.calledWith({ transaction: mockExternalTransaction });
       expect(qualificationCertificateServiceSpy).not.to.have.been.called;
     });
@@ -246,8 +248,10 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
       ];
       sinon.stub(mockExistingRecord, 'getQualificationCertificates').returns(mockCertificateRecords);
 
-      await helper.deleteQualification(mockExistingRecord);
+      const returnedPromise = helper.deleteQualification(mockExistingRecord);
+      expect(returnedPromise).to.be.a('promise');
 
+      await returnedPromise;
       expect(qualificationCertificateServiceSpy).to.have.been.calledWith(
         mockCertificateRecords,
         mockExternalTransaction,

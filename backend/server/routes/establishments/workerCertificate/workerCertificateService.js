@@ -14,7 +14,6 @@ class WorkerCertificateService {
   certificatesModel;
   certificateTypeModel;
   recordType;
-  recordTypeAlias;
 
   static initialiseQualifications = () => {
     const service = new WorkerCertificateService();
