@@ -39,35 +39,17 @@
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': wdfView && !worker.mainJobStartDate
+      'govuk-summary-list__row--no-bottom-border':
+        (wdfView && !worker.mainJobStartDate) || showWdfConfirmations.mainJobStartDate
     }"
   >
     <dt class="govuk-summary-list__key govuk-!-width-one-half">Date started in main job role</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.mainJobStartDate ? mainStartDate : '-' }}
-
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.mainJobStartDate.isEligible === 'Yes' &&
-          !worker.wdf?.mainJobStartDate.updatedSinceEffectiveDate
-        "
-        [changeLink]="getRoutePath('main-job-start-date', wdfView)"
-        (fieldConfirmation)="this.confirmField('mainJobStartDate')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="
-          !(
-            wdfView &&
-            worker.wdf?.mainJobStartDate.isEligible === 'Yes' &&
-            !worker.wdf?.mainJobStartDate.updatedSinceEffectiveDate
-          )
-        "
+        *ngIf="!showWdfConfirmations.mainJobStartDate"
         [explanationText]="' job start date'"
         [link]="getRoutePath('main-job-start-date', wdfView)"
         [hasData]="!!worker.mainJobStartDate"
@@ -80,6 +62,13 @@
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="mainJobStartDateWdfWarning"
   ></app-wdf-warning-message>
+  <app-wdf-field-confirmation
+    *ngIf="showWdfConfirmations.mainJobStartDate"
+    [changeLink]="getRoutePath('main-job-start-date', wdfView)"
+    (fieldConfirmation)="this.confirmField('mainJobStartDate')"
+    (setReturnClicked)="this.setReturn()"
+    [workerUid]="worker.uid"
+  ></app-wdf-field-confirmation>
 
   <div class="govuk-summary-list__row" *ngIf="displayMentalHealthProfessional">
     <dt class="govuk-summary-list__key">Approved Mental Health Professional</dt>
@@ -187,30 +176,16 @@
     *ngIf="displayDaysSickness"
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': wdfView && !worker.daysSick
+      'govuk-summary-list__row--no-bottom-border': (wdfView && !worker.daysSick) || showWdfConfirmations.daysSick
     }"
   >
     <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.daysSick | workerDays | openEndedAnswer }}
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.daysSick.isEligible === 'Yes' &&
-          !worker.wdf?.daysSick.updatedSinceEffectiveDate
-        "
-        [changeLink]="getRoutePath('days-of-sickness', wdfView)"
-        (fieldConfirmation)="this.confirmField('daysSick')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="
-          !(wdfView && worker.wdf?.daysSick.isEligible === 'Yes' && !worker.wdf?.daysSick.updatedSinceEffectiveDate)
-        "
+        *ngIf="!showWdfConfirmations.daysSick"
         [explanationText]="' days of sickness'"
         [link]="getRoutePath('days-of-sickness', wdfView)"
         [hasData]="!!worker.daysSick"
@@ -223,38 +198,28 @@
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="daysSickWdfWarning"
   ></app-wdf-warning-message>
+  <app-wdf-field-confirmation
+    *ngIf="showWdfConfirmations.daysSick"
+    [changeLink]="getRoutePath('days-of-sickness', wdfView)"
+    (fieldConfirmation)="this.confirmField('daysSick')"
+    (setReturnClicked)="this.setReturn()"
+    [workerUid]="worker.uid"
+  ></app-wdf-field-confirmation>
 
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': wdfView && !worker.zeroHoursContract
+      'govuk-summary-list__row--no-bottom-border':
+        (wdfView && !worker.zeroHoursContract) || showWdfConfirmations.zeroHoursContract
     }"
   >
     <dt class="govuk-summary-list__key">Zero hours contract</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.zeroHoursContract || '-' | closedEndedAnswer }}
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.zeroHoursContract.isEligible === 'Yes' &&
-          !worker.wdf?.zeroHoursContract.updatedSinceEffectiveDate
-        "
-        [changeLink]="getRoutePath('contract-with-zero-hours', wdfView)"
-        (fieldConfirmation)="this.confirmField('zeroHoursContract')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="
-          !(
-            wdfView &&
-            worker.wdf?.zeroHoursContract.isEligible === 'Yes' &&
-            !worker.wdf?.zeroHoursContract.updatedSinceEffectiveDate
-          )
-        "
+        *ngIf="!showWdfConfirmations.zeroHoursContract"
         [explanationText]="' contract with zero hours'"
         [link]="getRoutePath('contract-with-zero-hours', wdfView)"
         [hasData]="!!worker.zeroHoursContract"
@@ -267,163 +232,133 @@
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="zeroHoursContractWdfWarning"
   ></app-wdf-warning-message>
+  <app-wdf-field-confirmation
+    *ngIf="showWdfConfirmations.zeroHoursContract"
+    [changeLink]="getRoutePath('contract-with-zero-hours', wdfView)"
+    (fieldConfirmation)="this.confirmField('zeroHoursContract')"
+    (setReturnClicked)="this.setReturn()"
+    [workerUid]="worker.uid"
+  ></app-wdf-field-confirmation>
 
-  <div
-    *ngIf="displayAverageWeeklyHours"
-    class="govuk-summary-list__row"
-    [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border':
+  <ng-container *ngIf="displayAverageWeeklyHours">
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
+        'govuk-summary-list__row--no-bottom-border':
+          (wdfView &&
+            (worker.weeklyHoursAverage === null ||
+              (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null))) ||
+          showWdfConfirmations.weeklyHoursAverage
+      }"
+    >
+      <dt class="govuk-summary-list__key">Average weekly working hours</dt>
+      <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+        {{
+          isNumber(worker.weeklyHoursAverage?.hours)
+            ? worker.weeklyHoursAverage?.hours
+            : (worker.weeklyHoursAverage?.value | openEndedAnswer)
+        }}
+      </dd>
+      <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          *ngIf="!showWdfConfirmations.weeklyHoursAverage"
+          [explanationText]="' average weekly working hours'"
+          [link]="getRoutePath('average-weekly-hours', wdfView)"
+          [hasData]="
+            !(
+              worker.weeklyHoursAverage === null ||
+              (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null)
+            )
+          "
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+    <app-wdf-warning-message
+      *ngIf="
         wdfView &&
         (worker.weeklyHoursAverage === null ||
           (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null))
-    }"
-  >
-    <dt class="govuk-summary-list__key">Average weekly working hours</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
-      {{
-        isNumber(worker.weeklyHoursAverage?.hours)
-          ? worker.weeklyHoursAverage?.hours
-          : (worker.weeklyHoursAverage?.value | openEndedAnswer)
-      }}
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.weeklyHoursAverage.isEligible === 'Yes' &&
-          !worker.wdf?.weeklyHoursAverage.updatedSinceEffectiveDate
-        "
-        [changeLink]="getRoutePath('average-weekly-hours', wdfView)"
-        (fieldConfirmation)="this.confirmField('weeklyHoursAverage')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
-    </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        *ngIf="
-          !(
-            wdfView &&
-            worker.wdf?.weeklyHoursAverage.isEligible === 'Yes' &&
-            !worker.wdf?.weeklyHoursAverage.updatedSinceEffectiveDate
-          )
-        "
-        [explanationText]="' average weekly working hours'"
-        [link]="getRoutePath('average-weekly-hours', wdfView)"
-        [hasData]="
-          !(
-            worker.weeklyHoursAverage === null ||
-            (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null)
-          )
-        "
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-  <app-wdf-warning-message
-    *ngIf="
-      displayAverageWeeklyHours &&
-      wdfView &&
-      (worker.weeklyHoursAverage === null ||
-        (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null))
-    "
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="weeklyHoursAverageWdfWarning"
-  ></app-wdf-warning-message>
+      "
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="weeklyHoursAverageWdfWarning"
+    ></app-wdf-warning-message>
+    <app-wdf-field-confirmation
+      *ngIf="showWdfConfirmations.weeklyHoursAverage"
+      [changeLink]="getRoutePath('average-weekly-hours', wdfView)"
+      (fieldConfirmation)="this.confirmField('weeklyHoursAverage')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+    ></app-wdf-field-confirmation>
+  </ng-container>
 
-  <div
-    *ngIf="displayWeeklyContractedHours"
-    class="govuk-summary-list__row"
-    [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border':
+  <ng-container *ngIf="displayWeeklyContractedHours">
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
+        'govuk-summary-list__row--no-bottom-border':
+          (wdfView &&
+            (worker.weeklyHoursContracted === null ||
+              (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null))) ||
+          showWdfConfirmations.weeklyHoursContracted
+      }"
+    >
+      <dt class="govuk-summary-list__key">Contracted weekly hours</dt>
+      <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+        {{
+          isNumber(worker.weeklyHoursContracted?.hours)
+            ? worker.weeklyHoursContracted?.hours
+            : (worker.weeklyHoursContracted?.value | openEndedAnswer)
+        }}
+      </dd>
+      <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          *ngIf="!showWdfConfirmations.weeklyHoursContracted"
+          [explanationText]="' contracted weekly hours'"
+          [link]="getRoutePath('weekly-contracted-hours', wdfView)"
+          [hasData]="
+            !(
+              worker.weeklyHoursContracted === null ||
+              (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null)
+            )
+          "
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+    <app-wdf-warning-message
+      *ngIf="
         wdfView &&
         (worker.weeklyHoursContracted === null ||
           (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null))
-    }"
-  >
-    <dt class="govuk-summary-list__key">Contracted weekly hours</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
-      {{
-        isNumber(worker.weeklyHoursContracted?.hours)
-          ? worker.weeklyHoursContracted?.hours
-          : (worker.weeklyHoursContracted?.value | openEndedAnswer)
-      }}
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.weeklyHoursContracted.isEligible === 'Yes' &&
-          !worker.wdf?.weeklyHoursContracted.updatedSinceEffectiveDate
-        "
-        [changeLink]="getRoutePath('weekly-contracted-hours', wdfView)"
-        (fieldConfirmation)="this.confirmField('weeklyHoursContracted')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
-    </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        *ngIf="
-          !(
-            wdfView &&
-            worker.wdf?.weeklyHoursContracted.isEligible === 'Yes' &&
-            !worker.wdf?.weeklyHoursContracted.updatedSinceEffectiveDate
-          )
-        "
-        [explanationText]="' contracted weekly hours'"
-        [link]="getRoutePath('weekly-contracted-hours', wdfView)"
-        [hasData]="
-          !(
-            worker.weeklyHoursContracted === null ||
-            (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null)
-          )
-        "
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-  <app-wdf-warning-message
-    *ngIf="
-      displayWeeklyContractedHours &&
-      wdfView &&
-      (worker.weeklyHoursContracted === null ||
-        (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null))
-    "
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="weeklyHoursAverageWdfWarning"
-  ></app-wdf-warning-message>
+      "
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="weeklyHoursAverageWdfWarning"
+    ></app-wdf-warning-message>
+    <app-wdf-field-confirmation
+      *ngIf="showWdfConfirmations.weeklyHoursContracted"
+      [changeLink]="getRoutePath('weekly-contracted-hours', wdfView)"
+      (fieldConfirmation)="this.confirmField('weeklyHoursContracted')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+    ></app-wdf-field-confirmation>
+  </ng-container>
 
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': wdfView && !worker.annualHourlyPay
+      'govuk-summary-list__row--no-bottom-border':
+        (wdfView && !worker.annualHourlyPay) || showWdfConfirmations.annualHourlyPay
     }"
   >
     <dt class="govuk-summary-list__key">Hourly pay or annual salary</dt>
 
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.annualHourlyPay | workerPay | closedEndedAnswer }}
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.annualHourlyPay.isEligible === 'Yes' &&
-          !worker.wdf?.annualHourlyPay.updatedSinceEffectiveDate
-        "
-        [changeLink]="getRoutePath('salary', wdfView)"
-        (fieldConfirmation)="this.confirmField('annualHourlyPay')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="
-          !(
-            wdfView &&
-            worker.wdf?.annualHourlyPay.isEligible === 'Yes' &&
-            !worker.wdf?.annualHourlyPay.updatedSinceEffectiveDate
-          )
-        "
+        *ngIf="!showWdfConfirmations.annualHourlyPay"
         [explanationText]="' salary'"
         [link]="getRoutePath('salary', wdfView)"
         [hasData]="!!worker.annualHourlyPay"
@@ -436,4 +371,11 @@
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="annualHourlyPayWdfWarning"
   ></app-wdf-warning-message>
+  <app-wdf-field-confirmation
+    *ngIf="showWdfConfirmations.annualHourlyPay"
+    [changeLink]="getRoutePath('salary', wdfView)"
+    (fieldConfirmation)="this.confirmField('annualHourlyPay')"
+    (setReturnClicked)="this.setReturn()"
+    [workerUid]="worker.uid"
+  ></app-wdf-field-confirmation>
 </dl>

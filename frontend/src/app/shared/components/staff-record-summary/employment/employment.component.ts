@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { EthnicityService } from '@core/services/ethnicity.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -10,7 +11,6 @@ import dayjs from 'dayjs';
 import isNumber from 'lodash/isNumber';
 
 import { StaffRecordSummaryComponent } from '../staff-record-summary.component';
-import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 @Component({
   selector: 'app-employment',
@@ -82,6 +82,39 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   get displayEmployedFromOutsideOrInsideUkValue() {
     return this.internationalRecruitmentService.getEmployedFromOutsideUkStaffRecordValue(
       this.worker.employedFromOutsideUk,
+    );
+  }
+
+  public showWdfConfirmations: any = {
+    mainJobStartDate: null,
+    daysSick: null,
+    zeroHoursContract: null,
+    weeklyHoursAverage: null,
+    weeklyHoursContracted: null,
+    annualHourlyPay: null,
+  };
+
+  protected setShowWdfConfirmations(): void {
+    this.showWdfConfirmations = {
+      mainJobStartDate: this.showWdfConfirmation('mainJobStartDate'),
+      daysSick: this.showWdfConfirmation('daysSick'),
+      zeroHoursContract: this.showWdfConfirmation('zeroHoursContract'),
+      weeklyHoursAverage: this.showWdfConfirmation('weeklyHoursAverage'),
+      weeklyHoursContracted: this.showWdfConfirmation('weeklyHoursContracted'),
+      annualHourlyPay: this.showWdfConfirmation('annualHourlyPay'),
+    };
+  }
+
+  ngOnChanges(): void {
+    this.setShowWdfConfirmations();
+  }
+
+  public showWdfConfirmation(field: string): boolean {
+    return (
+      this.canEditWorker &&
+      this.wdfView &&
+      this.worker.wdf?.[field].isEligible === 'Yes' &&
+      !this.worker.wdf?.[field].updatedSinceEffectiveDate
     );
   }
 }
