@@ -475,7 +475,6 @@ class Worker extends EntityValidator {
           // and qualifications records
           this._qualificationsEntities = [];
           if (document.qualifications && Array.isArray(document.qualifications)) {
-            console.log('WA DEBUG - document.qualifications: ', document.qualifications);
             document.qualifications.forEach((thisQualificationRecord) => {
               const newQualificationRecord = new Qualification(null, null);
 
@@ -553,17 +552,19 @@ class Worker extends EntityValidator {
         });
       }
 
-      const qualificationHelper = new BulkUploadQualificationHelper({
-        workerId: this._id,
-        workerUid: this._uid,
-        establishmentId: this._establishmentId,
-        savedBy,
-        bulkUploaded,
-        externalTransaction,
-      });
-      const qualificationEntities = this._qualificationsEntities ? this._qualificationsEntities : [];
-      const promisesToPush = await qualificationHelper.processQualificationsEntities(qualificationEntities);
-      qualificationChangePromises.push(...promisesToPush);
+      if (bulkUploaded && ['NEW', 'UPDATE'].includes(this.status)) {
+        const qualificationHelper = new BulkUploadQualificationHelper({
+          workerId: this._id,
+          workerUid: this._uid,
+          establishmentId: this._establishmentId,
+          savedBy,
+          bulkUploaded,
+          externalTransaction,
+        });
+        const qualificationEntities = this._qualificationsEntities ? this._qualificationsEntities : [];
+        const promisesToPush = await qualificationHelper.processQualificationsEntities(qualificationEntities);
+        qualificationChangePromises.push(...promisesToPush);
+      }
 
       await Promise.all(newTrainingPromises);
       await Promise.all(qualificationChangePromises);
