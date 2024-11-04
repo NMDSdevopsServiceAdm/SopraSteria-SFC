@@ -37,7 +37,7 @@ class WorkerCertificateService {
     return `${establishmentUid}/${workerUid}/${this.recordType}Certificate/${recordUid}/${fileId}`;
   };
 
-  getFileKeys = async (recordUid, fileIds) => {
+  getFileKeys = async (workerUid, recordUid, fileIds) => {
     const certificateRecords = await this.certificatesModel.findAll({
       where: {
         uid: fileIds,
@@ -47,6 +47,11 @@ class WorkerCertificateService {
           model: this.certificateTypeModel,
           as: this.certificateTypeModel.name,
           where: { uid: recordUid },
+        },
+        {
+          model: models.worker,
+          as: models.worker.name,
+          where: { uid: workerUid },
         },
       ],
       attributes: ['uid', 'key'],
@@ -84,30 +89,6 @@ class WorkerCertificateService {
 
     return responsePayload;
   }
-
-  async findParentRecord(recordUid, workerUid) {
-    const record = await this.certificateTypeModel.findOne({
-      where: {
-        uid: recordUid,
-      },
-      include: [
-        {
-          model: models.worker,
-          as: 'worker',
-          where: { uid: workerUid },
-          require: true,
-        },
-      ],
-      attributes: ['id', 'workerFk'],
-    });
-
-    if (!record) {
-      throw new HttpError(`Failed to find related ${this.recordType} record`, 400);
-    }
-    return record;
-  }
-
-  verifyParentRecordExists = this.findParentRecord;
 
   async confirmUpload(files, recordUid) {
     if (!files || !files.length) {
@@ -169,8 +150,7 @@ class WorkerCertificateService {
     const allFileIds = files.map((file) => file.uid);
     const responsePayload = [];
 
-    await this.verifyParentRecordExists(recordUid, workerUid);
-    const certRecords = await this.getFileKeys(recordUid, allFileIds);
+    const certRecords = await this.getFileKeys(workerUid, recordUid, allFileIds);
 
     for (const file of files) {
       const signedUrl = await s3.getSignedUrlForDownload({
@@ -209,9 +189,8 @@ class WorkerCertificateService {
       throw new HttpError('No files provided in request body', 400);
     }
 
-    await this.verifyParentRecordExists(recordUid, workerUid);
     const allFileIds = files.map((file) => file.uid);
-    const certRecords = await this.getFileKeys(recordUid, allFileIds);
+    const certRecords = await this.getFileKeys(workerUid, recordUid, allFileIds);
 
     let filesToDeleteFromS3 = [];
     let filesToDeleteFromDatabase = [];

@@ -205,11 +205,10 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
     beforeEach(() => {
       getSignedUrlForDownloadSpy = sinon.stub(s3, 'getSignedUrlForDownload').returns(mockSignedUrl);
-      sinon.stub(service, 'verifyParentRecordExists').resolves();
-      sinon.stub(service, 'getFileKeys').callsFake((recordUid, fileIds) => {
+      sinon.stub(service, 'getFileKeys').callsFake((workerUid, recordUid, fileIds) => {
         return fileIds.map((fileId) => ({
           uid: fileId,
-          key: `${user.establishment.uid}/${user.uid}/qualificationCertificate/${recordUid}/${fileId}`,
+          key: `${user.establishment.uid}/${workerUid}/qualificationCertificate/${recordUid}/${fileId}`,
         }));
       });
 
@@ -306,11 +305,10 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       stubDeleteCertificate = sinon.stub(models.qualificationCertificates, 'deleteCertificate');
       stubCountCertificatesToBeDeleted = sinon.stub(models.qualificationCertificates, 'countCertificatesToBeDeleted');
 
-      sinon.stub(service, 'verifyParentRecordExists').resolves();
-      sinon.stub(service, 'getFileKeys').callsFake((recordUid, fileIds) => {
+      sinon.stub(service, 'getFileKeys').callsFake((workerUid, recordUid, fileIds) => {
         return fileIds.map((fileId) => ({
           uid: fileId,
-          key: `${user.establishment.uid}/${user.uid}/qualificationCertificate/${recordUid}/${fileId}`,
+          key: `${user.establishment.uid}/${workerUid}/qualificationCertificate/${recordUid}/${fileId}`,
         }));
       });
     });
@@ -431,31 +429,6 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
   });
 
-  describe('findParentRecord / verifyParentRecordExists', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should return a training / qualification record for the given id', async () => {
-      sinon.stub(models.workerQualifications, 'findOne').resolves({ workerFk: user.id, id: qualification.id });
-
-      const actual = await service.findParentRecord(qualification.uid, user.uid);
-      expect(actual).to.deep.equal({ workerFk: user.id, id: qualification.id });
-    });
-
-    it('should throw an error if cannot find a record that belongs to the given worker', async () => {
-      sinon.stub(models.workerQualifications, 'findOne').resolves(null);
-
-      try {
-        await service.findParentRecord(qualification.uid, user.uid);
-      } catch (err) {
-        error = err;
-      }
-      expect(error.statusCode).to.equal(400);
-      expect(error.message).to.equal('Failed to find related qualification record');
-    });
-  });
-
   describe('getFileKeys', () => {
     const mockFileIds = ['mock-file-id-1', 'mock-file-id-2', 'mock-file-id-3'];
     const mockRecords = [
@@ -467,7 +440,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     it('should return an array that contain every key for the given certificate records', async () => {
       sinon.stub(models.qualificationCertificates, 'findAll').resolves(mockRecords);
 
-      const actual = await service.getFileKeys(qualification.uid, mockFileIds);
+      const actual = await service.getFileKeys(user.uid, qualification.uid, mockFileIds);
       expect(actual).to.deep.equal(mockRecords);
     });
 
@@ -475,7 +448,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       sinon.stub(models.qualificationCertificates, 'findAll').resolves([]);
 
       try {
-        await service.getFileKeys(qualification.uid, mockFileIds);
+        await service.getFileKeys(user.uid, qualification.uid, mockFileIds);
       } catch (err) {
         error = err;
       }
@@ -487,7 +460,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       sinon.stub(models.qualificationCertificates, 'findAll').resolves(mockRecords.slice(0, 1));
 
       try {
-        await service.getFileKeys(qualification.uid, mockFileIds);
+        await service.getFileKeys(user.uid, qualification.uid, mockFileIds);
       } catch (err) {
         error = err;
       }
