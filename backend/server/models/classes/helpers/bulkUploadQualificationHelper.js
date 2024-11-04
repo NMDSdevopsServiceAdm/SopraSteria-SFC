@@ -17,13 +17,13 @@ class BulkUploadQualificationHelper {
   async processQualificationsEntities(qualificationsEntities) {
     const promisesToReturn = [];
 
-    const allExistingQualifications = await models.workerQualifications.findAll({
+    const allQualificationRecords = await models.workerQualifications.findAll({
       where: {
         workerFk: this.workerId,
       },
     });
 
-    const existingQualificationFks = allExistingQualifications.map((record) => record.qualificationFk);
+    const existingQualificationFks = allQualificationRecords.map((record) => record.qualificationFk);
     const bulkUploadQualificationFks = compact(qualificationsEntities.map((entity) => entity?._qualification?.id));
 
     for (const bulkUploadEntity of qualificationsEntities) {
@@ -32,7 +32,7 @@ class BulkUploadQualificationHelper {
 
       if (qualificationExists) {
         console.log('modify current qualification: ', bulkUploadEntity._qualification.title);
-        const recordToUpdate = allExistingQualifications.find(
+        const recordToUpdate = allQualificationRecords.find(
           (record) => record.qualificationFk === currentQualificationId,
         );
         promisesToReturn.push(this.updateQualification(recordToUpdate, bulkUploadEntity));
@@ -42,7 +42,7 @@ class BulkUploadQualificationHelper {
       }
     }
 
-    for (const qualification of allExistingQualifications) {
+    for (const qualification of allQualificationRecords) {
       if (!bulkUploadQualificationFks.includes(qualification.qualificationFk)) {
         console.log('delete current qualification: ', qualification.id);
         promisesToReturn.push(this.deleteQualification(qualification));
@@ -76,7 +76,7 @@ class BulkUploadQualificationHelper {
 
   async deleteQualification(existingRecord) {
     const certificatesFound = await existingRecord.getQualificationCertificates();
-    if (certificatesFound) {
+    if (certificatesFound?.length) {
       this.qualificationCertificateService.deleteCertificatesWithTransaction(
         certificatesFound,
         this.externalTransaction,

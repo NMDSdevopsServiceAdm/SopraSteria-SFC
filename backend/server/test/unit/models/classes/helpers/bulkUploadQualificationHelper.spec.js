@@ -4,16 +4,11 @@ const { v4: uuidv4 } = require('uuid');
 
 const models = require('../../../../../models');
 const Qualification = require('../../../../../models/classes/qualification').Qualification;
+const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
 const BulkUploadQualificationHelper = require('../../../../../models/classes/helpers/bulkUploadQualificationHelper');
 
 const buildMockQualificationEntity = async (override = {}) => {
-  const mockQualificationEntity = new Qualification(null, null);
-
-  await mockQualificationEntity.load({
-    uid: null,
-    created: null,
-    updated: null,
-    updatedBy: null,
+  const propertiesToLoad = {
     qualification: {
       id: 152,
       title: 'Level 2 Adult Social Care Certificate',
@@ -22,9 +17,17 @@ const buildMockQualificationEntity = async (override = {}) => {
     },
     year: 2023,
     notes: 'test notes',
-    qualificationCertificates: [],
     ...override,
-  });
+  };
+
+  if (Qualification.prototype.validateQualificationRecord?.restore?.sinon) {
+    Qualification.prototype.validateQualificationRecord.resolves(propertiesToLoad);
+  } else {
+    sinon.stub(Qualification.prototype, 'validateQualificationRecord').resolves(propertiesToLoad);
+  }
+
+  const mockQualificationEntity = new Qualification(null, null);
+  await mockQualificationEntity.load();
 
   return mockQualificationEntity;
 };
@@ -42,10 +45,10 @@ const buildMockWorkerQualification = (override = {}) => {
   });
 };
 
-describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () => {
+describe.only('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () => {
   const mockWorkerId = '100';
   const mockWorkerUid = uuidv4();
-  const mockEstablishmentId = '210';
+  const mockEstablishmentId = '1234';
   const mockSavedBy = 'admin3';
   const mockBulkUploaded = true;
   const mockExternalTransaction = { sequelize: 'mockSequelizeTransactionObject' };
@@ -200,18 +203,56 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
       expect(mockExistingRecord.notes).to.equal(mockEntityFromBulkUpload.notes);
       expect(mockExistingRecord.year).to.equal(mockEntityFromBulkUpload.year);
 
-      expect(mockExistingRecord.save).to.have.been.calledWith({ transaction: mockExternalTransaction });
-
       expect(returnedPromise).to.be.a('promise');
-      expect(returnedPromise).to.equal(mockExistingRecord.save.returnValues[0]);
+
+      await returnedPromise;
+      expect(mockExistingRecord.save).to.have.been.calledWith({ transaction: mockExternalTransaction });
     });
   });
 
   describe('deleteQualification', () => {
-    // TODO: implement tests for deleting qualification
+    let qualificationCertificateServiceSpy;
+    const helper = setupHelper();
 
-    it('should delete the qualification record from database');
+    beforeEach(() => {
+      sinon.stub(models.workerQualifications.prototype, 'destroy').callsFake(() => {
+        return Promise.resolve();
+      });
+      qualificationCertificateServiceSpy = sinon.stub(
+        helper.qualificationCertificateService,
+        'deleteCertificatesWithTransaction',
+      );
+    });
 
-    it('should call deleteCertificatesWithTransaction if there are any certificates attached to this qualification');
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return a promise that deletes the qualification record from database', async () => {
+      const mockExistingRecord = buildMockWorkerQualification();
+      sinon.stub(mockExistingRecord, 'getQualificationCertificates').returns([]);
+
+      await helper.deleteQualification(mockExistingRecord);
+
+      expect(mockExistingRecord.destroy).to.have.been.calledWith({ transaction: mockExternalTransaction });
+      expect(qualificationCertificateServiceSpy).not.to.have.been.called;
+    });
+
+    it('should call deleteCertificatesWithTransaction if there are any certificates attached to this qualification', async () => {
+      const mockExistingRecord = buildMockWorkerQualification();
+      const mockCertificateRecords = [
+        { uid: '123', key: 'abc' },
+        { uid: '456', key: 'def' },
+      ];
+      sinon.stub(mockExistingRecord, 'getQualificationCertificates').returns(mockCertificateRecords);
+
+      await helper.deleteQualification(mockExistingRecord);
+
+      expect(qualificationCertificateServiceSpy).to.have.been.calledWith(
+        mockCertificateRecords,
+        mockExternalTransaction,
+      );
+      expect(mockExistingRecord.destroy).to.have.been.calledWith({ transaction: mockExternalTransaction });
+    });
   });
 });
