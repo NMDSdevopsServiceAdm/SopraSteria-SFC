@@ -3,37 +3,18 @@
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': wdfView && !worker.careCertificate
+      'govuk-summary-list__row--no-bottom-border':
+        (wdfView && !worker.careCertificate) || showWdfConfirmations.careCertificate
     }"
   >
     <dt class="govuk-summary-list__key govuk-!-width-one-half">Care Certificate</dt>
 
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.careCertificate || '-' }}
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.careCertificate.isEligible === 'Yes' &&
-          !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
-          worker.careCertificate !== 'Yes, completed'
-        "
-        [changeLink]="getRoutePath('care-certificate', wdfView)"
-        (fieldConfirmation)="this.confirmField('careCertificate')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="
-          !(
-            wdfView &&
-            worker.wdf?.careCertificate.isEligible === 'Yes' &&
-            !worker.wdf?.careCertificate.updatedSinceEffectiveDate &&
-            worker.careCertificate !== 'Yes, completed'
-          )
-        "
+        *ngIf="!showWdfConfirmations.careCertificate"
         [explanationText]="' care certificate'"
         [link]="getRoutePath('care-certificate', wdfView)"
         [hasData]="!!worker.careCertificate"
@@ -46,6 +27,13 @@
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="careCertificateWdfWarning"
   ></app-wdf-warning-message>
+  <app-wdf-field-confirmation
+    *ngIf="showWdfConfirmations.careCertificate"
+    [changeLink]="getRoutePath('care-certificate', wdfView)"
+    (fieldConfirmation)="this.confirmField('careCertificate')"
+    (setReturnClicked)="this.setReturn()"
+    [workerUid]="worker.uid"
+  ></app-wdf-field-confirmation>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key govuk-!-width-one-half">Level 2 Adult Social Care Certificate</dt>
@@ -81,36 +69,17 @@
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': wdfView && !worker.qualificationInSocialCare
+      'govuk-summary-list__row--no-bottom-border':
+        (wdfView && !worker.qualificationInSocialCare) || showWdfConfirmations.qualificationInSocialCare
     }"
   >
     <dt class="govuk-summary-list__key">Has a social care qualification</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.qualificationInSocialCare || '-' | closedEndedAnswer }}
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
-          !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
-          worker.qualificationInSocialCare !== 'Yes'
-        "
-        [changeLink]="getRoutePath('social-care-qualification', wdfView)"
-        (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="
-          !(
-            wdfView &&
-            worker.wdf?.qualificationInSocialCare.isEligible === 'Yes' &&
-            !worker.wdf?.qualificationInSocialCare.updatedSinceEffectiveDate &&
-            worker.qualificationInSocialCare !== 'Yes'
-          )
-        "
+        *ngIf="!showWdfConfirmations.qualificationInSocialCare"
         [explanationText]="' relevant social care qualification'"
         [link]="getRoutePath('social-care-qualification', wdfView)"
         [hasData]="!!worker.qualificationInSocialCare"
@@ -123,41 +92,29 @@
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="qualificationInSocialCareWdfWarning"
   ></app-wdf-warning-message>
+  <app-wdf-field-confirmation
+    *ngIf="showWdfConfirmations.qualificationInSocialCare"
+    [changeLink]="getRoutePath('social-care-qualification', wdfView)"
+    (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
+    (setReturnClicked)="this.setReturn()"
+    [workerUid]="worker.uid"
+  ></app-wdf-field-confirmation>
 
   <ng-container *ngIf="displaySocialCareQualifications">
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': wdfView && !worker.socialCareQualification
+        'govuk-summary-list__row--no-bottom-border':
+          (wdfView && !worker.socialCareQualification) || showWdfConfirmations.socialCareQualification
       }"
     >
       <dt class="govuk-summary-list__key">Highest level of social care qualification</dt>
       <dd class="govuk-summary-list__value govuk-!-padding-left-2">
         {{ worker.socialCareQualification?.title | closedEndedAnswer }}
-        <app-wdf-field-confirmation
-          *ngIf="
-            canEditWorker &&
-            wdfView &&
-            worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
-            !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
-          "
-          [changeLink]="getRoutePath('social-care-qualification-level', wdfView)"
-          (fieldConfirmation)="
-            this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')
-          "
-          (setReturnClicked)="this.setReturn()"
-          [workerUid]="worker.uid"
-        ></app-wdf-field-confirmation>
       </dd>
       <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="
-            !(
-              wdfView &&
-              worker.wdf?.socialCareQualification.isEligible === 'Yes' &&
-              !worker.wdf?.socialCareQualification.updatedSinceEffectiveDate
-            )
-          "
+          *ngIf="!showWdfConfirmations.socialCareQualification"
           [explanationText]="' social care qualification level'"
           [link]="getRoutePath('social-care-qualification-level', wdfView)"
           [hasData]="!!worker.socialCareQualification"
@@ -170,30 +127,25 @@
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="socialCareQualificationWdfWarning"
     ></app-wdf-warning-message>
+    <app-wdf-field-confirmation
+      *ngIf="showWdfConfirmations.socialCareQualification"
+      [changeLink]="getRoutePath('social-care-qualification-level', wdfView)"
+      (fieldConfirmation)="this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+    ></app-wdf-field-confirmation>
   </ng-container>
 
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': wdfView && !worker.otherQualification
+      'govuk-summary-list__row--no-bottom-border':
+        (wdfView && !worker.otherQualification) || showWdfConfirmations.otherQualification
     }"
   >
     <dt class="govuk-summary-list__key">Other qualifications</dt>
     <dd class="govuk-summary-list__value govuk-!-padding-left-2">
       {{ worker.otherQualification || '-' | closedEndedAnswer }}
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.otherQualification.isEligible === 'Yes' &&
-          !worker.wdf?.otherQualification.updatedSinceEffectiveDate &&
-          worker.otherQualification !== 'Yes'
-        "
-        [changeLink]="getRoutePath('other-qualifications', wdfView)"
-        (fieldConfirmation)="this.confirmField('otherQualification')"
-        (setReturnClicked)="this.setReturn()"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
@@ -209,39 +161,29 @@
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="otherQualificationWdfWarning"
   ></app-wdf-warning-message>
+  <app-wdf-field-confirmation
+    *ngIf="showWdfConfirmations.otherQualification"
+    [changeLink]="getRoutePath('other-qualifications', wdfView)"
+    (fieldConfirmation)="this.confirmField('otherQualification')"
+    (setReturnClicked)="this.setReturn()"
+    [workerUid]="worker.uid"
+  ></app-wdf-field-confirmation>
 
   <ng-container *ngIf="displayOtherQualifications">
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': wdfView && !worker.highestQualification
+        'govuk-summary-list__row--no-bottom-border':
+          (wdfView && !worker.highestQualification) || showWdfConfirmations.highestQualification
       }"
     >
       <dt class="govuk-summary-list__key">Highest level of other qualifications</dt>
       <dd class="govuk-summary-list__value govuk-!-padding-left-2">
         {{ worker.highestQualification?.title || '-' }}
-        <app-wdf-field-confirmation
-          *ngIf="
-            canEditWorker &&
-            wdfView &&
-            worker.wdf?.highestQualification.isEligible === 'Yes' &&
-            !worker.wdf?.highestQualification.updatedSinceEffectiveDate
-          "
-          [changeLink]="getRoutePath('other-qualifications-level', wdfView)"
-          (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
-          (setReturnClicked)="this.setReturn()"
-          [workerUid]="worker.uid"
-        ></app-wdf-field-confirmation>
       </dd>
       <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="
-            !(
-              wdfView &&
-              worker.wdf?.highestQualification.isEligible === 'Yes' &&
-              !worker.wdf?.highestQualification.updatedSinceEffectiveDate
-            )
-          "
+          *ngIf="!showWdfConfirmations.highestQualification"
           [explanationText]="' other qualification level'"
           [link]="getRoutePath('other-qualifications-level', wdfView)"
           [hasData]="!!worker.highestQualification"
@@ -254,5 +196,12 @@
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="highestQualificationWdfWarning"
     ></app-wdf-warning-message>
+    <app-wdf-field-confirmation
+      *ngIf="showWdfConfirmations.highestQualification"
+      [changeLink]="getRoutePath('other-qualifications-level', wdfView)"
+      (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+    ></app-wdf-field-confirmation>
   </ng-container>
 </dl>
