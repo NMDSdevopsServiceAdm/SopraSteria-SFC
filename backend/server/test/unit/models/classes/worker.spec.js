@@ -466,6 +466,40 @@ describe('Worker Class', () => {
     })
   });
 
+    describe('deleteAllQualificationsCertificatesAssociatedWithWorker()', async () => {
+    let mockWorker;
+    let stubs;
+    const qualificationCertificatesReturnedFromDb = () => {
+      return [
+        { uid: 'abc123', key: 'abc123/qualificationCertificate/dasdsa12312' },
+        { uid: 'def456', key: 'def456/qualificationCertificate/deass12092' },
+        { uid: 'ghi789', key: 'ghi789/qualificationCertificate/da1412342' },
+      ];
+    };
+
+    beforeEach(() => {
+      mockWorker = new Worker();
+      mockWorker._id = 12345;
+      stubs = {
+        getWorkerCertificateServiceInstance: sinon.stub(WorkerCertificateService, 'initialiseQualifications').returns(new WorkerCertificateService()),
+        deleteAllCertificates: sinon.stub(WorkerCertificateService.prototype, 'deleteAllCertificates'),
+        getQualificationCertificates: sinon.stub(models.qualificationCertificates, 'getAllCertificateRecordsForWorker').resolves(qualificationCertificatesReturnedFromDb),
+      }
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should call deleteAllCertificates on WorkerCertificateService', async () => {
+      const transaction = models.sequelize.transaction();
+      await mockWorker.deleteAllQualificationCertificatesAssociatedWithWorker(transaction);
+
+      expect(stubs.getWorkerCertificateServiceInstance).to.have.been.called;
+      expect(stubs.deleteAllCertificates).to.be.calledWith(12345);
+    })
+  });
+
   describe('saveAssociatedEntities', async () => {
     let mockWorker;
 
