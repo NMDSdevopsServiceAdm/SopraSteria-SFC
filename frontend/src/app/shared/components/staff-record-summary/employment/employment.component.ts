@@ -95,26 +95,12 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
   };
 
   protected setShowWdfConfirmations(): void {
-    this.showWdfConfirmations = {
-      mainJobStartDate: this.showWdfConfirmation('mainJobStartDate'),
-      daysSick: this.showWdfConfirmation('daysSick'),
-      zeroHoursContract: this.showWdfConfirmation('zeroHoursContract'),
-      weeklyHoursAverage: this.showWdfConfirmation('weeklyHoursAverage'),
-      weeklyHoursContracted: this.showWdfConfirmation('weeklyHoursContracted'),
-      annualHourlyPay: this.showWdfConfirmation('annualHourlyPay'),
-    };
+    Object.keys(this.showWdfConfirmations).forEach((field) => {
+      this.showWdfConfirmations[field] = this.showWdfConfirmation(field);
+    });
   }
 
   ngOnChanges(): void {
     this.setShowWdfConfirmations();
-  }
-
-  public showWdfConfirmation(field: string): boolean {
-    return (
-      this.canEditWorker &&
-      this.wdfView &&
-      this.worker.wdf?.[field].isEligible === 'Yes' &&
-      !this.worker.wdf?.[field].updatedSinceEffectiveDate
-    );
   }
 }

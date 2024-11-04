@@ -34,13 +34,4 @@ export class BasicRecordComponent extends StaffRecordSummaryComponent {
   ngOnChanges(): void {
     this.setShowWdfConfirmations();
   }
-
-  public showWdfConfirmation(field: string): boolean {
-    return (
-      this.canEditWorker &&
-      this.wdfView &&
-      this.worker.wdf?.[field].isEligible === 'Yes' &&
-      !this.worker.wdf?.[field].updatedSinceEffectiveDate
-    );
-  }
 }

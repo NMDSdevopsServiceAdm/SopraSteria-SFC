@@ -41,15 +41,6 @@ export class QualificationsAndTrainingComponent extends StaffRecordSummaryCompon
     this.setShowWdfConfirmations();
   }
 
-  public showWdfConfirmation(field: string): boolean {
-    return (
-      this.canEditWorker &&
-      this.wdfView &&
-      this.worker.wdf?.[field].isEligible === 'Yes' &&
-      !this.worker.wdf?.[field].updatedSinceEffectiveDate
-    );
-  }
-
   public showWdfConfirmationForCareCertificate(): boolean {
     return this.showWdfConfirmation('careCertificate') && this.worker.careCertificate !== 'Yes, completed';
   }
