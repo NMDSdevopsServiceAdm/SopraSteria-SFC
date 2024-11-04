@@ -1,9 +1,13 @@
-<div class="govuk-summary-list__row govuk-summary-list__row--no-bottom-border">
-  <dt class="govuk-summary-list__key govuk-!-width-one-half"></dt>
+<div class="govuk-summary-list__row govuk-summary-list__row--no-bottom-border asc-summary-list--wide-value">
+  <dt class="govuk-summary-list__key"></dt>
   <dd class="govuk-summary-list__value govuk-summary-list__message">
     <div class="govuk-button-group govuk-!-margin-left-2 confirmation-content">
       <ng-container *ngIf="!confirmButtonClicked; else confirmed">
-        <img class="govuk-!-margin-right-1 asc-icon-align" src="/assets/images/flag-red.png" alt="Red flag" />
+        <img
+          alt="Red flag icon"
+          src="/assets/images/Red_flag-WDF_table_(1).svg"
+          class="govuk-!-margin-right-2 asc-icon-align"
+        />
         <div class="govuk-!-margin-right-5">Is this still correct?</div>
         <button
           class="govuk-button govuk-button--primary govuk-!-margin-right-5"
@@ -20,7 +24,7 @@
           src="/assets/images/tick-icon.svg"
           alt=""
         />
-        <div class="govuk-!-margin-right-5">Meeting requirements</div>
+        <div class="govuk-!-margin-right-5 govuk-!-margin-top-1 govuk-!-margin-bottom-4">Meeting requirements</div>
       </ng-template>
     </div>
   </dd>

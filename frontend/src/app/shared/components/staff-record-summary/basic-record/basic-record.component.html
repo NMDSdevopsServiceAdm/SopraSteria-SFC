@@ -1,11 +1,11 @@
 <h2 class="govuk-heading-m">{{ basicTitle }}</h2>
 <dl
-  class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top govuk-!-margin-bottom-0"
+  class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top asc-summary-list--wide-value govuk-!-margin-bottom-0"
   data-testid="name-and-contract-section"
 >
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key govuk-!-padding-right-0">Name or ID number</dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
+    <dt class="govuk-summary-list__key">Name or ID number</dt>
+    <dd class="govuk-summary-list__value">
       {{ worker.nameOrId }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -21,7 +21,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Contract type</dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
+    <dd class="govuk-summary-list__value">
       <ng-container *ngIf="showPoolBankTag; else notPoolBankTag">Pool, Bank</ng-container>
       <ng-template #notPoolBankTag>
         {{ worker.contract }}
@@ -44,8 +44,8 @@
     }"
     data-testid="main-job-role-section"
   >
-    <dt class="govuk-summary-list__key govuk-!-padding-right-0">Main job role</dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-2': !mandatoryDetailsPage }">
+    <dt class="govuk-summary-list__key">Main job role</dt>
+    <dd class="govuk-summary-list__value">
       <ng-container *ngIf="worker.mainJob?.other; else title">
         <span>{{ worker.mainJob.other }}</span>
       </ng-container>

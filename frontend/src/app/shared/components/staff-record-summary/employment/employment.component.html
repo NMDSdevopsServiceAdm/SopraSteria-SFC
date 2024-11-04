@@ -1,10 +1,8 @@
 <h2 class="govuk-heading-m">Employment details</h2>
-<dl class="govuk-summary-list asc-summarylist-border-top">
+<dl class="govuk-summary-list asc-summarylist-border-top asc-summary-list--wide-value">
   <div class="govuk-summary-list__row" *ngIf="displayHealthAndCareVisa" data-testid="health-and-care-visa-section">
-    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-right-0">
-      On a Health and Care Worker visa
-    </dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dt class="govuk-summary-list__key">On a Health and Care Worker visa</dt>
+    <dd class="govuk-summary-list__value">
       {{ worker.healthAndCareVisa | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -21,10 +19,8 @@
     *ngIf="displayEmployedFromOutsideOrInsideUk"
     data-testid="employed-inside-or-outside-section"
   >
-    <dt class="govuk-summary-list__key govuk-!-width-one-half govuk-!-padding-right-1">
-      Employed from outside or inside the UK
-    </dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dt class="govuk-summary-list__key">Employed from outside or inside the UK</dt>
+    <dd class="govuk-summary-list__value">
       {{ displayEmployedFromOutsideOrInsideUkValue | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -43,8 +39,8 @@
         (wdfView && !worker.mainJobStartDate) || showWdfConfirmations.mainJobStartDate
     }"
   >
-    <dt class="govuk-summary-list__key govuk-!-width-one-half">Date started in main job role</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dt class="govuk-summary-list__key">Date started in main job role</dt>
+    <dd class="govuk-summary-list__value">
       {{ worker.mainJobStartDate ? mainStartDate : '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -72,7 +68,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayMentalHealthProfessional">
     <dt class="govuk-summary-list__key">Approved Mental Health Professional</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dd class="govuk-summary-list__value">
       {{ worker.approvedMentalHealthWorker | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -87,7 +83,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
     <dt class="govuk-summary-list__key">Nursing and Midwifery Council category</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dd class="govuk-summary-list__value">
       {{ (worker.registeredNurse | nursingCategoriesText) || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -102,7 +98,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayNursingQuestions">
     <dt class="govuk-summary-list__key">Nursing specialisms used in current role</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dd class="govuk-summary-list__value">
       <ng-container *ngIf="!worker.nurseSpecialisms"> - </ng-container>
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'No'"> Not using any of their specialisms </ng-container>
       <ng-container *ngIf="worker.nurseSpecialisms?.value === 'Don\'t know'">Not known</ng-container>
@@ -131,7 +127,7 @@
     }"
   >
     <dt class="govuk-summary-list__key">Recruited from</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dd class="govuk-summary-list__value">
       {{
         worker.recruitedFrom?.from?.from !== null
           ? worker.recruitedFrom?.from?.from
@@ -155,7 +151,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Year started in adult social care</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dd class="govuk-summary-list__value">
       {{
         worker.socialCareStartDate?.year
           ? worker.socialCareStartDate?.year
@@ -171,40 +167,40 @@
       ></app-summary-record-change>
     </dd>
   </div>
-
-  <div
-    *ngIf="displayDaysSickness"
-    class="govuk-summary-list__row"
-    [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': (wdfView && !worker.daysSick) || showWdfConfirmations.daysSick
-    }"
-  >
-    <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
-      {{ worker.daysSick | workerDays | openEndedAnswer }}
-    </dd>
-    <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
-      <app-summary-record-change
-        *ngIf="!showWdfConfirmations.daysSick"
-        [explanationText]="' days of sickness'"
-        [link]="getRoutePath('days-of-sickness', wdfView)"
-        [hasData]="!!worker.daysSick"
-        (setReturnClicked)="this.setReturn()"
-      ></app-summary-record-change>
-    </dd>
-  </div>
-  <app-wdf-warning-message
-    *ngIf="wdfView && !worker.daysSick"
-    [overallWdfEligibility]="overallWdfEligibility"
-    data-testid="daysSickWdfWarning"
-  ></app-wdf-warning-message>
-  <app-wdf-field-confirmation
-    *ngIf="showWdfConfirmations.daysSick"
-    [changeLink]="getRoutePath('days-of-sickness', wdfView)"
-    (fieldConfirmation)="this.confirmField('daysSick')"
-    (setReturnClicked)="this.setReturn()"
-    [workerUid]="worker.uid"
-  ></app-wdf-field-confirmation>
+  <ng-container *ngIf="displayDaysSickness">
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
+        'govuk-summary-list__row--no-bottom-border': (wdfView && !worker.daysSick) || showWdfConfirmations.daysSick
+      }"
+    >
+      <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
+      <dd class="govuk-summary-list__value">
+        {{ worker.daysSick | workerDays | openEndedAnswer }}
+      </dd>
+      <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
+        <app-summary-record-change
+          *ngIf="!showWdfConfirmations.daysSick"
+          [explanationText]="' days of sickness'"
+          [link]="getRoutePath('days-of-sickness', wdfView)"
+          [hasData]="!!worker.daysSick"
+          (setReturnClicked)="this.setReturn()"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+    <app-wdf-warning-message
+      *ngIf="wdfView && !worker.daysSick"
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="daysSickWdfWarning"
+    ></app-wdf-warning-message>
+    <app-wdf-field-confirmation
+      *ngIf="showWdfConfirmations.daysSick"
+      [changeLink]="getRoutePath('days-of-sickness', wdfView)"
+      (fieldConfirmation)="this.confirmField('daysSick')"
+      (setReturnClicked)="this.setReturn()"
+      [workerUid]="worker.uid"
+    ></app-wdf-field-confirmation>
+  </ng-container>
 
   <div
     class="govuk-summary-list__row"
@@ -214,7 +210,7 @@
     }"
   >
     <dt class="govuk-summary-list__key">Zero hours contract</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dd class="govuk-summary-list__value">
       {{ worker.zeroHoursContract || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -252,7 +248,7 @@
       }"
     >
       <dt class="govuk-summary-list__key">Average weekly working hours</dt>
-      <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+      <dd class="govuk-summary-list__value">
         {{
           isNumber(worker.weeklyHoursAverage?.hours)
             ? worker.weeklyHoursAverage?.hours
@@ -304,7 +300,7 @@
       }"
     >
       <dt class="govuk-summary-list__key">Contracted weekly hours</dt>
-      <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+      <dd class="govuk-summary-list__value">
         {{
           isNumber(worker.weeklyHoursContracted?.hours)
             ? worker.weeklyHoursContracted?.hours
@@ -353,7 +349,7 @@
   >
     <dt class="govuk-summary-list__key">Hourly pay or annual salary</dt>
 
-    <dd class="govuk-summary-list__value govuk-!-padding-left-2">
+    <dd class="govuk-summary-list__value">
       {{ worker.annualHourlyPay | workerPay | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">

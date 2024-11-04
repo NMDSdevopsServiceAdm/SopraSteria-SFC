@@ -94,7 +94,15 @@
 
 .asc-summary-list--wide-value {
   .govuk-summary-list__value {
-    width: 70%;
+    width: 55%;
+  }
+
+  .govuk-summary-list__key {
+    width: 35%;
+  }
+
+  .govuk-summary-list__actions {
+    width: 10%;
   }
 }
 
