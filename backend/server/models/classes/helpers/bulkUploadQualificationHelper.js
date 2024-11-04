@@ -31,20 +31,17 @@ class BulkUploadQualificationHelper {
       const qualificationExists = existingQualificationFks.includes(currentQualificationId);
 
       if (qualificationExists) {
-        console.log('modify current qualification: ', bulkUploadEntity._qualification.title);
         const recordToUpdate = allQualificationRecords.find(
           (record) => record.qualificationFk === currentQualificationId,
         );
         promisesToReturn.push(this.updateQualification(recordToUpdate, bulkUploadEntity));
       } else {
-        console.log('create new qualification: ', bulkUploadEntity._qualification.title);
         promisesToReturn.push(this.createNewQualification(bulkUploadEntity));
       }
     }
 
     for (const qualification of allQualificationRecords) {
       if (!bulkUploadQualificationFks.includes(qualification.qualificationFk)) {
-        console.log('delete current qualification: ', qualification.id);
         promisesToReturn.push(this.deleteQualification(qualification));
       }
     }
