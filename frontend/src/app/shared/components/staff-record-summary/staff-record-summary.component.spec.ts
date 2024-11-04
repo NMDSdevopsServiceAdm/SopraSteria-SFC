@@ -422,7 +422,7 @@ describe('StaffRecordSummaryComponent', () => {
         ],
       },
       {
-        name: "Non-social care qualification when answered 'No'",
+        name: "Non-social care qualification when answered 'Don't know'",
         fields: [
           {
             name: 'otherQualification',
