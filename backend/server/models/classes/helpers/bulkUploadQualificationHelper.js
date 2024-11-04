@@ -73,7 +73,7 @@ class BulkUploadQualificationHelper {
   async deleteQualification(existingRecord) {
     const certificatesFound = await existingRecord.getQualificationCertificates();
     if (certificatesFound?.length) {
-      this.qualificationCertificateService.deleteCertificatesWithTransaction(
+      await this.qualificationCertificateService.deleteCertificatesWithTransaction(
         certificatesFound,
         this.externalTransaction,
       );
