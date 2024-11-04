@@ -365,8 +365,17 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       { uid: 'ghi789', key: 'ghi789/trainingCertificate/da1412342' },
     ];
 
+    const qualificationCertificatesReturnedFromDb = [
+      { uid: 'abc123', key: 'abc123/qualificationCertificate/dasdsa12312' },
+      { uid: 'def456', key: 'def456/qualificationCertificate/deass12092' },
+      { uid: 'ghi789', key: 'ghi789/qualificationCertificate/da1412342' },
+    ];
+
     beforeEach(() => {
-      stubs.getAllTrainingCertificatesForUser = sinon.stub(models.trainingCertificates, 'getAllCertificateRecordsForWorker').resolves(trainingCertificatesReturnedFromDb);      stubs.deleteTrainingCertificatesFromDb = sinon.stub(models.trainingCertificates, 'deleteCertificate');
+      stubs.getAllTrainingCertificatesForUser = sinon.stub(models.trainingCertificates, 'getAllCertificateRecordsForWorker').resolves(trainingCertificatesReturnedFromDb);
+      stubs.deleteTrainingCertificatesFromDb = sinon.stub(models.trainingCertificates, 'deleteCertificate');
+      stubs.getAllQualificationCertificatesForUser = sinon.stub(models.qualificationCertificates, 'getAllCertificateRecordsForWorker').resolves(qualificationCertificatesReturnedFromDb);
+      stubs.deleteQualificationCertificatesFromDb = sinon.stub(models.qualificationCertificates, 'deleteCertificate');
       stubs.deleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
     });
 
@@ -407,8 +416,6 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
         await services.training.deleteAllCertificates(12345, transaction);
 
-        console.log(stubs.deleteCertificatesFromS3.args[0][0]);
-
         expect(stubs.deleteCertificatesFromS3.args[0][0]).to.deep.equal({
           bucket: bucketName,
           objects: [
@@ -420,16 +427,52 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       });
     });
 
+    describe('Qualifications:', () => {
+      it('should get all certificates for user', async () => {
+        const transaction = models.sequelize.transaction();
+        await services.qualifications.deleteAllCertificates(12345, transaction);
 
+        expect(stubs.getAllQualificationCertificatesForUser).to.be.calledWith(12345);
+      });
 
-    // describe('Qualifications:', () => {
-    //   it('should get all certificates for user', async () => {
+      it('should not make DB or S3 deletion calls if no qualification certificates found', async () => {
+        stubs.getAllQualificationCertificatesForUser.resolves([]);
 
-    //     const transaction = models.sequelize.transaction();
-    //     await services.qualifications.deleteAllCertificates(12345, transaction);
+        const transaction = models.sequelize.transaction();
+        await services.qualifications.deleteAllCertificates(12345, transaction);
 
-    //     expect()
-    //   });
-    // });
+        expect(stubs.deleteQualificationCertificatesFromDb).to.not.have.been.called;
+        expect(stubs.deleteCertificatesFromS3).to.not.have.been.called;
+      });
+
+      it('should call deleteCertificate on DB model with uids returned from getAllQualificationCertificateRecordsForWorker and pass in transaction', async () => {
+        const transaction = await models.sequelize.transaction();
+        await services.qualifications.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.deleteQualificationCertificatesFromDb.args[0][0]).to.deep.equal([
+          qualificationCertificatesReturnedFromDb[0].uid,
+          qualificationCertificatesReturnedFromDb[1].uid,
+          qualificationCertificatesReturnedFromDb[2].uid,
+        ]);
+
+        expect(stubs.deleteQualificationCertificatesFromDb.args[0][1]).to.deep.equal(transaction);
+      });
+
+      it('should call deleteCertificatesFromS3 with keys returned from getAllQualificationCertificateRecordsForWorker', async () => {
+        const bucketName = config.get('workerCertificate.bucketname');
+        const transaction = await models.sequelize.transaction();
+
+        await services.qualifications.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.deleteCertificatesFromS3.args[0][0]).to.deep.equal({
+          bucket: bucketName,
+          objects: [
+            { Key: qualificationCertificatesReturnedFromDb[0].key },
+            { Key: qualificationCertificatesReturnedFromDb[1].key },
+            { Key: qualificationCertificatesReturnedFromDb[2].key },
+          ]
+        });
+      });
+    });
   })
 });
