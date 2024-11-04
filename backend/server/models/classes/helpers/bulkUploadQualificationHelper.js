@@ -4,12 +4,12 @@ const models = require('../../index');
 const WorkerCertificateService = require('../../../routes/establishments/workerCertificate/workerCertificateService');
 
 class BulkUploadQualificationHelper {
-  constructor({ workerId, workerUid, establishmentId, savedBy, bulkUploaded = true, externalTransaction }) {
+  constructor({ workerId, workerUid, establishmentId, savedBy, externalTransaction }) {
     this.workerId = workerId;
     this.workerUid = workerUid;
     this.establishmentId = establishmentId;
     this.savedBy = savedBy;
-    this.bulkUploaded = bulkUploaded;
+    this.bulkUploaded = true;
     this.externalTransaction = externalTransaction;
     this.qualificationCertificateService = WorkerCertificateService.initialiseQualifications();
   }
@@ -59,7 +59,7 @@ class BulkUploadQualificationHelper {
 
   updateQualification(existingRecord, entityFromBulkUpload) {
     const fieldsToUpdate = {
-      source: this.bulkUploaded ? 'Bulk' : 'Online',
+      source: 'Bulk',
       updatedBy: this.savedBy.toLowerCase(),
       notes: entityFromBulkUpload.notes ?? existingRecord.notes,
       year: entityFromBulkUpload.year ?? existingRecord.year,

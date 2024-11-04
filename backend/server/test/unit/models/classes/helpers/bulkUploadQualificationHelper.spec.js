@@ -59,7 +59,6 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
       workerUid: mockWorkerUid,
       establishmentId: mockEstablishmentId,
       savedBy: mockSavedBy,
-      bulkUploaded: mockBulkUploaded,
       externalTransaction: mockExternalTransaction,
     });
   };
