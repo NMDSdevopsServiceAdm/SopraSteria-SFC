@@ -76,10 +76,10 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
 
     beforeEach(async () => {
       mockExistingQualifications = [
-        buildMockWorkerQualification({ qualificationFk: 31 }), // to modify
-        buildMockWorkerQualification({ qualificationFk: 1 }), // to delete
-        buildMockWorkerQualification({ qualificationFk: 2 }), // to delete
-        buildMockWorkerQualification({ qualificationFk: 152 }), // to modify
+        buildMockWorkerQualification({ qualificationFk: 31 }), // should be modified
+        buildMockWorkerQualification({ qualificationFk: 1 }), // should be deleted
+        buildMockWorkerQualification({ qualificationFk: 2 }), // should be deleted
+        buildMockWorkerQualification({ qualificationFk: 152 }), // should be modified
       ];
       mockQualificationsEntities = await Promise.all(
         [
@@ -107,7 +107,7 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
       sinon.restore();
     });
 
-    it('should call createNewQualification for each new qualification added', async () => {
+    it('should call createNewQualification for each qualification that is not in database but appear in bulk upload entities', async () => {
       const returnedPromises = await helper.processQualificationsEntities(mockQualificationsEntities);
 
       expect(helper.createNewQualification).to.have.been.calledTwice;
@@ -119,7 +119,7 @@ describe('/server/models/classes/helpers/bulkUploadQualificationHelper.js', () =
         .that.includes(helper.createNewQualification.returnValues[0], helper.createNewQualification.returnValues[1]);
     });
 
-    it('should call updateQualification for each qualification that is modified', async () => {
+    it('should call updateQualification for each existing qualification that also appear in bulk upload entities', async () => {
       const returnedPromises = await helper.processQualificationsEntities(mockQualificationsEntities);
 
       expect(helper.updateQualification).to.have.been.calledTwice;
