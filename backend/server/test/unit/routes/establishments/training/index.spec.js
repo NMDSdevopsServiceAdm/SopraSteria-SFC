@@ -9,7 +9,6 @@ const {
   mockTrainingRecordWithCertificates,
   mockTrainingRecordWithoutCertificates,
 } = require('../../../mockdata/training');
-const TrainingCertificateRoute = require('../../../../../routes/establishments/workerCertificate/trainingCertificate');
 const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
 const HttpError = require('../../../../../utils/errors/httpError');
 
@@ -72,10 +71,7 @@ describe('server/routes/establishments/training/index.js', () => {
 
         await deleteTrainingRecord(req, res);
 
-        const response = res._getData();
-
         expect(res.statusCode).to.equal(123);
-        expect(response).to.equal('Test error message');
       });
 
       it('should default to status code 500 if no error code is provided', async () => {

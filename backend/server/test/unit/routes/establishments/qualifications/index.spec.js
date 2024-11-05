@@ -11,6 +11,7 @@ const {
 } = require('../../../mockdata/qualifications');
 const QualificationCertificateRoute = require('../../../../../routes/establishments/workerCertificate/qualificationCertificate');
 const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
+const HttpError = require('../../../../../utils/errors/httpError');
 
 describe('server/routes/establishments/qualifications/index.js', () => {
   afterEach(() => {
@@ -30,6 +31,8 @@ describe('server/routes/establishments/qualifications/index.js', () => {
     let establishmentUid = user.establishment.uid;
     let qualificationsRecord;
 
+    let stubs;
+
     beforeEach(() => {
       req = httpMocks.createRequest({
         method: 'DELETE',
@@ -41,16 +44,18 @@ describe('server/routes/establishments/qualifications/index.js', () => {
 
       qualificationsRecord = new Qualifications(establishmentUid, workerUid);
 
-      stubRestoredQualificationsRecord = sinon.stub(Qualifications.prototype, 'restore');
-      stubFindQualificationsRecord = sinon.stub(models.workerQualifications, 'findOne');
-      stubDestroyQualificationsRecord = sinon.stub(models.workerQualifications, 'destroy');
-      stubDeleteCertificates = sinon.stub(WorkerCertificateService.prototype, 'deleteCertificates').returns();
+      stubs = {
+        qualificationsRecord: sinon.createStubInstance(Qualifications),
+        restoreQualificationsRecord: sinon.stub(Qualifications.prototype, 'restore'),
+        getWorkerCertificateServiceInstance: sinon.stub(WorkerCertificateService, 'initialiseQualifications').returns(new WorkerCertificateService()),
+        destroyQualificationsRecord: sinon.stub(models.workerQualifications, 'destroy'),
+        deleteCertificates: sinon.stub(WorkerCertificateService.prototype, 'deleteCertificates'),
+      }
     });
 
     it('should return with a status of 204 when the qualifications record is deleted with qualifications certificates', async () => {
-      stubRestoredQualificationsRecord.returns(mockQualificationsRecordWithCertificates);
-      stubFindQualificationsRecord.returns(mockQualificationsRecordWithCertificates);
-      stubDestroyQualificationsRecord.returns(1);
+      stubs.restoreQualificationsRecord.returns(mockQualificationsRecordWithCertificates);
+      stubs.destroyQualificationsRecord.returns(1);
 
       await deleteQualificationRecord(req, res);
 
@@ -58,9 +63,8 @@ describe('server/routes/establishments/qualifications/index.js', () => {
     });
 
     it('should return with a status of 204 when the qualifications record is deleted with no qualifications certificates', async () => {
-      stubRestoredQualificationsRecord.returns(mockQualificationsRecordWithoutCertificates);
-      stubFindQualificationsRecord.returns(mockQualificationsRecordWithoutCertificates);
-      stubDestroyQualificationsRecord.returns(1);
+      stubs.restoreQualificationsRecord.returns(mockQualificationsRecordWithoutCertificates);
+      stubs.destroyQualificationsRecord.returns(1);
 
       await deleteQualificationRecord(req, res);
 
@@ -69,6 +73,15 @@ describe('server/routes/establishments/qualifications/index.js', () => {
 
     describe('errors', () => {
       describe('restoring qualifications record', () => {
+        it('should pass through status code if one is provided', async () => {
+          stubs.restoreQualificationsRecord.throws(new HttpError('Test error message', 123));
+          req.params.qualificationUid = 'mockQualificationId';
+
+          await deleteQualificationRecord(req, res);
+
+          expect(res.statusCode).to.equal(123);
+        });
+
         it('should return a 404 status code if there is an unknown worker uid', async () => {
           qualificationsRecord_workerUid = 'mockWorkerUid';
 
@@ -81,7 +94,7 @@ describe('server/routes/establishments/qualifications/index.js', () => {
         });
 
         it('should return a 500 status code if there is an error loading the qualifications record', async () => {
-          stubRestoredQualificationsRecord.throws();
+          stubs.restoreQualificationsRecord.throws();
 
           await deleteQualificationRecord(req, res);
 
@@ -91,9 +104,8 @@ describe('server/routes/establishments/qualifications/index.js', () => {
 
       describe('deleting qualifications record', () => {
         it('should return with a status of 404 when there is an error deleting the qualifications record from the database', async () => {
-          stubRestoredQualificationsRecord.returns(mockQualificationsRecordWithCertificates);
-          stubFindQualificationsRecord.returns(mockQualificationsRecordWithCertificates);
-          stubDestroyQualificationsRecord.returns(0);
+          stubs.restoreQualificationsRecord.returns(mockQualificationsRecordWithCertificates);
+          stubs.destroyQualificationsRecord.returns(0);
 
           await deleteQualificationRecord(req, res);
 
