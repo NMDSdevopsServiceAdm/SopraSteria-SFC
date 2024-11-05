@@ -555,7 +555,6 @@ class Worker extends EntityValidator {
       // there is no change audit on qualifications; simply delete all that is there and recreate
       if (this._qualificationsEntities && this._qualificationsEntities.length > 0) {
         // delete all existing training records for this worker
-        await this.deleteAllQualificationCertificatesAssociatedWithWorker(externalTransaction);
         await models.workerQualifications.destroy({
           where: {
             workerFk: this._id,
