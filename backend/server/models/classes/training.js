@@ -20,7 +20,6 @@ const EntityValidator = require('./validations/entityValidator').EntityValidator
 const ValidationMessage = require('./validations/validationMessage').ValidationMessage;
 const { TrainingCategoriesCache } = require('../cache/singletons/trainingCategories');
 const { Op } = require('sequelize');
-const HttpError = require('../../utils/errors/httpError');
 
 class Training extends EntityValidator {
   constructor(establishmentId, workerUid) {
@@ -587,12 +586,12 @@ class Training extends EntityValidator {
   async restore(uid) {
     if (!this.uuidV4Regex.test(uid)) {
       this._log(Training.LOG_ERROR, 'Failed to restore Training record with invalid UID');
-      throw new HttpError('Failed to restore', 500);
+      throw new Error('Failed to restore');
     }
 
     if (!this._establishmentId || !this._workerUid) {
       this._log(Training.LOG_ERROR, 'Failed to restore Training record with unknown worker id and establishment id');
-      throw new HttpError('Failed to restore', 404);
+      throw new Error('Failed to restore');
     }
 
     try {
