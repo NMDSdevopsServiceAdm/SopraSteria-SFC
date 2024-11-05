@@ -23,27 +23,25 @@ class BulkUploadQualificationHelper {
       },
     });
 
-    const existingQualificationFks = allQualificationRecords.map((record) => record.qualificationFk);
-    const bulkUploadQualificationFks = compact(qualificationsEntities.map((entity) => entity?._qualification?.id));
-
     for (const bulkUploadEntity of qualificationsEntities) {
       const currentQualificationId = bulkUploadEntity?._qualification?.id;
-      const qualificationExists = existingQualificationFks.includes(currentQualificationId);
+      const existingQualification = allQualificationRecords.find(
+        (record) => record.qualificationFk === currentQualificationId,
+      );
 
-      if (qualificationExists) {
-        const recordToUpdate = allQualificationRecords.find(
-          (record) => record.qualificationFk === currentQualificationId,
-        );
-        promisesToReturn.push(this.updateQualification(recordToUpdate, bulkUploadEntity));
+      if (existingQualification) {
+        promisesToReturn.push(this.updateQualification(existingQualification, bulkUploadEntity));
       } else {
         promisesToReturn.push(this.createNewQualification(bulkUploadEntity));
       }
     }
 
-    for (const qualification of allQualificationRecords) {
-      if (!bulkUploadQualificationFks.includes(qualification.qualificationFk)) {
-        promisesToReturn.push(this.deleteQualification(qualification));
-      }
+    const bulkUploadQualificationFks = compact(qualificationsEntities.map((entity) => entity?._qualification?.id));
+    const qualificationsToDelete = allQualificationRecords.filter(
+      (qualification) => !bulkUploadQualificationFks.includes(qualification.qualificationFk),
+    );
+    for (const qualification of qualificationsToDelete) {
+      promisesToReturn.push(this.deleteQualification(qualification));
     }
 
     return promisesToReturn;
