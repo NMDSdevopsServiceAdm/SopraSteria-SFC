@@ -2,6 +2,8 @@ const models = require('../../../models');
 
 const MAIN_JOB_ROLE_ERROR = () => 1280;
 
+const TRANSFERSTAFFRECORD_ERROR = () => 1400;
+
 const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker) => {
   if (workerNotChanged(JSONWorker)) {
     return false;
@@ -112,7 +114,7 @@ const _addErrorForNewWorkplaceNotFound = (csvWorkerSchemaErrors, JSONWorker) => 
     worker: JSONWorker.uniqueWorkerId,
     name: JSONWorker.localId,
     lineNumber: JSONWorker.lineNumber,
-    errCode: 99998,
+    errCode: TRANSFERSTAFFRECORD_ERROR(),
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     source: JSONWorker.transferStaffRecord,
     column: 'TRANSFERSTAFFRECORD',
@@ -125,7 +127,7 @@ const _addErrorForSameLocalIdExistInNewWorkplace = (csvWorkerSchemaErrors, JSONW
     worker: JSONWorker.uniqueWorkerId,
     name: JSONWorker.localId,
     lineNumber: JSONWorker.lineNumber,
-    errCode: 99999,
+    errCode: TRANSFERSTAFFRECORD_ERROR(),
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     source: JSONWorker.uniqueWorkerId,
     column: 'TRANSFERSTAFFRECORD',

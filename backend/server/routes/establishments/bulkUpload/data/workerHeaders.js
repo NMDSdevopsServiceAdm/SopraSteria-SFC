@@ -47,16 +47,16 @@ const workerHeaders = [
 const workerHeadersWithChangeUniqueWorkerIdAsArray = [
   ...workerHeaders.slice(0, 2),
   'CHGUNIQUEWRKID',
-  workerHeaders.slice(2),
+  ...workerHeaders.slice(2),
 ];
 
 const workerHeadersWithTransferStaffRecordAsArray = [
   ...workerHeaders.slice(0, 2),
   'TRANSFERSTAFFRECORD',
-  workerHeaders.slice(2),
+  ...workerHeaders.slice(2),
 ];
 
 exports.workerHeadersWithCHGUNIQUEWRKID = workerHeadersWithChangeUniqueWorkerIdAsArray.join(',');
-exports.workerHeadersWithTransferStaff = workerHeadersWithTransferStaffRecordAsArray.join('');
+exports.workerHeadersWithTransferStaff = workerHeadersWithTransferStaffRecordAsArray.join(',');
 exports.workerHeadersWithoutCHGUNIQUEWRKID = workerHeaders.join(',');
 exports.getWorkerColumnIndex = (columnName) => workerHeaders.findIndex((header) => header === columnName);
