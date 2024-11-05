@@ -45,6 +45,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   private setTrainingView(): void {
     this.trainingView = this.route.snapshot.data.trainingRecord ? true : false;
     this.trainingOrQualification = this.trainingView ? 'training' : 'qualification';
+
     if (this.trainingView) {
       this.trainingRecord = this.route.snapshot.data.trainingRecord;
       this.recordUid = this.trainingRecord.uid;
@@ -72,7 +73,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
     const message = `${this.capitalizeFirstLetter(this.trainingOrQualification)} record deleted`;
     this.subscriptions.add(
       this.deleteTrainingOrQualificationRecord().subscribe(() => {
-        this.router.navigate(this.previousUrl).then(()=>{
+        this.router.navigate([this.trainingPageUrl, 'training']).then(() => {
           this.alertService.addAlert({
             type: 'success',
             message: message,
