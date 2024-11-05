@@ -79,11 +79,12 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  QualificationCertificates.deleteCertificate = async function (uids) {
+  QualificationCertificates.deleteCertificate = async function (uids, transaction) {
     return await this.destroy({
       where: {
         uid: uids,
       },
+      ...(transaction ? { transaction } : {}),
     });
   };
 
