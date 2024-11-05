@@ -20,7 +20,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   public qualificationRecord: QualificationResponse;
   public trainingOrQualification: string;
   public trainingView: boolean;
-  private trainingPageUrl: string;
+  private workerTrainingAndQualsSummaryUrl: string;
   private recordUid: string;
   private subscriptions: Subscription = new Subscription();
 
@@ -36,7 +36,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
     this.setTrainingView();
     this.setVariables();
 
-    this.trainingPageUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
+    this.workerTrainingAndQualsSummaryUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
     this.setBackLink();
   }
 
@@ -64,14 +64,14 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
 
   public returnToEditPage(event: Event): void {
     event.preventDefault();
-    this.router.navigate([this.trainingPageUrl, this.trainingOrQualification, this.recordUid]);
+    this.router.navigate([this.workerTrainingAndQualsSummaryUrl, this.trainingOrQualification, this.recordUid]);
   }
 
   public deleteRecord(): void {
     const message = `${this.capitalizeFirstLetter(this.trainingOrQualification)} record deleted`;
     this.subscriptions.add(
       this.deleteTrainingOrQualificationRecord().subscribe(() => {
-        this.router.navigate([this.trainingPageUrl, 'training']).then(() => {
+        this.router.navigate([this.workerTrainingAndQualsSummaryUrl, 'training']).then(() => {
           this.alertService.addAlert({
             type: 'success',
             message: message,
