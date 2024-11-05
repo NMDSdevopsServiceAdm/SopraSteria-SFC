@@ -13,6 +13,7 @@ import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-last
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
+import { HasTrainingCertificatesResolver } from '@core/resolvers/training/has-training-certificates.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { AboutBulkUploadComponent } from '@features/bulk-upload/about-bulk-upload/about-bulk-upload.component';
 import { MissingStaffReferencesComponent } from '@features/bulk-upload/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
@@ -37,7 +38,11 @@ const routes: Routes = [
     component: BulkUploadPageComponent,
     canActivate: [BulkUploadStartGuard, BulkUploadMissingGuard],
     data: { title: 'Home' },
-    resolve: { dataChange: DataChangeResolver, dataChangeLastUpdated: DataChangeLastUpdatedResolver },
+    resolve: {
+      dataChange: DataChangeResolver,
+      dataChangeLastUpdated: DataChangeLastUpdatedResolver,
+      hasTrainingCertificates: HasTrainingCertificatesResolver,
+    },
   },
   {
     path: 'start',
