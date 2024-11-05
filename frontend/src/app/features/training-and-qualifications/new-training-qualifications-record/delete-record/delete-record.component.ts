@@ -23,7 +23,6 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   private trainingPageUrl: string;
   private recordUid: string;
   private subscriptions: Subscription = new Subscription();
-  public previousUrl: string[];
 
   constructor(
     private route: ActivatedRoute,
@@ -36,7 +35,6 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.setTrainingView();
     this.setVariables();
-    this.previousUrl = [localStorage.getItem('previousUrl')];
 
     this.trainingPageUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
     this.setBackLink();
@@ -96,6 +94,5 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
-    localStorage.removeItem('previousUrl');
   }
 }
