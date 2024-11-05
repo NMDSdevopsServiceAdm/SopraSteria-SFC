@@ -122,6 +122,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
 import { RadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { GroupedRadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
+import { FundingRequirementsStateComponent } from './components/funding-requirements-state/funding-requirements-state.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -245,6 +246,7 @@ import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-pane
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
     WdfSummaryPanel,
+    FundingRequirementsStateComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -364,6 +366,7 @@ import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-pane
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
     WdfSummaryPanel,
+    FundingRequirementsStateComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

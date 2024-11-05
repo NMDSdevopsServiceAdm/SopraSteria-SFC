@@ -10,7 +10,6 @@ import { WdfDataStatusMessageComponent } from './wdf-data-status-message/wdf-dat
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfParentStatusMessageComponent } from './wdf-parent-status-message/wdf-parent-status-message.component';
-import { WdfRequirementsStateComponent } from './wdf-requirements-state/wdf-requirements-state.component';
 import { WdfRoutingModule } from './wdf-routing.module';
 import { WdfStaffRecordStatusMessageComponent } from './wdf-staff-record-status-message/wdf-staff-record-status-message.component';
 import { WdfPaginationComponent } from './wdf-staff-record/wdf-pagination/wdf-pagination.component';
@@ -28,7 +27,6 @@ import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn
     WdfDataComponent,
     WdfStaffSummaryComponent,
     WdfStaffRecordComponent,
-    WdfRequirementsStateComponent,
     WdfDataStatusMessageComponent,
     WdfStaffRecordStatusMessageComponent,
     WdfPaginationComponent,

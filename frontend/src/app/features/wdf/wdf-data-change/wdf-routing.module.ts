@@ -46,6 +46,7 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-work
 import { FundingRequirementsComponent } from './funding-requirements/funding-requirements.component';
 import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn-more-about-funding.component';
 import { PageResolver } from '@core/resolvers/page.resolver';
+import { WorkersResolver } from '@core/resolvers/workers.resolver';
 
 const routes: Routes = [
   {
@@ -62,6 +63,7 @@ const routes: Routes = [
     component: WdfDataComponent,
     canActivate: [HasPermissionsGuard],
     data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
+    resolve: { workers: WorkersResolver },
   },
   {
     path: 'learn-more',
