@@ -2,13 +2,18 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { QualificationsByGroup, QualificationType } from '@core/model/qualification.model';
-import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
+import {
+  CreateTrainingRecordResponse,
+  MultipleTrainingResponse,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
 import { build, fake, oneOf, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
-import { AvailableQualificationsResponse, Qualification } from '../model/qualification.model';
+
+import { AvailableQualificationsResponse } from '../model/qualification.model';
 
 export const workerBuilder = build('Worker', {
   fields: {
@@ -461,7 +466,7 @@ export class MockWorkerService extends WorkerService {
     workplaceUid: string,
     workerId: string,
     record: TrainingRecordRequest,
-  ): Observable<TrainingRecordRequest> {
+  ): Observable<CreateTrainingRecordResponse> {
     return of(trainingRecord);
   }
 
