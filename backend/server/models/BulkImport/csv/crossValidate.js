@@ -14,6 +14,48 @@ const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker
   _crossValidateMainJobRole(csvWorkerSchemaErrors, isCqcRegulated, JSONWorker);
 };
 
+const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWorker) => {
+  if (!isCqcRegulated && JSONWorker.mainJobRoleId === 4) {
+    csvWorkerSchemaErrors.unshift({
+      worker: JSONWorker.uniqueWorkerId,
+      name: JSONWorker.localId,
+      lineNumber: JSONWorker.lineNumber,
+      errCode: MAIN_JOB_ROLE_ERROR(),
+      errType: 'MAIN_JOB_ROLE_ERROR',
+      source: JSONWorker.mainJobRoleId,
+      column: 'MAINJOBROLE',
+      error:
+        'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role',
+    });
+  }
+};
+
+const _isCQCRegulated = async (myEstablishments, JSONWorker) => {
+  const workerEstablishment = myEstablishments.find(
+    (establishment) => JSONWorker.establishmentKey === establishment.key,
+  );
+
+  if (workerEstablishment) {
+    switch (workerEstablishment.status) {
+      case 'NEW':
+      case 'UPDATE':
+        return workerEstablishment.regType === 2;
+      case 'UNCHECKED':
+      case 'NOCHANGE':
+        return await _checkEstablishmentRegulatedInDatabase(workerEstablishment.id);
+      case 'DELETE':
+        break;
+    }
+  }
+};
+
+const _checkEstablishmentRegulatedInDatabase = async (establishmentId) => {
+  const establishment = await models.establishment.findbyId(establishmentId);
+  return establishment.isRegulated;
+};
+
+const workerNotChanged = (JSONWorker) => !['NEW', 'UPDATE'].includes(JSONWorker.status);
+
 const crossValidateTransferStaffRecord = async (
   csvWorkerSchemaErrors,
   myAPIEstablishments,
@@ -22,48 +64,49 @@ const crossValidateTransferStaffRecord = async (
 ) => {
   const relatedEstablishmentIds = myEstablishments.map((establishment) => establishment.id);
 
-  for (const JSONworker of myJSONWorkers) {
-    if (JSONworker.status !== 'UPDATE' || !JSONworker.transferStaffRecord) {
-      continue;
-    }
+  const allMovingWorkers = myJSONWorkers.filter(isMovingToNewWorkplace);
 
-    await _crossValidateTransferStaffRecordForWorker(
+  _crossValidateWorkersWithSameRefMovingToSameWorkplace(csvWorkerSchemaErrors, allMovingWorkers);
+
+  for (const JSONWorker of allMovingWorkers) {
+    const newWorkplaceId = await _validateTransferIsPossible(
       csvWorkerSchemaErrors,
       relatedEstablishmentIds,
-      myAPIEstablishments,
-      JSONworker,
+      JSONWorker,
     );
+
+    if (newWorkplaceId) {
+      _addNewWorkplaceIdToWorkerEntity(myAPIEstablishments, JSONWorker, newWorkplaceId);
+    }
   }
 };
 
-const _crossValidateTransferStaffRecordForWorker = async (
-  csvWorkerSchemaErrors,
-  relatedEstablishmentIds,
-  myAPIEstablishments,
-  JSONworker,
-) => {
-  const oldWorkplaceLocalRef = JSONworker.localId;
-  const newWorkplaceLocalRef = JSONworker.transferStaffRecord;
+const isMovingToNewWorkplace = (JSONWorker) => {
+  return JSONWorker.status === 'UPDATE' && JSONWorker.transferStaffRecord;
+};
+
+const _validateTransferIsPossible = async (csvWorkerSchemaErrors, relatedEstablishmentIds, JSONWorker) => {
+  const newWorkplaceLocalRef = JSONWorker.transferStaffRecord;
   const newWorkplaceId = await _getNewWorkplaceId(newWorkplaceLocalRef, relatedEstablishmentIds);
 
   if (newWorkplaceId === null) {
-    _addErrorForNewWorkplaceNotFound(csvWorkerSchemaErrors, JSONworker);
+    _addErrorForNewWorkplaceNotFound(csvWorkerSchemaErrors, JSONWorker);
     return;
   }
 
   const sameLocalIdExistInNewWorkplace = await _checkDuplicateLocalIdInNewWorkplace(
     newWorkplaceId,
-    JSONworker.uniqueWorkerId,
+    JSONWorker.uniqueWorkerId,
   );
 
   if (sameLocalIdExistInNewWorkplace) {
-    _addErrorForSameLocalIdExistInNewWorkplace(csvWorkerSchemaErrors, JSONworker);
+    _addErrorForSameLocalIdExistInNewWorkplace(csvWorkerSchemaErrors, JSONWorker);
     return;
   }
 
-  const keyInApiEstablishments = JSONworker.uniqueWorkerId.replace(/\s/g, '');
-  const workerEntity = myAPIEstablishments[oldWorkplaceLocalRef]._workerEntities[keyInApiEstablishments];
-  workerEntity._newWorkplaceId = newWorkplaceId;
+  if (_workerPassedAllValidations(csvWorkerSchemaErrors, JSONWorker)) {
+    return newWorkplaceId;
+  }
 };
 
 const _getNewWorkplaceId = async (newWorkplaceLocalRef, relatedEstablishmentIds) => {
@@ -109,12 +152,29 @@ const _checkDuplicateLocalIdInNewWorkplace = async (newWorkplaceId, uniqueWorker
   return !!sameLocalIdFound;
 };
 
+const _workerPassedAllValidations = (csvWorkerSchemaErrors, JSONWorker) => {
+  return (
+    csvWorkerSchemaErrors.find(
+      (error) => error?.lineNumber === JSONWorker.lineNumber && error?.errType === 'TRANSFERSTAFFRECORD_ERROR',
+    ) === undefined
+  );
+};
+
+const _addNewWorkplaceIdToWorkerEntity = (myAPIEstablishments, JSONWorker, newWorkplaceId) => {
+  const oldWorkplaceKey = JSONWorker.localId.replace(/\s/g, '');
+  const workerEntityKey = JSONWorker.uniqueWorkerId.replace(/\s/g, '');
+
+  const workerEntity = myAPIEstablishments[oldWorkplaceKey].theWorker(workerEntityKey);
+
+  workerEntity._newWorkplaceId = newWorkplaceId;
+};
+
 const _addErrorForNewWorkplaceNotFound = (csvWorkerSchemaErrors, JSONWorker) => {
   csvWorkerSchemaErrors.unshift({
     worker: JSONWorker.uniqueWorkerId,
     name: JSONWorker.localId,
     lineNumber: JSONWorker.lineNumber,
-    errCode: TRANSFERSTAFFRECORD_ERROR(),
+    errCode: TRANSFERSTAFFRECORD_ERROR() + 1,
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     source: JSONWorker.transferStaffRecord,
     column: 'TRANSFERSTAFFRECORD',
@@ -127,55 +187,49 @@ const _addErrorForSameLocalIdExistInNewWorkplace = (csvWorkerSchemaErrors, JSONW
     worker: JSONWorker.uniqueWorkerId,
     name: JSONWorker.localId,
     lineNumber: JSONWorker.lineNumber,
-    errCode: TRANSFERSTAFFRECORD_ERROR(),
+    errCode: TRANSFERSTAFFRECORD_ERROR() + 2,
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     source: JSONWorker.uniqueWorkerId,
-    column: 'TRANSFERSTAFFRECORD',
+    column: 'UNIQUEWORKERID',
     error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD.',
   });
 };
 
-const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWorker) => {
-  if (!isCqcRegulated && JSONWorker.mainJobRoleId === 4) {
-    csvWorkerSchemaErrors.unshift({
-      worker: JSONWorker.uniqueWorkerId,
-      name: JSONWorker.localId,
-      lineNumber: JSONWorker.lineNumber,
-      errCode: MAIN_JOB_ROLE_ERROR(),
-      errType: 'MAIN_JOB_ROLE_ERROR',
-      source: JSONWorker.mainJobRoleId,
-      column: 'MAINJOBROLE',
-      error:
-        'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role',
-    });
-  }
-};
+const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (csvWorkerSchemaErrors, allMovingWorkers) => {
+  const destinations = {};
 
-const _isCQCRegulated = async (myEstablishments, JSONWorker) => {
-  const workerEstablishment = myEstablishments.find(
-    (establishment) => JSONWorker.establishmentKey === establishment.key,
-  );
+  for (const JSONWorker of allMovingWorkers) {
+    const newWorkplace = JSONWorker.transferStaffRecord;
+    const workerRef = JSONWorker.uniqueWorkerId.replace(/\s/g, '');
 
-  if (workerEstablishment) {
-    switch (workerEstablishment.status) {
-      case 'NEW':
-      case 'UPDATE':
-        return workerEstablishment.regType === 2;
-      case 'UNCHECKED':
-      case 'NOCHANGE':
-        return await _checkEstablishmentRegulatedInDatabase(workerEstablishment.id);
-      case 'DELETE':
-        break;
+    if (!destinations[newWorkplace]) {
+      destinations[newWorkplace] = new Set([workerRef]);
+      continue;
     }
+
+    if (!destinations[newWorkplace].has(workerRef)) {
+      destinations[newWorkplace].add(workerRef);
+      continue;
+    }
+
+    // if arrive at here, there is already another worker with that workerRef moving to the same new workplace
+    _addErrorForWorkersWithSameRefsMovingToSameWorkplace(csvWorkerSchemaErrors, JSONWorker);
   }
 };
 
-const _checkEstablishmentRegulatedInDatabase = async (establishmentId) => {
-  const establishment = await models.establishment.findbyId(establishmentId);
-  return establishment.isRegulated;
+const _addErrorForWorkersWithSameRefsMovingToSameWorkplace = (csvWorkerSchemaErrors, JSONWorker) => {
+  csvWorkerSchemaErrors.unshift({
+    worker: JSONWorker.uniqueWorkerId,
+    name: JSONWorker.localId,
+    lineNumber: JSONWorker.lineNumber,
+    errCode: TRANSFERSTAFFRECORD_ERROR() + 3,
+    errType: 'TRANSFERSTAFFRECORD_ERROR',
+    source: JSONWorker.uniqueWorkerId,
+    column: 'UNIQUEWORKERID',
+    error:
+      'There are more than one worker with this UNIQUEWORKERID moving into the new workplace given in TRANSFERSTAFFRECORD.',
+  });
 };
-
-const workerNotChanged = (JSONWorker) => !['NEW', 'UPDATE'].includes(JSONWorker.status);
 
 module.exports = {
   crossValidate,

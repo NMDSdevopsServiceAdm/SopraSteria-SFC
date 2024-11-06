@@ -1,3 +1,6 @@
+const sinon = require('sinon');
+const expect = require('chai').expect;
+
 const WorkerCsvValidator =
   require('../../../../../../../lambdas/bulkUpload/classes/workerCSVValidator.js').WorkerCsvValidator;
 const mappings = require('../../../../../models/BulkImport/BUDI/index.js').mappings;
@@ -6,10 +9,10 @@ const {
   crossValidate,
   _crossValidateMainJobRole,
   _isCQCRegulated,
+  crossValidateTransferStaffRecord,
 } = require('../../../../../models/BulkImport/csv/crossValidate');
-const sinon = require('sinon');
 const models = require('../../../../../models');
-const expect = require('chai').expect;
+const { Establishment } = require('../../../../../models/classes/establishment.js');
 
 describe('crossValidate', () => {
   describe('_crossValidateMainJobRole', () => {
@@ -197,6 +200,144 @@ describe('crossValidate', () => {
 
       expect(isCQCRegulated).to.not.deep.equal(true);
       expect(isCQCRegulated).to.not.deep.equal(false);
+    });
+  });
+
+  describe('crossValidateTransferStaffRecord', () => {
+    const worker = new WorkerCsvValidator(null, null, null, mappings);
+    const buildMockJSONWorker = (override) => {
+      return {
+        ...worker.toJSON(),
+        status: 'UPDATE',
+        transferStaffRecord: 'target workplace',
+        uniqueWorkerId: 'mock_worker_ref',
+        lineNumber: 3,
+        ...override,
+      };
+    };
+    const myEstablishments = [
+      { name: 'workplace A', id: 123 },
+      { name: 'workplace B', id: 456 },
+      { name: 'target workplace', id: 789 },
+    ];
+
+    let stubEstablishmentFindOne;
+    let stubWorkerFindOne;
+    let myAPIEstablishments;
+
+    beforeEach(() => {
+      stubEstablishmentFindOne = sinon.stub(models.establishment, 'findOne');
+      stubEstablishmentFindOne.returns(myEstablishments[2]);
+
+      stubWorkerFindOne = sinon.stub(models.worker, 'findOne');
+      stubWorkerFindOne.returns(null);
+
+      myAPIEstablishments = {
+        workplaceA: new Establishment(),
+        workplaceB: new Establishment(),
+        targetworkplace: new Establishment(),
+      };
+      myAPIEstablishments.workplaceA.associateWorker('mock_worker_ref', {});
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should add an error to csvWorkerSchemaErrors if two workers with the same unique worker id are transferring into the same new workplace', async () => {
+      const JSONWorkerA = buildMockJSONWorker({ localId: 'workplace A', lineNumber: 3 });
+      const JSONWorkerB = buildMockJSONWorker({ localId: 'workplace B', lineNumber: 4 });
+
+      const csvWorkerSchemaErrors = [];
+
+      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+        JSONWorkerA,
+        JSONWorkerB,
+      ]);
+
+      const expectedError = {
+        column: 'UNIQUEWORKERID',
+        errCode: 1403,
+        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        error:
+          'There are more than one worker with this UNIQUEWORKERID moving into the new workplace given in TRANSFERSTAFFRECORD.',
+        worker: JSONWorkerB.uniqueWorkerId,
+        name: JSONWorkerB.localId,
+        lineNumber: JSONWorkerB.lineNumber,
+        source: JSONWorkerB.uniqueWorkerId,
+      };
+      expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
+    });
+
+    it('should add an error to csvWorkerSchemaErrors if the new workplace cannot be found', async () => {
+      stubEstablishmentFindOne.returns(null);
+
+      const JSONWorker = buildMockJSONWorker({ transferStaffRecord: 'non_exist_workplace' });
+
+      const csvWorkerSchemaErrors = [];
+
+      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+        JSONWorker,
+      ]);
+
+      const expectedError = {
+        column: 'TRANSFERSTAFFRECORD',
+        errCode: 1401,
+        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        error: 'Cannot find an existing workplace with the localId provided in TRANSFERSTAFFRECORD',
+        worker: JSONWorker.uniqueWorkerId,
+        name: JSONWorker.localId,
+        lineNumber: JSONWorker.lineNumber,
+        source: JSONWorker.transferStaffRecord,
+      };
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
+      expect(stubEstablishmentFindOne).to.have.been.calledWith({
+        where: { LocalIdentifierValue: 'non_exist_workplace', id: [123, 456, 789] },
+      });
+    });
+
+    it("should add an error to csvWorkerSchemaErrors if the worker's unique worker id is already used in the new workplace", async () => {
+      stubWorkerFindOne.returns({ nameOrId: 'another worker', LocalIdentifierValue: 'mock_worker_ref' });
+
+      const JSONWorker = buildMockJSONWorker({ uniqueWorkerId: 'mock_worker_ref' });
+
+      const csvWorkerSchemaErrors = [];
+
+      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+        JSONWorker,
+      ]);
+
+      const expectedError = {
+        column: 'UNIQUEWORKERID',
+        errCode: 1402,
+        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD.',
+        worker: JSONWorker.uniqueWorkerId,
+        name: JSONWorker.localId,
+        lineNumber: JSONWorker.lineNumber,
+        source: JSONWorker.uniqueWorkerId,
+      };
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
+      expect(stubWorkerFindOne).to.have.been.calledWith({
+        where: { LocalIdentifierValue: 'mock_worker_ref', establishmentFk: 789 },
+      });
+    });
+
+    it('should add newWorkplaceId to the worker entity if all validations passed', async () => {
+      const JSONWorker = buildMockJSONWorker({ localId: 'workplace A', uniqueWorkerId: 'mock_worker_ref' });
+
+      const csvWorkerSchemaErrors = [];
+
+      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+        JSONWorker,
+      ]);
+
+      expect(csvWorkerSchemaErrors).to.be.empty;
+
+      const workerEntity = myAPIEstablishments['workplaceA']._workerEntities['mock_worker_ref'];
+      expect(workerEntity._newWorkplaceId).to.equal(789);
     });
   });
 });

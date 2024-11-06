@@ -200,6 +200,10 @@ class Worker extends EntityValidator {
     return this._transferStaffRecord;
   }
 
+  get newWorkplaceId() {
+    return this._newWorkplaceId;
+  }
+
   get contract() {
     return this._properties.get('Contract') ? this._properties.get('Contract').property : null;
   }
@@ -366,9 +370,8 @@ class Worker extends EntityValidator {
         this._transferStaffRecord = document.transferStaffRecord;
       }
 
-      if (document._newWorkplaceId) {
-        console.log('_newWorkplaceId received on worker.load()');
-        this._newWorkplaceId = document._newWorkplaceId;
+      if (document.newWorkplaceId) {
+        this._newWorkplaceId = document.newWorkplaceId;
       }
 
       // Consequential updates when one value means another should be empty or null
@@ -1377,7 +1380,7 @@ class Worker extends EntityValidator {
       }
 
       if (this._newWorkplaceId !== null) {
-        myDefaultJSON._newWorkplaceId = this._newWorkplaceId;
+        myDefaultJSON.newWorkplaceId = this._newWorkplaceId;
       }
 
       // TODO: JSON schema validation
