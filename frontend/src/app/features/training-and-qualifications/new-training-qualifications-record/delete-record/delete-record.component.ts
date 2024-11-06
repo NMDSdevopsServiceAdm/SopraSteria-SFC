@@ -21,6 +21,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   public trainingOrQualification: string;
   public trainingView: boolean;
   private workerTrainingAndQualsSummaryUrl: string;
+  public previousUrl: string;
   private recordUid: string;
   private subscriptions: Subscription = new Subscription();
 
@@ -37,6 +38,7 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
     this.setVariables();
 
     this.workerTrainingAndQualsSummaryUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
+    this.previousUrl = localStorage.getItem('previousUrl');
     this.setBackLink();
   }
 
@@ -71,12 +73,14 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
     const message = `${this.capitalizeFirstLetter(this.trainingOrQualification)} record deleted`;
     this.subscriptions.add(
       this.deleteTrainingOrQualificationRecord().subscribe(() => {
-        this.router.navigate([this.workerTrainingAndQualsSummaryUrl, 'training']).then(() => {
-          this.alertService.addAlert({
-            type: 'success',
-            message: message,
+        this.router
+          .navigate(this.previousUrl ? [this.previousUrl] : [this.workerTrainingAndQualsSummaryUrl, 'training'])
+          .then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: message,
+            });
           });
-        });
       }),
     );
   }
@@ -94,5 +98,6 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
+    localStorage.removeItem('previousUrl');
   }
 }

@@ -155,8 +155,31 @@ describe('DeleteRecordComponent', () => {
         );
       });
 
-      it('should navigate to the worker training and qualifications summary page and set a training deleted alert after user clicks delete button', async () => {
+      it("should navigate to previousUrl and set training deleted alert after clicking 'Delete record' when previousUrl exists", async () => {
         const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup();
+
+        const previousUrl = '/goToPreviousUrl';
+        spyOn(localStorage, 'getItem').and.returnValue(previousUrl);
+        component.ngOnInit();
+
+        const deleteButton = getByText('Delete record');
+        fireEvent.click(deleteButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([previousUrl]);
+
+        fixture.whenStable().then(() => {
+          expect(alertServiceSpy).toHaveBeenCalledWith({
+            type: 'success',
+            message: 'Training record deleted',
+          });
+        });
+      });
+
+      it("should navigate to worker training and quals summary page and set training deleted alert after clicking 'Delete record' when previousUrl doesn't exist", async () => {
+        const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup();
+
+        spyOn(localStorage, 'getItem').and.returnValue(null);
+        component.ngOnInit();
 
         const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
@@ -240,8 +263,31 @@ describe('DeleteRecordComponent', () => {
         );
       });
 
-      it('should navigate to the worker training and qualifications summary page and set a qualification deleted alert after user clicks delete button', async () => {
+      it("should navigate to previousUrl and set qualification deleted alert after clicking 'Delete record' when previousUrl exists", async () => {
         const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup(false);
+
+        const previousUrl = '/goToPreviousUrl';
+        spyOn(localStorage, 'getItem').and.returnValue(previousUrl);
+        component.ngOnInit();
+
+        const deleteButton = getByText('Delete record');
+        fireEvent.click(deleteButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([previousUrl]);
+
+        fixture.whenStable().then(() => {
+          expect(alertServiceSpy).toHaveBeenCalledWith({
+            type: 'success',
+            message: 'Qualification record deleted',
+          });
+        });
+      });
+
+      it("should navigate to worker training and quals summary page and set qualification deleted alert after clicking 'Delete record' when previousUrl doesn't exist", async () => {
+        const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup(false);
+
+        spyOn(localStorage, 'getItem').and.returnValue(null);
+        component.ngOnInit();
 
         const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
