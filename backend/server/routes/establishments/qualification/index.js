@@ -203,7 +203,7 @@ const deleteQualificationRecord = async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    return res.status(500).send();
+    return res.status(err.statusCode ? err.statusCode : 500).send();
   }
 };
 

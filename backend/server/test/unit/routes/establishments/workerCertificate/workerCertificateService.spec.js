@@ -14,14 +14,18 @@ const WorkerCertificateService = require('../../../../../routes/establishments/w
 describe('backend/server/routes/establishments/workerCertificate/workerCertificateService.js', () => {
   const user = buildUser();
   const qualification = qualificationBuilder();
-  let service;
-
+  let services;
+  let stubs;
   afterEach(() => {
     sinon.restore();
   });
 
   beforeEach(() => {
-    service = WorkerCertificateService.initialiseQualifications();
+    stubs = {};
+    services = {
+      qualifications: WorkerCertificateService.initialiseQualifications(),
+      training: WorkerCertificateService.initialiseTraining(),
+    };
   });
 
   describe('requestUploadUrl', () => {
@@ -38,7 +42,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
 
     it('should include a signed url for upload and a uuid for each file', async () => {
-      const result = await service.requestUploadUrl(
+      const result = await services.qualifications.requestUploadUrl(
         mockRequestBody.files,
         mockRequestBody.establishmentUid,
         mockRequestBody.workerUid,
@@ -59,7 +63,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       let error;
 
       try {
-        await service.requestUploadUrl({ params: { id: 1, workerId: 2, recordUid: 3 } });
+        await services.qualifications.requestUploadUrl({ params: { id: 1, workerId: 2, recordUid: 3 } });
       } catch (err) {
         error = err;
       }
@@ -70,7 +74,12 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
     it('should throw a HttpError with status 400 if filename was missing in any of the files', async () => {
       try {
-        await service.requestUploadUrl([{ filename: 'file1.pdf' }, { somethingElse: 'no file name' }], 1, 2, 3);
+        await services.qualifications.requestUploadUrl(
+          [{ filename: 'file1.pdf' }, { somethingElse: 'no file name' }],
+          1,
+          2,
+          3,
+        );
       } catch (err) {
         error = err;
       }
@@ -104,7 +113,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     it('should add a new record to database for each file', async () => {
       const req = createReq();
 
-      await service.confirmUpload(req.files, req.params.qualificationUid);
+      await services.qualifications.confirmUpload(req.files, req.params.qualificationUid);
 
       expect(stubAddCertificate).to.have.been.callCount(mockUploadFiles.length);
 
@@ -123,7 +132,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       const req = createReq({ files: [] });
       let error;
       try {
-        await service.confirmUpload(req.files, req.params.qualificationUid);
+        await services.qualifications.confirmUpload(req.files, req.params.qualificationUid);
       } catch (err) {
         error = err;
       }
@@ -139,7 +148,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       let error;
 
       try {
-        await service.confirmUpload(req.files, req.params.qualificationUid);
+        await services.qualifications.confirmUpload(req.files, req.params.qualificationUid);
       } catch (err) {
         error = err;
       }
@@ -155,7 +164,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       let error;
 
       try {
-        await service.confirmUpload(req.files, req.params.qualificationUid);
+        await services.qualifications.confirmUpload(req.files, req.params.qualificationUid);
       } catch (err) {
         error = err;
       }
@@ -172,7 +181,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       let error;
 
       try {
-        await service.confirmUpload(req.files, req.params.recordUid);
+        await services.qualifications.confirmUpload(req.files, req.params.recordUid);
       } catch (err) {
         error = err;
       }
@@ -188,7 +197,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       let error;
 
       try {
-        await service.confirmUpload(req.files, req.params.recordUid);
+        await services.qualifications.confirmUpload(req.files, req.params.recordUid);
       } catch (err) {
         error = err;
       }
@@ -205,7 +214,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
     beforeEach(() => {
       getSignedUrlForDownloadSpy = sinon.stub(s3, 'getSignedUrlForDownload').returns(mockSignedUrl);
-      sinon.stub(service, 'getFileKeys').callsFake((workerUid, recordUid, fileIds) => {
+      sinon.stub(services.qualifications, 'getFileKeys').callsFake((workerUid, recordUid, fileIds) => {
         return fileIds.map((fileId) => ({
           uid: fileId,
           key: `${user.establishment.uid}/${workerUid}/qualificationCertificate/${recordUid}/${fileId}`,
@@ -221,7 +230,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
 
     it('should return an array with signed url for download and file name in response', async () => {
-      const actual = await service.getPresignedUrlForCertificateDownload(
+      const actual = await services.qualifications.getPresignedUrlForCertificateDownload(
         req.files,
         req.params.establishmentUid,
         req.params.workerUid,
@@ -234,7 +243,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     it('should call getSignedUrlForDownload with bucket name from config', async () => {
       const bucketName = config.get('workerCertificate.bucketname');
 
-      await service.getPresignedUrlForCertificateDownload(
+      await services.qualifications.getPresignedUrlForCertificateDownload(
         req.files,
         req.params.establishmentUid,
         req.params.workerUid,
@@ -244,7 +253,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
 
     it('should call getSignedUrlForDownload with key of formatted uids passed in params', async () => {
-      await service.getPresignedUrlForCertificateDownload(
+      await services.qualifications.getPresignedUrlForCertificateDownload(
         req.files,
         req.params.establishmentUid,
         req.params.workerUid,
@@ -260,7 +269,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
       let error;
       try {
-        await service.getPresignedUrlForCertificateDownload(
+        await services.qualifications.getPresignedUrlForCertificateDownload(
           req.files,
           req.params.establishmentUid,
           req.params.workerUid,
@@ -277,8 +286,6 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
   });
 
   describe('delete certificates', () => {
-    let stubDeleteCertificatesFromS3;
-    let stubDeleteCertificate;
     let errorMessage;
     let mockFileUid1;
     let mockFileUid2;
@@ -301,11 +308,11 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         params: { establishmentUid: user.establishment.uid, workerUid: user.uid, recordUid: qualification.uid },
       });
       errorMessage = 'DatabaseError';
-      stubDeleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
-      stubDeleteCertificate = sinon.stub(models.qualificationCertificates, 'deleteCertificate');
-      stubCountCertificatesToBeDeleted = sinon.stub(models.qualificationCertificates, 'countCertificatesToBeDeleted');
+      stubs.deleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
+      stubs.deleteCertificate = sinon.stub(models.qualificationCertificates, 'deleteCertificate');
+      stubs.countCertificatesToBeDeleted = sinon.stub(models.qualificationCertificates, 'countCertificatesToBeDeleted');
 
-      sinon.stub(service, 'getFileKeys').callsFake((workerUid, recordUid, fileIds) => {
+      sinon.stub(services.qualifications, 'getFileKeys').callsFake((workerUid, recordUid, fileIds) => {
         return fileIds.map((fileId) => ({
           uid: fileId,
           key: `${user.establishment.uid}/${workerUid}/qualificationCertificate/${recordUid}/${fileId}`,
@@ -315,18 +322,18 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
     it('should delete certificate from S3', async () => {
       const bucketName = config.get('workerCertificate.bucketname');
-      stubDeleteCertificate.returns(1);
-      stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
-      stubCountCertificatesToBeDeleted.returns(1);
+      stubs.deleteCertificate.returns(1);
+      stubs.deleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
+      stubs.countCertificatesToBeDeleted.returns(1);
 
-      await service.deleteCertificates(
+      await services.qualifications.deleteCertificates(
         req.files,
         req.params.establishmentUid,
         req.params.workerUid,
         req.params.recordUid,
       );
 
-      expect(stubDeleteCertificatesFromS3).to.be.calledWith({
+      expect(stubs.deleteCertificatesFromS3).to.be.calledWith({
         bucket: bucketName,
         objects: [
           {
@@ -342,7 +349,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         let error;
 
         try {
-          await service.deleteCertificates(
+          await services.qualifications.deleteCertificates(
             req.files,
             req.params.establishmentUid,
             req.params.workerUid,
@@ -362,11 +369,11 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
           { uid: mockFileUid2, filename: 'mockFileName2' },
           { uid: mockFileUid3, filename: 'mockFileName3' },
         ];
-        stubCountCertificatesToBeDeleted.throws(errorMessage);
+        stubs.countCertificatesToBeDeleted.throws(errorMessage);
         let error;
 
         try {
-          await service.deleteCertificates(
+          await services.qualifications.deleteCertificates(
             req.files,
             req.params.establishmentUid,
             req.params.workerUid,
@@ -385,12 +392,12 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
           { uid: mockFileUid2, filename: 'mockFileName2' },
           { uid: mockFileUid3, filename: 'mockFileName3' },
         ];
-        stubCountCertificatesToBeDeleted.returns(3);
-        stubDeleteCertificate.throws(errorMessage);
+        stubs.countCertificatesToBeDeleted.returns(3);
+        stubs.deleteCertificate.throws(errorMessage);
         let error;
 
         try {
-          await service.deleteCertificates(
+          await services.qualifications.deleteCertificates(
             req.files,
             req.params.establishmentUid,
             req.params.workerUid,
@@ -410,10 +417,10 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
           { uid: mockFileUid3, filename: 'mockFileName3' },
         ];
 
-        stubCountCertificatesToBeDeleted.returns(1);
+        stubs.countCertificatesToBeDeleted.returns(1);
 
         try {
-          await service.deleteCertificates(
+          await services.qualifications.deleteCertificates(
             req.files,
             req.params.establishmentUid,
             req.params.workerUid,
@@ -429,6 +436,128 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     });
   });
 
+  describe('deleteAllCertificates', () => {
+    const trainingCertificatesReturnedFromDb = [
+      { uid: 'abc123', key: 'abc123/trainingCertificate/dasdsa12312' },
+      { uid: 'def456', key: 'def456/trainingCertificate/deass12092' },
+      { uid: 'ghi789', key: 'ghi789/trainingCertificate/da1412342' },
+    ];
+
+    const qualificationCertificatesReturnedFromDb = [
+      { uid: 'abc123', key: 'abc123/qualificationCertificate/dasdsa12312' },
+      { uid: 'def456', key: 'def456/qualificationCertificate/deass12092' },
+      { uid: 'ghi789', key: 'ghi789/qualificationCertificate/da1412342' },
+    ];
+
+    beforeEach(() => {
+      stubs.getAllTrainingCertificatesForUser = sinon
+        .stub(models.trainingCertificates, 'getAllCertificateRecordsForWorker')
+        .resolves(trainingCertificatesReturnedFromDb);
+      stubs.deleteTrainingCertificatesFromDb = sinon.stub(models.trainingCertificates, 'deleteCertificate');
+      stubs.getAllQualificationCertificatesForUser = sinon
+        .stub(models.qualificationCertificates, 'getAllCertificateRecordsForWorker')
+        .resolves(qualificationCertificatesReturnedFromDb);
+      stubs.deleteQualificationCertificatesFromDb = sinon.stub(models.qualificationCertificates, 'deleteCertificate');
+      stubs.deleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
+    });
+
+    describe('Training:', () => {
+      it('should get all certificates for user', async () => {
+        const transaction = models.sequelize.transaction();
+        await services.training.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.getAllTrainingCertificatesForUser).to.be.calledWith(12345);
+      });
+
+      it('should not make DB or S3 deletion calls if no training certificates found', async () => {
+        stubs.getAllTrainingCertificatesForUser.resolves([]);
+
+        const transaction = models.sequelize.transaction();
+        await services.training.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.deleteTrainingCertificatesFromDb).to.not.have.been.called;
+        expect(stubs.deleteCertificatesFromS3).to.not.have.been.called;
+      });
+
+      it('should call deleteCertificate on DB model with uids returned from getAllTrainingCertificateRecordsForWorker and pass in transaction', async () => {
+        const transaction = await models.sequelize.transaction();
+        await services.training.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.deleteTrainingCertificatesFromDb.args[0][0]).to.deep.equal([
+          trainingCertificatesReturnedFromDb[0].uid,
+          trainingCertificatesReturnedFromDb[1].uid,
+          trainingCertificatesReturnedFromDb[2].uid,
+        ]);
+
+        expect(stubs.deleteTrainingCertificatesFromDb.args[0][1]).to.deep.equal(transaction);
+      });
+
+      it('should call deleteCertificatesFromS3 with keys returned from getAllTrainingCertificateRecordsForWorker', async () => {
+        const bucketName = config.get('workerCertificate.bucketname');
+        const transaction = await models.sequelize.transaction();
+
+        await services.training.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.deleteCertificatesFromS3.args[0][0]).to.deep.equal({
+          bucket: bucketName,
+          objects: [
+            { Key: trainingCertificatesReturnedFromDb[0].key },
+            { Key: trainingCertificatesReturnedFromDb[1].key },
+            { Key: trainingCertificatesReturnedFromDb[2].key },
+          ],
+        });
+      });
+    });
+
+    describe('Qualifications:', () => {
+      it('should get all certificates for user', async () => {
+        const transaction = models.sequelize.transaction();
+        await services.qualifications.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.getAllQualificationCertificatesForUser).to.be.calledWith(12345);
+      });
+
+      it('should not make DB or S3 deletion calls if no qualification certificates found', async () => {
+        stubs.getAllQualificationCertificatesForUser.resolves([]);
+
+        const transaction = models.sequelize.transaction();
+        await services.qualifications.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.deleteQualificationCertificatesFromDb).to.not.have.been.called;
+        expect(stubs.deleteCertificatesFromS3).to.not.have.been.called;
+      });
+
+      it('should call deleteCertificate on DB model with uids returned from getAllQualificationCertificateRecordsForWorker and pass in transaction', async () => {
+        const transaction = await models.sequelize.transaction();
+        await services.qualifications.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.deleteQualificationCertificatesFromDb.args[0][0]).to.deep.equal([
+          qualificationCertificatesReturnedFromDb[0].uid,
+          qualificationCertificatesReturnedFromDb[1].uid,
+          qualificationCertificatesReturnedFromDb[2].uid,
+        ]);
+
+        expect(stubs.deleteQualificationCertificatesFromDb.args[0][1]).to.deep.equal(transaction);
+      });
+
+      it('should call deleteCertificatesFromS3 with keys returned from getAllQualificationCertificateRecordsForWorker', async () => {
+        const bucketName = config.get('workerCertificate.bucketname');
+        const transaction = await models.sequelize.transaction();
+
+        await services.qualifications.deleteAllCertificates(12345, transaction);
+
+        expect(stubs.deleteCertificatesFromS3.args[0][0]).to.deep.equal({
+          bucket: bucketName,
+          objects: [
+            { Key: qualificationCertificatesReturnedFromDb[0].key },
+            { Key: qualificationCertificatesReturnedFromDb[1].key },
+            { Key: qualificationCertificatesReturnedFromDb[2].key },
+          ],
+        });
+      });
+    });
+  });
+
   describe('getFileKeys', () => {
     const mockFileIds = ['mock-file-id-1', 'mock-file-id-2', 'mock-file-id-3'];
     const mockRecords = [
@@ -440,7 +569,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
     it('should return an array that contain every key for the given certificate records', async () => {
       sinon.stub(models.qualificationCertificates, 'findAll').resolves(mockRecords);
 
-      const actual = await service.getFileKeys(user.uid, qualification.uid, mockFileIds);
+      const actual = await services.qualifications.getFileKeys(user.uid, qualification.uid, mockFileIds);
       expect(actual).to.deep.equal(mockRecords);
     });
 
@@ -448,7 +577,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       sinon.stub(models.qualificationCertificates, 'findAll').resolves([]);
 
       try {
-        await service.getFileKeys(user.uid, qualification.uid, mockFileIds);
+        await services.qualifications.getFileKeys(user.uid, qualification.uid, mockFileIds);
       } catch (err) {
         error = err;
       }
@@ -460,7 +589,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       sinon.stub(models.qualificationCertificates, 'findAll').resolves(mockRecords.slice(0, 1));
 
       try {
-        await service.getFileKeys(user.uid, qualification.uid, mockFileIds);
+        await services.qualifications.getFileKeys(user.uid, qualification.uid, mockFileIds);
       } catch (err) {
         error = err;
       }
@@ -484,7 +613,7 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
       const stubDeleteCertificate = sinon.stub(models.qualificationCertificates, 'destroy');
       const mockExternalTransaction = { mockTransaction: '', afterCommit: sinon.stub() };
 
-      await service.deleteCertificatesWithTransaction(mockCertificateRecords, mockExternalTransaction);
+      await services.qualifications.deleteCertificatesWithTransaction(mockCertificateRecords, mockExternalTransaction);
 
       expect(stubDeleteCertificate).to.have.been.calledWith({
         where: { uid: ['file-uid-1', 'file-uid-2', 'file-uid-3'] },
@@ -494,10 +623,10 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
 
     it("should register a deleteCertificatesFromS3 call to the transaction's after commit hook", async () => {
       sinon.stub(models.qualificationCertificates, 'destroy');
-      const stubDeleteCertificatesFromS3 = sinon.stub(service, 'deleteCertificatesFromS3');
+      const stubDeleteCertificatesFromS3 = sinon.stub(services.qualifications, 'deleteCertificatesFromS3');
       const mockExternalTransaction = { mockTransaction: '', afterCommit: sinon.stub() };
 
-      await service.deleteCertificatesWithTransaction(mockCertificateRecords, mockExternalTransaction);
+      await services.qualifications.deleteCertificatesWithTransaction(mockCertificateRecords, mockExternalTransaction);
 
       expect(mockExternalTransaction.afterCommit).to.have.been.called;
 
