@@ -129,7 +129,7 @@ const _checkDuplicateLocalIdInNewWorkplace = async (newWorkplaceId, uniqueWorker
   const uniqueWorkerIdHasWhitespace = /\s/g.test(uniqueWorkerId);
 
   if (uniqueWorkerIdHasWhitespace) {
-    // Handle special cases when uniqueWorkerId includes whitespace.
+    // Handle the special case when uniqueWorkerId includes whitespace.
     // As the legacy code does a /\s/g replacement in several different places, we need to ensure uniqueness even when whitespaces are stripped out.
     const allWorkersInNewWorkplace = await models.worker.findAll({
       attributes: ['LocalIdentifierValue'],
@@ -142,24 +142,26 @@ const _checkDuplicateLocalIdInNewWorkplace = async (newWorkplaceId, uniqueWorker
       .filter((worker) => worker?.LocalIdentifierValue)
       .map((worker) => worker.LocalIdentifierValue.replace(/\s/g, ''));
 
-    return allRefsWithoutWhitespaces.includes(uniqueWorkerId.replace(/\s/g, ''));
+    const duplicationFound = allRefsWithoutWhitespaces.includes(uniqueWorkerId.replace(/\s/g, ''));
+    return duplicationFound;
   }
 
-  const sameLocalIdFound = await models.worker.findOne({
+  // normal case, when uniqueWorkerId does not contain whitespace
+  const duplicationFound = await models.worker.findOne({
     where: {
       LocalIdentifierValue: uniqueWorkerId,
       establishmentFk: newWorkplaceId,
     },
   });
-  return !!sameLocalIdFound;
+  return !!duplicationFound;
 };
 
 const _workerPassedAllValidations = (csvWorkerSchemaErrors, JSONWorker) => {
-  return (
-    csvWorkerSchemaErrors.find(
-      (error) => error?.lineNumber === JSONWorker.lineNumber && error?.errType === 'TRANSFERSTAFFRECORD_ERROR',
-    ) === undefined
+  const errorForThisWorker = csvWorkerSchemaErrors.find(
+    (error) => error?.lineNumber === JSONWorker.lineNumber && error?.errType === 'TRANSFERSTAFFRECORD_ERROR',
   );
+
+  return !errorForThisWorker;
 };
 
 const _addNewWorkplaceIdToWorkerEntity = (myAPIEstablishments, JSONWorker, newWorkplaceId) => {
