@@ -6,6 +6,7 @@ const models = require('../../../../models');
 const Worker = require('../../../../models/classes/worker').Worker;
 const TrainingCertificateRoute = require('../../../../routes/establishments/workerCertificate/trainingCertificate');
 const { Training } = require('../../../../models/classes/training');
+const WorkerCertificateService = require('../../../../routes/establishments/workerCertificate/workerCertificateService');
 
 const worker = new Worker();
 
@@ -433,6 +434,7 @@ describe('Worker Class', () => {
 
   describe('deleteAllTrainingCertificatesAssociatedWithWorker()', async () => {
     let mockWorker;
+    let stubs;
     const trainingCertificatesReturnedFromDb = () => {
       return [
         { uid: 'abc123', key: 'abc123/trainingCertificate/dasdsa12312' },
@@ -444,75 +446,58 @@ describe('Worker Class', () => {
     beforeEach(() => {
       mockWorker = new Worker();
       mockWorker._id = 12345;
+      stubs = {
+        getWorkerCertificateServiceInstance: sinon.stub(WorkerCertificateService, 'initialiseTraining').returns(new WorkerCertificateService()),
+        deleteAllCertificates: sinon.stub(WorkerCertificateService.prototype, 'deleteAllCertificates'),
+        getTrainingCertificates: sinon.stub(models.trainingCertificates, 'getAllCertificateRecordsForWorker').resolves(trainingCertificatesReturnedFromDb),
+      }
     });
 
     afterEach(() => {
       sinon.restore();
     });
 
-    it('should call getAllTrainingCertificateRecordsForWorker with worker ID', async () => {
-      const getAllTrainingCertificateRecordsForWorkerSpy = sinon
-        .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
-        .resolves([]);
-
-      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker();
-
-      expect(getAllTrainingCertificateRecordsForWorkerSpy.args[0][0]).to.equal(12345);
-    });
-
-    it('should not make DB or S3 deletion calls if no training certificates found', async () => {
-      sinon.stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker').resolves([]);
-
-      const dbDeleteCertificateSpy = sinon.stub(models.trainingCertificates, 'deleteCertificate');
-      const s3DeleteCertificateSpy = sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3');
-
-      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker();
-
-      expect(dbDeleteCertificateSpy.callCount).to.equal(0);
-      expect(s3DeleteCertificateSpy.callCount).to.equal(0);
-    });
-
-    it('should call deleteCertificate on DB model with uids returned from getAllTrainingCertificateRecordsForWorker and pass in transaction', async () => {
-      const trainingCertificates = trainingCertificatesReturnedFromDb();
-
-      sinon
-        .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
-        .resolves(trainingCertificates);
-
-      const dbDeleteCertificateSpy = sinon.stub(models.trainingCertificates, 'deleteCertificate');
-      sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3');
-      const transaction = await models.sequelize.transaction();
-
+    it('should call deleteAllCertificates on WorkerCertificateService', async () => {
+      const transaction = models.sequelize.transaction();
       await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker(transaction);
 
-      expect(dbDeleteCertificateSpy.args[0][0]).to.deep.equal([
-        trainingCertificates[0].uid,
-        trainingCertificates[1].uid,
-        trainingCertificates[2].uid,
-      ]);
+      expect(stubs.getWorkerCertificateServiceInstance).to.have.been.called;
+      expect(stubs.deleteAllCertificates).to.be.calledWith(12345);
+    })
+  });
 
-      expect(dbDeleteCertificateSpy.args[0][1]).to.deep.equal(transaction);
+    describe('deleteAllQualificationsCertificatesAssociatedWithWorker()', async () => {
+    let mockWorker;
+    let stubs;
+    const qualificationCertificatesReturnedFromDb = () => {
+      return [
+        { uid: 'abc123', key: 'abc123/qualificationCertificate/dasdsa12312' },
+        { uid: 'def456', key: 'def456/qualificationCertificate/deass12092' },
+        { uid: 'ghi789', key: 'ghi789/qualificationCertificate/da1412342' },
+      ];
+    };
+
+    beforeEach(() => {
+      mockWorker = new Worker();
+      mockWorker._id = 12345;
+      stubs = {
+        getWorkerCertificateServiceInstance: sinon.stub(WorkerCertificateService, 'initialiseQualifications').returns(new WorkerCertificateService()),
+        deleteAllCertificates: sinon.stub(WorkerCertificateService.prototype, 'deleteAllCertificates'),
+        getQualificationCertificates: sinon.stub(models.qualificationCertificates, 'getAllCertificateRecordsForWorker').resolves(qualificationCertificatesReturnedFromDb),
+      }
     });
 
-    it('should call deleteCertificatesFromS3 with keys returned from getAllTrainingCertificateRecordsForWorker', async () => {
-      const trainingCertificates = trainingCertificatesReturnedFromDb();
-
-      sinon
-        .stub(models.trainingCertificates, 'getAllTrainingCertificateRecordsForWorker')
-        .resolves(trainingCertificates);
-
-      sinon.stub(models.trainingCertificates, 'deleteCertificate');
-      const s3DeleteCertificateSpy = sinon.stub(TrainingCertificateRoute, 'deleteCertificatesFromS3');
-      const transaction = await models.sequelize.transaction();
-
-      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker(transaction);
-
-      expect(s3DeleteCertificateSpy.args[0][0]).to.deep.equal([
-        { Key: trainingCertificates[0].key },
-        { Key: trainingCertificates[1].key },
-        { Key: trainingCertificates[2].key },
-      ]);
+    afterEach(() => {
+      sinon.restore();
     });
+
+    it('should call deleteAllCertificates on WorkerCertificateService', async () => {
+      const transaction = models.sequelize.transaction();
+      await mockWorker.deleteAllQualificationCertificatesAssociatedWithWorker(transaction);
+
+      expect(stubs.getWorkerCertificateServiceInstance).to.have.been.called;
+      expect(stubs.deleteAllCertificates).to.be.calledWith(12345);
+    })
   });
 
   describe('saveAssociatedEntities', async () => {
