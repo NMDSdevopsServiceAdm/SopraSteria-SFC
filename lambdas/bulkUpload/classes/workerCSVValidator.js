@@ -199,6 +199,7 @@ class WorkerCsvValidator {
 
   static get TRANSFERSTAFFRECORD_ERROR() {
     return 1400;
+    // NOTE: Reserve error code 1400 - 1409 for TRANSFERSTAFFRECORD errors
   }
 
   static get UNIQUE_WORKER_ID_WARNING() {
