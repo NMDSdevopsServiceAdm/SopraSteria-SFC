@@ -106,7 +106,7 @@ class Qualification extends EntityValidator {
   }
 
   get workerId() {
-    return this._workerUid;
+    return this._workerId;
   }
   get workerUid() {
     return this._workerUid;

@@ -174,7 +174,14 @@ const deleteTrainingRecord = async (req, res) => {
 
       const trainingCertificateService = WorkerCertificateService.initialiseTraining();
 
-      await trainingCertificateService.deleteCertificates(trainingCertificates, establishmentUid, workerUid, trainingUid);
+      if (this.trainingCertificates?.length) {
+        await trainingCertificateService.deleteCertificates(
+          trainingCertificates,
+          establishmentUid,
+          workerUid,
+          trainingUid,
+        );
+      }
 
       // by deleting after the restore we can be sure this training record belongs to the given worker
       const deleteSuccess = await thisTrainingRecord.delete();

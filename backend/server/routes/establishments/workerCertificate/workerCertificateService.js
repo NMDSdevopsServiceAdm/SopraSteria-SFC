@@ -21,7 +21,7 @@ class WorkerCertificateService {
     service.certificateTypeModel = models.workerQualifications;
     service.recordType = 'qualification';
     return service;
-  }
+  };
 
   static initialiseTraining = () => {
     const service = new WorkerCertificateService();
@@ -29,13 +29,39 @@ class WorkerCertificateService {
     service.certificateTypeModel = models.workerTraining;
     service.recordType = 'training';
     return service;
-  }
+  };
 
-  constructor() {
-  }
+  constructor() {}
 
   makeFileKey = (establishmentUid, workerUid, recordUid, fileId) => {
     return `${establishmentUid}/${workerUid}/${this.recordType}Certificate/${recordUid}/${fileId}`;
+  };
+
+  getFileKeys = async (workerUid, recordUid, fileIds) => {
+    const certificateRecords = await this.certificatesModel.findAll({
+      where: {
+        uid: fileIds,
+      },
+      include: [
+        {
+          model: this.certificateTypeModel,
+          as: this.certificateTypeModel.name,
+          where: { uid: recordUid },
+        },
+        {
+          model: models.worker,
+          as: models.worker.name,
+          where: { uid: workerUid },
+        },
+      ],
+      attributes: ['uid', 'key'],
+    });
+
+    if (!certificateRecords || certificateRecords.length !== fileIds.length) {
+      throw new HttpError(`Failed to find related ${this.recordType} certificate records`, 400);
+    }
+
+    return certificateRecords;
   };
 
   async requestUploadUrl(files, establishmentUid, workerUid, recordUid) {
@@ -62,7 +88,7 @@ class WorkerCertificateService {
     }
 
     return responsePayload;
-  };
+  }
 
   async confirmUpload(files, recordUid) {
     if (!files || !files.length) {
@@ -98,7 +124,7 @@ class WorkerCertificateService {
         throw new HttpError('Failed to add records to database', 500);
       }
     }
-  };
+  }
 
   verifyEtagsForAllFiles = async (files) => {
     try {
@@ -116,24 +142,27 @@ class WorkerCertificateService {
     return true;
   };
 
-  async getPresignedUrlForCertificateDownload (files, establishmentUid, workerUid, recordUid) {
+  async getPresignedUrlForCertificateDownload(files, establishmentUid, workerUid, recordUid) {
     if (!files || !files.length) {
       throw new HttpError('No files provided in request body', 400);
     }
 
+    const allFileIds = files.map((file) => file.uid);
     const responsePayload = [];
+
+    const certRecords = await this.getFileKeys(workerUid, recordUid, allFileIds);
 
     for (const file of files) {
       const signedUrl = await s3.getSignedUrlForDownload({
         bucket: certificateBucket,
-        key: this.makeFileKey(establishmentUid, workerUid, recordUid, file.uid),
+        key: certRecords.find((record) => record.uid === file.uid).key,
         options: { expiresIn: downloadSignedUrlExpire },
       });
       responsePayload.push({ signedUrl, filename: file.filename });
     }
 
     return responsePayload;
-  };
+  }
 
   deleteRecordsFromDatabase = async (uids, transaction) => {
     try {
@@ -173,11 +202,14 @@ class WorkerCertificateService {
       throw new HttpError('No files provided in request body', 400);
     }
 
+    const allFileIds = files.map((file) => file.uid);
+    const certRecords = await this.getFileKeys(workerUid, recordUid, allFileIds);
+
     let filesToDeleteFromS3 = [];
     let filesToDeleteFromDatabase = [];
 
     for (const file of files) {
-      let fileKey = this.makeFileKey(establishmentUid, workerUid, recordUid, file.uid);
+      let fileKey = certRecords.find((record) => record.uid === file.uid).key;
 
       filesToDeleteFromDatabase.push(file.uid);
       filesToDeleteFromS3.push({ Key: fileKey });
@@ -204,7 +236,21 @@ class WorkerCertificateService {
     }
 
     await this.deleteCertificatesFromS3(filesToDeleteFromS3);
-  };
+  }
+
+  async deleteCertificatesWithTransaction(certificateRecords, externalTransaction) {
+    if (!certificateRecords || certificateRecords.length < 1 || !externalTransaction) {
+      return;
+    }
+
+    const filesToDeleteFromS3 = certificateRecords.map((record) => ({ Key: record.key }));
+    const certificateRecordUids = certificateRecords.map((record) => record.uid);
+
+    externalTransaction.afterCommit(() => {
+      this.deleteCertificatesFromS3(filesToDeleteFromS3);
+    });
+    await this.certificatesModel.destroy({ where: { uid: certificateRecordUids }, transaction: externalTransaction });
+  }
 }
 
 module.exports = WorkerCertificateService;

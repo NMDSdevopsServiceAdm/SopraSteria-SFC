@@ -33,6 +33,8 @@ const WorkerCertificateService = require('../../routes/establishments/workerCert
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
+const BulkUploadQualificationHelper = require('./helpers/bulkUploadQualificationHelper');
+
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
 class Worker extends EntityValidator {
@@ -474,7 +476,6 @@ class Worker extends EntityValidator {
           // and qualifications records
           this._qualificationsEntities = [];
           if (document.qualifications && Array.isArray(document.qualifications)) {
-            // console.log("WA DEBUG - document.qualifications: ", document.qualifications)
             document.qualifications.forEach((thisQualificationRecord) => {
               const newQualificationRecord = new Qualification(null, null);
 
@@ -529,7 +530,7 @@ class Worker extends EntityValidator {
   }
 
   async saveAssociatedEntities(savedBy, bulkUploaded = false, externalTransaction) {
-    const newQualificationsPromises = [];
+    const qualificationChangePromises = [];
     const newTrainingPromises = [];
 
     try {
@@ -552,29 +553,22 @@ class Worker extends EntityValidator {
         });
       }
 
-      // there is no change audit on qualifications; simply delete all that is there and recreate
-      if (this._qualificationsEntities && this._qualificationsEntities.length > 0) {
-        // delete all existing training records for this worker
-        await models.workerQualifications.destroy({
-          where: {
-            workerFk: this._id,
-          },
-          transaction: externalTransaction,
+      if (bulkUploaded && ['NEW', 'UPDATE'].includes(this.status)) {
+        const qualificationHelper = new BulkUploadQualificationHelper({
+          workerId: this._id,
+          workerUid: this._uid,
+          establishmentId: this._establishmentId,
+          savedBy,
+          bulkUploaded,
+          externalTransaction,
         });
-
-        // now create new training records
-        this._qualificationsEntities.forEach((currentQualificationRecord) => {
-          currentQualificationRecord.workerId = this._id;
-          currentQualificationRecord.workerUid = this._uid;
-          currentQualificationRecord.establishmentId = this._establishmentId;
-          newQualificationsPromises.push(
-            currentQualificationRecord.save(savedBy, bulkUploaded, 0, externalTransaction),
-          );
-        });
+        const qualificationEntities = this._qualificationsEntities ? this._qualificationsEntities : [];
+        const promisesToPush = await qualificationHelper.processQualificationsEntities(qualificationEntities);
+        qualificationChangePromises.push(...promisesToPush);
       }
 
       await Promise.all(newTrainingPromises);
-      await Promise.all(newQualificationsPromises);
+      await Promise.all(qualificationChangePromises);
     } catch (err) {
       console.error('Worker::saveAssociatedEntities error: ', err);
       // rethrow error to ensure the transaction is rolled back
