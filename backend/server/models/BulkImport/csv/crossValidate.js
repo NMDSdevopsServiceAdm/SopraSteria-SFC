@@ -1,3 +1,4 @@
+const { chain } = require('lodash');
 const models = require('../../../models');
 
 const MAIN_JOB_ROLE_ERROR = () => 1280;
@@ -65,8 +66,9 @@ const crossValidateTransferStaffRecord = async (
   const relatedEstablishmentIds = myEstablishments.map((establishment) => establishment.id);
 
   const allMovingWorkers = myJSONWorkers.filter(isMovingToNewWorkplace);
+  const allNewWorkers = myJSONWorkers.filter((JSONWorker) => JSONWorker.status === 'NEW');
 
-  _crossValidateWorkersWithSameRefMovingToSameWorkplace(csvWorkerSchemaErrors, allMovingWorkers);
+  _crossValidateWorkersWithSameRefMovingToSameWorkplace(csvWorkerSchemaErrors, allMovingWorkers, allNewWorkers);
 
   for (const JSONWorker of allMovingWorkers) {
     const newWorkplaceId = await _validateTransferIsPossible(
@@ -128,7 +130,7 @@ const _checkDuplicateLocalIdInNewWorkplace = async (newWorkplaceId, uniqueWorker
 
   if (uniqueWorkerIdHasWhitespace) {
     // Handle special cases when uniqueWorkerId includes whitespace.
-    // As the legacy code does a /\s/g replacement in same places, we need to consider the case of local id collision with whitespaces stripped.
+    // As the legacy code does a /\s/g replacement in several different places, we need to ensure uniqueness even when whitespaces are stripped out.
     const allWorkersInNewWorkplace = await models.worker.findAll({
       attributes: ['LocalIdentifierValue'],
       where: {
@@ -195,26 +197,38 @@ const _addErrorForSameLocalIdExistInNewWorkplace = (csvWorkerSchemaErrors, JSONW
   });
 };
 
-const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (csvWorkerSchemaErrors, allMovingWorkers) => {
-  const destinations = {};
+const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (
+  csvWorkerSchemaErrors,
+  allMovingWorkers,
+  allNewWorkers,
+) => {
+  const workplacesDict = _buildWorkplaceDictWithNewWorkers(allNewWorkers);
 
   for (const JSONWorker of allMovingWorkers) {
-    const newWorkplace = JSONWorker.transferStaffRecord;
+    const newWorkplaceRef = JSONWorker.transferStaffRecord;
     const workerRef = JSONWorker.uniqueWorkerId.replace(/\s/g, '');
 
-    if (!destinations[newWorkplace]) {
-      destinations[newWorkplace] = new Set([workerRef]);
+    if (!workplacesDict[newWorkplaceRef]) {
+      workplacesDict[newWorkplaceRef] = new Set([workerRef]);
       continue;
     }
 
-    if (!destinations[newWorkplace].has(workerRef)) {
-      destinations[newWorkplace].add(workerRef);
+    if (!workplacesDict[newWorkplaceRef].has(workerRef)) {
+      workplacesDict[newWorkplaceRef].add(workerRef);
       continue;
     }
 
-    // if arrive at here, there is already another worker with that workerRef moving to the same new workplace
+    // if arrive at here, there is already another new or moving worker with that workerRef coming to the same new workplace
     _addErrorForWorkersWithSameRefsMovingToSameWorkplace(csvWorkerSchemaErrors, JSONWorker);
   }
+};
+
+const _buildWorkplaceDictWithNewWorkers = (allNewWorkers) => {
+  return chain(allNewWorkers)
+    .groupBy('localId')
+    .mapValues((JSONWorkers) => JSONWorkers.map((JSONWorker) => JSONWorker.uniqueWorkerId.replace(/\s/g, '')))
+    .mapValues((workerRefs) => new Set(workerRefs))
+    .value();
 };
 
 const _addErrorForWorkersWithSameRefsMovingToSameWorkplace = (csvWorkerSchemaErrors, JSONWorker) => {

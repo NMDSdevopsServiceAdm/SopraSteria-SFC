@@ -14,7 +14,7 @@ const {
 const models = require('../../../../../models');
 const { Establishment } = require('../../../../../models/classes/establishment.js');
 
-describe('crossValidate', () => {
+describe.only('crossValidate', () => {
   describe('_crossValidateMainJobRole', () => {
     it('should add error to csvWorkerSchemaErrors if establishment not CQC regulated and main role ID is 4', () => {
       const csvWorkerSchemaErrors = [];
@@ -244,31 +244,6 @@ describe('crossValidate', () => {
       sinon.restore();
     });
 
-    it('should add an error to csvWorkerSchemaErrors if two workers with the same unique worker id are transferring into the same new workplace', async () => {
-      const JSONWorkerA = buildMockJSONWorker({ localId: 'workplace A', lineNumber: 3 });
-      const JSONWorkerB = buildMockJSONWorker({ localId: 'workplace B', lineNumber: 4 });
-
-      const csvWorkerSchemaErrors = [];
-
-      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
-        JSONWorkerA,
-        JSONWorkerB,
-      ]);
-
-      const expectedError = {
-        column: 'UNIQUEWORKERID',
-        errCode: 1403,
-        errType: 'TRANSFERSTAFFRECORD_ERROR',
-        error:
-          'There are more than one worker with this UNIQUEWORKERID moving into the new workplace given in TRANSFERSTAFFRECORD.',
-        worker: JSONWorkerB.uniqueWorkerId,
-        name: JSONWorkerB.localId,
-        lineNumber: JSONWorkerB.lineNumber,
-        source: JSONWorkerB.uniqueWorkerId,
-      };
-      expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
-    });
-
     it('should add an error to csvWorkerSchemaErrors if the new workplace cannot be found', async () => {
       stubEstablishmentFindOne.returns(null);
 
@@ -317,6 +292,65 @@ describe('crossValidate', () => {
         name: JSONWorker.localId,
         lineNumber: JSONWorker.lineNumber,
         source: JSONWorker.uniqueWorkerId,
+      };
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
+      expect(stubWorkerFindOne).to.have.been.calledWith({
+        where: { LocalIdentifierValue: 'mock_worker_ref', establishmentFk: 789 },
+      });
+    });
+
+    it('should add an error to csvWorkerSchemaErrors if two workers with the same unique worker id are transferring into the same new workplace', async () => {
+      const JSONWorkerA = buildMockJSONWorker({ localId: 'workplace A', lineNumber: 3 });
+      const JSONWorkerB = buildMockJSONWorker({ localId: 'workplace B', lineNumber: 4 });
+
+      const csvWorkerSchemaErrors = [];
+
+      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+        JSONWorkerA,
+        JSONWorkerB,
+      ]);
+
+      const expectedError = {
+        column: 'UNIQUEWORKERID',
+        errCode: 1403,
+        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        error:
+          'There are more than one worker with this UNIQUEWORKERID moving into the new workplace given in TRANSFERSTAFFRECORD.',
+        worker: JSONWorkerB.uniqueWorkerId,
+        name: JSONWorkerB.localId,
+        lineNumber: JSONWorkerB.lineNumber,
+        source: JSONWorkerB.uniqueWorkerId,
+      };
+      expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
+    });
+
+    it('should add an error to csvWorkerSchemaErrors if a NEW worker and a transferring worker with the same ref are coming into the same new workplace', async () => {
+      const movingWorker = buildMockJSONWorker({ uniqueWorkerId: 'mock_worker_ref' });
+      const newWorker = buildMockJSONWorker({
+        uniqueWorkerId: 'mock_worker_ref',
+        status: 'NEW',
+        transferStaffRecord: null,
+        localId: 'target workplace',
+      });
+
+      const csvWorkerSchemaErrors = [];
+
+      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+        movingWorker,
+        newWorker,
+      ]);
+
+      const expectedError = {
+        column: 'UNIQUEWORKERID',
+        errCode: 1403,
+        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        error:
+          'There are more than one worker with this UNIQUEWORKERID moving into the new workplace given in TRANSFERSTAFFRECORD.',
+        worker: movingWorker.uniqueWorkerId,
+        name: movingWorker.localId,
+        lineNumber: movingWorker.lineNumber,
+        source: movingWorker.uniqueWorkerId,
       };
 
       expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
