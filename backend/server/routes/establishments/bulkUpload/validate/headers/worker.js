@@ -1,28 +1,23 @@
 const {
   workerHeadersWithCHGUNIQUEWRKID,
   workerHeadersWithoutCHGUNIQUEWRKID,
-  workerHeadersWithTransferStaff,
+  workerHeadersWithTRANSFERSTAFFRECORD,
 } = require('../../data/workerHeaders');
 
 const validateWorkerHeaders = (headers) => {
-  const matchesWithChgUnique = headers.startsWith(workerHeadersWithCHGUNIQUEWRKID);
-  const matchesWithoutChgUnique = headers.startsWith(workerHeadersWithoutCHGUNIQUEWRKID);
-  const matchesWithTransferStaff = headers.startsWith(workerHeadersWithTransferStaff);
+  const allowedWorkerHeaders = [
+    workerHeadersWithoutCHGUNIQUEWRKID,
+    workerHeadersWithCHGUNIQUEWRKID,
+    workerHeadersWithTRANSFERSTAFFRECORD,
+  ];
 
-  if (!matchesWithChgUnique && !matchesWithoutChgUnique && !matchesWithTransferStaff) {
-    return false;
+  for (const workerHeadersBeforeExtraQuals of allowedWorkerHeaders) {
+    if (headers.startsWith(workerHeadersBeforeExtraQuals)) {
+      const additionalQualsHeaders = headers.slice(workerHeadersBeforeExtraQuals.length);
+      return validateAdditionalQualificationsHeaders(additionalQualsHeaders);
+    }
   }
-
-  if (matchesWithTransferStaff) {
-    // temp shortcut
-    return true;
-  }
-
-  const additionalQualsHeaders = matchesWithChgUnique
-    ? headers.slice(workerHeadersWithCHGUNIQUEWRKID.length)
-    : headers.slice(workerHeadersWithoutCHGUNIQUEWRKID.length);
-
-  return validateAdditionalQualificationsHeaders(additionalQualsHeaders);
+  return false;
 };
 
 const validateAdditionalQualificationsHeaders = (additionalQualsHeaders) => {

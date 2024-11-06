@@ -57,6 +57,6 @@ const workerHeadersWithTransferStaffRecordAsArray = [
 ];
 
 exports.workerHeadersWithCHGUNIQUEWRKID = workerHeadersWithChangeUniqueWorkerIdAsArray.join(',');
-exports.workerHeadersWithTransferStaff = workerHeadersWithTransferStaffRecordAsArray.join(',');
+exports.workerHeadersWithTRANSFERSTAFFRECORD = workerHeadersWithTransferStaffRecordAsArray.join(',');
 exports.workerHeadersWithoutCHGUNIQUEWRKID = workerHeaders.join(',');
 exports.getWorkerColumnIndex = (columnName) => workerHeaders.findIndex((header) => header === columnName);
