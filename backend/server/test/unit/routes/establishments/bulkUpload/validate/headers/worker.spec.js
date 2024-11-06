@@ -35,7 +35,7 @@ describe('server/routes/establishments/bulkUpload/validate/headers/worker', () =
       expect(validateWorkerHeaders(workerHeadersWithTRANSFERSTAFFRECORD)).to.deep.equal(true);
     });
 
-    it('should return true when headings match without CHGUNIQUEWRKID', async () => {
+    it('should return true when headings match without CHGUNIQUEWRKID OR TRANSFERSTAFFRECORD', async () => {
       expect(validateWorkerHeaders(workerHeadersWithoutCHGUNIQUEWRKID)).to.deep.equal(true);
     });
 
@@ -46,34 +46,36 @@ describe('server/routes/establishments/bulkUpload/validate/headers/worker', () =
     });
 
     describe('Extra qualifications', () => {
-      it('should return true when headings match with headers for one extra QUAL', async () => {
-        const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(',QUALACH04,QUALACH04NOTES');
+      const testCases = [
+        workerHeadersWithCHGUNIQUEWRKID,
+        workerHeadersWithoutCHGUNIQUEWRKID,
+        workerHeadersWithTRANSFERSTAFFRECORD,
+      ];
 
-        expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(true);
-      });
+      testCases.forEach((workerHeaders) => {
+        it('should return true when headings match with headers for one extra QUAL', async () => {
+          const headersWithExtraQuals = workerHeaders.concat(',QUALACH04,QUALACH04NOTES');
 
-      it('should return true when headings match with headers for two extra QUALs', async () => {
-        const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(
-          ',QUALACH04,QUALACH04NOTES,QUALACH05,QUALACH05NOTES',
-        );
+          expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(true);
+        });
 
-        expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(true);
-      });
+        it('should return true when headings match with headers for two extra QUALs', async () => {
+          const headersWithExtraQuals = workerHeaders.concat(',QUALACH04,QUALACH04NOTES,QUALACH05,QUALACH05NOTES');
 
-      it('should return false when invalid extra QUALs headers (wrong qual number)', async () => {
-        const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(
-          ',QUALACH04,QUALACH04NOTES,QUALACH04,QUALACH05NOTES',
-        );
+          expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(true);
+        });
 
-        expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(false);
-      });
+        it('should return false when invalid extra QUALs headers (wrong qual number)', async () => {
+          const headersWithExtraQuals = workerHeaders.concat(',QUALACH04,QUALACH04NOTES,QUALACH04,QUALACH05NOTES');
 
-      it('should return false when invalid extra QUALs headers (wrong qualNotes number)', async () => {
-        const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(
-          ',QUALACH04,QUALACH04NOTES,QUALACH05,QUALACH03NOTES',
-        );
+          expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(false);
+        });
 
-        expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(false);
+        it('should return false when invalid extra QUALs headers (wrong qualNotes number)', async () => {
+          const headersWithExtraQuals = workerHeaders.concat(',QUALACH04,QUALACH04NOTES,QUALACH05,QUALACH03NOTES');
+
+          expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(false);
+        });
       });
     });
   });
