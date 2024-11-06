@@ -1430,7 +1430,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
-    describe.only('_validateTransferStaffRecord', () => {
+    describe('_validateTransferStaffRecord', () => {
       const worker = buildWorkerCsv({
         overrides: {
           STATUS: 'UPDATE',
