@@ -122,6 +122,70 @@ describe('WdfSummaryPanel', () => {
     });
 
     describe('funding message links', () => {
+      it('should show both messages as links', async () => {
+        const overrides = {
+          workplaceWdfEligibilityStatus: true,
+          staffWdfEligibilityStatus: true,
+        };
+
+        const { getByTestId } = await setup(overrides);
+
+        const workplaceRow = getByTestId('workplace-row');
+        const staffRow = getByTestId('staff-row');
+
+        const workplaceFundingMessage = within(workplaceRow).getByRole('link');
+        const staffFundingMessage = within(staffRow).getByRole('link');
+
+        expect(workplaceFundingMessage).toBeTruthy();
+        expect(staffFundingMessage).toBeTruthy();
+      });
+
+      it('should show workplace without a link and staff with a link', async () => {
+        const overrides = {
+          workplaceWdfEligibilityStatus: true,
+          staffWdfEligibilityStatus: true,
+        };
+
+        const { fixture, getByTestId } = await setup(overrides);
+
+        const workplaceRow = getByTestId('workplace-row');
+        const staffRow = getByTestId('staff-row');
+
+        const metFundingMessage = within(workplaceRow).getByTestId('met-funding-message');
+
+        fireEvent.click(metFundingMessage);
+        fixture.detectChanges();
+
+        const workplaceFundingMessage = within(workplaceRow).queryByRole('link');
+        const staffFundingMessage = within(staffRow).getByRole('link');
+
+        expect(workplaceFundingMessage).toBeFalsy();
+        expect(staffFundingMessage).toBeTruthy();
+      });
+
+      it('should show workplace with a link and staff without a link', async () => {
+        const overrides = {
+          workplaceWdfEligibilityStatus: true,
+          staffWdfEligibilityStatus: true,
+        };
+
+        const { fixture, getByTestId } = await setup(overrides);
+
+        const workplaceRow = getByTestId('workplace-row');
+        const staffRow = getByTestId('staff-row');
+
+        const metFundingMessage = within(staffRow).getByTestId('met-funding-message');
+
+        fireEvent.click(metFundingMessage);
+        fixture.detectChanges();
+
+        const workplaceFundingMessage = within(workplaceRow).getByRole('link');
+        const staffFundingMessage = within(staffRow).queryByRole('link');
+
+        expect(workplaceFundingMessage).toBeTruthy();
+        expect(staffFundingMessage).toBeFalsy();
+      });
+
       it('should navigate to workplace when clicked', async () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
@@ -159,6 +223,59 @@ describe('WdfSummaryPanel', () => {
 
         expect(routerSpy).toHaveBeenCalledWith(['/wdf/data'], { fragment: 'staff' });
       });
+    });
+
+    describe('parent', () => {
+      it('should show all messages as clickable links', async () => {
+        const overrides = {
+          workplaceWdfEligibilityStatus: true,
+          staffWdfEligibilityStatus: true,
+          parentOverallWdfEligibility: true,
+          isParent: true,
+        };
+
+        const { getByTestId } = await setup(overrides);
+
+        const workplaceRow = getByTestId('workplace-row');
+        const staffRow = getByTestId('staff-row');
+        const allWorkplacesRow = getByTestId('workplaces-row');
+
+        const workplaceFundingMessage = within(workplaceRow).getByRole('link');
+        const staffFundingMessage = within(staffRow).getByRole('link');
+        const allWorkplacesFundingMessage = within(allWorkplacesRow).getByRole('link');
+
+        expect(workplaceFundingMessage).toBeTruthy();
+        expect(staffFundingMessage).toBeTruthy();
+        expect(allWorkplacesFundingMessage).toBeTruthy();
+      });
+
+      it('should show all workplace without a link', async () => {
+        const overrides = {
+          workplaceWdfEligibilityStatus: true,
+          staffWdfEligibilityStatus: true,
+          parentOverallWdfEligibility: true,
+          isParent: true,
+        };
+
+        const { fixture, getByTestId } = await setup(overrides);
+
+        const workplaceRow = getByTestId('workplace-row');
+        const staffRow = getByTestId('staff-row');
+        const allWorkplacesRow = getByTestId('workplaces-row');
+
+        const metFundingMessage = within(allWorkplacesRow).getByTestId('met-funding-message');
+
+        fireEvent.click(metFundingMessage);
+        fixture.detectChanges();
+
+        const workplaceFundingMessage = within(workplaceRow).getByRole('link');
+        const staffFundingMessage = within(staffRow).getByRole('link');
+        const allWorkplacesFundingMessage = within(allWorkplacesRow).queryByRole('link');
+
+        expect(workplaceFundingMessage).toBeTruthy();
+        expect(staffFundingMessage).toBeTruthy();
+        expect(allWorkplacesFundingMessage).toBeFalsy();
+      });
 
       it('should navigate to all workplaces when clicked', async () => {
         const overrides = {
@@ -168,9 +285,9 @@ describe('WdfSummaryPanel', () => {
 
         const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
-        const workplacesRow = getByTestId('workplaces-row');
+        const allWorkplacesRow = getByTestId('workplaces-row');
 
-        const metFundingMessage = within(workplacesRow).getByTestId('met-funding-message');
+        const metFundingMessage = within(allWorkplacesRow).getByTestId('met-funding-message');
 
         expect(metFundingMessage).toBeTruthy();
 

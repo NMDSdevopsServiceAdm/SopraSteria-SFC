@@ -17,6 +17,9 @@ import { take } from 'rxjs/operators';
 import { WdfEligibilityStatus } from '../../../../core/model/wdf.model';
 import { Worker } from '../../../../core/model/worker.model';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
+import { UserService } from '@core/services/user.service';
+import orderBy from 'lodash/orderBy';
 
 @Component({
   selector: 'app-wdf-data',
@@ -40,6 +43,10 @@ export class WdfDataComponent implements OnInit {
   public standAloneAccount = false;
   private subscriptions: Subscription = new Subscription();
   public viewWDFData = false;
+  public parentOverallWdfEligibility: boolean;
+  public overallWdfEligibility: boolean;
+  public isParent: boolean;
+  public workplaces = [];
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -49,6 +56,7 @@ export class WdfDataComponent implements OnInit {
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
+    private userService: UserService,
   ) {
     this.featureFlagsService.start();
   }
@@ -56,6 +64,7 @@ export class WdfDataComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.standAloneAccount = this.establishmentService.standAloneAccount;
+    this.isParent = this.establishmentService.establishment.isParent;
 
     if (this.route.snapshot.params.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
@@ -72,6 +81,7 @@ export class WdfDataComponent implements OnInit {
     this.setWorkplace();
     this.getWdfReport();
     this.setWorkerCount();
+    this.getParentAndSubs();
 
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
@@ -165,5 +175,24 @@ export class WdfDataComponent implements OnInit {
       return !this.workplace.isParent;
     }
     return true;
+  }
+
+  private getParentAndSubs(): void {
+    this.subscriptions.add(
+      this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
+        if (workplaces.subsidaries) {
+          this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
+        }
+        this.workplaces.push(workplaces.primary);
+        this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
+        this.getParentOverallWdfEligibility();
+      }),
+    );
+  }
+
+  public getParentOverallWdfEligibility(): void {
+    this.parentOverallWdfEligibility = !this.workplaces.some((workplace) => {
+      return workplace.wdf.overall === false;
+    });
   }
 }
