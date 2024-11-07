@@ -568,7 +568,7 @@ class Worker extends EntityValidator {
           currentTrainingRecord.workerId = this._id;
           currentTrainingRecord.workerUid = this._uid;
           currentTrainingRecord.establishmentId = this._establishmentId;
-          newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
+          newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, externalTransaction));
         });
       }
 
@@ -689,7 +689,6 @@ class Worker extends EntityValidator {
           if (associatedEntities) {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
           }
-
           if (this.nurseSpecialisms && this.nurseSpecialisms.value === 'Yes') {
             await models.workerNurseSpecialisms.bulkCreate(
               this.nurseSpecialisms.specialisms.map((thisSpecialism) => ({
