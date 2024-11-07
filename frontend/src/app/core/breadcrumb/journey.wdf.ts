@@ -40,22 +40,12 @@ enum Path {
 export const wdfJourney: JourneyRoute = {
   children: [
     {
-      title: 'WDF',
+      title: 'Meeting funding requirements?',
       path: Path.OVERVIEW,
       children: [
         {
-          title: 'WDF data',
+          title: 'Your data',
           path: Path.DATA,
-          children: [
-            {
-              title: 'Staff record',
-              path: Path.STAFF_RECORD,
-              referrer: {
-                path: Path.DATA,
-                fragment: 'staff-records',
-              },
-            },
-          ],
         },
       ],
     },
