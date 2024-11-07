@@ -183,7 +183,7 @@ const _addErrorForNewWorkplaceNotFound = (csvWorkerSchemaErrors, JSONWorker) => 
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     source: JSONWorker.transferStaffRecord,
     column: 'TRANSFERSTAFFRECORD',
-    error: 'Cannot find an existing workplace with the localId provided in TRANSFERSTAFFRECORD',
+    error: 'Cannot find an existing workplace with the reference provided in TRANSFERSTAFFRECORD',
   });
 };
 
@@ -196,7 +196,7 @@ const _addErrorForSameLocalIdExistInNewWorkplace = (csvWorkerSchemaErrors, JSONW
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     source: JSONWorker.uniqueWorkerId,
     column: 'UNIQUEWORKERID',
-    error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD.',
+    error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD',
   });
 };
 
