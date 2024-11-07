@@ -544,7 +544,7 @@ describe('Worker Class', () => {
         where: { workerFk: mockWorker._id },
         transaction: transaction,
       });
-      expect(trainingSaveSpy).to.have.been.calledWith(savedBy, bulkUploaded, 0, transaction);
+      expect(trainingSaveSpy).to.have.been.calledWith(savedBy, bulkUploaded, transaction);
     });
 
     it('should not make calls to delete certificates or destroy training records when no training records in trainingEntities', async () => {
