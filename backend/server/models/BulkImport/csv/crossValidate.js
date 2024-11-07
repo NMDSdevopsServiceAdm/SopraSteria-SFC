@@ -1,4 +1,5 @@
 const { chain } = require('lodash');
+const { Op } = require('sequelize');
 const models = require('../../../models');
 
 const MAIN_JOB_ROLE_ERROR = () => 1280;
@@ -138,11 +139,11 @@ const _checkDuplicateLocalIdInNewWorkplace = async (newWorkplaceId, uniqueWorker
       },
       raw: true,
     });
-    const allRefsWithoutWhitespaces = allWorkersInNewWorkplace
+    const allRefsWithWhitespacesStripped = allWorkersInNewWorkplace
       .filter((worker) => worker?.LocalIdentifierValue)
       .map((worker) => worker.LocalIdentifierValue.replace(/\s/g, ''));
 
-    const duplicationFound = allRefsWithoutWhitespaces.includes(uniqueWorkerId.replace(/\s/g, ''));
+    const duplicationFound = allRefsWithWhitespacesStripped.includes(uniqueWorkerId.replace(/\s/g, ''));
     return duplicationFound;
   }
 
@@ -227,7 +228,7 @@ const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (
 
 const _buildWorkplaceDictWithNewWorkers = (allNewWorkers) => {
   return chain(allNewWorkers)
-    .groupBy('localId')
+    .groupBy('localId') // workplace ref
     .mapValues((JSONWorkers) => JSONWorkers.map((JSONWorker) => JSONWorker.uniqueWorkerId.replace(/\s/g, '')))
     .mapValues((workerRefs) => new Set(workerRefs))
     .value();

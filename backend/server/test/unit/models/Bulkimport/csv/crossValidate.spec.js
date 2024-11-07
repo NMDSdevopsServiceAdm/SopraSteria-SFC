@@ -14,7 +14,7 @@ const {
 const models = require('../../../../../models');
 const { Establishment } = require('../../../../../models/classes/establishment.js');
 
-describe.only('crossValidate', () => {
+describe('crossValidate', () => {
   describe('_crossValidateMainJobRole', () => {
     it('should add error to csvWorkerSchemaErrors if establishment not CQC regulated and main role ID is 4', () => {
       const csvWorkerSchemaErrors = [];
@@ -298,6 +298,33 @@ describe.only('crossValidate', () => {
       expect(stubWorkerFindOne).to.have.been.calledWith({
         where: { LocalIdentifierValue: 'mock_worker_ref', establishmentFk: 789 },
       });
+    });
+
+    it("should add an error to csvWorkerSchemaErrors if the worker's unique worker id will collide with an existing worker in the new workplace given whitespaces are removed", async () => {
+      sinon
+        .stub(models.worker, 'findAll')
+        .returns([{ nameOrId: 'another worker', LocalIdentifierValue: 'mockWorker Ref' }]);
+
+      const JSONWorker = buildMockJSONWorker({ uniqueWorkerId: 'mock Worker Ref' });
+
+      const csvWorkerSchemaErrors = [];
+
+      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+        JSONWorker,
+      ]);
+
+      const expectedError = {
+        column: 'UNIQUEWORKERID',
+        errCode: 1402,
+        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD.',
+        worker: JSONWorker.uniqueWorkerId,
+        name: JSONWorker.localId,
+        lineNumber: JSONWorker.lineNumber,
+        source: JSONWorker.uniqueWorkerId,
+      };
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
     });
 
     it('should add an error to csvWorkerSchemaErrors if two workers with the same unique worker id are transferring into the same new workplace', async () => {
