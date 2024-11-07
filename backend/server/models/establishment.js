@@ -2395,38 +2395,24 @@ module.exports = function (sequelize, DataTypes) {
     return await this.findAll(nhsBsaApiQuery({ parentId }));
   };
 
-  Establishment.getTrainingCertificatesForWorkplaceAndAnySubs = async function (workplaceId) {
-    return await this.findAll({
-      where: {
-        [Op.or]: [
-          {
-            id: workplaceId,
-          },
-          {
-            parentId: workplaceId,
-            dataOwner: 'Parent',
-          },
-        ],
+  Establishment.workplaceOrSubHasAtLeastOneTrainingCertificate = async function (workplaceId) {
+    const [result] = await sequelize.query(
+      `
+      SELECT 1 FROM cqc."Establishment" establishment
+        INNER JOIN cqc."Worker" worker ON establishment."EstablishmentID" = worker."EstablishmentFK"
+        INNER JOIN cqc."WorkerTraining" workerTraining ON worker."ID" = workerTraining."WorkerFK"
+        INNER JOIN cqc."TrainingCertificates" trainingCertificate ON workerTraining."WorkerFK" = trainingCertificate."WorkerFK"
+        WHERE establishment."Archived" = false AND worker."Archived" = false
+          AND (establishment."EstablishmentID" = :workplaceId OR establishment."ParentID" = :workplaceId)
+        LIMIT 1;
+      `,
+      {
+        replacements: { workplaceId },
+        type: sequelize.QueryTypes.SELECT,
       },
-      include: {
-        model: sequelize.models.worker,
-        attributes: ['id'],
-        as: 'workers',
-        where: {
-          archived: false,
-        },
-        include: {
-          model: sequelize.models.workerTraining,
-          as: 'workerTraining',
-          attributes: ['id'],
-          include: {
-            model: sequelize.models.trainingCertificates,
-            as: 'trainingCertificates',
-            attributes: ['id'],
-          },
-        },
-      },
-    });
+    );
+
+    return !!result;
   };
 
   return Establishment;
