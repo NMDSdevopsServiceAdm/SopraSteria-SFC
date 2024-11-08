@@ -1,7 +1,7 @@
-<div class="govuk-summary-list__row govuk-summary-list__row--no-bottom-border asc-summary-list--wide-value">
+<div class="govuk-summary-list__row govuk-summary-list__row--no-bottom-border govuk-summary-list--wide-key">
   <dt class="govuk-summary-list__key"></dt>
   <dd class="govuk-summary-list__value govuk-summary-list__message">
-    <div class="govuk-button-group govuk-!-margin-left-2 confirmation-content">
+    <div class="govuk-button-group confirmation-content">
       <ng-container *ngIf="!confirmButtonClicked; else confirmed">
         <img
           alt="Red flag icon"
@@ -19,11 +19,7 @@
         <a class="govuk-link" [routerLink]="changeLink" (click)="setReturn()">No, change it</a>
       </ng-container>
       <ng-template #confirmed>
-        <img
-          class="govuk-!-margin-top-1 govuk-!-margin-right-1 asc-icon-align"
-          src="/assets/images/tick-icon.svg"
-          alt=""
-        />
+        <img class="govuk-!-margin-right-2 asc-icon-align" src="/assets/images/tick-icon.svg" alt="" />
         <div class="govuk-!-margin-right-5 govuk-!-margin-top-1 govuk-!-margin-bottom-4">Meeting requirements</div>
       </ng-template>
     </div>
