@@ -1,26 +1,23 @@
 <div class="govuk-summary-list__row govuk-summary-list__row--no-bottom-border govuk-summary-list--wide-key">
   <dt class="govuk-summary-list__key"></dt>
   <dd class="govuk-summary-list__value govuk-summary-list__message">
-    <ng-container *ngIf="!overallWdfEligibility; else orange">
-      <div class="message-content">
+    <div class="message-content">
+      <ng-container *ngIf="!overallWdfEligibility; else orange">
         <img
           alt="Red flag icon"
           src="/assets/images/red-flag-wdf-table.svg"
           class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
         />
-        This information needs to be added
-      </div>
-    </ng-container>
-    <ng-template #orange>
-      <div class="message-content">
+      </ng-container>
+      <ng-template #orange>
         <img
           alt="Orange flag icon"
           src="/assets/images/flag-orange.svg"
           class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
         />
-        Add this information
-      </div>
-    </ng-template>
+      </ng-template>
+      Add this information
+    </div>
   </dd>
   <dd class="govuk-summary-list__value govuk-summary-list__message"></dd>
 </div>

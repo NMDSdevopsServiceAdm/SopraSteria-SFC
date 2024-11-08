@@ -27,20 +27,18 @@ describe('WdfWarningMessageComponent', () => {
     };
   };
 
-  it("should display 'This information needs to be added' message and red flag when not eligible overall", async () => {
-    const { getByText, queryByText, queryByAltText } = await setup({ overallWdfEligibility: false });
+  it("should display 'Add this information' message and red flag when not eligible overall", async () => {
+    const { getByText, queryByAltText } = await setup({ overallWdfEligibility: false });
 
-    expect(getByText('This information needs to be added')).toBeTruthy();
+    expect(getByText('Add this information')).toBeTruthy();
     expect(queryByAltText('Red flag icon')).toBeTruthy();
 
-    expect(queryByText('Add this information')).toBeFalsy();
     expect(queryByAltText('Orange flag icon')).toBeFalsy();
   });
 
   it("should display 'Add this information' message and orange flag when eligible overall", async () => {
-    const { getByText, queryByText, queryByAltText } = await setup({ overallWdfEligibility: true });
+    const { getByText, queryByAltText } = await setup({ overallWdfEligibility: true });
 
-    expect(queryByText('This information needs to be added')).toBeFalsy();
     expect(queryByAltText('Red flag icon')).toBeFalsy();
 
     expect(getByText('Add this information')).toBeTruthy();

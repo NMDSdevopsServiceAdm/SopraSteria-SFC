@@ -525,7 +525,7 @@ describe('StaffRecordSummaryComponent', () => {
         overrides: [{ name: 'otherQualification', response: 'Yes' }],
       },
     ].forEach((field) => {
-      it(`should show this information needs to be added message when worker is not eligible and needs to add ${field.name}`, async () => {
+      it(`should show 'Add this information' message when worker is not eligible and needs to add ${field.name}`, async () => {
         const worker = buildWorker(field);
         worker[field.name] = null;
 
@@ -533,11 +533,11 @@ describe('StaffRecordSummaryComponent', () => {
 
         const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
 
-        expect(within(wdfWarningSection).getByText('This information needs to be added')).toBeTruthy();
+        expect(within(wdfWarningSection).getByText('Add this information')).toBeTruthy();
         expect(within(wdfWarningSection).getByAltText('Red flag icon')).toBeTruthy();
       });
 
-      it(`should not show this information needs to be added message when worker is not eligible but has added ${field.name}`, async () => {
+      it(`should not show 'Add this information' message when worker is not eligible but has added ${field.name}`, async () => {
         const worker = buildWorker(field);
         worker[field.name] = field.validResponse;
 
@@ -548,7 +548,7 @@ describe('StaffRecordSummaryComponent', () => {
         expect(wdfWarningSection).toBeFalsy();
       });
 
-      it(`should not show this information needs to be added message when worker does not have ${field.name} added but not in WDF view`, async () => {
+      it(`should not show 'Add this information' message when worker does not have ${field.name} added but not in WDF view`, async () => {
         const worker = buildWorker(field);
         worker[field.name] = null;
 
@@ -559,7 +559,7 @@ describe('StaffRecordSummaryComponent', () => {
         expect(wdfWarningSection).toBeFalsy();
       });
 
-      it(`should show add this information message when worker does not have ${field.name} added but workplace has met WDF eligibility`, async () => {
+      it(`should show 'Add this information' and orange flag when worker does not have ${field.name} added but workplace has met WDF eligibility`, async () => {
         const worker = buildWorker(field);
         worker[field.name] = null;
 
