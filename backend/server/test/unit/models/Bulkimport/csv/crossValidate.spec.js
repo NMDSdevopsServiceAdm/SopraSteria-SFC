@@ -222,15 +222,15 @@ describe('crossValidate', () => {
     ];
 
     let stubEstablishmentFindOne;
-    let stubWorkerFindOne;
+    let stubWorkerFindOneWithLocalRef;
     let myAPIEstablishments;
 
     beforeEach(() => {
       stubEstablishmentFindOne = sinon.stub(models.establishment, 'findOne');
       stubEstablishmentFindOne.returns(myEstablishments[2]);
 
-      stubWorkerFindOne = sinon.stub(models.worker, 'findOne');
-      stubWorkerFindOne.returns(null);
+      stubWorkerFindOneWithLocalRef = sinon.stub(models.worker, 'findOneWithConflictingLocalRef');
+      stubWorkerFindOneWithLocalRef.returns(null);
 
       myAPIEstablishments = {
         workplaceA: new Establishment(),
@@ -273,7 +273,10 @@ describe('crossValidate', () => {
     });
 
     it("should add an error to csvWorkerSchemaErrors if the worker's unique worker id is already used in the new workplace", async () => {
-      stubWorkerFindOne.returns({ nameOrId: 'another worker', LocalIdentifierValue: 'mock_worker_ref' });
+      stubWorkerFindOneWithLocalRef.returns({
+        NameOrIdValue: 'another worker',
+        LocalIdentifierValue: 'mock_worker_ref',
+      });
 
       const JSONWorker = buildMockJSONWorker({ uniqueWorkerId: 'mock_worker_ref' });
 
@@ -295,36 +298,7 @@ describe('crossValidate', () => {
       };
 
       expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
-      expect(stubWorkerFindOne).to.have.been.calledWith({
-        where: { LocalIdentifierValue: 'mock_worker_ref', establishmentFk: 789 },
-      });
-    });
-
-    it("should add an error to csvWorkerSchemaErrors if the worker's unique worker id will collide with an existing worker in the new workplace given whitespaces are removed", async () => {
-      sinon
-        .stub(models.worker, 'findAll')
-        .returns([{ nameOrId: 'another worker', LocalIdentifierValue: 'mockWorker Ref' }]);
-
-      const JSONWorker = buildMockJSONWorker({ uniqueWorkerId: 'mock Worker Ref' });
-
-      const csvWorkerSchemaErrors = [];
-
-      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
-        JSONWorker,
-      ]);
-
-      const expectedError = {
-        column: 'UNIQUEWORKERID',
-        errCode: 1402,
-        errType: 'TRANSFERSTAFFRECORD_ERROR',
-        error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD',
-        worker: JSONWorker.uniqueWorkerId,
-        name: JSONWorker.localId,
-        lineNumber: JSONWorker.lineNumber,
-        source: JSONWorker.uniqueWorkerId,
-      };
-
-      expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
+      expect(stubWorkerFindOneWithLocalRef).to.have.been.calledWith(789, 'mock_worker_ref');
     });
 
     it('should add an error to csvWorkerSchemaErrors if two workers with the same unique worker id are transferring into the same new workplace', async () => {
@@ -381,9 +355,6 @@ describe('crossValidate', () => {
       };
 
       expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
-      expect(stubWorkerFindOne).to.have.been.calledWith({
-        where: { LocalIdentifierValue: 'mock_worker_ref', establishmentFk: 789 },
-      });
     });
 
     it('should add newWorkplaceId to the worker entity if all validations passed', async () => {
