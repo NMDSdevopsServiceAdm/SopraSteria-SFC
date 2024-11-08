@@ -2400,8 +2400,7 @@ module.exports = function (sequelize, DataTypes) {
       `
       SELECT 1 FROM cqc."Establishment" establishment
         INNER JOIN cqc."Worker" worker ON establishment."EstablishmentID" = worker."EstablishmentFK"
-        INNER JOIN cqc."WorkerTraining" workerTraining ON worker."ID" = workerTraining."WorkerFK"
-        INNER JOIN cqc."TrainingCertificates" trainingCertificate ON workerTraining."WorkerFK" = trainingCertificate."WorkerFK"
+        INNER JOIN cqc."TrainingCertificates" trainingCertificate ON worker."ID" = trainingCertificate."WorkerFK"
         WHERE establishment."Archived" = false AND worker."Archived" = false
           AND (establishment."EstablishmentID" = :workplaceId OR establishment."ParentID" = :workplaceId)
         LIMIT 1;
