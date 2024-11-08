@@ -97,7 +97,7 @@ const _validateTransferIsPossible = async (csvWorkerSchemaErrors, relatedEstabli
     return;
   }
 
-  const sameLocalIdExistInNewWorkplace = await _checkDuplicateLocalIdInNewWorkplace(
+  const sameLocalIdExistInNewWorkplace = await models.worker.findOneWithConflictingLocalRef(
     newWorkplaceId,
     JSONWorker.uniqueWorkerId,
   );
@@ -124,37 +124,6 @@ const _getNewWorkplaceId = async (newWorkplaceLocalRef, relatedEstablishmentIds)
   }
 
   return null;
-};
-
-const _checkDuplicateLocalIdInNewWorkplace = async (newWorkplaceId, uniqueWorkerId) => {
-  const uniqueWorkerIdHasWhitespace = /\s/g.test(uniqueWorkerId);
-
-  if (uniqueWorkerIdHasWhitespace) {
-    // Handle the special case when uniqueWorkerId includes whitespace.
-    // As the legacy code does a /\s/g replacement in several different places, we need to ensure uniqueness even when whitespaces are stripped out.
-    const allWorkersInNewWorkplace = await models.worker.findAll({
-      attributes: ['LocalIdentifierValue'],
-      where: {
-        establishmentFk: newWorkplaceId,
-      },
-      raw: true,
-    });
-    const allRefsWithWhitespacesStripped = allWorkersInNewWorkplace
-      .filter((worker) => worker?.LocalIdentifierValue)
-      .map((worker) => worker.LocalIdentifierValue.replace(/\s/g, ''));
-
-    const duplicationFound = allRefsWithWhitespacesStripped.includes(uniqueWorkerId.replace(/\s/g, ''));
-    return duplicationFound;
-  }
-
-  // normal case, when uniqueWorkerId does not contain whitespace
-  const duplicationFound = await models.worker.findOne({
-    where: {
-      LocalIdentifierValue: uniqueWorkerId,
-      establishmentFk: newWorkplaceId,
-    },
-  });
-  return !!duplicationFound;
 };
 
 const _workerPassedAllValidations = (csvWorkerSchemaErrors, JSONWorker) => {
