@@ -12,6 +12,7 @@ export class WdfFieldConfirmationComponent {
   @Output() fieldConfirmation: EventEmitter<Event> = new EventEmitter();
   @Output() setReturnClicked: EventEmitter<Event> = new EventEmitter();
   @Input() changeLink: any[];
+  @Input() staffRecordView: boolean = false;
 
   @Input() set workerUid(uid: string) {
     this._workerUid = uid;

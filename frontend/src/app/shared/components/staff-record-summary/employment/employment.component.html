@@ -64,6 +64,7 @@
     (fieldConfirmation)="this.confirmField('mainJobStartDate')"
     (setReturnClicked)="this.setReturn()"
     [workerUid]="worker.uid"
+    [staffRecordView]="true"
   ></app-wdf-field-confirmation>
 
   <div class="govuk-summary-list__row" *ngIf="displayMentalHealthProfessional">
@@ -200,6 +201,7 @@
       (fieldConfirmation)="this.confirmField('daysSick')"
       (setReturnClicked)="this.setReturn()"
       [workerUid]="worker.uid"
+      [staffRecordView]="true"
     ></app-wdf-field-confirmation>
   </ng-container>
 
@@ -235,6 +237,7 @@
     (fieldConfirmation)="this.confirmField('zeroHoursContract')"
     (setReturnClicked)="this.setReturn()"
     [workerUid]="worker.uid"
+    [staffRecordView]="true"
   ></app-wdf-field-confirmation>
 
   <ng-container *ngIf="displayAverageWeeklyHours">
@@ -286,6 +289,7 @@
       (fieldConfirmation)="this.confirmField('weeklyHoursAverage')"
       (setReturnClicked)="this.setReturn()"
       [workerUid]="worker.uid"
+      [staffRecordView]="true"
     ></app-wdf-field-confirmation>
   </ng-container>
 
@@ -338,6 +342,7 @@
       (fieldConfirmation)="this.confirmField('weeklyHoursContracted')"
       (setReturnClicked)="this.setReturn()"
       [workerUid]="worker.uid"
+      [staffRecordView]="true"
     ></app-wdf-field-confirmation>
   </ng-container>
 
@@ -374,5 +379,6 @@
     (fieldConfirmation)="this.confirmField('annualHourlyPay')"
     (setReturnClicked)="this.setReturn()"
     [workerUid]="worker.uid"
+    [staffRecordView]="true"
   ></app-wdf-field-confirmation>
 </dl>

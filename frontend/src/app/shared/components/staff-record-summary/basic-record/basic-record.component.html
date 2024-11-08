@@ -33,6 +33,7 @@
     [changeLink]="getRoutePath('staff-details', wdfView)"
     (fieldConfirmation)="this.confirmField('contract')"
     [workerUid]="worker.uid"
+    [staffRecordView]="true"
   ></app-wdf-field-confirmation>
 </dl>
 
@@ -69,5 +70,6 @@
     [changeLink]="getRoutePath('main-job-role', wdfView)"
     (fieldConfirmation)="this.confirmField('mainJob')"
     [workerUid]="worker.uid"
+    [staffRecordView]="true"
   ></app-wdf-field-confirmation>
 </dl>

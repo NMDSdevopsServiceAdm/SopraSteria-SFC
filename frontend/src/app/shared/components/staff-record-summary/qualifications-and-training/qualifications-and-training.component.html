@@ -33,6 +33,7 @@
     (fieldConfirmation)="this.confirmField('careCertificate')"
     (setReturnClicked)="this.setReturn()"
     [workerUid]="worker.uid"
+    [staffRecordView]="true"
   ></app-wdf-field-confirmation>
 
   <div class="govuk-summary-list__row">
@@ -98,6 +99,7 @@
     (fieldConfirmation)="this.confirmField('qualificationInSocialCare')"
     (setReturnClicked)="this.setReturn()"
     [workerUid]="worker.uid"
+    [staffRecordView]="true"
   ></app-wdf-field-confirmation>
 
   <ng-container *ngIf="displaySocialCareQualifications">
@@ -133,6 +135,7 @@
       (fieldConfirmation)="this.confirmField('socialCareQualification'); this.confirmField('qualificationInSocialCare')"
       (setReturnClicked)="this.setReturn()"
       [workerUid]="worker.uid"
+      [staffRecordView]="true"
     ></app-wdf-field-confirmation>
   </ng-container>
 
@@ -168,6 +171,7 @@
     (fieldConfirmation)="this.confirmField('otherQualification')"
     (setReturnClicked)="this.setReturn()"
     [workerUid]="worker.uid"
+    [staffRecordView]="true"
   ></app-wdf-field-confirmation>
 
   <ng-container *ngIf="displayOtherQualifications">
@@ -203,6 +207,7 @@
       (fieldConfirmation)="this.confirmField('highestQualification'); this.confirmField('otherQualification')"
       (setReturnClicked)="this.setReturn()"
       [workerUid]="worker.uid"
+      [staffRecordView]="true"
     ></app-wdf-field-confirmation>
   </ng-container>
 </dl>
