@@ -11,7 +11,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var proxy = require('express-http-proxy'); // for service public/download content
 var compression = require('compression');
-var toobusy = require('toobusy-js');
 const cors = require('cors');
 
 // app config
@@ -118,16 +117,6 @@ app.use(
 );
 app.use(Sentry.Handlers.tracingHandler());
 app.use(compression());
-
-// middleware which blocks requests when we're too busy
-app.use(function (req, res, next) {
-  if (toobusy()) {
-    res.setHeader('Retry-After', '1');
-    res.status(503).send('Server busy, try again later');
-  } else {
-    next();
-  }
-});
 
 /* public/download - proxy interception */
 const publicDownloadBaseUrl = config.get('public.download.baseurl');
