@@ -770,8 +770,8 @@ class Worker extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
           };
 
-          if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord && this._newWorkplaceId) {
-            updateDocument.establishmentFk = this._newWorkplaceId;
+          if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord && this.newWorkplaceId) {
+            updateDocument.establishmentFk = this.newWorkplaceId;
           }
 
           if (this._changeLocalIdentifer) {

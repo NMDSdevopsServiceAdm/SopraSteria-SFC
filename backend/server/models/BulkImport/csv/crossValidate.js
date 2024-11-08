@@ -1,5 +1,4 @@
 const { chain } = require('lodash');
-const { Op } = require('sequelize');
 const models = require('../../../models');
 
 const MAIN_JOB_ROLE_ERROR = () => 1280;
@@ -53,7 +52,7 @@ const _isCQCRegulated = async (myEstablishments, JSONWorker) => {
 
 const _checkEstablishmentRegulatedInDatabase = async (establishmentId) => {
   const establishment = await models.establishment.findbyId(establishmentId);
-  return establishment.isRegulated;
+  return establishment?.isRegulated;
 };
 
 const workerNotChanged = (JSONWorker) => !['NEW', 'UPDATE'].includes(JSONWorker.status);
