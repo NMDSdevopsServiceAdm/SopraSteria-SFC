@@ -15,6 +15,8 @@ import { Observable } from 'rxjs';
 
 import { WdfModule } from '../wdf.module';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
+import { MockInternationalRecruitmentService } from '@core/test-utils/MockInternationalRecruitmentService';
 
 describe('WdfStaffRecordComponent', () => {
   const setup = async (id = 123) => {
@@ -24,6 +26,7 @@ describe('WdfStaffRecordComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: WorkerService, useClass: MockWorkerService },
+        { provide: InternationalRecruitmentService, useClass: MockInternationalRecruitmentService },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -82,7 +85,7 @@ describe('WdfStaffRecordComponent', () => {
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = false;
     component.wdfStartDate = `${year}-01-01`;
-    component.wdfEndDate = `${year+1}-01-01`;
+    component.wdfEndDate = `${year + 1}-01-01`;
     component.workerList = ['1', '2', '3', '4'];
 
     fixture.detectChanges();
@@ -106,7 +109,7 @@ describe('WdfStaffRecordComponent', () => {
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = true;
     component.wdfStartDate = `${year}-01-01`;
-    component.wdfEndDate = `${year+1}-01-01`;
+    component.wdfEndDate = `${year + 1}-01-01`;
     component.workerList = ['1', '2', '3', '4'];
     fixture.detectChanges();
 

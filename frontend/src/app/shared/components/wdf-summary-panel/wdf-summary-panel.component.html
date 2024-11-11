@@ -12,15 +12,21 @@
             class="govuk-!-margin-right-2"
             data-testid="green-tick"
           />
-          <a
-            (click)="onClick($event, section.fragment)"
-            href="#"
-            class="govuk-link--no-visited-state"
-            data-testid="met-funding-message"
-          >
+          <ng-container *ngIf="section.showLink; else noLink">
+            <a
+              (click)="onClick($event, section.fragment)"
+              href="#"
+              class="govuk-link--no-visited-state"
+              data-testid="met-funding-message"
+            >
+              Your data has met the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+              {{ wdfEndDate | date: 'yyyy' }}
+            </a>
+          </ng-container>
+          <ng-template #noLink>
             Your data has met the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
             {{ wdfEndDate | date: 'yyyy' }}
-          </a>
+          </ng-template>
         </ng-container>
         <ng-template #redFlag>
           <img
@@ -29,15 +35,21 @@
             class="govuk-!-margin-right-2"
             data-testid="red-flag"
           />
-          <a
-            (click)="onClick($event, section.fragment)"
-            href="#"
-            class="govuk-link--no-visited-state"
-            data-testid="not-met-funding-message"
-          >
+          <ng-container *ngIf="section.showLink; else noLink">
+            <a
+              (click)="onClick($event, section.fragment)"
+              href="#"
+              class="govuk-link--no-visited-state"
+              data-testid="not-met-funding-message"
+            >
+              Your data does not meet the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+              {{ wdfEndDate | date: 'yyyy' }}
+            </a>
+          </ng-container>
+          <ng-template #noLink>
             Your data does not meet the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
             {{ wdfEndDate | date: 'yyyy' }}
-          </a>
+          </ng-template>
         </ng-template>
       </div>
     </div>

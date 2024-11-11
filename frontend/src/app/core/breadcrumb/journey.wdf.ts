@@ -27,7 +27,7 @@ export const wdfJourney: JourneyRoute = {
           path: Path.FUNDING_REQUIREMENTS,
         },
         {
-          title: 'WDF data',
+          title: 'Your data',
           path: Path.DATA,
           children: [
             {
