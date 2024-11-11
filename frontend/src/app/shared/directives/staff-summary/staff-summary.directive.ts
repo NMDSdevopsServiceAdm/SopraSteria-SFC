@@ -16,8 +16,8 @@ export class StaffSummaryDirective implements OnInit {
   @Input() workplace: Establishment;
   @Input() workers: Array<Worker>;
   @Input() workerCount: number;
-  @Input() wdfView = false;
 
+  public wdfView = false;
   public subscriptions: Subscription = new Subscription();
   public totalWorkerCount: number;
   public canViewWorker: boolean;
