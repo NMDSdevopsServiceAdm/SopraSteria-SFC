@@ -1,41 +1,41 @@
 const MAIN_JOB_ROLE_ERROR_CODE = 1280;
 const TRANSFER_STAFF_RECORD_BASE_ERROR_CODE = 1400;
 
-const MAIN_JOB_ERRORS = Object.freeze({
-  RegisteredManagerWithoutCqcRegulatedService: {
+const MAIN_JOB_ERRORS = {
+  RegisteredManagerWithoutCqcRegulatedService: Object.freeze({
     errCode: MAIN_JOB_ROLE_ERROR_CODE,
     errType: 'MAIN_JOB_ROLE_ERROR',
     column: 'MAINJOBROLE',
     _sourceFieldName: 'mainJobRoleId',
     error:
       'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role',
-  },
-});
+  }),
+};
 
-const TRANSFER_STAFF_RECORD_ERRORS = Object.freeze({
-  NewWorkplaceNotFound: {
+const TRANSFER_STAFF_RECORD_ERRORS = {
+  NewWorkplaceNotFound: Object.freeze({
     errCode: TRANSFER_STAFF_RECORD_BASE_ERROR_CODE + 1,
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     column: 'TRANSFERSTAFFRECORD',
     _sourceFieldName: 'transferStaffRecord',
     error: 'Cannot find an existing workplace with the reference provided in TRANSFERSTAFFRECORD',
-  },
-  SameLocalIdExistInNewWorkplace: {
+  }),
+  SameLocalIdExistInNewWorkplace: Object.freeze({
     errCode: TRANSFER_STAFF_RECORD_BASE_ERROR_CODE + 2,
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     column: 'UNIQUEWORKERID',
     _sourceFieldName: 'uniqueWorkerId',
     error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD',
-  },
-  SameRefsMovingToWorkplace: {
+  }),
+  SameRefsMovingToWorkplace: Object.freeze({
     errCode: TRANSFER_STAFF_RECORD_BASE_ERROR_CODE + 3,
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     column: 'UNIQUEWORKERID',
     _sourceFieldName: 'uniqueWorkerId',
     error:
       'There are more than one worker with this UNIQUEWORKERID moving into the new workplace given in TRANSFERSTAFFRECORD.',
-  },
-});
+  }),
+};
 
 const addCrossValidateError = (errorsArray, errorType, JSONWorker) => {
   const newErrorObject = {

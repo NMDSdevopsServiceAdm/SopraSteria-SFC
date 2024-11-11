@@ -171,10 +171,6 @@ const _buildWorkplaceDictWithNewWorkers = (allNewWorkers) => {
     .value();
 };
 
-const _addErrorForWorkersWithSameRefsMovingToSameWorkplace = (csvWorkerSchemaErrors, JSONWorker) => {
-  addCrossValidateError(csvWorkerSchemaErrors, TRANSFER_STAFF_RECORD_ERRORS.SameRefsMovingToWorkplace, JSONWorker);
-};
-
 module.exports = {
   crossValidate,
   _crossValidateMainJobRole,
