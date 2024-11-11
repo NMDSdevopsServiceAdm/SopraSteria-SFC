@@ -1,9 +1,6 @@
 const { chain } = require('lodash');
 const models = require('../../../models');
-
-const MAIN_JOB_ROLE_ERROR = () => 1280;
-
-const TRANSFERSTAFFRECORD_ERROR = () => 1400;
+const { addCrossValidateError, MAIN_JOB_ERRORS, TRANSFER_STAFF_RECORD_ERRORS } = require('./crossValidateErrors');
 
 const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker) => {
   if (workerNotChanged(JSONWorker)) {
@@ -17,17 +14,11 @@ const crossValidate = async (csvWorkerSchemaErrors, myEstablishments, JSONWorker
 
 const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWorker) => {
   if (!isCqcRegulated && JSONWorker.mainJobRoleId === 4) {
-    csvWorkerSchemaErrors.unshift({
-      worker: JSONWorker.uniqueWorkerId,
-      name: JSONWorker.localId,
-      lineNumber: JSONWorker.lineNumber,
-      errCode: MAIN_JOB_ROLE_ERROR(),
-      errType: 'MAIN_JOB_ROLE_ERROR',
-      source: JSONWorker.mainJobRoleId,
-      column: 'MAINJOBROLE',
-      error:
-        'Workers MAINJOBROLE is Registered Manager but you are not providing a CQC regulated service. Please change to another Job Role',
-    });
+    addCrossValidateError(
+      csvWorkerSchemaErrors,
+      MAIN_JOB_ERRORS.RegisteredManagerWithoutCqcRegulatedService,
+      JSONWorker,
+    );
   }
 };
 
@@ -92,7 +83,7 @@ const _validateTransferIsPossible = async (csvWorkerSchemaErrors, relatedEstabli
   const newWorkplaceId = await _getNewWorkplaceId(newWorkplaceLocalRef, relatedEstablishmentIds);
 
   if (newWorkplaceId === null) {
-    _addErrorForNewWorkplaceNotFound(csvWorkerSchemaErrors, JSONWorker);
+    addCrossValidateError(csvWorkerSchemaErrors, TRANSFER_STAFF_RECORD_ERRORS.NewWorkplaceNotFound, JSONWorker);
     return;
   }
 
@@ -102,7 +93,11 @@ const _validateTransferIsPossible = async (csvWorkerSchemaErrors, relatedEstabli
   );
 
   if (sameLocalIdExistInNewWorkplace) {
-    _addErrorForSameLocalIdExistInNewWorkplace(csvWorkerSchemaErrors, JSONWorker);
+    addCrossValidateError(
+      csvWorkerSchemaErrors,
+      TRANSFER_STAFF_RECORD_ERRORS.SameLocalIdExistInNewWorkplace,
+      JSONWorker,
+    );
     return;
   }
 
@@ -142,32 +137,6 @@ const _addNewWorkplaceIdToWorkerEntity = (myAPIEstablishments, JSONWorker, newWo
   workerEntity._newWorkplaceId = newWorkplaceId;
 };
 
-const _addErrorForNewWorkplaceNotFound = (csvWorkerSchemaErrors, JSONWorker) => {
-  csvWorkerSchemaErrors.unshift({
-    worker: JSONWorker.uniqueWorkerId,
-    name: JSONWorker.localId,
-    lineNumber: JSONWorker.lineNumber,
-    errCode: TRANSFERSTAFFRECORD_ERROR() + 1,
-    errType: 'TRANSFERSTAFFRECORD_ERROR',
-    source: JSONWorker.transferStaffRecord,
-    column: 'TRANSFERSTAFFRECORD',
-    error: 'Cannot find an existing workplace with the reference provided in TRANSFERSTAFFRECORD',
-  });
-};
-
-const _addErrorForSameLocalIdExistInNewWorkplace = (csvWorkerSchemaErrors, JSONWorker) => {
-  csvWorkerSchemaErrors.unshift({
-    worker: JSONWorker.uniqueWorkerId,
-    name: JSONWorker.localId,
-    lineNumber: JSONWorker.lineNumber,
-    errCode: TRANSFERSTAFFRECORD_ERROR() + 2,
-    errType: 'TRANSFERSTAFFRECORD_ERROR',
-    source: JSONWorker.uniqueWorkerId,
-    column: 'UNIQUEWORKERID',
-    error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD',
-  });
-};
-
 const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (
   csvWorkerSchemaErrors,
   allMovingWorkers,
@@ -190,7 +159,7 @@ const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (
     }
 
     // if arrive at here, there is already another new or moving worker with that workerRef coming to the same new workplace
-    _addErrorForWorkersWithSameRefsMovingToSameWorkplace(csvWorkerSchemaErrors, JSONWorker);
+    addCrossValidateError(csvWorkerSchemaErrors, TRANSFER_STAFF_RECORD_ERRORS.SameRefsMovingToWorkplace, JSONWorker);
   }
 };
 
@@ -203,17 +172,7 @@ const _buildWorkplaceDictWithNewWorkers = (allNewWorkers) => {
 };
 
 const _addErrorForWorkersWithSameRefsMovingToSameWorkplace = (csvWorkerSchemaErrors, JSONWorker) => {
-  csvWorkerSchemaErrors.unshift({
-    worker: JSONWorker.uniqueWorkerId,
-    name: JSONWorker.localId,
-    lineNumber: JSONWorker.lineNumber,
-    errCode: TRANSFERSTAFFRECORD_ERROR() + 3,
-    errType: 'TRANSFERSTAFFRECORD_ERROR',
-    source: JSONWorker.uniqueWorkerId,
-    column: 'UNIQUEWORKERID',
-    error:
-      'There are more than one worker with this UNIQUEWORKERID moving into the new workplace given in TRANSFERSTAFFRECORD.',
-  });
+  addCrossValidateError(csvWorkerSchemaErrors, TRANSFER_STAFF_RECORD_ERRORS.SameRefsMovingToWorkplace, JSONWorker);
 };
 
 module.exports = {
