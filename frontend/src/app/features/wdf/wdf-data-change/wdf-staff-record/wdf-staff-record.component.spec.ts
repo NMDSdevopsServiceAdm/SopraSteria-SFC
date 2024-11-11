@@ -17,25 +17,25 @@ import { WdfModule } from '../wdf.module';
 import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 
 describe('WdfStaffRecordComponent', () => {
-  const setup = async (id = 123) => {
+  const setup = async (overrides: any = {}) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfStaffRecordComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
-        { provide: WorkerService, useClass: MockWorkerService },
+        { provide: WorkerService, useFactory: MockWorkerService.factory(overrides.worker ?? workerBuilder()) },
         {
           provide: ActivatedRoute,
           useValue: {
-            params: Observable.from([{ id: id }]),
+            params: Observable.from([{ id: 123 }]),
             snapshot: {
               data: {
                 worker: {},
               },
-              params: [{ id: id }],
+              params: [{ id: 123 }],
               paramMap: {
                 get(id) {
-                  return id;
+                  return 123;
                 },
               },
             },
@@ -58,8 +58,6 @@ describe('WdfStaffRecordComponent', () => {
     const expectedStatusMessage = 'Update this staff record to save yourself time next year';
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
-    component.worker = workerBuilder() as Worker;
-    component.updatedWorker = workerBuilder() as Worker;
     component.exitUrl = { url: [] };
     component.overallWdfEligibility = true;
     component.workerList = ['1', '2', '3', '4'];
@@ -73,11 +71,8 @@ describe('WdfStaffRecordComponent', () => {
   it('should display the "not meeting requirements" message and red flag when user does not meet WDF requirements overall and current staff record does not', async () => {
     const { component, fixture, getByText } = await setup();
     const year = new Date().getFullYear();
-    const expectedStatusMessage = `This staff record does not meet funding requirements, ${year} to ${year + 1}`;
+    const expectedStatusMessage = `This staff record does not meet the funding requirements for ${year} to ${year + 1}`;
     const redFlagVisuallyHiddenMessage = 'Red flag';
-
-    component.worker = workerBuilder() as Worker;
-    component.updatedWorker = workerBuilder() as Worker;
 
     component.overallWdfEligibility = false;
     component.wdfStartDate = `${year}-01-01`;
@@ -91,13 +86,10 @@ describe('WdfStaffRecordComponent', () => {
   });
 
   it('should display the "meets funding requirements" message when worker is eligible', async () => {
-    const { component, fixture, queryByText } = await setup();
+    const { component, fixture, queryByText } = await setup({ worker: workerWithWdf() });
     const year = new Date().getFullYear();
-    const meetsRequirementsMessage = `This staff record meets funding requirements, ${year} to ${year + 1}`;
+    const meetsRequirementsMessage = `This staff record meets the funding requirements for ${year} to ${year + 1}`;
     const greenTickVisuallyHiddenMessage = 'Green tick';
-
-    component.worker = workerWithWdf() as Worker;
-    component.updatedWorker = workerWithWdf() as Worker;
 
     component.wdfStartDate = `${year}-01-01`;
     component.wdfEndDate = `${year + 1}-01-01`;
@@ -106,5 +98,14 @@ describe('WdfStaffRecordComponent', () => {
 
     expect(queryByText(meetsRequirementsMessage)).toBeTruthy();
     expect(queryByText(greenTickVisuallyHiddenMessage)).toBeTruthy();
+  });
+
+  it('should display the last updated date in expected format', async () => {
+    const worker = workerWithWdf() as Worker;
+    worker.updated = '2023-01-01';
+
+    const { getByText } = await setup({ worker });
+
+    expect(getByText('Last update, 1 January 2023')).toBeTruthy();
   });
 });

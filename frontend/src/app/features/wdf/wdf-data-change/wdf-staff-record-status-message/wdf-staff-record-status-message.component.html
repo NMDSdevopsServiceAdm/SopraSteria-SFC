@@ -10,14 +10,15 @@
     <p class="asc-wdf-status-box__content">
       <img class="govuk-!-margin-right-2 govuk-util__vertical-align-top" src="/assets/images/tick-icon.svg" alt="" />
       <span class="govuk-visually-hidden">Green tick</span>
-      This staff record meets funding requirements, {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}
+      This staff record meets the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+      {{ wdfEndDate | date: 'yyyy' }}
     </p>
   </ng-container>
   <ng-container *ngIf="!overallWdfEligibility && !worker.wdf?.isEligible">
     <p class="asc-wdf-status-box__content">
       <img class="govuk-!-margin-right-2 govuk-util__vertical-align-top" src="/assets/images/flag-red.png" alt="" />
       <span class="govuk-visually-hidden">Red flag</span>
-      This staff record does not meet funding requirements,
+      This staff record does not meet the funding requirements for
       {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}
     </p>
   </ng-container>
