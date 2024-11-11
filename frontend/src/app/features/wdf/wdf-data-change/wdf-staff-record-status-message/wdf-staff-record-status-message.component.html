@@ -1,14 +1,22 @@
 <div class="asc-wdf-status-box">
   <ng-container *ngIf="overallWdfEligibility && !worker.wdf?.isEligible">
     <p class="asc-wdf-status-box__content">
-      <img class="govuk-!-margin-right-2 govuk-util__vertical-align-top" src="/assets/images/flag-orange.svg" alt="" />
+      <img
+        class="govuk-!-margin-right-2 govuk-util__vertical-align-top"
+        src="/assets/images/large-orange-flag.svg"
+        alt=""
+      />
       <span class="govuk-visually-hidden">Orange warning flag</span>Update this staff record to save yourself time next
       year
     </p>
   </ng-container>
   <ng-container *ngIf="worker.wdf?.isEligible">
     <p class="asc-wdf-status-box__content">
-      <img class="govuk-!-margin-right-2 govuk-util__vertical-align-top" src="/assets/images/tick-icon.svg" alt="" />
+      <img
+        class="govuk-!-margin-right-2 govuk-util__vertical-align-top"
+        src="/assets/images/large-green-tick.svg"
+        alt=""
+      />
       <span class="govuk-visually-hidden">Green tick</span>
       This staff record meets the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
       {{ wdfEndDate | date: 'yyyy' }}
@@ -16,7 +24,11 @@
   </ng-container>
   <ng-container *ngIf="!overallWdfEligibility && !worker.wdf?.isEligible">
     <p class="asc-wdf-status-box__content">
-      <img class="govuk-!-margin-right-2 govuk-util__vertical-align-top" src="/assets/images/flag-red.png" alt="" />
+      <img
+        class="govuk-!-margin-right-2 govuk-util__vertical-align-center"
+        src="/assets/images/large-red-flag.svg"
+        alt=""
+      />
       <span class="govuk-visually-hidden">Red flag</span>
       This staff record does not meet the funding requirements for
       {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}
