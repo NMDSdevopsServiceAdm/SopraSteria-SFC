@@ -38,6 +38,7 @@ import { DetailsComponent } from './components/details/details.component';
 import { ValidationErrorMessageComponent } from './components/drag-and-drop/validation-error-message/validation-error-message.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
+import { FundingRequirementsStateComponent } from './components/funding-requirements-state/funding-requirements-state.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
 import { LinkToParentCancelDialogComponent } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
@@ -99,6 +100,7 @@ import { UserTableComponent } from './components/users-table/user.table.componen
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
 import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
+import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
 import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
@@ -245,6 +247,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
     WdfWarningMessageComponent,
+    WdfSummaryPanel,
+    FundingRequirementsStateComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -364,6 +368,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
     WdfWarningMessageComponent,
+    WdfSummaryPanel,
+    FundingRequirementsStateComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

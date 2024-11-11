@@ -5,9 +5,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockInternationalRecruitmentService } from '@core/test-utils/MockInternationalRecruitmentService';
 import { MockWorkerService, workerBuilder, workerWithWdf } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -24,6 +26,7 @@ describe('WdfStaffRecordComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: WorkerService, useFactory: MockWorkerService.factory(overrides.worker ?? workerBuilder()) },
+        { provide: InternationalRecruitmentService, useClass: MockInternationalRecruitmentService },
         {
           provide: ActivatedRoute,
           useValue: {

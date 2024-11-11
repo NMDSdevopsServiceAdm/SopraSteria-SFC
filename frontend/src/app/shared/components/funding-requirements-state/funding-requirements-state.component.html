@@ -1,0 +1,16 @@
+<span class="govuk-!-margin-bottom-0 govuk__flex govuk__nowrap" data-testid="requirements-state">
+  <ng-container *ngIf="currentWdfEligibility">
+    <img class="govuk-!-margin-right-1" src="/assets/images/tick-icon.svg" alt="" data-testid="green-tick" />
+    <span class="govuk-visually-hidden">Green tick</span>Meeting
+  </ng-container>
+  <ng-container *ngIf="overallWdfEligibility && !currentWdfEligibility">
+    <img class="govuk-!-margin-right-1" src="/assets/images/flag-orange.svg" alt="" data-testid="orange-flag" />
+    <span class="govuk-visually-hidden">Orange warning flag</span>
+    <ng-container *ngIf="singeStaffRecord; else others">New staff record</ng-container>
+    <ng-template #others>Not meeting</ng-template>
+  </ng-container>
+  <ng-container *ngIf="!overallWdfEligibility && !currentWdfEligibility">
+    <img class="govuk-!-margin-right-1" src="/assets/images/flag-red.svg" alt="" data-testid="red-flag" />
+    <span class="govuk-visually-hidden">Red flag</span>Not meeting
+  </ng-container>
+</span>
