@@ -27,9 +27,9 @@ export class VacanciesJobRoleSelectionComponent extends Question implements OnIn
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
-  init() {
+  protected init() {
     this.getJobs();
-    console.log();
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies-number'];
   }
 
   private summaryText = {

@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, ContentChildren, QueryList } from '@angular/core';
+import { AfterContentInit, Component, ContentChildren, Input, QueryList } from '@angular/core';
 import { AccordionItemComponent } from '../accordion-item/accordion-item.component';
 
 @Component({
@@ -6,6 +6,7 @@ import { AccordionItemComponent } from '../accordion-item/accordion-item.compone
   templateUrl: './accordion-group.component.html',
 })
 export class AccordionGroupComponent implements AfterContentInit {
+  @Input() textShowHideAll?: string = 'sections';
   @ContentChildren(AccordionItemComponent) children: QueryList<AccordionItemComponent>;
 
   expandedChildren = new Set<number>();

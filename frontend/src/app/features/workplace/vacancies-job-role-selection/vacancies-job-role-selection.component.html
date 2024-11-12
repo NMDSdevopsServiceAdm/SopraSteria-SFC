@@ -27,6 +27,11 @@
         </ng-container>
       </app-accordion-group>
     </fieldset>
+    <app-workplace-submit-button
+      (clicked)="setSubmitAction($event)"
+      [callToAction]="return ? 'Continue' : 'Save and continue'"
+      [recordSummary]="false"
+    ></app-workplace-submit-button>
   </div>
 
   <div class="govuk-grid-column-one-third">
