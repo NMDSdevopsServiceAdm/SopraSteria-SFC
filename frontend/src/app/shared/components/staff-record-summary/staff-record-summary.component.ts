@@ -214,4 +214,13 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
     await this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).toPromise();
     this.allFieldsConfirmed.emit();
   }
+
+  public showWdfConfirmation(field: string): boolean {
+    return (
+      this.canEditWorker &&
+      this.wdfView &&
+      this.worker.wdf?.[field].isEligible === 'Yes' &&
+      !this.worker.wdf?.[field].updatedSinceEffectiveDate
+    );
+  }
 }

@@ -1,25 +1,22 @@
 <h2 class="govuk-heading-m">Personal details</h2>
-<dl class="govuk-summary-list asc-summarylist-border-top">
-  <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key govuk-!-width-one-half">Date of birth</dt>
-    <dd class="govuk-summary-list__value govuk-list--inline govuk-!-padding-left-9">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.dateOfBirth"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
+<dl class="govuk-summary-list asc-summarylist-border-top govuk-summary-list--wide-key">
+  <div
+    class="govuk-summary-list__row"
+    [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': wdfView && !worker.dateOfBirth }"
+  >
+    <dt class="govuk-summary-list__key">Date of birth</dt>
+    <dd class="govuk-summary-list__value">
+      <div class="govuk-!-display-inline-block govuk-!-width-one-half">
+        <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
+        <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
+      </div>
+      <ng-container *ngIf="canViewNinoDob">
         <div class="govuk-!-display-inline-block govuk-!-width-one-half">
-          <ng-container *ngIf="!worker.dateOfBirth; else hasDob">-</ng-container>
-          <ng-template #hasDob>{{ dobHidden ? '*********' : dob }}</ng-template>
+          <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
+            >{{ dobHidden ? 'Show' : 'Hide' }}
+          </a>
         </div>
-        <ng-container *ngIf="canViewNinoDob">
-          <div class="govuk-!-display-inline-block govuk-!-width-one-half">
-            <a *ngIf="worker.dateOfBirth" class="govuk-link" href="#" (click)="toggleDobHide($event)"
-              >{{ dobHidden ? 'Show' : 'Hide' }}
-            </a>
-          </div>
-        </ng-container>
-      </app-summary-record-value>
+      </ng-container>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
@@ -30,14 +27,19 @@
       ></app-summary-record-change>
     </dd>
   </div>
+  <app-wdf-warning-message
+    *ngIf="wdfView && !worker.dateOfBirth"
+    [overallWdfEligibility]="overallWdfEligibility"
+    data-testid="dateOfBirthWdfWarning"
+  ></app-wdf-warning-message>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">National Insurance number</dt>
     <ng-container *ngIf="!worker.nationalInsuranceNumber; else hasNino">
-      <dd class="govuk-summary-list__value govuk-!-padding-left-9">-</dd>
+      <dd class="govuk-summary-list__value">-</dd>
     </ng-container>
     <ng-template #hasNino>
-      <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+      <dd class="govuk-summary-list__value">
         <div class="govuk-!-display-inline-block govuk-!-width-one-third">
           {{ ninoHidden ? '*********' : worker.nationalInsuranceNumber }}
         </div>
@@ -63,7 +65,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Home postcode</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value">
       {{ worker.postcode || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -76,17 +78,14 @@
     </dd>
   </div>
 
-  <div class="govuk-summary-list__row">
+  <div
+    class="govuk-summary-list__row"
+    [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': wdfView && !worker.gender }"
+  >
     <dt class="govuk-summary-list__key">Gender identity</dt>
 
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.gender"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        {{ worker.gender || '-' | closedEndedAnswer }}
-      </app-summary-record-value>
+    <dd class="govuk-summary-list__value">
+      {{ worker.gender || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
@@ -97,10 +96,15 @@
       ></app-summary-record-change>
     </dd>
   </div>
+  <app-wdf-warning-message
+    *ngIf="wdfView && !worker.gender"
+    [overallWdfEligibility]="overallWdfEligibility"
+    data-testid="genderWdfWarning"
+  ></app-wdf-warning-message>
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Disabled</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value">
       {{ showDisability || '-' | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -115,7 +119,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Ethnic group</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value">
       {{ ethnicGroupData || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -130,7 +134,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Ethnic background</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value">
       {{ ethnicityData || '-' }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -143,20 +147,20 @@
     </dd>
   </div>
 
-  <div class="govuk-summary-list__row">
+  <div
+    class="govuk-summary-list__row"
+    [ngClass]="{
+      'govuk-summary-list__row--no-bottom-border':
+        wdfView && !(worker.nationality?.value || worker.nationality?.other?.nationality)
+    }"
+  >
     <dt class="govuk-summary-list__key">Nationality</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.nationality"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        {{
-          worker.nationality?.other?.nationality !== null
-            ? worker.nationality?.other?.nationality
-            : (worker.nationality?.value | closedEndedAnswer)
-        }}
-      </app-summary-record-value>
+    <dd class="govuk-summary-list__value">
+      {{
+        worker.nationality?.other?.nationality !== null
+          ? worker.nationality?.other?.nationality
+          : (worker.nationality?.value | closedEndedAnswer)
+      }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
@@ -167,10 +171,15 @@
       ></app-summary-record-change>
     </dd>
   </div>
+  <app-wdf-warning-message
+    *ngIf="wdfView && !(worker.nationality?.value || worker.nationality?.other?.nationality)"
+    [overallWdfEligibility]="overallWdfEligibility"
+    data-testid="nationalityWdfWarning"
+  ></app-wdf-warning-message>
 
   <div class="govuk-summary-list__row" *ngIf="displayBritishCitizenship">
     <dt class="govuk-summary-list__key">British citizenship</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value">
       {{ worker.britishCitizenship | closedEndedAnswer }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -185,7 +194,7 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Country of birth</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value">
       {{
         worker.countryOfBirth?.other?.country !== null
           ? worker.countryOfBirth?.other?.country
@@ -204,7 +213,7 @@
 
   <div class="govuk-summary-list__row" *ngIf="displayYearArrived">
     <dt class="govuk-summary-list__key">Year arrived in the UK</dt>
-    <dd class="govuk-summary-list__value govuk-!-padding-left-9">
+    <dd class="govuk-summary-list__value">
       {{ worker.yearArrived?.year ? worker.yearArrived?.year : (worker.yearArrived?.value | openEndedAnswer) }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">

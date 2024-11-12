@@ -1,0 +1,11 @@
+@import 'govuk-frontend/govuk/base';
+
+.asc-wdf-status-box {
+  display: flex;
+  background-color: govuk-colour('light-grey');
+}
+
+.asc-wdf-status-box__content {
+  display: flex;
+  margin: 20px;
+}

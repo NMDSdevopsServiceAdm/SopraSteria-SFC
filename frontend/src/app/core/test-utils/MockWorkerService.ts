@@ -282,6 +282,10 @@ export class MockWorkerService extends WorkerService {
     return this._worker;
   }
 
+  public getWorker() {
+    return of(this._worker);
+  }
+
   public set worker(val) {
     this._worker = val;
   }
