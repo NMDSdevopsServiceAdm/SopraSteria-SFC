@@ -13,9 +13,25 @@ export class BasicRecordComponent extends StaffRecordSummaryComponent {
   @Input() public canEditWorker: boolean;
   @Input() public mandatoryDetailsPage = false;
 
+  public showWdfConfirmations: any = {
+    contract: null,
+    mainJob: null,
+  };
+
   public getMandatoryDetailsRoute(path: string): Array<string> {
     if (path) {
       return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'mandatory-details', path];
     }
+  }
+
+  protected setShowWdfConfirmations(): void {
+    this.showWdfConfirmations = {
+      contract: this.showWdfConfirmation('contract'),
+      mainJob: this.showWdfConfirmation('mainJob'),
+    };
+  }
+
+  ngOnChanges(): void {
+    this.setShowWdfConfirmations();
   }
 }

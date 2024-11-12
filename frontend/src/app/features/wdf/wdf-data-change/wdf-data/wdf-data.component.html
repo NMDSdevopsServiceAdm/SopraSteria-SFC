@@ -1,15 +1,22 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-      <span class="govuk-caption-l" data-testid="pre-header">{{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})</span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
+      <span class="govuk-caption-xl" data-testid="pre-header">{{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})</span>
       Your data
     </h1>
-    <app-wdf-data-status-message
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-bottom-8">
+  <div class="govuk-grid-column-full-width">
+    <app-wdf-summary-panel
       [wdfStartDate]="wdfStartDate"
       [wdfEndDate]="wdfEndDate"
-      [wdfEligibilityStatus]="wdfEligibilityStatus"
-      [isStandalone]="isStandalone"
-    ></app-wdf-data-status-message>
+      [workplaceWdfEligibilityStatus]="wdfEligibilityStatus.currentWorkplace"
+      [staffWdfEligibilityStatus]="wdfEligibilityStatus.currentStaff"
+      [parentOverallWdfEligibility]="parentOverallWdfEligibility"
+      [overallWdfEligibility]="wdfEligibilityStatus.overall"
+      [isParent]="isParent"
+    ></app-wdf-summary-panel>
   </div>
 </div>
 
@@ -39,8 +46,8 @@
     *ngIf="viewWDFData && workers && workplace"
     [workplace]="workplace"
     [workers]="workers"
-    [canEditWorker]="canEditWorker"
     [standAloneAccount]="standAloneAccount"
+    [workerCount]="workerCount"
   ></app-wdf-staff-summary>
 </ng-container>
 
@@ -73,7 +80,7 @@
         *ngIf="workers && workplace"
         [workplace]="workplace"
         [workers]="workers"
-        [canEditWorker]="canEditWorker"
+        [workerCount]="workerCount"
       ></app-wdf-staff-summary>
     </app-tab>
   </app-tabs>

@@ -3,7 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
+import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import {
   AdultSocialCareStartedComponent,
@@ -59,6 +61,8 @@ import { StaffDetailsComponent } from '@features/workers/staff-details/staff-det
 import { WeeklyContractedHoursComponent } from '@features/workers/weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from '@features/workers/year-arrived-uk/year-arrived-uk.component';
 
+import { FundingRequirementsComponent } from './funding-requirements/funding-requirements.component';
+import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn-more-about-funding.component';
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.component';
@@ -79,7 +83,26 @@ const routes: Routes = [
     component: WdfDataComponent,
     canActivate: [HasPermissionsGuard],
     data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
-    resolve: { workplace: WorkplaceResolver },
+    resolve: {
+      workers: WorkersResolver,
+      workplace: WorkplaceResolver
+     },
+  },
+  {
+    path: 'learn-more',
+    component: LearnMoreAboutFundingComponent,
+    data: { title: 'Learn More' },
+    resolve: {
+      pages: PageResolver,
+    },
+  },
+  {
+    path: 'funding-requirements',
+    component: FundingRequirementsComponent,
+    data: { title: 'Funding Requirements' },
+    resolve: {
+      pages: PageResolver,
+    },
   },
   {
     path: 'staff-record/:id',

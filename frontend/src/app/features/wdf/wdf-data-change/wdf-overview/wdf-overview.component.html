@@ -1,90 +1,70 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <span class="govuk-caption-xl">{{ workplace.name }} (Workplace ID: {{ workplace.nmdsId }})</span>
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">Workforce Development Fund (WDF)</h1>
-
-    <ng-container *ngIf="!isParent; else parent">
-      <ng-container *ngIf="overallWdfEligibility; else notEligible">
-        <span>
-          <h2 class="govuk-heading-s">
-            <img
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-              src="/assets/images/tick-icon.svg"
-              alt=""
-            />Your data has met the WDF {{ wdfStartDate | date: 'yyyy' }} to
-            {{ wdfEndDate | date: 'yyyy' }} requirements
-          </h2>
-        </span>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-6">
+      Does your data meet funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}?
+    </h1>
+    <div class="govuk-warning-text">
+      <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+      <span class="govuk-warning-text__text" style="font-weight: 500">
+        <span class="govuk-visually-hidden">Warning</span>
+        Your eligibility resets every year on 1 April, so you'll need to complete or update your data on or after this
+        date.
+      </span>
+    </div>
+  </div>
+</div>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full-width">
+    <app-wdf-summary-panel
+      [wdfStartDate]="wdfStartDate"
+      [wdfEndDate]="wdfEndDate"
+      [workplaceWdfEligibilityStatus]="wdfEligibilityStatus.currentWorkplace"
+      [staffWdfEligibilityStatus]="wdfEligibilityStatus.currentStaff"
+      [parentOverallWdfEligibility]="parentOverallWdfEligibility"
+      [overallWdfEligibility]="overallWdfEligibility"
+      [isParent]="isParent"
+    ></app-wdf-summary-panel>
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-top-7">
+  <div class="govuk-grid-column-three-quarters">
+    <ng-container
+      *ngIf="(overallWdfEligibility && !isParent) || (parentOverallWdfEligibility && isParent); else notEligible"
+    >
+      <div data-testid="dataMetFunding">
         <p>
-          Your data met the requirements on {{ overallEligibilityDate }} and will continue to meet them until 31 March
-          {{ wdfEndDate | date: 'yyyy' }}.
+          Your data met the funding requirements on {{ overallEligibilityDate }} and will continue to meet them until 31
+          March {{ wdfEndDate | date: 'yyyy' }}.
+          <a [routerLink]="['data']" [relativeTo]="route">Keep your data current</a>, it might save you time next year.
         </p>
-        <p><a [routerLink]="['/wdf/data']">Keep your WDF data up to date</a>, it will save you time next year.</p>
-      </ng-container>
-
-      <ng-template #notEligible>
-        <span>
-          <h2 class="govuk-heading-s govuk-!-margin-bottom-6">
-            <img
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-              src="/assets/images/cross-icon.svg"
-              alt=""
-            />Your data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to
-            {{ wdfEndDate | date: 'yyyy' }} requirements
-          </h2>
-        </span>
-        <p><a [routerLink]="['/wdf/data']">View your WDF data</a> to see where it does not meet the requirements.</p>
-      </ng-template>
+        <p class="govuk-!-margin-bottom-6">
+          <a [routerLink]="['funding-requirements']" [relativeTo]="route">
+            View the ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
+            {{ wdfEndDate | date: 'yyyy' }}</a
+          >
+        </p>
+      </div>
     </ng-container>
 
-    <ng-template #parent>
-      <ng-container *ngIf="parentOverallWdfEligibility; else parentNotEligible">
-        <span>
-          <h2 class="govuk-heading-s">
-            <img
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-              src="/assets/images/tick-icon.svg"
-              alt=""
-            />All of your workplaces have met the WDF {{ wdfStartDate | date: 'yyyy' }} to
-            {{ wdfEndDate | date: 'yyyy' }} data requirements
-          </h2>
-        </span>
-        <p>
-          Your workplaces' data met the requirements on {{ parentOverallEligibilityDate }} and will continue to meet
-          them until 31 March {{ wdfEndDate | date: 'yyyy' }}.
-        </p>
-        <p>
-          <a [routerLink]="['/wdf/workplaces']">View your workplaces</a> and keep your data up to date to save time next
-          year.
-        </p>
-      </ng-container>
-
-      <ng-template #parentNotEligible>
-        <span>
-          <h2 class="govuk-heading-s govuk-!-margin-bottom-6">
-            <img
-              class="govuk-!-margin-right-1 govuk-util__vertical-align-top"
-              src="/assets/images/cross-icon.svg"
-              alt=""
-            />Some of your workplaces' data does not meet the WDF {{ wdfStartDate | date: 'yyyy' }} to
-            {{ wdfEndDate | date: 'yyyy' }} requirements
-          </h2>
-        </span>
-        <p>
-          <a [routerLink]="['/wdf/workplaces']">View your workplaces</a> to see which have data that does not meet the
-          requirements.
-        </p>
-      </ng-template>
+    <ng-template #notEligible>
+      <div class="govuk-inset-text thin-border govuk-!-margin-top-0" data-testid="fundingInsetText">
+        <a [routerLink]="['funding-requirements']" [relativeTo]="route">
+          The ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}</a
+        >
+        are exactly the same for both the Workforce Development Fund (WDF) and the Learning and Development Support
+        Scheme (LDSS).
+      </div>
     </ng-template>
 
-    <h2 class="govuk-heading-s">Find out more</h2>
+    <h2 class="govuk-heading-s govuk-!-margin-bottom-1">Find out more</h2>
     <p>
-      <a
-        href="https://www.skillsforcare.org.uk/Learning-development/Funding/Workforce-Development-Fund/Workforce-Development-Fund.aspx"
-        target="_blank"
-        >Learn more about the WDF</a
-      >
-      on the Skills for Care website.
+      <a [routerLink]="['learn-more']" [relativeTo]="route">Learn more about the funds that you can claim from</a>
     </p>
+    <div class="govuk-!-margin-top-8">
+      <button type="button" class="govuk-button" data-module="govuk-button" (click)="viewYourData()">
+        Check your data
+      </button>
+    </div>
   </div>
 </div>

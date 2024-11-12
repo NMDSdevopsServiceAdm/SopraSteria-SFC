@@ -10,7 +10,6 @@ import { WdfDataStatusMessageComponent } from './wdf-data-status-message/wdf-dat
 import { WdfDataComponent } from './wdf-data/wdf-data.component';
 import { WdfOverviewComponent } from './wdf-overview/wdf-overview.component';
 import { WdfParentStatusMessageComponent } from './wdf-parent-status-message/wdf-parent-status-message.component';
-import { WdfRequirementsStateComponent } from './wdf-requirements-state/wdf-requirements-state.component';
 import { WdfRoutingModule } from './wdf-routing.module';
 import { WdfStaffRecordStatusMessageComponent } from './wdf-staff-record-status-message/wdf-staff-record-status-message.component';
 import { WdfPaginationComponent } from './wdf-staff-record/wdf-pagination/wdf-pagination.component';
@@ -19,6 +18,8 @@ import { WdfStaffSummaryComponent } from './wdf-staff-summary/wdf-staff-summary.
 import { WdfWorkplacesSummaryTableComponent } from './wdf-workplaces-summary-table/wdf-workplaces-summary-table.component';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary/wdf-workplaces-summary.component';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
+import { FundingRequirementsComponent } from './funding-requirements/funding-requirements.component';
+import { LearnMoreAboutFundingComponent } from './learn-more-about-funding/learn-more-about-funding.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, WdfRoutingModule],
@@ -26,7 +27,6 @@ import { JobsResolver } from '@core/resolvers/jobs.resolver';
     WdfDataComponent,
     WdfStaffSummaryComponent,
     WdfStaffRecordComponent,
-    WdfRequirementsStateComponent,
     WdfDataStatusMessageComponent,
     WdfStaffRecordStatusMessageComponent,
     WdfPaginationComponent,
@@ -34,6 +34,8 @@ import { JobsResolver } from '@core/resolvers/jobs.resolver';
     WdfWorkplacesSummaryTableComponent,
     WdfParentStatusMessageComponent,
     WdfOverviewComponent,
+    FundingRequirementsComponent,
+    LearnMoreAboutFundingComponent,
   ],
   providers: [WorkerResolver, WorkplaceResolver, JobsResolver],
 })
