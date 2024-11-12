@@ -64,6 +64,7 @@ import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { VacanciesJobRoleSelectionComponent } from './vacancies-job-role-selection/vacancies-job-role-selection.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -268,6 +269,16 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Vacancies',
+        },
+      },
+      {
+        path: 'vacancies-job-role-selection',
+        component: VacanciesJobRoleSelectionComponent,
+        // canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          // permissions: ['canEditEstablishment'],
+          title: 'Vacancies job role selection',
         },
       },
       {
