@@ -691,7 +691,7 @@ class WorkerCsvValidator {
   }
 
   _validateStatus() {
-    const statusValues = ['DELETE', 'UPDATE', 'UNCHECKED', 'NOCHANGE', 'NEW', 'CHGSUB'];
+    const statusValues = ['DELETE', 'UPDATE', 'UNCHECKED', 'NOCHANGE', 'NEW'];
     const myStatus = this._currentLine.STATUS ? this._currentLine.STATUS.toUpperCase() : this._currentLine.STATUS;
 
     if (!statusValues.includes(myStatus)) {
@@ -754,21 +754,6 @@ class WorkerCsvValidator {
               errCode: WorkerCsvValidator.STATUS_ERROR,
               errType: 'STATUS_ERROR',
               error: `Staff record has a STATUS of ${myStatus} but doesn't exist, please change to NEW if you want to add this staff record`,
-              source: myStatus,
-              column: 'STATUS',
-            });
-          }
-          break;
-        case 'CHGSUB':
-          // note - the LOCALESTID here is that of the target sub - not the current sub
-          if (thisWorkerExists()) {
-            this._validationErrors.push({
-              name: this._currentLine.LOCALESTID,
-              worker: this._currentLine.UNIQUEWORKERID,
-              lineNumber: this._lineNumber,
-              errCode: WorkerCsvValidator.STATUS_ERROR,
-              errType: 'STATUS_ERROR',
-              error: 'STATUS is CHGSUB but staff already exists in the new workplace',
               source: myStatus,
               column: 'STATUS',
             });

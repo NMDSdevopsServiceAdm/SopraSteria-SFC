@@ -84,122 +84,129 @@ describe('crossValidate', () => {
       sinon.restore();
     });
 
-    it('should return true when unchecked establishment with matching key is regulated (according to database)', async () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'UNCHECKED',
-          key: 'HELLO',
-        },
-      ];
+    const newWorker = (establishmentKey = 'HELLO') => {
       const worker = new WorkerCsvValidator(null, null, null, mappings);
       worker._status = 'NEW';
       const JSONWorker = worker.toJSON();
-      JSONWorker.establishmentKey = 'HELLO';
+      JSONWorker.establishmentKey = establishmentKey;
+      return JSONWorker;
+    };
 
-      sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: true });
-
-      const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
-
-      expect(isCQCRegulated).to.deep.equal(true);
-    });
-
-    it('should return false when unchecked establishment with matching key is not regulated (according to database)', async () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'UNCHECKED',
-          key: 'HELLO',
-        },
-      ];
+    const transferringWorker = (establishmentKey = 'HELLO') => {
       const worker = new WorkerCsvValidator(null, null, null, mappings);
-      worker._status = 'NEW';
+      worker._status = 'UPDATE';
+      worker._transferStaffRecord = establishmentKey;
       const JSONWorker = worker.toJSON();
-      JSONWorker.establishmentKey = 'HELLO';
+      return JSONWorker;
+    };
 
-      sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: false });
+    const testCases = [
+      { workertype: 'New worker', workerBuilder: newWorker },
+      { workertype: 'Transferring worker', workerBuilder: transferringWorker },
+    ];
 
-      const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
+    testCases.forEach(({ workertype, workerBuilder }) => {
+      describe(`Case of ${workertype}`, () => {
+        it('should return true when unchecked establishment with matching key is regulated (according to database)', async () => {
+          const myEstablishments = [
+            {
+              id: 1,
+              status: 'UNCHECKED',
+              key: 'HELLO',
+            },
+          ];
+          const JSONWorker = workerBuilder();
 
-      expect(isCQCRegulated).to.deep.equal(false);
-    });
+          sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: true });
 
-    it('should return true when updated establishment with matching key is regulated (according to file)', async () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'UPDATE',
-          key: 'HELLO',
-          regType: 1,
-        },
-      ];
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
-      worker._status = 'NEW';
-      const JSONWorker = worker.toJSON();
-      JSONWorker.establishmentKey = 'HELLO';
+          const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
 
-      const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
+          expect(isCQCRegulated).to.deep.equal(true);
+        });
 
-      expect(isCQCRegulated).to.deep.equal(false);
-    });
+        it('should return false when unchecked establishment with matching key is not regulated (according to database)', async () => {
+          const myEstablishments = [
+            {
+              id: 1,
+              status: 'UNCHECKED',
+              key: 'HELLO',
+            },
+          ];
+          const JSONWorker = workerBuilder();
 
-    it('should return false when updated establishment with matching key is not regulated (according to file)', async () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'UPDATE',
-          key: 'HELLO',
-          regType: 2,
-        },
-      ];
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
-      worker._status = 'NEW';
-      const JSONWorker = worker.toJSON();
-      JSONWorker.establishmentKey = 'HELLO';
+          sinon.stub(models.establishment, 'findbyId').returns({ isRegulated: false });
 
-      const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
+          const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
 
-      expect(isCQCRegulated).to.deep.equal(true);
-    });
+          expect(isCQCRegulated).to.deep.equal(false);
+        });
 
-    it('should not return anything if the establishment is set to DELETE', async () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'DELETE',
-          key: 'HELLO',
-          regType: 2,
-        },
-      ];
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
-      worker._status = 'NEW';
-      const JSONWorker = worker.toJSON();
-      JSONWorker.establishmentKey = 'HELLO';
+        it('should return true when updated establishment with matching key is regulated (according to file)', async () => {
+          const myEstablishments = [
+            {
+              id: 1,
+              status: 'UPDATE',
+              key: 'HELLO',
+              regType: 1,
+            },
+          ];
+          const JSONWorker = workerBuilder();
 
-      const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
+          const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
 
-      expect(isCQCRegulated).to.not.deep.equal(true);
-      expect(isCQCRegulated).to.not.deep.equal(false);
-    });
+          expect(isCQCRegulated).to.deep.equal(false);
+        });
 
-    it('should not return anything if the establishment is not found', async () => {
-      const myEstablishments = [
-        {
-          id: 1,
-          status: 'UPDATE',
-          key: 'HELLO',
-          regType: 2,
-        },
-      ];
-      const worker = new WorkerCsvValidator(null, null, null, mappings);
-      worker._status = 'NEW';
-      const JSONWorker = worker.toJSON();
-      JSONWorker.establishmentKey = 'HELLO1';
+        it('should return false when updated establishment with matching key is not regulated (according to file)', async () => {
+          const myEstablishments = [
+            {
+              id: 1,
+              status: 'UPDATE',
+              key: 'HELLO',
+              regType: 2,
+            },
+          ];
+          const JSONWorker = workerBuilder();
 
-      const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
+          const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
 
-      expect(isCQCRegulated).to.not.deep.equal(true);
-      expect(isCQCRegulated).to.not.deep.equal(false);
+          expect(isCQCRegulated).to.deep.equal(true);
+        });
+
+        it('should not return anything if the establishment is set to DELETE', async () => {
+          const myEstablishments = [
+            {
+              id: 1,
+              status: 'DELETE',
+              key: 'HELLO',
+              regType: 2,
+            },
+          ];
+          const JSONWorker = workerBuilder();
+
+          const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
+
+          expect(isCQCRegulated).to.not.deep.equal(true);
+          expect(isCQCRegulated).to.not.deep.equal(false);
+        });
+
+        it('should not return anything if the establishment is not found', async () => {
+          const myEstablishments = [
+            {
+              id: 1,
+              status: 'UPDATE',
+              key: 'HELLO',
+              regType: 2,
+            },
+          ];
+          const JSONWorker = workerBuilder('HELLO1');
+
+          const isCQCRegulated = await _isCQCRegulated(myEstablishments, JSONWorker);
+
+          expect(isCQCRegulated).to.not.deep.equal(true);
+          expect(isCQCRegulated).to.not.deep.equal(false);
+        });
+      });
     });
   });
 

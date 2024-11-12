@@ -1470,5 +1470,33 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator._transferStaffRecord).to.equal('workplace B');
       });
     });
+
+    describe('_validateStatus', () => {
+      it('should give an error if CHGSUB (a deprecated option) is supplied in STATUS column', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'CHGSUB',
+          },
+        });
+        const expectedWarning = {
+          column: 'STATUS',
+          lineNumber: 2,
+          name: 'MARMA',
+          source: 'CHGSUB',
+          errCode: WorkerCsvValidator.STATUS_ERROR,
+          errType: 'STATUS_ERROR',
+          error: 'The STATUS you have supplied is incorrect',
+          worker: '3',
+        };
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
   });
 });

@@ -23,9 +23,14 @@ const _crossValidateMainJobRole = (csvWorkerSchemaErrors, isCqcRegulated, JSONWo
 };
 
 const _isCQCRegulated = async (myEstablishments, JSONWorker) => {
-  const workerEstablishment = myEstablishments.find(
-    (establishment) => JSONWorker.establishmentKey === establishment.key,
-  );
+  let workerEstablishmentKey;
+  if (isMovingToNewWorkplace(JSONWorker)) {
+    workerEstablishmentKey = JSONWorker.transferStaffRecord.replace(/\s/g, '');
+  } else {
+    workerEstablishmentKey = JSONWorker.establishmentKey;
+  }
+
+  const workerEstablishment = myEstablishments.find((establishment) => workerEstablishmentKey === establishment.key);
 
   if (workerEstablishment) {
     switch (workerEstablishment.status) {
