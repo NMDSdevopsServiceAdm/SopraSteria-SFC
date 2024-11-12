@@ -79,6 +79,7 @@ const routes: Routes = [
     component: WdfDataComponent,
     canActivate: [HasPermissionsGuard],
     data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
+    resolve: { workplace: WorkplaceResolver },
   },
   {
     path: 'staff-record/:id',
@@ -277,6 +278,7 @@ const routes: Routes = [
             component: WdfDataComponent,
             canActivate: [HasPermissionsGuard],
             data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
+            resolve: { workplace: WorkplaceResolver },
           },
           {
             path: 'staff-record/:id',

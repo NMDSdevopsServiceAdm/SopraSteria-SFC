@@ -9,6 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import dayjs from 'dayjs';
 import sortBy from 'lodash/sortBy';
 import { Subscription } from 'rxjs';
@@ -16,7 +17,6 @@ import { take } from 'rxjs/operators';
 
 import { WdfEligibilityStatus } from '../../../../core/model/wdf.model';
 import { Worker } from '../../../../core/model/worker.model';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-wdf-data',
@@ -57,7 +57,7 @@ export class WdfDataComponent implements OnInit {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.standAloneAccount = this.establishmentService.standAloneAccount;
 
-    if (this.route.snapshot.params.establishmentuid) {
+    if (this.route.snapshot?.params?.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
       this.returnUrl = { url: ['/wdf', 'workplaces', this.workplaceUid] };
     } else {
@@ -88,14 +88,10 @@ export class WdfDataComponent implements OnInit {
   }
 
   private setWorkplace(): void {
-    this.subscriptions.add(
-      this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
-        this.workplace = workplace;
-        this.isStandalone = this.checkIfStandalone();
-        this.setBreadcrumbs();
-        this.establishmentService.setState(workplace);
-      }),
-    );
+    this.workplace = this.route.snapshot.data?.workplace;
+    this.isStandalone = this.checkIfStandalone();
+    this.setBreadcrumbs();
+    this.establishmentService.setState(this.workplace);
   }
 
   private getWorkers(): void {
