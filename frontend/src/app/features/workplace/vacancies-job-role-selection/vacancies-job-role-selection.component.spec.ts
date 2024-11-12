@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -12,9 +12,33 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { HttpClient } from '@angular/common/http';
 
 fdescribe('VacanciesJobRoleSelectionComponent', () => {
+  const mockAvailableJobs = [
+    {
+      id: 4,
+      jobRoleGroup: 'Professional and related roles',
+      title: 'Allied health professional (not occupational therapist)',
+    },
+    {
+      id: 10,
+      jobRoleGroup: 'Care providing roles',
+      title: 'Care worker',
+    },
+    {
+      id: 23,
+      title: 'Registered nurse',
+      jobRoleGroup: 'Professional and related roles',
+    },
+    {
+      id: 27,
+      title: 'Social worker',
+      jobRoleGroup: 'Professional and related roles',
+    },
+  ];
+
   const setup = async (override: any = {}) => {
     const returnUrl = override.returnUrl ?? 'true';
     const vacancies = override.vacancies;
+    const availableJobs = override.availableJobs ?? mockAvailableJobs;
 
     const { fixture, getByText, getByTestId, getByRole, queryByTestId } = await render(
       VacanciesJobRoleSelectionComponent,
@@ -28,6 +52,17 @@ fdescribe('VacanciesJobRoleSelectionComponent', () => {
               vacancies,
             }),
             deps: [HttpClient],
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                params: {},
+                data: {
+                  jobs: availableJobs,
+                },
+              },
+            },
           },
         ],
       },
@@ -52,11 +87,26 @@ fdescribe('VacanciesJobRoleSelectionComponent', () => {
   describe('rendering', () => {
     it('should display a heading and a section heading', async () => {
       const { getByRole, getByText } = await setup();
-      const heading = getByRole('heading', { name: 'Select your current staff vacancy job roles' });
+      const heading = getByRole('heading', { name: 'Select job roles for all your current staff vacancies' });
       const sectionHeading = getByText('Vacancies and turnover');
 
       expect(heading).toBeTruthy();
       expect(sectionHeading).toBeTruthy();
+    });
+
+    describe('accordion', () => {
+      it('should show the accordion', async () => {
+        const { getByTestId } = await setup();
+
+        expect(getByTestId('groupedAccordion')).toBeTruthy();
+      });
+
+      it('should show the accordion headings', async () => {
+        const { getByText } = await setup();
+
+        expect(getByText('Care providing roles')).toBeTruthy();
+        expect(getByText('Professional and related roles')).toBeTruthy();
+      });
     });
 
     describe('progress bar', () => {
@@ -68,7 +118,7 @@ fdescribe('VacanciesJobRoleSelectionComponent', () => {
       });
 
       it('should render a progress bar when in the flow', async () => {
-        const { component, fixture, getByTestId } = await setup({ returnUrl: false });
+        const { getByTestId } = await setup({ returnUrl: false });
 
         expect(getByTestId('progress-bar')).toBeTruthy();
       });
