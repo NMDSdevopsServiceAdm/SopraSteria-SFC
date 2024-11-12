@@ -26,7 +26,7 @@ import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary
 import { WdfModule } from '../wdf.module';
 import { WdfDataComponent } from './wdf-data.component';
 
-fdescribe('WdfDataComponent', () => {
+describe('WdfDataComponent', () => {
   const setup = async () => {
     const establishment = establishmentBuilder() as Establishment;
 
