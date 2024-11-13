@@ -128,7 +128,7 @@ export class WdfDataComponent implements OnInit {
     );
   }
 
-  public handleViewTrainingByCategory(visible: boolean): void {
+  public handleTabChange(visible: boolean): void {
     this.viewWDFData = visible;
   }
 

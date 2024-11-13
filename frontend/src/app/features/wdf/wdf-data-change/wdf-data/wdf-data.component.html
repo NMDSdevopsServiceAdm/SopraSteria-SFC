@@ -21,17 +21,12 @@
 </div>
 
 <ng-container *ngIf="standAloneAccount && newHomeDesignFlag; else parentView">
-  <app-new-wdf-tab
-    [viewWDFData]="viewWDFData"
-    (handleViewToggle)="handleViewTrainingByCategory($event)"
-    [workplaceGreenTick]="wdfEligibilityStatus.currentWorkplace"
-    [workplaceAlert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-    [workplaceRedCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-    [staffGreenTick]="wdfEligibilityStatus.currentStaff"
-    [staffAlert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
-    [staffRedCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
+  <app-select-view-panel
+    [falseSelectionName]="'Workplace'"
+    [trueSelectionName]="'Staff'"
+    (handleViewToggle)="handleTabChange($event)"
   >
-  </app-new-wdf-tab>
+  </app-select-view-panel>
   <app-wdf-workplace-summary
     *ngIf="!viewWDFData && workplace"
     [workplace]="workplace"

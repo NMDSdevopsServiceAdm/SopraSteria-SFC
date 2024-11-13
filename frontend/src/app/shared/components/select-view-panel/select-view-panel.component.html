@@ -1,0 +1,36 @@
+<div class="govuk-!-margin-bottom-7">
+  <ul class="govuk-tabs__list asc-tabs__list" role="tablist">
+    <li
+      class="govuk-tabs__list-item asc-tabs__list-item"
+      data-testid="falseItem"
+      [class.asc-tabs__list-item--active]="!toggleBoolean"
+    >
+      <a
+        id="tab_false"
+        class="govuk-tabs__tab asc-tabs__link"
+        data-testid="falseLink"
+        [class.asc-tabs__link--active]="!toggleBoolean"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event, false)"
+        >{{ falseSelectionName }}</a
+      >
+    </li>
+    <li
+      class="govuk-tabs__list-item asc-tabs__list-item"
+      data-testid="trueItem"
+      [class.asc-tabs__list-item--active]="toggleBoolean"
+    >
+      <a
+        id="tab_true"
+        class="govuk-tabs__tab asc-tabs__link"
+        data-testid="trueLink"
+        [class.asc-tabs__link--active]="toggleBoolean"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event, true)"
+        >{{ trueSelectionName }}</a
+      >
+    </li>
+  </ul>
+</div>

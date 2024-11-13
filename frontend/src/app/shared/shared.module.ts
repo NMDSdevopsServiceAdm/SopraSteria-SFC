@@ -93,6 +93,7 @@ import {
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
 import { SelectUploadFileComponent } from './components/select-upload-file/select-upload-file.component';
+import { SelectViewPanelComponent } from './components/select-view-panel/select-view-panel.component';
 import {
   SelectWorkplaceDropdownFormComponent,
 } from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
@@ -301,6 +302,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
+    SelectViewPanelComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -424,6 +426,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
+    SelectViewPanelComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
