@@ -24,7 +24,7 @@ import dayjs from 'dayjs';
 
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 
-describe('WDFWorkplaceSummaryComponent', () => {
+fdescribe('WDFWorkplaceSummaryComponent', () => {
   const setup = async (shareWith = null) => {
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WDFWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
@@ -65,6 +65,12 @@ describe('WDFWorkplaceSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should render a heading', async () => {
+    const { component, getByText } = await setup();
+
+    expect(getByText('Your workplace details')).toBeTruthy();
+  })
+
   it('should render all the sections', async () => {
     const { component, fixture, getByTestId } = await setup();
 
@@ -72,6 +78,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     fixture.detectChanges();
 
     expect(getByTestId('workplace-section')).toBeTruthy();
+    expect(getByTestId('address-section')).toBeTruthy();
     expect(getByTestId('cqcLocationId')).toBeTruthy();
     expect(getByTestId('numberOfStaff')).toBeTruthy();
     expect(getByTestId('employerType')).toBeTruthy();
