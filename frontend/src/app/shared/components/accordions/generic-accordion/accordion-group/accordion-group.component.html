@@ -1,6 +1,6 @@
 <div class="govuk-accordion" data-module="govuk-accordion" data-govuk-accordion-init="">
   <div class="govuk-accordion__controls">
-    <button type="button" class="govuk-accordion__show-all" aria-expanded="false">
+    <button type="button" class="govuk-accordion__show-all" aria-expanded="false" (click)="toggleAll()">
       <span
         class="govuk-accordion-nav__chevron"
         [class]="{
@@ -8,7 +8,7 @@
           'govuk-accordion-nav__chevron--down': !isShowingAll
         }"
       ></span
-      ><span class="govuk-accordion__show-all-text" (click)="toggleAll()"
+      ><span class="govuk-accordion__show-all-text"
         >{{ isShowingAll ? 'Hide' : 'Show' }} all {{ textShowHideAll }}</span
       >
     </button>
