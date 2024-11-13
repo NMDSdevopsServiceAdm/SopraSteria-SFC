@@ -24,7 +24,7 @@ import dayjs from 'dayjs';
 
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 
-fdescribe('WDFWorkplaceSummaryComponent', () => {
+describe('WDFWorkplaceSummaryComponent', () => {
   const setup = async (shareWith = null) => {
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WDFWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
