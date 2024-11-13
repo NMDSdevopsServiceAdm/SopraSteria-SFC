@@ -17,8 +17,8 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   public section = 'Vacancies and turnover';
   public jobsAvailable: Job[] = [];
   public jobGroups: JobGroup[] = [];
-  public preSelectedJobRoles = [];
   public errorMessageOnEmptyInput = 'Select job roles for all your current staff vacancies';
+  private prefilledJobIds: number[] = [];
   private summaryText = {
     'Care providing roles': 'care worker, community support, support worker',
     'Professional and related roles': 'occupational therapist, registered nurse, nursing assistant',
@@ -54,25 +54,24 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
 
   private prefill(): void {
     if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
-      const preSelectedJobRoles = this.establishment.vacancies.map((vacancy) => Number(vacancy.jobId));
-      this.form.patchValue({ selectedJobRoles: preSelectedJobRoles });
+      this.prefilledJobIds = this.establishment.vacancies.map((vacancy) => Number(vacancy.jobId));
+      this.form.patchValue({ selectedJobRoles: this.prefilledJobIds });
     }
   }
 
   public ngAfterViewInit(): void {
     super.ngAfterViewInit();
-    this.expandPreselectedJobGroups();
+    this.expandPrefilledJobGroups();
   }
 
-  private expandPreselectedJobGroups(): void {
-    if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
-      const preSelectedJobRoles = this.establishment.vacancies.map((vacancy) => Number(vacancy.jobId));
-      this.jobGroups.forEach((group, index) => {
-        if (group.items.some((job) => preSelectedJobRoles.includes(job.id))) {
-          setTimeout(() => this.accordion.toggleChild(index));
-        }
-      });
-    }
+  private expandPrefilledJobGroups(): void {
+    this.jobGroups.forEach((group, index) => {
+      if (group.items.some((job) => this.prefilledJobIds.includes(job.id))) {
+        setTimeout(() => {
+          this.accordion.toggleChild(index);
+        });
+      }
+    });
   }
 
   private validateForm(): ValidatorFn {

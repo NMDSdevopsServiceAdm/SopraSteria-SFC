@@ -154,7 +154,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
     });
 
     describe('prefill', () => {
-      fit('should check the checkboxes of job roles according to vacancies for the workplace', async () => {
+      it('should check the checkboxes of job roles according to vacancies for the workplace', async () => {
         const mockVacancies: Vacancy[] = [
           {
             jobId: 10,
@@ -174,19 +174,24 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
       });
 
-      fit('should expand the accordion for job groups that have prefilled vacancies', async () => {
+      it('should expand the accordion for job groups that have prefilled vacancies', async () => {
         const mockVacancies: Vacancy[] = [
           {
             jobId: 10,
-            title: 'Care worker',
+            title: 'Care worker', // belongs to Care providing roles
             total: 2,
           },
         ];
         const { fixture, getByLabelText } = await setup({ vacancies: mockVacancies });
 
         await fixture.whenStable();
+        fixture.detectChanges();
 
-        const careProviding = getByLabelText('Care providing roles');
+        const accordionForJobGroup1 = getByLabelText('Care providing roles');
+        const accordionForJobGroup2 = getByLabelText('Professional and related roles');
+
+        expect(within(accordionForJobGroup1).getByText('Hide')).toBeTruthy(); // is expanded
+        expect(within(accordionForJobGroup2).getByText('Show')).toBeTruthy(); // not expanded
       });
     });
   });
