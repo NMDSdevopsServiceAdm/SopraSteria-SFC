@@ -392,6 +392,11 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
   public getEstablishment(workplaceUid: string, wdf: boolean = false): Observable<any> {
     return of(this.establishmentObj as Establishment);
   }
+
+  public workplaceOrSubHasTrainingCertificates(workplaceUid: string) {
+    return of(null);
+  }
+
   public get returnTo(): URLStructure {
     return;
   }

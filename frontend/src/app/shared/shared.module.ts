@@ -30,6 +30,7 @@ import { BecomeAParentDialogComponent } from './components/become-a-parent/becom
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { CardComponent } from './components/card/card.component';
+import { CertificationsTableComponent } from './components/certifications-table/certifications-table.component';
 import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { CharacterCountComponent } from './components/character-count/character-count.component';
 import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-data-link/about-the-data-link.component';
@@ -65,6 +66,7 @@ import { RejectRequestDialogComponent } from './components/reject-request-dialog
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
+import { SelectUploadFileComponent } from './components/select-upload-file/select-upload-file.component';
 import { SelectWorkplaceDropdownFormComponent } from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
 import { SelectWorkplaceRadioButtonFormComponent } from './components/select-workplace-radio-button-form/select-workplace-radio-button-form.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
@@ -249,6 +251,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
+    CertificationsTableComponent,
+    SelectUploadFileComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -370,6 +374,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
+    CertificationsTableComponent,
+    SelectUploadFileComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

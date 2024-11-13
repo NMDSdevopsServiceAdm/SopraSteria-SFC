@@ -27,6 +27,8 @@ const WorkerProperties = require('./worker/workerProperties').WorkerPropertyMana
 const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_DOCUMENT;
 
+const TrainingCertificateRoute = require('../../routes/establishments/workerCertificate/trainingCertificate');
+
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
 
@@ -530,9 +532,10 @@ class Worker extends EntityValidator {
     const newTrainingPromises = [];
 
     try {
-      // there is no change audit on training; simply delete all that is there and recreate
       if (this._trainingEntities && this._trainingEntities.length > 0) {
-        // delete all existing training records for this worker
+        // delete all existing training records for this worker and create new records
+
+        await this.deleteAllTrainingCertificatesAssociatedWithWorker(externalTransaction);
         await models.workerTraining.destroy({
           where: {
             workerFk: this._id,
@@ -540,7 +543,6 @@ class Worker extends EntityValidator {
           transaction: externalTransaction,
         });
 
-        // now create new training records
         this._trainingEntities.forEach((currentTrainingRecord) => {
           currentTrainingRecord.workerId = this._id;
           currentTrainingRecord.workerUid = this._uid;
@@ -1149,6 +1151,8 @@ class Worker extends EntityValidator {
         if (associatedEntities) {
           // TODO - to be confirmed
         }
+
+        await this.deleteAllTrainingCertificatesAssociatedWithWorker(thisTransaction);
 
         // always recalculate WDF - if not bulk upload (this._status)
         if (this._status === null) {
@@ -1893,6 +1897,20 @@ class Worker extends EntityValidator {
       console.error('Worker::bulkUpdateLocalIdentifiers error: ', err);
       throw err;
     }
+  }
+
+  async deleteAllTrainingCertificatesAssociatedWithWorker(transaction) {
+    const trainingCertificates = await models.trainingCertificates.getAllTrainingCertificateRecordsForWorker(this._id);
+
+    if (!trainingCertificates.length) return;
+
+    const trainingCertificateUids = trainingCertificates.map((cert) => cert.uid);
+    const filesToDeleteFromS3 = trainingCertificates.map((cert) => {
+      return { Key: cert.key };
+    });
+
+    await models.trainingCertificates.deleteCertificate(trainingCertificateUids, transaction);
+    await TrainingCertificateRoute.deleteCertificatesFromS3(filesToDeleteFromS3);
   }
 }
 

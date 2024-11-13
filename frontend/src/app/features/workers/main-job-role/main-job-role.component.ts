@@ -30,7 +30,7 @@ export class MainJobRoleComponent extends QuestionComponent implements OnInit, O
     'Care providing roles': 'care worker, community support, support worker',
     'Professional and related roles': 'occupational therapist, registered nurse, nursing assistant',
     'Managerial and supervisory roles': 'registered manager, supervisor, team leader',
-    'IT, digital and date roles': 'data analyst, IT and digital support, IT manager',
+    'IT, digital and data roles': 'data analyst, IT and digital support, IT manager',
     'Other roles': 'admin, care co-ordinator, learning and development',
   };
 

@@ -4,11 +4,14 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { TrainingRecord, TrainingRecords } from '@core/model/training.model';
+import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PdfTrainingAndQualificationService } from '@core/services/pdf-training-and-qualification.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -18,8 +21,9 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { MockWorkerService, qualificationsByGroup } from '@core/test-utils/MockWorkerService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
-import { of } from 'rxjs';
+import { fireEvent, render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+import { of, throwError } from 'rxjs';
 
 import { WorkersModule } from '../../workers/workers.module';
 import { NewTrainingAndQualificationsRecordComponent } from './new-training-and-qualifications-record.component';
@@ -34,6 +38,77 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
   yesterday.setDate(yesterday.getDate() - 1);
   tomorrow.setDate(tomorrow.getDate() + 1);
   activeDate.setDate(activeDate.getDate() + 93); // 3 months in the future
+
+  const mockTrainingData: TrainingRecords = {
+    lastUpdated: new Date('2020-01-01'),
+    mandatory: [],
+    jobRoleMandatoryTrainingCount: [],
+    nonMandatory: [
+      {
+        category: 'Health',
+        id: 1,
+        trainingRecords: [
+          {
+            accredited: true,
+            completed: new Date('10/20/2021'),
+            expires: activeDate,
+            title: 'Health training',
+            trainingCategory: { id: 1, category: 'Health' },
+            trainingCertificates: [],
+            trainingStatus: 0,
+            uid: 'someHealthuid',
+            created: new Date('10/20/2021'),
+            updated: new Date('10/20/2021'),
+            updatedBy: '',
+          },
+        ],
+      },
+      {
+        category: 'Autism',
+        id: 2,
+        trainingRecords: [
+          {
+            accredited: true,
+            completed: new Date('10/20/2021'),
+            expires: yesterday,
+            title: 'Autism training',
+            trainingCategory: { id: 2, category: 'Autism' },
+            created: new Date('10/20/2021'),
+            updated: new Date('10/20/2021'),
+            updatedBy: '',
+            trainingCertificates: [
+              {
+                filename: 'test certificate.pdf',
+                uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+                uploadDate: '2024-09-20T08:57:45.000Z',
+              },
+            ],
+            trainingStatus: 3,
+            uid: 'someAutismuid',
+          },
+        ],
+      },
+      {
+        category: 'Coshh',
+        id: 3,
+        trainingRecords: [
+          {
+            accredited: true,
+            completed: new Date('01/01/2010'),
+            expires: tomorrow,
+            title: 'Coshh training',
+            trainingCategory: { id: 3, category: 'Coshh' },
+            trainingCertificates: [],
+            trainingStatus: 1,
+            uid: 'someCoshhuid',
+            created: new Date('10/20/2021'),
+            updated: new Date('10/20/2021'),
+            updatedBy: '',
+          },
+        ],
+      },
+    ],
+  };
 
   async function setup(
     otherJob = false,
@@ -74,58 +149,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
                     careCertificate: careCert ? 'Yes, in progress or partially completed' : null,
                   },
                   trainingAndQualificationRecords: {
-                    training: {
-                      lastUpdated: new Date('2020-01-01'),
-                      jobRoleMandatoryTraining,
-                      mandatory: mandatoryTraining,
-                      nonMandatory: [
-                        {
-                          category: 'Health',
-                          id: 1,
-                          trainingRecords: [
-                            {
-                              accredited: true,
-                              completed: new Date('10/20/2021'),
-                              expires: activeDate,
-                              title: 'Health training',
-                              trainingCategory: { id: 1, category: 'Health' },
-                              trainingStatus: 0,
-                              uid: 'someHealthuid',
-                            },
-                          ],
-                        },
-                        {
-                          category: 'Autism',
-                          id: 2,
-                          trainingRecords: [
-                            {
-                              accredited: true,
-                              completed: new Date('10/20/2021'),
-                              expires: yesterday,
-                              title: 'Autism training',
-                              trainingCategory: { id: 2, category: 'Autism' },
-                              trainingStatus: 3,
-                              uid: 'someAutismuid',
-                            },
-                          ],
-                        },
-                        {
-                          category: 'Coshh',
-                          id: 3,
-                          trainingRecords: [
-                            {
-                              accredited: true,
-                              completed: new Date('01/01/2010'),
-                              expires: tomorrow,
-                              title: 'Coshh training',
-                              trainingCategory: { id: 3, category: 'Coshh' },
-                              trainingStatus: 1,
-                              uid: 'someCoshhuid',
-                            },
-                          ],
-                        },
-                      ],
-                    },
+                    training: { ...mockTrainingData, jobRoleMandatoryTraining, mandatory: mandatoryTraining },
                     qualifications: noQualifications
                       ? { count: 0, groups: [], lastUpdated: null }
                       : qualificationsByGroup,
@@ -290,7 +314,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
           },
           { provide: EstablishmentService, useClass: MockEstablishmentService },
           { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-          { provide: PermissionsService, useClass: MockPermissionsService },
+          { provide: PermissionsService, useFactory: MockPermissionsService.factory(['canEditWorker']) },
         ],
       },
     );
@@ -307,6 +331,8 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     spyOn(establishmentService, 'isOwnWorkplace').and.returnValue(isOwnWorkplace);
 
     const workerService = injector.inject(WorkerService) as WorkerService;
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+
     const workerSpy = spyOn(workerService, 'setReturnTo');
     workerSpy.and.callThrough();
 
@@ -325,6 +351,7 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       routerSpy,
       workerSpy,
       workerService,
+      trainingService,
       getByText,
       getAllByText,
       getByTestId,
@@ -360,21 +387,13 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should display the View staff record button', async () => {
-      const { component, getByText, fixture } = await setup();
-
-      component.canEditWorker = true;
-
-      fixture.detectChanges();
+      const { getByText } = await setup();
 
       expect(getByText('View staff record', { exact: false })).toBeTruthy();
     });
 
     it('should have correct href on the View staff record button', async () => {
-      const { component, getByText, fixture } = await setup();
-
-      component.canEditWorker = true;
-
-      fixture.detectChanges();
+      const { component, getByText } = await setup();
 
       const viewStaffRecordButton = getByText('View staff record', { exact: false });
 
@@ -402,7 +421,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       expect(getByText('Care Certificate:', { exact: false })).toBeTruthy();
       expect(getByText('Not answered', { exact: false })).toBeTruthy();
     });
-
   });
 
   describe('Long-Term Absence', async () => {
@@ -436,7 +454,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component, fixture, getByText } = await setup();
 
       component.worker.longTermAbsence = null;
-      component.canEditWorker = true;
       fixture.detectChanges();
 
       expect(getByText('Flag long-term absence')).toBeTruthy();
@@ -446,7 +463,6 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component, fixture, getByTestId, routerSpy } = await setup();
 
       component.worker.longTermAbsence = null;
-      component.canEditWorker = true;
       fixture.detectChanges();
 
       const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
@@ -524,7 +540,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should render Autism as an expired training without an update link if canEditWorker is false', async () => {
-      const { fixture } = await setup();
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
       const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
       const rowOne = actionListTableRows[1];
       expect(rowOne.cells['0'].innerHTML).toBe('Autism');
@@ -547,7 +567,11 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
     });
 
     it('should render Coshh as an expiring soon training without an update link if canEditWorker is false', async () => {
-      const { fixture } = await setup();
+      const { component, fixture } = await setup();
+
+      component.canEditWorker = false;
+      fixture.detectChanges();
+
       const actionListTableRows = fixture.nativeElement.querySelectorAll('tr');
       const rowTwo = actionListTableRows[2];
       expect(rowTwo.cells['0'].innerHTML).toBe('Coshh');
@@ -764,6 +788,219 @@ describe('NewTrainingAndQualificationsRecordComponent', () => {
       const { component } = await setup(false, true, [], [], false, 'all-records', false);
 
       expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
+    });
+  });
+
+  describe('certificates', () => {
+    describe('Download button', () => {
+      const mockTrainings = [
+        {
+          category: 'HealthWithCertificate',
+          id: 1,
+          trainingRecords: [
+            {
+              accredited: true,
+              completed: new Date('10/20/2021'),
+              expires: activeDate,
+              title: 'Health training',
+              trainingCategory: { id: 1, category: 'HealthWithCertificate' },
+              trainingCertificates: [
+                {
+                  filename: 'test.pdf',
+                  uid: '1872ec19-510d-41de-995d-6abfd3ae888a',
+                  uploadDate: '2024-09-20T08:57:45.000Z',
+                },
+              ],
+              trainingStatus: 0,
+              uid: 'someHealthuidWithCertificate',
+            },
+          ] as TrainingRecord[],
+        },
+      ];
+
+      it('should download a certificate file when download link of a certificate row is clicked', async () => {
+        const { getByTestId, component, trainingService } = await setup(false, true, mockTrainings);
+        const uidForTrainingRecord = 'someHealthuidWithCertificate';
+
+        const trainingRecordRow = getByTestId(uidForTrainingRecord);
+        const downloadLink = within(trainingRecordRow).getByText('Download');
+
+        const downloadCertificatesSpy = spyOn(trainingService, 'downloadCertificates').and.returnValue(of(null));
+
+        userEvent.click(downloadLink);
+        expect(downloadCertificatesSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          mockTrainings[0].trainingRecords[0].uid,
+          mockTrainings[0].trainingRecords[0].trainingCertificates,
+        );
+      });
+
+      it('should call triggerCertificateDownloads with file returned from downloadCertificates', async () => {
+        const { getByTestId, trainingService } = await setup(false, true, mockTrainings);
+        const uidForTrainingRecord = 'someHealthuidWithCertificate';
+
+        const trainingRecordRow = getByTestId(uidForTrainingRecord);
+        const downloadLink = within(trainingRecordRow).getByText('Download');
+        const filesReturnedFromDownloadCertificates = [
+          { filename: 'test.pdf', signedUrl: 'signedUrl.com/1872ec19-510d-41de-995d-6abfd3ae888a' },
+        ];
+
+        const triggerCertificateDownloadsSpy = spyOn(trainingService, 'triggerCertificateDownloads').and.returnValue(
+          of(null),
+        );
+        spyOn(trainingService, 'getCertificateDownloadUrls').and.returnValue(
+          of({ files: filesReturnedFromDownloadCertificates }),
+        );
+
+        userEvent.click(downloadLink);
+
+        expect(triggerCertificateDownloadsSpy).toHaveBeenCalledWith(filesReturnedFromDownloadCertificates);
+      });
+
+      it('should display an error message on the training category when certificate download fails', async () => {
+        const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, mockTrainings);
+
+        const uidForTrainingRecord = 'someHealthuidWithCertificate';
+
+        const trainingRecordRow = getByTestId(uidForTrainingRecord);
+        const downloadLink = within(trainingRecordRow).getByText('Download');
+
+        spyOn(trainingService, 'downloadCertificates').and.returnValue(throwError('403 forbidden'));
+
+        userEvent.click(downloadLink);
+        fixture.detectChanges();
+
+        expect(getByText("There's a problem with this download. Try again later or contact us for help.")).toBeTruthy();
+      });
+    });
+
+    describe('Upload button', () => {
+      const mockUploadFile = new File(['some file content'], 'certificate.pdf');
+
+      it('should upload a file when a file is selected from Upload file button', async () => {
+        const { component, getByTestId, trainingService } = await setup(false, true, []);
+        const uploadCertificateSpy = spyOn(trainingService, 'addCertificateToTraining').and.returnValue(of(null));
+
+        const trainingRecordRow = getByTestId('someHealthuid');
+
+        const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        expect(uploadCertificateSpy).toHaveBeenCalledWith(
+          component.workplace.uid,
+          component.worker.uid,
+          'someHealthuid',
+          [mockUploadFile],
+        );
+      });
+
+      it('should show an error message when a non pdf file is selected', async () => {
+        const invalidFile = new File(['some file content'], 'certificate.csv');
+
+        const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, []);
+        const uploadCertificateSpy = spyOn(trainingService, 'addCertificateToTraining');
+
+        const trainingRecordRow = getByTestId('someHealthuid');
+
+        const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, invalidFile);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+        expect(uploadCertificateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should show an error message when a file of > 5MB is selected', async () => {
+        const invalidFile = new File(['some file content'], 'certificate.pdf');
+        Object.defineProperty(invalidFile, 'size', {
+          value: 6 * 1024 * 1024, // 6MB
+        });
+
+        const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, []);
+        const uploadCertificateSpy = spyOn(trainingService, 'addCertificateToTraining');
+
+        const trainingRecordRow = getByTestId('someHealthuid');
+
+        const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, invalidFile);
+
+        fixture.detectChanges();
+
+        expect(getByText('The certificate must be no larger than 5MB')).toBeTruthy();
+        expect(uploadCertificateSpy).not.toHaveBeenCalled();
+      });
+
+      it('should refresh the training record and display an alert of "Certificate uploaded" on successful upload', async () => {
+        const { fixture, alertSpy, getByTestId, workerService, trainingService } = await setup(false, true, []);
+        const mockUpdatedData = {
+          training: mockTrainingData,
+          qualifications: { count: 0, groups: [], lastUpdated: null },
+        } as TrainingAndQualificationRecords;
+        const workerSpy = spyOn(workerService, 'getAllTrainingAndQualificationRecords').and.returnValue(
+          of(mockUpdatedData),
+        );
+        spyOn(trainingService, 'addCertificateToTraining').and.returnValue(of(null));
+
+        const trainingRecordRow = getByTestId('someHealthuid');
+        const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        await fixture.whenStable();
+
+        expect(workerSpy).toHaveBeenCalled();
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Certificate uploaded',
+        });
+      });
+
+      it('should reset the actions list with returned training data when file successfully uploaded', async () => {
+        const { fixture, getByTestId, workerService, trainingService } = await setup(false, true, []);
+        const mockUpdatedData = {
+          training: mockTrainingData,
+          qualifications: { count: 0, groups: [], lastUpdated: null },
+        } as TrainingAndQualificationRecords;
+        spyOn(workerService, 'getAllTrainingAndQualificationRecords').and.returnValue(of(mockUpdatedData));
+        spyOn(trainingService, 'addCertificateToTraining').and.returnValue(of(null));
+
+        const trainingRecordRow = getByTestId('someHealthuid');
+        const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        await fixture.whenStable();
+
+        const actionsListTable = getByTestId('actions-list-table');
+        const actionListTableRows = actionsListTable.querySelectorAll('tr');
+
+        const rowOne = actionListTableRows[1];
+        expect(rowOne.cells['0'].innerHTML).toBe('Autism');
+
+        const rowTwo = actionListTableRows[2];
+        expect(rowTwo.cells['0'].innerHTML).toBe('Coshh');
+
+        expect(actionListTableRows.length).toBe(3);
+      });
+
+      it('should display an error message on the training category when certificate upload fails', async () => {
+        const { fixture, getByTestId, trainingService, getByText } = await setup(false, true, []);
+        spyOn(trainingService, 'addCertificateToTraining').and.returnValue(throwError('failed to upload'));
+
+        const trainingRecordRow = getByTestId('someHealthuid');
+        const uploadButton = within(trainingRecordRow).getByTestId('fileInput');
+
+        userEvent.upload(uploadButton, mockUploadFile);
+
+        fixture.detectChanges();
+
+        expect(getByText("There's a problem with this upload. Try again later or contact us for help.")).toBeTruthy();
+      });
     });
   });
 });

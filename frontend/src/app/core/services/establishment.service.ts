@@ -245,6 +245,12 @@ export class EstablishmentService {
     return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/capacity`, data);
   }
 
+  workplaceOrSubHasTrainingCertificates(workplaceUid: string) {
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/hasTrainingCertificates`,
+    );
+  }
+
   getJobs() {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/jobs`);
   }

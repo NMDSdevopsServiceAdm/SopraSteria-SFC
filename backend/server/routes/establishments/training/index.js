@@ -5,6 +5,7 @@ const router = express.Router({ mergeParams: true });
 // all user functionality is encapsulated
 const Training = require('../../../models/classes/training').Training;
 const MandatoryTraining = require('../../../models/classes/mandatoryTraining').MandatoryTraining;
+const TrainingCertificateRoute = require('../workerCertificate/trainingCertificate');
 
 const { hasPermission } = require('../../../utils/security/hasPermission');
 
@@ -157,6 +158,7 @@ const deleteTrainingRecord = async (req, res) => {
   const establishmentId = req.establishmentId;
   const trainingUid = req.params.trainingUid;
   const workerUid = req.params.workerId;
+  const establishmentUid = req.params.id;
 
   const thisTrainingRecord = new Training(establishmentId, workerUid);
 
@@ -167,13 +169,42 @@ const deleteTrainingRecord = async (req, res) => {
     if (await thisTrainingRecord.restore(trainingUid)) {
       // TODO: JSON validation
 
+      const trainingCertificates = thisTrainingRecord?._trainingCertificates;
+
+      if (trainingCertificates?.length > 0) {
+        let trainingCertificatesfilesToDeleteFromS3 = [];
+        let trainingCertificatesUidsToDeleteFromDb = [];
+
+        for (const trainingCertificate of trainingCertificates) {
+          let fileKey = TrainingCertificateRoute.makeFileKey(
+            establishmentUid,
+            workerUid,
+            trainingUid,
+            trainingCertificate.uid,
+          );
+
+          trainingCertificatesUidsToDeleteFromDb.push(trainingCertificate.uid);
+          trainingCertificatesfilesToDeleteFromS3.push({ Key: fileKey });
+        }
+
+        const deletedTrainingCertificatesFromDatabase = await TrainingCertificateRoute.deleteRecordsFromDatabase(
+          trainingCertificatesUidsToDeleteFromDb,
+        );
+
+        if (deletedTrainingCertificatesFromDatabase) {
+          await TrainingCertificateRoute.deleteCertificatesFromS3(trainingCertificatesfilesToDeleteFromS3);
+        } else {
+          console.log('Failed to delete training certificates');
+          return res.status(500).send();
+        }
+      }
+
       // by deleting after the restore we can be sure this training record belongs to the given worker
       const deleteSuccess = await thisTrainingRecord.delete();
-
       if (deleteSuccess) {
         return res.status(204).json();
       } else {
-        return res.status(404).json('Not Found');
+        return res.status(404).send('Not Found');
       }
     } else {
       // not found worker
@@ -190,7 +221,9 @@ router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
 router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
 router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
 router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);
+router.use('/:trainingUid/certificate', TrainingCertificateRoute);
 
 module.exports = router;
 module.exports.getTrainingListWithMissingMandatoryTraining = getTrainingListWithMissingMandatoryTraining;
 module.exports.createSingleTrainingRecord = createSingleTrainingRecord;
+module.exports.deleteTrainingRecord = deleteTrainingRecord;

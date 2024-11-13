@@ -1,6 +1,9 @@
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { ErrorReport } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { UserService } from '@core/services/user.service';
 import { build, fake } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
 
@@ -68,12 +71,28 @@ export const errorReport = {
 
 @Injectable()
 export class MockBulkUploadService extends BulkUploadService {
+  public static factory(overrides: any = {}) {
+    return (httpClient: HttpClient, establishmentService: EstablishmentService, userService: UserService) => {
+      const service = new MockBulkUploadService(httpClient, establishmentService, userService);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        service[overrideName] = overrides[overrideName];
+      });
+
+      return service;
+    };
+  }
+
   public errorReport(establishmentUid): Observable<ErrorReport> {
     return of(errorReport);
   }
 
   public nextMissingReferencesNavigation(): string[] {
     return ['1'];
+  }
+
+  public getBulkUploadStatus(establishmentUid): Observable<string> {
+    return of('');
   }
 }
 
