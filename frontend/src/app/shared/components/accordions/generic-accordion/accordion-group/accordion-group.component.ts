@@ -9,7 +9,7 @@ export class AccordionGroupComponent implements AfterContentInit {
   @Input() textShowHideAll?: string = 'sections';
   @ContentChildren(AccordionItemComponent) children: QueryList<AccordionItemComponent>;
 
-  expandedChildren = new Set<number>();
+  private expandedChildren = new Set<number>();
 
   ngAfterContentInit() {
     this.children.forEach((child, index) => {
@@ -36,14 +36,14 @@ export class AccordionGroupComponent implements AfterContentInit {
     this.expandedChildren = new Set(childrenWhichAreOpening);
   }
 
-  showAll() {
+  public showAll() {
     this.children.forEach((child) => {
       child.expanded = true;
     });
     this.updateState();
   }
 
-  hideAll() {
+  public hideAll() {
     this.children.forEach((child) => {
       child.expanded = false;
     });

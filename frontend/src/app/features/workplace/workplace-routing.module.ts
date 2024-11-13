@@ -64,7 +64,7 @@ import { UsersComponent } from './users/users.component';
 import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-import { VacanciesJobRoleSelectionComponent } from './vacancies-job-role-selection/vacancies-job-role-selection.component';
+import { VacanciesJobRolesSelectionComponent } from './vacancies-job-roles-selection/vacancies-job-roles-selection.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -272,8 +272,8 @@ const routes: Routes = [
         },
       },
       {
-        path: 'vacancies-job-role-selection',
-        component: VacanciesJobRoleSelectionComponent,
+        path: 'vacancies-job-roles-selection',
+        component: VacanciesJobRolesSelectionComponent,
         // canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
         data: {

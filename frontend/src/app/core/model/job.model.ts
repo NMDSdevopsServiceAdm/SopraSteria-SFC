@@ -5,6 +5,12 @@ export interface Job {
   jobRoleGroup?: string;
 }
 
+export interface JobGroup {
+  title: string;
+  descriptionText: string;
+  items: Job[];
+}
+
 export interface GetJobsResponse {
   jobs: Job[];
 }
