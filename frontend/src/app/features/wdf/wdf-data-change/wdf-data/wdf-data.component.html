@@ -22,7 +22,7 @@
 
 <ng-container *ngIf="isStandalone; else parentView">
   <app-select-view-panel
-    [tabs]="tabs.names"
+    [tabs]="tabs"
     (handleTabChange)="handleTabChange($event)"
   >
   </app-select-view-panel>

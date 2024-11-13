@@ -47,7 +47,7 @@ export class WdfDataComponent implements OnInit {
   public overallWdfEligibility: boolean;
   public isParent: boolean;
   public workplaces = [];
-  public tabs: { names: string[], fragments: string[] } = { names: ['Workplace', 'Staff records'], fragments: ['workplace', 'staff'] };
+  public tabs: { name: string, fragment: string }[] = [ { name: 'Workplace', fragment: 'workplace' }, { name: 'Staff records', fragment: 'staff' }];
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -87,13 +87,9 @@ export class WdfDataComponent implements OnInit {
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
     this.route.fragment.subscribe((fragment) => {
-        const selectedTabIndex = this.tabs.fragments.findIndex((tabName) => tabName === fragment);
+        const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
         this.activeTabIndex = selectedTabIndex ?? 0;
     });
-  }
-
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
   }
 
   private setWorkplace(): void {
@@ -178,5 +174,9 @@ export class WdfDataComponent implements OnInit {
     this.parentOverallWdfEligibility = !this.workplaces.some((workplace) => {
       return workplace.wdf.overall === false;
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }

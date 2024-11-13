@@ -4,7 +4,7 @@ import { spy } from 'sinon';
 import { SelectViewPanelComponent } from './select-view-panel.component';
 
 describe('SelectViewPanelComponent', () => {
-  async function setup(overrides: {tabs?: string[]} = {}) {
+  async function setup(overrides: {tabs?: any[]} = {}) {
     const setupSuite = await render(SelectViewPanelComponent, {
       imports: [],
       declarations: [],
@@ -13,7 +13,7 @@ describe('SelectViewPanelComponent', () => {
         handleTabChange: {
           emit: spy(),
         } as any,
-        tabs: ['Tab0', 'Tab1'],
+        tabs: [{ name: 'Tab0', fragment: 'tab0' }, { name: 'Tab1', fragment: 'tab1' }],
         ...overrides,
       },
     });
@@ -35,14 +35,14 @@ describe('SelectViewPanelComponent', () => {
 
   describe('Two tabs', () => {
     async function setupTwoTabs() {
-      const tabs = ['Tab0', 'Tab1'];
+      const tabs = [{ name: 'Tab0', fragment: 'tab0' }, { name: 'Tab1', fragment: 'tab1' }];
 
       const setupSuite = await setup({ tabs });
 
       const firstTab = setupSuite.getByTestId('tab0');
       const secondTab = setupSuite.getByTestId('tab1');
-      const firstTabLink = within(firstTab).getByText(tabs[0]);
-      const secondTabLink = within(secondTab).getByText(tabs[1]);
+      const firstTabLink = within(firstTab).getByText(tabs[0].name);
+      const secondTabLink = within(secondTab).getByText(tabs[1].name);
 
       return { ...setupSuite, firstTab, secondTab, firstTabLink, secondTabLink, tabs }
     }
