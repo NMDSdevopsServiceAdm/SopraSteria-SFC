@@ -98,6 +98,12 @@ module.exports = function (sequelize, DataTypes) {
       targetKey: 'id',
       as: 'category',
     });
+    WorkerTraining.hasMany(models.trainingCertificates, {
+      foreignKey: 'workerTrainingFk',
+      sourceKey: 'id',
+      as: 'trainingCertificates',
+      onDelete: 'CASCADE',
+    });
   };
 
   WorkerTraining.fetchTrainingByCategoryForEstablishment = async function (
