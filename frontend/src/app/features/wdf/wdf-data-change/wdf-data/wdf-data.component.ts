@@ -42,11 +42,12 @@ export class WdfDataComponent implements OnInit {
   public newHomeDesignFlag: boolean;
   public standAloneAccount = false;
   private subscriptions: Subscription = new Subscription();
-  public viewWDFData = false;
+  public activeTabIndex: number;
   public parentOverallWdfEligibility: boolean;
   public overallWdfEligibility: boolean;
   public isParent: boolean;
   public workplaces = [];
+  public tabs: { names: string[], fragments: string[] } = { names: ['Workplace', 'Staff records'], fragments: ['workplace', 'staff'] };
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -85,11 +86,9 @@ export class WdfDataComponent implements OnInit {
 
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
-
-    this.route.fragment.subscribe((params) => {
-      if (params === 'workplace') {
-        this.viewWDFData = true;
-      }
+    this.route.fragment.subscribe((fragment) => {
+        const selectedTabIndex = this.tabs.fragments.findIndex((tabName) => tabName === fragment);
+        this.activeTabIndex = selectedTabIndex ?? 0;
     });
   }
 
@@ -99,7 +98,6 @@ export class WdfDataComponent implements OnInit {
 
   private setWorkplace(): void {
     this.workplace = this.route.snapshot.data?.workplace;
-    this.isStandalone = this.checkIfStandalone();
     this.setBreadcrumbs();
     this.establishmentService.setState(this.workplace);
   }
@@ -128,8 +126,8 @@ export class WdfDataComponent implements OnInit {
     );
   }
 
-  public handleTabChange(visible: boolean): void {
-    this.viewWDFData = visible;
+  public handleTabChange(activeTabIndex: number): void {
+    this.activeTabIndex = activeTabIndex;
   }
 
   private setWorkerCount() {
@@ -158,19 +156,9 @@ export class WdfDataComponent implements OnInit {
   }
 
   private setBreadcrumbs(): void {
-    this.isStandalone
+    this.standAloneAccount
       ? this.breadcrumbService.show(JourneyType.WDF)
       : this.breadcrumbService.show(JourneyType.WDF_PARENT);
-  }
-
-  private checkIfStandalone(): boolean {
-    if (this.workplace) {
-      if (this.primaryWorkplaceUid !== this.workplaceUid) {
-        return false;
-      }
-      return !this.workplace.isParent;
-    }
-    return true;
   }
 
   private getParentAndSubs(): void {

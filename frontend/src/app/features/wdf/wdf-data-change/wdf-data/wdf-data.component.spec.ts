@@ -21,13 +21,14 @@ import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summar
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { getByText, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
 import { WdfModule } from '../wdf.module';
 import { WdfDataComponent } from './wdf-data.component';
 
 describe('WdfDataComponent', () => {
-  const setup = async () => {
+  const setup = async (overrides: any = {}) => {
     const establishment = establishmentBuilder() as Establishment;
 
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfDataComponent, {
@@ -47,7 +48,8 @@ describe('WdfDataComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { data: { workplace: establishment }, params: { establishmentuid: 'abc123' } },
+            snapshot: { data: { workplace: establishment }, params: { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } },
+            fragment: of(overrides.fragment ?? 'workplace'),
           },
         },
       ],
@@ -86,6 +88,22 @@ describe('WdfDataComponent', () => {
 
       expect(getByText(headerText)).toBeTruthy();
     })
+  })
+
+  describe('Tabs', () => {
+    it('should display the workplace tab when workplace fragment in params', async () => {
+      const { fixture, getByTestId } = await setup({ fragment: 'workplace' });
+
+      fixture.detectChanges()
+      expect(getByTestId('workplaceSummaryTab')).toBeTruthy();
+    });
+
+    it('should display the staff records tab when staff-records fragment in params', async () => {
+      const { fixture, getByTestId } = await setup({ fragment: 'staff' });
+
+      fixture.detectChanges()
+      expect(getByTestId('staffRecordsTab')).toBeTruthy();
+    });
   })
 
   describe('getStaffWdfEligibility', () => {

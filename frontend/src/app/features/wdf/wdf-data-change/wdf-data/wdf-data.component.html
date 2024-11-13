@@ -20,15 +20,15 @@
   </div>
 </div>
 
-<ng-container *ngIf="standAloneAccount && newHomeDesignFlag; else parentView">
+<ng-container *ngIf="isStandalone; else parentView">
   <app-select-view-panel
-    [falseSelectionName]="'Workplace'"
-    [trueSelectionName]="'Staff'"
-    (handleViewToggle)="handleTabChange($event)"
+    [tabs]="tabs.names"
+    (handleTabChange)="handleTabChange($event)"
   >
   </app-select-view-panel>
   <app-wdf-workplace-summary
-    *ngIf="!viewWDFData && workplace"
+    *ngIf="activeTabIndex === 0 && workplace"
+    data-testid="workplaceSummaryTab"
     [workplace]="workplace"
     [workerCount]="workerCount"
     [return]="returnUrl"
@@ -38,7 +38,8 @@
   ></app-wdf-workplace-summary>
 
   <app-wdf-staff-summary
-    *ngIf="viewWDFData && workers && workplace"
+    *ngIf="activeTabIndex === 1 && workers && workplace"
+    data-testid="staffRecordsTab"
     [workplace]="workplace"
     [workers]="workers"
     [standAloneAccount]="standAloneAccount"

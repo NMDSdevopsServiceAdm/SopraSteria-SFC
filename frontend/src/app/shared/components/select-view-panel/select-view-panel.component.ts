@@ -6,15 +6,14 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./select-view-panel.component.scss'],
 })
 export class SelectViewPanelComponent {
-  @Input() falseSelectionName: string;
-  @Input() trueSelectionName: string;
-  @Output() handleViewToggle: EventEmitter<boolean> = new EventEmitter();
+  @Input() tabs: string[];
+  @Output() handleTabChange: EventEmitter<number> = new EventEmitter();
 
-  public toggleBoolean: boolean;
+  public activeTabIndex: number = 0;
 
-  public handleViewChange(event: Event, toggle: boolean): void {
+  public handleViewChange(event: Event, index: number): void {
     event.preventDefault();
-    this.toggleBoolean = toggle;
-    this.handleViewToggle.emit(toggle);
+    this.activeTabIndex = index;
+    this.handleTabChange.emit(index);
   }
 }

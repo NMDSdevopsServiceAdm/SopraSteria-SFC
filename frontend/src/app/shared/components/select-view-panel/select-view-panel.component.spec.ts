@@ -1,29 +1,30 @@
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { spy } from 'sinon';
 
 import { SelectViewPanelComponent } from './select-view-panel.component';
 
 describe('SelectViewPanelComponent', () => {
-  async function setup() {
-    const { fixture, getByTestId } = await render(SelectViewPanelComponent, {
+  async function setup(overrides: {tabs?: string[]} = {}) {
+    const setupSuite = await render(SelectViewPanelComponent, {
       imports: [],
       declarations: [],
       providers: [],
       componentProperties: {
-        handleViewToggle: {
+        handleTabChange: {
           emit: spy(),
         } as any,
+        tabs: ['Tab0', 'Tab1'],
+        ...overrides,
       },
     });
 
-    const component = fixture.componentInstance;
-    const toggleViewSpy = spyOn(component.handleViewToggle, 'emit').and.callThrough();
+    const component = setupSuite.fixture.componentInstance;
+    const handleTabChangeSpy = spyOn(component.handleTabChange, 'emit').and.callThrough();
 
     return {
       component,
-      fixture,
-      getByTestId,
-      toggleViewSpy,
+      handleTabChangeSpy,
+      ...setupSuite,
     };
   }
 
@@ -32,53 +33,58 @@ describe('SelectViewPanelComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the false selection link as active when toggleBoolean is false', async () => {
-    const { getByTestId } = await setup();
+  describe('Two tabs', () => {
+    async function setupTwoTabs() {
+      const tabs = ['Tab0', 'Tab1'];
 
-    const falseItem = getByTestId('falseItem');
-    const trueItem = getByTestId('trueItem');
-    const falseLink = getByTestId('falseLink');
-    const trueLink = getByTestId('trueLink');
+      const setupSuite = await setup({ tabs });
 
-    expect(falseItem.getAttribute('class')).toContain('asc-tabs__list-item--active');
-    expect(falseLink.getAttribute('class')).toContain('asc-tabs__link--active');
-    expect(trueItem.getAttribute('class')).not.toContain('asc-tabs__list-item--active');
-    expect(trueLink.getAttribute('class')).not.toContain('asc-tabs__link--active');
-  });
+      const firstTab = setupSuite.getByTestId('tab0');
+      const secondTab = setupSuite.getByTestId('tab1');
+      const firstTabLink = within(firstTab).getByText(tabs[0]);
+      const secondTabLink = within(secondTab).getByText(tabs[1]);
 
-  it('should show the true selection link as active when toggleBoolean is true', async () => {
-    const { component, fixture, getByTestId } = await setup();
+      return { ...setupSuite, firstTab, secondTab, firstTabLink, secondTabLink, tabs }
+    }
 
-    component.toggleBoolean = true;
-    fixture.detectChanges();
+    it('should set the first tab as active on load', async () => {
+      const { firstTab, firstTabLink, secondTab, secondTabLink } = await setupTwoTabs();
 
-    const falseItem = getByTestId('falseItem');
-    const trueItem = getByTestId('trueItem');
-    const falseLink = getByTestId('falseLink');
-    const trueLink = getByTestId('trueLink');
+      expect(firstTab.getAttribute('class')).toContain('asc-tabs__list-item--active');
+      expect(firstTabLink.getAttribute('class')).toContain('asc-tabs__link--active');
+      expect(secondTab.getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+      expect(secondTabLink.getAttribute('class')).not.toContain('asc-tabs__link--active');
+    });
 
-    expect(trueItem.getAttribute('class')).toContain('asc-tabs__list-item--active');
-    expect(trueLink.getAttribute('class')).toContain('asc-tabs__link--active');
-    expect(falseItem.getAttribute('class')).not.toContain('asc-tabs__list-item--active');
-    expect(falseLink.getAttribute('class')).not.toContain('asc-tabs__link--active');
-  });
+    it('should set the second tab as active after clicking second tab', async () => {
+      const { fixture, firstTab, firstTabLink, secondTab, secondTabLink } = await setupTwoTabs();
 
-  it('should emit handleViewToggle with true when the true link is clicked', async () => {
-    const { getByTestId, toggleViewSpy } = await setup();
+      fireEvent.click(secondTabLink);
+      fixture.detectChanges();
 
-    const trueLink = getByTestId('trueLink');
-    fireEvent.click(trueLink);
+      expect(secondTab.getAttribute('class')).toContain('asc-tabs__list-item--active');
+      expect(secondTabLink.getAttribute('class')).toContain('asc-tabs__link--active');
+      expect(firstTab.getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+      expect(firstTabLink.getAttribute('class')).not.toContain('asc-tabs__link--active');
+    });
 
-    expect(toggleViewSpy).toHaveBeenCalledWith(true);
-  });
+    it('should emit handleTabChange with second index (1) when second tab is clicked', async () => {
+      const { handleTabChangeSpy, secondTabLink } = await setupTwoTabs();
 
-  it('should emit handleViewToggle with false when the false link is clicked', async () => {
-    const { component, getByTestId, toggleViewSpy } = await setup();
+      fireEvent.click(secondTabLink);
 
-    component.toggleBoolean = true;
-    const falseLink = getByTestId('falseLink');
-    fireEvent.click(falseLink);
+      expect(handleTabChangeSpy).toHaveBeenCalledWith(1);
+    });
 
-    expect(toggleViewSpy).toHaveBeenCalledWith(false);
+    it('should emit handleTabChange with first index (0) when the first tab link is clicked', async () => {
+      const { component, fixture, handleTabChangeSpy, firstTabLink } = await setupTwoTabs();
+
+      component.activeTabIndex = 1;
+      fixture.detectChanges();
+
+      fireEvent.click(firstTabLink);
+
+      expect(handleTabChangeSpy).toHaveBeenCalledWith(0);
+    });
   });
 });
