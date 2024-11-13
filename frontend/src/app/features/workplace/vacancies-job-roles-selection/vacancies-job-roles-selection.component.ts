@@ -7,6 +7,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Job, JobGroup } from '@core/model/job.model';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import { Vacancy } from '@core/model/establishment.model';
 
 @Component({
   selector: 'app-vacancies-job-roles-selection',
@@ -18,6 +19,7 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   public jobsAvailable: Job[] = [];
   public jobGroups: JobGroup[] = [];
   public errorMessageOnEmptyInput = 'Select job roles for all your current staff vacancies';
+  private vacancies: Vacancy[] = [];
   private prefilledJobIds: number[] = [];
   private summaryText = {
     'Care providing roles': 'care worker, community support, support worker',
@@ -54,6 +56,7 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
 
   private prefill(): void {
     if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
+      this.vacancies = this.establishment.vacancies;
       this.prefilledJobIds = this.establishment.vacancies.map((vacancy) => Number(vacancy.jobId));
       this.form.patchValue({ selectedJobRoles: this.prefilledJobIds });
     }
@@ -79,7 +82,7 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
       if (formControl.value?.length > 0) {
         return null;
       } else {
-        return { minLength: true };
+        return { selectedNone: true };
       }
     };
   }
@@ -97,18 +100,6 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
     }
   }
 
-  // public submitJobRolesSelection(event: Event) {
-  //   event.preventDefault();
-  //   this.submitted = true;
-
-  //   this.addErrorLinkFunctionality();
-  //   this.createDynamicErrorMessaging();
-
-  //   if (this.form.invalid) {
-  //     this.accordion.showAll();
-  //   }
-  // }
-
   public onSubmit(): void {
     if (this.form.invalid) {
       this.accordion.showAll();
@@ -121,13 +112,23 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
     this.sortJobsByJobGroup(this.jobsAvailable);
   }
 
+  private storeSelectedJobRolesInLocalStorage(): void {
+    const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
+    const updatedVacancies: Vacancy[] = selectedJobIds.map((jobId) => {
+      const job = this.jobsAvailable.find((job) => job.id === jobId);
+      const vacancyNumber = this.vacancies.find((vacancy) => vacancy.jobId === jobId)?.total ?? null;
+      return { jobId, title: job.title, total: vacancyNumber };
+    });
+    localStorage.setItem('updated-vacancies', JSON.stringify(updatedVacancies));
+  }
+
   protected setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'selectedJobRoles',
         type: [
           {
-            name: 'minLength',
+            name: 'selectedNone',
             message: this.errorMessageOnEmptyInput,
           },
         ],
@@ -135,19 +136,10 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
     ];
   }
 
-  protected createDynamicErrorMessaging(): void {
-    this.setupFormErrorsMap();
-  }
-
-  protected addErrorLinkFunctionality(): void {
-    if (!this.errorSummaryService.formEl$.value) {
-      this.errorSummaryService.formEl$.next(this.formEl);
-    }
-  }
-
   protected onSuccess(): void {}
 
   protected generateUpdateProps() {
+    // suppress the default action of making calls to backend
     return null;
   }
 
