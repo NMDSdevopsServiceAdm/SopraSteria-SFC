@@ -18,22 +18,21 @@ const TRANSFER_STAFF_RECORD_ERRORS = {
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     column: 'TRANSFERSTAFFRECORD',
     _sourceFieldName: 'transferStaffRecord',
-    error: 'Cannot find an existing workplace with the reference provided in TRANSFERSTAFFRECORD',
+    error: 'The LOCALESTID in TRANSFERSTAFFRECORD does not exist',
   }),
   SameLocalIdExistInNewWorkplace: Object.freeze({
     errCode: TRANSFER_STAFF_RECORD_BASE_ERROR_CODE + 2,
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     column: 'UNIQUEWORKERID',
     _sourceFieldName: 'uniqueWorkerId',
-    error: 'The UNIQUEWORKERID for this worker is already used in the new workplace given in TRANSFERSTAFFRECORD',
+    error: 'The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD',
   }),
   SameRefsMovingToWorkplace: Object.freeze({
     errCode: TRANSFER_STAFF_RECORD_BASE_ERROR_CODE + 3,
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     column: 'UNIQUEWORKERID',
     _sourceFieldName: 'uniqueWorkerId',
-    error:
-      'There are more than one worker with this UNIQUEWORKERID moving into the new workplace given in TRANSFERSTAFFRECORD.',
+    error: 'Duplicate UNIQUEWORKERID’s are being moved to the same LOCALESTID in TRANSFERSTAFFRECORD',
   }),
 };
 

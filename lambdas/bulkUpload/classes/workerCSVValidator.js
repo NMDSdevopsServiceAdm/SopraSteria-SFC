@@ -777,7 +777,7 @@ class WorkerCsvValidator {
         lineNumber: this._lineNumber,
         errCode: WorkerCsvValidator.TRANSFERSTAFFRECORD_ERROR,
         errType: 'TRANSFERSTAFFRECORD_ERROR',
-        error: `TRANSFERSTAFFRECORD is provided but cannot find the worker in the given workplace`,
+        error: 'Staff record has TRANSFERSTAFFRECORD given but does not exist',
         source: this._currentLine.LOCALESTID,
         column: 'LOCALESTID',
       });

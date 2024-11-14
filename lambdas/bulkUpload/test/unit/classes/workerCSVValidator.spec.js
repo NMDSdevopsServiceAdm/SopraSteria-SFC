@@ -1448,7 +1448,7 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           lineNumber: 2,
           errCode: WorkerCsvValidator.TRANSFERSTAFFRECORD_ERROR,
           errType: 'TRANSFERSTAFFRECORD_ERROR',
-          error: 'TRANSFERSTAFFRECORD is provided but cannot find the worker in the given workplace',
+          error: 'Staff record has TRANSFERSTAFFRECORD given but does not exist',
           source: worker.LOCALESTID,
           column: 'LOCALESTID',
           name: 'MARMA',
