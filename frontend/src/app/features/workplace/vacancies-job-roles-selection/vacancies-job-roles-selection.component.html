@@ -22,7 +22,7 @@
             <p *ngIf="submitted && form.invalid" id="selectedJobRoles-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ errorMessageOnEmptyInput }}
             </p>
-            <app-accordion-item
+            <app-accordion-section
               *ngFor="let group of jobGroups"
               [title]="group.title"
               [description]="group.descriptionText"
@@ -61,7 +61,7 @@
                   </div>
                 </ng-container>
               </ng-container>
-            </app-accordion-item>
+            </app-accordion-section>
           </app-accordion-group>
         </div>
       </fieldset>

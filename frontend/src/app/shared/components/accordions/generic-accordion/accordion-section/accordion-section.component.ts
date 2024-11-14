@@ -1,10 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-accordion-item',
-  templateUrl: './accordion-item.component.html',
+  selector: 'app-accordion-section',
+  templateUrl: './accordion-section.component.html',
 })
-export class AccordionItemComponent implements OnInit {
+export class AccordionSectionComponent implements OnInit {
   @Input() title: string;
   @Input() description?: string;
   @Input() expandedAtStart: boolean = false;

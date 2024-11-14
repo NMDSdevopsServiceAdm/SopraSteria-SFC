@@ -1,5 +1,5 @@
 import { AfterContentInit, Component, ContentChildren, Input, QueryList } from '@angular/core';
-import { AccordionItemComponent } from '../accordion-item/accordion-item.component';
+import { AccordionSectionComponent } from '../accordion-section/accordion-section.component';
 
 @Component({
   selector: 'app-accordion-group',
@@ -7,7 +7,7 @@ import { AccordionItemComponent } from '../accordion-item/accordion-item.compone
 })
 export class AccordionGroupComponent implements AfterContentInit {
   @Input() contentName?: string = 'sections';
-  @ContentChildren(AccordionItemComponent) children: QueryList<AccordionItemComponent>;
+  @ContentChildren(AccordionSectionComponent) children: QueryList<AccordionSectionComponent>;
 
   private expandedChildren = new Set<number>();
 

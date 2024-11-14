@@ -13,12 +13,12 @@ fdescribe('AccordionGroupComponent', () => {
 
     const testTemplate = `
       <app-accordion-group ${accordionGroupPropsInTemplate}>
-        <app-accordion-item title='Care providing roles' description='Jobs like care worker, community support, support worker'>
+        <app-accordion-section title='Care providing roles' description='Jobs like care worker, community support, support worker'>
           <p>Content of 1st accordion section</p>
-        </app-accordion-item>
-        <app-accordion-item title='Professional and related roles' description='Jobs like occupational therapist, registered nurse, nursing assistant'>
+        </app-accordion-section>
+        <app-accordion-section title='Professional and related roles' description='Jobs like occupational therapist, registered nurse, nursing assistant'>
           <p>Content of 2nd accordion section</p>
-        </app-accordion-item>
+        </app-accordion-section>
       </app-accordion-group>
     `;
 
