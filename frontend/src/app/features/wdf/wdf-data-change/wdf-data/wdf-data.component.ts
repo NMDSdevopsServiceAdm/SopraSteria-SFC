@@ -88,7 +88,7 @@ export class WdfDataComponent implements OnInit {
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
     this.route.fragment.subscribe((fragment) => {
         const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
-        this.activeTabIndex = selectedTabIndex ?? 0;
+        this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
     });
   }
 

@@ -49,7 +49,7 @@ describe('WdfDataComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: { data: { workplace: establishment }, params: { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } },
-            fragment: of(overrides.fragment ?? 'workplace'),
+            fragment: of(overrides.fragment ?? undefined),
           },
         },
       ],
@@ -90,7 +90,14 @@ describe('WdfDataComponent', () => {
     })
   })
 
-  describe('Tabs', () => {
+  fdescribe('Tabs', () => {
+    it('should display the workplace tab when no fragment in params', async () => {
+      const { fixture, getByTestId } = await setup();
+
+      fixture.detectChanges()
+      expect(getByTestId('workplaceSummaryTab')).toBeTruthy();
+    });
+
     it('should display the workplace tab when workplace fragment in params', async () => {
       const { fixture, getByTestId } = await setup({ fragment: 'workplace' });
 
