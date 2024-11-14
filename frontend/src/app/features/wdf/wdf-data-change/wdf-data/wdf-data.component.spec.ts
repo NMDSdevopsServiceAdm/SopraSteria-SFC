@@ -90,7 +90,7 @@ describe('WdfDataComponent', () => {
     })
   })
 
-  fdescribe('Tabs', () => {
+  describe('Tabs', () => {
     it('should display the workplace tab when no fragment in params', async () => {
       const { fixture, getByTestId } = await setup();
 
