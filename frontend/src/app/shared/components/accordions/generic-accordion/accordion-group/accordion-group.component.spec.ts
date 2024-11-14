@@ -1,20 +1,15 @@
 import { FormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 fdescribe('AccordionGroupComponent', () => {
   const setup = async (override: any = {}) => {
-    const componentProperties = {
+    const componentProps = {
       contentName: override.contentName,
     };
 
-    let accordionGroupPropsInTemplate = '';
-    for (const key in componentProperties) {
-      if (componentProperties[key]) {
-        accordionGroupPropsInTemplate += ` [${key}]='${key}'`;
-      }
-    }
+    const accordionGroupPropsInTemplate = override.contentName ? " [contentName]='contentName'" : '';
 
     const testTemplate = `
       <app-accordion-group ${accordionGroupPropsInTemplate}>
@@ -27,15 +22,15 @@ fdescribe('AccordionGroupComponent', () => {
       </app-accordion-group>
     `;
 
-    const { fixture, getByText, getByTestId, getAllByText, queryByText } = await render(testTemplate, {
+    const { fixture, getByText, getByTestId, getAllByText, getByLabelText, queryByText } = await render(testTemplate, {
       imports: [SharedModule, FormsModule],
       providers: [],
-      componentProperties,
+      componentProperties: componentProps,
     });
 
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getByTestId, getAllByText, queryByText };
+    return { component, fixture, getByText, getByTestId, getAllByText, getByLabelText, queryByText };
   };
 
   it('should create', async () => {
@@ -48,14 +43,14 @@ fdescribe('AccordionGroupComponent', () => {
       const { getByText } = await setup();
 
       const toggleText = getByText('Show all sections');
-      expect(toggleText).toBeTruthy;
+      expect(toggleText).toBeTruthy();
     });
 
     it('should display a customised toggle text if given', async () => {
       const { getByText } = await setup({ contentName: 'job roles' });
 
       const toggleText = getByText('Show all job roles');
-      expect(toggleText).toBeTruthy;
+      expect(toggleText).toBeTruthy();
     });
 
     it('should display a toggle button for each accordion section', async () => {
@@ -67,49 +62,67 @@ fdescribe('AccordionGroupComponent', () => {
   });
 
   describe('behaviour', () => {
-    it('should hide all contents by default', async () => {
-      const { queryByText } = await setup();
+    const isHidden = (element: HTMLElement): boolean => {
+      const showButtonFound = within(element.parentElement).queryByText('Show');
+      return !!showButtonFound;
+    };
 
-      const sectionOneContent = queryByText('Content of 1st accordion section');
-      const sectionTwoContent = queryByText('Content of 2nd accordion section');
+    it('should hide all accordion sections by default', async () => {
+      const { getByLabelText } = await setup();
 
-      expect(sectionOneContent).toBeFalsy;
-      expect(sectionTwoContent).toBeFalsy;
+      const sectionOne = getByLabelText('Care providing roles');
+      const sectionTwo = getByLabelText('Professional and related roles');
+
+      expect(isHidden(sectionOne)).toBeTrue();
+      expect(isHidden(sectionTwo)).toBeTrue();
     });
 
     it('should expand all the accordion sections when "Show all" button is clicked', async () => {
-      const { fixture, getByText, queryByText, getAllByText } = await setup({ contentName: 'job roles' });
+      const { fixture, getByText, getByLabelText } = await setup({
+        contentName: 'job roles',
+      });
 
       const showAll = getByText('Show all job roles');
       userEvent.click(showAll);
       fixture.detectChanges();
 
-      const sectionOneContent = getByText('Content of 1st accordion section');
-      const sectionTwoContent = getByText('Content of 2nd accordion section');
+      const sectionOne = getByLabelText('Care providing roles');
+      const sectionTwo = getByLabelText('Professional and related roles');
 
-      expect(sectionOneContent).toBeTruthy;
-      expect(sectionTwoContent).toBeTruthy;
-
-      expect(queryByText('Show')).toBeFalsy;
-      expect(getAllByText('Hide').length).toEqual(2);
+      expect(isHidden(sectionOne)).toBeFalse();
+      expect(isHidden(sectionTwo)).toBeFalse();
     });
 
     it('should change the toggle text between "Hide all" and "Show all"', async () => {
       const { fixture, getByText, queryByText } = await setup({ contentName: 'job roles' });
 
-      expect(getByText('Show all job roles')).toBeTruthy;
+      expect(getByText('Show all job roles')).toBeTruthy();
 
       userEvent.click(getByText('Show all job roles'));
       fixture.detectChanges();
 
-      expect(queryByText('Show all job roles')).toBeFalsy;
-      expect(getByText('Hide all job roles')).toBeTruthy;
+      expect(queryByText('Show all job roles')).toBeFalsy();
+      expect(getByText('Hide all job roles')).toBeTruthy();
 
       userEvent.click(getByText('Hide all job roles'));
       fixture.detectChanges();
 
-      expect(queryByText('Hide all job roles')).toBeFalsy;
-      expect(getByText('Show all job roles')).toBeTruthy;
+      expect(queryByText('Hide all job roles')).toBeFalsy();
+      expect(getByText('Show all job roles')).toBeTruthy();
+    });
+
+    it('should show change the toggle text to "Hide all" when every section is opened separately', async () => {
+      const { fixture, getByText, getAllByText, queryByText } = await setup({ contentName: 'job roles' });
+
+      expect(getByText('Show all job roles')).toBeTruthy();
+
+      const showButtons = getAllByText('Show');
+      showButtons.forEach((button) => userEvent.click(button));
+
+      fixture.detectChanges();
+
+      expect(queryByText('Show all job roles')).toBeFalsy();
+      expect(getByText('Hide all job roles')).toBeTruthy();
     });
   });
 });
