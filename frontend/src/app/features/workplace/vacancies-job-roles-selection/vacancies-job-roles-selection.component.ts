@@ -45,6 +45,11 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
   }
 
+  private getJobs(): void {
+    this.jobsAvailable = this.route.snapshot.data.jobs;
+    this.jobGroups = JobService.sortJobsByJobGroup(this.jobsAvailable);
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
       selectedJobRoles: [[], this.validateForm()],
@@ -102,19 +107,26 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
     super.onSubmit();
   }
 
-  private getJobs(): void {
-    this.jobsAvailable = this.route.snapshot.data.jobs;
-    this.jobGroups = JobService.sortJobsByJobGroup(this.jobsAvailable);
+  protected onSuccess(): void {
+    this.storeSelectedJobRolesInLocalStorage();
   }
 
   private storeSelectedJobRolesInLocalStorage(): void {
     const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
+    const otherCareProvidingRoleName: string = this.form.get('otherCareProvidingRoleName').value;
+
     const updatedVacancies: Vacancy[] = selectedJobIds.map((jobId) => {
       const job = this.jobsAvailable.find((job) => job.id === jobId);
       const vacancyNumber = this.vacancies.find((vacancy) => vacancy.jobId === jobId)?.total ?? null;
+      if (job.id === this.jobIdOfCareProvidingRoleOther && otherCareProvidingRoleName) {
+        return { jobId, title: job.title, total: vacancyNumber, other: otherCareProvidingRoleName };
+      }
+
       return { jobId, title: job.title, total: vacancyNumber };
     });
-    localStorage.setItem('updated-vacancies', JSON.stringify(updatedVacancies));
+    const dataToStore = { establishmentUid: this.establishment.uid, vacancies: updatedVacancies };
+
+    localStorage.setItem('updated-vacancies', JSON.stringify(dataToStore));
   }
 
   protected setupFormErrorsMap(): void {
@@ -130,8 +142,6 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
       },
     ];
   }
-
-  protected onSuccess(): void {}
 
   protected generateUpdateProps() {
     // suppress the default action of making calls to backend

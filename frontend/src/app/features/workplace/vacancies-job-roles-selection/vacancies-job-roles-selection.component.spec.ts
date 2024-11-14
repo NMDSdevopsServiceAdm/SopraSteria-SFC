@@ -1,5 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
+import { getTestBed, tick } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -75,13 +75,12 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
     const component = renderResults.fixture.componentInstance;
 
     const injector = getTestBed();
-    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    const establishmentServiceSpy = spyOn(establishmentService, 'updateJobs').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
+      routerSpy,
       ...renderResults,
     };
   };
@@ -125,7 +124,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
         });
       });
 
-      it('should render a text input when "Care providing roles --> Other" is ticked', async () => {
+      it('should render a text input when "Care providing roles - Other" is ticked', async () => {
         const { fixture, getByRole, getByLabelText } = await setup();
 
         userEvent.click(getByLabelText('Care providing roles'));
@@ -137,7 +136,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
       });
     });
 
-    describe('submit button', () => {
+    describe('buttons', () => {
       it('should render a "Save and continue" CTA button when in the flow', async () => {
         const { getByRole } = await setup();
         expect(getByRole('button', { name: 'Save and continue' })).toBeTruthy();
@@ -170,7 +169,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
     });
 
     describe('prefill', () => {
-      it('should check the checkboxes of job roles according to vacancies for the workplace', async () => {
+      it('should tick the checkboxes according to previously saved vacancies for the workplace', async () => {
         const mockVacancies: Vacancy[] = [
           {
             jobId: 10,
@@ -194,16 +193,16 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
         const mockVacancies: Vacancy[] = [
           {
             jobId: 10,
-            title: 'Care worker', // belongs to Care providing roles
+            title: 'Care worker',
             total: 2,
           },
         ];
         const { getByLabelText } = await setup({ vacanciesFromDatabase: mockVacancies });
 
-        const accordionForJobGroup1 = getByLabelText('Care providing roles');
+        const sectionForCareProvidingRoles = getByLabelText('Care providing roles');
         const accordionForJobGroup2 = getByLabelText('Professional and related roles');
 
-        expect(within(accordionForJobGroup1).getByText('Hide')).toBeTruthy(); // is expanded
+        expect(within(sectionForCareProvidingRoles).getByText('Hide')).toBeTruthy(); // is expanded
         expect(within(accordionForJobGroup2).getByText('Show')).toBeTruthy(); // not expanded
       });
 
@@ -211,7 +210,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
         const mockVacancies: Vacancy[] = [
           {
             jobId: 20,
-            title: 'Other (directly involved in providing care)', // belongs to Care providing roles
+            title: 'Other (directly involved in providing care)',
             total: 2,
             other: 'Some really special job role name',
           },
@@ -227,9 +226,102 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
   });
 
   describe('form submit and validation', () => {
+    describe('on Success', () => {
+      it('should store the user input data in localStorage', async () => {
+        const { component, getByText, getByRole } = await setup();
+        const localStorageSpy = spyOn(localStorage, 'setItem');
+
+        userEvent.click(getByText('Show all job roles'));
+        userEvent.click(getByText('Care worker'));
+        userEvent.click(getByText('Registered nurse'));
+        userEvent.click(getByText('Other (directly involved in providing care)'));
+
+        const otherJobRoleInput = getByRole('textbox', { name: 'Job role (optional)' });
+        userEvent.type(otherJobRoleInput, 'example job role name');
+
+        userEvent.click(getByText('Save and continue'));
+
+        const expectedData = {
+          establishmentUid: component.establishment.uid,
+          vacancies: [
+            {
+              jobId: 10,
+              title: 'Care worker',
+              total: null,
+            },
+            {
+              jobId: 23,
+              title: 'Registered nurse',
+              total: null,
+            },
+            {
+              jobId: 20,
+              title: 'Other (directly involved in providing care)',
+              total: null,
+              other: 'example job role name',
+            },
+          ],
+        };
+
+        expect(localStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
+      });
+
+      it('should keep any previously input vacancies numbers', async () => {
+        const mockVacanciesFromDatabase: Vacancy[] = [
+          {
+            jobId: 10,
+            title: 'Care worker',
+            total: 3,
+          },
+          {
+            jobId: 23,
+            title: 'Registered nurse',
+            total: 2,
+          },
+        ];
+
+        const { component, getByText } = await setup({ vacanciesFromDatabase: mockVacanciesFromDatabase });
+        const localStorageSpy = spyOn(localStorage, 'setItem');
+
+        userEvent.click(getByText('Show all job roles'));
+        userEvent.click(getByText('Registered nurse')); // untick this job
+        userEvent.click(getByText('Social worker')); // add this job
+        userEvent.click(getByText('Save and continue'));
+
+        const expectedData = {
+          establishmentUid: component.establishment.uid,
+          vacancies: [
+            {
+              jobId: 10,
+              title: 'Care worker',
+              total: 3, // should keep this number for next page
+            },
+            {
+              jobId: 27,
+              title: 'Social worker',
+              total: null,
+            },
+          ],
+        };
+
+        expect(localStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
+      });
+
+      it('should navigate to the number input page', async () => {
+        const { component, getByText, routerSpy } = await setup();
+
+        userEvent.click(getByText('Show all job roles'));
+        userEvent.click(getByText('Registered nurse'));
+        userEvent.click(getByText('Save and continue'));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'vacancies-number']);
+      });
+    });
+
     describe('errors', () => {
       it('should display an error message on submit if no job roles are selected', async () => {
         const { fixture, getByRole, getByText, getByTestId } = await setup();
+        const localStorageSpy = spyOn(localStorage, 'setItem');
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
@@ -242,6 +334,8 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
         expect(getByText('There is a problem')).toBeTruthy();
         const errorSummaryBox = getByText('There is a problem').parentElement;
         expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
+
+        expect(localStorageSpy).not.toHaveBeenCalled();
       });
 
       it('should expand the whole accordion on error', async () => {
