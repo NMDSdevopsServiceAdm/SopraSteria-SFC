@@ -8,7 +8,7 @@ export interface Job {
 export interface JobGroup {
   title: string;
   descriptionText: string;
-  items: Job[];
+  items: { label: string; id: number }[];
 }
 
 export interface GetJobsResponse {
