@@ -3,7 +3,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -12,7 +11,7 @@ import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
@@ -29,8 +28,6 @@ import { WdfDataComponent } from './wdf-data.component';
 
 describe('WdfDataComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const establishment = establishmentBuilder() as Establishment;
-
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfDataComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       declarations: [WdfStaffSummaryComponent, WdfSummaryPanel],
@@ -48,7 +45,7 @@ describe('WdfDataComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { data: { workplace: establishment }, params: { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } },
+            snapshot: { params: { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } },
             fragment: of(overrides.fragment ?? undefined),
           },
         },
@@ -59,7 +56,7 @@ describe('WdfDataComponent', () => {
     });
     const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, establishment };
+    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
   };
 
   it('should render a WdfDataComponent', async () => {
@@ -75,11 +72,11 @@ describe('WdfDataComponent', () => {
 
   describe('Header', () => {
     it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
-      const { component, fixture, getByTestId, establishment } = await setup();
+      const { component, getByTestId } = await setup();
 
 
-      expect(getByTestId('pre-header').innerHTML).toContain(establishment.name);
-      expect(getByTestId('pre-header').innerHTML).toContain(establishment.nmdsId);
+      expect(getByTestId('pre-header').innerHTML).toContain(component.workplace.name);
+      expect(getByTestId('pre-header').innerHTML).toContain(component.workplace.nmdsId);
     })
 
     it('should display header text', async () => {

@@ -93,9 +93,13 @@ export class WdfDataComponent implements OnInit {
   }
 
   private setWorkplace(): void {
-    this.workplace = this.route.snapshot.data?.workplace;
-    this.setBreadcrumbs();
-    this.establishmentService.setState(this.workplace);
+    this.subscriptions.add(
+      this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
+        this.workplace = workplace;
+        this.setBreadcrumbs();
+        this.establishmentService.setState(workplace);
+      }),
+    );
   }
 
   private getWorkers(): void {
