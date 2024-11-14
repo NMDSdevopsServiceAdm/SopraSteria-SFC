@@ -41,12 +41,13 @@
                   />
                   <label class="govuk-label govuk-checkboxes__label" [for]="'job-' + job.id"> {{ job.label }} </label>
                 </div>
-                <ng-container
-                  *ngIf="
-                    job.id === jobIdOfCareProvidingRoleOther && form.get('selectedJobRoles').value.includes(job.id)
-                  "
-                >
-                  <div class="govuk-checkboxes__conditional" data-testid="other-care-providing-role-name">
+                <ng-container *ngIf="job.id === jobIdOfCareProvidingRoleOther">
+                  <div
+                    class="govuk-checkboxes__conditional"
+                    [class.govuk-checkboxes__conditional--hidden]="
+                      !form.get('selectedJobRoles').value?.includes(job.id)
+                    "
+                  >
                     <div class="govuk-form-group">
                       <label class="govuk-label" for="other-care-providing-role"> Job role (optional) </label>
                       <input

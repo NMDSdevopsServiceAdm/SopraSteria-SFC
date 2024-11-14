@@ -42,6 +42,7 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
     this.prefill();
 
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies-number'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
   }
 
   private setupForm(): void {
@@ -59,7 +60,13 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
         .filter((group) => group.items.some((job) => this.prefilledJobIds.includes(job.id)))
         .map((group) => group.title);
 
-      this.form.patchValue({ selectedJobRoles: this.prefilledJobIds });
+      const otherCareProvidingRole = this.vacancies.find(
+        (vacancy) => vacancy.jobId === this.jobIdOfCareProvidingRoleOther,
+      );
+      this.form.patchValue({
+        selectedJobRoles: this.prefilledJobIds,
+        otherCareProvidingRoleName: otherCareProvidingRole?.other ?? null,
+      });
     }
   }
 

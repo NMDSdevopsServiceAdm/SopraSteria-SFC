@@ -125,7 +125,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
         });
       });
 
-      it('should render a text input when "Care providing roles - Other" is ticked', async () => {
+      it('should render a text input when "Care providing roles --> Other" is ticked', async () => {
         const { fixture, getByRole, getByLabelText } = await setup();
 
         userEvent.click(getByLabelText('Care providing roles'));
@@ -205,6 +205,23 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
 
         expect(within(accordionForJobGroup1).getByText('Hide')).toBeTruthy(); // is expanded
         expect(within(accordionForJobGroup2).getByText('Show')).toBeTruthy(); // not expanded
+      });
+
+      it('should prefill the optional job role name for "Care providing role - Other" if given', async () => {
+        const mockVacancies: Vacancy[] = [
+          {
+            jobId: 20,
+            title: 'Other (directly involved in providing care)', // belongs to Care providing roles
+            total: 2,
+            other: 'Some really special job role name',
+          },
+        ];
+
+        const { getByRole } = await setup({ vacanciesFromDatabase: mockVacancies });
+
+        const inputBox = getByRole('textbox', { name: 'Job role (optional)' }) as HTMLInputElement;
+        expect(inputBox).toBeTruthy();
+        expect(inputBox.value).toEqual('Some really special job role name');
       });
     });
   });
