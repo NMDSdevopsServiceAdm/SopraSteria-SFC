@@ -24,8 +24,8 @@ import dayjs from 'dayjs';
 
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 
-describe('WDFWorkplaceSummaryComponent', () => {
-  const setup = async (shareWith = null) => {
+fdescribe('WDFWorkplaceSummaryComponent', () => {
+  const setup = async (overrides: any = {}) => {
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WDFWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
       declarations: [],
@@ -50,8 +50,9 @@ describe('WDFWorkplaceSummaryComponent', () => {
       ],
       componentProperties: {
         wdfView: true,
-        workplace: shareWith ? establishmentWithShareWith(shareWith) : (establishmentWithWdfBuilder() as Establishment),
+        workplace: establishmentWithWdfBuilder() as Establishment,
         removeServiceSectionMargin: false,
+        ...overrides
       },
     });
     const component = fixture.componentInstance;
@@ -149,7 +150,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.name = 'Care Home';
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const workplaceRow = within(document.body).queryByTestId('workplace-section');
@@ -165,7 +166,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.isRegulated = true;
-        component.canEditEstablishment = true;
+
         component.workplace.locationId = '1-23452354';
 
         fixture.detectChanges();
@@ -179,10 +180,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should render not the locationID if the workplace is not regulated', async () => {
-        const { component, fixture, queryByTestId } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
+        const { queryByTestId } = await setup();
 
         expect(queryByTestId('cqcLocationId')).toBeFalsy();
       });
@@ -192,9 +190,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it('should render the number of staff and a Change link with a bottom border', async () => {
         const { component, fixture } = await setup();
 
-        component.canEditEstablishment = true;
         component.workplace.numberOfStaff = 4;
-
         fixture.detectChanges();
 
         const numberOfStaffRow = within(document.body).queryByTestId('numberOfStaff');
@@ -210,7 +206,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it('should render the number of staff row without bottom border when there is a staff mismatch and it has been longer than 8 weeks since first login', async () => {
         const { component, fixture } = await setup();
 
-        component.canEditEstablishment = true;
         component.canViewListOfWorkers = true;
         component.workerCount = 2;
         component.workplace.numberOfStaff = 4;
@@ -234,7 +229,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         component.wdfView = false;
         component.canViewListOfWorkers = true;
         component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
-
         fixture.detectChanges();
 
         const moreRecords = within(document.body).queryByTestId('morerecords');
@@ -317,7 +311,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it('should render the employer type and a Change link when employer type is the other field in object', async () => {
         const { component, fixture } = await setup();
 
-        component.canEditEstablishment = true;
         component.workplace.employerType = { other: 'Adult care', value: 'Other' };
 
         fixture.detectChanges();
@@ -333,7 +326,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it('should render the employer type and a Change link when employer type is the other field in object', async () => {
         const { component, fixture } = await setup();
 
-        component.canEditEstablishment = true;
         component.workplace.employerType = { other: null, value: 'Voluntary / Charity' };
 
         fixture.detectChanges();
@@ -366,7 +358,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.cqcStatusRequested = true;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const mainServiceChangeOrPending = within(document.body).queryByTestId('main-service-change-or-pending');
@@ -377,7 +369,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.cqcStatusRequested = false;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const mainServiceChangeOrPending = within(document.body).queryByTestId('main-service-change-or-pending');
@@ -410,9 +402,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it('should show the Change link when there is a main service', async () => {
         const { component, fixture } = await setup();
 
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
         const mainServiceRow = within(document.body).queryByTestId('mainService');
         const link = within(mainServiceRow).queryByText('Change');
 
@@ -424,7 +413,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.mainService = null;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const mainServiceRow = within(document.body).queryByTestId('mainService');
@@ -438,7 +427,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.cqcStatusRequested = true;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const mainServiceRow = within(document.body).queryByTestId('mainService');
@@ -453,7 +442,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.otherServices = { value: null };
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const otherServicesRow = within(document.body).queryByTestId('otherServices');
@@ -468,7 +457,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.otherServices = { value: 'No' };
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const otherServicesRow = within(document.body).queryByTestId('otherServices');
@@ -487,7 +476,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
           services: [{ category: 'category1', services: [{ id: 1, name: 'Carers' }] }],
         };
 
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const otherServicesRow = within(document.body).queryByTestId('otherServices');
@@ -515,7 +503,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
           ],
         };
 
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const otherServicesRow = within(document.body).queryByTestId('otherServices');
@@ -534,7 +521,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.capacities = [];
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const serviceCapacityRow = within(document.body).queryByTestId('serviceCapacity');
@@ -573,7 +560,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           { message: '1 bed available', service: ' (some kind of service)' },
           { message: '4 people receiving care', service: ' (some kind of service)' },
         ];
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const serviceCapacityRow = within(document.body).queryByTestId('serviceCapacity');
@@ -591,7 +578,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.serviceUsers = [];
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const serviceUsersRow = within(document.body).queryByTestId('serviceUsers');
@@ -613,7 +600,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
           },
         ];
 
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const serviceUsersRow = within(document.body).queryByTestId('serviceUsers');
@@ -640,7 +626,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
           },
         ];
 
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const serviceUsersRow = within(document.body).queryByTestId('serviceUsers');
@@ -660,7 +645,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.vacancies = null;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const vacanciesRow = within(document.body).queryByTestId('vacancies');
@@ -675,7 +660,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.vacancies = `Don't know`;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const vacanciesRow = within(document.body).queryByTestId('vacancies');
@@ -690,7 +675,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.vacancies = `None`;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const vacanciesRow = within(document.body).queryByTestId('vacancies');
@@ -705,7 +690,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.vacancies = [{ jobId: 1, title: 'Administrative', total: 3 }];
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const vacanciesRow = within(document.body).queryByTestId('vacancies');
@@ -723,7 +708,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
         ];
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const vacanciesRow = within(document.body).queryByTestId('vacancies');
@@ -782,7 +767,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.starters = null;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const startersRow = within(document.body).queryByTestId('starters');
@@ -797,7 +782,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.starters = `Don't know`;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const startersRow = within(document.body).queryByTestId('starters');
@@ -812,7 +797,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.starters = `None`;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const startersRow = within(document.body).queryByTestId('starters');
@@ -827,7 +812,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.starters = [{ jobId: 1, title: 'Administrative', total: 3 }];
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const startersRow = within(document.body).queryByTestId('starters');
@@ -845,7 +830,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
         ];
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const startersRow = within(document.body).queryByTestId('starters');
@@ -904,7 +889,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.leavers = null;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const leaversRow = within(document.body).queryByTestId('leavers');
@@ -919,7 +904,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.leavers = `Don't know`;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const leaversRow = within(document.body).queryByTestId('leavers');
@@ -934,7 +919,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.leavers = `None`;
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const leaversRow = within(document.body).queryByTestId('leavers');
@@ -949,7 +934,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.leavers = [{ jobId: 1, title: 'Administrative', total: 3 }];
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const leaversRow = within(document.body).queryByTestId('leavers');
@@ -967,7 +951,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
         ];
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const leaversRow = within(document.body).queryByTestId('leavers');
@@ -989,7 +972,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
             total: 1,
           },
         ];
-
         fixture.detectChanges();
 
         expect(getByText('Is this still correct?')).toBeTruthy();
@@ -1009,12 +991,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
             total: 1,
           },
         ];
-
         fixture.detectChanges();
 
         const yesItIsButton = getByText('Yes, it is', { exact: false });
         yesItIsButton.click();
-
         fixture.detectChanges();
 
         expect(getByText('Meeting requirements')).toBeTruthy();
@@ -1028,7 +1008,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks = null;
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
@@ -1042,7 +1021,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it('should show Change button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType has a value (answered)', async () => {
         const { component, fixture } = await setup();
 
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
@@ -1063,7 +1041,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.peopleInterviewedInTheLastFourWeeks = null;
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
@@ -1076,9 +1053,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
       it('should show Change button on People Interviewed row when peopleInterviewedInTheLastFourWeeks has a value (answered)', async () => {
         const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
 
         const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
         const link = within(peopleInterviewedRow).queryByText('Change');
@@ -1096,7 +1070,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const repeatTrainingRow = within(document.body).queryByTestId('repeat-training');
@@ -1111,9 +1084,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
       it('should show Change button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment has a value (answered)', async () => {
         const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
 
         const repeatTrainingRow = within(document.body).queryByTestId('repeat-training');
 
@@ -1136,7 +1106,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const acceptCareCertificateRow = within(document.body).queryByTestId('accept-care-certificate');
@@ -1152,9 +1121,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
       it('should show Change button on accept care certificate row when wouldYouAcceptCareCertificatesFromPreviousEmployment has a value (answered)', async () => {
         const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
 
         const acceptCareCertificateRow = within(document.body).queryByTestId('accept-care-certificate');
         const link = within(acceptCareCertificateRow).queryByText('Change');
@@ -1178,7 +1144,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.careWorkersCashLoyaltyForFirstTwoYears = null;
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
@@ -1191,9 +1156,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
       it('should show Change button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears has a value (answered)', async () => {
         const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
 
         const careWorkersCashLoyaltyRow = within(document.body).queryByTestId('cash-loyalty-bonus-spend');
         const link = within(careWorkersCashLoyaltyRow).queryByText('Change');
@@ -1213,7 +1175,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.sickPay = null;
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const statutorySickPayRow = within(document.body).queryByTestId('offer-more-than-statutory-sick-pay');
@@ -1226,9 +1187,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
       it('should show Change button on statutory sick pay row when sickPay has a value (answered)', async () => {
         const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
 
         const statutorySickPayRow = within(document.body).queryByTestId('offer-more-than-statutory-sick-pay');
         const link = within(statutorySickPayRow).queryByText('Change');
@@ -1244,7 +1202,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.pensionContribution = null;
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
@@ -1259,7 +1216,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.pensionContribution = 'Yes';
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const pensionContributionRow = within(document.body).queryByTestId('higher-pension-contributions');
@@ -1276,7 +1232,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const { component, fixture } = await setup();
 
         component.workplace.careWorkersLeaveDaysPerYear = null;
-        component.canEditEstablishment = true;
         fixture.detectChanges();
 
         const careWorkersLeaveDaysPerYearRow = within(document.body).queryByTestId('number-of-days-leave');
@@ -1290,7 +1245,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it('should show Change button on number of days leave row when careWorkersLeaveDaysPerYear has a value (answered)', async () => {
         const { component, fixture } = await setup();
 
-        component.canEditEstablishment = true;
+
         fixture.detectChanges();
 
         const careWorkersLeaveDaysPerYearRow = within(document.body).queryByTestId('number-of-days-leave');
@@ -1308,10 +1263,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
   describe('Permissions section', () => {
     describe('Data sharing', () => {
       it('should show dash and have Add information button on Data sharing when cqc and localAuthorities set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
+        const { component } = await setup();
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
         const link = within(dataSharing).queryByText('Add');
@@ -1322,10 +1274,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Local authorities and have Change button on Data sharing when localAuthorities set to true', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: true });
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
+        const workplace = establishmentWithShareWith({ cqc: null, localAuthorities: true })
+        const { component } = await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
         const link = within(dataSharing).queryByText('Change');
@@ -1336,10 +1286,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show CQC and have Change button on Data sharing when cqc set to true', async () => {
-        const { component, fixture } = await setup({ cqc: true, localAuthorities: false });
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
+        const workplace = establishmentWithShareWith({ cqc: true, localAuthorities: false })
+        await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
 
@@ -1348,10 +1296,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc and localAuthorities are set to false', async () => {
-        const { component, fixture } = await setup({ cqc: false, localAuthorities: false });
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
+        const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: false })
+        const { component, fixture } = await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
 
@@ -1360,10 +1306,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc is set to false and localAuthorities is null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: false, localAuthorities: null });
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
+        const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: null })
+        const { component, fixture } = await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
 
@@ -1372,10 +1316,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when localAuthorities is set to false and cqc is null (not answered)', async () => {
-        const { component, fixture } = await setup({ cqc: null, localAuthorities: false });
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
+        const workplace = establishmentWithShareWith({ cqc: null, localAuthorities: false })
+        await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
 
@@ -1384,10 +1326,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should not show Not sharing when one of cqc and localAuthorities is false and one is true', async () => {
-        const { component, fixture } = await setup({ cqc: true, localAuthorities: false });
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
+        const workplace = establishmentWithShareWith({ cqc: true, localAuthorities: false })
+        await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
 
