@@ -35,6 +35,11 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
       title: 'Social worker',
       jobRoleGroup: 'Professional and related roles',
     },
+    {
+      id: 20,
+      title: 'Other (directly involved in providing care)',
+      jobRoleGroup: 'Care providing roles',
+    },
   ];
 
   const setup = async (override: any = {}) => {
@@ -118,6 +123,17 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
           const checkbox = getByRole('checkbox', { name: job.title });
           expect(checkbox).toBeTruthy();
         });
+      });
+
+      it('should render a text input when "Care providing roles - Other" is ticked', async () => {
+        const { fixture, getByRole, getByLabelText } = await setup();
+
+        userEvent.click(getByLabelText('Care providing roles'));
+        userEvent.click(getByRole('checkbox', { name: 'Other (directly involved in providing care)' }));
+
+        fixture.detectChanges();
+
+        expect(getByRole('textbox', { name: 'Job role (optional)' })).toBeTruthy();
       });
     });
 

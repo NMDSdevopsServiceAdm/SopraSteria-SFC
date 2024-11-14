@@ -20,6 +20,7 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   public jobsAvailable: Job[] = [];
   public jobGroups: JobGroup[] = [];
   public errorMessageOnEmptyInput = 'Select job roles for all your current staff vacancies';
+  public jobIdOfCareProvidingRoleOther = 20;
   private vacancies: Vacancy[] = [];
   private prefilledJobIds: number[] = [];
   private jobGroupsToOpenAtStart: string[] = [];
@@ -46,6 +47,7 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   private setupForm(): void {
     this.form = this.formBuilder.group({
       selectedJobRoles: [[], this.validateForm()],
+      otherCareProvidingRoleName: ['', null],
     });
   }
 
