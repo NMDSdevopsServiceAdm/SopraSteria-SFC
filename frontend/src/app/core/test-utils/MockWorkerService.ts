@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { QualificationsByGroup } from '@core/model/qualification.model';
+import { QualificationsByGroup, QualificationType } from '@core/model/qualification.model';
 import {
   CreateTrainingRecordResponse,
   MultipleTrainingResponse,
@@ -12,6 +12,8 @@ import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.
 import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
 import { build, fake, oneOf, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
+
+import { AvailableQualificationsResponse } from '../model/qualification.model';
 
 export const workerBuilder = build('Worker', {
   fields: {
@@ -238,6 +240,130 @@ export const qualificationsByGroup = {
   ],
 } as QualificationsByGroup;
 
+export const mockAvailableQualifications: AvailableQualificationsResponse[] = [
+  {
+    type: QualificationType.NVQ,
+    count: 2,
+    qualifications: [
+      {
+        id: 93,
+        title: 'Care NVQ (level 2)',
+        level: '2',
+        code: 4,
+      },
+      {
+        id: 94,
+        title: 'Care NVQ (level 3)',
+        level: '3',
+        code: 5,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Certificate,
+    count: 2,
+    qualifications: [
+      {
+        id: 30,
+        title: 'Activity provision in social care (level 3)',
+        level: '3',
+        code: 42,
+      },
+      {
+        id: 31,
+        title: 'Adult care (level 4)',
+        level: '4',
+        code: 110,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Degree,
+    count: 2,
+    qualifications: [
+      {
+        id: 71,
+        title: 'Combined nursing and social work degree (level 6)',
+        level: '6',
+        code: 18,
+      },
+      {
+        id: 136,
+        title: 'Health and social care degree (level 6)',
+        level: '6',
+        code: 144,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Award,
+    count: 2,
+    qualifications: [
+      {
+        id: 1,
+        title: 'Advanced Award in Social Work (AASW, level 7)',
+        level: '7',
+        code: 20,
+      },
+      {
+        id: 5,
+        title: 'Awareness of dementia (level 3)',
+        level: '3',
+        code: 49,
+        from: '2010-09-01',
+      },
+    ],
+  },
+  {
+    type: QualificationType.Diploma,
+    count: 1,
+    qualifications: [
+      {
+        id: 74,
+        title: 'Adult care (level 4)',
+        level: '4',
+        code: 109,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Apprenticeship,
+    count: 3,
+    qualifications: [
+      {
+        id: 121,
+        title: 'Adult care worker (standard, level 2)',
+        level: '2',
+        code: 302,
+      },
+      {
+        id: 124,
+        title: 'Degree registered nurse (standard, level 6)',
+        level: '6',
+        code: 310,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Other,
+    count: 2,
+    qualifications: [
+      {
+        id: 113,
+        title: 'Other relevant professional qualification',
+        level: null,
+        code: 33,
+      },
+      {
+        id: 119,
+        title: 'Other qualification',
+        level: null,
+        code: 39,
+      },
+    ],
+  },
+];
+
 export const trainingRecord = {
   id: 10,
   uid: 'someTrainingUid',
@@ -342,6 +468,13 @@ export class MockWorkerService extends WorkerService {
     record: TrainingRecordRequest,
   ): Observable<CreateTrainingRecordResponse> {
     return of(trainingRecord);
+  }
+
+  getAllAvailableQualifications(
+    workplaceUid: string,
+    workerUid: string,
+  ): Observable<AvailableQualificationsResponse[]> {
+    return of(mockAvailableQualifications);
   }
 }
 

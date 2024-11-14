@@ -28,7 +28,7 @@ export interface AvailableQualificationsResponse {
 export interface QualificationRequest {
   type: QualificationType;
   qualification: Qualification;
-  year?: 2014;
+  year?: number;
   notes?: string;
 }
 
