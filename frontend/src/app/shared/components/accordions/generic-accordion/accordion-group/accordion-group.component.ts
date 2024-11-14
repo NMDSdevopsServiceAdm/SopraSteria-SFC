@@ -12,23 +12,24 @@ export class AccordionGroupComponent implements AfterContentInit {
   private expandedChildren = new Set<number>();
 
   ngAfterContentInit() {
-    this.children.forEach((child, index) => {
-      child.toggleEmitter.subscribe(() => {
-        this.toggleChild(index);
+    this.children.forEach((child) => {
+      child.clickEmitter.subscribe(() => {
+        child.toggle();
+        this.updateState();
       });
     });
     this.updateState();
   }
 
-  toggleChild = (index: number) => {
+  toggleNthChild = (index: number) => {
     const childToToggle = this.children.toArray()[index];
     if (childToToggle) {
-      childToToggle.expanded = !childToToggle.expanded;
+      childToToggle.toggle();
     }
     this.updateState();
   };
 
-  updateState() {
+  private updateState() {
     const childrenWhichAreOpening = this.children
       .map((child, index) => (child.expanded ? index : null))
       .filter((index) => index !== null);
@@ -36,25 +37,25 @@ export class AccordionGroupComponent implements AfterContentInit {
     this.expandedChildren = new Set(childrenWhichAreOpening);
   }
 
+  get isShowingAll() {
+    return this.expandedChildren.size === this.children.length;
+  }
+
   public showAll() {
     this.children.forEach((child) => {
-      child.expanded = true;
+      child.open();
     });
     this.updateState();
   }
 
   public hideAll() {
     this.children.forEach((child) => {
-      child.expanded = false;
+      child.close();
     });
     this.updateState();
   }
 
-  get isShowingAll() {
-    return this.expandedChildren.size === this.children.length;
-  }
-
-  toggleAll() {
+  public toggleAll() {
     if (this.isShowingAll) {
       this.hideAll();
     } else {

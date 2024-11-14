@@ -22,6 +22,7 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   public errorMessageOnEmptyInput = 'Select job roles for all your current staff vacancies';
   private vacancies: Vacancy[] = [];
   private prefilledJobIds: number[] = [];
+  private jobGroupsToOpenAtStart: string[] = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -52,23 +53,12 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
     if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
       this.vacancies = this.establishment.vacancies;
       this.prefilledJobIds = this.establishment.vacancies.map((vacancy) => Number(vacancy.jobId));
+      this.jobGroupsToOpenAtStart = this.jobGroups
+        .filter((group) => group.items.some((job) => this.prefilledJobIds.includes(job.id)))
+        .map((group) => group.title);
+
       this.form.patchValue({ selectedJobRoles: this.prefilledJobIds });
     }
-  }
-
-  public ngAfterViewInit(): void {
-    super.ngAfterViewInit();
-    this.expandPrefilledJobGroups();
-  }
-
-  private expandPrefilledJobGroups(): void {
-    this.jobGroups.forEach((group, index) => {
-      if (group.items.some((job) => this.prefilledJobIds.includes(job.id))) {
-        setTimeout(() => {
-          this.accordion.toggleChild(index);
-        });
-      }
-    });
   }
 
   private validateForm(): ValidatorFn {

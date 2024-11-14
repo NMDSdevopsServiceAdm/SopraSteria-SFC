@@ -12,7 +12,6 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { HttpClient } from '@angular/common/http';
 import userEvent from '@testing-library/user-event';
 import { Vacancy } from '@core/model/establishment.model';
-import { JobService } from '@core/services/job.service';
 
 fdescribe('VacanciesJobRolesSelectionComponent', () => {
   const mockAvailableJobs = [
@@ -40,7 +39,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
 
   const setup = async (override: any = {}) => {
     const returnToUrl = 'returnToUrl' in override ? override.returnToUrl : null;
-    const vacancies = override.vacancies;
+    const vacanciesFromDatabase = override.vacanciesFromDatabase;
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
 
     const renderResults = await render(VacanciesJobRolesSelectionComponent, {
@@ -50,7 +49,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnToUrl, {
-            vacancies,
+            vacancies: vacanciesFromDatabase,
           }),
           deps: [HttpClient],
         },
@@ -168,7 +167,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
             total: 2,
           },
         ];
-        const { getAllByRole } = await setup({ vacancies: mockVacancies });
+        const { getAllByRole } = await setup({ vacanciesFromDatabase: mockVacancies });
 
         const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(2);
@@ -183,10 +182,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
             total: 2,
           },
         ];
-        const { fixture, getByLabelText } = await setup({ vacancies: mockVacancies });
-
-        await fixture.whenStable();
-        fixture.detectChanges();
+        const { getByLabelText } = await setup({ vacanciesFromDatabase: mockVacancies });
 
         const accordionForJobGroup1 = getByLabelText('Care providing roles');
         const accordionForJobGroup2 = getByLabelText('Professional and related roles');

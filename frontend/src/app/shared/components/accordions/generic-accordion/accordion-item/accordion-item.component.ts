@@ -1,16 +1,38 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-accordion-item',
   templateUrl: './accordion-item.component.html',
 })
-export class AccordionItemComponent {
+export class AccordionItemComponent implements OnInit {
   @Input() title: string;
   @Input() description?: string;
-  @Input() expanded: boolean;
-  @Output() toggleEmitter: EventEmitter<Event> = new EventEmitter();
+  @Input() expandedAtStart: boolean = false;
+  @Output() clickEmitter: EventEmitter<Event> = new EventEmitter();
 
-  toggleAccordion() {
-    this.toggleEmitter.emit();
+  private _expanded: boolean;
+
+  ngOnInit(): void {
+    this._expanded = this.expandedAtStart;
+  }
+
+  handleClick() {
+    this.clickEmitter.emit();
+  }
+
+  get expanded() {
+    return this._expanded;
+  }
+
+  public open() {
+    this._expanded = true;
+  }
+
+  public close() {
+    this._expanded = false;
+  }
+
+  public toggle() {
+    this._expanded = !this._expanded;
   }
 }
