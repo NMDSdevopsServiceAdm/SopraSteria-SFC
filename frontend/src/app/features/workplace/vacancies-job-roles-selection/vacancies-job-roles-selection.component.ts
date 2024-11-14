@@ -1,13 +1,14 @@
-import { Component, OnDestroy, OnInit, ViewChild, AfterViewInit } from '@angular/core';
-import { Question } from '../question/question.component';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Vacancy } from '@core/model/establishment.model';
+import { Job, JobGroup } from '@core/model/job.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { Job, JobGroup } from '@core/model/job.model';
+import { JobService } from '@core/services/job.service';
+import { Question } from '@features/workplace/question/question.component';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
-import { Vacancy } from '@core/model/establishment.model';
 
 @Component({
   selector: 'app-vacancies-job-roles-selection',
@@ -21,13 +22,6 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   public errorMessageOnEmptyInput = 'Select job roles for all your current staff vacancies';
   private vacancies: Vacancy[] = [];
   private prefilledJobIds: number[] = [];
-  private summaryText = {
-    'Care providing roles': 'care worker, community support, support worker',
-    'Professional and related roles': 'occupational therapist, registered nurse, nursing assistant',
-    'Managerial and supervisory roles': 'registered manager, supervisor, team leader',
-    'IT, digital and data roles': 'data analyst, IT and digital support, IT manager',
-    'Other roles': 'admin, care co-ordinator, learning and development',
-  };
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -78,13 +72,15 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   }
 
   private validateForm(): ValidatorFn {
-    return (formControl) => {
+    const validatorFunction = (formControl) => {
       if (formControl.value?.length > 0) {
         return null;
       } else {
         return { selectedNone: true };
       }
     };
+
+    return validatorFunction;
   }
 
   public onCheckboxClick(target: HTMLInputElement) {
@@ -109,7 +105,7 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
 
   private getJobs(): void {
     this.jobsAvailable = this.route.snapshot.data.jobs;
-    this.sortJobsByJobGroup(this.jobsAvailable);
+    this.jobGroups = JobService.sortJobsByJobGroup(this.jobsAvailable);
   }
 
   private storeSelectedJobRolesInLocalStorage(): void {
@@ -141,32 +137,5 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   protected generateUpdateProps() {
     // suppress the default action of making calls to backend
     return null;
-  }
-
-  private getTrainingGroupSummary(jobRoleGroup: { title: string }) {
-    return `Jobs like ${this.summaryText[jobRoleGroup.title]}`;
-  }
-
-  private sortJobsByJobGroup(jobs: Job[]) {
-    for (let group of Object.keys(this.summaryText)) {
-      let currentJobGroup = {
-        title: group,
-        descriptionText: '',
-        items: [],
-      };
-
-      let jobRolesArray = [];
-      jobs.map((x) => {
-        if (x.jobRoleGroup === group) {
-          jobRolesArray.push({
-            label: x.title,
-            id: x.id,
-          });
-        }
-      });
-      currentJobGroup.items = jobRolesArray;
-      currentJobGroup.descriptionText = this.getTrainingGroupSummary(currentJobGroup);
-      this.jobGroups.push(currentJobGroup);
-    }
   }
 }

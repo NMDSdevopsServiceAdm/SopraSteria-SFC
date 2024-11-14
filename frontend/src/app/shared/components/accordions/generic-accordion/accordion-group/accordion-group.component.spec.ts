@@ -1,16 +1,14 @@
-import { TestBed } from '@angular/core/testing';
+import { FormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { AccordionGroupComponent } from './accordion-group.component';
-import { render, queryByText } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
-import { FormsModule } from '@angular/forms';
-import userEvent from '@testing-library/user-event';
 
 fdescribe('AccordionGroupComponent', () => {
   const setup = async (override: any = {}) => {
-    const { textShowHideAll } = override;
     const componentProperties = {
-      textShowHideAll: override.textShowHideAll,
+      contentName: override.contentName,
     };
 
     let accordionGroupPropsInTemplate = '';
@@ -56,14 +54,14 @@ fdescribe('AccordionGroupComponent', () => {
     });
 
     it('should display a customised toggle text if given', async () => {
-      const { getByText } = await setup({ textShowHideAll: 'job roles' });
+      const { getByText } = await setup({ contentName: 'job roles' });
 
       const toggleText = getByText('Show all job roles');
       expect(toggleText).toBeTruthy;
     });
 
     it('should display a toggle button for each accordion section', async () => {
-      const { getAllByText } = await setup({ textShowHideAll: 'job roles' });
+      const { getAllByText } = await setup({ contentName: 'job roles' });
 
       const toggleButtons = getAllByText('Show');
       expect(toggleButtons.length).toEqual(2);
@@ -82,7 +80,7 @@ fdescribe('AccordionGroupComponent', () => {
     });
 
     it('should expand all the accordion sections when "Show all" button is clicked', async () => {
-      const { fixture, getByText, queryByText, getAllByText } = await setup({ textShowHideAll: 'job roles' });
+      const { fixture, getByText, queryByText, getAllByText } = await setup({ contentName: 'job roles' });
 
       const showAll = getByText('Show all job roles');
       userEvent.click(showAll);
@@ -99,7 +97,7 @@ fdescribe('AccordionGroupComponent', () => {
     });
 
     it('should change the toggle text between "Hide all" and "Show all"', async () => {
-      const { fixture, getByText, queryByText } = await setup({ textShowHideAll: 'job roles' });
+      const { fixture, getByText, queryByText } = await setup({ contentName: 'job roles' });
 
       expect(getByText('Show all job roles')).toBeTruthy;
 

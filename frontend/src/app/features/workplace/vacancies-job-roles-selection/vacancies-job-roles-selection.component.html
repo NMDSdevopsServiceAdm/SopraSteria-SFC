@@ -18,28 +18,30 @@
         </div>
 
         <div [class.govuk-form-group--error]="submitted && form.invalid">
-          <app-accordion-group #accordion data-testid="selectJobRolesAccordion" textShowHideAll="job roles">
+          <app-accordion-group #accordion data-testid="selectJobRolesAccordion" contentName="job roles">
             <p *ngIf="submitted && form.invalid" id="selectedJobRoles-error" class="govuk-error-message">
               <span class="govuk-visually-hidden">Error:</span> {{ errorMessageOnEmptyInput }}
             </p>
-            <ng-container *ngFor="let group of jobGroups">
-              <app-accordion-item [title]="group.title" [description]="group.descriptionText">
-                <ng-container *ngFor="let job of group.items">
-                  <div class="govuk-checkboxes__item">
-                    <input
-                      type="checkbox"
-                      class="govuk-checkboxes__input"
-                      [id]="'job-' + job.id"
-                      [name]="job.label"
-                      [value]="job.id"
-                      [checked]="form.get('selectedJobRoles').value.includes(job.id)"
-                      (change)="onCheckboxClick($event.target)"
-                    />
-                    <label class="govuk-label govuk-checkboxes__label" [for]="'job-' + job.id"> {{ job.label }} </label>
-                  </div>
-                </ng-container>
-              </app-accordion-item>
-            </ng-container>
+            <app-accordion-item
+              *ngFor="let group of jobGroups"
+              [title]="group.title"
+              [description]="group.descriptionText"
+            >
+              <ng-container *ngFor="let job of group.items">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    type="checkbox"
+                    class="govuk-checkboxes__input"
+                    [id]="'job-' + job.id"
+                    [name]="job.label"
+                    [value]="job.id"
+                    [checked]="form.get('selectedJobRoles').value.includes(job.id)"
+                    (change)="onCheckboxClick($event.target)"
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" [for]="'job-' + job.id"> {{ job.label }} </label>
+                </div>
+              </ng-container>
+            </app-accordion-item>
           </app-accordion-group>
         </div>
       </fieldset>

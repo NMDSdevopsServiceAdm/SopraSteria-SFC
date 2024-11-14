@@ -12,6 +12,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { HttpClient } from '@angular/common/http';
 import userEvent from '@testing-library/user-event';
 import { Vacancy } from '@core/model/establishment.model';
+import { JobService } from '@core/services/job.service';
 
 fdescribe('VacanciesJobRolesSelectionComponent', () => {
   const mockAvailableJobs = [

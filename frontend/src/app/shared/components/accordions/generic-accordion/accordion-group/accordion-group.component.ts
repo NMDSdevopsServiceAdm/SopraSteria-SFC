@@ -6,7 +6,7 @@ import { AccordionItemComponent } from '../accordion-item/accordion-item.compone
   templateUrl: './accordion-group.component.html',
 })
 export class AccordionGroupComponent implements AfterContentInit {
-  @Input() textShowHideAll?: string = 'sections';
+  @Input() contentName?: string = 'sections';
   @ContentChildren(AccordionItemComponent) children: QueryList<AccordionItemComponent>;
 
   private expandedChildren = new Set<number>();
