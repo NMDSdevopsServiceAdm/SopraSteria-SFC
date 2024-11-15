@@ -90,23 +90,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
     expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
-  it('should render the certain sections when on the check-answers page', async () => {
-    const { component, fixture, getByTestId, queryByTestId } = await setup();
-
-    component.checkAnswersPage = true;
-    fixture.detectChanges();
-
-    expect(queryByTestId('workplace-section')).toBeFalsy();
-    expect(queryByTestId('cqcLocationId')).toBeFalsy();
-    expect(queryByTestId('numberOfStaff')).toBeFalsy();
-    expect(queryByTestId('employerType')).toBeFalsy();
-    expect(getByTestId('services-section')).toBeTruthy();
-    expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
-    expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
-  });
-
   it('should render the services section with top margin when removeServiceSectionMargin is false, and without margin when true', async () => {
     const { rerender, getByText } = await setup();
 
@@ -341,18 +324,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
   });
 
   describe('services section', () => {
-    it('should show not show the main service row if on the check answers page', async () => {
-      const { component, fixture, getByTestId, queryByTestId } = await setup();
-
-      component.checkAnswersPage = true;
-      fixture.detectChanges();
-
-      expect(queryByTestId('mainService')).toBeFalsy();
-      expect(getByTestId('otherServices')).toBeTruthy();
-      expect(getByTestId('serviceCapacity')).toBeTruthy();
-      expect(getByTestId('serviceUsers')).toBeTruthy();
-    });
-
     describe('Main service', () => {
       it('should show Pending on main service when non-CQC to CQC main service change has been requested', async () => {
         const { component, fixture } = await setup();
@@ -1241,6 +1212,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
             total: 1,
           },
         ],
+      },
+      {
+        fieldName: 'mainService',
+        value: { name: 'Care Giving' },
       },
     ].forEach((field) => {
       const establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective = (fieldName, value) => {

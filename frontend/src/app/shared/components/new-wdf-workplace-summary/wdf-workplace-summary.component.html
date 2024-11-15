@@ -189,9 +189,11 @@
       <dd class="govuk-summary-list__actions"></dd>
     </div>
     <div
-      *ngIf="!checkAnswersPage"
       class="govuk-summary-list__row"
-      [ngClass]="{ 'govuk-panel--light-blue': cqcStatusRequested }"
+      [ngClass]="{
+        'govuk-panel--light-blue': cqcStatusRequested,
+        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.mainService,
+      }"
       data-testid="mainService"
     >
       <dt class="govuk-summary-list__key" [ngClass]="{ 'govuk-!-padding-left-3': cqcStatusRequested }">Main service</dt>
@@ -210,18 +212,6 @@
             - {{ cqcStatusRequested ? requestedServiceOtherName : workplace.mainService?.other }}
           </ng-container>
         </app-summary-record-value>
-        <app-wdf-field-confirmation
-          *ngIf="
-            canEditEstablishment &&
-            wdfView &&
-            workplace.wdf?.mainService.isEligible === 'Yes' &&
-            !workplace.wdf?.mainService.updatedSinceEffectiveDate
-          "
-          [changeLink]="getRoutePath('main-service-cqc', wdfView)"
-          (fieldConfirmation)="this.confirmField('mainService')"
-          (setReturnClicked)="this.setReturn()"
-        >
-        </app-wdf-field-confirmation>
       </dd>
       <dd
         *ngIf="canEditEstablishment"
@@ -229,15 +219,7 @@
         [ngClass]="{ 'govuk-!-padding-right-3': cqcStatusRequested }"
         data-testid="main-service-change-or-pending"
       >
-        <ng-container
-          *ngIf="
-            !(
-              wdfView &&
-              workplace.wdf?.mainService.isEligible === 'Yes' &&
-              !workplace.wdf?.mainService.updatedSinceEffectiveDate
-            )
-          "
-        >
+        <ng-container *ngIf="!showWdfConfirmations.mainService">
           <a
             *ngIf="!cqcStatusRequested; else cqcPending"
             [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']"
@@ -257,6 +239,15 @@
         </ng-container>
       </dd>
     </div>
+    <app-wdf-field-confirmation
+      *ngIf="showWdfConfirmations.mainService"
+      [changeLink]="getRoutePath('main-service-cqc', wdfView)"
+      [staffRecordView]="true"
+      (fieldConfirmation)="this.confirmField('mainService')"
+      (setReturnClicked)="this.setReturn()"
+    >
+    </app-wdf-field-confirmation>
+
     <div class="govuk-summary-list__row" data-testid="otherServices">
       <dt class="govuk-summary-list__key">Other services</dt>
       <dd class="govuk-summary-list__value">

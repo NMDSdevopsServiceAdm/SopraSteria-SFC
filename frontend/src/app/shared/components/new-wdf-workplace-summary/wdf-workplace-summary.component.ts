@@ -29,13 +29,13 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   public canViewListOfWorkers = false;
   public confirmedFields: Array<string> = [];
   public showTotalStaffWarning: boolean;
-  public checkAnswersPage: boolean;
   public now: Date = new Date();
   public typeOfEmployer: string;
   public showWdfConfirmations: any = {
     starters: null,
     leavers: null,
     vacancies: null,
+    mainService: null,
   };
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
@@ -115,7 +115,6 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   ngOnInit(): void {
     this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
-    this.checkAnswersPage = this.return?.url.includes('check-answers');
 
     this.setTotalStaffWarning();
     if (this.canEditEstablishment && this.wdfView) {
