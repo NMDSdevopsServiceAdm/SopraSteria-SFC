@@ -144,4 +144,16 @@ export class CustomValidators extends Validators {
 
     return errors.length ? errors : null;
   }
+
+  static validateArrayNotEmpty(): ValidatorFn {
+    const validatorFunction = (formControl: AbstractControl) => {
+      if (formControl.value?.length > 0) {
+        return null;
+      } else {
+        return { selectedNone: true };
+      }
+    };
+
+    return validatorFunction;
+  }
 }

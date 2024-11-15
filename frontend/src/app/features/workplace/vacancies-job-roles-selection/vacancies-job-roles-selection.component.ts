@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, ValidatorFn } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Vacancy } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
@@ -9,6 +9,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { Question } from '@features/workplace/question/question.component';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-vacancies-job-roles-selection',
@@ -55,7 +56,7 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      selectedJobRoles: [[], this.validateForm()],
+      selectedJobRoles: [[], CustomValidators.validateArrayNotEmpty()],
       otherCareProvidingRoleName: ['', null],
     });
   }
@@ -91,22 +92,10 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
     }
   }
 
-  private validateForm(): ValidatorFn {
-    const validatorFunction = (formControl) => {
-      if (formControl.value?.length > 0) {
-        return null;
-      } else {
-        return { selectedNone: true };
-      }
-    };
-
-    return validatorFunction;
-  }
-
   public onCheckboxClick(target: HTMLInputElement) {
     const jobId = Number(target.value);
     const selectedJobRoles = this.form.get('selectedJobRoles');
-    const currentSelectedIds: number[] = this.form.get('selectedJobRoles').value;
+    const currentSelectedIds: number[] = selectedJobRoles.value;
 
     if (currentSelectedIds.includes(jobId)) {
       const updatedSelection = currentSelectedIds.filter((id) => id !== jobId);
