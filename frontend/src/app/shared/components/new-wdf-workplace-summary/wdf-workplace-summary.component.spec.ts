@@ -1285,6 +1285,20 @@ describe('WDFWorkplaceSummaryComponent', () => {
         name: 'vacancies',
         validResponse: [{ jobId: 13, title: 'First-line manager', total: 1 }],
       },
+      {
+        name: 'starters',
+        validResponse: [{ jobId: 13, title: 'First-line manager', total: 1 }],
+      },
+      {
+        name: 'leavers',
+        validResponse: [
+          {
+            jobId: 1,
+            title: 'Activities worker or co-ordinator',
+            total: 1,
+          },
+        ],
+      },
     ].forEach((field) => {
       it(`should show 'Add this information' message and red flag when workplace is not eligible and needs to add ${field.name}`, async () => {
         const workplace = establishmentWithWdfBuilder() as Establishment;

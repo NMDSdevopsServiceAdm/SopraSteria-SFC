@@ -411,29 +411,23 @@
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.starters
+        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.starters || !workplace.starters?.length
       }"
       data-testid="starters"
     >
       <dt class="govuk-summary-list__key">New starters</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.starters"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
-          <ng-template #starters>
-            <ng-container *ngIf="isArray(workplace.starters)">
-              <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
-              </ul>
-            </ng-container>
-            <ng-container *ngIf="!isArray(workplace.starters)">
-              {{ workplace.starters }}
-            </ng-container>
-          </ng-template>
-        </app-summary-record-value>
+        <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
+        <ng-template #starters>
+          <ng-container *ngIf="isArray(workplace.starters)">
+            <ul class="govuk-list govuk-!-margin-bottom-0">
+              <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
+            </ul>
+          </ng-container>
+          <ng-container *ngIf="!isArray(workplace.starters)">
+            {{ workplace.starters }}
+          </ng-container>
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -453,33 +447,32 @@
       (setReturnClicked)="this.setReturn()"
     >
     </app-wdf-field-confirmation>
+    <app-wdf-warning-message
+      *ngIf="!workplace.starters?.length"
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="startersWdfWarning"
+    ></app-wdf-warning-message>
 
     <div
       class="govuk-summary-list__row"
       data-testid="leavers"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.leavers
+        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.leavers || !workplace.leavers?.length
       }"
     >
       <dt class="govuk-summary-list__key">Leavers</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.leavers"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
-          <ng-template #leavers>
-            <ng-container *ngIf="isArray(workplace.leavers)">
-              <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let leaver of workplace.leavers">{{ leaver.total }} {{ leaver.title }}</li>
-              </ul>
-            </ng-container>
-            <ng-container *ngIf="!isArray(workplace.leavers)">
-              {{ workplace.leavers }}
-            </ng-container>
-          </ng-template>
-        </app-summary-record-value>
+        <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
+        <ng-template #leavers>
+          <ng-container *ngIf="isArray(workplace.leavers)">
+            <ul class="govuk-list govuk-!-margin-bottom-0">
+              <li *ngFor="let leaver of workplace.leavers">{{ leaver.total }} {{ leaver.title }}</li>
+            </ul>
+          </ng-container>
+          <ng-container *ngIf="!isArray(workplace.leavers)">
+            {{ workplace.leavers }}
+          </ng-container>
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -499,6 +492,11 @@
       (setReturnClicked)="this.setReturn()"
     >
     </app-wdf-field-confirmation>
+    <app-wdf-warning-message
+      *ngIf="!workplace.leavers?.length"
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="leaversWdfWarning"
+    ></app-wdf-warning-message>
   </ng-container>
 
   <ng-container>
