@@ -275,23 +275,19 @@
 
     <div
       class="govuk-summary-list__row"
-      [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.capacities }"
+      [ngClass]="{
+        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.capacities || !workplace.capacities?.length
+      }"
       data-testid="serviceCapacity"
     >
       <dt class="govuk-summary-list__key">Service capacity</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.capacities"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!workplace.capacities?.length; else capacities"> - </ng-container>
-          <ng-template #capacities>
-            <ul class="govuk-list govuk-!-margin-bottom-0">
-              <li *ngFor="let capacity of capacityMessages">{{ capacity.message }}</li>
-            </ul>
-          </ng-template>
-        </app-summary-record-value>
+        <ng-container *ngIf="!workplace.capacities?.length; else capacities"> - </ng-container>
+        <ng-template #capacities>
+          <ul class="govuk-list govuk-!-margin-bottom-0">
+            <li *ngFor="let capacity of capacityMessages">{{ capacity.message }}</li>
+          </ul>
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -311,6 +307,11 @@
       (setReturnClicked)="this.setReturn()"
     >
     </app-wdf-field-confirmation>
+    <app-wdf-warning-message
+      *ngIf="!workplace.capacities?.length"
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="capacitiesWdfWarning"
+    ></app-wdf-warning-message>
 
     <div
       class="govuk-summary-list__row"
