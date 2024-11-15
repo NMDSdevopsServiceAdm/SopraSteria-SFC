@@ -315,26 +315,23 @@
 
     <div
       class="govuk-summary-list__row"
-      [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.serviceUsers }"
+      [ngClass]="{
+        'govuk-summary-list__row--no-bottom-border':
+          showWdfConfirmations.serviceUsers || !workplace.serviceUsers?.length
+      }"
       data-testid="serviceUsers"
     >
       <dt class="govuk-summary-list__key">Service users</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.serviceUsers"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!workplace.serviceUsers?.length; else serviceUsers"> - </ng-container>
-          <ng-template #serviceUsers>
-            <ul class="govuk-list govuk-!-margin-bottom-0">
-              <li *ngFor="let users of workplace.serviceUsers">
-                {{ users.service }}
-                <ng-container *ngIf="users.other"> - {{ users.other }}</ng-container>
-              </li>
-            </ul>
-          </ng-template>
-        </app-summary-record-value>
+        <ng-container *ngIf="!workplace.serviceUsers?.length; else serviceUsers"> - </ng-container>
+        <ng-template #serviceUsers>
+          <ul class="govuk-list govuk-!-margin-bottom-0">
+            <li *ngFor="let users of workplace.serviceUsers">
+              {{ users.service }}
+              <ng-container *ngIf="users.other"> - {{ users.other }}</ng-container>
+            </li>
+          </ul>
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -353,6 +350,11 @@
       (fieldConfirmation)="this.confirmField('serviceUsers')"
       (setReturnClicked)="this.setReturn()"
     ></app-wdf-field-confirmation>
+    <app-wdf-warning-message
+      *ngIf="!workplace.serviceUsers?.length"
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="serviceUsersWdfWarning"
+    ></app-wdf-warning-message>
   </ng-container>
 
   <ng-container>
@@ -366,25 +368,21 @@
     <div
       class="govuk-summary-list__row"
       data-testid="vacancies"
-      [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.vacancies }"
+      [ngClass]="{
+        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.vacancies || !workplace.vacancies?.length
+      }"
     >
       <dt class="govuk-summary-list__key">Current staff vacancies</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.vacancies"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!workplace.vacancies?.length; else vacancies"> - </ng-container>
-          <ng-template #vacancies>
-            <ng-container *ngIf="isArray(workplace.vacancies)">
-              <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
-              </ul>
-            </ng-container>
-            <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
-          </ng-template>
-        </app-summary-record-value>
+        <ng-container *ngIf="!workplace.vacancies?.length; else vacancies"> - </ng-container>
+        <ng-template #vacancies>
+          <ng-container *ngIf="isArray(workplace.vacancies)">
+            <ul class="govuk-list govuk-!-margin-bottom-0">
+              <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
+            </ul>
+          </ng-container>
+          <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -404,6 +402,11 @@
       (setReturnClicked)="this.setReturn()"
     >
     </app-wdf-field-confirmation>
+    <app-wdf-warning-message
+      *ngIf="!workplace.vacancies?.length"
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="vacanciesWdfWarning"
+    ></app-wdf-warning-message>
 
     <div
       class="govuk-summary-list__row"
