@@ -3,7 +3,7 @@ import { render } from '@testing-library/angular';
 
 import { AccordionSectionComponent } from './accordion-section.component';
 
-fdescribe('AccordionSectionComponent', () => {
+describe('AccordionSectionComponent', () => {
   const setup = async (override: any = {}) => {
     const componentProps = {
       title: 'Care providing roles',

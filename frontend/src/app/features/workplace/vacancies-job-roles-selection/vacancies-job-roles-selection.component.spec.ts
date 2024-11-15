@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 
 import { VacanciesJobRolesSelectionComponent } from './vacancies-job-roles-selection.component';
 
-fdescribe('VacanciesJobRolesSelectionComponent', () => {
+describe('VacanciesJobRolesSelectionComponent', () => {
   const mockAvailableJobs = [
     {
       id: 4,
@@ -187,6 +187,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
           total: 2,
         },
       ];
+
       it('should tick the checkboxes according to previously saved vacancies for the workplace', async () => {
         const { getAllByRole } = await setup({ vacanciesFromDatabase: mockVacancies });
 

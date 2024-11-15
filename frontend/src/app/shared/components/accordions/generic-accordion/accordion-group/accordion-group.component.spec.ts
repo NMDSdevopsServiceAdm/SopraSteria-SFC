@@ -3,7 +3,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-fdescribe('AccordionGroupComponent', () => {
+describe('AccordionGroupComponent', () => {
   const setup = async (override: any = {}) => {
     const componentProps = {
       contentName: override.contentName,

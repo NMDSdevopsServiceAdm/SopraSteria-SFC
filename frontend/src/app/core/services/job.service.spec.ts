@@ -1,6 +1,6 @@
 import { JobService } from './job.service';
 
-fdescribe('JobService', () => {
+describe('JobService', () => {
   describe('sortJobsByJobGroup', () => {
     const mockJobs = [
       {
