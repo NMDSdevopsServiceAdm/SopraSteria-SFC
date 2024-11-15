@@ -1266,4 +1266,48 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
     });
   });
+
+  describe('Add information messages', () => {
+    [
+      {
+        name: 'employerType',
+        validResponse: { value: 'Care Home' },
+      },
+    ].forEach((field) => {
+      it(`should show 'Add this information' message and red flag when workplace is not eligible and needs to add ${field.name}`, async () => {
+        const workplace = establishmentWithWdfBuilder() as Establishment;
+        workplace[field.name] = null;
+
+        const { getByTestId } = await setup({ workplace });
+
+        const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
+
+        expect(within(wdfWarningSection).getByText('Add this information')).toBeTruthy();
+        expect(within(wdfWarningSection).getByAltText('Red flag icon')).toBeTruthy();
+      });
+
+      it(`should not show 'Add this information' message when workplace is not eligible but has added ${field.name}`, async () => {
+        const workplace = establishmentWithWdfBuilder() as Establishment;
+        workplace[field.name] = field.validResponse;
+
+        const { queryByTestId } = await setup({ workplace });
+
+        const wdfWarningSection = queryByTestId(field.name + 'WdfWarning');
+
+        expect(wdfWarningSection).toBeFalsy();
+      });
+
+      it(`should show 'Add this information' and orange flag when workplace does not have ${field.name} added but workplace has met WDF eligibility`, async () => {
+        const workplace = establishmentWithWdfBuilder() as Establishment;
+        workplace[field.name] = null;
+
+        const { getByTestId } = await setup({ workplace, overallWdfEligibility: true });
+
+        const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
+
+        expect(within(wdfWarningSection).queryByText('Add this information')).toBeTruthy();
+        expect(within(wdfWarningSection).getByAltText('Orange flag icon')).toBeTruthy();
+      });
+    });
+  });
 });

@@ -141,21 +141,21 @@
       </div>
     </ng-container>
 
-    <div class="govuk-summary-list__row" data-testid="employerType">
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
+      'govuk-summary-list__row--no-bottom-border': !(workplace.employerType?.other || workplace.employerType?.value),
+    }"
+      data-testid="employerType"
+    >
       <dt class="govuk-summary-list__key">Employer type</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
-            -
-          </ng-container>
-          <ng-template #employertype>
-            {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
-          </ng-template>
-        </app-summary-record-value>
+        <ng-container *ngIf="!(workplace.employerType?.other || workplace.employerType?.value); else employertype">
+          -
+        </ng-container>
+        <ng-template #employertype>
+          {{ workplace.employerType?.other ? workplace.employerType.other : workplace.employerType.value }}
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -166,6 +166,11 @@
         ></app-summary-record-change>
       </dd>
     </div>
+    <app-wdf-warning-message
+      *ngIf="!(workplace.employerType?.other || workplace.employerType?.value)"
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="employerTypeWdfWarning"
+    ></app-wdf-warning-message>
   </ng-container>
 
   <ng-container>
