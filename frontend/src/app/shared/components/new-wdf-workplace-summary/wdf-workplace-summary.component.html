@@ -1,4 +1,4 @@
-<h2 class="govuk-heading-m govuk-!-padding-bottom-3 govuk-section-break--visible ">Your workplace details</h2>
+<h2 class="govuk-heading-m govuk-!-padding-bottom-3 govuk-section-break--visible">Your workplace details</h2>
 <dl
   *ngIf="workplace"
   class="govuk-summary-list govuk-summary-list--medium"
@@ -8,7 +8,10 @@
   }"
 >
   <ng-container *ngIf="!checkAnswersPage">
-    <div class="govuk-summary-list__row govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding" data-testid="workplace-section">
+    <div
+      class="govuk-summary-list__row govuk-summary-list__row--no-bottom-border govuk-summary-list__row--no-bottom-padding"
+      data-testid="workplace-section"
+    >
       <dt class="govuk-summary-list__key">
         <div>Name</div>
       </dt>
@@ -385,12 +388,7 @@
     <div
       class="govuk-summary-list__row"
       data-testid="vacancies"
-      [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': canEditEstablishment &&
-          wdfView &&
-          workplace.wdf?.vacancies.isEligible === 'Yes' &&
-          !workplace.wdf?.vacancies.updatedSinceEffectiveDate
-      }"
+      [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.vacancies }"
     >
       <dt class="govuk-summary-list__key">Current staff vacancies</dt>
       <dd class="govuk-summary-list__value">
@@ -412,13 +410,7 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="
-            !(
-              wdfView &&
-              workplace.wdf?.vacancies.isEligible === 'Yes' &&
-              !workplace.wdf?.vacancies.updatedSinceEffectiveDate
-            )
-          "
+          *ngIf="!showWdfConfirmations.vacancies"
           [explanationText]="' staff vacancies'"
           [link]="['/workplace', workplace.uid, 'vacancies']"
           [hasData]="workplace.vacancies?.length"
@@ -427,12 +419,7 @@
       </dd>
     </div>
     <app-wdf-field-confirmation
-      *ngIf="
-        canEditEstablishment &&
-        wdfView &&
-        workplace.wdf?.vacancies.isEligible === 'Yes' &&
-        !workplace.wdf?.vacancies.updatedSinceEffectiveDate
-      "
+      *ngIf="showWdfConfirmations.vacancies"
       [staffRecordView]="true"
       [changeLink]="getRoutePath('vacancies', wdfView)"
       (fieldConfirmation)="this.confirmField('vacancies')"
@@ -443,10 +430,7 @@
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': canEditEstablishment &&
-          wdfView &&
-          workplace.wdf?.starters.isEligible === 'Yes' &&
-          !workplace.wdf?.starters.updatedSinceEffectiveDate
+        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.starters
       }"
       data-testid="starters"
     >
@@ -472,13 +456,7 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="
-            !(
-              wdfView &&
-              workplace.wdf?.starters.isEligible === 'Yes' &&
-              !workplace.wdf?.starters.updatedSinceEffectiveDate
-            )
-          "
+          *ngIf="!showWdfConfirmations.starters"
           [explanationText]="' new starters'"
           [link]="['/workplace', workplace.uid, 'starters']"
           [hasData]="workplace.starters?.length"
@@ -487,12 +465,7 @@
       </dd>
     </div>
     <app-wdf-field-confirmation
-      *ngIf="
-        canEditEstablishment &&
-        wdfView &&
-        workplace.wdf?.starters.isEligible === 'Yes' &&
-        !workplace.wdf?.starters.updatedSinceEffectiveDate
-      "
+      *ngIf="showWdfConfirmations.starters"
       [changeLink]="getRoutePath('starters', wdfView)"
       [staffRecordView]="true"
       (fieldConfirmation)="this.confirmField('starters')"
@@ -504,10 +477,7 @@
       class="govuk-summary-list__row"
       data-testid="leavers"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': canEditEstablishment &&
-          wdfView &&
-          workplace.wdf?.leavers.isEligible === 'Yes' &&
-          !workplace.wdf?.leavers.updatedSinceEffectiveDate
+        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.leavers
       }"
     >
       <dt class="govuk-summary-list__key">Leavers</dt>
@@ -532,13 +502,7 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="
-            !(
-              wdfView &&
-              workplace.wdf?.leavers.isEligible === 'Yes' &&
-              !workplace.wdf?.leavers.updatedSinceEffectiveDate
-            )
-          "
+          *ngIf="!showWdfConfirmations.leavers"
           [explanationText]="' leavers'"
           [link]="['/workplace', workplace.uid, 'leavers']"
           [hasData]="workplace.leavers?.length"
@@ -547,12 +511,7 @@
       </dd>
     </div>
     <app-wdf-field-confirmation
-      *ngIf="
-        canEditEstablishment &&
-        wdfView &&
-        workplace.wdf?.leavers.isEligible === 'Yes' &&
-        !workplace.wdf?.leavers.updatedSinceEffectiveDate
-      "
+      *ngIf="showWdfConfirmations.leavers"
       [staffRecordView]="true"
       [changeLink]="getRoutePath('leavers', wdfView)"
       (fieldConfirmation)="this.confirmField('leavers')"

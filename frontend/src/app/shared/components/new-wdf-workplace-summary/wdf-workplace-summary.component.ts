@@ -17,7 +17,6 @@ import { Subscription } from 'rxjs';
 })
 export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChanges {
   private _workplace: any;
-  public resp: any;
   protected subscriptions: Subscription = new Subscription();
   public hasCapacity: boolean;
   private capacities: any;
@@ -33,6 +32,11 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   public checkAnswersPage: boolean;
   public now: Date = new Date();
   public typeOfEmployer: string;
+  public showWdfConfirmations: any = {
+    starters: null,
+    leavers: null,
+    vacancies: null,
+  };
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
   @Input() removeServiceSectionMargin = false;
@@ -64,6 +68,8 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
         }
       }
     }
+
+    this.setShowWdfConfirmations();
   }
 
   get totalStaffWarningNonWDF(): boolean {
@@ -157,6 +163,8 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
         }
       }),
     );
+
+    this.setShowWdfConfirmations();
   }
 
   public sortedCapacityService(capacityService: any) {
@@ -165,9 +173,6 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     });
   }
 
-  ngOnDestroy(): void {
-    this.subscriptions.unsubscribe();
-  }
   public setTotalStaffWarning(): void {
     if (this.workplace.workerCount === null && this.workerCount === null) {
       this.showTotalStaffWarning = false;
@@ -258,5 +263,24 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     return requiredFields.every(
       (field) => this.workplace.wdf[field].updatedSinceEffectiveDate || this.confirmedFields.includes(field),
     );
+  }
+
+  protected setShowWdfConfirmations(): void {
+    Object.keys(this.showWdfConfirmations).forEach((field) => {
+      this.showWdfConfirmations[field] = this.showWdfConfirmation(field);
+    });
+  }
+
+  public showWdfConfirmation(field: string): boolean {
+    return (
+      this.canEditEstablishment &&
+      this.wdfView &&
+      this.workplace.wdf?.[field].isEligible === 'Yes' &&
+      !this.workplace.wdf?.[field].updatedSinceEffectiveDate
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

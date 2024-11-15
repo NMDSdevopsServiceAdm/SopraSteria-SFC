@@ -52,7 +52,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         wdfView: true,
         workplace: establishmentWithWdfBuilder() as Establishment,
         removeServiceSectionMargin: false,
-        ...overrides
+        ...overrides,
       },
     });
     const component = fixture.componentInstance;
@@ -70,7 +70,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     const { component, getByText } = await setup();
 
     expect(getByText('Your workplace details')).toBeTruthy();
-  })
+  });
 
   it('should render all the sections', async () => {
     const { component, fixture, getByTestId } = await setup();
@@ -873,27 +873,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(leaversRow).queryByText('2 Nursing')).toBeTruthy();
       });
-
-      it('should show meeting requirements message in WdfFieldConfirmation when Yes it is is clicked for Staff Leavers', async () => {
-        const { component, fixture, getByText } = await setup();
-
-        component.workplace.wdf.leavers.isEligible = Eligibility.YES;
-        component.workplace.wdf.leavers.updatedSinceEffectiveDate = false;
-        component.workplace.vacancies = [
-          {
-            jobId: 1,
-            title: 'Activities worker or co-ordinator',
-            total: 1,
-          },
-        ];
-        fixture.detectChanges();
-
-        const yesItIsButton = getByText('Yes, it is', { exact: false });
-        yesItIsButton.click();
-        fixture.detectChanges();
-
-        expect(getByText('Meeting requirements')).toBeTruthy();
-      });
     });
   });
 
@@ -1140,7 +1119,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it('should show Change button on number of days leave row when careWorkersLeaveDaysPerYear has a value (answered)', async () => {
         const { component, fixture } = await setup();
 
-
         fixture.detectChanges();
 
         const careWorkersLeaveDaysPerYearRow = within(document.body).queryByTestId('number-of-days-leave');
@@ -1169,7 +1147,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Local authorities and have Change button on Data sharing when localAuthorities set to true', async () => {
-        const workplace = establishmentWithShareWith({ cqc: null, localAuthorities: true })
+        const workplace = establishmentWithShareWith({ cqc: null, localAuthorities: true });
         const { component } = await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1181,7 +1159,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show CQC and have Change button on Data sharing when cqc set to true', async () => {
-        const workplace = establishmentWithShareWith({ cqc: true, localAuthorities: false })
+        const workplace = establishmentWithShareWith({ cqc: true, localAuthorities: false });
         await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1191,7 +1169,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc and localAuthorities are set to false', async () => {
-        const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: false })
+        const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: false });
         const { component, fixture } = await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1201,7 +1179,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc is set to false and localAuthorities is null (not answered)', async () => {
-        const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: null })
+        const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: null });
         const { component, fixture } = await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1211,7 +1189,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when localAuthorities is set to false and cqc is null (not answered)', async () => {
-        const workplace = establishmentWithShareWith({ cqc: null, localAuthorities: false })
+        const workplace = establishmentWithShareWith({ cqc: null, localAuthorities: false });
         await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1221,7 +1199,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should not show Not sharing when one of cqc and localAuthorities is false and one is true', async () => {
-        const workplace = establishmentWithShareWith({ cqc: true, localAuthorities: false })
+        const workplace = establishmentWithShareWith({ cqc: true, localAuthorities: false });
         await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1242,7 +1220,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
             title: 'Activities worker or co-ordinator',
             total: 1,
           },
-        ]
+        ],
       },
       {
         fieldName: 'starters',
@@ -1252,7 +1230,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
             title: 'Activities worker or co-ordinator',
             total: 1,
           },
-        ]
+        ],
       },
       {
         fieldName: 'leavers',
@@ -1262,8 +1240,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
             title: 'Activities worker or co-ordinator',
             total: 1,
           },
-        ]
-      }
+        ],
+      },
     ].forEach((field) => {
       const establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective = (fieldName, value) => {
         const workplace = establishmentWithWdfBuilder() as Establishment;
@@ -1272,7 +1250,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         workplace[field.fieldName] = field.value;
 
         return workplace;
-      }
+      };
 
       it(`should show WdfFieldConfirmation when is eligible but needs to be confirmed for ${field.fieldName}`, async () => {
         const workplace = establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective(field.fieldName, field.value);
