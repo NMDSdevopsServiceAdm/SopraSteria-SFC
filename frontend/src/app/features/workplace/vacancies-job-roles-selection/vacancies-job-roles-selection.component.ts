@@ -17,13 +17,16 @@ import { AccordionGroupComponent } from '@shared/components/accordions/generic-a
 export class VacanciesJobRolesSelectionComponent extends Question implements OnInit, OnDestroy {
   @ViewChild('accordion') accordion: AccordionGroupComponent;
   public section = 'Vacancies and turnover';
-  public jobsAvailable: Job[] = [];
-  public jobGroups: JobGroup[] = [];
   public errorMessageOnEmptyInput = 'Select job roles for all your current staff vacancies';
-  public jobIdOfCareProvidingRoleOther = 20;
+  public jobIdOfOtherCareProvidingRole = 20;
+  public jobGroupsToOpenAtStart: string[] = [];
+  public jobGroups: JobGroup[] = [];
+
+  protected localStorageKey = 'updated-vacancies';
+
+  private jobsAvailable: Job[] = [];
   private vacancies: Vacancy[] = [];
   private prefilledJobIds: number[] = [];
-  private jobGroupsToOpenAtStart: string[] = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -58,20 +61,33 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   }
 
   private prefill(): void {
-    if (Array.isArray(this.establishment.vacancies) && this.establishment.vacancies.length) {
-      this.vacancies = this.establishment.vacancies;
-      this.prefilledJobIds = this.establishment.vacancies.map((vacancy) => Number(vacancy.jobId));
-      this.jobGroupsToOpenAtStart = this.jobGroups
-        .filter((group) => group.items.some((job) => this.prefilledJobIds.includes(job.id)))
-        .map((group) => group.title);
+    this.vacancies = this.getPrefillData() ?? [];
+    if (!this.vacancies?.length) {
+      return;
+    }
 
-      const otherCareProvidingRole = this.vacancies.find(
-        (vacancy) => vacancy.jobId === this.jobIdOfCareProvidingRoleOther,
-      );
-      this.form.patchValue({
-        selectedJobRoles: this.prefilledJobIds,
-        otherCareProvidingRoleName: otherCareProvidingRole?.other ?? null,
-      });
+    this.prefilledJobIds = this.vacancies.map((vacancy) => Number(vacancy.jobId));
+    this.jobGroupsToOpenAtStart = this.jobGroups
+      .filter((group) => group.items.some((job) => this.prefilledJobIds.includes(job.id)))
+      .map((group) => group.title);
+
+    const otherCareProvidingRole = this.vacancies.find(
+      (vacancy) => vacancy.jobId === this.jobIdOfOtherCareProvidingRole,
+    );
+    this.form.patchValue({
+      selectedJobRoles: this.prefilledJobIds,
+      otherCareProvidingRoleName: otherCareProvidingRole?.other ?? null,
+    });
+  }
+
+  private getPrefillData() {
+    const previousData = this.loadFromLocal();
+    if (previousData?.establishmentUid === this.establishment.uid && Array.isArray(previousData?.vacancies)) {
+      return previousData.vacancies;
+    }
+
+    if (Array.isArray(this.establishment.vacancies)) {
+      return this.establishment.vacancies;
     }
   }
 
@@ -108,25 +124,36 @@ export class VacanciesJobRolesSelectionComponent extends Question implements OnI
   }
 
   protected onSuccess(): void {
-    this.storeSelectedJobRolesInLocalStorage();
+    this.storeCurrentChanges();
   }
 
-  private storeSelectedJobRolesInLocalStorage(): void {
+  protected storeCurrentChanges(): void {
     const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
     const otherCareProvidingRoleName: string = this.form.get('otherCareProvidingRoleName').value;
 
     const updatedVacancies: Vacancy[] = selectedJobIds.map((jobId) => {
       const job = this.jobsAvailable.find((job) => job.id === jobId);
-      const vacancyNumber = this.vacancies.find((vacancy) => vacancy.jobId === jobId)?.total ?? null;
-      if (job.id === this.jobIdOfCareProvidingRoleOther && otherCareProvidingRoleName) {
-        return { jobId, title: job.title, total: vacancyNumber, other: otherCareProvidingRoleName };
+      const vacancyCount = this.vacancies.find((vacancy) => vacancy.jobId === jobId)?.total ?? null;
+      if (job.id === this.jobIdOfOtherCareProvidingRole && otherCareProvidingRoleName) {
+        return { jobId, title: job.title, total: vacancyCount, other: otherCareProvidingRoleName };
       }
 
-      return { jobId, title: job.title, total: vacancyNumber };
+      return { jobId, title: job.title, total: vacancyCount };
     });
     const dataToStore = { establishmentUid: this.establishment.uid, vacancies: updatedVacancies };
+    this.saveToLocal(dataToStore);
+  }
 
-    localStorage.setItem('updated-vacancies', JSON.stringify(dataToStore));
+  protected saveToLocal(dataToStore) {
+    localStorage.setItem(this.localStorageKey, JSON.stringify(dataToStore));
+  }
+
+  protected loadFromLocal() {
+    try {
+      return JSON.parse(localStorage.getItem(this.localStorageKey));
+    } catch (err) {
+      return null;
+    }
   }
 
   protected setupFormErrorsMap(): void {

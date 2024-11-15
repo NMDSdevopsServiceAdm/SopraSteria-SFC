@@ -1,17 +1,17 @@
+import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed, tick } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
-
-import { VacanciesJobRolesSelectionComponent } from './vacancies-job-roles-selection.component';
+import { Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { HttpClient } from '@angular/common/http';
+import { SharedModule } from '@shared/shared.module';
+import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { Vacancy } from '@core/model/establishment.model';
+
+import { VacanciesJobRolesSelectionComponent } from './vacancies-job-roles-selection.component';
 
 fdescribe('VacanciesJobRolesSelectionComponent', () => {
   const mockAvailableJobs = [
@@ -46,6 +46,10 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
     const returnToUrl = 'returnToUrl' in override ? override.returnToUrl : null;
     const vacanciesFromDatabase = override.vacanciesFromDatabase;
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
+    const localStorageData = override.localStorageData ?? null;
+
+    const setLocalStorageSpy = spyOn(localStorage, 'setItem');
+    const getLocalStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
 
     const renderResults = await render(VacanciesJobRolesSelectionComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -81,6 +85,8 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
     return {
       component,
       routerSpy,
+      setLocalStorageSpy,
+      getLocalStorageSpy,
       ...renderResults,
     };
   };
@@ -169,19 +175,19 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
     });
 
     describe('prefill', () => {
+      const mockVacancies: Vacancy[] = [
+        {
+          jobId: 10,
+          title: 'Care worker',
+          total: 2,
+        },
+        {
+          jobId: 23,
+          title: 'Registered nurse',
+          total: 2,
+        },
+      ];
       it('should tick the checkboxes according to previously saved vacancies for the workplace', async () => {
-        const mockVacancies: Vacancy[] = [
-          {
-            jobId: 10,
-            title: 'Care worker',
-            total: 2,
-          },
-          {
-            jobId: 23,
-            title: 'Registered nurse',
-            total: 2,
-          },
-        ];
         const { getAllByRole } = await setup({ vacanciesFromDatabase: mockVacancies });
 
         const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
@@ -190,14 +196,14 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
       });
 
       it('should expand the accordion for job groups that have prefilled vacancies', async () => {
-        const mockVacancies: Vacancy[] = [
+        const careWorkerOnly: Vacancy[] = [
           {
             jobId: 10,
             title: 'Care worker',
             total: 2,
           },
         ];
-        const { getByLabelText } = await setup({ vacanciesFromDatabase: mockVacancies });
+        const { getByLabelText } = await setup({ vacanciesFromDatabase: careWorkerOnly });
 
         const sectionForCareProvidingRoles = getByLabelText('Care providing roles');
         const accordionForJobGroup2 = getByLabelText('Professional and related roles');
@@ -207,7 +213,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
       });
 
       it('should prefill the optional job role name for "Care providing role - Other" if given', async () => {
-        const mockVacancies: Vacancy[] = [
+        const otherCareProvidingRole: Vacancy[] = [
           {
             jobId: 20,
             title: 'Other (directly involved in providing care)',
@@ -216,11 +222,28 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
           },
         ];
 
-        const { getByRole } = await setup({ vacanciesFromDatabase: mockVacancies });
+        const { getByRole } = await setup({ vacanciesFromDatabase: otherCareProvidingRole });
 
         const inputBox = getByRole('textbox', { name: 'Job role (optional)' }) as HTMLInputElement;
         expect(inputBox).toBeTruthy();
         expect(inputBox.value).toEqual('Some really special job role name');
+      });
+
+      it('should prefill from the data in localStorage if editing the same workplace', async () => {
+        const mockLocalStorageData = { establishmentUid: 'mocked-uid', vacancies: mockVacancies };
+        const { getAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
+
+        const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
+        expect(tickedCheckboxes.length).toEqual(2);
+        expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
+      });
+
+      it('should not prefill from the data in localStorage if editing a different workplace', async () => {
+        const mockLocalStorageData = { establishmentUid: 'other-workplace-uid', vacancies: mockVacancies };
+        const { queryAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
+
+        const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
+        expect(tickedCheckboxes.length).toEqual(0);
       });
     });
   });
@@ -228,8 +251,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
   describe('form submit and validation', () => {
     describe('on Success', () => {
       it('should store the user input data in localStorage', async () => {
-        const { component, getByText, getByRole } = await setup();
-        const localStorageSpy = spyOn(localStorage, 'setItem');
+        const { component, getByText, getByRole, setLocalStorageSpy } = await setup();
 
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Care worker'));
@@ -263,7 +285,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
           ],
         };
 
-        expect(localStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
+        expect(setLocalStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
       });
 
       it('should keep any previously input vacancies numbers', async () => {
@@ -280,8 +302,9 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
           },
         ];
 
-        const { component, getByText } = await setup({ vacanciesFromDatabase: mockVacanciesFromDatabase });
-        const localStorageSpy = spyOn(localStorage, 'setItem');
+        const { component, getByText, setLocalStorageSpy } = await setup({
+          vacanciesFromDatabase: mockVacanciesFromDatabase,
+        });
 
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Registered nurse')); // untick this job
@@ -304,7 +327,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
           ],
         };
 
-        expect(localStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
+        expect(setLocalStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
       });
 
       it('should navigate to the number input page', async () => {
@@ -320,8 +343,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
 
     describe('errors', () => {
       it('should display an error message on submit if no job roles are selected', async () => {
-        const { fixture, getByRole, getByText, getByTestId } = await setup();
-        const localStorageSpy = spyOn(localStorage, 'setItem');
+        const { fixture, getByRole, getByText, getByTestId, setLocalStorageSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
@@ -335,7 +357,7 @@ fdescribe('VacanciesJobRolesSelectionComponent', () => {
         const errorSummaryBox = getByText('There is a problem').parentElement;
         expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
 
-        expect(localStorageSpy).not.toHaveBeenCalled();
+        expect(setLocalStorageSpy).not.toHaveBeenCalled();
       });
 
       it('should expand the whole accordion on error', async () => {

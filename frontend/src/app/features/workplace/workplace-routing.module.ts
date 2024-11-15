@@ -274,10 +274,10 @@ const routes: Routes = [
       {
         path: 'vacancies-job-roles-selection',
         component: VacanciesJobRolesSelectionComponent,
-        // canActivate: [CheckPermissionsGuard],
+        canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
         data: {
-          // permissions: ['canEditEstablishment'],
+          permissions: ['canEditEstablishment'],
           title: 'Vacancies job role selection',
         },
       },
