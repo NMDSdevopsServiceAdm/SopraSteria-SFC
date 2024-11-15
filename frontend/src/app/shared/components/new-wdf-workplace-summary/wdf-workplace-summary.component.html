@@ -51,7 +51,11 @@
         <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()"> Change </a>
       </dd>
     </div>
-    <div class="govuk-summary-list__row" data-testid="numberOfStaff">
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.numberOfStaff }"
+      data-testid="numberOfStaff"
+    >
       <dt
         class="govuk-summary-list__key"
         [class.asc-no-border]="
@@ -77,18 +81,6 @@
         >
           {{ workplace.numberOfStaff | numericAnswer }}
         </app-summary-record-value>
-        <app-wdf-field-confirmation
-          *ngIf="
-            canEditEstablishment &&
-            wdfView &&
-            workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
-            !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
-            workplace.numberOfStaff === workerCount
-          "
-          [changeLink]="getRoutePath('total-staff', wdfView)"
-          (fieldConfirmation)="this.confirmField('numberOfStaff')"
-          (setReturnClicked)="this.setReturn()"
-        ></app-wdf-field-confirmation>
         <app-wdf-staff-mismatch-message
           *ngIf="wdfView && this.showTotalStaffWarning"
           [workplace]="workplace"
@@ -106,14 +98,7 @@
         "
       >
         <app-summary-record-change
-          *ngIf="
-            !(
-              wdfView &&
-              workplace.wdf?.numberOfStaff.isEligible === 'Yes' &&
-              !workplace.wdf?.numberOfStaff.updatedSinceEffectiveDate &&
-              workplace.numberOfStaff === workerCount
-            )
-          "
+          *ngIf="!(showWdfConfirmations.numberOfStaff && workplace.numberOfStaff === workerCount)"
           [explanationText]="' total number of staff'"
           [link]="['/workplace', workplace.uid, 'total-staff']"
           [hasData]="isNumber(workplace.numberOfStaff)"
@@ -121,6 +106,13 @@
         ></app-summary-record-change>
       </dd>
     </div>
+    <app-wdf-field-confirmation
+      *ngIf="showWdfConfirmations.numberOfStaff && workplace.numberOfStaff === workerCount"
+      [staffRecordView]="true"
+      [changeLink]="getRoutePath('total-staff', wdfView)"
+      (fieldConfirmation)="this.confirmField('numberOfStaff')"
+      (setReturnClicked)="this.setReturn()"
+    ></app-wdf-field-confirmation>
     <ng-container
       *ngIf="
         staffMismatchWarning() &&

@@ -26,6 +26,8 @@ import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component'
 
 describe('WDFWorkplaceSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
+    const workplace = establishmentWithWdfBuilder() as Establishment;
+
     const { fixture, getByText, getByTestId, queryByTestId, rerender } = await render(WDFWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WdfModule],
       declarations: [],
@@ -50,8 +52,9 @@ describe('WDFWorkplaceSummaryComponent', () => {
       ],
       componentProperties: {
         wdfView: true,
-        workplace: establishmentWithWdfBuilder() as Establishment,
+        workplace,
         removeServiceSectionMargin: false,
+        workerCount: workplace.numberOfStaff,
         ...overrides,
       },
     });
@@ -1224,6 +1227,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
       {
         fieldName: 'serviceUsers',
         value: [{ service: 'Care Giving' }],
+      },
+      {
+        fieldName: 'numberOfStaff',
+        value: 3,
       },
     ].forEach((field) => {
       const establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective = (fieldName, value) => {

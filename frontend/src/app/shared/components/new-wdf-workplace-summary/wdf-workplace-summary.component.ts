@@ -38,6 +38,7 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     mainService: null,
     capacities: null,
     serviceUsers: null,
+    numberOfStaff: null,
   };
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
