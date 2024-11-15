@@ -66,13 +66,11 @@
         </div>
       </fieldset>
 
-      <!-- <button class="govuk-button" (click)="submitJobRolesSelection($event)">
-        {{ return ? 'Continue' : 'Save and continue' }}
-      </button> -->
       <app-workplace-submit-button
         (clicked)="setSubmitAction($event)"
         [callToAction]="return ? 'Continue' : 'Save and continue'"
         [recordSummary]="false"
+        [canExit]="!!return"
       ></app-workplace-submit-button>
     </form>
   </div>

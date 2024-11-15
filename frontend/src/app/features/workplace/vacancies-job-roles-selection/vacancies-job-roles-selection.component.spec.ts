@@ -157,6 +157,16 @@ describe('VacanciesJobRolesSelectionComponent', () => {
         const { queryByText } = await setup();
         expect(queryByText('Skip this question')).toBeFalsy();
       });
+
+      it('should render a "Cancel" button when not in flow', async () => {
+        const { getByText } = await setup({ returnToUrl: '/dashboard#workplace' });
+        expect(getByText('Cancel')).toBeTruthy();
+      });
+
+      it('should not render a "Cancel" button when in flow', async () => {
+        const { queryByText } = await setup();
+        expect(queryByText('Cancel')).toBeFalsy();
+      });
     });
 
     describe('progress bar', () => {
@@ -370,5 +380,13 @@ describe('VacanciesJobRolesSelectionComponent', () => {
         expect(getByText('Hide all job roles')).toBeTruthy();
       });
     });
+  });
+
+  it('should return to the workplace summary page when cancel button is clicked', async () => {
+    const { getByText, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
+    const cancelButton = getByText('Cancel');
+
+    userEvent.click(cancelButton);
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
   });
 });
