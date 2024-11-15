@@ -2,7 +2,11 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
 import { QualificationsByGroup, QualificationType } from '@core/model/qualification.model';
-import { CreateTrainingRecordResponse, MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
+import {
+  CreateTrainingRecordResponse,
+  MultipleTrainingResponse,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
 import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
