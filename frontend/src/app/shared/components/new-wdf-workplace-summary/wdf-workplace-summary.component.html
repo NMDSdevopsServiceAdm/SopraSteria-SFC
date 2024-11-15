@@ -148,6 +148,7 @@
         <div></div>
       </div>
     </ng-container>
+
     <div class="govuk-summary-list__row" data-testid="employerType">
       <dt class="govuk-summary-list__key">Employer type</dt>
       <dd class="govuk-summary-list__value">
@@ -277,9 +278,7 @@
 
     <div
       class="govuk-summary-list__row"
-      [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.capacities,
-    }"
+      [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.capacities }"
       data-testid="serviceCapacity"
     >
       <dt class="govuk-summary-list__key">Service capacity</dt>
@@ -309,13 +308,18 @@
     </div>
     <app-wdf-field-confirmation
       *ngIf="showWdfConfirmations.capacities"
+      [staffRecordView]="true"
       [changeLink]="getRoutePath('capacity-of-services', wdfView)"
       (fieldConfirmation)="this.confirmField('capacities')"
       (setReturnClicked)="this.setReturn()"
     >
     </app-wdf-field-confirmation>
 
-    <div class="govuk-summary-list__row" data-testid="serviceUsers">
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.serviceUsers }"
+      data-testid="serviceUsers"
+    >
       <dt class="govuk-summary-list__key">Service users</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
@@ -333,27 +337,10 @@
             </ul>
           </ng-template>
         </app-summary-record-value>
-        <app-wdf-field-confirmation
-          *ngIf="
-            canEditEstablishment &&
-            wdfView &&
-            workplace.wdf?.serviceUsers.isEligible === 'Yes' &&
-            !workplace.wdf?.serviceUsers.updatedSinceEffectiveDate
-          "
-          [changeLink]="getRoutePath('service-users', wdfView)"
-          (fieldConfirmation)="this.confirmField('serviceUsers')"
-          (setReturnClicked)="this.setReturn()"
-        ></app-wdf-field-confirmation>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="
-            !(
-              wdfView &&
-              workplace.wdf?.serviceUsers.isEligible === 'Yes' &&
-              !workplace.wdf?.serviceUsers.updatedSinceEffectiveDate
-            )
-          "
+          *ngIf="!showWdfConfirmations.serviceUsers"
           [explanationText]="' service users'"
           [link]="['/workplace', workplace.uid, 'service-users']"
           [hasData]="workplace.serviceUsers?.length"
@@ -361,6 +348,13 @@
         ></app-summary-record-change>
       </dd>
     </div>
+    <app-wdf-field-confirmation
+      *ngIf="showWdfConfirmations.serviceUsers"
+      [staffRecordView]="true"
+      [changeLink]="getRoutePath('service-users', wdfView)"
+      (fieldConfirmation)="this.confirmField('serviceUsers')"
+      (setReturnClicked)="this.setReturn()"
+    ></app-wdf-field-confirmation>
   </ng-container>
 
   <ng-container>
