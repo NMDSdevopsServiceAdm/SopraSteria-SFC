@@ -1217,6 +1217,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
         fieldName: 'mainService',
         value: { name: 'Care Giving' },
       },
+      {
+        fieldName: 'capacities',
+        value: [{ message: '4 beds' }],
+      },
     ].forEach((field) => {
       const establishmentWithWdfFieldEligibleButNotUpdatedSinceEffective = (fieldName, value) => {
         const workplace = establishmentWithWdfBuilder() as Establishment;

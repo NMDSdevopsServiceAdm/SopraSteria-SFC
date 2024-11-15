@@ -275,7 +275,13 @@
       </dd>
     </div>
 
-    <div class="govuk-summary-list__row" data-testid="serviceCapacity">
+    <div
+      class="govuk-summary-list__row"
+      [ngClass]="{
+      'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.capacities,
+    }"
+      data-testid="serviceCapacity"
+    >
       <dt class="govuk-summary-list__key">Service capacity</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
@@ -290,28 +296,10 @@
             </ul>
           </ng-template>
         </app-summary-record-value>
-        <app-wdf-field-confirmation
-          *ngIf="
-            canEditEstablishment &&
-            wdfView &&
-            workplace.wdf?.capacities.isEligible === 'Yes' &&
-            !workplace.wdf?.capacities.updatedSinceEffectiveDate
-          "
-          [changeLink]="getRoutePath('capacity-of-services', wdfView)"
-          (fieldConfirmation)="this.confirmField('capacities')"
-          (setReturnClicked)="this.setReturn()"
-        >
-        </app-wdf-field-confirmation>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="
-            !(
-              wdfView &&
-              workplace.wdf?.capacities.isEligible === 'Yes' &&
-              !workplace.wdf?.capacities.updatedSinceEffectiveDate
-            )
-          "
+          *ngIf="!showWdfConfirmations.capacities"
           [explanationText]="' service capacities'"
           [link]="['/workplace', workplace.uid, 'capacity-of-services']"
           [hasData]="workplace.capacities?.length"
@@ -319,6 +307,13 @@
         ></app-summary-record-change>
       </dd>
     </div>
+    <app-wdf-field-confirmation
+      *ngIf="showWdfConfirmations.capacities"
+      [changeLink]="getRoutePath('capacity-of-services', wdfView)"
+      (fieldConfirmation)="this.confirmField('capacities')"
+      (setReturnClicked)="this.setReturn()"
+    >
+    </app-wdf-field-confirmation>
 
     <div class="govuk-summary-list__row" data-testid="serviceUsers">
       <dt class="govuk-summary-list__key">Service users</dt>
