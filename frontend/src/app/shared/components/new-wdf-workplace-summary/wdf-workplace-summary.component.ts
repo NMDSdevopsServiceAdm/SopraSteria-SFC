@@ -2,6 +2,7 @@ import { I18nPluralPipe } from '@angular/common';
 import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Service } from '@core/model/services.model';
 import { URLStructure } from '@core/model/url.model';
+import { Eligibility } from '@core/model/wdf.model';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -40,6 +41,7 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     serviceUsers: null,
     numberOfStaff: null,
   };
+  public Eligibility = Eligibility;
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
   @Input() removeServiceSectionMargin = false;

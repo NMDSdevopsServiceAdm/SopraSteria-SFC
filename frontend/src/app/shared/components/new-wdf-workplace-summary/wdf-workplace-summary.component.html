@@ -110,7 +110,7 @@
       (setReturnClicked)="this.setReturn()"
     ></app-wdf-field-confirmation>
     <app-wdf-warning-message
-      *ngIf="!workplace.numberOfStaff"
+      *ngIf="workplace.wdf?.numberOfStaff?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="numberOfStaffWdfWarning"
     ></app-wdf-warning-message>
@@ -168,7 +168,7 @@
       </dd>
     </div>
     <app-wdf-warning-message
-      *ngIf="!(workplace.employerType?.other || workplace.employerType?.value)"
+      *ngIf="workplace.wdf?.employerType?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="employerTypeWdfWarning"
     ></app-wdf-warning-message>
@@ -309,7 +309,7 @@
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
-      *ngIf="!workplace.capacities?.length"
+      *ngIf="workplace.wdf?.capacities?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="capacitiesWdfWarning"
     ></app-wdf-warning-message>
@@ -352,7 +352,7 @@
       (setReturnClicked)="this.setReturn()"
     ></app-wdf-field-confirmation>
     <app-wdf-warning-message
-      *ngIf="!workplace.serviceUsers?.length"
+      *ngIf="workplace.wdf?.serviceUsers?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="serviceUsersWdfWarning"
     ></app-wdf-warning-message>
@@ -404,7 +404,7 @@
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
-      *ngIf="!workplace.vacancies?.length"
+      *ngIf="workplace.wdf?.vacancies?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="vacanciesWdfWarning"
     ></app-wdf-warning-message>
@@ -449,7 +449,7 @@
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
-      *ngIf="!workplace.starters?.length"
+      *ngIf="workplace.wdf?.starters?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="startersWdfWarning"
     ></app-wdf-warning-message>
@@ -494,7 +494,7 @@
     >
     </app-wdf-field-confirmation>
     <app-wdf-warning-message
-      *ngIf="!workplace.leavers?.length"
+      *ngIf="workplace.wdf?.leavers?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="leaversWdfWarning"
     ></app-wdf-warning-message>

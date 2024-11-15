@@ -1307,6 +1307,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it(`should show 'Add this information' message and red flag when workplace is not eligible and needs to add ${field.name}`, async () => {
         const workplace = establishmentWithWdfBuilder() as Establishment;
         workplace[field.name] = null;
+        workplace.wdf[field.name].isEligible = Eligibility.NO;
 
         const { getByTestId } = await setup({ workplace });
 
@@ -1319,6 +1320,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it(`should not show 'Add this information' message when workplace is not eligible but has added ${field.name}`, async () => {
         const workplace = establishmentWithWdfBuilder() as Establishment;
         workplace[field.name] = field.validResponse;
+        workplace.wdf[field.name].isEligible = Eligibility.YES;
 
         const { queryByTestId } = await setup({ workplace });
 
@@ -1330,6 +1332,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       it(`should show 'Add this information' and orange flag when workplace does not have ${field.name} added but workplace has met WDF eligibility`, async () => {
         const workplace = establishmentWithWdfBuilder() as Establishment;
         workplace[field.name] = null;
+        workplace.wdf[field.name].isEligible = Eligibility.NO;
 
         const { getByTestId } = await setup({ workplace, overallWdfEligibility: true });
 
