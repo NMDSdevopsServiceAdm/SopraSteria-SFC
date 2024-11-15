@@ -510,37 +510,31 @@
     <div class="govuk-summary-list__row" data-testid="advertising-spend">
       <dt class="govuk-summary-list__key">Advertising spend</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
+        <ng-container
+          *ngIf="
+            !workplace.moneySpentOnAdvertisingInTheLastFourWeeks;
+            else moneySpentOnAdvertisingInTheLastFourWeeksType
+          "
         >
+          -
+        </ng-container>
+        <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksType>
           <ng-container
             *ngIf="
-              !workplace.moneySpentOnAdvertisingInTheLastFourWeeks;
-              else moneySpentOnAdvertisingInTheLastFourWeeksType
+              workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'None' ||
+                workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'Don\'t know';
+              then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
+              else moneySpentOnAdvertisingInTheLastFourWeeksKnown
             "
           >
-            -
           </ng-container>
-          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksType>
-            <ng-container
-              *ngIf="
-                workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'None' ||
-                  workplace.moneySpentOnAdvertisingInTheLastFourWeeks == 'Don\'t know';
-                then moneySpentOnAdvertisingInTheLastFourWeeksNotKnown;
-                else moneySpentOnAdvertisingInTheLastFourWeeksKnown
-              "
-            >
-            </ng-container>
-            <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
-              {{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
-            </ng-template>
-            <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
-              £{{ this.formatMonetaryValue(workplace.moneySpentOnAdvertisingInTheLastFourWeeks) }}
-            </ng-template>
+          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksNotKnown>
+            {{ workplace.moneySpentOnAdvertisingInTheLastFourWeeks }}
           </ng-template>
-        </app-summary-record-value>
+          <ng-template #moneySpentOnAdvertisingInTheLastFourWeeksKnown>
+            £{{ this.formatMonetaryValue(workplace.moneySpentOnAdvertisingInTheLastFourWeeks) }}
+          </ng-template>
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -555,20 +549,14 @@
     <div class="govuk-summary-list__row" data-testid="people-interviewed">
       <dt class="govuk-summary-list__key">People interviewed</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
+        <ng-container
+          *ngIf="!workplace.peopleInterviewedInTheLastFourWeeks; else peopleInterviewedInTheLastFourWeeksType"
         >
-          <ng-container
-            *ngIf="!workplace.peopleInterviewedInTheLastFourWeeks; else peopleInterviewedInTheLastFourWeeksType"
-          >
-            -
-          </ng-container>
-          <ng-template #peopleInterviewedInTheLastFourWeeksType>
-            {{ workplace.peopleInterviewedInTheLastFourWeeks }}
-          </ng-template>
-        </app-summary-record-value>
+          -
+        </ng-container>
+        <ng-template #peopleInterviewedInTheLastFourWeeksType>
+          {{ workplace.peopleInterviewedInTheLastFourWeeks }}
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -583,23 +571,17 @@
     <div class="govuk-summary-list__row" data-testid="repeat-training">
       <dt class="govuk-summary-list__key">Repeat training</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
+        <ng-container
+          *ngIf="
+            !workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
+            else doNewStartersRepeatMandatoryTrainingFromPreviousEmploymentType
+          "
         >
-          <ng-container
-            *ngIf="
-              !workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-              else doNewStartersRepeatMandatoryTrainingFromPreviousEmploymentType
-            "
-          >
-            -
-          </ng-container>
-          <ng-template #doNewStartersRepeatMandatoryTrainingFromPreviousEmploymentType>
-            {{ workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment }}
-          </ng-template>
-        </app-summary-record-value>
+          -
+        </ng-container>
+        <ng-template #doNewStartersRepeatMandatoryTrainingFromPreviousEmploymentType>
+          {{ workplace.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment }}
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -614,23 +596,17 @@
     <div class="govuk-summary-list__row" data-testid="accept-care-certificate">
       <dt class="govuk-summary-list__key">Accept Care Certificate</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
+        <ng-container
+          *ngIf="
+            !workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment;
+            else wouldYouAcceptCareCertificatesFromPreviousEmploymentType
+          "
         >
-          <ng-container
-            *ngIf="
-              !workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-              else wouldYouAcceptCareCertificatesFromPreviousEmploymentType
-            "
-          >
-            -
-          </ng-container>
-          <ng-template #wouldYouAcceptCareCertificatesFromPreviousEmploymentType>
-            {{ workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment }}
-          </ng-template>
-        </app-summary-record-value>
+          -
+        </ng-container>
+        <ng-template #wouldYouAcceptCareCertificatesFromPreviousEmploymentType>
+          {{ workplace.wouldYouAcceptCareCertificatesFromPreviousEmployment }}
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -654,35 +630,29 @@
     <div class="govuk-summary-list__row" data-testid="cash-loyalty-bonus-spend">
       <dt class="govuk-summary-list__key">Cash loyalty bonus</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
+        <ng-container
+          *ngIf="!workplace.careWorkersCashLoyaltyForFirstTwoYears; else careWorkersCashLoyaltyForFirstTwoYearsType"
         >
+          -
+        </ng-container>
+        <ng-template #careWorkersCashLoyaltyForFirstTwoYearsType>
           <ng-container
-            *ngIf="!workplace.careWorkersCashLoyaltyForFirstTwoYears; else careWorkersCashLoyaltyForFirstTwoYearsType"
+            *ngIf="
+              workplace.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
+                workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know' ||
+                workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Yes';
+              then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
+              else careWorkersCashLoyaltyForFirstTwoYearsKnown
+            "
           >
-            -
           </ng-container>
-          <ng-template #careWorkersCashLoyaltyForFirstTwoYearsType>
-            <ng-container
-              *ngIf="
-                workplace.careWorkersCashLoyaltyForFirstTwoYears == 'No' ||
-                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Don\'t know' ||
-                  workplace.careWorkersCashLoyaltyForFirstTwoYears == 'Yes';
-                then careWorkersCashLoyaltyForFirstTwoYearsNotKnown;
-                else careWorkersCashLoyaltyForFirstTwoYearsKnown
-              "
-            >
-            </ng-container>
-            <ng-template #careWorkersCashLoyaltyForFirstTwoYearsNotKnown>
-              {{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
-            </ng-template>
-            <ng-template #careWorkersCashLoyaltyForFirstTwoYearsKnown>
-              £{{ this.formatMonetaryValue(workplace.careWorkersCashLoyaltyForFirstTwoYears) }}
-            </ng-template>
+          <ng-template #careWorkersCashLoyaltyForFirstTwoYearsNotKnown>
+            {{ workplace.careWorkersCashLoyaltyForFirstTwoYears }}
           </ng-template>
-        </app-summary-record-value>
+          <ng-template #careWorkersCashLoyaltyForFirstTwoYearsKnown>
+            £{{ this.formatMonetaryValue(workplace.careWorkersCashLoyaltyForFirstTwoYears) }}
+          </ng-template>
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -697,16 +667,10 @@
     <div class="govuk-summary-list__row" data-testid="offer-more-than-statutory-sick-pay">
       <dt class="govuk-summary-list__key">Offer more than Statutory Sick Pay</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!workplace.sickPay; else sickPayType"> - </ng-container>
-          <ng-template #sickPayType>
-            {{ workplace.sickPay }}
-          </ng-template>
-        </app-summary-record-value>
+        <ng-container *ngIf="!workplace.sickPay; else sickPayType"> - </ng-container>
+        <ng-template #sickPayType>
+          {{ workplace.sickPay }}
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -721,16 +685,10 @@
     <div class="govuk-summary-list__row" data-testid="higher-pension-contributions">
       <dt class="govuk-summary-list__key">Higher pension contributions</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!workplace.pensionContribution; else pensionContributionType"> - </ng-container>
-          <ng-template #pensionContributionType>
-            {{ workplace.pensionContribution }}
-          </ng-template>
-        </app-summary-record-value>
+        <ng-container *ngIf="!workplace.pensionContribution; else pensionContributionType"> - </ng-container>
+        <ng-template #pensionContributionType>
+          {{ workplace.pensionContribution }}
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
@@ -745,18 +703,12 @@
     <div class="govuk-summary-list__row" data-testid="number-of-days-leave">
       <dt class="govuk-summary-list__key">Number of days leave</dt>
       <dd class="govuk-summary-list__value">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.employerType"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          <ng-container *ngIf="!workplace.careWorkersLeaveDaysPerYear; else careWorkersLeaveDaysPerYearType">
-            -
-          </ng-container>
-          <ng-template #careWorkersLeaveDaysPerYearType>
-            {{ workplace.careWorkersLeaveDaysPerYear }}
-          </ng-template>
-        </app-summary-record-value>
+        <ng-container *ngIf="!workplace.careWorkersLeaveDaysPerYear; else careWorkersLeaveDaysPerYearType">
+          -
+        </ng-container>
+        <ng-template #careWorkersLeaveDaysPerYearType>
+          {{ workplace.careWorkersLeaveDaysPerYear }}
+        </ng-template>
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
