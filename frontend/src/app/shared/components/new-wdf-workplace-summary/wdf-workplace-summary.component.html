@@ -1,7 +1,7 @@
 <h2 class="govuk-heading-m govuk-!-padding-bottom-3 govuk-section-break--visible">Your workplace details</h2>
 <dl
   *ngIf="workplace"
-  class="govuk-summary-list govuk-summary-list--medium"
+  class="govuk-summary-list govuk-summary-list--wide-key"
   [ngClass]="{
     'govuk-summary-list--contains-warnings': !wdfView && (showTotalStaffWarning || staffMismatchWarning()),
     'asc-summary-list--wide-value': wdfView && showTotalStaffWarning
