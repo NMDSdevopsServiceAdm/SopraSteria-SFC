@@ -54,7 +54,8 @@
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.numberOfStaff || !workplace.numberOfStaff
+        'govuk-summary-list__row--no-bottom-border':
+          showWdfConfirmations.numberOfStaff || workplace.wdf?.numberOfStaff?.isEligible === Eligibility.NO
       }"
       data-testid="numberOfStaff"
     >
@@ -145,8 +146,8 @@
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': !(workplace.employerType?.other || workplace.employerType?.value),
-    }"
+      'govuk-summary-list__row--no-bottom-border': workplace.wdf?.employerType?.isEligible === Eligibility.NO,
+      }"
       data-testid="employerType"
     >
       <dt class="govuk-summary-list__key">Employer type</dt>
@@ -191,26 +192,20 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-panel--light-blue': cqcStatusRequested,
-        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.mainService,
+        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.mainService || (workplace.wdf?.mainService?.isEligible === Eligibility.NO),
       }"
       data-testid="mainService"
     >
       <dt class="govuk-summary-list__key" [ngClass]="{ 'govuk-!-padding-left-3': cqcStatusRequested }">Main service</dt>
       <dd class="govuk-summary-list__value" data-testid="main-service-name">
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.mainService"
-          [overallWdfEligibility]="overallWdfEligibility"
+        {{ cqcStatusRequested ? requestedServiceName : workplace.mainService?.name }}
+        <ng-container
+          *ngIf="
+            (cqcStatusRequested && requestedServiceOtherName) || (workplace.mainService?.other && !cqcStatusRequested)
+          "
         >
-          {{ cqcStatusRequested ? requestedServiceName : workplace.mainService?.name }}
-          <ng-container
-            *ngIf="
-              (cqcStatusRequested && requestedServiceOtherName) || (workplace.mainService?.other && !cqcStatusRequested)
-            "
-          >
-            - {{ cqcStatusRequested ? requestedServiceOtherName : workplace.mainService?.other }}
-          </ng-container>
-        </app-summary-record-value>
+          - {{ cqcStatusRequested ? requestedServiceOtherName : workplace.mainService?.other }}
+        </ng-container>
       </dd>
       <dd
         *ngIf="canEditEstablishment"
@@ -246,6 +241,11 @@
       (setReturnClicked)="this.setReturn()"
     >
     </app-wdf-field-confirmation>
+    <app-wdf-warning-message
+      *ngIf="workplace.wdf?.mainService?.isEligible === Eligibility.NO"
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="mainServiceWdfWarning"
+    ></app-wdf-warning-message>
 
     <div class="govuk-summary-list__row" data-testid="otherServices">
       <dt class="govuk-summary-list__key">Other services</dt>
@@ -277,7 +277,8 @@
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.capacities || !workplace.capacities?.length
+        'govuk-summary-list__row--no-bottom-border':
+          showWdfConfirmations.capacities || workplace.wdf?.capacities?.isEligible === Eligibility.NO
       }"
       data-testid="serviceCapacity"
     >
@@ -318,7 +319,7 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          showWdfConfirmations.serviceUsers || !workplace.serviceUsers?.length
+          showWdfConfirmations.serviceUsers || workplace.wdf?.serviceUsers?.isEligible === Eligibility.NO
       }"
       data-testid="serviceUsers"
     >
@@ -370,7 +371,8 @@
       class="govuk-summary-list__row"
       data-testid="vacancies"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.vacancies || !workplace.vacancies?.length
+        'govuk-summary-list__row--no-bottom-border':
+          showWdfConfirmations.vacancies || workplace.wdf?.vacancies?.isEligible === Eligibility.NO
       }"
     >
       <dt class="govuk-summary-list__key">Current staff vacancies</dt>
@@ -412,7 +414,8 @@
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.starters || !workplace.starters?.length
+        'govuk-summary-list__row--no-bottom-border':
+          showWdfConfirmations.starters || workplace.wdf?.starters?.isEligible === Eligibility.NO
       }"
       data-testid="starters"
     >
@@ -458,7 +461,8 @@
       class="govuk-summary-list__row"
       data-testid="leavers"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.leavers || !workplace.leavers?.length
+        'govuk-summary-list__row--no-bottom-border':
+          showWdfConfirmations.leavers || workplace.wdf?.leavers?.isEligible === Eligibility.NO
       }"
     >
       <dt class="govuk-summary-list__key">Leavers</dt>
