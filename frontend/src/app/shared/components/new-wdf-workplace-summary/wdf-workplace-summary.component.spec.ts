@@ -1299,6 +1299,10 @@ describe('WDFWorkplaceSummaryComponent', () => {
           },
         ],
       },
+      {
+        name: 'numberOfStaff',
+        validResponse: 3,
+      },
     ].forEach((field) => {
       it(`should show 'Add this information' message and red flag when workplace is not eligible and needs to add ${field.name}`, async () => {
         const workplace = establishmentWithWdfBuilder() as Establishment;

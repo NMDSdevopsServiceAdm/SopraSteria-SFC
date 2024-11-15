@@ -53,7 +53,9 @@
     </div>
     <div
       class="govuk-summary-list__row"
-      [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.numberOfStaff }"
+      [ngClass]="{
+        'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.numberOfStaff || !workplace.numberOfStaff
+      }"
       data-testid="numberOfStaff"
     >
       <dt
@@ -74,13 +76,7 @@
           convertToDate(workplace.eightWeeksFromFirstLogin) < now
         "
       >
-        <app-summary-record-value
-          [wdfView]="wdfView"
-          [wdfValue]="workplace.wdf?.numberOfStaff"
-          [overallWdfEligibility]="overallWdfEligibility"
-        >
-          {{ workplace.numberOfStaff | numericAnswer }}
-        </app-summary-record-value>
+        {{ workplace.numberOfStaff | numericAnswer }}
         <app-wdf-staff-mismatch-message
           *ngIf="wdfView && this.showTotalStaffWarning"
           [workplace]="workplace"
@@ -113,6 +109,11 @@
       (fieldConfirmation)="this.confirmField('numberOfStaff')"
       (setReturnClicked)="this.setReturn()"
     ></app-wdf-field-confirmation>
+    <app-wdf-warning-message
+      *ngIf="!workplace.numberOfStaff"
+      [overallWdfEligibility]="overallWdfEligibility"
+      data-testid="numberOfStaffWdfWarning"
+    ></app-wdf-warning-message>
     <ng-container
       *ngIf="
         staffMismatchWarning() &&
