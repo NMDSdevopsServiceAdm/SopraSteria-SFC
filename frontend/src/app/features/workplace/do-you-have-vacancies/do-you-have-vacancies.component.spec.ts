@@ -31,11 +31,9 @@ describe('DoYouHaveVacanciesComponent', () => {
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory(
-            { cqc: null, localAuthorities: null },
-            overrides?.returnUrl,
-            overrides.vacancies,
-          ),
+          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, overrides?.returnUrl, {
+            vacancies: overrides?.vacancies,
+          }),
           deps: [HttpClient],
         },
       ],
@@ -145,13 +143,10 @@ describe('DoYouHaveVacanciesComponent', () => {
 
     vacancyAnswers.forEach((test: any) => {
       it(`should preselect ${test.value} if there was a saved value`, async () => {
-        const { component, fixture } = await setup();
-
-        component.establishment.vacancies = test.vacancyAnswer;
-
-        fixture.detectChanges();
-
-        component.init();
+        const overrides = {
+          vacancies: test.vacancyAnswer,
+        };
+        const { component } = await setup(overrides);
 
         const form = component.form;
         expect(form.value).toEqual({ vacanciesKnown: test.value });
