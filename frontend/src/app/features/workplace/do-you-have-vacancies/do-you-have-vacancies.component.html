@@ -1,0 +1,52 @@
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+          <h1 class="govuk-fieldset__heading">Do you have any current staff vacancies?</h1>
+        </legend>
+        <p>We only want to know about current staff vacancies for permanent and temporary job roles.</p>
+
+        <app-details [title]="'Why we ask for this information'">
+          <p>
+            To show DHSC and others how the level of staff vacancies and the number employed affects the sector over
+            time.
+          </p>
+        </app-details>
+
+        <div class="govuk-form-group govuk-!-margin-bottom-3">
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let option of vacanciesKnownOptions; let i = index">
+              <input
+                class="govuk-radios__input"
+                id="vacanciesKnown-{{ i }}"
+                name="vacanciesKnown"
+                [formControlName]="'vacanciesKnown'"
+                type="radio"
+                [value]="option.value"
+              />
+              <label class="govuk-label govuk-radios__label" for="vacanciesKnown-{{ i }}">
+                {{ option.label }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </fieldset>
+      <app-workplace-submit-button
+        [return]="!!return"
+        [continue]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
+      </div>
+    </div>
+  </div>
+</form>
