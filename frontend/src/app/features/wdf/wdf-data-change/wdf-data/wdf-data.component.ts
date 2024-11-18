@@ -47,7 +47,10 @@ export class WdfDataComponent implements OnInit {
   public overallWdfEligibility: boolean;
   public isParent: boolean;
   public workplaces = [];
-  public tabs: { name: string, fragment: string }[] = [ { name: 'Workplace', fragment: 'workplace' }, { name: 'Staff records', fragment: 'staff' }];
+  public tabs: { name: string; fragment: string }[] = [
+    { name: 'Workplace', fragment: 'workplace' },
+    { name: 'Staff records', fragment: 'staff' },
+  ];
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -83,12 +86,13 @@ export class WdfDataComponent implements OnInit {
     this.getWdfReport();
     this.setWorkerCount();
     this.getParentAndSubs();
+    this.breadcrumbService.show(JourneyType.WDF);
 
     this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
     this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
     this.route.fragment.subscribe((fragment) => {
-        const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
-        this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
+      const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
+      this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
     });
   }
 
@@ -96,7 +100,6 @@ export class WdfDataComponent implements OnInit {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
-        this.setBreadcrumbs();
         this.establishmentService.setState(workplace);
       }),
     );
@@ -153,12 +156,6 @@ export class WdfDataComponent implements OnInit {
       return false;
     }
     return workers.every((worker) => worker.wdfEligible === true);
-  }
-
-  private setBreadcrumbs(): void {
-    this.standAloneAccount
-      ? this.breadcrumbService.show(JourneyType.WDF)
-      : this.breadcrumbService.show(JourneyType.WDF_PARENT);
   }
 
   private getParentAndSubs(): void {
