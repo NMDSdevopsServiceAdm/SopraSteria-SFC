@@ -60,7 +60,6 @@
     </dd>
     <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
       <app-summary-record-change
-        *ngIf="!(showWdfConfirmations.numberOfStaff && workplace.numberOfStaff === workerCount)"
         [explanationText]="' total number of staff'"
         [link]="['/workplace', workplace.uid, 'total-staff']"
         [hasData]="isNumber(workplace.numberOfStaff)"
@@ -157,7 +156,7 @@
         [ngClass]="{ 'govuk-!-padding-right-3': cqcStatusRequested }"
         data-testid="main-service-change-or-pending"
       >
-        <ng-container *ngIf="!showWdfConfirmations.mainService">
+        <ng-container>
           <a
             *ngIf="!cqcStatusRequested; else cqcPending"
             [routerLink]="['/workplace', workplace.uid, 'main-service-cqc']"
@@ -237,7 +236,6 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="!showWdfConfirmations.capacities"
           [explanationText]="' service capacities'"
           [link]="['/workplace', workplace.uid, 'capacity-of-services']"
           [hasData]="workplace.capacities?.length"
@@ -281,7 +279,6 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="!showWdfConfirmations.serviceUsers"
           [explanationText]="' service users'"
           [link]="['/workplace', workplace.uid, 'service-users']"
           [hasData]="workplace.serviceUsers?.length"
@@ -333,7 +330,6 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="!showWdfConfirmations.vacancies"
           [explanationText]="' staff vacancies'"
           [link]="['/workplace', workplace.uid, 'vacancies']"
           [hasData]="workplace.vacancies?.length"
@@ -379,7 +375,6 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="!showWdfConfirmations.starters"
           [explanationText]="' new starters'"
           [link]="['/workplace', workplace.uid, 'starters']"
           [hasData]="workplace.starters?.length"
@@ -425,7 +420,6 @@
       </dd>
       <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
-          *ngIf="!showWdfConfirmations.leavers"
           [explanationText]="' leavers'"
           [link]="['/workplace', workplace.uid, 'leavers']"
           [hasData]="workplace.leavers?.length"
