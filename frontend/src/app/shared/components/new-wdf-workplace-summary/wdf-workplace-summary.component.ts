@@ -42,10 +42,11 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     numberOfStaff: null,
   };
   public Eligibility = Eligibility;
+  public wdfView = true;
+
   @Output() allFieldsConfirmed: EventEmitter<Event> = new EventEmitter();
 
   @Input() removeServiceSectionMargin = false;
-  @Input() wdfView = false;
   @Input() overallWdfEligibility: boolean;
   @Input() workerCount: number;
   @Input()
@@ -75,13 +76,6 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     }
 
     this.setShowWdfConfirmations();
-  }
-
-  get totalStaffWarningNonWDF(): boolean {
-    return (
-      (this.workplace.numberOfStaff != null || this.workplace.totalWorkers !== null) &&
-      this.workplace.numberOfStaff !== this.workerCount
-    );
   }
 
   constructor(
@@ -122,7 +116,7 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     this.canViewListOfWorkers = this.permissionsService.can(this.workplace.uid, 'canViewListOfWorkers');
 
     this.setTotalStaffWarning();
-    if (this.canEditEstablishment && this.wdfView) {
+    if (this.canEditEstablishment) {
       this.updateEmployerTypeIfNotUpdatedSinceEffectiveDate();
     }
 
@@ -211,19 +205,8 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
     this.establishmentService.setReturnTo(this.return);
   }
 
-  public selectStaffTab(event: Event): void {
-    event.preventDefault();
-    this.workerService.tabChanged.next(true);
-  }
-
   public isNumber(value: unknown): boolean {
     return typeof value === 'number';
-  }
-
-  public staffMismatchWarning(): boolean {
-    return (
-      this.canViewListOfWorkers && this.isNumber(this.workerCount) && !this.wdfView && this.totalStaffWarningNonWDF
-    );
   }
 
   public getRoutePath(name: string): Array<string> {
@@ -279,7 +262,6 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   public showWdfConfirmation(field: string): boolean {
     return (
       this.canEditEstablishment &&
-      this.wdfView &&
       this.workplace.wdf?.[field].isEligible === 'Yes' &&
       !this.workplace.wdf?.[field].updatedSinceEffectiveDate
     );
