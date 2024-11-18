@@ -2,7 +2,9 @@
 <dl class="govuk-summary-list asc-summarylist-border-top govuk-summary-list--wide-key">
   <div
     class="govuk-summary-list__row"
-    [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': wdfView && !worker.dateOfBirth }"
+    [ngClass]="{
+      'govuk-summary-list__row--no-bottom-border': wdfView && worker.wdf?.dateOfBirth?.isEligible === Eligibility.NO
+    }"
   >
     <dt class="govuk-summary-list__key">Date of birth</dt>
     <dd class="govuk-summary-list__value">
@@ -28,7 +30,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !worker.dateOfBirth"
+    *ngIf="wdfView && worker.wdf?.dateOfBirth?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="dateOfBirthWdfWarning"
   ></app-wdf-warning-message>
@@ -80,7 +82,9 @@
 
   <div
     class="govuk-summary-list__row"
-    [ngClass]="{ 'govuk-summary-list__row--no-bottom-border': wdfView && !worker.gender }"
+    [ngClass]="{
+      'govuk-summary-list__row--no-bottom-border': wdfView && worker.wdf?.gender?.isEligible === Eligibility.NO
+    }"
   >
     <dt class="govuk-summary-list__key">Gender identity</dt>
 
@@ -97,7 +101,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !worker.gender"
+    *ngIf="wdfView && worker.wdf?.gender?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="genderWdfWarning"
   ></app-wdf-warning-message>
@@ -150,8 +154,7 @@
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border':
-        wdfView && !(worker.nationality?.value || worker.nationality?.other?.nationality)
+      'govuk-summary-list__row--no-bottom-border': wdfView && worker.wdf?.nationality?.isEligible === Eligibility.NO
     }"
   >
     <dt class="govuk-summary-list__key">Nationality</dt>
@@ -172,7 +175,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !(worker.nationality?.value || worker.nationality?.other?.nationality)"
+    *ngIf="wdfView && worker.wdf?.nationality?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="nationalityWdfWarning"
   ></app-wdf-warning-message>

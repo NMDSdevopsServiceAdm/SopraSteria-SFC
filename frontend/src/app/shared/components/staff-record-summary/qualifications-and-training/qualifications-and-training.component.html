@@ -4,7 +4,7 @@
     class="govuk-summary-list__row"
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border':
-        (wdfView && !worker.careCertificate) || showWdfConfirmations.careCertificate
+        (wdfView && worker.wdf?.careCertificate?.isEligible === Eligibility.NO) || showWdfConfirmations.careCertificate
     }"
   >
     <dt class="govuk-summary-list__key">Care Certificate</dt>
@@ -23,7 +23,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !worker.careCertificate"
+    *ngIf="wdfView && worker.wdf?.careCertificate?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="careCertificateWdfWarning"
   ></app-wdf-warning-message>
@@ -71,7 +71,8 @@
     class="govuk-summary-list__row"
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border':
-        (wdfView && !worker.qualificationInSocialCare) || showWdfConfirmations.qualificationInSocialCare
+        (wdfView && worker.wdf?.qualificationInSocialCare?.isEligible === Eligibility.NO) ||
+        showWdfConfirmations.qualificationInSocialCare
     }"
   >
     <dt class="govuk-summary-list__key">Has a social care qualification</dt>
@@ -89,7 +90,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !worker.qualificationInSocialCare"
+    *ngIf="wdfView && worker.wdf?.qualificationInSocialCare?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="qualificationInSocialCareWdfWarning"
   ></app-wdf-warning-message>
@@ -107,7 +108,8 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          (wdfView && !worker.socialCareQualification) || showWdfConfirmations.socialCareQualification
+          (wdfView && worker.wdf?.socialCareQualification?.isEligible === Eligibility.NO) ||
+          showWdfConfirmations.socialCareQualification
       }"
     >
       <dt class="govuk-summary-list__key">Highest level of social care qualification</dt>
@@ -125,7 +127,7 @@
       </dd>
     </div>
     <app-wdf-warning-message
-      *ngIf="wdfView && !worker.socialCareQualification"
+      *ngIf="wdfView && worker.wdf?.socialCareQualification?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="socialCareQualificationWdfWarning"
     ></app-wdf-warning-message>
@@ -143,7 +145,8 @@
     class="govuk-summary-list__row"
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border':
-        (wdfView && !worker.otherQualification) || showWdfConfirmations.otherQualification
+        (wdfView && worker.wdf?.otherQualification?.isEligible === Eligibility.NO) ||
+        showWdfConfirmations.otherQualification
     }"
   >
     <dt class="govuk-summary-list__key">Other qualifications</dt>
@@ -161,7 +164,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !worker.otherQualification"
+    *ngIf="wdfView && worker.wdf?.otherQualification?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="otherQualificationWdfWarning"
   ></app-wdf-warning-message>
@@ -179,7 +182,8 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          (wdfView && !worker.highestQualification) || showWdfConfirmations.highestQualification
+          (wdfView && worker.wdf?.highestQualification?.isEligible === Eligibility.NO) ||
+          showWdfConfirmations.highestQualification
       }"
     >
       <dt class="govuk-summary-list__key">Highest level of other qualifications</dt>
@@ -197,7 +201,7 @@
       </dd>
     </div>
     <app-wdf-warning-message
-      *ngIf="wdfView && !worker.highestQualification"
+      *ngIf="wdfView && worker.wdf?.highestQualification?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="highestQualificationWdfWarning"
     ></app-wdf-warning-message>
