@@ -1,7 +1,7 @@
 <h2 class="govuk-heading-m govuk-!-padding-bottom-3 govuk-section-break--visible">Your workplace details</h2>
 <dl
   *ngIf="workplace"
-  class="govuk-summary-list govuk-summary-list--wide-key"
+  class="govuk-summary-list asc-summary-list--wide-value"
   [ngClass]="{
     'govuk-summary-list--contains-warnings': !wdfView && (showTotalStaffWarning || staffMismatchWarning()),
     'asc-summary-list--wide-value': wdfView && showTotalStaffWarning
@@ -51,49 +51,22 @@
         <a [routerLink]="['/workplace', workplace.uid, 'regulated-by-cqc']" (click)="setReturn()"> Change </a>
       </dd>
     </div>
+
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          showWdfConfirmations.numberOfStaff || workplace.wdf?.numberOfStaff?.isEligible === Eligibility.NO
+          showWdfConfirmations.numberOfStaff ||
+          workplace.wdf?.numberOfStaff?.isEligible === Eligibility.NO ||
+          showTotalStaffWarning
       }"
       data-testid="numberOfStaff"
     >
-      <dt
-        class="govuk-summary-list__key"
-        [class.asc-no-border]="
-          staffMismatchWarning() &&
-          workplace.eightWeeksFromFirstLogin &&
-          convertToDate(workplace.eightWeeksFromFirstLogin) < now
-        "
-      >
-        Number of staff
-      </dt>
-      <dd
-        class="govuk-summary-list__value"
-        [class.asc-no-border]="
-          staffMismatchWarning() &&
-          workplace.eightWeeksFromFirstLogin &&
-          convertToDate(workplace.eightWeeksFromFirstLogin) < now
-        "
-      >
+      <dt class="govuk-summary-list__key">Number of staff</dt>
+      <dd class="govuk-summary-list__value">
         {{ workplace.numberOfStaff | numericAnswer }}
-        <app-wdf-staff-mismatch-message
-          *ngIf="wdfView && this.showTotalStaffWarning"
-          [workplace]="workplace"
-          [workerCount]="workerCount"
-          [overallWdfEligibility]="overallWdfEligibility"
-        ></app-wdf-staff-mismatch-message>
       </dd>
-      <dd
-        *ngIf="canEditEstablishment"
-        class="govuk-summary-list__actions"
-        [class.asc-no-border]="
-          staffMismatchWarning() &&
-          workplace.eightWeeksFromFirstLogin &&
-          convertToDate(workplace.eightWeeksFromFirstLogin) < now
-        "
-      >
+      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
         <app-summary-record-change
           *ngIf="!(showWdfConfirmations.numberOfStaff && workplace.numberOfStaff === workerCount)"
           [explanationText]="' total number of staff'"
@@ -115,33 +88,13 @@
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="numberOfStaffWdfWarning"
     ></app-wdf-warning-message>
-    <ng-container
-      *ngIf="
-        staffMismatchWarning() &&
-        workplace.eightWeeksFromFirstLogin &&
-        convertToDate(workplace.eightWeeksFromFirstLogin) < now
-      "
-    >
-      <div class="govuk-summary-list__row spacer"></div>
-      <div class="govuk-summary-list__row asc-warning-banner" data-testid="morerecords">
-        <dt class="govuk-summary-list__key">
-          <span class="govuk-visually-hidden">Number of staff warning</span>
-        </dt>
-        <dd class="govuk-summary-list__value">
-          <p *ngIf="workplace.numberOfStaff > workerCount">You've more staff than staff records</p>
-          <p *ngIf="workplace.numberOfStaff < workerCount">You've more staff records than staff</p>
-          <p *ngIf="workplace.numberOfStaff == null">The number of staff is missing</p>
-        </dd>
-        <dd class="govuk-summary-list__actions">
-          <a *ngIf="workplace.numberOfStaff" href="#" (click)="selectStaffTab($event)">View staff records</a>
-        </dd>
-      </div>
-      <div class="govuk-summary-list__row spacer">
-        <div></div>
-        <div></div>
-        <div></div>
-      </div>
-    </ng-container>
+    <app-wdf-staff-mismatch-message
+      data-testid="staffMismatchMessage"
+      *ngIf="showTotalStaffWarning"
+      [workplace]="workplace"
+      [workerCount]="workerCount"
+      [overallWdfEligibility]="overallWdfEligibility"
+    ></app-wdf-staff-mismatch-message>
 
     <div
       class="govuk-summary-list__row"

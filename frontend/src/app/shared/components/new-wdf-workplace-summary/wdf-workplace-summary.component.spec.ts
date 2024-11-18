@@ -20,7 +20,6 @@ import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
-import dayjs from 'dayjs';
 
 import { WDFWorkplaceSummaryComponent } from './wdf-workplace-summary.component';
 
@@ -189,107 +188,47 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(numberOfStaffRow).queryByText('4')).toBeTruthy();
       });
 
-      it('should render the number of staff row without bottom border when there is a staff mismatch and it has been longer than 8 weeks since first login', async () => {
-        const { component, fixture } = await setup();
+      it('should render the number of staff row without bottom border when staff mismatch message is shown', async () => {
+        const workplace = establishmentWithWdfBuilder() as Establishment;
+        workplace.numberOfStaff = 9;
 
-        component.canViewListOfWorkers = true;
-        component.workerCount = 2;
-        component.workplace.numberOfStaff = 4;
-        component.wdfView = false;
-        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
-        fixture.detectChanges();
+        const { queryByTestId } = await setup({ workplace, workerCount: 10 });
 
-        const numberOfStaffRow = within(document.body).queryByTestId('numberOfStaff');
-        const property = within(numberOfStaffRow).queryByText('Number of staff');
+        const numberOfStaffRow = queryByTestId('numberOfStaff');
 
-        expect(property.getAttribute('class')).toContain('asc-no-border');
+        expect(numberOfStaffRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
       });
     });
 
     describe('Number of staff warning', () => {
       it('should show banner if you have more staff records', async () => {
-        const { component, fixture } = await setup();
+        const workplace = establishmentWithWdfBuilder() as Establishment;
+        workplace.numberOfStaff = 9;
 
-        component.workerCount = 10;
-        component.workplace.numberOfStaff = 9;
-        component.wdfView = false;
-        component.canViewListOfWorkers = true;
-        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
-        fixture.detectChanges();
+        const { queryByTestId } = await setup({ workplace, workerCount: 10 });
 
-        const moreRecords = within(document.body).queryByTestId('morerecords');
-        expect(moreRecords.innerHTML).toContain(`You've more staff records than staff`);
-        expect(moreRecords.innerHTML).toContain('View staff records');
+        const staffMismatchMessage = queryByTestId('staffMismatchMessage');
+        expect(staffMismatchMessage).toBeTruthy();
       });
 
       it('should show banner if you have more total staff', async () => {
-        const { component, fixture } = await setup();
+        const workplace = establishmentWithWdfBuilder() as Establishment;
+        workplace.numberOfStaff = 9;
 
-        component.workerCount = 8;
-        component.workplace.numberOfStaff = 9;
-        component.wdfView = false;
-        component.canViewListOfWorkers = true;
-        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
-        fixture.detectChanges();
+        const { queryByTestId } = await setup({ workplace, workerCount: 8 });
 
-        const moreRecords = within(document.body).queryByTestId('morerecords');
-        expect(moreRecords.innerHTML).toContain(`You've more staff than staff records`);
+        const staffMismatchMessage = queryByTestId('staffMismatchMessage');
+        expect(staffMismatchMessage).toBeTruthy();
       });
 
       it('should show banner if you have more staff records and 0 staff', async () => {
-        const { component, fixture } = await setup();
+        const workplace = establishmentWithWdfBuilder() as Establishment;
+        workplace.numberOfStaff = 0;
 
-        component.workerCount = 10;
-        component.workplace.numberOfStaff = 0;
-        component.wdfView = false;
-        component.canViewListOfWorkers = true;
-        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
-        fixture.detectChanges();
+        const { queryByTestId } = await setup({ workplace, workerCount: 10 });
 
-        const moreRecords = within(document.body).queryByTestId('morerecords');
-        expect(moreRecords.innerHTML).toContain(`You've more staff records than staff`);
-      });
-
-      it('should not show banner if first login date is within eight weeks of now', async () => {
-        const { component, fixture } = await setup();
-
-        component.workerCount = 10;
-        component.workplace.numberOfStaff = 0;
-        component.wdfView = false;
-        component.canViewListOfWorkers = true;
-        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).add(1, 'day').toString();
-        fixture.detectChanges();
-
-        const moreRecords = within(document.body).queryByTestId('morerecords');
-        expect(moreRecords).toBe(null);
-      });
-
-      it(`should not show banner if you don't have permission to list workers`, async () => {
-        const { component, fixture } = await setup();
-
-        component.workerCount = 10;
-        component.workplace.numberOfStaff = 9;
-        component.wdfView = false;
-        component.canViewListOfWorkers = false;
-        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
-        fixture.detectChanges();
-
-        const moreRecords = within(document.body).queryByTestId('morerecords');
-        expect(moreRecords).toBe(null);
-      });
-
-      it('should not show banner if it is the WDF View', async () => {
-        const { component, fixture } = await setup();
-
-        component.workerCount = 10;
-        component.workplace.numberOfStaff = 9;
-        component.wdfView = true;
-        component.canViewListOfWorkers = true;
-        component.workplace.eightWeeksFromFirstLogin = dayjs(new Date()).subtract(1, 'day').toString();
-        fixture.detectChanges();
-
-        const moreRecords = within(document.body).queryByTestId('morerecords');
-        expect(moreRecords).toBe(null);
+        const staffMismatchMessage = queryByTestId('staffMismatchMessage');
+        expect(staffMismatchMessage).toBeTruthy();
       });
     });
 
