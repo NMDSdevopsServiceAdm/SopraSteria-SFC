@@ -171,6 +171,7 @@ export interface UpdateJobsRequest {
 }
 
 export enum jobOptionsEnum {
+  YES = 'With Jobs',
   DONT_KNOW = "Don't know",
   NONE = 'None',
 }
