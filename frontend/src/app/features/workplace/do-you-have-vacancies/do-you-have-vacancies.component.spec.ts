@@ -31,7 +31,11 @@ describe('DoYouHaveVacanciesComponent', () => {
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, overrides?.returnUrl),
+          useFactory: MockEstablishmentService.factory(
+            { cqc: null, localAuthorities: null },
+            overrides?.returnUrl,
+            overrides.vacancies,
+          ),
           deps: [HttpClient],
         },
       ],
@@ -96,7 +100,7 @@ describe('DoYouHaveVacanciesComponent', () => {
   });
 
   it('should show the radio buttons', async () => {
-    const { getByText, getByLabelText, getByTestId } = await setup();
+    const { getByLabelText } = await setup();
 
     expect(getByLabelText('Yes')).toBeTruthy();
     expect(getByLabelText('No')).toBeTruthy();
