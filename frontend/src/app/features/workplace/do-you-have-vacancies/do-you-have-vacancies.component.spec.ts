@@ -113,12 +113,13 @@ describe('DoYouHaveVacanciesComponent', () => {
 
   describe('prefill form', () => {
     it('should not prefill the form', async () => {
-      const { component, fixture } = await setup();
-      component.establishment.vacancies = null;
-      const form = component.form;
-      fixture.detectChanges();
+      const overrides = {
+        vacancies: null,
+      };
 
-      component.init();
+      const { component } = await setup(overrides);
+
+      const form = component.form;
 
       expect(form.value).toEqual({ vacanciesKnown: null });
     });
@@ -138,7 +139,7 @@ describe('DoYouHaveVacanciesComponent', () => {
       },
     ];
 
-    vacancyAnswers.forEach((test) => {
+    vacancyAnswers.forEach((test: any) => {
       it(`should preselect ${test.value} if there was a saved value`, async () => {
         const { component, fixture } = await setup();
 
@@ -168,13 +169,11 @@ describe('DoYouHaveVacanciesComponent', () => {
     });
 
     it("should preselect 'Yes' if hasVacancies is true return to page if the database has a different value", async () => {
-      const overrides = { returnUrl: false };
+      const overrides = { returnUrl: false, vacancies: jobOptionsEnum.NONE };
 
       const { component } = await setup(overrides);
 
       localStorage.setItem('hasVacancies', 'true');
-
-      component.establishment.vacancies = jobOptionsEnum.NONE;
 
       component.init();
 
