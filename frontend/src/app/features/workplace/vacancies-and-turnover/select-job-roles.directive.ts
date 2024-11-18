@@ -12,7 +12,7 @@ import { AccordionGroupComponent } from '@shared/components/accordions/generic-a
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Directive()
-export class JobRoleSelectionDirective extends Question implements OnInit, OnDestroy {
+export class SelectJobRolesDirective extends Question implements OnInit, OnDestroy {
   @ViewChild('accordion') accordion: AccordionGroupComponent;
   public section = 'Vacancies and turnover';
   public heading: string;

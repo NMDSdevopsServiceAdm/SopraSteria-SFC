@@ -11,9 +11,9 @@ import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { VacanciesJobRolesSelectionComponent } from './vacancies-job-roles-selection.component';
+import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles.component';
 
-describe('VacanciesJobRolesSelectionComponent', () => {
+describe('SelectVacancyJobRolesComponent', () => {
   const mockAvailableJobs = [
     {
       id: 4,
@@ -43,15 +43,15 @@ describe('VacanciesJobRolesSelectionComponent', () => {
   ];
 
   const setup = async (override: any = {}) => {
-    const returnToUrl = 'returnToUrl' in override ? override.returnToUrl : null;
-    const vacanciesFromDatabase = override.vacanciesFromDatabase;
+    const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
+    const vacanciesFromDatabase = override.vacanciesFromDatabase ?? null;
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
     const localStorageData = override.localStorageData ?? null;
 
     const setLocalStorageSpy = spyOn(localStorage, 'setItem');
     const getLocalStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
 
-    const renderResults = await render(VacanciesJobRolesSelectionComponent, {
+    const renderResults = await render(SelectVacancyJobRolesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
@@ -216,11 +216,11 @@ describe('VacanciesJobRolesSelectionComponent', () => {
         ];
         const { getByLabelText } = await setup({ vacanciesFromDatabase: careWorkerOnly });
 
-        const sectionForCareProvidingRoles = getByLabelText('Care providing roles');
-        const accordionForJobGroup2 = getByLabelText('Professional and related roles');
+        const careProvidingRolesAccordion = getByLabelText('Care providing roles');
+        const professionalRolesAccordion = getByLabelText('Professional and related roles');
 
-        expect(within(sectionForCareProvidingRoles).getByText('Hide')).toBeTruthy(); // is expanded
-        expect(within(accordionForJobGroup2).getByText('Show')).toBeTruthy(); // not expanded
+        expect(within(careProvidingRolesAccordion).getByText('Hide')).toBeTruthy(); // is expanded
+        expect(within(professionalRolesAccordion).getByText('Show')).toBeTruthy(); // not expanded
       });
 
       it('should prefill the optional job role name for "Care providing role - Other" if given', async () => {
@@ -299,7 +299,7 @@ describe('VacanciesJobRolesSelectionComponent', () => {
         expect(setLocalStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
       });
 
-      it('should keep any previously input vacancies numbers', async () => {
+      it('should keep the vacancies numbers that was loaded from database', async () => {
         const mockVacanciesFromDatabase: Vacancy[] = [
           {
             jobId: 10,
@@ -341,14 +341,14 @@ describe('VacanciesJobRolesSelectionComponent', () => {
         expect(setLocalStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
       });
 
-      it('should navigate to the number input page', async () => {
+      it('should navigate to the vacancies number input page after submit', async () => {
         const { component, getByText, routerSpy } = await setup();
 
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Registered nurse'));
         userEvent.click(getByText('Save and continue'));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'vacancies-number']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'how-many-vacancies']);
       });
     });
 
