@@ -88,8 +88,6 @@ export class WdfDataComponent implements OnInit {
     this.getParentAndSubs();
     this.breadcrumbService.show(JourneyType.WDF);
 
-    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
-    this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
     this.route.fragment.subscribe((fragment) => {
       const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
       this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
