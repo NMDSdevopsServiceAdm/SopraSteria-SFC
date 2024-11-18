@@ -6,10 +6,9 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./select-view-panel.component.scss'],
 })
 export class SelectViewPanelComponent {
-  @Input() tabs: { name: string, fragment: string }[];
+  @Input() tabs: { name: string; fragment: string }[];
+  @Input() activeTabIndex: number = 0;
   @Output() handleTabChange: EventEmitter<number> = new EventEmitter();
-
-  public activeTabIndex: number = 0;
 
   public handleViewChange(event: Event, index: number): void {
     event.preventDefault();

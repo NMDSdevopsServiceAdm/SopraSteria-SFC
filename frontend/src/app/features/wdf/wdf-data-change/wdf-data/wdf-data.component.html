@@ -1,7 +1,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
-      <span class="govuk-caption-xl" data-testid="pre-header">{{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})</span>
+      <span class="govuk-caption-xl" data-testid="pre-header"
+        >{{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})</span
+      >
       Your data
     </h1>
   </div>
@@ -21,10 +23,7 @@
 </div>
 
 <ng-container *ngIf="isStandalone; else parentView">
-  <app-select-view-panel
-    [tabs]="tabs"
-    (handleTabChange)="handleTabChange($event)"
-  >
+  <app-select-view-panel [tabs]="tabs" (handleTabChange)="handleTabChange($event)" [activeTabIndex]="activeTabIndex">
   </app-select-view-panel>
   <app-wdf-workplace-summary
     *ngIf="activeTabIndex === 0 && workplace"

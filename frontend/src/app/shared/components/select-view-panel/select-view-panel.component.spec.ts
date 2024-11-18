@@ -4,7 +4,7 @@ import { spy } from 'sinon';
 import { SelectViewPanelComponent } from './select-view-panel.component';
 
 describe('SelectViewPanelComponent', () => {
-  async function setup(overrides: {tabs?: any[]} = {}) {
+  async function setup(overrides: any = {}) {
     const setupSuite = await render(SelectViewPanelComponent, {
       imports: [],
       declarations: [],
@@ -13,7 +13,10 @@ describe('SelectViewPanelComponent', () => {
         handleTabChange: {
           emit: spy(),
         } as any,
-        tabs: [{ name: 'Tab0', fragment: 'tab0' }, { name: 'Tab1', fragment: 'tab1' }],
+        tabs: [
+          { name: 'Tab0', fragment: 'tab0' },
+          { name: 'Tab1', fragment: 'tab1' },
+        ],
         ...overrides,
       },
     });
@@ -34,26 +37,38 @@ describe('SelectViewPanelComponent', () => {
   });
 
   describe('Two tabs', () => {
-    async function setupTwoTabs() {
-      const tabs = [{ name: 'Tab0', fragment: 'tab0' }, { name: 'Tab1', fragment: 'tab1' }];
+    async function setupTwoTabs(overrides = {}) {
+      const tabs = [
+        { name: 'Tab0', fragment: 'tab0' },
+        { name: 'Tab1', fragment: 'tab1' },
+      ];
 
-      const setupSuite = await setup({ tabs });
+      const setupSuite = await setup({ tabs, ...overrides });
 
       const firstTab = setupSuite.getByTestId('tab0');
       const secondTab = setupSuite.getByTestId('tab1');
       const firstTabLink = within(firstTab).getByText(tabs[0].name);
       const secondTabLink = within(secondTab).getByText(tabs[1].name);
 
-      return { ...setupSuite, firstTab, secondTab, firstTabLink, secondTabLink, tabs }
+      return { ...setupSuite, firstTab, secondTab, firstTabLink, secondTabLink, tabs };
     }
 
-    it('should set the first tab as active on load', async () => {
+    it('should set the first tab as active on load if no activeTabIndex passed in', async () => {
       const { firstTab, firstTabLink, secondTab, secondTabLink } = await setupTwoTabs();
 
       expect(firstTab.getAttribute('class')).toContain('asc-tabs__list-item--active');
       expect(firstTabLink.getAttribute('class')).toContain('asc-tabs__link--active');
       expect(secondTab.getAttribute('class')).not.toContain('asc-tabs__list-item--active');
       expect(secondTabLink.getAttribute('class')).not.toContain('asc-tabs__link--active');
+    });
+
+    it('should set the second tab as active on load if activeTabIndex passed in as 1', async () => {
+      const { fixture, firstTab, firstTabLink, secondTab, secondTabLink } = await setupTwoTabs({ activeTabIndex: 1 });
+
+      expect(secondTab.getAttribute('class')).toContain('asc-tabs__list-item--active');
+      expect(secondTabLink.getAttribute('class')).toContain('asc-tabs__link--active');
+      expect(firstTab.getAttribute('class')).not.toContain('asc-tabs__list-item--active');
+      expect(firstTabLink.getAttribute('class')).not.toContain('asc-tabs__link--active');
     });
 
     it('should set the second tab as active after clicking second tab', async () => {
