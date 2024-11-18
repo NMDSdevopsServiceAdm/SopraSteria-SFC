@@ -4,7 +4,6 @@
   class="govuk-summary-list asc-summary-list--wide-value"
   [ngClass]="{
     'govuk-summary-list--contains-warnings': !wdfView && (showTotalStaffWarning || staffMismatchWarning()),
-    'asc-summary-list--wide-value': wdfView && showTotalStaffWarning
   }"
 >
   <ng-container *ngIf="!checkAnswersPage">
