@@ -400,7 +400,7 @@
             workplace.wdf?.vacancies.isEligible === 'Yes' &&
             !workplace.wdf?.vacancies.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('vacancies', wdfView)"
+          [changeLink]="getRoutePath('do-you-have-vacancies', wdfView)"
           (fieldConfirmation)="this.confirmField('vacancies')"
           (setReturnClicked)="this.setReturn()"
         >
@@ -416,7 +416,7 @@
             )
           "
           [explanationText]="' staff vacancies'"
-          [link]="['/workplace', workplace.uid, 'vacancies']"
+          [link]="['/workplace', workplace.uid, 'do-you-have-vacancies']"
           [hasData]="workplace.vacancies?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
