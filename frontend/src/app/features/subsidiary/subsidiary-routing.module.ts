@@ -71,7 +71,7 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
-import { VacanciesCurrentComponent } from '@features/workplace/vacancies-current/vacancies-current.component';
+import { DoYouHaveVacanciesComponent } from '@features/workplace/do-you-have-vacancies/do-you-have-vacancies.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -372,24 +372,24 @@ const routes: Routes = [
           title: 'Total Staff',
         },
       },
-      // {
-      //   path: 'vacancies',
-      //   component: VacanciesComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   resolve: { jobs: JobsResolver },
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Vacancies',
-      //   },
-      // },
       {
-        path: 'vacancies-current',
-        component: VacanciesCurrentComponent,
+        path: 'vacancies',
+        component: VacanciesComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Current Vacancies',
+          title: 'Vacancies',
+        },
+      },
+      {
+        path: 'do-you-have-vacancies',
+        component: DoYouHaveVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Do You Have Vacancies',
         },
       },
       {

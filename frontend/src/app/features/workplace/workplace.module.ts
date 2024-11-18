@@ -67,7 +67,7 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
-import { VacanciesCurrentComponent } from './vacancies-current/vacancies-current.component';
+import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
 
 @NgModule({
   imports: [
@@ -129,7 +129,7 @@ import { VacanciesCurrentComponent } from './vacancies-current/vacancies-current
     EmployedFromOutsideUkExistingWorkersComponent,
     HealthAndCareVisaExistingWorkers,
     ChangeDataOwnerComponent,
-    VacanciesCurrentComponent,
+    DoYouHaveVacanciesComponent,
   ],
   providers: [
     DialogService,

@@ -1,6 +1,4 @@
-import { fireEvent, getByTestId, render, within } from '@testing-library/angular';
-
-import { VacanciesCurrentComponent } from './vacancies-current.component';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
@@ -12,8 +10,9 @@ import { HttpClient } from '@angular/common/http';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { getTestBed } from '@angular/core/testing';
 import { WindowRef } from '@core/services/window.ref';
+import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 
-describe('VacanciesCurrentComponent', () => {
+describe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
     const {
       fixture,
@@ -25,7 +24,7 @@ describe('VacanciesCurrentComponent', () => {
       queryAllByText,
       queryByTestId,
       getByRole,
-    } = await render(VacanciesCurrentComponent, {
+    } = await render(DoYouHaveVacanciesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
@@ -195,60 +194,62 @@ describe('VacanciesCurrentComponent', () => {
       expect(getByText('Skip this question')).toBeTruthy();
     });
 
-    it("should store answer in local storage if 'Yes' is selected and not call updatedJobs", async () => {
-      const overrides = { returnUrl: false };
+    describe('local storage', () => {
+      it("should store answer in local storage if 'Yes' is selected and not call updatedJobs", async () => {
+        const overrides = { returnUrl: false };
 
-      const { component, fixture, getByText, establishmentServiceSpy } = await setup(overrides);
+        const { component, fixture, getByText, establishmentServiceSpy } = await setup(overrides);
 
-      component.form.get('vacanciesKnown').setValue('With Jobs');
+        component.form.get('vacanciesKnown').setValue('With Jobs');
 
-      const button = getByText('Save and continue');
-      const localStorageSpy = spyOn(localStorage, 'setItem');
+        const button = getByText('Save and continue');
+        const localStorageSpy = spyOn(localStorage, 'setItem');
 
-      fireEvent.click(button);
-      fixture.detectChanges();
+        fireEvent.click(button);
+        fixture.detectChanges();
 
-      expect(localStorageSpy).toHaveBeenCalledTimes(1);
-      expect(localStorageSpy.calls.all()[0].args).toEqual(['hasVacancies', 'true']);
-      expect(establishmentServiceSpy).not.toHaveBeenCalled();
-    });
+        expect(localStorageSpy).toHaveBeenCalledTimes(1);
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['hasVacancies', 'true']);
+        expect(establishmentServiceSpy).not.toHaveBeenCalled();
+      });
 
-    it("should clear local storage when 'No' is selected and is submitted", async () => {
-      const overrides = { returnUrl: false };
+      it("should clear local storage when 'No' is selected and is submitted", async () => {
+        const overrides = { returnUrl: false };
 
-      const { component, fixture, getByText } = await setup(overrides);
+        const { component, fixture, getByText } = await setup(overrides);
 
-      localStorage.setItem('hasVacancies', 'true');
+        localStorage.setItem('hasVacancies', 'true');
 
-      component.form.get('vacanciesKnown').setValue(jobOptionsEnum.NONE);
-      const localStorageSpy = spyOn(localStorage, 'setItem');
+        component.form.get('vacanciesKnown').setValue(jobOptionsEnum.NONE);
+        const localStorageSpy = spyOn(localStorage, 'setItem');
 
-      const button = getByText('Save and continue');
+        const button = getByText('Save and continue');
 
-      fireEvent.click(button);
-      fixture.detectChanges();
+        fireEvent.click(button);
+        fixture.detectChanges();
 
-      expect(localStorageSpy).toHaveBeenCalledTimes(1);
-      expect(localStorageSpy.calls.all()[0].args).toEqual(['hasVacancies', 'false']);
-    });
+        expect(localStorageSpy).toHaveBeenCalledTimes(1);
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['hasVacancies', 'false']);
+      });
 
-    it("should clear local storage when 'I do not know' is selected and is submitted", async () => {
-      const overrides = { returnUrl: false };
+      it("should clear local storage when 'I do not know' is selected and is submitted", async () => {
+        const overrides = { returnUrl: false };
 
-      const { component, fixture, getByText } = await setup(overrides);
+        const { component, fixture, getByText } = await setup(overrides);
 
-      localStorage.setItem('hasVacancies', 'true');
+        localStorage.setItem('hasVacancies', 'true');
 
-      component.form.get('vacanciesKnown').setValue(jobOptionsEnum.DONT_KNOW);
-      const localStorageSpy = spyOn(localStorage, 'setItem');
+        component.form.get('vacanciesKnown').setValue(jobOptionsEnum.DONT_KNOW);
+        const localStorageSpy = spyOn(localStorage, 'setItem');
 
-      const button = getByText('Save and continue');
+        const button = getByText('Save and continue');
 
-      fireEvent.click(button);
-      fixture.detectChanges();
+        fireEvent.click(button);
+        fixture.detectChanges();
 
-      expect(localStorageSpy).toHaveBeenCalledTimes(1);
-      expect(localStorageSpy.calls.all()[0].args).toEqual(['hasVacancies', 'false']);
+        expect(localStorageSpy).toHaveBeenCalledTimes(1);
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['hasVacancies', 'false']);
+      });
     });
 
     it('should call updatedJobs when submitting form with radio button value', async () => {
@@ -268,21 +269,52 @@ describe('VacanciesCurrentComponent', () => {
       });
     });
 
-    it('should navigate to the starters page when submitting from the flow', async () => {
-      const overrides = { returnUrl: false };
+    describe('workplace flow', () => {
+      it("should navigate to the starters page when submitting 'Yes'", async () => {
+        const overrides = { returnUrl: false };
 
-      const { component, fixture, getByText, routerSpy } = await setup(overrides);
+        const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-      component.form.get('vacanciesKnown').setValue('None');
+        component.form.get('vacanciesKnown').setValue('With Jobs');
+        fixture.detectChanges();
 
-      const button = getByText('Save and continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
+        const button = getByText('Save and continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-vacancy-job-roles']);
+      });
+
+      it("should navigate to the starters page when submitting 'None'", async () => {
+        const overrides = { returnUrl: false };
+
+        const { component, fixture, getByText, routerSpy } = await setup(overrides);
+
+        component.form.get('vacanciesKnown').setValue('None');
+
+        const button = getByText('Save and continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
+      });
+
+      it("should navigate to the starters page when submitting 'I do not know' ", async () => {
+        const overrides = { returnUrl: false };
+
+        const { component, fixture, getByText, routerSpy } = await setup(overrides);
+
+        component.form.get('vacanciesKnown').setValue('I do not know');
+
+        const button = getByText('Save and continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
+      });
     });
 
-    it('should navigate to the check-answers page when clicking Skip this question link', async () => {
+    it('should navigate to the starters page when clicking Skip this question link', async () => {
       const overrides = { returnUrl: false };
       const { fixture, getByText, routerSpy } = await setup(overrides);
 

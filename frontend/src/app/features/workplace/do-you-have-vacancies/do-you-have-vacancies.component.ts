@@ -8,10 +8,10 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 
 @Component({
-  selector: 'app-vacancies-current',
-  templateUrl: './vacancies-current.component.html',
+  selector: 'app-do-you-have-vacancies',
+  templateUrl: './do-you-have-vacancies.component.html',
 })
-export class VacanciesCurrentComponent extends Question implements OnInit {
+export class DoYouHaveVacanciesComponent extends Question implements OnInit {
   public section = 'Vacancies and turnover';
   public hasVacancies: boolean = false;
   public vacanciesKnownOptions = [
@@ -98,9 +98,8 @@ export class VacanciesCurrentComponent extends Question implements OnInit {
   }
 
   protected onSuccess(): void {
-    console.log(this.hasVacancies);
     if (this.hasVacancies) {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies-select-job-role'];
+      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'select-vacancy-job-roles'];
     } else {
       this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
     }
