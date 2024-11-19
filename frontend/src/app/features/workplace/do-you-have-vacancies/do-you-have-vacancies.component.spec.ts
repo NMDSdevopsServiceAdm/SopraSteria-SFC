@@ -310,87 +310,97 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
       });
+
+      it('should navigate to the starters page when clicking Skip this question link', async () => {
+        const overrides = { returnUrl: false };
+        const { fixture, getByText, routerSpy } = await setup(overrides);
+
+        const link = getByText('Skip this question');
+        fireEvent.click(link);
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
+      });
+
+      it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
+        const overrides = { returnUrl: false };
+
+        const { component, getByText } = await setup(overrides);
+
+        const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+
+        const link = getByText('Skip this question');
+        fireEvent.click(link);
+
+        expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+      });
     });
 
-    it('should navigate to the starters page when clicking Skip this question link', async () => {
-      const overrides = { returnUrl: false };
-      const { fixture, getByText, routerSpy } = await setup(overrides);
+    describe('workplace summary page', () => {
+      it(`should show 'Continue' cta button and 'Cancel' link if a return url is provided`, async () => {
+        const overrides = { returnUrl: true };
 
-      const link = getByText('Skip this question');
-      fireEvent.click(link);
-      fixture.detectChanges();
+        const { getByText } = await setup(overrides);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
-    });
+        expect(getByText('Continue')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
+      });
 
-    it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
-      const overrides = { returnUrl: false };
+      it("should navigate to the select vacancy job roles page when submitting 'Yes'", async () => {
+        const overrides = { returnUrl: true };
 
-      const { component, getByText } = await setup(overrides);
+        const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-      const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
+        component.form.get('vacanciesKnown').setValue('With Jobs');
 
-      const link = getByText('Skip this question');
-      fireEvent.click(link);
+        const button = getByText('Continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
 
-      expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
-    });
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-vacancy-job-roles']);
+      });
 
-    it(`should show 'Continue' cta button and 'Cancel' link if a return url is provided`, async () => {
-      const overrides = { returnUrl: true };
+      it("should navigate to the workplace summary page when submitting 'None'", async () => {
+        const overrides = { returnUrl: true };
 
-      const { getByText } = await setup(overrides);
+        const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-      expect(getByText('Continue')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
+        component.form.get('vacanciesKnown').setValue('None');
 
-    it("should navigate to the select vacancy job roles page when submitting 'Yes'", async () => {
-      const { component, fixture, getByText, routerSpy } = await setup();
+        const button = getByText('Continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
 
-      component.form.get('vacanciesKnown').setValue('With Jobs');
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+      });
 
-      const button = getByText('Continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
+      it("should navigate to the workplace summary page when submitting 'I do not know'", async () => {
+        const overrides = { returnUrl: true };
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-vacancy-job-roles']);
-    });
+        const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-    it("should navigate to the workplace summary page when submitting 'None'", async () => {
-      const { component, fixture, getByText, routerSpy } = await setup();
+        component.form.get('vacanciesKnown').setValue('I do not know');
 
-      component.form.get('vacanciesKnown').setValue('None');
+        const button = getByText('Continue');
+        fireEvent.click(button);
+        fixture.detectChanges();
 
-      const button = getByText('Continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+      });
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
-    });
+      it('should navigte to the correct page when clicking the cancel link', async () => {
+        const overrides = { returnUrl: true };
 
-    it("should navigate to the workplace summary page when submitting 'I do not know'", async () => {
-      const { component, fixture, getByText, routerSpy } = await setup();
+        const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-      component.form.get('vacanciesKnown').setValue('I do not know');
+        component.form.get('vacanciesKnown').setValue('None');
 
-      const button = getByText('Continue');
-      fireEvent.click(button);
-      fixture.detectChanges();
+        const link = getByText('Cancel');
+        fireEvent.click(link);
+        fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
-    });
-
-    it('should navigte to the correct page when clicking the cancel link', async () => {
-      const { component, fixture, getByText, routerSpy } = await setup();
-
-      component.form.get('vacanciesKnown').setValue('None');
-
-      const link = getByText('Cancel');
-      fireEvent.click(link);
-      fixture.detectChanges();
-
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+      });
     });
   });
 
