@@ -1,4 +1,13 @@
-<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+<app-error-summary
+  *ngIf="(submitted && form.invalid) || serverError"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+  [addIndexKeyToFormArrayErrors]="true"
+>
+</app-error-summary>
+
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <fieldset class="govuk-fieldset">
@@ -24,9 +33,9 @@
                 <th class="govuk-table__header" scope="col" style="width: 45%">Number of vacancies</th>
               </tr>
             </thead>
-            <ng-container formArrayName="vacancies">
+            <ng-container formArrayName="vacancyNumbers">
               <tbody>
-                <ng-container *ngFor="let vacancy of vacancies.controls; let i = index">
+                <ng-container *ngFor="let vacancy of vacancyNumbers.controls; let i = index">
                   <tr class="govuk-table__row">
                     <td class="govuk-table__cell govuk-util__vertical-align-center">
                       <label for="jobRole-{{ i }}" class="govuk-label">
@@ -35,14 +44,24 @@
                       >
                     </td>
                     <td class="govuk-table__cell">
-                      <input
-                        name="total"
-                        type="number"
-                        class="govuk-input govuk-!-width-one-half"
-                        id="jobRole-{{ i }}"
-                        [value]="vacancy.value"
-                        [formControlName]="i"
-                      />
+                      <div>
+                        <span
+                          *ngIf="submitted && vacancy.errors"
+                          id="vacancyNumbers-{{ i }}-error"
+                          class="govuk-error-message"
+                          ><span class="govuk-visually-hidden">Error:</span>
+                          {{ getFirstErrorMessage('vacancyNumbers.' + i) }}
+                        </span>
+
+                        <input
+                          name="total"
+                          type="number"
+                          class="govuk-input govuk-!-width-one-half"
+                          id="jobRole-{{ i }}"
+                          [value]="vacancy.value"
+                          [formControlName]="i"
+                        />
+                      </div>
                     </td>
                   </tr>
                 </ng-container>

@@ -8,7 +8,7 @@ import { Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { HowManyVacanciesComponent } from './how-many-vacancies.component';
@@ -26,6 +26,10 @@ fdescribe('HowManyVacanciesComponent', () => {
       total: null,
     },
   ];
+
+  const getInputBoxForJobRole = (jobTitle: string) => {
+    return screen.getByRole('spinbutton', { name: 'Number of vacancies for ' + jobTitle });
+  };
 
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
@@ -87,66 +91,94 @@ fdescribe('HowManyVacanciesComponent', () => {
       expect(heading.textContent).toEqual('How many current staff vacancies do you have for each job role?');
       expect(sectionHeading.textContent).toEqual('Vacancies and turnover');
     });
-  });
 
-  it('should render a reveal text to explain why we ask for this information', async () => {
-    const { getByText } = await setup();
-    const revealText = getByText('Why we ask for this information');
+    it('should render a reveal text to explain why we ask for this information', async () => {
+      const { getByText } = await setup();
+      const revealText = getByText('Why we ask for this information');
 
-    expect(revealText).toBeTruthy();
-    userEvent.click(revealText);
+      expect(revealText).toBeTruthy();
+      userEvent.click(revealText);
 
-    const revealTextContent =
-      'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
-    expect(getByText(revealTextContent)).toBeTruthy();
-  });
+      const revealTextContent =
+        'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
+      expect(getByText(revealTextContent)).toBeTruthy();
+    });
 
-  describe('vacancy numbers input form', () => {
-    it('should render a input box for each selected job roles', async () => {
-      const { getByText, getByRole } = await setup();
+    describe('vacancy numbers input form', () => {
+      it('should render a input box for each selected job roles', async () => {
+        const { getByText, getByRole } = await setup();
 
-      mockSelectedJobRoles.forEach((role) => {
-        expect(getByText(role.title)).toBeTruthy();
-        const numberInput = getByRole('spinbutton', { name: 'Number of vacancies for ' + role.title });
-        expect(numberInput).toBeTruthy();
+        mockSelectedJobRoles.forEach((role) => {
+          expect(getByText(role.title)).toBeTruthy();
+          const numberInput = getByRole('spinbutton', { name: 'Number of vacancies for ' + role.title });
+          expect(numberInput).toBeTruthy();
+        });
+      });
+    });
+
+    describe('buttons', () => {
+      it('should render a "Save and continue" CTA button when in the flow', async () => {
+        const { getByRole } = await setup();
+        expect(getByRole('button', { name: 'Save and continue' })).toBeTruthy();
+      });
+
+      it('should render a "Save and return" CTA button when not in the flow', async () => {
+        const { getByRole } = await setup({ returnToUrl: '/dashboard#workplace' });
+        expect(getByRole('button', { name: 'Save and return' })).toBeTruthy();
+      });
+
+      it('should render a "Cancel" button when not in the flow', async () => {
+        const { getByText } = await setup({ returnToUrl: '/dashboard#workplace' });
+        expect(getByText('Cancel')).toBeTruthy();
+      });
+
+      it('should not render a "Skip this question" button', async () => {
+        const { queryByText } = await setup();
+        expect(queryByText('Skip this question')).toBeFalsy();
+      });
+    });
+
+    describe('progress bar', () => {
+      it('should render a progress bar when in the flow', async () => {
+        const { getByTestId } = await setup();
+
+        expect(getByTestId('progress-bar')).toBeTruthy();
+      });
+
+      it('should not render a progress bar when not in the flow', async () => {
+        const { getByTestId, queryByTestId } = await setup({ returnToUrl: '/dashboard#workplace' });
+
+        expect(getByTestId('section-heading')).toBeTruthy();
+        expect(queryByTestId('progress-bar')).toBeFalsy();
       });
     });
   });
 
-  describe('buttons', () => {
-    it('should render a "Save and continue" CTA button when in the flow', async () => {
-      const { getByRole } = await setup();
-      expect(getByRole('button', { name: 'Save and continue' })).toBeTruthy();
-    });
+  describe('form submit and validations', () => {
+    describe('errors', () => {
+      it('should show an error message if number input box is empty', async () => {
+        const { fixture, getByRole, getByText, getAllByText } = await setup();
 
-    it('should render a "Save and return" CTA button when not in the flow', async () => {
-      const { getByRole } = await setup({ returnToUrl: '/dashboard#workplace' });
-      expect(getByRole('button', { name: 'Save and return' })).toBeTruthy();
-    });
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+        fixture.detectChanges();
 
-    it('should render a "Cancel" button when not in the flow', async () => {
-      const { getByText } = await setup({ returnToUrl: '/dashboard#workplace' });
-      expect(getByText('Cancel')).toBeTruthy();
-    });
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText('Enter the number of vacancies (care worker)')).toHaveSize(2);
+        expect(getAllByText('Enter the number of vacancies (registered nurse)')).toHaveSize(2);
+      });
 
-    it('should not render a "Skip this question" button', async () => {
-      const { queryByText } = await setup();
-      expect(queryByText('Skip this question')).toBeFalsy();
-    });
-  });
+      it('should show an error message if the input number is out of range', async () => {
+        const { fixture, getByRole, getByText, getAllByText } = await setup();
 
-  describe('progress bar', () => {
-    it('should render a progress bar when in the flow', async () => {
-      const { getByTestId } = await setup();
+        userEvent.type(getInputBoxForJobRole('Care worker'), '-10');
+        userEvent.type(getInputBoxForJobRole('Registered nurse'), '99999');
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+        fixture.detectChanges();
 
-      expect(getByTestId('progress-bar')).toBeTruthy();
-    });
-
-    it('should not render a progress bar when not in the flow', async () => {
-      const { getByTestId, queryByTestId } = await setup({ returnToUrl: '/dashboard#workplace' });
-
-      expect(getByTestId('section-heading')).toBeTruthy();
-      expect(queryByTestId('progress-bar')).toBeFalsy();
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText('Number of vacancies must be between 1 and 999 (care worker)')).toHaveSize(2);
+        expect(getAllByText('Number of vacancies must be between 1 and 999 (registered nurse)')).toHaveSize(2);
+      });
     });
   });
 });

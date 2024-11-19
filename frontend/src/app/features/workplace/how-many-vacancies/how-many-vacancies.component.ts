@@ -34,10 +34,10 @@ export class HowManyVacanciesComponent extends Question implements OnInit, OnDes
 
   protected setupForm() {
     this.form = this.formBuilder.group({
-      vacancies: this.formBuilder.array([]),
+      vacancyNumbers: this.formBuilder.array([]),
     });
     this.selectedJobRoles.forEach((jobRole) => {
-      this.vacancies.push(
+      this.vacancyNumbers.push(
         this.formBuilder.control(jobRole.total, [
           Validators.required,
           Validators.min(this.minNumber),
@@ -47,18 +47,48 @@ export class HowManyVacanciesComponent extends Question implements OnInit, OnDes
     });
 
     this.subscriptions.add(
-      this.vacancies.valueChanges.subscribe(() => {
+      this.vacancyNumbers.valueChanges.subscribe(() => {
         this.updateTotalNumber();
       }),
     );
   }
 
-  get vacancies(): UntypedFormArray {
-    return this.form.get('vacancies') as UntypedFormArray;
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [];
+
+    this.vacancyNumbers.controls.forEach((_, index) => {
+      const jobRoleTitle = this.selectedJobRoles[index].title.toLowerCase();
+      this.formErrorsMap.push({
+        item: `vacancyNumbers.${index}`,
+        type: [
+          {
+            name: 'required',
+            message: `Enter the number of vacancies (${jobRoleTitle})`,
+          },
+          {
+            name: 'min',
+            message: `Number of vacancies must be between ${this.minNumber} and ${this.maxNumber} (${jobRoleTitle})`,
+          },
+          {
+            name: 'max',
+            message: `Number of vacancies must be between ${this.minNumber} and ${this.maxNumber} (${jobRoleTitle})`,
+          },
+        ],
+      });
+    });
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  get vacancyNumbers(): UntypedFormArray {
+    return this.form.get('vacancyNumbers') as UntypedFormArray;
   }
 
   updateTotalNumber() {
-    const inputValues = this.vacancies.value as Array<number | null>;
+    const inputValues = this.vacancyNumbers.value as Array<number | null>;
     this.totalVacancies = inputValues.reduce((total, current) => (current ? total + current : total), 0);
   }
 }
