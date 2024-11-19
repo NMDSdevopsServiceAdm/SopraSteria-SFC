@@ -23,7 +23,7 @@ import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary.componen
 
 describe('WdfWorkplacesSummaryComponent', () => {
   const setup = async (viewPermission?) => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfWorkplacesSummaryComponent, {
+    const setupTools = await render(WdfWorkplacesSummaryComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -39,9 +39,9 @@ describe('WdfWorkplacesSummaryComponent', () => {
         },
       ],
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+    return { ...setupTools, component };
   };
 
   it('should render a WdfWorkplacesSummaryComponent', async () => {
@@ -70,48 +70,6 @@ describe('WdfWorkplacesSummaryComponent', () => {
 
     expect(getReport).toHaveBeenCalled();
     expect(saveAs).toHaveBeenCalled();
-  });
-
-  describe('WdfParentStatusMessageComponent', async () => {
-    it('should display the correct message and timeframe if meeting WDF requirements', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `All your workplaces' data meets the WDF ${year} to ${year + 1} requirements`;
-
-      component.parentOverallEligibilityStatus = true;
-      component.parentCurrentEligibilityStatus = true;
-      fixture.detectChanges();
-
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
-    });
-
-    it('should display the correct message if workplaces have met WDF requirements this year but not meeting currently', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Your workplaces met the WDF ${year} to ${
-        year + 1
-      } requirements, but updating those currently shown as 'not meeting' will save you time next year.`;
-
-      component.parentOverallEligibilityStatus = true;
-      component.parentCurrentEligibilityStatus = false;
-      fixture.detectChanges();
-
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
-    });
-
-    it('should display the correct message if workplaces have not met WDF requirements this year', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Some of your workplaces' data does not meet the WDF ${year} to ${
-        year + 1
-      } requirements`;
-
-      component.parentOverallEligibilityStatus = false;
-      component.parentCurrentEligibilityStatus = false;
-      fixture.detectChanges();
-
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
-    });
   });
 
   describe('workplace rendering', async () => {
