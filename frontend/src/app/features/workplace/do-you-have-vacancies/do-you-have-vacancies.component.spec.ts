@@ -268,7 +268,7 @@ describe('DoYouHaveVacanciesComponent', () => {
     });
 
     describe('workplace flow', () => {
-      it("should navigate to the starters page when submitting 'Yes'", async () => {
+      it("should navigate to the select vacancy job roles page when submitting 'Yes'", async () => {
         const overrides = { returnUrl: false };
 
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
@@ -345,10 +345,34 @@ describe('DoYouHaveVacanciesComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    it('should navigate to the summary page when submitting', async () => {
+    it("should navigate to the select vacancy job roles page when submitting 'Yes'", async () => {
+      const { component, fixture, getByText, routerSpy } = await setup();
+
+      component.form.get('vacanciesKnown').setValue('With Jobs');
+
+      const button = getByText('Continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-vacancy-job-roles']);
+    });
+
+    it("should navigate to the workplace summary page when submitting 'None'", async () => {
       const { component, fixture, getByText, routerSpy } = await setup();
 
       component.form.get('vacanciesKnown').setValue('None');
+
+      const button = getByText('Continue');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+    });
+
+    it("should navigate to the workplace summary page when submitting 'I do not know'", async () => {
+      const { component, fixture, getByText, routerSpy } = await setup();
+
+      component.form.get('vacanciesKnown').setValue('I do not know');
 
       const button = getByText('Continue');
       fireEvent.click(button);
