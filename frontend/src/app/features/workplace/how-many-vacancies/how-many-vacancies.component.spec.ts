@@ -4,48 +4,36 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-
-import { HowManyVacanciesComponent } from './how-many-vacancies.component';
 import userEvent from '@testing-library/user-event';
 
+import { HowManyVacanciesComponent } from './how-many-vacancies.component';
+
 fdescribe('HowManyVacanciesComponent', () => {
-  const mockAvailableJobs = [
+  const mockSelectedJobRoles: Vacancy[] = [
     {
-      id: 4,
-      title: 'Allied health professional (not occupational therapist)',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 10,
+      jobId: 10,
       title: 'Care worker',
-      jobRoleGroup: 'Care providing roles',
+      total: null,
     },
     {
-      id: 23,
+      jobId: 23,
       title: 'Registered nurse',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 27,
-      title: 'Social worker',
-      jobRoleGroup: 'Professional and related roles',
-    },
-    {
-      id: 20,
-      title: 'Other (directly involved in providing care)',
-      jobRoleGroup: 'Care providing roles',
+      total: null,
     },
   ];
 
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
-    const availableJobs = override.availableJobs ?? mockAvailableJobs;
+    const availableJobs = override.availableJobs;
 
-    const localStorageData = override.localStorageData ?? null;
+    const selectedJobRoles = override.selectedJobRoles ?? mockSelectedJobRoles;
+    const localStorageData =
+      override.localStorageData ?? JSON.stringify({ establishmentUid: 'mock-uid', vacancies: selectedJobRoles });
     const getLocalStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
 
     const renderResults = await render(HowManyVacanciesComponent, {
@@ -113,7 +101,17 @@ fdescribe('HowManyVacanciesComponent', () => {
     expect(getByText(revealTextContent)).toBeTruthy();
   });
 
-  describe('vacancy numbers input form', () => {});
+  describe('vacancy numbers input form', () => {
+    it('should render a input box for each selected job roles', async () => {
+      const { getByText, getByRole } = await setup();
+
+      mockSelectedJobRoles.forEach((role) => {
+        expect(getByText(role.title)).toBeTruthy();
+        const numberInput = getByRole('spinbutton', { name: 'Number of vacancies for ' + role.title });
+        expect(numberInput).toBeTruthy();
+      });
+    });
+  });
 
   describe('buttons', () => {
     it('should render a "Save and continue" CTA button when in the flow', async () => {
@@ -134,6 +132,21 @@ fdescribe('HowManyVacanciesComponent', () => {
     it('should not render a "Skip this question" button', async () => {
       const { queryByText } = await setup();
       expect(queryByText('Skip this question')).toBeFalsy();
+    });
+  });
+
+  describe('progress bar', () => {
+    it('should render a progress bar when in the flow', async () => {
+      const { getByTestId } = await setup();
+
+      expect(getByTestId('progress-bar')).toBeTruthy();
+    });
+
+    it('should not render a progress bar when not in the flow', async () => {
+      const { getByTestId, queryByTestId } = await setup({ returnToUrl: '/dashboard#workplace' });
+
+      expect(getByTestId('section-heading')).toBeTruthy();
+      expect(queryByTestId('progress-bar')).toBeFalsy();
     });
   });
 });

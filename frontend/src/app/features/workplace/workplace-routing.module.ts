@@ -66,6 +66,7 @@ import { WorkplaceNameAddressComponent } from './workplace-name-address/workplac
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -262,16 +263,16 @@ const routes: Routes = [
           title: 'Total Staff',
         },
       },
-      {
-        path: 'vacancies',
-        component: VacanciesComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Vacancies',
-        },
-      },
+      // {
+      //   path: 'vacancies',
+      //   component: VacanciesComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   resolve: { jobs: JobsResolver },
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Vacancies',
+      //   },
+      // },
       {
         path: 'do-you-have-vacancies',
         component: DoYouHaveVacanciesComponent,
@@ -290,6 +291,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Vacancies job role selection',
+        },
+      },
+      {
+        path: 'how-many-vacancies',
+        component: HowManyVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'How many vacancies',
         },
       },
       {

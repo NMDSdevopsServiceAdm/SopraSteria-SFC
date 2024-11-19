@@ -73,6 +73,7 @@ import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-su
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { DoYouHaveVacanciesComponent } from '@features/workplace/do-you-have-vacancies/do-you-have-vacancies.component';
 import { SelectVacancyJobRolesComponent } from '../workplace/select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { HowManyVacanciesComponent } from '@features/workplace/how-many-vacancies/how-many-vacancies.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -373,16 +374,16 @@ const routes: Routes = [
           title: 'Total Staff',
         },
       },
-      {
-        path: 'vacancies',
-        component: VacanciesComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Vacancies',
-        },
-      },
+      // {
+      //   path: 'vacancies',
+      //   component: VacanciesComponent,
+      //   canActivate: [CheckPermissionsGuard],
+      //   resolve: { jobs: JobsResolver },
+      //   data: {
+      //     permissions: ['canEditEstablishment'],
+      //     title: 'Vacancies',
+      //   },
+      // },
       {
         path: 'do-you-have-vacancies',
         component: DoYouHaveVacanciesComponent,
@@ -401,6 +402,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Vacancies job role selection',
+        },
+      },
+      {
+        path: 'how-many-vacancies',
+        component: HowManyVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'How many vacancies',
         },
       },
       {

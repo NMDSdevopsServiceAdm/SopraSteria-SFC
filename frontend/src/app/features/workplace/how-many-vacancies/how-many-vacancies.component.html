@@ -1,27 +1,79 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <fieldset class="govuk-fieldset">
-      <div class="govuk-form-group govuk-!-margin-bottom-2">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
-          <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-          <h1 class="govuk-fieldset__heading">{{ heading }}</h1>
-        </legend>
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      <fieldset class="govuk-fieldset">
+        <div class="govuk-form-group govuk-!-margin-bottom-2">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
+            <h1 class="govuk-fieldset__heading">{{ heading }}</h1>
+          </legend>
 
-        <p>Only add the number of vacancies for permanent and temporary job roles.</p>
+          <p>Only add the number of vacancies for permanent and temporary job roles.</p>
 
-        <app-details [title]="'Why we ask for this information'">
-          <p>
-            To show DHSC and others how the level of staff vacancies and the number employed affects the sector over
-            time.
-          </p>
-        </app-details>
+          <app-details title="Why we ask for this information">
+            <p>
+              To show DHSC and others how the level of staff vacancies and the number employed affects the sector over
+              time.
+            </p>
+          </app-details>
+
+          <table class="govuk-table">
+            <thead class="govuk-table__head">
+              <tr class="govuk-table__row">
+                <th class="govuk-table__header" scope="col" style="width: 65%">Job role</th>
+                <th class="govuk-table__header" scope="col" style="width: 45%">Number of vacancies</th>
+              </tr>
+            </thead>
+            <ng-container formArrayName="vacancies">
+              <tbody>
+                <ng-container *ngFor="let vacancy of vacancies.controls; let i = index">
+                  <tr class="govuk-table__row">
+                    <td class="govuk-table__cell govuk-util__vertical-align-center">
+                      <label for="jobRole-{{ i }}" class="govuk-label">
+                        <span class="govuk-visually-hidden">Number of vacancies for</span
+                        >{{ selectedJobRoles[i].title }}</label
+                      >
+                    </td>
+                    <td class="govuk-table__cell">
+                      <input
+                        name="total"
+                        type="number"
+                        class="govuk-input govuk-!-width-one-half"
+                        id="jobRole-{{ i }}"
+                        [value]="vacancy.value"
+                        [formControlName]="i"
+                      />
+                    </td>
+                  </tr>
+                </ng-container>
+                <tr>
+                  <td></td>
+                  <td class="govuk-table__header">Total</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td class="govuk-table__header" data-testid="total-number">{{ totalVacancies }}</td>
+                </tr>
+              </tbody>
+            </ng-container>
+          </table>
+        </div>
+      </fieldset>
+
+      <app-workplace-submit-button
+        [recordSummary]="false"
+        [return]="!!return"
+        (clicked)="setSubmitAction($event)"
+      ></app-workplace-submit-button>
+    </div>
+    <div class="govuk-grid-column-one-third">
+      <div *ngIf="!return" class="govuk-util__float-right">
+        <app-progress-bar
+          data-testid="progress-bar"
+          [sections]="workplaceFlowSections"
+          [currentSection]="section"
+        ></app-progress-bar>
       </div>
-    </fieldset>
-
-    <app-workplace-submit-button
-      [recordSummary]="false"
-      [return]="!!return"
-      (clicked)="setSubmitAction($event)"
-    ></app-workplace-submit-button>
+    </div>
   </div>
-</div>
+</form>
