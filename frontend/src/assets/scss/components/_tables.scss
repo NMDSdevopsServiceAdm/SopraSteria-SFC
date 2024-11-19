@@ -96,3 +96,10 @@ $error_row_padding: $govuk-gutter-half;
 .govuk-table-custom-width {
   width: 20% !important;
 }
+
+.asc-training-and-quals-table {
+  td.govuk-table__cell:has(button) {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+}
