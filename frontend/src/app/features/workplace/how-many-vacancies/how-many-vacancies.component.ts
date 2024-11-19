@@ -1,6 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UntypedFormArray, Validators } from '@angular/forms';
-import { Vacancy } from '@core/model/establishment.model';
+import { UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 
 import { Question } from '../question/question.component';
 
@@ -9,27 +9,41 @@ import { Question } from '../question/question.component';
   templateUrl: './how-many-vacancies.component.html',
 })
 export class HowManyVacanciesComponent extends Question implements OnInit, OnDestroy {
-  // public errorMessageOnEmptyInput = 'Select job roles for all your current staff vacancies';
   public heading = 'How many current staff vacancies do you have for each job role?';
   public section = 'Vacancies and turnover';
-  protected localStorageKey = 'updated-vacancies';
-  private selectedJobRoles: Array<Vacancy> = [];
   public totalVacancies: number = 0;
+
+  protected localStorageKey = 'updated-vacancies';
+
+  private selectedJobRoles: Array<Vacancy> = [];
   private minNumber = 1;
   private maxNumber = 999;
 
   protected init(): void {
     this.loadSelectedJobRoles();
+    this.setPreviousRoute();
     this.setupForm();
   }
 
-  protected loadSelectedJobRoles() {
-    const loadedData = JSON.parse(localStorage.getItem(this.localStorageKey));
-    if (Array.isArray(loadedData?.vacancies)) {
-      this.selectedJobRoles = loadedData.vacancies;
+  public loadSelectedJobRoles() {
+    try {
+      const loadedData = JSON.parse(localStorage.getItem(this.localStorageKey));
+      this.selectedJobRoles = loadedData?.vacancies;
+    } catch (err) {
+      this.returnToFirstPage();
     }
 
-    // if (!this.selectedJobRoles)  jump to 1st page
+    if (!(Array.isArray(this.selectedJobRoles) && this.selectedJobRoles?.length)) {
+      this.returnToFirstPage();
+    }
+  }
+
+  protected returnToFirstPage() {
+    this.router.navigate(['/workplace', `${this.establishment.uid}`, 'do-you-have-vacancies']);
+  }
+
+  private setPreviousRoute(): void {
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'select-vacancy-job-roles'];
   }
 
   protected setupForm() {
@@ -51,6 +65,49 @@ export class HowManyVacanciesComponent extends Question implements OnInit, OnDes
         this.updateTotalNumber();
       }),
     );
+  }
+
+  get vacancyNumbers(): UntypedFormArray {
+    return this.form.get('vacancyNumbers') as UntypedFormArray;
+  }
+
+  updateTotalNumber() {
+    const inputValues = this.vacancyNumbers.value as Array<number | null>;
+    this.totalVacancies = inputValues.reduce((total, current) => (current ? total + current : total), 0);
+  }
+
+  protected generateUpdateProps(): UpdateJobsRequest {
+    const updatedVacancies = this.selectedJobRoles.map((job, index) => {
+      const updatedFields: Vacancy = {
+        jobId: Number(job.jobId),
+        total: Number(this.vacancyNumbers.value[index]),
+      };
+      if (job.other) {
+        updatedFields.other = job.other;
+      }
+      return updatedFields;
+    });
+
+    return { vacancies: updatedVacancies };
+  }
+
+  protected updateEstablishment(props: UpdateJobsRequest): void {
+    this.subscriptions.add(
+      this.establishmentService.updateJobs(this.establishment.uid, props).subscribe(
+        (data) => this._onSuccess(data),
+        (error) => this.onError(error),
+      ),
+    );
+  }
+
+  protected onSuccess(): void {
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
+    // TODO: change to 'do-you-have-starters' page after #1560 complete
+    this.clearLocalStorageData();
+  }
+
+  protected clearLocalStorageData(): void {
+    localStorage.removeItem(this.localStorageKey);
   }
 
   protected setupFormErrorsMap(): void {
@@ -81,14 +138,5 @@ export class HowManyVacanciesComponent extends Question implements OnInit, OnDes
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  get vacancyNumbers(): UntypedFormArray {
-    return this.form.get('vacancyNumbers') as UntypedFormArray;
-  }
-
-  updateTotalNumber() {
-    const inputValues = this.vacancyNumbers.value as Array<number | null>;
-    this.totalVacancies = inputValues.reduce((total, current) => (current ? total + current : total), 0);
   }
 }

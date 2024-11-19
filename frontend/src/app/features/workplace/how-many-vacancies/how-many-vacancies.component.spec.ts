@@ -27,10 +27,6 @@ fdescribe('HowManyVacanciesComponent', () => {
     },
   ];
 
-  const getInputBoxForJobRole = (jobTitle: string) => {
-    return screen.getByRole('spinbutton', { name: 'Number of vacancies for ' + jobTitle });
-  };
-
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
     const availableJobs = override.availableJobs;
@@ -38,7 +34,7 @@ fdescribe('HowManyVacanciesComponent', () => {
     const selectedJobRoles = override.selectedJobRoles ?? mockSelectedJobRoles;
     const localStorageData =
       override.localStorageData ?? JSON.stringify({ establishmentUid: 'mock-uid', vacancies: selectedJobRoles });
-    const getLocalStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
+    spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
 
     const renderResults = await render(HowManyVacanciesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -66,15 +62,21 @@ fdescribe('HowManyVacanciesComponent', () => {
     const component = renderResults.fixture.componentInstance;
 
     const injector = getTestBed();
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const updateJobsSpy = spyOn(establishmentService, 'updateJobs').and.callThrough();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       component,
       routerSpy,
-      getLocalStorageSpy,
+      updateJobsSpy,
       ...renderResults,
     };
+  };
+
+  const getInputBoxForJobRole = (jobTitle: string): HTMLInputElement => {
+    return screen.getByRole('spinbutton', { name: 'Number of vacancies for ' + jobTitle });
   };
 
   it('should create', async () => {
@@ -154,10 +156,74 @@ fdescribe('HowManyVacanciesComponent', () => {
     });
   });
 
+  describe('prefill', () => {
+    it('should prefill any job roles number that are brought along from previous page', async () => {
+      const mockSelectedJobRoles = [
+        {
+          jobId: 10,
+          title: 'Care worker',
+          total: 3,
+        },
+        {
+          jobId: 23,
+          title: 'Registered nurse',
+          total: null,
+        },
+      ];
+      await setup({ selectedJobRoles: mockSelectedJobRoles });
+
+      expect(getInputBoxForJobRole('Care worker').value).toEqual('3');
+      expect(getInputBoxForJobRole('Registered nurse').value).toEqual('');
+    });
+
+    it('should navigate to "Do you have vacancies" page if failed to retrieve data from previous page', async () => {
+      const { component, routerSpy } = await setup({ selectedJobRoles: 'some invalid data' });
+      component.loadSelectedJobRoles();
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-vacancies']);
+    });
+  });
+
   describe('form submit and validations', () => {
+    describe('on Success', () => {
+      it('should call updateJobs with the input vacancies number', async () => {
+        const { component, getByRole, updateJobsSpy } = await setup();
+
+        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
+        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+
+        expect(updateJobsSpy).toHaveBeenCalledWith(component.establishment.uid, {
+          vacancies: [
+            { jobId: 10, total: 2 },
+            { jobId: 23, total: 4 },
+          ],
+        });
+      });
+
+      it('should navigate to the starters page if in the flow', async () => {
+        const { component, getByRole, routerSpy } = await setup();
+
+        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
+        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'starters']);
+      });
+
+      it('should navigate to workplace summary page if not in the flow', async () => {
+        const { getByRole, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
+
+        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
+        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+      });
+    });
+
     describe('errors', () => {
       it('should show an error message if number input box is empty', async () => {
-        const { fixture, getByRole, getByText, getAllByText } = await setup();
+        const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
@@ -165,10 +231,12 @@ fdescribe('HowManyVacanciesComponent', () => {
         expect(getByText('There is a problem')).toBeTruthy();
         expect(getAllByText('Enter the number of vacancies (care worker)')).toHaveSize(2);
         expect(getAllByText('Enter the number of vacancies (registered nurse)')).toHaveSize(2);
+
+        expect(updateJobsSpy).not.toHaveBeenCalled();
       });
 
       it('should show an error message if the input number is out of range', async () => {
-        const { fixture, getByRole, getByText, getAllByText } = await setup();
+        const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup();
 
         userEvent.type(getInputBoxForJobRole('Care worker'), '-10');
         userEvent.type(getInputBoxForJobRole('Registered nurse'), '99999');
@@ -178,6 +246,8 @@ fdescribe('HowManyVacanciesComponent', () => {
         expect(getByText('There is a problem')).toBeTruthy();
         expect(getAllByText('Number of vacancies must be between 1 and 999 (care worker)')).toHaveSize(2);
         expect(getAllByText('Number of vacancies must be between 1 and 999 (registered nurse)')).toHaveSize(2);
+
+        expect(updateJobsSpy).not.toHaveBeenCalled();
       });
     });
   });
