@@ -88,11 +88,6 @@ export class WdfDataComponent implements OnInit {
     this.setWorkerCount();
     this.getParentAndSubs();
     this.breadcrumbService.show(JourneyType.WDF);
-
-    this.route.fragment.subscribe((fragment) => {
-      const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
-      this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
-    });
   }
 
   public get activeTab() {
@@ -104,9 +99,15 @@ export class WdfDataComponent implements OnInit {
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
         this.establishmentService.setState(workplace);
+
         if (workplace.isParent) {
-          this.tabs.push({ name: 'Your other workplaces', fragment: 'your-other-workplaces' });
+          this.tabs.push({ name: 'Your other workplaces', fragment: 'workplaces' });
         }
+
+        this.route.fragment.subscribe((fragment) => {
+          const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
+          this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
+        });
       }),
     );
   }

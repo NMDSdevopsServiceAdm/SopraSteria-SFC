@@ -120,6 +120,13 @@ describe('WdfDataComponent', () => {
       expect(within(tabSection).queryByText('Your other workplaces')).toBeTruthy();
     });
 
+    it('should display the Your other workplaces tab on page load when workplaces fragment in params', async () => {
+      const { fixture, getByTestId } = await setup({ workplace: { isParent: true }, fragment: 'workplaces' });
+
+      fixture.detectChanges();
+      expect(getByTestId('yourOtherWorkplacesTab')).toBeTruthy();
+    });
+
     it("should not have 'Your other workplaces' tab when workplace is not parent", async () => {
       const workplace = { isParent: false };
       const { getByTestId } = await setup({ workplace });

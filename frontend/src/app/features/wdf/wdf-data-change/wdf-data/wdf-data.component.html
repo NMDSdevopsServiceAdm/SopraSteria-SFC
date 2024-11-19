@@ -45,4 +45,9 @@
     [standAloneAccount]="standAloneAccount"
     [workerCount]="workerCount"
   ></app-wdf-staff-summary>
+
+  <app-wdf-workplaces-summary
+    *ngIf="activeTabIndex === 2"
+    data-testid="yourOtherWorkplacesTab"
+  ></app-wdf-workplaces-summary>
 </span>
