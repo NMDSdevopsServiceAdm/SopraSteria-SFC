@@ -104,6 +104,9 @@ export class WdfDataComponent implements OnInit {
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
         this.establishmentService.setState(workplace);
+        if (workplace.isParent) {
+          this.tabs.push({ name: 'Your other workplaces', fragment: 'your-other-workplaces' });
+        }
       }),
     );
   }
