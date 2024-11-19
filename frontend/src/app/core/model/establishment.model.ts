@@ -51,18 +51,21 @@ export interface Vacancy {
   jobId: number;
   title?: string;
   total: number;
+  other?: string;
 }
 
 export interface Starter {
   jobId: number;
   title?: string;
   total: number;
+  other?: string;
 }
 
 export interface Leaver {
   jobId: number;
   title?: string;
   total: number;
+  other?: string;
 }
 
 export interface Category {

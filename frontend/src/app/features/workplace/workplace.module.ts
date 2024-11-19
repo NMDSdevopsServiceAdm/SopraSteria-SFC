@@ -68,6 +68,7 @@ import { WorkplaceNameAddressComponent } from './workplace-name-address/workplac
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
+import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
 
 @NgModule({
   imports: [
@@ -130,6 +131,7 @@ import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have
     HealthAndCareVisaExistingWorkers,
     ChangeDataOwnerComponent,
     DoYouHaveVacanciesComponent,
+    SelectVacancyJobRolesComponent,
   ],
   providers: [
     DialogService,

@@ -72,6 +72,7 @@ import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { DoYouHaveVacanciesComponent } from '@features/workplace/do-you-have-vacancies/do-you-have-vacancies.component';
+import { SelectVacancyJobRolesComponent } from '../workplace/select-vacancy-job-roles/select-vacancy-job-roles.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -390,6 +391,16 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Do You Have Vacancies',
+        },
+      },
+      {
+        path: 'select-vacancy-job-roles',
+        component: SelectVacancyJobRolesComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Vacancies job role selection',
         },
       },
       {

@@ -123,6 +123,8 @@ import { RadioButtonAccordionComponent } from './components/accordions/radio-but
 import { GroupedRadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { CertificationsTableComponent } from './components/certifications-table/certifications-table.component';
 import { SelectUploadFileComponent } from './components/select-upload-file/select-upload-file.component';
+import { AccordionGroupComponent } from './components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import { AccordionSectionComponent } from './components/accordions/generic-accordion/accordion-section/accordion-section.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -247,6 +249,8 @@ import { SelectUploadFileComponent } from './components/select-upload-file/selec
     NewTrainingLinkPanelComponent,
     CertificationsTableComponent,
     SelectUploadFileComponent,
+    AccordionGroupComponent,
+    AccordionSectionComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -367,6 +371,8 @@ import { SelectUploadFileComponent } from './components/select-upload-file/selec
     NewTrainingLinkPanelComponent,
     CertificationsTableComponent,
     SelectUploadFileComponent,
+    AccordionGroupComponent,
+    AccordionSectionComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
