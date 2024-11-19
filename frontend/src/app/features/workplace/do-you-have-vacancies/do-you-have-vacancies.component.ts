@@ -100,6 +100,8 @@ export class DoYouHaveVacanciesComponent extends Question implements OnInit {
   protected onSuccess(): void {
     if (this.hasVacancies) {
       this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'select-vacancy-job-roles'];
+    } else if (!this.hasVacancies && this.return) {
+      this.submitAction = { action: 'return', save: true };
     } else {
       this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
     }
