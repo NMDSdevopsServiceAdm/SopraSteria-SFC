@@ -11,7 +11,6 @@ import { TrainingStatusService } from '@core/services/trainingStatus.service';
 @Component({
   selector: 'app-new-training',
   templateUrl: './new-training.component.html',
-  styleUrls: ['./new-training.component.scss'],
 })
 export class NewTrainingComponent implements OnChanges {
   @Input() public trainingCategories: TrainingRecordCategory[];
