@@ -1,15 +1,10 @@
 import { HttpResponse } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FundingParentSortWorkplacesOptions } from '@core/model/establishment.model';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
-import { WDFReport } from '@core/model/reports.model';
-import { URLStructure } from '@core/model/url.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
-import dayjs from 'dayjs';
 import saveAs from 'file-saver';
 import orderBy from 'lodash/orderBy';
 import { Subscription } from 'rxjs';
@@ -18,50 +13,22 @@ import { Subscription } from 'rxjs';
   selector: 'app-wdf-workplaces-summary',
   templateUrl: './wdf-workplaces-summary.component.html',
 })
-export class WdfWorkplacesSummaryComponent implements OnInit {
+export class WdfWorkplacesSummaryComponent implements OnInit, OnDestroy {
   @Input() workplaces = [];
   public workplaceUid: string;
-  public wdfStartDate: string;
-  public wdfEndDate: string;
-  public returnUrl: URLStructure;
-  public report: WDFReport;
-  public parentOverallEligibilityStatus: boolean;
-  public parentCurrentEligibilityStatus: boolean;
-  public parentOverallEligibilityDate: string;
-  public now: Date = new Date();
   private subscriptions: Subscription = new Subscription();
   public canDownloadReport: boolean;
   public sortWorkplacesOptions = FundingParentSortWorkplacesOptions;
-  public sortBy: string;
 
   constructor(
     private establishmentService: EstablishmentService,
     private reportService: ReportService,
-    private breadcrumbService: BreadcrumbService,
     private permissionsService: PermissionsService,
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.WDF_PARENT);
-    this.returnUrl = { url: ['/wdf', 'workplaces'] };
-
     this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.canDownloadReport = this.permissionsService.can(this.workplaceUid, 'canEditEstablishment');
-    this.getWdfReport();
-  }
-
-  private getWdfReport() {
-    this.subscriptions.add(
-      this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
-        this.report = report;
-        this.setDates(report);
-      }),
-    );
-  }
-
-  private setDates(report: WDFReport): void {
-    this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
-    this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
   }
 
   public downloadWdfParentReport(event: Event) {
@@ -131,5 +98,9 @@ export class WdfWorkplacesSummaryComponent implements OnInit {
       ],
       [order, order, order],
     );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

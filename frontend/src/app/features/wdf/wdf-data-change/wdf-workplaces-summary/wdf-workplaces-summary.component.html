@@ -18,7 +18,6 @@
         <option
           *ngFor="let sortWorkplaceOption of sortWorkplacesOptions | keyvalue"
           value="{{ sortWorkplaceOption.key }}"
-          [selected]="sortWorkplaceOption.key == this.sortBy"
         >
           {{ sortWorkplaceOption.value }}
         </option>
