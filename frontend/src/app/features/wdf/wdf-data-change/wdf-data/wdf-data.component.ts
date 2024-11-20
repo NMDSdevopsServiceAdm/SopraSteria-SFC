@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
@@ -42,7 +42,7 @@ export class WdfDataComponent implements OnInit {
   public newHomeDesignFlag: boolean;
   public standAloneAccount = false;
   private subscriptions: Subscription = new Subscription();
-  public activeTabIndex: number;
+  private activeTabIndex: number;
   public parentOverallWdfEligibility: boolean;
   public overallWdfEligibility: boolean;
   public isParent: boolean;
@@ -61,6 +61,7 @@ export class WdfDataComponent implements OnInit {
     private route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
     private userService: UserService,
+    private router: Router,
   ) {
     this.featureFlagsService.start();
   }
@@ -92,6 +93,10 @@ export class WdfDataComponent implements OnInit {
       const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
       this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
     });
+  }
+
+  public get activeTab() {
+    return { ...this.tabs[this.activeTabIndex], index: this.activeTabIndex }
   }
 
   private setWorkplace(): void {
@@ -128,7 +133,7 @@ export class WdfDataComponent implements OnInit {
   }
 
   public handleTabChange(activeTabIndex: number): void {
-    this.activeTabIndex = activeTabIndex;
+    this.router.navigate(['/wdf/data'], { fragment: this.tabs[activeTabIndex].fragment });
   }
 
   private setWorkerCount() {

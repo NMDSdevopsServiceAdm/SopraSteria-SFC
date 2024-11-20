@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-wdf-summary-panel',
@@ -14,6 +14,7 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   @Input() isParent: boolean;
   @Input() parentOverallWdfEligibility: boolean;
   @Input() overallWdfEligibility: boolean;
+  @Input() activatedFragment: string;
 
   public sections: any = [];
 
@@ -21,10 +22,12 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
 
   ngOnInit(): void {
     this.getSections();
+    this.showLink(this.activatedFragment);
   }
 
   ngOnChanges(): void {
     this.getSections();
+    this.showLink(this.activatedFragment);
   }
 
   public getSections(): void {

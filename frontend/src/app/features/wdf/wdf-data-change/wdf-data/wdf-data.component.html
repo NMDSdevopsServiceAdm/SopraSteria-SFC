@@ -18,15 +18,16 @@
       [parentOverallWdfEligibility]="parentOverallWdfEligibility"
       [overallWdfEligibility]="wdfEligibilityStatus.overall"
       [isParent]="isParent"
+      [activatedFragment]="activeTab.fragment"
     ></app-wdf-summary-panel>
   </div>
 </div>
 
 <ng-container *ngIf="isStandalone; else parentView">
-  <app-select-view-panel [tabs]="tabs" (handleTabChange)="handleTabChange($event)" [activeTabIndex]="activeTabIndex">
+  <app-select-view-panel [tabs]="tabs" (handleTabChange)="handleTabChange($event)" [activeTabIndex]="activeTab.index">
   </app-select-view-panel>
   <app-wdf-workplace-summary
-    *ngIf="activeTabIndex === 0 && workplace"
+    *ngIf="activeTab.index === 0 && workplace"
     data-testid="workplaceSummaryTab"
     [workplace]="workplace"
     [workerCount]="workerCount"
@@ -37,7 +38,7 @@
   ></app-wdf-workplace-summary>
 
   <app-wdf-staff-summary
-    *ngIf="activeTabIndex === 1 && workers && workplace"
+    *ngIf="activeTab.index === 1 && workers && workplace"
     data-testid="staffRecordsTab"
     [workplace]="workplace"
     [workers]="workers"
