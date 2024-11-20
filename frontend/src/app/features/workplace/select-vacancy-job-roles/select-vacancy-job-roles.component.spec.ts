@@ -149,7 +149,7 @@ describe('SelectVacancyJobRolesComponent', () => {
       });
 
       it('should render a "Continue" CTA button when not in the flow', async () => {
-        const { getByRole } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const { getByRole } = await setup({ returnToUrl: true });
         expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
       });
 
@@ -159,7 +159,7 @@ describe('SelectVacancyJobRolesComponent', () => {
       });
 
       it('should render a "Cancel" button when not in flow', async () => {
-        const { getByText } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const { getByText } = await setup({ returnToUrl: true });
         expect(getByText('Cancel')).toBeTruthy();
       });
 
@@ -177,7 +177,7 @@ describe('SelectVacancyJobRolesComponent', () => {
       });
 
       it('should not render a progress bar when not in the flow', async () => {
-        const { getByTestId, queryByTestId } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const { getByTestId, queryByTestId } = await setup({ returnToUrl: true });
 
         expect(getByTestId('section-heading')).toBeTruthy();
         expect(queryByTestId('progress-bar')).toBeFalsy();
@@ -384,11 +384,21 @@ describe('SelectVacancyJobRolesComponent', () => {
 
   describe('navigation', () => {
     it('should return to the workplace summary page when cancel button is clicked', async () => {
-      const { getByText, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
+      const { getByText, routerSpy } = await setup({ returnToUrl: true });
       const cancelButton = getByText('Cancel');
 
       userEvent.click(cancelButton);
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+    });
+
+    it('should return to the wdf workplace summary page when visited from wdf and cancel button is clicked', async () => {
+      const { component, getByText, routerSpy } = await setup({ returnToUrl: true });
+      component.return = { url: ['/wdf', 'workplaces', 'mock-uid'] };
+
+      const cancelButton = getByText('Cancel');
+
+      userEvent.click(cancelButton);
+      expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'workplaces', 'mock-uid'], jasmine.anything());
     });
 
     it('should set the backlink to "do you have vacancy" page', async () => {
@@ -399,7 +409,7 @@ describe('SelectVacancyJobRolesComponent', () => {
     });
 
     it('should set the backlink to "do you have vacancy" when not in the flow', async () => {
-      const { component } = await setup({ returnToUrl: '/dashboard#workplace' });
+      const { component } = await setup({ returnToUrl: true });
       expect(component.back).toEqual({
         url: ['/workplace', component.establishment.uid, 'do-you-have-vacancies'],
       });

@@ -28,7 +28,7 @@ describe('HowManyVacanciesComponent', () => {
   ];
 
   const setup = async (override: any = {}) => {
-    const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
+    const returnToUrl = override.returnToUrl ?? false;
     const availableJobs = override.availableJobs;
 
     const selectedJobRoles = override.selectedJobRoles ?? mockSelectedJobRoles;
@@ -69,6 +69,7 @@ describe('HowManyVacanciesComponent', () => {
 
     return {
       component,
+      router,
       routerSpy,
       updateJobsSpy,
       ...renderResults,
@@ -125,12 +126,12 @@ describe('HowManyVacanciesComponent', () => {
       });
 
       it('should render a "Save and return" CTA button when not in the flow', async () => {
-        const { getByRole } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const { getByRole } = await setup({ returnToUrl: true });
         expect(getByRole('button', { name: 'Save and return' })).toBeTruthy();
       });
 
       it('should render a "Cancel" button when not in the flow', async () => {
-        const { getByText } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const { getByText } = await setup({ returnToUrl: true });
         expect(getByText('Cancel')).toBeTruthy();
       });
 
@@ -148,7 +149,7 @@ describe('HowManyVacanciesComponent', () => {
       });
 
       it('should not render a progress bar when not in the flow', async () => {
-        const { getByTestId, queryByTestId } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const { getByTestId, queryByTestId } = await setup({ returnToUrl: true });
 
         expect(getByTestId('section-heading')).toBeTruthy();
         expect(queryByTestId('progress-bar')).toBeFalsy();
@@ -206,7 +207,7 @@ describe('HowManyVacanciesComponent', () => {
       });
 
       it('should navigate to workplace summary page if not in the flow', async () => {
-        const { getByRole, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const { getByRole, routerSpy } = await setup({ returnToUrl: true });
 
         userEvent.type(getInputBoxForJobRole('Care worker'), '2');
         userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
@@ -215,8 +216,19 @@ describe('HowManyVacanciesComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
       });
 
+      it('should navigate to wdf summary page if not in the flow and visited from wdf page', async () => {
+        const { component, getByRole, routerSpy } = await setup({ returnToUrl: true });
+        component.return = { url: ['/wdf', 'workplaces', 'mock-uid'] };
+
+        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
+        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'workplaces', 'mock-uid'], jasmine.anything());
+      });
+
       it('should clear the cache data in local storage after submit', async () => {
-        const { getByRole } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const { getByRole } = await setup({ returnToUrl: true });
         const localStorageSpy = spyOn(localStorage, 'removeItem');
 
         userEvent.type(getInputBoxForJobRole('Care worker'), '2');
@@ -288,6 +300,18 @@ describe('HowManyVacanciesComponent', () => {
         userEvent.click(getByText('Cancel'));
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+      });
+
+      it('should return to the wdf workplace summary page when visited from wdf and cancel button is clicked', async () => {
+        const { component, getByText, routerSpy } = await setup({
+          returnToUrl: true,
+        });
+        component.return = { url: ['/wdf', 'workplaces', 'mock-uid'] };
+
+        const cancelButton = getByText('Cancel');
+
+        userEvent.click(cancelButton);
+        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'workplaces', 'mock-uid'], jasmine.anything());
       });
 
       it('should clear the cache data in local storage on cancel', async () => {

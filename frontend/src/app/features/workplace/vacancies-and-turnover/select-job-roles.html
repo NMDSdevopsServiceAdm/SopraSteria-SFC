@@ -67,10 +67,11 @@
       </fieldset>
 
       <app-workplace-submit-button
+        [return]="!!return"
+        [continue]="true"
         (clicked)="setSubmitAction($event)"
         [callToAction]="return ? 'Continue' : 'Save and continue'"
         [recordSummary]="false"
-        [canExit]="!!return"
       ></app-workplace-submit-button>
     </form>
   </div>
