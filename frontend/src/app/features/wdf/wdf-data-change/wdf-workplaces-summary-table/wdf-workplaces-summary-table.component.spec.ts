@@ -9,7 +9,19 @@ import { WdfModule } from '../wdf.module';
 import { WdfWorkplacesSummaryTableComponent } from './wdf-workplaces-summary-table.component';
 
 describe('WdfWorkplacesSummaryTableComponent', () => {
-  const workplaces = [
+  const overallEligible = {
+    overall: true,
+    staff: true,
+    workplace: true,
+  };
+
+  const allIneligible = {
+    overall: false,
+    staff: false,
+    workplace: false,
+  };
+
+  const mockWorkplaces = (): any[] => [
     {
       name: 'Workplace name',
       wdf: {
@@ -28,14 +40,15 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
     },
   ];
 
-  const setup = async () => {
+  const setup = async (overrides: any = {}) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(
       WdfWorkplacesSummaryTableComponent,
       {
         imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
         providers: [],
         componentProperties: {
-          workplaces: workplaces,
+          workplaces: mockWorkplaces(),
+          ...overrides,
         },
       },
     );
@@ -50,53 +63,41 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
   });
 
   it('should display two green ticks for each workplace when the workplace has qualified for WDF and the workplace and staff records are eligible', async () => {
-    const { component, fixture, getAllByText } = await setup();
+    const workplaces = mockWorkplaces();
+    workplaces[0].wdf = overallEligible;
+    workplaces[1].wdf = overallEligible;
+
+    const { getAllByText } = await setup({ workplaces });
     const greenTickVisuallyHiddenMessage = 'Green tick';
     const meetingMessage = 'Meeting';
-
-    component.workplaces[0].wdf.overall = true;
-    component.workplaces[0].wdf.workplace = true;
-    component.workplaces[0].wdf.staff = true;
-
-    component.workplaces[1].wdf.overall = true;
-    component.workplaces[1].wdf.workplace = true;
-    component.workplaces[1].wdf.staff = true;
-    fixture.detectChanges();
 
     expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(4);
     expect(getAllByText(meetingMessage, { exact: true }).length).toBe(4);
   });
-  it('should not display a link for workplaces without rights', async () => {
-    const { component, fixture, getAllByText } = await setup();
-    component.workplaces[0].isParent = false;
-    component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
-    component.workplaces[0].dataPermissions = DataPermissions.None;
-    component.workplaces[0].name = 'Test Workplace';
 
-    fixture.detectChanges();
+  it('should not display a link for workplaces without rights', async () => {
+    const workplaces = mockWorkplaces();
+    workplaces[0].isParent = false;
+    workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
+    workplaces[0].dataPermissions = DataPermissions.None;
+    workplaces[0].name = 'Test Workplace';
+
+    const { getAllByText } = await setup({ workplaces });
+
     expect(getAllByText('Test Workplace', { exact: false })[0].outerHTML).toContain('<p>');
   });
+
   it('should display a link for workplaces with rights to at least workplace', async () => {
-    const { component, fixture, getAllByText } = await setup();
+    const workplaces = mockWorkplaces();
+    workplaces[0].dataPermissions = DataPermissions.Workplace;
+    workplaces[0].name = 'Test Workplace';
+    workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
 
-    component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
-    component.workplaces[0].dataPermissions = DataPermissions.Workplace;
-    component.workplaces[0].name = 'Test Workplace';
+    const { getAllByText } = await setup({ workplaces });
 
-    fixture.detectChanges();
     expect(getAllByText('Test Workplace', { exact: false })[0].outerHTML).toContain('</a>');
   });
-  it('should display a link for workplaces if parent', async () => {
-    const { component, fixture, getAllByText } = await setup();
 
-    component.workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
-    component.workplaces[0].dataPermissions = DataPermissions.None;
-    component.workplaces[0].isParent = true;
-    component.workplaces[0].name = 'Test Workplace';
-
-    fixture.detectChanges();
-    expect(getAllByText('Test Workplace', { exact: false })[0].outerHTML).toContain('</a>');
-  });
   it('canViewWorkplace should return true if parent', async () => {
     const { component } = await setup();
 
@@ -109,91 +110,83 @@ describe('WdfWorkplacesSummaryTableComponent', () => {
 
   describe('sortByColumn', async () => {
     it('should put workplaces not meeting WDF at top of table when sorting by WDF requirements (not meeting)', async () => {
-      const { component, fixture } = await setup();
+      const workplaces = mockWorkplaces();
+      workplaces[0].wdf = overallEligible;
+      workplaces[1].wdf = allIneligible;
 
-      component.workplaces[0].wdf.overall = true;
-      component.workplaces[0].wdf.workplace = true;
-      component.workplaces[0].wdf.staff = true;
-
-      component.workplaces[1].wdf.overall = false;
-      component.workplaces[1].wdf.workplace = false;
-      component.workplaces[1].wdf.staff = false;
+      const { component, fixture } = await setup({ workplaces });
 
       fixture.componentInstance.sortByColumn('1_not_meeting');
-      const workplaces = component.workplaces;
-      fixture.detectChanges();
 
-      expect(workplaces[0].wdf.overall).toEqual(false);
-      expect(workplaces[1].wdf.overall).toEqual(true);
+      const sortedWorkplaces = component.workplaces;
+
+      expect(sortedWorkplaces[0].wdf.overall).toEqual(false);
+      expect(sortedWorkplaces[1].wdf.overall).toEqual(true);
     });
 
-    it('should put workplaces not meeting WDF for either workplace or staff record at top of table when sorting by WDF requirements (not meeting)', async () => {
-      const { component, fixture } = await setup();
+    it('should put workplaces not meeting for either workplace or staff record at top of table when sorting by funding requirements (not meeting)', async () => {
+      const workplaces = mockWorkplaces();
+      workplaces[0].wdf.overall = false;
+      workplaces[0].wdf.workplace = false;
+      workplaces[0].wdf.staff = true;
 
-      component.workplaces[0].wdf.overall = true;
-      component.workplaces[0].wdf.workplace = false;
-      component.workplaces[0].wdf.staff = true;
+      workplaces[1].wdf = allIneligible;
 
-      component.workplaces[1].wdf.overall = true;
-      component.workplaces[1].wdf.workplace = false;
-      component.workplaces[1].wdf.staff = false;
+      const { component, fixture } = await setup({ workplaces });
 
       fixture.componentInstance.sortByColumn('1_not_meeting');
-      const workplaces = component.workplaces;
-      fixture.detectChanges();
+      const sortedWorkplaces = component.workplaces;
 
-      expect(workplaces[0].wdf.workplace).toEqual(false);
-      expect(workplaces[0].wdf.staff).toEqual(false);
-      expect(workplaces[1].wdf.workplace).toEqual(false);
-      expect(workplaces[1].wdf.staff).toEqual(true);
+      expect(sortedWorkplaces[0].wdf.workplace).toEqual(false);
+      expect(sortedWorkplaces[0].wdf.staff).toEqual(false);
+      expect(sortedWorkplaces[1].wdf.workplace).toEqual(false);
+      expect(sortedWorkplaces[1].wdf.staff).toEqual(true);
     });
 
-    it('should put workplaces not meeting WDF (red crosses) before those meeting with changes (orange flags) when sorting by WDF requirements (not meeting)', async () => {
-      const { component, fixture } = await setup();
+    it('should put workplaces not meeting (red flag) before those meeting with changes (orange flags) when sorting by funding requirements (not meeting)', async () => {
+      const workplaces = mockWorkplaces();
+      workplaces[0].wdf.overall = false;
+      workplaces[0].wdf.workplace = true;
+      workplaces[0].wdf.staff = false;
 
-      component.workplaces[0].wdf.overall = false;
-      component.workplaces[0].wdf.workplace = true;
-      component.workplaces[0].wdf.staff = false;
+      workplaces[1].wdf.overall = true;
+      workplaces[1].wdf.workplace = true;
+      workplaces[1].wdf.staff = false;
 
-      component.workplaces[1].wdf.overall = true;
-      component.workplaces[1].wdf.workplace = false;
-      component.workplaces[1].wdf.staff = true;
+      const { component, fixture } = await setup({ workplaces });
 
       fixture.componentInstance.sortByColumn('1_not_meeting');
-      const workplaces = component.workplaces;
-      fixture.detectChanges();
+      const sortedWorkplaces = component.workplaces;
 
-      expect(workplaces[0].wdf.overall).toEqual(false);
-      expect(workplaces[0].wdf.workplace).toEqual(true);
-      expect(workplaces[0].wdf.staff).toEqual(false);
+      expect(sortedWorkplaces[0].wdf.overall).toEqual(false);
+      expect(sortedWorkplaces[0].wdf.workplace).toEqual(true);
+      expect(sortedWorkplaces[0].wdf.staff).toEqual(false);
 
-      expect(workplaces[1].wdf.overall).toEqual(true);
-      expect(workplaces[1].wdf.workplace).toEqual(false);
-      expect(workplaces[1].wdf.staff).toEqual(true);
+      expect(sortedWorkplaces[1].wdf.overall).toEqual(true);
+      expect(sortedWorkplaces[1].wdf.workplace).toEqual(true);
+      expect(sortedWorkplaces[1].wdf.staff).toEqual(false);
     });
 
     it('should put workplaces meeting WDF with changes (orange flags) before those not meeting (red crosses) when sorting by WDF requirements (meeting)', async () => {
-      const { component, fixture } = await setup();
+      const workplaces = mockWorkplaces();
+      workplaces[0].wdf = allIneligible;
 
-      component.workplaces[0].wdf.overall = false;
-      component.workplaces[0].wdf.workplace = false;
-      component.workplaces[0].wdf.staff = false;
+      workplaces[1].wdf.overall = true;
+      workplaces[1].wdf.workplace = false;
+      workplaces[1].wdf.staff = true;
 
-      component.workplaces[1].wdf.overall = true;
-      component.workplaces[1].wdf.workplace = false;
-      component.workplaces[1].wdf.staff = true;
+      const { component, fixture } = await setup({ workplaces });
 
       fixture.componentInstance.sortByColumn('2_meeting');
-      const workplaces = component.workplaces;
-      fixture.detectChanges();
+      const sortedWorkplaces = component.workplaces;
 
-      expect(workplaces[0].wdf.overall).toEqual(true);
-      expect(workplaces[0].wdf.workplace).toEqual(false);
-      expect(workplaces[0].wdf.staff).toEqual(true);
+      expect(sortedWorkplaces[0].wdf.overall).toEqual(true);
+      expect(sortedWorkplaces[0].wdf.workplace).toEqual(false);
+      expect(sortedWorkplaces[0].wdf.staff).toEqual(true);
 
-      expect(workplaces[1].wdf.overall).toEqual(false);
-      expect(workplaces[1].wdf.workplace).toEqual(false);
-      expect(workplaces[1].wdf.staff).toEqual(false);
+      expect(sortedWorkplaces[1].wdf.overall).toEqual(false);
+      expect(sortedWorkplaces[1].wdf.workplace).toEqual(false);
+      expect(sortedWorkplaces[1].wdf.staff).toEqual(false);
     });
   });
 });

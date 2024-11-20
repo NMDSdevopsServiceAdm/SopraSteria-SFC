@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { WdfParentSortWorkplacesOptions } from '@core/model/establishment.model';
+import { FundingParentSortWorkplacesOptions } from '@core/model/establishment.model';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import orderBy from 'lodash/orderBy';
@@ -15,7 +15,7 @@ export class WdfWorkplacesSummaryTableComponent implements OnInit {
   constructor(private permissionsService: PermissionsService) {}
 
   ngOnInit(): void {
-    this.sortWorkplacesOptions = WdfParentSortWorkplacesOptions;
+    this.sortWorkplacesOptions = FundingParentSortWorkplacesOptions;
   }
 
   ngOnChanges() {
