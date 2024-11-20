@@ -154,40 +154,39 @@ const updateTrainingRecord = async (req, res) => {
   }
 };
 
-// deletes requested training record using the training uid
 const deleteTrainingRecordEndpoint = async (req, res) => {
-  const thisTrainingRecord = new Training(req.establishmentId, req.params.workerId);
+  const trainingRecord = new Training(req.establishmentId, req.params.workerId);
   const trainingCertificateService = WorkerCertificateService.initialiseTraining();
 
-  return await deleteTrainingRecord(req, res, thisTrainingRecord, trainingCertificateService);
+  return await deleteTrainingRecord(req, res, trainingRecord, trainingCertificateService);
 };
 
-const deleteTrainingRecord = async (req, res, thisTrainingRecord, trainingCertificateService) => {
-  const trainingUid = req.params.trainingUid;
-  const workerUid = req.params.workerId;
-  const establishmentUid = req.params.id;
-
+const deleteTrainingRecord = async (req, res, trainingRecord, trainingCertificateService) => {
   try {
-    if (await thisTrainingRecord.restore(trainingUid)) {
-      const trainingCertificates = thisTrainingRecord?._trainingCertificates;
+    const trainingUid = req.params.trainingUid;
+    const workerUid = req.params.workerId;
+    const establishmentUid = req.params.id;
 
-      if (trainingCertificates?.length) {
-        await trainingCertificateService.deleteCertificates(
-          trainingCertificates,
-          establishmentUid,
-          workerUid,
-          trainingUid,
-        );
-      }
+    const trainingRecordFound = await trainingRecord.restore(trainingUid);
+    if (!trainingRecordFound) {
+      return res.status(404).send('Not Found');
+    }
 
-      const deleteSuccess = await thisTrainingRecord.delete();
-      if (deleteSuccess) {
-        return res.status(204).json();
-      } else {
-        return res.status(404).send('Not Found');
-      }
+    const trainingCertificates = trainingRecord?._trainingCertificates;
+
+    if (trainingCertificates?.length) {
+      await trainingCertificateService.deleteCertificates(
+        trainingCertificates,
+        establishmentUid,
+        workerUid,
+        trainingUid,
+      );
+    }
+
+    const deleteSuccess = await trainingRecord.delete();
+    if (deleteSuccess) {
+      return res.status(204).json();
     } else {
-      // not found training record
       return res.status(404).send('Not Found');
     }
   } catch (err) {
