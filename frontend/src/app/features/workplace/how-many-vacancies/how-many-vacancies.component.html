@@ -29,19 +29,19 @@
           <table class="govuk-table">
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
-                <th class="govuk-table__header" scope="col" style="width: 65%">Job role</th>
-                <th class="govuk-table__header" scope="col" style="width: 45%">Number of vacancies</th>
+                <th class="govuk-table__header" scope="col" style="width: 67%">Job role</th>
+                <th class="govuk-table__header" scope="col" style="width: 33%">Number of vacancies</th>
               </tr>
             </thead>
             <ng-container formArrayName="vacancyNumbers">
               <tbody>
-                <ng-container *ngFor="let vacancy of vacancyNumbers.controls; let i = index">
+                <ng-container *ngFor="let vacancy of vacancyNumbers.controls; index as i">
                   <tr class="govuk-table__row">
-                    <td class="govuk-table__cell govuk-util__vertical-align-center">
+                    <td class="govuk-table__cell govuk-util__vertical-align-middle">
                       <label for="jobRole-{{ i }}" class="govuk-label">
                         <span class="govuk-visually-hidden">Number of vacancies for</span
-                        >{{ selectedJobRoles[i].title }}</label
-                      >
+                        >{{ selectedJobRoles[i].title }}
+                      </label>
                     </td>
                     <td class="govuk-table__cell">
                       <div>
@@ -52,7 +52,6 @@
                           ><span class="govuk-visually-hidden">Error:</span>
                           {{ getFirstErrorMessage('vacancyNumbers.' + i) }}
                         </span>
-
                         <input
                           name="total"
                           type="number"
@@ -67,7 +66,7 @@
                 </ng-container>
                 <tr>
                   <td></td>
-                  <td class="govuk-table__header">Total</td>
+                  <td class="govuk-table__header govuk-!-padding-top-4">Total</td>
                 </tr>
                 <tr>
                   <td></td>

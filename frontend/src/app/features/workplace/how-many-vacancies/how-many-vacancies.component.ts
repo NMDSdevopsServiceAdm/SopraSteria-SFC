@@ -25,7 +25,7 @@ export class HowManyVacanciesComponent extends Question implements OnInit, OnDes
     this.setupForm();
   }
 
-  public loadSelectedJobRoles() {
+  public loadSelectedJobRoles(): void {
     try {
       const loadedData = JSON.parse(localStorage.getItem(this.localStorageKey));
       this.selectedJobRoles = loadedData?.vacancies;
@@ -38,7 +38,7 @@ export class HowManyVacanciesComponent extends Question implements OnInit, OnDes
     }
   }
 
-  protected returnToFirstPage() {
+  protected returnToFirstPage(): void {
     this.router.navigate(['/workplace', `${this.establishment.uid}`, 'do-you-have-vacancies']);
   }
 
@@ -46,7 +46,7 @@ export class HowManyVacanciesComponent extends Question implements OnInit, OnDes
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'select-vacancy-job-roles'];
   }
 
-  protected setupForm() {
+  protected setupForm(): void {
     this.form = this.formBuilder.group({
       vacancyNumbers: this.formBuilder.array([]),
     });
@@ -71,7 +71,7 @@ export class HowManyVacanciesComponent extends Question implements OnInit, OnDes
     return this.form.get('vacancyNumbers') as UntypedFormArray;
   }
 
-  updateTotalNumber() {
+  updateTotalNumber(): void {
     const inputValues = this.vacancyNumbers.value as Array<number | null>;
     this.totalVacancies = inputValues.reduce((total, current) => (current ? total + current : total), 0);
   }
@@ -80,7 +80,7 @@ export class HowManyVacanciesComponent extends Question implements OnInit, OnDes
     const updatedVacancies = this.selectedJobRoles.map((job, index) => {
       const updatedFields: Vacancy = {
         jobId: Number(job.jobId),
-        total: Number(this.vacancyNumbers.value[index]),
+        total: parseInt(this.vacancyNumbers.value[index]),
       };
       if (job.other) {
         updatedFields.other = job.other;
