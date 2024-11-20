@@ -296,7 +296,7 @@ fdescribe('SelectVacancyJobRolesComponent', () => {
           ],
         };
 
-        expect(setLocalStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
+        expect(setLocalStorageSpy).toHaveBeenCalledWith('vacanciesJobRoles', JSON.stringify(expectedData));
       });
 
       it('should keep the vacancies numbers that was loaded from database', async () => {
@@ -338,7 +338,7 @@ fdescribe('SelectVacancyJobRolesComponent', () => {
           ],
         };
 
-        expect(setLocalStorageSpy).toHaveBeenCalledWith('updated-vacancies', JSON.stringify(expectedData));
+        expect(setLocalStorageSpy).toHaveBeenCalledWith('vacanciesJobRoles', JSON.stringify(expectedData));
       });
 
       it('should navigate to the vacancies number input page after submit', async () => {

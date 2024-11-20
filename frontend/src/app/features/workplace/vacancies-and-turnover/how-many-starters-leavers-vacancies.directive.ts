@@ -4,7 +4,7 @@ import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establi
 
 import { Question } from '../question/question.component';
 
-@Directive({})
+@Directive()
 export class HowManyStartersLeaversVacanciesDirective extends Question implements OnInit, OnDestroy {
   public heading: string;
   public section: string;
@@ -14,7 +14,7 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
 
   public totalNumber = 0;
 
-  protected localStorageKey: string;
+  protected localStorageJobRoleKey: string;
   protected selectedJobRoles: Array<Starter | Leaver | Vacancy> = [];
 
   private minNumberPerJobRole = 1;
@@ -27,6 +27,10 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
   }
 
   public loadSelectedJobRoles(): void {}
+
+  protected clearLocalStorageData(): void {
+    localStorage.removeItem(this.localStorageJobRoleKey);
+  }
 
   protected returnToFirstPage(): void {}
 
@@ -92,10 +96,6 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
   public setBackLink() {
     this.back = { url: this.previousRoute };
     this.backService.setBackLink(this.back);
-  }
-
-  protected clearLocalStorageData(): void {
-    localStorage.removeItem(this.localStorageKey);
   }
 
   protected setupFormErrorsMap(): void {

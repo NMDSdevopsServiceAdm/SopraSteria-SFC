@@ -15,13 +15,12 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
   public jobRoleType = 'vacancies';
 
-  protected localStorageKey = 'updated-vacancies';
   protected selectedJobRoles: Array<Vacancy> = [];
 
   public loadSelectedJobRoles(): void {
     try {
-      const loadedData = JSON.parse(localStorage.getItem(this.localStorageKey));
-      this.selectedJobRoles = loadedData?.vacancies;
+      const loadedJobRoles = JSON.parse(localStorage.getItem('vacanciesJobRoles'));
+      this.selectedJobRoles = loadedJobRoles?.vacancies;
     } catch (err) {
       this.returnToFirstPage();
     }
@@ -29,6 +28,11 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
     if (!Array.isArray(this.selectedJobRoles) || this.selectedJobRoles?.length === 0) {
       this.returnToFirstPage();
     }
+  }
+
+  protected clearLocalStorageData(): void {
+    localStorage.removeItem('hasVacancies');
+    localStorage.removeItem('vacanciesJobRoles');
   }
 
   protected returnToFirstPage(): void {
