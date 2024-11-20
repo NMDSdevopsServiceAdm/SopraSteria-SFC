@@ -79,6 +79,21 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
 
   protected onSuccess(): void {}
 
+  protected navigate(): void {
+    const action = this.submitAction.action;
+
+    if (['continue', 'exit', 'return'].includes(action)) {
+      this.clearLocalStorageData();
+    }
+
+    super.navigate();
+  }
+
+  public setBackLink() {
+    this.back = { url: this.previousRoute };
+    this.backService.setBackLink(this.back);
+  }
+
   protected clearLocalStorageData(): void {
     localStorage.removeItem(this.localStorageKey);
   }

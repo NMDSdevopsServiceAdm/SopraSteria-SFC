@@ -154,32 +154,26 @@ fdescribe('HowManyVacanciesComponent', () => {
         expect(queryByTestId('progress-bar')).toBeFalsy();
       });
     });
-  });
 
-  describe('prefill', () => {
-    it('should prefill any job roles number that are brought along from previous page', async () => {
-      const mockSelectedJobRoles = [
-        {
-          jobId: 10,
-          title: 'Care worker',
-          total: 3,
-        },
-        {
-          jobId: 23,
-          title: 'Registered nurse',
-          total: null,
-        },
-      ];
-      await setup({ selectedJobRoles: mockSelectedJobRoles });
+    describe('prefill', () => {
+      it('should prefill any job roles number that are brought along from previous page', async () => {
+        const mockSelectedJobRoles = [
+          {
+            jobId: 10,
+            title: 'Care worker',
+            total: 3,
+          },
+          {
+            jobId: 23,
+            title: 'Registered nurse',
+            total: null,
+          },
+        ];
+        await setup({ selectedJobRoles: mockSelectedJobRoles });
 
-      expect(getInputBoxForJobRole('Care worker').value).toEqual('3');
-      expect(getInputBoxForJobRole('Registered nurse').value).toEqual('');
-    });
-
-    it('should navigate to "Do you have vacancies" page if failed to retrieve data from previous page', async () => {
-      const { component, routerSpy } = await setup({ selectedJobRoles: 'some invalid data' });
-      component.loadSelectedJobRoles();
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-vacancies']);
+        expect(getInputBoxForJobRole('Care worker').value).toEqual('3');
+        expect(getInputBoxForJobRole('Registered nurse').value).toEqual('');
+      });
     });
   });
 
@@ -219,6 +213,17 @@ fdescribe('HowManyVacanciesComponent', () => {
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
       });
+
+      it('should clear the cache data in local storage after submit', async () => {
+        const { getByRole } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const localStorageSpy = spyOn(localStorage, 'removeItem');
+
+        userEvent.type(getInputBoxForJobRole('Care worker'), '2');
+        userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        expect(localStorageSpy).toHaveBeenCalled();
+      });
     });
 
     describe('errors', () => {
@@ -248,6 +253,49 @@ fdescribe('HowManyVacanciesComponent', () => {
         expect(getAllByText('Number of vacancies must be between 1 and 999 (registered nurse)')).toHaveSize(2);
 
         expect(updateJobsSpy).not.toHaveBeenCalled();
+      });
+    });
+  });
+
+  describe('navigation', async () => {
+    it('should navigate to "Do you have vacancies" page if failed to load selected job roles data', async () => {
+      const { component, routerSpy } = await setup({ selectedJobRoles: '[]' });
+      component.loadSelectedJobRoles();
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-vacancies']);
+    });
+
+    describe('backlink', () => {
+      it('should set the backlink to job role selection page', async () => {
+        const { component } = await setup();
+        expect(component.back).toEqual({
+          url: ['/workplace', component.establishment.uid, 'select-vacancy-job-roles'],
+        });
+      });
+
+      it('should set the backlink to job role selection page when not in the flow', async () => {
+        const { component } = await setup({ returnToUrl: '/dashboard#workplace' });
+        expect(component.back).toEqual({
+          url: ['/workplace', component.establishment.uid, 'select-vacancy-job-roles'],
+        });
+      });
+    });
+
+    describe('cancel button', () => {
+      it('should navigate to workplace summary page when cancel button is clicked', async () => {
+        const { getByText, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
+
+        userEvent.click(getByText('Cancel'));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
+      });
+
+      it('should clear the cache data in local storage on cancel', async () => {
+        const { getByText } = await setup({ returnToUrl: '/dashboard#workplace' });
+        const localStorageSpy = spyOn(localStorage, 'removeItem');
+
+        userEvent.click(getByText('Cancel'));
+
+        expect(localStorageSpy).toHaveBeenCalled();
       });
     });
   });
