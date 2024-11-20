@@ -11,10 +11,8 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
   public instruction: string;
   public revealTextContent: string;
   public jobRoleType: string;
-
   public totalNumber = 0;
 
-  protected localStorageJobRoleKey: string;
   protected selectedJobRoles: Array<Starter | Leaver | Vacancy> = [];
 
   private minNumberPerJobRole = 1;
@@ -28,9 +26,7 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
 
   public loadSelectedJobRoles(): void {}
 
-  protected clearLocalStorageData(): void {
-    localStorage.removeItem(this.localStorageJobRoleKey);
-  }
+  protected clearLocalStorageData(): void {}
 
   protected returnToFirstPage(): void {}
 
@@ -51,6 +47,8 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
         ]),
       );
     });
+
+    this.updateTotalNumber();
 
     this.subscriptions.add(
       this.jobRoleNumbers.valueChanges.subscribe(() => {

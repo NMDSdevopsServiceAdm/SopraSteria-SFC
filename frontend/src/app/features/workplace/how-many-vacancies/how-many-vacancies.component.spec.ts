@@ -8,7 +8,7 @@ import { Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render, screen } from '@testing-library/angular';
+import { render, screen, getByTestId } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { HowManyVacanciesComponent } from './how-many-vacancies.component';
@@ -169,10 +169,11 @@ fdescribe('HowManyVacanciesComponent', () => {
             total: null,
           },
         ];
-        await setup({ selectedJobRoles: mockSelectedJobRoles });
+        const { getByTestId } = await setup({ selectedJobRoles: mockSelectedJobRoles });
 
         expect(getInputBoxForJobRole('Care worker').value).toEqual('3');
         expect(getInputBoxForJobRole('Registered nurse').value).toEqual('');
+        expect(getByTestId('total-number').innerText).toEqual('3');
       });
     });
   });
