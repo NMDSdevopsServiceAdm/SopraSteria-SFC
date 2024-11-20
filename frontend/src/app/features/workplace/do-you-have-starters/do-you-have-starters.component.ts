@@ -1,11 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { DoYouHaveStartersVacanciesLeaversDirective } from '@shared/directives/do-you-have-starters-vacancies-leavers/do-you-have-starters-vacancies-leavers.directive';
+import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.directive';
 
 @Component({
   selector: 'app-do-you-have-starters',
   templateUrl:
-    '../../shared/directives/do-you-have-starters-vacancies-leavers/do-you-have-starters-vacancies-leavers.html',
+    '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
 })
-export class DoYouHaveStartersComponent extends DoYouHaveStartersVacanciesLeaversDirective implements OnInit {
-  ngOnInit(): void {}
+export class DoYouHaveStartersComponent extends DoYouHaveStartersLeaversVacanciesDirective implements OnInit {
+  protected setupRoutes(): void {
+    this.previousRoute = ['/workplace', this.establishment.uid, 'how-many-vacancies'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'leavers'];
+  }
+
+  protected setupTextAndHeadings(): void {
+    this.heading = 'Have you had any new starters in the last 12 months?';
+    this.hintText = 'We only want to know about new starters who are in permanent and temporary job roles.';
+    this.revealText =
+      "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
+  }
+
+  protected getDataToPrefill(): void {
+    this.dataToPrefill = this.establishment.starters;
+  }
 }
