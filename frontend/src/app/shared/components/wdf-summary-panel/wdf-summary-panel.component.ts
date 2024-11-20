@@ -59,7 +59,7 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
 
   public onClick(event: Event, fragment: string): void {
     event.preventDefault();
-    this.showLink(fragment);
+    // this.showLink(fragment);
     this.router.navigate(['/wdf/data'], { fragment: fragment });
   }
 
