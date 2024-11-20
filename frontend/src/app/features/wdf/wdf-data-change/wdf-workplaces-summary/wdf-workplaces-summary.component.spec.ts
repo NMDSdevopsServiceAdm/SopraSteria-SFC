@@ -49,24 +49,24 @@ describe('WdfWorkplacesSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the download a WDF report when the user has edit permissions', async () => {
+  it('should show the download your funding report link when user has edit permissions', async () => {
     const { getByText } = await setup();
-    expect(getByText('Download your WDF report (Excel)', { exact: false })).toBeTruthy();
+    expect(getByText('Download your funding report (Excel)', { exact: false })).toBeTruthy();
   });
 
-  it('should not show the download a WDF report when the user has view permissions', async () => {
+  it('should not show the download your funding report link when user only has view permissions', async () => {
     const { queryByText } = await setup(true);
-    expect(queryByText('Download your WDF report (Excel)', { exact: false })).toBeFalsy();
+    expect(queryByText('Download your funding report (Excel)', { exact: false })).toBeFalsy();
   });
 
-  it('should download a WDF report when the download link is clicked', async () => {
+  it('should download the funding report when the download link is clicked', async () => {
     const { fixture, getByText } = await setup();
 
     const reportService = TestBed.inject(ReportService);
     const getReport = spyOn(reportService, 'getParentWDFReport').and.callFake(() => of(null));
     const saveAs = spyOn(fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
-    fireEvent.click(getByText('Download your WDF report (Excel)', { exact: false }));
+    fireEvent.click(getByText('Download your funding report (Excel)', { exact: false }));
 
     expect(getReport).toHaveBeenCalled();
     expect(saveAs).toHaveBeenCalled();
