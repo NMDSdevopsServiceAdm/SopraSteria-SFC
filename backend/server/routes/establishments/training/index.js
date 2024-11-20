@@ -155,26 +155,23 @@ const updateTrainingRecord = async (req, res) => {
 };
 
 // deletes requested training record using the training uid
-const deleteTrainingRecord = async (req, res) => {
-  const establishmentId = req.establishmentId;
+const deleteTrainingRecordEndpoint = async (req, res) => {
+  const thisTrainingRecord = new Training(req.establishmentId, req.params.workerId);
+  const trainingCertificateService = WorkerCertificateService.initialiseTraining();
+
+  return await deleteTrainingRecord(req, res, thisTrainingRecord, trainingCertificateService);
+};
+
+const deleteTrainingRecord = async (req, res, thisTrainingRecord, trainingCertificateService) => {
   const trainingUid = req.params.trainingUid;
   const workerUid = req.params.workerId;
   const establishmentUid = req.params.id;
 
-  const thisTrainingRecord = new Training(establishmentId, workerUid);
-
   try {
-    // before updating a Worker, we need to be sure the Worker is
-    //  available to the given establishment. The best way of doing that
-    //  is to restore from given UID
     if (await thisTrainingRecord.restore(trainingUid)) {
-      // TODO: JSON validation
-
       const trainingCertificates = thisTrainingRecord?._trainingCertificates;
 
-      const trainingCertificateService = WorkerCertificateService.initialiseTraining();
-
-      if (this.trainingCertificates?.length) {
+      if (trainingCertificates?.length) {
         await trainingCertificateService.deleteCertificates(
           trainingCertificates,
           establishmentUid,
@@ -183,7 +180,6 @@ const deleteTrainingRecord = async (req, res) => {
         );
       }
 
-      // by deleting after the restore we can be sure this training record belongs to the given worker
       const deleteSuccess = await thisTrainingRecord.delete();
       if (deleteSuccess) {
         return res.status(204).json();
@@ -191,7 +187,7 @@ const deleteTrainingRecord = async (req, res) => {
         return res.status(404).send('Not Found');
       }
     } else {
-      // not found worker
+      // not found training record
       return res.status(404).send('Not Found');
     }
   } catch (err) {
@@ -204,7 +200,7 @@ router.route('/').get(hasPermission('canViewWorker'), getTrainingListWithMissing
 router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
 router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
 router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
-router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);
+router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecordEndpoint);
 router.use('/:trainingUid/certificate', TrainingCertificateRoute);
 
 module.exports = router;
