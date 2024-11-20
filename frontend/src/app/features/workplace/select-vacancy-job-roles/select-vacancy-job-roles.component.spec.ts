@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles.component';
 
-describe('SelectVacancyJobRolesComponent', () => {
+fdescribe('SelectVacancyJobRolesComponent', () => {
   const mockAvailableJobs = [
     {
       id: 4,
@@ -382,11 +382,27 @@ describe('SelectVacancyJobRolesComponent', () => {
     });
   });
 
-  it('should return to the workplace summary page when cancel button is clicked', async () => {
-    const { getByText, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
-    const cancelButton = getByText('Cancel');
+  describe('navigation', () => {
+    it('should return to the workplace summary page when cancel button is clicked', async () => {
+      const { getByText, routerSpy } = await setup({ returnToUrl: '/dashboard#workplace' });
+      const cancelButton = getByText('Cancel');
 
-    userEvent.click(cancelButton);
-    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
+      userEvent.click(cancelButton);
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace' });
+    });
+
+    it('should set the backlink to "do you have vacancy" page', async () => {
+      const { component } = await setup();
+      expect(component.back).toEqual({
+        url: ['/workplace', component.establishment.uid, 'do-you-have-vacancies'],
+      });
+    });
+
+    it('should set the backlink to "do you have vacancy" when not in the flow', async () => {
+      const { component } = await setup({ returnToUrl: '/dashboard#workplace' });
+      expect(component.back).toEqual({
+        url: ['/workplace', component.establishment.uid, 'do-you-have-vacancies'],
+      });
+    });
   });
 });
