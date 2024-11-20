@@ -45,7 +45,7 @@ export class DoYouHaveVacanciesComponent extends Question implements OnInit {
     this.setupForm();
     this.previousRoute = ['/workplace', this.establishment.uid, 'service-users'];
     this.prefill();
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-starters'];
   }
 
   private setupForm(): void {
@@ -103,7 +103,7 @@ export class DoYouHaveVacanciesComponent extends Question implements OnInit {
     } else if (!this.hasVacancies && this.return) {
       this.submitAction = { action: 'return', save: true };
     } else {
-      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
+      this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-starters'];
     }
   }
 }

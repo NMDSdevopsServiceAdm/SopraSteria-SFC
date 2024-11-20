@@ -67,7 +67,7 @@ describe('DoYouHaveVacanciesComponent', () => {
     localStorage.clear();
   });
 
-  it('should render a VacanciesCurrentComponent', async () => {
+  it('should render a DoYouHaveVacanciesComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
@@ -294,7 +294,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-starters']);
       });
 
       it("should navigate to the starters page when submitting 'I do not know' ", async () => {
@@ -308,7 +308,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-starters']);
       });
 
       it('should navigate to the starters page when clicking Skip this question link', async () => {
@@ -319,7 +319,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(link);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'starters']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-starters']);
       });
 
       it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
