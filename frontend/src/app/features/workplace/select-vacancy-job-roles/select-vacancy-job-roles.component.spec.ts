@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles.component';
 
-fdescribe('SelectVacancyJobRolesComponent', () => {
+describe('SelectVacancyJobRolesComponent', () => {
   const mockAvailableJobs = [
     {
       id: 4,

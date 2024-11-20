@@ -1,10 +1,11 @@
 import { ReactiveFormsModule, UntypedFormBuilder, Validators } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
-import { ErrorSummaryComponent } from './error-summary.component';
-import { ActivatedRoute } from '@angular/router';
 
-fdescribe('ErrorSummaryComponent', () => {
+import { ErrorSummaryComponent } from './error-summary.component';
+
+describe('ErrorSummaryComponent', () => {
   describe('getFormErrors', () => {
     describe('for the error of any element in a formArray', () => {
       const setup = async (override: any = {}) => {

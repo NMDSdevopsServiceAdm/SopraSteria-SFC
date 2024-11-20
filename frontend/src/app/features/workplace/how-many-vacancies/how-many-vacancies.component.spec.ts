@@ -8,12 +8,12 @@ import { Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render, screen, getByTestId } from '@testing-library/angular';
+import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { HowManyVacanciesComponent } from './how-many-vacancies.component';
 
-fdescribe('HowManyVacanciesComponent', () => {
+describe('HowManyVacanciesComponent', () => {
   const mockSelectedJobRoles: Vacancy[] = [
     {
       jobId: 10,
