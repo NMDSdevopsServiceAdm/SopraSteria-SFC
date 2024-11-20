@@ -17,47 +17,44 @@
             <h1 class="govuk-fieldset__heading">{{ heading }}</h1>
           </legend>
 
-          <p>Only add the number of vacancies for permanent and temporary job roles.</p>
+          <p>{{ instruction }}</p>
 
           <app-details title="Why we ask for this information">
-            <p>
-              To show DHSC and others how the level of staff vacancies and the number employed affects the sector over
-              time.
-            </p>
+            <p>{{ revealTextContent }}</p>
           </app-details>
 
           <table class="govuk-table">
             <thead class="govuk-table__head">
               <tr class="govuk-table__row">
                 <th class="govuk-table__header" scope="col" style="width: 67%">Job role</th>
-                <th class="govuk-table__header" scope="col" style="width: 33%">Number of vacancies</th>
+                <th class="govuk-table__header" scope="col" style="width: 33%">Number of {{ jobRoleType }}</th>
               </tr>
             </thead>
-            <ng-container formArrayName="vacancyNumbers">
+            <ng-container formArrayName="jobRoleNumbers">
               <tbody>
-                <ng-container *ngFor="let vacancy of vacancyNumbers.controls; index as i">
+                <ng-container *ngFor="let numberInput of jobRoleNumbers.controls; index as i">
                   <tr class="govuk-table__row">
                     <td class="govuk-table__cell govuk-util__vertical-align-middle">
                       <label for="jobRole-{{ i }}" class="govuk-label">
-                        <span class="govuk-visually-hidden">Number of vacancies for</span
-                        >{{ selectedJobRoles[i].title }}
+                        <span class="govuk-visually-hidden">Number of {{ jobRoleType }} for</span>{{
+                        selectedJobRoles[i].title }}
                       </label>
                     </td>
                     <td class="govuk-table__cell">
                       <div>
                         <span
-                          *ngIf="submitted && vacancy.errors"
-                          id="vacancyNumbers-{{ i }}-error"
+                          *ngIf="submitted && numberInput.errors"
+                          id="jobRoleNumbers-{{ i }}-error"
                           class="govuk-error-message"
                           ><span class="govuk-visually-hidden">Error:</span>
-                          {{ getFirstErrorMessage('vacancyNumbers.' + i) }}
+                          {{ getFirstErrorMessage('jobRoleNumbers.' + i) }}
                         </span>
                         <input
                           name="total"
                           type="number"
                           class="govuk-input govuk-!-width-one-half"
                           id="jobRole-{{ i }}"
-                          [value]="vacancy.value"
+                          [value]="numberInput.value"
                           [formControlName]="i"
                         />
                       </div>
@@ -70,7 +67,7 @@
                 </tr>
                 <tr>
                   <td></td>
-                  <td class="govuk-table__header" data-testid="total-number">{{ totalVacancies }}</td>
+                  <td class="govuk-table__header" data-testid="total-number">{{ totalNumber }}</td>
                 </tr>
               </tbody>
             </ng-container>
