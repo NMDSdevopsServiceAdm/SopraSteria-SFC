@@ -154,44 +154,39 @@ const updateTrainingRecord = async (req, res) => {
   }
 };
 
-// deletes requested training record using the training uid
-const deleteTrainingRecord = async (req, res) => {
-  const establishmentId = req.establishmentId;
-  const trainingUid = req.params.trainingUid;
-  const workerUid = req.params.workerId;
-  const establishmentUid = req.params.id;
+const deleteTrainingRecordEndpoint = async (req, res) => {
+  const trainingRecord = new Training(req.establishmentId, req.params.workerId);
+  const trainingCertificateService = WorkerCertificateService.initialiseTraining();
 
-  const thisTrainingRecord = new Training(establishmentId, workerUid);
+  return await deleteTrainingRecord(req, res, trainingRecord, trainingCertificateService);
+};
 
+const deleteTrainingRecord = async (req, res, trainingRecord, trainingCertificateService) => {
   try {
-    // before updating a Worker, we need to be sure the Worker is
-    //  available to the given establishment. The best way of doing that
-    //  is to restore from given UID
-    if (await thisTrainingRecord.restore(trainingUid)) {
-      // TODO: JSON validation
+    const trainingUid = req.params.trainingUid;
+    const workerUid = req.params.workerId;
+    const establishmentUid = req.params.id;
 
-      const trainingCertificates = thisTrainingRecord?._trainingCertificates;
+    const trainingRecordFound = await trainingRecord.restore(trainingUid);
+    if (!trainingRecordFound) {
+      return res.status(404).send('Not Found');
+    }
 
-      const trainingCertificateService = WorkerCertificateService.initialiseTraining();
+    const trainingCertificates = trainingRecord?._trainingCertificates;
 
-      if (this.trainingCertificates?.length) {
-        await trainingCertificateService.deleteCertificates(
-          trainingCertificates,
-          establishmentUid,
-          workerUid,
-          trainingUid,
-        );
-      }
+    if (trainingCertificates?.length) {
+      await trainingCertificateService.deleteCertificates(
+        trainingCertificates,
+        establishmentUid,
+        workerUid,
+        trainingUid,
+      );
+    }
 
-      // by deleting after the restore we can be sure this training record belongs to the given worker
-      const deleteSuccess = await thisTrainingRecord.delete();
-      if (deleteSuccess) {
-        return res.status(204).json();
-      } else {
-        return res.status(404).send('Not Found');
-      }
+    const deleteSuccess = await trainingRecord.delete();
+    if (deleteSuccess) {
+      return res.status(204).json();
     } else {
-      // not found worker
       return res.status(404).send('Not Found');
     }
   } catch (err) {
@@ -204,7 +199,7 @@ router.route('/').get(hasPermission('canViewWorker'), getTrainingListWithMissing
 router.route('/').post(hasPermission('canEditWorker'), createTrainingRecord);
 router.route('/:trainingUid').get(hasPermission('canViewWorker'), viewTrainingRecord);
 router.route('/:trainingUid').put(hasPermission('canEditWorker'), updateTrainingRecord);
-router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecord);
+router.route('/:trainingUid').delete(hasPermission('canEditWorker'), deleteTrainingRecordEndpoint);
 router.use('/:trainingUid/certificate', TrainingCertificateRoute);
 
 module.exports = router;
