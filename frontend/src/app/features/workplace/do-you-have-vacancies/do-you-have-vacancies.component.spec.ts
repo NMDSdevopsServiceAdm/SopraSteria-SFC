@@ -85,6 +85,14 @@ describe('DoYouHaveVacanciesComponent', () => {
     expect(sectionHeading.getByText('Vacancies and turnover')).toBeTruthy();
   });
 
+  it('should show the hint text', async () => {
+    const { getByTestId } = await setup();
+
+    const hintText = 'We only want to know about current staff vacancies for permanent and temporary job roles.';
+
+    expect(within(getByTestId('hint-text')).getByText(hintText)).toBeTruthy();
+  });
+
   it('should show the reveal', async () => {
     const { getByText } = await setup();
 
@@ -123,7 +131,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
       const form = component.form;
 
-      expect(form.value).toEqual({ vacanciesKnown: null });
+      expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
     });
 
     const vacancyAnswers: any = [
@@ -149,7 +157,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         const { component } = await setup(overrides);
 
         const form = component.form;
-        expect(form.value).toEqual({ vacanciesKnown: test.value });
+        expect(form.value).toEqual({ startersLeaversVacanciesKnown: test.value });
       });
     });
 
@@ -164,7 +172,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
       const form = component.form;
 
-      expect(form.value).toEqual({ vacanciesKnown: 'With Jobs' });
+      expect(form.value).toEqual({ startersLeaversVacanciesKnown: 'With Jobs' });
     });
 
     it("should preselect 'Yes' if hasVacancies is true return to page if the database has a different value", async () => {
@@ -178,7 +186,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
       const form = component.form;
 
-      expect(form.value).toEqual({ vacanciesKnown: 'With Jobs' });
+      expect(form.value).toEqual({ startersLeaversVacanciesKnown: 'With Jobs' });
     });
   });
 
@@ -198,7 +206,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText, establishmentServiceSpy } = await setup(overrides);
 
-        component.form.get('vacanciesKnown').setValue('With Jobs');
+        component.form.get('startersLeaversVacanciesKnown').setValue('With Jobs');
 
         const button = getByText('Save and continue');
         const localStorageSpy = spyOn(localStorage, 'setItem');
@@ -218,7 +226,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         localStorage.setItem('hasVacancies', 'true');
 
-        component.form.get('vacanciesKnown').setValue(jobOptionsEnum.NONE);
+        component.form.get('startersLeaversVacanciesKnown').setValue(jobOptionsEnum.NONE);
         const localStorageSpy = spyOn(localStorage, 'setItem');
 
         const button = getByText('Save and continue');
@@ -237,7 +245,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         localStorage.setItem('hasVacancies', 'true');
 
-        component.form.get('vacanciesKnown').setValue(jobOptionsEnum.DONT_KNOW);
+        component.form.get('startersLeaversVacanciesKnown').setValue(jobOptionsEnum.DONT_KNOW);
         const localStorageSpy = spyOn(localStorage, 'setItem');
 
         const button = getByText('Save and continue');
@@ -255,7 +263,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
       const { component, fixture, getByText, establishmentServiceSpy } = await setup(overrides);
 
-      component.form.get('vacanciesKnown').setValue('None');
+      component.form.get('startersLeaversVacanciesKnown').setValue('None');
 
       const button = getByText('Save and continue');
 
@@ -273,7 +281,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-        component.form.get('vacanciesKnown').setValue('With Jobs');
+        component.form.get('startersLeaversVacanciesKnown').setValue('With Jobs');
         fixture.detectChanges();
 
         const button = getByText('Save and continue');
@@ -288,7 +296,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-        component.form.get('vacanciesKnown').setValue('None');
+        component.form.get('startersLeaversVacanciesKnown').setValue('None');
 
         const button = getByText('Save and continue');
         fireEvent.click(button);
@@ -302,7 +310,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-        component.form.get('vacanciesKnown').setValue('I do not know');
+        component.form.get('startersLeaversVacanciesKnown').setValue('I do not know');
 
         const button = getByText('Save and continue');
         fireEvent.click(button);
@@ -351,7 +359,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-        component.form.get('vacanciesKnown').setValue('With Jobs');
+        component.form.get('startersLeaversVacanciesKnown').setValue('With Jobs');
 
         const button = getByText('Continue');
         fireEvent.click(button);
@@ -365,7 +373,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-        component.form.get('vacanciesKnown').setValue('None');
+        component.form.get('startersLeaversVacanciesKnown').setValue('None');
 
         const button = getByText('Continue');
         fireEvent.click(button);
@@ -379,7 +387,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-        component.form.get('vacanciesKnown').setValue('I do not know');
+        component.form.get('startersLeaversVacanciesKnown').setValue('I do not know');
 
         const button = getByText('Continue');
         fireEvent.click(button);
@@ -393,7 +401,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
-        component.form.get('vacanciesKnown').setValue('None');
+        component.form.get('startersLeaversVacanciesKnown').setValue('None');
 
         const link = getByText('Cancel');
         fireEvent.click(link);

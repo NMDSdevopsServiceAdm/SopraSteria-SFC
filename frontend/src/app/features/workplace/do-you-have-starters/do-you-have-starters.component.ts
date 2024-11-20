@@ -8,18 +8,21 @@ import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/d
 })
 export class DoYouHaveStartersComponent extends DoYouHaveStartersLeaversVacanciesDirective implements OnInit {
   protected setupRoutes(): void {
-    this.previousRoute = ['/workplace', this.establishment.uid, 'how-many-vacancies'];
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'leavers'];
+    this.previousRoute = ['/workplace', this.establishment?.uid, 'how-many-vacancies'];
+    this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'leavers'];
+    this.startersLeaversOrVacanciesPageTwo = 'select-starter-job-roles';
   }
 
-  protected setupTextAndHeadings(): void {
+  protected setPageVariables(): void {
     this.heading = 'Have you had any new starters in the last 12 months?';
     this.hintText = 'We only want to know about new starters who are in permanent and temporary job roles.';
     this.revealText =
       "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
+    this.localStorageKey = 'hasStarters';
+    this.valueToUpdate = 'starters';
   }
 
   protected getDataToPrefill(): void {
-    this.dataToPrefill = this.establishment.starters;
+    this.dataToPrefill = this.establishment?.starters;
   }
 }
