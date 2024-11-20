@@ -1,24 +1,30 @@
-<ul *ngIf="canDownloadReport" class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-bottom-5">
-  <li>
-    <a
-      href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-parent-report.xls"
-      (click)="downloadWdfParentReport($event)"
-      >Download your funding report (Excel)</a
-    >
-  </li>
-</ul>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters">
+    <ul *ngIf="canDownloadReport" class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-top-7">
+      <li>
+        <a
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-parent-report.xls"
+          (click)="downloadWdfParentReport($event)"
+          >Download your funding report (Excel)</a
+        >
+      </li>
+    </ul>
+  </div>
 
-<div class="govuk-form-group">
-  <label class="govuk-label" for="sortByStaff"> Sort by </label>
-  <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortByColumn($event.target.value)">
-    <option
-      *ngFor="let sortWorkplaceOption of sortWorkplacesOptions | keyvalue"
-      value="{{ sortWorkplaceOption.key }}"
-      [selected]="sortWorkplaceOption.key == this.sortBy"
-    >
-      {{ sortWorkplaceOption.value }}
-    </option>
-  </select>
+  <div class="govuk-grid-column-one-quarter govuk-util__float-right">
+    <div class="govuk-form-group">
+      <label class="govuk-label" for="sortByStaff"> Sort by </label>
+      <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortByColumn($event.target.value)">
+        <option
+          *ngFor="let sortWorkplaceOption of sortWorkplacesOptions | keyvalue"
+          value="{{ sortWorkplaceOption.key }}"
+          [selected]="sortWorkplaceOption.key == this.sortBy"
+        >
+          {{ sortWorkplaceOption.value }}
+        </option>
+      </select>
+    </div>
+  </div>
 </div>
 
 <table *ngIf="workplaces.length" class="govuk-table">
