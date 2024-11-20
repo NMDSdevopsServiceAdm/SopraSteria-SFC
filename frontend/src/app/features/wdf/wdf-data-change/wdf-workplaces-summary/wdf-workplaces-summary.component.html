@@ -3,7 +3,7 @@
     <ul *ngIf="canDownloadReport" class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-top-7">
       <li>
         <a
-          href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-parent-report.xls"
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-funding-parent-report.xls"
           (click)="downloadWdfParentReport($event)"
           >Download your funding report (Excel)</a
         >
