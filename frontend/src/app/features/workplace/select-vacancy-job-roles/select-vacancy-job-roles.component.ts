@@ -29,10 +29,11 @@ export class SelectVacancyJobRolesComponent extends SelectJobRolesDirective impl
   protected onSuccess(): void {
     const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
     const otherCareProvidingRoleName: string = this.form.get('otherCareProvidingRoleName').value;
+    const vacanciesFromDatabase = Array.isArray(this.establishment.vacancies) ? this.establishment.vacancies : [];
 
     const updatedVacancies: Vacancy[] = selectedJobIds.map((jobId) => {
       const job = this.jobsAvailable.find((job) => job.id === jobId);
-      const vacancyCount = this.prefillData.find((vacancy) => vacancy.jobId === jobId)?.total ?? null;
+      const vacancyCount = vacanciesFromDatabase.find((vacancy) => vacancy.jobId === jobId)?.total ?? null;
       if (job.id === this.jobIdOfOtherCareProvidingRole && otherCareProvidingRoleName) {
         return { jobId, title: job.title, total: vacancyCount, other: otherCareProvidingRoleName };
       }
