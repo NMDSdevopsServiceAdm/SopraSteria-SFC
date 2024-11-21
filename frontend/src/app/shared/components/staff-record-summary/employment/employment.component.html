@@ -36,7 +36,8 @@
     class="govuk-summary-list__row"
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border':
-        (wdfView && !worker.mainJobStartDate) || showWdfConfirmations.mainJobStartDate
+        (wdfView && worker.wdf?.mainJobStartDate?.isEligible === Eligibility.NO) ||
+        showWdfConfirmations.mainJobStartDate
     }"
   >
     <dt class="govuk-summary-list__key">Date started in main job role</dt>
@@ -54,7 +55,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !worker.mainJobStartDate"
+    *ngIf="wdfView && worker.wdf?.mainJobStartDate?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="mainJobStartDateWdfWarning"
   ></app-wdf-warning-message>
@@ -124,7 +125,7 @@
   <div
     class="govuk-summary-list__row"
     [ngClass]="{
-      'govuk-summary-list__row--no-bottom-border': wdfView && !worker.recruitedFrom
+      'govuk-summary-list__row--no-bottom-border': wdfView && worker.wdf?.recruitedFrom?.isEligible === Eligibility.NO
     }"
   >
     <dt class="govuk-summary-list__key">Recruited from</dt>
@@ -145,7 +146,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !worker.recruitedFrom"
+    *ngIf="wdfView && worker.wdf?.recruitedFrom?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="recruitedFromWdfWarning"
   ></app-wdf-warning-message>
@@ -173,7 +174,8 @@
     <div
       class="govuk-summary-list__row"
       [ngClass]="{
-        'govuk-summary-list__row--no-bottom-border': (wdfView && !worker.daysSick) || showWdfConfirmations.daysSick
+        'govuk-summary-list__row--no-bottom-border':
+          (wdfView && worker.wdf?.daysSick?.isEligible === Eligibility.NO) || showWdfConfirmations.daysSick
       }"
     >
       <dt class="govuk-summary-list__key">Days sickness in last 12 months</dt>
@@ -191,7 +193,7 @@
       </dd>
     </div>
     <app-wdf-warning-message
-      *ngIf="wdfView && !worker.daysSick"
+      *ngIf="wdfView && worker.wdf?.daysSick?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="daysSickWdfWarning"
     ></app-wdf-warning-message>
@@ -209,7 +211,8 @@
     class="govuk-summary-list__row"
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border':
-        (wdfView && !worker.zeroHoursContract) || showWdfConfirmations.zeroHoursContract
+        (wdfView && worker.wdf?.zeroHoursContract?.isEligible === Eligibility.NO) ||
+        showWdfConfirmations.zeroHoursContract
     }"
   >
     <dt class="govuk-summary-list__key">Zero hours contract</dt>
@@ -227,7 +230,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !worker.zeroHoursContract"
+    *ngIf="wdfView && worker.wdf?.zeroHoursContract?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="zeroHoursContractWdfWarning"
   ></app-wdf-warning-message>
@@ -245,9 +248,7 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          (wdfView &&
-            (worker.weeklyHoursAverage === null ||
-              (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null))) ||
+          (wdfView && worker.wdf?.weeklyHoursAverage?.isEligible === Eligibility.NO) ||
           showWdfConfirmations.weeklyHoursAverage
       }"
     >
@@ -275,11 +276,7 @@
       </dd>
     </div>
     <app-wdf-warning-message
-      *ngIf="
-        wdfView &&
-        (worker.weeklyHoursAverage === null ||
-          (worker.weeklyHoursAverage?.value === null && worker.weeklyHoursAverage?.hours === null))
-      "
+      *ngIf="wdfView && worker.wdf?.weeklyHoursAverage?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="weeklyHoursAverageWdfWarning"
     ></app-wdf-warning-message>
@@ -298,9 +295,7 @@
       class="govuk-summary-list__row"
       [ngClass]="{
         'govuk-summary-list__row--no-bottom-border':
-          (wdfView &&
-            (worker.weeklyHoursContracted === null ||
-              (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null))) ||
+          (wdfView && worker.wdf?.weeklyHoursContracted?.isEligible === Eligibility.NO) ||
           showWdfConfirmations.weeklyHoursContracted
       }"
     >
@@ -328,11 +323,7 @@
       </dd>
     </div>
     <app-wdf-warning-message
-      *ngIf="
-        wdfView &&
-        (worker.weeklyHoursContracted === null ||
-          (worker.weeklyHoursContracted?.value === null && worker.weeklyHoursContracted?.hours === null))
-      "
+      *ngIf="wdfView && worker.wdf?.weeklyHoursContracted?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
       data-testid="weeklyHoursAverageWdfWarning"
     ></app-wdf-warning-message>
@@ -350,7 +341,7 @@
     class="govuk-summary-list__row"
     [ngClass]="{
       'govuk-summary-list__row--no-bottom-border':
-        (wdfView && !worker.annualHourlyPay) || showWdfConfirmations.annualHourlyPay
+        (wdfView && worker.wdf?.annualHourlyPay?.isEligible === Eligibility.NO) || showWdfConfirmations.annualHourlyPay
     }"
   >
     <dt class="govuk-summary-list__key">Hourly pay or annual salary</dt>
@@ -369,7 +360,7 @@
     </dd>
   </div>
   <app-wdf-warning-message
-    *ngIf="wdfView && !worker.annualHourlyPay"
+    *ngIf="wdfView && worker.wdf?.annualHourlyPay?.isEligible === Eligibility.NO"
     [overallWdfEligibility]="overallWdfEligibility"
     data-testid="annualHourlyPayWdfWarning"
   ></app-wdf-warning-message>

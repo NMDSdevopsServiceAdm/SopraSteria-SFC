@@ -67,6 +67,7 @@ import { RemoveParentConfirmationComponent } from './components/remove-parent-co
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
 import { SelectUploadFileComponent } from './components/select-upload-file/select-upload-file.component';
+import { SelectViewPanelComponent } from './components/select-view-panel/select-view-panel.component';
 import { SelectWorkplaceDropdownFormComponent } from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
 import { SelectWorkplaceRadioButtonFormComponent } from './components/select-workplace-radio-button-form/select-workplace-radio-button-form.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
@@ -248,11 +249,12 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NavigateToWorkplaceDropdownComponent,
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
+    CertificationsTableComponent,
+    SelectUploadFileComponent,
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
-    CertificationsTableComponent,
-    SelectUploadFileComponent,
+    SelectViewPanelComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -371,11 +373,12 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NavigateToWorkplaceDropdownComponent,
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
+    CertificationsTableComponent,
+    SelectUploadFileComponent,
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
-    CertificationsTableComponent,
-    SelectUploadFileComponent,
+    SelectViewPanelComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

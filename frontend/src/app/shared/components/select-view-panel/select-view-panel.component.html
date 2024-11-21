@@ -1,0 +1,34 @@
+<div class="govuk-!-margin-bottom-7">
+  <ul class="govuk-tabs__list asc-tabs__list" role="tablist">
+    <li
+      class="govuk-tabs__list-item asc-tabs__list-item"
+      data-testid="tab0"
+      [class.asc-tabs__list-item--active]="activeTabIndex === 0"
+    >
+      <a
+        id="tab_false"
+        class="govuk-tabs__tab asc-tabs__link"
+        [class.asc-tabs__link--active]="activeTabIndex === 0"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event, 0)"
+        >{{ tabs[0].name }}</a
+      >
+    </li>
+    <li
+      class="govuk-tabs__list-item asc-tabs__list-item"
+      data-testid="tab1"
+      [class.asc-tabs__list-item--active]="activeTabIndex === 1"
+    >
+      <a
+        id="tab_true"
+        class="govuk-tabs__tab asc-tabs__link"
+        [class.asc-tabs__link--active]="activeTabIndex === 1"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event, 1)"
+        >{{ tabs[1].name }}</a
+      >
+    </li>
+  </ul>
+</div>

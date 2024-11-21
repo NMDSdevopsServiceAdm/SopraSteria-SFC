@@ -1,6 +1,6 @@
 import { Directive, Input, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Establishment, WdfSortStaffOptions, SortStaffOptions } from '@core/model/establishment.model';
+import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -66,8 +66,8 @@ export class StaffSummaryDirective implements OnInit {
   }
 
   protected setSearchIfPrevious(): void {
-    const search = this.route.snapshot.queryParamMap.get('search');
-    const tab = this.route.snapshot.queryParamMap.get('tab');
+    const search = this.route.snapshot.queryParamMap?.get('search');
+    const tab = this.route.snapshot.queryParamMap?.get('tab');
 
     if (search && tab === 'staff') {
       this.searchTerm = search;

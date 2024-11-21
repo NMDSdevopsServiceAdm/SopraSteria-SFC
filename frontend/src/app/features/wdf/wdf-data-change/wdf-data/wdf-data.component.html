@@ -1,7 +1,9 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
-      <span class="govuk-caption-xl">{{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})</span>
+      <span class="govuk-caption-xl" data-testid="pre-header"
+        >{{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})</span
+      >
       Your data
     </h1>
   </div>
@@ -16,24 +18,17 @@
       [parentOverallWdfEligibility]="parentOverallWdfEligibility"
       [overallWdfEligibility]="wdfEligibilityStatus.overall"
       [isParent]="isParent"
+      [activatedFragment]="activeTab.fragment"
     ></app-wdf-summary-panel>
   </div>
 </div>
 
-<ng-container *ngIf="standAloneAccount && newHomeDesignFlag; else parentView">
-  <app-new-wdf-tab
-    [viewWDFData]="viewWDFData"
-    (handleViewToggle)="handleViewTrainingByCategory($event)"
-    [workplaceGreenTick]="wdfEligibilityStatus.currentWorkplace"
-    [workplaceAlert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-    [workplaceRedCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-    [staffGreenTick]="wdfEligibilityStatus.currentStaff"
-    [staffAlert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
-    [staffRedCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
-  >
-  </app-new-wdf-tab>
+<ng-container *ngIf="isStandalone; else parentView">
+  <app-select-view-panel [tabs]="tabs" (handleTabChange)="handleTabChange($event)" [activeTabIndex]="activeTab.index">
+  </app-select-view-panel>
   <app-wdf-workplace-summary
-    *ngIf="!viewWDFData && workplace"
+    *ngIf="activeTab.index === 0 && workplace"
+    data-testid="workplaceSummaryTab"
     [workplace]="workplace"
     [workerCount]="workerCount"
     [return]="returnUrl"
@@ -43,7 +38,8 @@
   ></app-wdf-workplace-summary>
 
   <app-wdf-staff-summary
-    *ngIf="viewWDFData && workers && workplace"
+    *ngIf="activeTab.index === 1 && workers && workplace"
+    data-testid="staffRecordsTab"
     [workplace]="workplace"
     [workers]="workers"
     [standAloneAccount]="standAloneAccount"

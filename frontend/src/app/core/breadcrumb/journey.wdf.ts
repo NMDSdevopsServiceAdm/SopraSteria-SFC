@@ -29,16 +29,6 @@ export const wdfJourney: JourneyRoute = {
         {
           title: 'Your data',
           path: Path.DATA,
-          children: [
-            {
-              title: 'Staff record',
-              path: Path.STAFF_RECORD,
-              referrer: {
-                path: Path.DATA,
-                fragment: 'staff-records',
-              },
-            },
-          ],
         },
       ],
     },

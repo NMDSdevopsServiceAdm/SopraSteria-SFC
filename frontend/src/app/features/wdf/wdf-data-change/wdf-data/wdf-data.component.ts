@@ -1,25 +1,25 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
 import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
+import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
+import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import dayjs from 'dayjs';
+import orderBy from 'lodash/orderBy';
 import sortBy from 'lodash/sortBy';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { WdfEligibilityStatus } from '../../../../core/model/wdf.model';
 import { Worker } from '../../../../core/model/worker.model';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
-import { UserService } from '@core/services/user.service';
-import orderBy from 'lodash/orderBy';
 
 @Component({
   selector: 'app-wdf-data',
@@ -42,11 +42,15 @@ export class WdfDataComponent implements OnInit {
   public newHomeDesignFlag: boolean;
   public standAloneAccount = false;
   private subscriptions: Subscription = new Subscription();
-  public viewWDFData = false;
+  private activeTabIndex: number;
   public parentOverallWdfEligibility: boolean;
   public overallWdfEligibility: boolean;
   public isParent: boolean;
   public workplaces = [];
+  public tabs: { name: string; fragment: string }[] = [
+    { name: 'Workplace', fragment: 'workplace' },
+    { name: 'Staff records', fragment: 'staff' },
+  ];
 
   constructor(
     private establishmentService: EstablishmentService,
@@ -57,6 +61,7 @@ export class WdfDataComponent implements OnInit {
     private route: ActivatedRoute,
     private featureFlagsService: FeatureFlagsService,
     private userService: UserService,
+    private router: Router,
   ) {
     this.featureFlagsService.start();
   }
@@ -66,7 +71,7 @@ export class WdfDataComponent implements OnInit {
     this.standAloneAccount = this.establishmentService.standAloneAccount;
     this.isParent = this.establishmentService.establishment.isParent;
 
-    if (this.route.snapshot.params.establishmentuid) {
+    if (this.route.snapshot?.params?.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
       this.returnUrl = { url: ['/wdf', 'workplaces', this.workplaceUid] };
     } else {
@@ -82,27 +87,22 @@ export class WdfDataComponent implements OnInit {
     this.getWdfReport();
     this.setWorkerCount();
     this.getParentAndSubs();
+    this.breadcrumbService.show(JourneyType.WDF);
 
-    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
-    this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
-
-    this.route.fragment.subscribe((params) => {
-      if (params === 'workplace') {
-        this.viewWDFData = true;
-      }
+    this.route.fragment.subscribe((fragment) => {
+      const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
+      this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
     });
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  public get activeTab() {
+    return { ...this.tabs[this.activeTabIndex], index: this.activeTabIndex }
   }
 
   private setWorkplace(): void {
     this.subscriptions.add(
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
-        this.isStandalone = this.checkIfStandalone();
-        this.setBreadcrumbs();
         this.establishmentService.setState(workplace);
       }),
     );
@@ -132,8 +132,8 @@ export class WdfDataComponent implements OnInit {
     );
   }
 
-  public handleViewTrainingByCategory(visible: boolean): void {
-    this.viewWDFData = visible;
+  public handleTabChange(activeTabIndex: number): void {
+    this.router.navigate(['/wdf/data'], { fragment: this.tabs[activeTabIndex].fragment });
   }
 
   private setWorkerCount() {
@@ -161,22 +161,6 @@ export class WdfDataComponent implements OnInit {
     return workers.every((worker) => worker.wdfEligible === true);
   }
 
-  private setBreadcrumbs(): void {
-    this.isStandalone
-      ? this.breadcrumbService.show(JourneyType.WDF)
-      : this.breadcrumbService.show(JourneyType.WDF_PARENT);
-  }
-
-  private checkIfStandalone(): boolean {
-    if (this.workplace) {
-      if (this.primaryWorkplaceUid !== this.workplaceUid) {
-        return false;
-      }
-      return !this.workplace.isParent;
-    }
-    return true;
-  }
-
   private getParentAndSubs(): void {
     this.subscriptions.add(
       this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
@@ -194,5 +178,9 @@ export class WdfDataComponent implements OnInit {
     this.parentOverallWdfEligibility = !this.workplaces.some((workplace) => {
       return workplace.wdf.overall === false;
     });
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }

@@ -1,11 +1,12 @@
-import { fireEvent, render, within } from '@testing-library/angular';
-import { WdfSummaryPanel } from './wdf-summary-panel.component';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { BrowserModule } from '@angular/platform-browser';
 import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
+
+import { WdfSummaryPanel } from './wdf-summary-panel.component';
 
 describe('WdfSummaryPanel', () => {
   const currentYear = new Date().getFullYear();
@@ -144,17 +145,13 @@ describe('WdfSummaryPanel', () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
+          activatedFragment: 'workplace',
         };
 
-        const { fixture, getByTestId } = await setup(overrides);
+        const { getByTestId } = await setup(overrides);
 
         const workplaceRow = getByTestId('workplace-row');
         const staffRow = getByTestId('staff-row');
-
-        const metFundingMessage = within(workplaceRow).getByTestId('met-funding-message');
-
-        fireEvent.click(metFundingMessage);
-        fixture.detectChanges();
 
         const workplaceFundingMessage = within(workplaceRow).queryByRole('link');
         const staffFundingMessage = within(staffRow).getByRole('link');
@@ -167,17 +164,13 @@ describe('WdfSummaryPanel', () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
+          activatedFragment: 'staff',
         };
 
-        const { fixture, getByTestId } = await setup(overrides);
+        const { getByTestId } = await setup(overrides);
 
         const workplaceRow = getByTestId('workplace-row');
         const staffRow = getByTestId('staff-row');
-
-        const metFundingMessage = within(staffRow).getByTestId('met-funding-message');
-
-        fireEvent.click(metFundingMessage);
-        fixture.detectChanges();
 
         const workplaceFundingMessage = within(workplaceRow).getByRole('link');
         const staffFundingMessage = within(staffRow).queryByRole('link');
@@ -255,18 +248,14 @@ describe('WdfSummaryPanel', () => {
           staffWdfEligibilityStatus: true,
           parentOverallWdfEligibility: true,
           isParent: true,
+          activatedFragment: 'workplaces',
         };
 
-        const { fixture, getByTestId } = await setup(overrides);
+        const { getByTestId } = await setup(overrides);
 
         const workplaceRow = getByTestId('workplace-row');
         const staffRow = getByTestId('staff-row');
         const allWorkplacesRow = getByTestId('workplaces-row');
-
-        const metFundingMessage = within(allWorkplacesRow).getByTestId('met-funding-message');
-
-        fireEvent.click(metFundingMessage);
-        fixture.detectChanges();
 
         const workplaceFundingMessage = within(workplaceRow).getByRole('link');
         const staffFundingMessage = within(staffRow).getByRole('link');

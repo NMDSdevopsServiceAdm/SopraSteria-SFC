@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -12,21 +12,22 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
-import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { SharedModule } from '@shared/shared.module';
+import { getByText, render } from '@testing-library/angular';
+import { of } from 'rxjs';
 
+import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
 import { WdfModule } from '../wdf.module';
 import { WdfDataComponent } from './wdf-data.component';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
-import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
-import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
 
 describe('WdfDataComponent', () => {
-  const setup = async () => {
+  const setup = async (overrides: any = {}) => {
     const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfDataComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       declarations: [WdfStaffSummaryComponent, WdfSummaryPanel],
@@ -41,6 +42,13 @@ describe('WdfDataComponent', () => {
           deps: [HttpClient, Router, UserService],
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: { params: { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } },
+            fragment: of(overrides.fragment ?? undefined),
+          },
+        },
       ],
       componentProperties: {
         workerCount: 1,
@@ -56,146 +64,51 @@ describe('WdfDataComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
-    const { component, getByText } = await setup();
-
-    const workplaceName = component.workplace.name;
-    const nmdsId = component.workplace.nmdsId;
-    const expectedTitleCaption = `${workplaceName} (Workplace ID: ${nmdsId})`;
-
-    expect(getByText(expectedTitleCaption)).toBeTruthy();
-  });
-
-  it('should display the page with title', async () => {
-    const { getByText } = await setup();
-
-    const pageTitle = 'Your data';
-
-    expect(getByText(pageTitle)).toBeTruthy();
-  });
-
   it('should display the summary panel', async () => {
     const { getByTestId } = await setup();
 
     expect(getByTestId('summaryPanel')).toBeTruthy();
   });
 
-  describe('Tab icons', async () => {
-    it('should display a green tick on the workplace tab when the user has qualified for WDF and workplace is still eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const greenTickVisuallyHiddenMessage = 'Green tick';
+  describe('Header', () => {
+    it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
+      const { component, getByTestId } = await setup();
 
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
 
-      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(getByTestId('pre-header').innerHTML).toContain(component.workplace.name);
+      expect(getByTestId('pre-header').innerHTML).toContain(component.workplace.nmdsId);
+    })
+
+    it('should display header text', async () => {
+      const { component, getByText } = await setup();
+      const headerText = 'Your data';
+
+      expect(getByText(headerText)).toBeTruthy();
+    })
+  })
+
+  describe('Tabs', () => {
+    it('should display the workplace tab when no fragment in params', async () => {
+      const { fixture, getByTestId } = await setup();
+
+      fixture.detectChanges()
+      expect(getByTestId('workplaceSummaryTab')).toBeTruthy();
     });
 
-    it('should display a green tick in staff tab when the user has qualified for WDF and is still eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const greenTickVisuallyHiddenMessage = 'Green tick';
+    it('should display the workplace tab when workplace fragment in params', async () => {
+      const { fixture, getByTestId } = await setup({ fragment: 'workplace' });
 
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = true;
-      fixture.detectChanges();
-
-      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      fixture.detectChanges()
+      expect(getByTestId('workplaceSummaryTab')).toBeTruthy();
     });
 
-    it('should display a green tick on the workplace tab when the user has not qualified for WDF but workplace is currently eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const greenTickVisuallyHiddenMessage = 'Green tick';
+    it('should display the staff records tab when staff-records fragment in params', async () => {
+      const { fixture, getByTestId } = await setup({ fragment: 'staff' });
 
-      component.wdfEligibilityStatus.overall = false;
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
-
-      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      fixture.detectChanges()
+      expect(getByTestId('staffRecordsTab')).toBeTruthy();
     });
-
-    it('should display a green tick on the staff tab and the workplace tab when the user has qualified for WDF and staff records and workplace are still eligible', async () => {
-      const { component, fixture, getAllByText } = await setup();
-      const greenTickVisuallyHiddenMessage = 'Green tick';
-
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = true;
-      fixture.detectChanges();
-
-      expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(2);
-    });
-
-    it('should display an orange flag on the workplace tab when the user has qualified for WDF but workplace is no longer eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
-
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = true;
-      fixture.detectChanges();
-
-      expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    });
-
-    it('should display an orange flag on the staff tab when the user has qualified for WDF but staff records are no longer eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
-
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
-
-      expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    });
-
-    it('should display an orange flag on the staff tab and workplace tab when the user has qualified for WDF but staff records and workplace are no longer eligible', async () => {
-      const { component, fixture, getAllByText } = await setup();
-      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
-
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
-
-      expect(getAllByText(orangeFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
-    });
-
-    it('should display a red cross on the workplace tab when the user has not qualified for WDF and workplace is not currently eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const redCrossVisuallyHiddenMessage = 'Red cross';
-
-      component.wdfEligibilityStatus.overall = false;
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = true;
-      fixture.detectChanges();
-
-      expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    });
-
-    it('should display a red cross on the staff tab when the user has not qualified for WDF and staff records are not currently eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const redCrossVisuallyHiddenMessage = 'Red cross';
-
-      component.wdfEligibilityStatus.overall = false;
-      component.wdfEligibilityStatus.currentStaff = false;
-      component.wdfEligibilityStatus.currentWorkplace = true;
-
-      fixture.detectChanges();
-
-      expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    });
-
-    it('should display a red cross on the staff tab and workplace tab when the user has not qualified for WDF and staff records and workplace are not currently eligible', async () => {
-      const { component, fixture, getAllByText } = await setup();
-      const redCrossVisuallyHiddenMessage = 'Red cross';
-
-      component.wdfEligibilityStatus.overall = false;
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
-
-      expect(getAllByText(redCrossVisuallyHiddenMessage, { exact: false }).length).toBe(2);
-    });
-  });
+  })
 
   describe('getStaffWdfEligibility', () => {
     it('should return true when all workers are WDF eligible', async () => {

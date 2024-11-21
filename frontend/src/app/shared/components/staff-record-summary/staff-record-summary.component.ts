@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Ethnicity } from '@core/model/ethnicity.model';
+import { Eligibility } from '@core/model/wdf.model';
 import { Worker } from '@core/model/worker.model';
 import { EthnicityService } from '@core/services/ethnicity.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
@@ -38,6 +39,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   public ethnicGroupData: string;
   public ethnicityData: string;
   private ethnicityObject: Ethnicity;
+  public Eligibility = Eligibility;
 
   constructor(
     private permissionsService: PermissionsService,

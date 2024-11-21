@@ -106,7 +106,7 @@ describe('WdfStaffMismatchMessageComponent', () => {
     expect(component.icon).toEqual(orangeFlagIcon);
   });
 
-  it('should show a red cross if the user is not meeting WDF overall', async () => {
+  it('should show a red flag if the user is not meeting WDF overall', async () => {
     const { component, fixture } = await setup();
     component.workerCount = 10;
     component.workplace.numberOfStaff = 9;
@@ -114,8 +114,8 @@ describe('WdfStaffMismatchMessageComponent', () => {
     component.setIcon();
     fixture.detectChanges();
 
-    const crossIcon = 'cross-icon';
-    expect(component.icon).toEqual(crossIcon);
+    const redFlagIcon = 'red-flag-wdf-table';
+    expect(component.icon).toEqual(redFlagIcon);
   });
 
   describe('setStaffRecordsUrl', async () => {
