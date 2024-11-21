@@ -1,8 +1,6 @@
-//do-you-have-starters-vacancies-leavers
-
 import { Directive, OnInit } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -41,16 +39,15 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
     protected backService: BackService,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
-    private route: ActivatedRoute,
   ) {
     super(formBuilder, router, backService, errorSummaryService, establishmentService);
   }
 
   public init(): void {
     this.setupForm();
+    this.setPageVariables();
     this.prefillForm();
     this.setupRoutes();
-    this.setPageVariables();
   }
 
   protected setupForm(): void {
@@ -74,7 +71,6 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
   protected prefillForm(): void {
     this.getDataToPrefill();
     this.getFromLocalStorage();
-
     if (
       (typeof this.dataToPrefill === 'object' && this.dataToPrefill?.length > 0) ||
       this.hasStartersLeaversOrVacancies
