@@ -76,25 +76,6 @@ export const establishmentWithShareWith = (shareWith) => {
   });
 };
 
-export const establishmentWithWdfAndShareWith = (shareWith) => {
-  return establishmentBuilder({
-    overrides: {
-      shareWith,
-      otherService: { value: 'Yes', services: [{ category: 'Adult community care', services: [] }] },
-      wdf: {
-        mainService: { isEligible: false, updatedSinceEffectiveDate: true },
-        starters: { isEligible: false, updatedSinceEffectiveDate: true },
-        leavers: { isEligible: false, updatedSinceEffectiveDate: true },
-        vacancies: { isEligible: false, updatedSinceEffectiveDate: true },
-        capacities: { isEligible: false, updatedSinceEffectiveDate: true },
-        serviceUsers: { isEligible: false, updatedSinceEffectiveDate: true },
-        numberOfStaff: { isEligible: false, updatedSinceEffectiveDate: true },
-        employerType: { isEligible: false, updatedSinceEffectiveDate: true },
-      },
-    },
-  });
-};
-
 export const establishmentWithWdfBuilder = () => {
   return establishmentBuilder({
     overrides: {

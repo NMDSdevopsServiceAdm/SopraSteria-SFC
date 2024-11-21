@@ -262,8 +262,8 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
   public shouldShowWdfConfirmation(field: string): boolean {
     return (
       this.canEditEstablishment &&
-      this.workplace.wdf[field]?.isEligible === 'Yes' &&
-      !this.workplace.wdf[field]?.updatedSinceEffectiveDate
+      this.workplace.wdf?.[field]?.isEligible === 'Yes' &&
+      !this.workplace.wdf?.[field]?.updatedSinceEffectiveDate
     );
   }
 
