@@ -47,7 +47,7 @@
   ></app-wdf-staff-summary>
 
   <app-wdf-workplaces-summary
-    *ngIf="activeTabIndex === 2"
+    *ngIf="activeTab.index === 2"
     data-testid="yourOtherWorkplacesTab"
     [workplaces]="subsidiaryWorkplaces"
   ></app-wdf-workplaces-summary>
