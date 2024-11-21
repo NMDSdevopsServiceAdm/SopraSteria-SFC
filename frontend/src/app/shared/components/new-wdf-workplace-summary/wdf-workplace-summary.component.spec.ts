@@ -11,7 +11,7 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
-  establishmentWithShareWith,
+  establishmentWithWdfAndShareWith,
   establishmentWithWdfBuilder,
   MockEstablishmentService,
 } from '@core/test-utils/MockEstablishmentService';
@@ -1060,7 +1060,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Local authorities and have Change button on Data sharing when localAuthorities set to true', async () => {
-        const workplace = establishmentWithShareWith({ cqc: null, localAuthorities: true });
+        const workplace = establishmentWithWdfAndShareWith({ cqc: null, localAuthorities: true });
         const { component } = await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1072,7 +1072,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show CQC and have Change button on Data sharing when cqc set to true', async () => {
-        const workplace = establishmentWithShareWith({ cqc: true, localAuthorities: false });
+        const workplace = establishmentWithWdfAndShareWith({ cqc: true, localAuthorities: false });
         await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1082,7 +1082,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc and localAuthorities are set to false', async () => {
-        const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: false });
+        const workplace = establishmentWithWdfAndShareWith({ cqc: false, localAuthorities: false });
         const { component, fixture } = await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1092,7 +1092,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when cqc is set to false and localAuthorities is null (not answered)', async () => {
-        const workplace = establishmentWithShareWith({ cqc: false, localAuthorities: null });
+        const workplace = establishmentWithWdfAndShareWith({ cqc: false, localAuthorities: null });
         const { component, fixture } = await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1102,7 +1102,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should show Not sharing and have Change button on Data sharing when localAuthorities is set to false and cqc is null (not answered)', async () => {
-        const workplace = establishmentWithShareWith({ cqc: null, localAuthorities: false });
+        const workplace = establishmentWithWdfAndShareWith({ cqc: null, localAuthorities: false });
         await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
@@ -1112,7 +1112,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       });
 
       it('should not show Not sharing when one of cqc and localAuthorities is false and one is true', async () => {
-        const workplace = establishmentWithShareWith({ cqc: true, localAuthorities: false });
+        const workplace = establishmentWithWdfAndShareWith({ cqc: true, localAuthorities: false });
         await setup({ workplace });
 
         const dataSharing = within(document.body).queryByTestId('data-sharing');
