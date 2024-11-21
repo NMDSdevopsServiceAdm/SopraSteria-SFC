@@ -46,7 +46,7 @@ export class WdfDataComponent implements OnInit {
   public parentOverallWdfEligibility: boolean;
   public overallWdfEligibility: boolean;
   public isParent: boolean;
-  public workplaces = [];
+  public subsidiaryWorkplaces = [];
   public tabs: { name: string; fragment: string }[] = [
     { name: 'Workplace', fragment: 'workplace' },
     { name: 'Staff records', fragment: 'staff' },
@@ -86,7 +86,6 @@ export class WdfDataComponent implements OnInit {
     this.setWorkplace();
     this.getWdfReport();
     this.setWorkerCount();
-    this.getParentAndSubs();
     this.breadcrumbService.show(JourneyType.WDF);
   }
 
@@ -102,6 +101,7 @@ export class WdfDataComponent implements OnInit {
 
         if (workplace.isParent) {
           this.tabs.push({ name: 'Your other workplaces', fragment: 'workplaces' });
+          this.getParentAndSubs();
         }
 
         this.route.fragment.subscribe((fragment) => {
@@ -169,17 +169,18 @@ export class WdfDataComponent implements OnInit {
     this.subscriptions.add(
       this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
         if (workplaces.subsidaries) {
-          this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
+          const activeSubsidiaryWorkplaces = workplaces.subsidaries.establishments.filter(
+            (item) => item.ustatus !== 'PENDING',
+          );
+          this.subsidiaryWorkplaces = orderBy(activeSubsidiaryWorkplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
         }
-        this.workplaces.push(workplaces.primary);
-        this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
         this.getParentOverallWdfEligibility();
       }),
     );
   }
 
   public getParentOverallWdfEligibility(): void {
-    this.parentOverallWdfEligibility = !this.workplaces.some((workplace) => {
+    this.parentOverallWdfEligibility = ![this.workplace, ...this.subsidiaryWorkplaces].some((workplace) => {
       return workplace.wdf.overall === false;
     });
   }

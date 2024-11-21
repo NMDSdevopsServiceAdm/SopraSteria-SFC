@@ -11,7 +11,7 @@ import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
@@ -45,6 +45,12 @@ describe('WdfDataComponent', () => {
           deps: [HttpClient, Router, UserService],
         },
         { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: UserService,
+          useValue: {
+            getEstablishments: () => of(overrides.getEstablishments ?? null),
+          },
+        },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -134,6 +140,68 @@ describe('WdfDataComponent', () => {
       const tabSection = getByTestId('tabSection');
 
       expect(within(tabSection).queryByText('Your other workplaces')).toBeFalsy();
+    });
+  });
+
+  describe('Your other workplaces row in summary panel', () => {
+    let getEstablishments;
+
+    beforeEach(() => {
+      const parent = establishmentBuilder();
+      parent.isParent = true;
+
+      getEstablishments = {
+        primary: parent,
+        subsidaries: {
+          count: 2,
+          establishments: [establishmentBuilder(), establishmentBuilder()],
+        },
+      };
+    });
+
+    it('should display the row when workplace is parent', async () => {
+      const { getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(yourOtherWorkplacesRow).toBeTruthy();
+    });
+
+    it('should display the met funding requirements message when parent and subs all have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: true };
+
+      const { getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(within(yourOtherWorkplacesRow).getByTestId('met-funding-message')).toBeTruthy();
+    });
+
+    it('should display the not meeting funding requirements message when parent does not have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: false };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: true };
+
+      const { getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(within(yourOtherWorkplacesRow).getByTestId('not-met-funding-message')).toBeTruthy();
+    });
+
+    it('should display the not meeting funding requirements message when one sub does not have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: false };
+
+      const { fixture, getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      fixture.detectChanges();
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(within(yourOtherWorkplacesRow).getByTestId('not-met-funding-message')).toBeTruthy();
     });
   });
 
