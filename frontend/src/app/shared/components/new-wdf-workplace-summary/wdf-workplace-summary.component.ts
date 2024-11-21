@@ -255,11 +255,11 @@ export class WDFWorkplaceSummaryComponent implements OnInit, OnDestroy, OnChange
 
   protected setShowWdfConfirmations(): void {
     Object.keys(this.showWdfConfirmations).forEach((field) => {
-      this.showWdfConfirmations[field] = this.showWdfConfirmation(field);
+      this.showWdfConfirmations[field] = this.shouldShowWdfConfirmation(field);
     });
   }
 
-  public showWdfConfirmation(field: string): boolean {
+  public shouldShowWdfConfirmation(field: string): boolean {
     return (
       this.canEditEstablishment &&
       this.workplace.wdf?.[field].isEligible === 'Yes' &&
