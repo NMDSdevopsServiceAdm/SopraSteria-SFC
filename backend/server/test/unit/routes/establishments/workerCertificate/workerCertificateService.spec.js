@@ -10,6 +10,7 @@ const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
 const config = require('../../../../../config/config');
 
 const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
+const HttpError = require('../../../../../utils/errors/httpError');
 
 describe('backend/server/routes/establishments/workerCertificate/workerCertificateService.js', () => {
   const user = buildUser();
@@ -31,7 +32,6 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
   describe('requestUploadUrl', () => {
     const mockUploadFiles = ['cert1.pdf', 'cert2.pdf'];
     const mockSignedUrl = 'http://localhost/mock-upload-url';
-    let res;
 
     beforeEach(() => {
       mockRequestBody = {
@@ -639,6 +639,30 @@ describe('backend/server/routes/establishments/workerCertificate/workerCertifica
         { Key: 'file-key-2' },
         { Key: 'file-key-3' },
       ]);
+    });
+  });
+
+  describe('sendErrorResponse', () => {
+    let res;
+
+    beforeEach(() => {
+      res = httpMocks.createResponse();
+    });
+
+    it('should send status code and message from error when HttpError thrown', async () => {
+      const errorThrown = new HttpError('Invalid request', 400);
+
+      services.qualifications.sendErrorResponse(res, errorThrown);
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.equal('Invalid request');
+    });
+
+    it('should send 500 status code and Internal server error message when unexpected error', async () => {
+      const errorThrown = new Error('Unexpected error');
+
+      services.qualifications.sendErrorResponse(res, errorThrown);
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.equal('Internal server error');
     });
   });
 });

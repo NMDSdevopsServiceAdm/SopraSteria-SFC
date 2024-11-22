@@ -8,16 +8,21 @@ const router = express.Router({ mergeParams: true });
 
 const initialiseCertificateService = () => {
   return WorkerCertificateService.initialiseTraining();
-}
+};
 
 const requestUploadUrlEndpoint = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
   try {
-    const responsePayload = await certificateService.requestUploadUrl(req.body.files, req.params.id, req.params.workerId, req.params.trainingUid);
+    const responsePayload = await certificateService.requestUploadUrl(
+      req.body.files,
+      req.params.id,
+      req.params.workerId,
+      req.params.trainingUid,
+    );
     return res.status(200).json({ files: responsePayload });
   } catch (err) {
-    return res.status(err.statusCode).send(err.message);
+    return certificateService.sendErrorResponse(res, err);
   }
 };
 
@@ -28,7 +33,7 @@ const confirmUploadEndpoint = async (req, res) => {
     await certificateService.confirmUpload(req.body.files, req.params.trainingUid);
     return res.status(200).send();
   } catch (err) {
-    return res.status(err.statusCode).send(err.message);
+    return certificateService.sendErrorResponse(res, err);
   }
 };
 
@@ -36,10 +41,15 @@ const getPresignedUrlForCertificateDownloadEndpoint = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
   try {
-    const responsePayload = await certificateService.getPresignedUrlForCertificateDownload(req.body.files, req.params.id, req.params.workerId, req.params.trainingUid);
+    const responsePayload = await certificateService.getPresignedUrlForCertificateDownload(
+      req.body.files,
+      req.params.id,
+      req.params.workerId,
+      req.params.trainingUid,
+    );
     return res.status(200).json({ files: responsePayload });
   } catch (err) {
-    return res.status(err.statusCode).send(err.message);
+    return certificateService.sendErrorResponse(res, err);
   }
 };
 
@@ -47,10 +57,15 @@ const deleteCertificatesEndpoint = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
   try {
-    await certificateService.deleteCertificates(req.body.files, req.params.id, req.params.workerId, req.params.trainingUid);
+    await certificateService.deleteCertificates(
+      req.body.files,
+      req.params.id,
+      req.params.workerId,
+      req.params.trainingUid,
+    );
     return res.status(200).send();
   } catch (err) {
-    return res.status(err.statusCode).send(err.message);
+    return certificateService.sendErrorResponse(res, err);
   }
 };
 

@@ -22,7 +22,7 @@ const requestUploadUrlEndpoint = async (req, res) => {
     );
     return res.status(200).json({ files: responsePayload });
   } catch (err) {
-    return res.status(err.statusCode).send(err.message);
+    return certificateService.sendErrorResponse(res, err);
   }
 };
 
@@ -33,7 +33,7 @@ const confirmUploadEndpoint = async (req, res) => {
     await certificateService.confirmUpload(req.body.files, req.params.qualificationUid);
     return res.status(200).send();
   } catch (err) {
-    return res.status(err.statusCode).send(err.message);
+    return certificateService.sendErrorResponse(res, err);
   }
 };
 
@@ -49,7 +49,7 @@ const getPresignedUrlForCertificateDownloadEndpoint = async (req, res) => {
     );
     return res.status(200).json({ files: responsePayload });
   } catch (err) {
-    return res.status(err.statusCode).send(err.message);
+    return certificateService.sendErrorResponse(res, err);
   }
 };
 
@@ -65,7 +65,7 @@ const deleteCertificatesEndpoint = async (req, res) => {
     );
     return res.status(200).send();
   } catch (err) {
-    return res.status(err.statusCode).send(err.message);
+    return certificateService.sendErrorResponse(res, err);
   }
 };
 
