@@ -251,6 +251,14 @@ class WorkerCertificateService {
     });
     await this.certificatesModel.destroy({ where: { uid: certificateRecordUids }, transaction: externalTransaction });
   }
+
+  sendErrorResponse(res, err) {
+    if (err instanceof HttpError) {
+      return res.status(err.statusCode).send(err.message);
+    }
+    console.error('WorkerCertificateService error: ', err);
+    return res.status(500).send('Internal server error');
+  }
 }
 
 module.exports = WorkerCertificateService;
