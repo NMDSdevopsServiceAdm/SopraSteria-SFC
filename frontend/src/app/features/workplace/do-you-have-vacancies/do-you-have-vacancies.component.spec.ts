@@ -14,17 +14,7 @@ import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 
 describe('DoYouHaveVacanciesComponent', () => {
   async function setup(overrides: any = {}) {
-    const {
-      fixture,
-      getByText,
-      getAllByText,
-      getByLabelText,
-      getByTestId,
-      queryByText,
-      queryAllByText,
-      queryByTestId,
-      getByRole,
-    } = await render(DoYouHaveVacanciesComponent, {
+    const setupTools = await render(DoYouHaveVacanciesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
@@ -38,7 +28,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         },
       ],
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
@@ -48,15 +38,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
     return {
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByLabelText,
-      getByTestId,
-      queryByText,
-      queryAllByText,
-      queryByTestId,
-      getByRole,
+      ...setupTools,
       establishmentService,
       establishmentServiceSpy,
       routerSpy,
@@ -175,7 +157,7 @@ describe('DoYouHaveVacanciesComponent', () => {
       expect(form.value).toEqual({ startersLeaversVacanciesKnown: 'With Jobs' });
     });
 
-    it("should preselect 'Yes' if hasVacancies is true return to page if the database has a different value", async () => {
+    it("should preselect 'Yes' if hasVacancies is true the database has a different value", async () => {
       const overrides = { returnUrl: false, vacancies: jobOptionsEnum.NONE };
 
       const { component } = await setup(overrides);

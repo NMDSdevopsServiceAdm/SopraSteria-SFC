@@ -14,17 +14,7 @@ import { DoYouHaveStartersComponent } from './do-you-have-starters.component';
 
 describe('DoYouHaveStartersComponent', () => {
   async function setup(overrides: any = {}) {
-    const {
-      fixture,
-      getByText,
-      getAllByText,
-      getByLabelText,
-      getByTestId,
-      queryByText,
-      queryAllByText,
-      queryByTestId,
-      getByRole,
-    } = await render(DoYouHaveStartersComponent, {
+    const setupTools = await render(DoYouHaveStartersComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
@@ -38,7 +28,7 @@ describe('DoYouHaveStartersComponent', () => {
         },
       ],
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
@@ -48,15 +38,7 @@ describe('DoYouHaveStartersComponent', () => {
 
     return {
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByLabelText,
-      getByTestId,
-      queryByText,
-      queryAllByText,
-      queryByTestId,
-      getByRole,
+      ...setupTools,
       establishmentService,
       establishmentServiceSpy,
       routerSpy,
@@ -175,7 +157,7 @@ describe('DoYouHaveStartersComponent', () => {
       expect(form.value).toEqual({ startersLeaversVacanciesKnown: 'With Jobs' });
     });
 
-    it("should preselect 'Yes' if hasStarters is true return to page if the database has a different value", async () => {
+    it("should preselect 'Yes' if hasStarters is true and the database has a different value", async () => {
       const overrides = { returnUrl: false, starters: jobOptionsEnum.NONE };
 
       const { component } = await setup(overrides);

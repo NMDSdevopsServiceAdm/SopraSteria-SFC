@@ -22,7 +22,7 @@ export class DoYouHaveStartersComponent extends DoYouHaveStartersLeaversVacancie
     this.valueToUpdate = 'starters';
   }
 
-  protected getDataToPrefill(): void {
-    this.dataToPrefill = this.establishment?.starters;
+  protected getDataFromEstablishment(): any {
+    return this.establishment?.starters;
   }
 }

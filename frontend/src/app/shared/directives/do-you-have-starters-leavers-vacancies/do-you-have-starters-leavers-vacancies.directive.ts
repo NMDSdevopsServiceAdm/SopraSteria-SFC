@@ -13,8 +13,8 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
   public heading: string;
   public hintText: string;
   public revealText: string;
-  public dataToPrefill: any;
-  public hasStartersLeaversOrVacancies: boolean;
+  public dataFromEstablishment: any;
+  public hasStartersLeaversOrVacanciesValueInLocalStorage: boolean;
   public localStorageKey: string;
   public startersLeaversOrVacanciesPageTwo: string;
   public valueToUpdate: string;
@@ -60,27 +60,30 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
 
   protected setPageVariables(): void {}
 
-  protected getFromLocalStorage(): void {
-    this.hasStartersLeaversOrVacancies = localStorage.getItem(this.localStorageKey) === 'true' ? true : false;
+  protected getFromLocalStorage(): boolean {
+    return localStorage.getItem(this.localStorageKey) === 'true' ? true : false;
   }
 
   protected setToLocalStorage(): void {}
 
-  protected getDataToPrefill(): void {}
+  protected getDataFromEstablishment(): any {}
 
   protected prefillForm(): void {
-    this.getDataToPrefill();
-    this.getFromLocalStorage();
+    this.dataFromEstablishment = this.getDataFromEstablishment();
+    this.hasStartersLeaversOrVacanciesValueInLocalStorage = this.getFromLocalStorage();
     if (
-      (typeof this.dataToPrefill === 'object' && this.dataToPrefill?.length > 0) ||
-      this.hasStartersLeaversOrVacancies
+      (typeof this.dataFromEstablishment === 'object' && this.dataFromEstablishment?.length > 0) ||
+      this.hasStartersLeaversOrVacanciesValueInLocalStorage
     ) {
       this.form.setValue({
         startersLeaversVacanciesKnown: jobOptionsEnum.YES,
       });
-    } else if (this.dataToPrefill === jobOptionsEnum.NONE || this.dataToPrefill === jobOptionsEnum.DONT_KNOW) {
+    } else if (
+      this.dataFromEstablishment === jobOptionsEnum.NONE ||
+      this.dataFromEstablishment === jobOptionsEnum.DONT_KNOW
+    ) {
       this.form.setValue({
-        startersLeaversVacanciesKnown: this.dataToPrefill,
+        startersLeaversVacanciesKnown: this.dataFromEstablishment,
       });
     }
   }
@@ -93,11 +96,11 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
       startersLeaversVacanciesKnown.value === jobOptionsEnum.DONT_KNOW
     ) {
       localStorage.setItem(this.localStorageKey, 'false');
-      this.hasStartersLeaversOrVacancies = false;
+      this.hasStartersLeaversOrVacanciesValueInLocalStorage = false;
 
       return { [this.valueToUpdate]: startersLeaversVacanciesKnown.value };
     } else if (startersLeaversVacanciesKnown.value === jobOptionsEnum.YES) {
-      this.hasStartersLeaversOrVacancies = true;
+      this.hasStartersLeaversOrVacanciesValueInLocalStorage = true;
       localStorage.setItem(this.localStorageKey, 'true');
     }
 
@@ -114,9 +117,9 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
   }
 
   protected onSuccess(): void {
-    if (this.hasStartersLeaversOrVacancies) {
+    if (this.hasStartersLeaversOrVacanciesValueInLocalStorage) {
       this.nextRoute = ['/workplace', `${this.establishment.uid}`, this.startersLeaversOrVacanciesPageTwo];
-    } else if (!this.hasStartersLeaversOrVacancies && this.return) {
+    } else if (!this.hasStartersLeaversOrVacanciesValueInLocalStorage && this.return) {
       this.submitAction = { action: 'return', save: true };
     } else {
       this.nextRoute = this.skipRoute;
