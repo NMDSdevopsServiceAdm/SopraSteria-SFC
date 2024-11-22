@@ -391,7 +391,7 @@ const routes: Routes = [
         resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Do You Have Vacancies?',
+          title: 'Do You Have Vacancies',
         },
       },
       {
@@ -421,7 +421,7 @@ const routes: Routes = [
         resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Do You Have Starters?',
+          title: 'Do You Have Starters',
         },
       },
       {
