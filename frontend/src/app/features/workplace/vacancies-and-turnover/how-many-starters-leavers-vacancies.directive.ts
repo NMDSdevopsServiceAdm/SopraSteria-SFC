@@ -1,4 +1,5 @@
-import { Directive, OnDestroy, OnInit } from '@angular/core';
+import { sum } from 'lodash';
+import { Directive, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { UntypedFormArray, Validators } from '@angular/forms';
 import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 
@@ -6,6 +7,7 @@ import { Question } from '../question/question.component';
 
 @Directive()
 export class HowManyStartersLeaversVacanciesDirective extends Question implements OnInit, OnDestroy {
+  @ViewChildren('numberInputRef') numberInputs: QueryList<ElementRef<HTMLInputElement>>;
   public heading: string;
   public section: string;
   public instruction: string;
@@ -40,30 +42,29 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
     this.selectedJobRoles.forEach((jobRole) => {
       const initialValue = jobRole.total ?? '';
       this.jobRoleNumbers.push(
-        this.formBuilder.control(initialValue, [
-          Validators.required,
-          Validators.min(this.minNumberPerJobRole),
-          Validators.max(this.maxNumberPerJobRole),
-        ]),
+        this.formBuilder.control(initialValue, {
+          validators: [
+            Validators.required,
+            Validators.min(this.minNumberPerJobRole),
+            Validators.max(this.maxNumberPerJobRole),
+          ],
+          updateOn: 'submit',
+        }),
       );
     });
 
-    this.updateTotalNumber();
-
-    this.subscriptions.add(
-      this.jobRoleNumbers.valueChanges.subscribe(() => {
-        this.updateTotalNumber();
-      }),
-    );
+    const inputValues = this.jobRoleNumbers.value as Array<number | null>;
+    this.totalNumber = inputValues.reduce((total, current) => (current ? total + current : total), 0);
   }
 
   get jobRoleNumbers(): UntypedFormArray {
     return this.form.get('jobRoleNumbers') as UntypedFormArray;
   }
 
-  updateTotalNumber(): void {
-    const inputValues = this.jobRoleNumbers.value as Array<number | null>;
-    this.totalNumber = inputValues.reduce((total, current) => (current ? total + current : total), 0);
+  protected updateTotalNumber(): void {
+    const nativeNumberInputs = this.numberInputs.map((ref) => ref.nativeElement);
+    const inputValues = nativeNumberInputs.map((input) => (input.value ? parseInt(input.value) : 0));
+    this.totalNumber = sum(inputValues);
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {

@@ -35,27 +35,32 @@
                 <ng-container *ngFor="let numberInput of jobRoleNumbers.controls; index as i">
                   <tr class="govuk-table__row">
                     <td class="govuk-table__cell govuk-util__vertical-align-middle">
-                      <label for="jobRole-{{ i }}" class="govuk-label">
-                        <span class="govuk-visually-hidden">Number of {{ jobRoleType }} for</span>{{
-                        selectedJobRoles[i].title }}
-                      </label>
-                    </td>
-                    <td class="govuk-table__cell">
-                      <div>
+                      <span class="govuk-util__block" [class.govuk-form-group--error]="submitted && numberInput.errors">
                         <span
-                          *ngIf="submitted && numberInput.errors"
+                          *ngIf="submitted && numberInput.invalid"
                           id="jobRoleNumbers-{{ i }}-error"
                           class="govuk-error-message"
                           ><span class="govuk-visually-hidden">Error:</span>
                           {{ getFirstErrorMessage('jobRoleNumbers.' + i) }}
                         </span>
+                        <label for="jobRole-{{ i }}" class="govuk-label">
+                          <span class="govuk-visually-hidden">Number of {{ jobRoleType }} for</span>{{
+                          selectedJobRoles[i].title }}
+                        </label>
+                      </span>
+                    </td>
+                    <td class="govuk-table__cell">
+                      <div>
                         <input
+                          #numberInputRef
                           name="total"
                           type="number"
                           class="govuk-input govuk-!-width-one-half"
+                          [class.govuk-input--error]="submitted && numberInput.invalid"
                           id="jobRole-{{ i }}"
-                          [value]="numberInput.value"
                           [formControlName]="i"
+                          [value]="numberInput.value"
+                          (change)="updateTotalNumber()"
                         />
                       </div>
                     </td>
@@ -63,7 +68,7 @@
                 </ng-container>
                 <tr>
                   <td></td>
-                  <td class="govuk-table__header govuk-!-padding-top-4">Total</td>
+                  <td class="govuk-table__header">Total</td>
                 </tr>
                 <tr>
                   <td></td>
