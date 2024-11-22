@@ -19,6 +19,7 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
 
   private minNumberPerJobRole = 1;
   private maxNumberPerJobRole = 999;
+  private errorMessagesTemplate = [];
 
   protected init(): void {
     this.loadSelectedJobRoles();
@@ -92,9 +93,21 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
     super.navigate();
   }
 
-  public setBackLink() {
+  public setBackLink(): void {
     this.back = { url: this.previousRoute };
     this.backService.setBackLink(this.back);
+  }
+
+  protected getErrorMessage(errorType: string, jobRoleTitle?: string): string {
+    const jobRoleTitleSuffix = jobRoleTitle ? ` (${jobRoleTitle})` : '';
+    switch (errorType) {
+      case 'required':
+        return `Enter the number of ${this.jobRoleType}${jobRoleTitleSuffix}`;
+
+      case 'min':
+      case 'max':
+        return `Number of ${this.jobRoleType} must be between ${this.minNumberPerJobRole} and ${this.maxNumberPerJobRole}${jobRoleTitleSuffix}`;
+    }
   }
 
   protected setupFormErrorsMap(): void {
@@ -107,23 +120,23 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
         type: [
           {
             name: 'required',
-            message: `Enter the number of ${this.jobRoleType} (${jobRoleTitle})`,
+            message: this.getErrorMessage('required', jobRoleTitle),
           },
           {
             name: 'min',
-            message: `Number of ${this.jobRoleType} must be between ${this.minNumberPerJobRole} and ${this.maxNumberPerJobRole} (${jobRoleTitle})`,
+            message: this.getErrorMessage('min', jobRoleTitle),
           },
           {
             name: 'max',
-            message: `Number of ${this.jobRoleType} must be between ${this.minNumberPerJobRole} and ${this.maxNumberPerJobRole} (${jobRoleTitle})`,
+            message: this.getErrorMessage('max', jobRoleTitle),
           },
         ],
       });
     });
   }
 
-  public getFirstErrorMessage(item: string): string {
-    const errorType = Object.keys(this.form.get(item).errors)[0];
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  public getInlineErrorMessage(formControlItemKey: string): string {
+    const errorType = Object.keys(this.form.get(formControlItemKey).errors)[0];
+    return this.getErrorMessage(errorType);
   }
 }
