@@ -23,10 +23,24 @@
         border-bottom: none;
       }
       input {
+        width: 100%;
         @media only screen and (min-width: 40.0625em) {
           width: max(100px, 50%);
         }
-        width: 100%;
+      }
+      .govuk-form-group--error {
+        margin-top: -15px;
+        padding-top: 15px;
+      }
+    }
+
+    .asc-job-role-numbers-table__error_message {
+      grid-column: 1 / span 2;
+      padding: 5px 0 0 15px;
+      margin-top: 10px;
+
+      p {
+        margin-bottom: 5px;
       }
     }
   }

@@ -32,16 +32,17 @@
             <ng-container formArrayName="jobRoleNumbers">
               <ng-container *ngFor="let numberInput of jobRoleNumbers.controls; index as i">
                 <div class="asc-job-role-numbers-table__row">
+                  <span
+                    class="asc-job-role-numbers-table__error_message govuk-form-group--error"
+                    *ngIf="submitted && numberInput.invalid"
+                  >
+                    <p id="jobRoleNumbers-{{ i }}-error" class="govuk-error-message">
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getInlineErrorMessage('jobRoleNumbers.' + i) }}
+                    </p></span
+                  >
                   <span class="asc-job-role-numbers-table__cell--align-center">
                     <span class="govuk-util__block" [class.govuk-form-group--error]="submitted && numberInput.errors">
-                      <p
-                        *ngIf="submitted && numberInput.invalid"
-                        id="jobRoleNumbers-{{ i }}-error"
-                        class="govuk-error-message"
-                      >
-                        <span class="govuk-visually-hidden">Error:</span>
-                        {{ getInlineErrorMessage('jobRoleNumbers.' + i) }}
-                      </p>
                       <label for="jobRole-{{ i }}" class="govuk-label">
                         <span class="govuk-visually-hidden">Number of {{ jobRoleType }} for</span>{{
                         selectedJobRoles[i].title }}
