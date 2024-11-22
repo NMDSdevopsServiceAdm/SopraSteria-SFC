@@ -69,6 +69,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
 
 @NgModule({
   imports: [
@@ -132,6 +133,7 @@ import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/selec
     ChangeDataOwnerComponent,
     DoYouHaveVacanciesComponent,
     SelectVacancyJobRolesComponent,
+    DoYouHaveStartersComponent,
   ],
   providers: [
     DialogService,

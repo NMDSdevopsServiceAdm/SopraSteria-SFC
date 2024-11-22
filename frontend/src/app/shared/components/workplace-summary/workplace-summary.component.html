@@ -450,7 +450,7 @@
             workplace.wdf?.starters.isEligible === 'Yes' &&
             !workplace.wdf?.starters.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('starters', wdfView)"
+          [changeLink]="getRoutePath('do-you-have-starters', wdfView)"
           (fieldConfirmation)="this.confirmField('starters')"
           (setReturnClicked)="this.setReturn()"
         >
@@ -466,7 +466,7 @@
             )
           "
           [explanationText]="' new starters'"
-          [link]="['/workplace', workplace.uid, 'starters']"
+          [link]="['/workplace', workplace.uid, 'do-you-have-starters']"
           [hasData]="workplace.starters?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>

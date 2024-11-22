@@ -73,6 +73,7 @@ import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-su
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { DoYouHaveVacanciesComponent } from '@features/workplace/do-you-have-vacancies/do-you-have-vacancies.component';
 import { SelectVacancyJobRolesComponent } from '../workplace/select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { DoYouHaveStartersComponent } from '@features/workplace/do-you-have-starters/do-you-have-starters.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -411,6 +412,16 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Starters',
+        },
+      },
+      {
+        path: 'do-you-have-starters',
+        component: DoYouHaveStartersComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Do You Have Starters',
         },
       },
       {

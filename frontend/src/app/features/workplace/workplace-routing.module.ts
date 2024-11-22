@@ -66,6 +66,7 @@ import { WorkplaceNameAddressComponent } from './workplace-name-address/workplac
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -300,6 +301,16 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Starters',
+        },
+      },
+      {
+        path: 'do-you-have-starters',
+        component: DoYouHaveStartersComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Do You Have Starters',
         },
       },
       {

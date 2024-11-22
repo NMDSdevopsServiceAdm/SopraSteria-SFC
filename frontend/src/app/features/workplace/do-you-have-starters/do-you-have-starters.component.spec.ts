@@ -10,11 +10,11 @@ import { HttpClient } from '@angular/common/http';
 import { jobOptionsEnum } from '@core/model/establishment.model';
 import { getTestBed } from '@angular/core/testing';
 import { WindowRef } from '@core/services/window.ref';
-import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
+import { DoYouHaveStartersComponent } from './do-you-have-starters.component';
 
-describe('DoYouHaveVacanciesComponent', () => {
+describe('DoYouHaveStartersComponent', () => {
   async function setup(overrides: any = {}) {
-    const setupTools = await render(DoYouHaveVacanciesComponent, {
+    const setupTools = await render(DoYouHaveStartersComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         WindowRef,
@@ -22,7 +22,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         {
           provide: EstablishmentService,
           useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, overrides?.returnUrl, {
-            vacancies: overrides?.vacancies,
+            starters: overrides?.starters,
           }),
           deps: [HttpClient],
         },
@@ -49,7 +49,7 @@ describe('DoYouHaveVacanciesComponent', () => {
     localStorage.clear();
   });
 
-  it('should render a DoYouHaveVacanciesComponent', async () => {
+  it('should render a DoYouHaveStartersComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
@@ -58,7 +58,7 @@ describe('DoYouHaveVacanciesComponent', () => {
     const { getByRole, getByTestId } = await setup();
 
     const heading = getByRole('heading', {
-      name: /do you have any current staff vacancies/i,
+      name: /have you had any new starters in the last 12 months?/i,
     });
 
     const sectionHeading = within(getByTestId('section-heading'));
@@ -70,7 +70,7 @@ describe('DoYouHaveVacanciesComponent', () => {
   it('should show the hint text', async () => {
     const { getByTestId } = await setup();
 
-    const hintText = 'We only want to know about current staff vacancies for permanent and temporary job roles.';
+    const hintText = 'We only want to know about new starters who are in permanent and temporary job roles.';
 
     expect(within(getByTestId('hint-text')).getByText(hintText)).toBeTruthy();
   });
@@ -80,7 +80,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
     const reveal = getByText('Why we ask for this information');
     const revealText = getByText(
-      'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.',
+      "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.",
     );
 
     expect(reveal).toBeTruthy();
@@ -95,18 +95,18 @@ describe('DoYouHaveVacanciesComponent', () => {
     expect(getByLabelText('I do not know')).toBeTruthy();
   });
 
-  it('should return to service users page when you click on the back link', async () => {
+  it('should return to how many vacancies page when you click on the back link', async () => {
     const overrides = { returnUrl: false };
 
     const { component } = await setup(overrides);
 
-    expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'service-users']);
+    expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'how-many-vacancies']);
   });
 
   describe('prefill form', () => {
     it('should not prefill the form', async () => {
       const overrides = {
-        vacancies: null,
+        starters: null,
       };
 
       const { component } = await setup(overrides);
@@ -116,25 +116,25 @@ describe('DoYouHaveVacanciesComponent', () => {
       expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
     });
 
-    const vacancyAnswers: any = [
+    const starterAnswers: any = [
       {
-        vacancyAnswer: [{ jobRole: 1, total: 1 }],
+        starterAnswer: [{ jobRole: 1, total: 1 }],
         value: jobOptionsEnum.YES,
       },
       {
-        vacancyAnswer: jobOptionsEnum.NONE,
+        starterAnswer: jobOptionsEnum.NONE,
         value: jobOptionsEnum.NONE,
       },
       {
-        vacancyAnswer: jobOptionsEnum.DONT_KNOW,
+        starterAnswer: jobOptionsEnum.DONT_KNOW,
         value: jobOptionsEnum.DONT_KNOW,
       },
     ];
 
-    vacancyAnswers.forEach((test: any) => {
+    starterAnswers.forEach((test: any) => {
       it(`should preselect ${test.value} if there was a saved value`, async () => {
         const overrides = {
-          vacancies: test.vacancyAnswer,
+          starters: test.starterAnswer,
         };
         const { component } = await setup(overrides);
 
@@ -143,12 +143,12 @@ describe('DoYouHaveVacanciesComponent', () => {
       });
     });
 
-    it("should preselect 'Yes' if hasVacancies is true in local storage", async () => {
+    it("should preselect 'Yes' if hasStarters is true in local storage", async () => {
       const overrides = { returnUrl: false };
 
       const { component } = await setup(overrides);
 
-      localStorage.setItem('hasVacancies', 'true');
+      localStorage.setItem('hasStarters', 'true');
 
       component.init();
 
@@ -157,12 +157,12 @@ describe('DoYouHaveVacanciesComponent', () => {
       expect(form.value).toEqual({ startersLeaversVacanciesKnown: 'With Jobs' });
     });
 
-    it("should preselect 'Yes' if hasVacancies is true the database has a different value", async () => {
-      const overrides = { returnUrl: false, vacancies: jobOptionsEnum.NONE };
+    it("should preselect 'Yes' if hasStarters is true and the database has a different value", async () => {
+      const overrides = { returnUrl: false, starters: jobOptionsEnum.NONE };
 
       const { component } = await setup(overrides);
 
-      localStorage.setItem('hasVacancies', 'true');
+      localStorage.setItem('hasStarters', 'true');
 
       component.init();
 
@@ -197,7 +197,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         fixture.detectChanges();
 
         expect(localStorageSpy).toHaveBeenCalledTimes(1);
-        expect(localStorageSpy.calls.all()[0].args).toEqual(['hasVacancies', 'true']);
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['hasStarters', 'true']);
         expect(establishmentServiceSpy).not.toHaveBeenCalled();
       });
 
@@ -206,7 +206,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText } = await setup(overrides);
 
-        localStorage.setItem('hasVacancies', 'true');
+        localStorage.setItem('hasStarters', 'true');
 
         component.form.get('startersLeaversVacanciesKnown').setValue(jobOptionsEnum.NONE);
         const localStorageSpy = spyOn(localStorage, 'setItem');
@@ -217,7 +217,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         fixture.detectChanges();
 
         expect(localStorageSpy).toHaveBeenCalledTimes(1);
-        expect(localStorageSpy.calls.all()[0].args).toEqual(['hasVacancies', 'false']);
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['hasStarters', 'false']);
       });
 
       it("should clear local storage when 'I do not know' is selected and is submitted", async () => {
@@ -225,7 +225,7 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         const { component, fixture, getByText } = await setup(overrides);
 
-        localStorage.setItem('hasVacancies', 'true');
+        localStorage.setItem('hasStarters', 'true');
 
         component.form.get('startersLeaversVacanciesKnown').setValue(jobOptionsEnum.DONT_KNOW);
         const localStorageSpy = spyOn(localStorage, 'setItem');
@@ -236,7 +236,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         fixture.detectChanges();
 
         expect(localStorageSpy).toHaveBeenCalledTimes(1);
-        expect(localStorageSpy.calls.all()[0].args).toEqual(['hasVacancies', 'false']);
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['hasStarters', 'false']);
       });
     });
 
@@ -253,14 +253,13 @@ describe('DoYouHaveVacanciesComponent', () => {
       fixture.detectChanges();
 
       expect(establishmentServiceSpy).toHaveBeenCalledWith('mocked-uid', {
-        vacancies: 'None',
+        starters: 'None',
       });
     });
 
     describe('workplace flow', () => {
       it("should navigate to the select vacancy job roles page when submitting 'Yes'", async () => {
         const overrides = { returnUrl: false };
-
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
         component.form.get('startersLeaversVacanciesKnown').setValue('With Jobs');
@@ -270,12 +269,11 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-vacancy-job-roles']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-starter-job-roles']);
       });
 
-      it("should navigate to the starters page when submitting 'None'", async () => {
+      it("should navigate to the leavers page when submitting 'None'", async () => {
         const overrides = { returnUrl: false };
-
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
         component.form.get('startersLeaversVacanciesKnown').setValue('None');
@@ -284,12 +282,11 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-starters']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'leavers']);
       });
 
-      it("should navigate to the starters page when submitting 'I do not know' ", async () => {
+      it("should navigate to the leavers page when submitting 'I do not know' ", async () => {
         const overrides = { returnUrl: false };
-
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
         component.form.get('startersLeaversVacanciesKnown').setValue('I do not know');
@@ -298,10 +295,10 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-starters']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'leavers']);
       });
 
-      it('should navigate to the starters page when clicking Skip this question link', async () => {
+      it('should navigate to the leavers page when clicking Skip this question link', async () => {
         const overrides = { returnUrl: false };
         const { fixture, getByText, routerSpy } = await setup(overrides);
 
@@ -309,17 +306,16 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(link);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-starters']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'leavers']);
       });
 
       it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
         const overrides = { returnUrl: false };
-
         const { component, getByText } = await setup(overrides);
 
         const setSubmitActionSpy = spyOn(component, 'setSubmitAction').and.callThrough();
-
         const link = getByText('Skip this question');
+
         fireEvent.click(link);
 
         expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
@@ -347,7 +343,7 @@ describe('DoYouHaveVacanciesComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-vacancy-job-roles']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-starter-job-roles']);
       });
 
       it("should navigate to the workplace summary page when submitting 'None'", async () => {
