@@ -572,7 +572,7 @@ class Worker extends EntityValidator {
         });
       }
 
-      if (bulkUploaded && ['NEW', 'UPDATE', 'CHGSUB'].includes(this.status)) {
+      if (bulkUploaded && ['NEW', 'UPDATE'].includes(this.status)) {
         const qualificationHelper = new BulkUploadQualificationHelper({
           workerId: this._id,
           workerUid: this._uid,
