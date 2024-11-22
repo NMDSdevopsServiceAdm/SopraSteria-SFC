@@ -6,6 +6,7 @@ import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turno
 @Component({
   selector: 'app-how-many-vacancies',
   templateUrl: '../vacancies-and-turnover/how-many-starters-leavers-vacancies.html',
+  styleUrls: ['../vacancies-and-turnover/how-many-starters-leavers-vacancies.scss'],
 })
 export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDirective {
   public heading = 'How many current staff vacancies do you have for each job role?';

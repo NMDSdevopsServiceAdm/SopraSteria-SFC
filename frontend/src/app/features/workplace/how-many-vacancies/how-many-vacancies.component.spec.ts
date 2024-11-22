@@ -8,12 +8,12 @@ import { Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { HowManyVacanciesComponent } from './how-many-vacancies.component';
 
-describe('HowManyVacanciesComponent', () => {
+fdescribe('HowManyVacanciesComponent', () => {
   const mockSelectedJobRoles: Vacancy[] = [
     {
       jobId: 10,
@@ -241,29 +241,40 @@ describe('HowManyVacanciesComponent', () => {
 
     describe('errors', () => {
       it('should show an error message if number input box is empty', async () => {
-        const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup();
+        const { fixture, getByRole, getByText, getByTestId, updateJobsSpy } = await setup();
 
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
 
         expect(getByText('There is a problem')).toBeTruthy();
-        expect(getAllByText('Enter the number of vacancies (care worker)')).toHaveSize(2);
-        expect(getAllByText('Enter the number of vacancies (registered nurse)')).toHaveSize(2);
+        const errorSummaryBox = getByText('There is a problem').parentElement;
+        expect(within(errorSummaryBox).getByText('Enter the number of vacancies (care worker)')).toBeTruthy();
+        expect(within(errorSummaryBox).getByText('Enter the number of vacancies (registered nurse)')).toBeTruthy();
+
+        const numberInputsTable = getByTestId('number-inputs-table');
+        expect(within(numberInputsTable).getAllByText('Enter the number of vacancies')).toHaveSize(2);
 
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
 
       it('should show an error message if the input number is out of range', async () => {
-        const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup();
+        const { fixture, getByRole, getByText, getByTestId, updateJobsSpy } = await setup();
 
         userEvent.type(getInputBoxForJobRole('Care worker'), '-10');
         userEvent.type(getInputBoxForJobRole('Registered nurse'), '99999');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
 
-        expect(getByText('There is a problem')).toBeTruthy();
-        expect(getAllByText('Number of vacancies must be between 1 and 999 (care worker)')).toHaveSize(2);
-        expect(getAllByText('Number of vacancies must be between 1 and 999 (registered nurse)')).toHaveSize(2);
+        const errorSummaryBox = getByText('There is a problem').parentElement;
+        expect(
+          within(errorSummaryBox).getByText('Number of vacancies must be between 1 and 999 (care worker)'),
+        ).toBeTruthy();
+        expect(
+          within(errorSummaryBox).getByText('Number of vacancies must be between 1 and 999 (registered nurse)'),
+        ).toBeTruthy();
+
+        const numberInputsTable = getByTestId('number-inputs-table');
+        expect(within(numberInputsTable).getAllByText('Number of vacancies must be between 1 and 999')).toHaveSize(2);
 
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
