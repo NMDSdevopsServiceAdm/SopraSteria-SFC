@@ -14,7 +14,7 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
   public hintText: string;
   public revealText: string;
   public dataFromEstablishment: any;
-  public hasStartersLeaversOrVacanciesValueInLocalStorage: boolean;
+  public hasSelectedYesWithoutSavingJobRoles: boolean;
   public localStorageKey: string;
   public startersLeaversOrVacanciesPageTwo: string;
   public valueToUpdate: string;
@@ -70,10 +70,10 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
 
   protected prefillForm(): void {
     this.dataFromEstablishment = this.getDataFromEstablishment();
-    this.hasStartersLeaversOrVacanciesValueInLocalStorage = this.getFromLocalStorage();
+    this.hasSelectedYesWithoutSavingJobRoles = this.getFromLocalStorage();
     if (
       (typeof this.dataFromEstablishment === 'object' && this.dataFromEstablishment?.length > 0) ||
-      this.hasStartersLeaversOrVacanciesValueInLocalStorage
+      this.hasSelectedYesWithoutSavingJobRoles
     ) {
       this.form.setValue({
         startersLeaversVacanciesKnown: jobOptionsEnum.YES,
@@ -96,11 +96,11 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
       startersLeaversVacanciesKnown.value === jobOptionsEnum.DONT_KNOW
     ) {
       localStorage.setItem(this.localStorageKey, 'false');
-      this.hasStartersLeaversOrVacanciesValueInLocalStorage = false;
+      this.hasSelectedYesWithoutSavingJobRoles = false;
 
       return { [this.valueToUpdate]: startersLeaversVacanciesKnown.value };
     } else if (startersLeaversVacanciesKnown.value === jobOptionsEnum.YES) {
-      this.hasStartersLeaversOrVacanciesValueInLocalStorage = true;
+      this.hasSelectedYesWithoutSavingJobRoles = true;
       localStorage.setItem(this.localStorageKey, 'true');
     }
 
@@ -117,9 +117,9 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
   }
 
   protected onSuccess(): void {
-    if (this.hasStartersLeaversOrVacanciesValueInLocalStorage) {
+    if (this.hasSelectedYesWithoutSavingJobRoles) {
       this.nextRoute = ['/workplace', `${this.establishment.uid}`, this.startersLeaversOrVacanciesPageTwo];
-    } else if (!this.hasStartersLeaversOrVacanciesValueInLocalStorage && this.return) {
+    } else if (!this.hasSelectedYesWithoutSavingJobRoles && this.return) {
       this.submitAction = { action: 'return', save: true };
     } else {
       this.nextRoute = this.skipRoute;
