@@ -7,7 +7,7 @@ const { hasPermission } = require('../../../utils/security/hasPermission');
 const router = express.Router({ mergeParams: true });
 
 const initialiseCertificateService = () => {
-  return WorkerCertificateService.initialiseTraining();
+  return WorkerCertificateService.initialiseQualifications();
 };
 
 const requestUploadUrlEndpoint = async (req, res) => {
@@ -18,7 +18,7 @@ const requestUploadUrlEndpoint = async (req, res) => {
       req.body.files,
       req.params.id,
       req.params.workerId,
-      req.params.trainingUid,
+      req.params.qualificationUid,
     );
     return res.status(200).json({ files: responsePayload });
   } catch (err) {
@@ -30,7 +30,7 @@ const confirmUploadEndpoint = async (req, res) => {
   const certificateService = initialiseCertificateService();
 
   try {
-    await certificateService.confirmUpload(req.body.files, req.params.trainingUid);
+    await certificateService.confirmUpload(req.body.files, req.params.qualificationUid);
     return res.status(200).send();
   } catch (err) {
     return certificateService.sendErrorResponse(res, err);
@@ -45,7 +45,7 @@ const getPresignedUrlForCertificateDownloadEndpoint = async (req, res) => {
       req.body.files,
       req.params.id,
       req.params.workerId,
-      req.params.trainingUid,
+      req.params.qualificationUid,
     );
     return res.status(200).json({ files: responsePayload });
   } catch (err) {
@@ -61,7 +61,7 @@ const deleteCertificatesEndpoint = async (req, res) => {
       req.body.files,
       req.params.id,
       req.params.workerId,
-      req.params.trainingUid,
+      req.params.qualificationUid,
     );
     return res.status(200).send();
   } catch (err) {

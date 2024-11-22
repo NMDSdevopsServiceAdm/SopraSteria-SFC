@@ -1,3 +1,8 @@
+import dayjs from 'dayjs';
+import { Subscription } from 'rxjs';
+import { Observable } from 'rxjs-compat';
+import { mergeMap } from 'rxjs/operators';
+
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -6,18 +11,20 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import {
   Qualification,
+  QualificationCertificate,
   QualificationRequest,
   QualificationResponse,
   QualificationType,
 } from '@core/model/qualification.model';
+import { Certificate, CertificateDownload } from '@core/model/trainingAndQualifications.model';
 import { Worker } from '@core/model/worker.model';
 import { BackLinkService } from '@core/services/backLink.service';
+import { QualificationCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
-import dayjs from 'dayjs';
-import { Subscription } from 'rxjs';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-add-edit-qualification',
@@ -46,6 +53,11 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   public selectedQualification: Qualification;
   public qualificationType: string;
   public qualificationTitle: string;
+  public qualificationCertificates: QualificationCertificate[] = [];
+  private _filesToUpload: File[];
+  public filesToRemove: QualificationCertificate[] = [];
+  public certificateErrors: string[] | null;
+  public submitButtonDisabled: boolean = false;
 
   constructor(
     private trainingService: TrainingService,
@@ -56,6 +68,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     private backLinkService: BackLinkService,
     private qualificationService: QualificationService,
+    private certificateService: QualificationCertificateService,
   ) {
     this.yearValidators = [Validators.max(dayjs().year()), Validators.min(dayjs().subtract(100, 'years').year())];
   }
@@ -94,6 +107,10 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
               if (this.record.notes?.length > 0) {
                 this.notesOpen = true;
                 this.remainingCharacterCount = this.notesMaxLength - this.record.notes.length;
+              }
+
+              if (this.record.qualificationCertificates) {
+                this.qualificationCertificates = this.record.qualificationCertificates;
               }
             }
           },
@@ -171,6 +188,7 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       return;
     }
 
+    this.submitButtonDisabled = true;
     this.qualificationService.clearSelectedQualification();
 
     const { year, notes } = this.form.value;
@@ -184,23 +202,64 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
       notes,
     };
 
-    if (this.qualificationId) {
-      this.subscriptions.add(
-        this.workerService
-          .updateQualification(this.workplace.uid, this.worker.uid, this.qualificationId, record)
-          .subscribe(
-            () => this.onSuccess(),
-            (error) => this.onError(error),
-          ),
-      );
-    } else {
-      this.subscriptions.add(
-        this.workerService.createQualification(this.workplace.uid, this.worker.uid, record).subscribe(
-          () => this.onSuccess(),
-          (error) => this.onError(error),
-        ),
+    let submitQualificationRecord: Observable<any> = this.qualificationId
+      ? this.workerService.updateQualification(this.workplace.uid, this.worker.uid, this.qualificationId, record)
+      : this.workerService.createQualification(this.workplace.uid, this.worker.uid, record);
+
+    if (this.filesToUpload?.length > 0) {
+      submitQualificationRecord = submitQualificationRecord.pipe(
+        mergeMap((response) => this.uploadNewCertificate(response)),
       );
     }
+
+    if (this.filesToRemove?.length > 0) {
+      this.deleteQualificationCertificate(this.filesToRemove);
+    }
+
+    this.subscriptions.add(
+      submitQualificationRecord.subscribe(
+        () => this.onSuccess(),
+        (error) => this.onError(error),
+      ),
+    );
+  }
+
+  private uploadNewCertificate(response: QualificationResponse): Observable<any> {
+    const qualifcationId = this.qualificationId ? this.qualificationId : response.uid;
+    return this.certificateService.addCertificates(
+      this.workplace.uid,
+      this.worker.uid,
+      qualifcationId,
+      this.filesToUpload,
+    );
+  }
+
+  public downloadCertificates(fileIndex: number | null): void {
+    const filesToDownload = this.getFilesToDownload(fileIndex);
+
+    this.subscriptions.add(
+      this.certificateService
+        .downloadCertificates(this.workplace.uid, this.worker.uid, this.qualificationId, filesToDownload)
+        .subscribe(
+          () => {
+            this.certificateErrors = [];
+          },
+          (_error) => {
+            this.certificateErrors = ["There's a problem with this download. Try again later or contact us for help."];
+          },
+        ),
+    );
+  }
+
+  private getFilesToDownload(fileIndex: number | null): CertificateDownload[] {
+    if (fileIndex !== null) {
+      return [this.formatForCertificateDownload(this.qualificationCertificates[fileIndex])];
+    }
+    return this.qualificationCertificates.map(this.formatForCertificateDownload);
+  }
+
+  private formatForCertificateDownload(certificate: Certificate): CertificateDownload {
+    return { uid: certificate.uid, filename: certificate.filename };
   }
 
   private onSuccess(): void {
@@ -224,11 +283,58 @@ export class AddEditQualificationComponent implements OnInit, OnDestroy {
   }
 
   private onError(error): void {
+    this.submitButtonDisabled = false;
     console.log(error);
   }
 
   public toggleNotesOpen(): void {
     this.notesOpen = !this.notesOpen;
+  }
+
+  get filesToUpload(): File[] {
+    return this._filesToUpload ?? [];
+  }
+
+  private set filesToUpload(files: File[]) {
+    this._filesToUpload = files ?? [];
+  }
+
+  private resetUploadFilesError(): void {
+    this.certificateErrors = null;
+  }
+
+  public onSelectFiles(newFiles: File[]): void {
+    this.resetUploadFilesError();
+    const errors = CustomValidators.validateUploadCertificates(newFiles);
+
+    if (errors) {
+      this.certificateErrors = errors;
+      return;
+    }
+
+    const combinedFiles = [...newFiles, ...this.filesToUpload];
+    this.filesToUpload = combinedFiles;
+  }
+
+  public removeFileToUpload(fileIndexToRemove: number): void {
+    const filesToKeep = this.filesToUpload.filter((_file, index) => index !== fileIndexToRemove);
+    this.filesToUpload = filesToKeep;
+    this.certificateErrors = [];
+  }
+
+  public removeSavedFile(fileIndexToRemove: number): void {
+    this.filesToRemove.push(this.qualificationCertificates[fileIndexToRemove]);
+    this.qualificationCertificates = this.qualificationCertificates.filter(
+      (_certificate, index) => index !== fileIndexToRemove,
+    );
+  }
+
+  private deleteQualificationCertificate(files: QualificationCertificate[]) {
+    this.subscriptions.add(
+      this.certificateService
+        .deleteCertificates(this.workplace.uid, this.worker.uid, this.qualificationId, files)
+        .subscribe(),
+    );
   }
 
   protected navigateToDeleteQualificationRecord(): void {

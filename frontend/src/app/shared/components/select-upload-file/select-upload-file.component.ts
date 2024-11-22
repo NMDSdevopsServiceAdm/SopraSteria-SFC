@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 
 @Component({
   selector: 'app-select-upload-file',
@@ -25,7 +25,6 @@ export class SelectUploadFileComponent implements OnInit {
     const selectedFiles = Array.from(event.target.files);
     if (selectedFiles?.length) {
       this.selectFiles.emit(selectedFiles);
-
       event.target.value = '';
     }
   }

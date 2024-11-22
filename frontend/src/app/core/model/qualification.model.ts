@@ -1,3 +1,5 @@
+import { Certificate, CertificateDownload } from './trainingAndQualifications.model';
+
 export enum QualificationType {
   NVQ = 'NVQ',
   Other = 'Other type of qualification',
@@ -33,6 +35,7 @@ export interface QualificationRequest {
 }
 
 export interface QualificationsResponse {
+  workerUid: string;
   count: number;
   lastUpdated?: string;
   qualifications: Qualification[];
@@ -44,8 +47,9 @@ export interface QualificationResponse {
   updated: string;
   updatedBy: string;
   qualification: Qualification;
-  year: number;
-  notes: string;
+  year?: number;
+  notes?: string;
+  qualificationCertificates?: QualificationCertificate[];
 }
 
 export interface Qualification {
@@ -63,6 +67,7 @@ export interface Qualification {
     title?: string;
     group?: string;
   };
+  qualificationCertificates?: QualificationCertificate[];
 }
 
 export interface QualificationsByGroup {
@@ -81,4 +86,21 @@ export interface BasicQualificationRecord {
   title: string;
   uid: string;
   year: number;
+  qualificationCertificates: QualificationCertificate[];
+}
+
+export interface QualificationCertificate extends Certificate {}
+
+export interface QualificationCertificateDownloadEvent {
+  recordType: 'qualification';
+  recordUid: string;
+  qualificationType: QualificationType;
+  filesToDownload: CertificateDownload[];
+}
+
+export interface QualificationCertificateUploadEvent {
+  recordType: 'qualification';
+  recordUid: string;
+  qualificationType: QualificationType;
+  files: File[];
 }

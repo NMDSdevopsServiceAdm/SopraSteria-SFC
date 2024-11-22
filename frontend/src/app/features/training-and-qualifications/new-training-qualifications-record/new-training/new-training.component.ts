@@ -1,12 +1,16 @@
 import { Component, ElementRef, EventEmitter, Input, OnChanges, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { CertificateUpload, TrainingRecord, TrainingRecordCategory } from '@core/model/training.model';
+import {
+  TrainingCertificateDownloadEvent,
+  TrainingCertificateUploadEvent,
+  TrainingRecord,
+  TrainingRecordCategory,
+} from '@core/model/training.model';
 import { TrainingStatusService } from '@core/services/trainingStatus.service';
 
 @Component({
   selector: 'app-new-training',
   templateUrl: './new-training.component.html',
-  styleUrls: ['./new-training.component.scss'],
 })
 export class NewTrainingComponent implements OnChanges {
   @Input() public trainingCategories: TrainingRecordCategory[];
@@ -16,8 +20,8 @@ export class NewTrainingComponent implements OnChanges {
   @Input() public canEditWorker: boolean;
   @Input() public missingMandatoryTraining = false;
   @Input() public certificateErrors: Record<string, string> = {};
-  @Output() public downloadFile = new EventEmitter<TrainingRecord>();
-  @Output() public uploadFile = new EventEmitter<CertificateUpload>();
+  @Output() public downloadFile = new EventEmitter<TrainingCertificateDownloadEvent>();
+  @Output() public uploadFile = new EventEmitter<TrainingCertificateUploadEvent>();
 
   public trainingCategoryToDisplay: (TrainingRecordCategory & { error?: string })[];
 
@@ -26,22 +30,13 @@ export class NewTrainingComponent implements OnChanges {
 
   constructor(protected trainingStatusService: TrainingStatusService, private route: ActivatedRoute) {}
 
-  ngOnInit(): void {
+  ngOnInit() {
     this.workplaceUid = this.route.snapshot.params.establishmentuid;
     this.addErrorsToTrainingCategories();
   }
 
   ngOnChanges(): void {
     this.addErrorsToTrainingCategories();
-  }
-
-  handleDownloadCertificate(event: Event, trainingRecord: TrainingRecord) {
-    event.preventDefault();
-    this.downloadFile.emit(trainingRecord);
-  }
-
-  handleUploadCertificate(files: File[], trainingRecord: TrainingRecord) {
-    this.uploadFile.emit({ files, trainingRecord });
   }
 
   addErrorsToTrainingCategories() {
@@ -52,6 +47,25 @@ export class NewTrainingComponent implements OnChanges {
       } else {
         return trainingCategory;
       }
+    });
+  }
+
+  handleDownloadCertificate(event: Event, trainingRecord: TrainingRecord) {
+    event.preventDefault();
+    this.downloadFile.emit({
+      recordType: 'training',
+      recordUid: trainingRecord.uid,
+      categoryName: trainingRecord.trainingCategory.category,
+      filesToDownload: trainingRecord.trainingCertificates,
+    });
+  }
+
+  handleUploadCertificate(files: File[], trainingRecord: TrainingRecord) {
+    this.uploadFile.emit({
+      recordType: 'training',
+      recordUid: trainingRecord.uid,
+      categoryName: trainingRecord.trainingCategory.category,
+      files,
     });
   }
 }

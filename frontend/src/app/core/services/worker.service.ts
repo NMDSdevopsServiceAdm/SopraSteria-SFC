@@ -210,7 +210,7 @@ export class WorkerService {
   }
 
   createQualification(workplaceUid: string, workerId: string, record: QualificationRequest) {
-    return this.http.post<QualificationRequest>(
+    return this.http.post<QualificationResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification`,
       record,
     );
