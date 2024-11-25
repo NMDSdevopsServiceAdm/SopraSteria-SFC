@@ -35,7 +35,7 @@ describe('WdfDataComponent', () => {
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory(null, null, overrides?.workplace),
+          useClass: MockEstablishmentService,
         },
         { provide: ReportService, useClass: MockReportService },
         { provide: WorkerService, useClass: MockWorkerService },
@@ -54,7 +54,10 @@ describe('WdfDataComponent', () => {
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { params: { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } },
+            snapshot: {
+              data: { workplace: overrides.workplace ?? establishmentBuilder() },
+              params: { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' },
+            },
             fragment: of(overrides.fragment ?? undefined),
           },
         },
@@ -118,7 +121,9 @@ describe('WdfDataComponent', () => {
     });
 
     it("should have 'Your other workplaces' tab when workplace is parent", async () => {
-      const workplace = { isParent: true };
+      const workplace = establishmentBuilder();
+      workplace.isParent = true;
+
       const { getByTestId } = await setup({ workplace });
 
       const tabSection = getByTestId('tabSection');
@@ -134,7 +139,9 @@ describe('WdfDataComponent', () => {
     });
 
     it("should not have 'Your other workplaces' tab when workplace is not parent", async () => {
-      const workplace = { isParent: false };
+      const workplace = establishmentBuilder();
+      workplace.isParent = false;
+
       const { getByTestId } = await setup({ workplace });
 
       const tabSection = getByTestId('tabSection');

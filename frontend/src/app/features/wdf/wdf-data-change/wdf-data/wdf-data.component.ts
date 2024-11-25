@@ -69,7 +69,6 @@ export class WdfDataComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
     this.standAloneAccount = this.establishmentService.standAloneAccount;
-    this.isParent = this.establishmentService.establishment.isParent;
 
     if (this.route.snapshot?.params?.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
@@ -90,26 +89,22 @@ export class WdfDataComponent implements OnInit {
   }
 
   public get activeTab() {
-    return { ...this.tabs[this.activeTabIndex], index: this.activeTabIndex }
+    return { ...this.tabs[this.activeTabIndex], index: this.activeTabIndex };
   }
 
   private setWorkplace(): void {
-    this.subscriptions.add(
-      this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
-        this.workplace = workplace;
-        this.establishmentService.setState(workplace);
+    this.workplace = this.route.snapshot.data.workplace;
+    this.isParent = this.workplace.isParent;
 
-        if (workplace.isParent) {
-          this.tabs.push({ name: 'Your other workplaces', fragment: 'workplaces' });
-          this.getParentAndSubs();
-        }
+    if (this.workplace.isParent) {
+      this.tabs.push({ name: 'Your other workplaces', fragment: 'workplaces' });
+      this.getParentAndSubs();
+    }
 
-        this.route.fragment.subscribe((fragment) => {
-          const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
-          this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
-        });
-      }),
-    );
+    this.route.fragment.subscribe((fragment) => {
+      const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
+      this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
+    });
   }
 
   private getWorkers(): void {
@@ -137,7 +132,7 @@ export class WdfDataComponent implements OnInit {
   }
 
   public handleTabChange(activeTabIndex: number): void {
-    this.router.navigate(['/wdf/data'], { fragment: this.tabs[activeTabIndex].fragment });
+    this.router.navigate([], { fragment: this.tabs[activeTabIndex].fragment });
   }
 
   private setWorkerCount() {

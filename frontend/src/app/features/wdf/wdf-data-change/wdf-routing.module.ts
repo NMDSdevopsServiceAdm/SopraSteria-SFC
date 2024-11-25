@@ -61,11 +61,211 @@ const routes: Routes = [
     path: 'data',
     component: WdfDataComponent,
     canActivate: [HasPermissionsGuard],
-    data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
+    data: { permissions: ['canViewWdfReport'], title: 'WDF data', withFunding: true },
     resolve: {
       workers: WorkersResolver,
       workplace: WorkplaceResolver,
     },
+  },
+  {
+    path: 'workplaces',
+    children: [
+      {
+        path: ':establishmentuid',
+        children: [
+          {
+            path: '',
+            component: WdfDataComponent,
+            canActivate: [HasPermissionsGuard],
+            data: { permissions: ['canViewWdfReport'], title: 'WDF data', withFunding: true },
+            resolve: { workplace: WorkplaceResolver },
+          },
+          {
+            path: 'staff-record/:id',
+            resolve: { worker: WorkerResolver, establishment: WorkplaceResolver },
+            canActivate: [HasPermissionsGuard],
+            data: { permissions: ['canViewWdfReport'], title: 'Staff Record Summary' },
+            children: [
+              {
+                path: '',
+                component: WdfStaffRecordComponent,
+                data: { title: 'WDF Staff Record' },
+              },
+              {
+                path: 'staff-details',
+                component: StaffDetailsComponent,
+                data: { title: 'Staff Details' },
+              },
+              {
+                path: 'main-job-role',
+                component: MainJobRoleComponent,
+                data: { title: 'Main Job Role' },
+                resolve: { jobs: JobsResolver },
+              },
+              {
+                path: 'main-job-start-date',
+                component: MainJobStartDateComponent,
+                data: { title: 'Main Job Role Start Date' },
+              },
+              {
+                path: 'select-record-type',
+                canActivate: [CheckPermissionsGuard],
+                component: SelectRecordTypeComponent,
+                data: {
+                  permissions: ['canAddWorker'],
+                  title: 'Select Record Type',
+                },
+              },
+              {
+                path: 'nursing-category',
+                component: NursingCategoryComponent,
+                data: { title: 'Nursing Category' },
+              },
+              {
+                path: 'nursing-specialism',
+                component: NursingSpecialismComponent,
+                data: { title: 'Nursing Specialism' },
+              },
+              {
+                path: 'mental-health-professional',
+                component: MentalHealthProfessionalComponent,
+                data: { title: 'Mental Health Professional' },
+              },
+              {
+                path: 'national-insurance-number',
+                component: NationalInsuranceNumberComponent,
+                data: { title: 'National Insurance Number' },
+              },
+              {
+                path: 'date-of-birth',
+                component: DateOfBirthComponent,
+                data: { title: 'Date of Birth' },
+              },
+              {
+                path: 'home-postcode',
+                component: HomePostcodeComponent,
+                data: { title: 'Home Postcode' },
+              },
+              {
+                path: 'gender',
+                component: GenderComponent,
+                data: { title: 'Gender' },
+              },
+              {
+                path: 'disability',
+                component: DisabilityComponent,
+                data: { title: 'Disability' },
+              },
+              {
+                path: 'ethnicity',
+                component: EthnicityComponent,
+                data: { title: 'Ethnicity' },
+              },
+              {
+                path: 'nationality',
+                component: NationalityComponent,
+                data: { title: 'Nationality' },
+              },
+              {
+                path: 'british-citizenship',
+                component: BritishCitizenshipComponent,
+                data: { title: 'British Citizenship' },
+              },
+              {
+                path: 'country-of-birth',
+                component: CountryOfBirthComponent,
+                data: { title: 'Country of Birth' },
+              },
+              {
+                path: 'year-arrived-uk',
+                component: YearArrivedUkComponent,
+                data: { title: 'Year Arrived in the UK' },
+              },
+              {
+                path: 'recruited-from',
+                component: RecruitedFromComponent,
+                data: { title: 'Recruited From' },
+              },
+              {
+                path: 'health-and-care-visa',
+                component: HealthAndCareVisaComponent,
+                data: { title: 'Health and Care Visa' },
+              },
+              {
+                path: 'inside-or-outside-of-uk',
+                component: EmployedFromOutsideUkComponent,
+                data: { title: 'Inside or Outside UK' },
+              },
+              {
+                path: 'adult-social-care-started',
+                component: AdultSocialCareStartedComponent,
+                data: { title: 'Adult Social Care Started' },
+              },
+              {
+                path: 'days-of-sickness',
+                component: DaysOfSicknessComponent,
+                data: { title: 'Days of Sickness' },
+              },
+              {
+                path: 'contract-with-zero-hours',
+                component: ContractWithZeroHoursComponent,
+                data: { title: 'Contract with Zero Hours' },
+              },
+              {
+                path: 'average-weekly-hours',
+                component: AverageWeeklyHoursComponent,
+                data: { title: 'Average Weekly Hours' },
+              },
+              {
+                path: 'weekly-contracted-hours',
+                component: WeeklyContractedHoursComponent,
+                data: { title: 'Weekly Contracted Hours' },
+              },
+              {
+                path: 'salary',
+                component: SalaryComponent,
+                data: { title: 'Salary' },
+              },
+              {
+                path: 'care-certificate',
+                component: CareCertificateComponent,
+                data: { title: 'Care Certificate' },
+              },
+              {
+                path: 'level-2-care-certificate',
+                component: Level2AdultSocialCareCertificateComponent,
+                data: { title: 'Level 2 Adult Social Care Certificate' },
+              },
+              {
+                path: 'apprenticeship-training',
+                component: ApprenticeshipTrainingComponent,
+                data: { title: 'Apprenticeship Training' },
+              },
+              {
+                path: 'social-care-qualification',
+                component: SocialCareQualificationComponent,
+                data: { title: 'Social Care Qualification' },
+              },
+              {
+                path: 'social-care-qualification-level',
+                component: SocialCareQualificationLevelComponent,
+                data: { title: 'Highest Social Care Qualification Level' },
+              },
+              {
+                path: 'other-qualifications',
+                component: OtherQualificationsComponent,
+                data: { title: 'Other Qualifications' },
+              },
+              {
+                path: 'other-qualifications-level',
+                component: OtherQualificationsLevelComponent,
+                data: { title: 'Highest Level of Other Qualifications' },
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
   {
     path: 'learn-more',
@@ -261,206 +461,6 @@ const routes: Routes = [
         path: 'other-qualifications-level',
         component: OtherQualificationsLevelComponent,
         data: { title: 'Highest Level of Other Qualifications' },
-      },
-    ],
-  },
-  {
-    path: 'workplaces',
-    children: [
-      {
-        path: ':establishmentuid',
-        children: [
-          {
-            path: '',
-            component: WdfDataComponent,
-            canActivate: [HasPermissionsGuard],
-            data: { permissions: ['canViewWdfReport'], title: 'WDF data' },
-            resolve: { workplace: WorkplaceResolver },
-          },
-          {
-            path: 'staff-record/:id',
-            resolve: { worker: WorkerResolver, establishment: WorkplaceResolver },
-            canActivate: [HasPermissionsGuard],
-            data: { permissions: ['canViewWdfReport'], title: 'Staff Record Summary' },
-            children: [
-              {
-                path: '',
-                component: WdfStaffRecordComponent,
-                data: { title: 'WDF Staff Record' },
-              },
-              {
-                path: 'staff-details',
-                component: StaffDetailsComponent,
-                data: { title: 'Staff Details' },
-              },
-              {
-                path: 'main-job-role',
-                component: MainJobRoleComponent,
-                data: { title: 'Main Job Role' },
-                resolve: { jobs: JobsResolver },
-              },
-              {
-                path: 'main-job-start-date',
-                component: MainJobStartDateComponent,
-                data: { title: 'Main Job Role Start Date' },
-              },
-              {
-                path: 'select-record-type',
-                canActivate: [CheckPermissionsGuard],
-                component: SelectRecordTypeComponent,
-                data: {
-                  permissions: ['canAddWorker'],
-                  title: 'Select Record Type',
-                },
-              },
-              {
-                path: 'nursing-category',
-                component: NursingCategoryComponent,
-                data: { title: 'Nursing Category' },
-              },
-              {
-                path: 'nursing-specialism',
-                component: NursingSpecialismComponent,
-                data: { title: 'Nursing Specialism' },
-              },
-              {
-                path: 'mental-health-professional',
-                component: MentalHealthProfessionalComponent,
-                data: { title: 'Mental Health Professional' },
-              },
-              {
-                path: 'national-insurance-number',
-                component: NationalInsuranceNumberComponent,
-                data: { title: 'National Insurance Number' },
-              },
-              {
-                path: 'date-of-birth',
-                component: DateOfBirthComponent,
-                data: { title: 'Date of Birth' },
-              },
-              {
-                path: 'home-postcode',
-                component: HomePostcodeComponent,
-                data: { title: 'Home Postcode' },
-              },
-              {
-                path: 'gender',
-                component: GenderComponent,
-                data: { title: 'Gender' },
-              },
-              {
-                path: 'disability',
-                component: DisabilityComponent,
-                data: { title: 'Disability' },
-              },
-              {
-                path: 'ethnicity',
-                component: EthnicityComponent,
-                data: { title: 'Ethnicity' },
-              },
-              {
-                path: 'nationality',
-                component: NationalityComponent,
-                data: { title: 'Nationality' },
-              },
-              {
-                path: 'british-citizenship',
-                component: BritishCitizenshipComponent,
-                data: { title: 'British Citizenship' },
-              },
-              {
-                path: 'country-of-birth',
-                component: CountryOfBirthComponent,
-                data: { title: 'Country of Birth' },
-              },
-              {
-                path: 'year-arrived-uk',
-                component: YearArrivedUkComponent,
-                data: { title: 'Year Arrived in the UK' },
-              },
-              {
-                path: 'recruited-from',
-                component: RecruitedFromComponent,
-                data: { title: 'Recruited From' },
-              },
-              {
-                path: 'health-and-care-visa',
-                component: HealthAndCareVisaComponent,
-                data: { title: 'Health and Care Visa' },
-              },
-              {
-                path: 'inside-or-outside-of-uk',
-                component: EmployedFromOutsideUkComponent,
-                data: { title: 'Inside or Outside UK' },
-              },
-              {
-                path: 'adult-social-care-started',
-                component: AdultSocialCareStartedComponent,
-                data: { title: 'Adult Social Care Started' },
-              },
-              {
-                path: 'days-of-sickness',
-                component: DaysOfSicknessComponent,
-                data: { title: 'Days of Sickness' },
-              },
-              {
-                path: 'contract-with-zero-hours',
-                component: ContractWithZeroHoursComponent,
-                data: { title: 'Contract with Zero Hours' },
-              },
-              {
-                path: 'average-weekly-hours',
-                component: AverageWeeklyHoursComponent,
-                data: { title: 'Average Weekly Hours' },
-              },
-              {
-                path: 'weekly-contracted-hours',
-                component: WeeklyContractedHoursComponent,
-                data: { title: 'Weekly Contracted Hours' },
-              },
-              {
-                path: 'salary',
-                component: SalaryComponent,
-                data: { title: 'Salary' },
-              },
-              {
-                path: 'care-certificate',
-                component: CareCertificateComponent,
-                data: { title: 'Care Certificate' },
-              },
-              {
-                path: 'level-2-care-certificate',
-                component: Level2AdultSocialCareCertificateComponent,
-                data: { title: 'Level 2 Adult Social Care Certificate' },
-              },
-              {
-                path: 'apprenticeship-training',
-                component: ApprenticeshipTrainingComponent,
-                data: { title: 'Apprenticeship Training' },
-              },
-              {
-                path: 'social-care-qualification',
-                component: SocialCareQualificationComponent,
-                data: { title: 'Social Care Qualification' },
-              },
-              {
-                path: 'social-care-qualification-level',
-                component: SocialCareQualificationLevelComponent,
-                data: { title: 'Highest Social Care Qualification Level' },
-              },
-              {
-                path: 'other-qualifications',
-                component: OtherQualificationsComponent,
-                data: { title: 'Other Qualifications' },
-              },
-              {
-                path: 'other-qualifications-level',
-                component: OtherQualificationsLevelComponent,
-                data: { title: 'Highest Level of Other Qualifications' },
-              },
-            ],
-          },
-        ],
       },
     ],
   },

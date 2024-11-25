@@ -38,9 +38,7 @@
     <tr *ngFor="let workplace of workplaces" class="govuk-table__row">
       <td class="govuk-table__cell">
         <ng-container *ngIf="canViewWorkplace(workplace); else noLink">
-          <a [routerLink]="[workplace.uid]">
-            {{ workplace.name }}
-          </a>
+          <a [routerLink]="['../', 'workplaces', workplace.uid]"> {{ workplace.name }}</a>
         </ng-container>
         <ng-template #noLink>
           <p>{{ workplace.name }}</p>
