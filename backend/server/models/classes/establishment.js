@@ -723,7 +723,9 @@ class Establishment extends EntityValidator {
 
         // new and updated Workers
         const starterSavePromise = Promise.resolve(null);
-        await workersAsArray.reduce(
+        console.log('workersAsArray: ', workersAsArray);
+        const sortedWorkersAsArray = workersAsArray.sort((worker) => worker.changeLocalIdentifier !== null);
+        await sortedWorkersAsArray.reduce(
           (p, thisWorkerToSave) =>
             p.then(() => thisWorkerToSave.save(savedBy, bulkUploaded, 0, externalTransaction, true)).then(log),
           starterSavePromise,
