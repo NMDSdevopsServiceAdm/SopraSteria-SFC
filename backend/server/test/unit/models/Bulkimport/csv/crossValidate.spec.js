@@ -303,7 +303,8 @@ describe('crossValidate', () => {
         column: 'UNIQUEWORKERID',
         errCode: 1402,
         errType: 'TRANSFERSTAFFRECORD_ERROR',
-        error: 'The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD',
+        error:
+          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID",
         worker: movingWorker.uniqueWorkerId,
         name: movingWorker.localId,
         lineNumber: movingWorker.lineNumber,
@@ -335,7 +336,8 @@ describe('crossValidate', () => {
         column: 'UNIQUEWORKERID',
         errCode: 1402,
         errType: 'TRANSFERSTAFFRECORD_ERROR',
-        error: 'The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD',
+        error:
+          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID",
         worker: movingWorker.uniqueWorkerId,
         name: movingWorker.localId,
         lineNumber: movingWorker.lineNumber,
@@ -400,7 +402,7 @@ describe('crossValidate', () => {
       expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
     });
 
-    it("should add an error to csvWorkerSchemaErrors if transferring worker to workplace with worker with same ref but that worker's ID is being changed", async () => {
+    it("should add an error to csvWorkerSchemaErrors if transferring worker to workplace with worker with same ref, even if the worker's ID is being changed", async () => {
       const movingWorker = buildMockJSONWorker({ uniqueWorkerId: 'mock_worker_ref', localId: 'workplace A' });
       const existingWorkerInWorkplace = buildMockJSONWorker({
         uniqueWorkerId: 'mock_worker_ref',
@@ -421,7 +423,8 @@ describe('crossValidate', () => {
         column: 'UNIQUEWORKERID',
         errCode: 1402,
         errType: 'TRANSFERSTAFFRECORD_ERROR',
-        error: 'The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD',
+        error:
+          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID",
         worker: movingWorker.uniqueWorkerId,
         name: movingWorker.localId,
         lineNumber: movingWorker.lineNumber,
@@ -429,9 +432,6 @@ describe('crossValidate', () => {
       };
 
       expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
-
-      // const workerEntity = myAPIEstablishments['workplaceA']._workerEntities['mock_worker_ref'];
-      // expect(workerEntity._newWorkplaceId).to.equal(789);
     });
 
     it("should not add an error to csvWorkerSchemaErrors and add newWorkplaceId to worker entity if transferring worker to workplace with worker with same ref but moving worker's ID is being changed", async () => {
@@ -459,6 +459,7 @@ describe('crossValidate', () => {
 
       const workerEntity = myAPIEstablishments['workplaceA']._workerEntities['mock_worker_ref'];
       expect(workerEntity._newWorkplaceId).to.equal(789);
+      expect(stubWorkerFindOneWithLocalRef).to.have.been.calledWith(789, 'new_unique_worker_ref');
     });
 
     it("should add an error to csvWorkerSchemaErrors if transferring worker to workplace with worker with same ref and moving worker's ID is being changed to existing ref", async () => {
@@ -494,7 +495,8 @@ describe('crossValidate', () => {
         column: 'UNIQUEWORKERID',
         errCode: 1402,
         errType: 'TRANSFERSTAFFRECORD_ERROR',
-        error: 'The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD',
+        error:
+          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID",
         worker: movingWorker.uniqueWorkerId,
         name: movingWorker.localId,
         lineNumber: movingWorker.lineNumber,

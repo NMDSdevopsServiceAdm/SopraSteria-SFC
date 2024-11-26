@@ -115,23 +115,26 @@ const _validateTransferIsPossible = async (
     return;
   }
 
-  const sameLocalIdExistsInNewWorkplace = await models.worker.findOneWithConflictingLocalRef(
+  const workerReferenceToLookup = JSONWorker.changeUniqueWorker
+    ? JSONWorker.changeUniqueWorker
+    : JSONWorker.uniqueWorkerId;
+
+  // if worker with duplicated reference found in database but not in csv file,
+  // changes to unique worker ID are applied before deleting workers not in file,
+  // which would cause bulk upload to break
+  // the code below prevents this issue
+
+  const uniqueWorkerIdFoundInWorkplaceInDatabase = await models.worker.findOneWithConflictingLocalRef(
     newWorkplaceId,
-    JSONWorker.uniqueWorkerId,
+    workerReferenceToLookup,
   );
 
-  if (sameLocalIdExistsInNewWorkplace) {
-    const workerWithSameLocalIdInFile = allOtherWorkers.find(
-      (worker) => worker.uniqueWorkerId == JSONWorker.uniqueWorkerId,
+  if (uniqueWorkerIdFoundInWorkplaceInDatabase) {
+    addCrossValidateError(
+      csvWorkerSchemaErrors,
+      TRANSFER_STAFF_RECORD_ERRORS.SameLocalIdExistInNewWorkplace,
+      JSONWorker,
     );
-
-    if (!workerWithSameLocalIdInFile?.changeUniqueWorker) {
-      addCrossValidateError(
-        csvWorkerSchemaErrors,
-        TRANSFER_STAFF_RECORD_ERRORS.SameLocalIdExistInNewWorkplace,
-        JSONWorker,
-      );
-    }
     return;
   }
 
