@@ -61,7 +61,6 @@ import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UsersComponent } from './users/users.component';
-import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
@@ -263,16 +262,6 @@ const routes: Routes = [
           title: 'Total Staff',
         },
       },
-      // {
-      //   path: 'vacancies',
-      //   component: VacanciesComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   resolve: { jobs: JobsResolver },
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Vacancies',
-      //   },
-      // },
       {
         path: 'do-you-have-vacancies',
         component: DoYouHaveVacanciesComponent,

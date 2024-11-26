@@ -61,7 +61,6 @@ import { UserAccountEditDetailsComponent } from '@features/workplace/user-accoun
 import { UserAccountEditPermissionsComponent } from '@features/workplace/user-account-edit-permissions/user-account-edit-permissions.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
-import { VacanciesComponent } from '@features/workplace/vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
 
@@ -374,16 +373,6 @@ const routes: Routes = [
           title: 'Total Staff',
         },
       },
-      // {
-      //   path: 'vacancies',
-      //   component: VacanciesComponent,
-      //   canActivate: [CheckPermissionsGuard],
-      //   resolve: { jobs: JobsResolver },
-      //   data: {
-      //     permissions: ['canEditEstablishment'],
-      //     title: 'Vacancies',
-      //   },
-      // },
       {
         path: 'do-you-have-vacancies',
         component: DoYouHaveVacanciesComponent,
