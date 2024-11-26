@@ -211,11 +211,13 @@ const _buildWorkplaceDictWithNewWorkers = (allNewWorkers) => {
     .groupBy('localId') // workplace ref
     .mapValues((JSONWorkers) =>
       JSONWorkers.map((JSONWorker) => {
-        if (JSONWorker.changeUniqueWorker) return JSONWorker.changeUniqueWorker.replace(/\s/g, '');
-        return JSONWorker.uniqueWorkerId.replace(/\s/g, '');
+        if (JSONWorker.changeUniqueWorker) {
+          return [JSONWorker.changeUniqueWorker.replace(/\s/g, ''), JSONWorker.uniqueWorkerId.replace(/\s/g, '')];
+        }
+        return [JSONWorker.uniqueWorkerId.replace(/\s/g, '')];
       }),
     )
-    .mapValues((workerRefs) => new Set(workerRefs))
+    .mapValues((workerRefs) => new Set(workerRefs.flat()))
     .value();
 };
 
