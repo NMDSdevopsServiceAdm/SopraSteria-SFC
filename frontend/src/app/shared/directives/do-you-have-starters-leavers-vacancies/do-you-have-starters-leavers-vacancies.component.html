@@ -4,29 +4,30 @@
       <fieldset class="govuk-fieldset">
         <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
           <span class="govuk-caption-l" data-testid="section-heading">{{ section }}</span>
-          <h1 class="govuk-fieldset__heading">Do you have any current staff vacancies?</h1>
+          <h1 class="govuk-fieldset__heading">{{ heading }}</h1>
         </legend>
-        <p>We only want to know about current staff vacancies for permanent and temporary job roles.</p>
+        <p data-testid="hint-text">
+          {{ hintText }}
+        </p>
 
         <app-details [title]="'Why we ask for this information'">
           <p>
-            To show DHSC and others how the level of staff vacancies and the number employed affects the sector over
-            time.
+            {{ revealText }}
           </p>
         </app-details>
 
         <div class="govuk-form-group govuk-!-margin-bottom-3">
           <div class="govuk-radios">
-            <div class="govuk-radios__item" *ngFor="let option of vacanciesKnownOptions; let i = index">
+            <div class="govuk-radios__item" *ngFor="let option of knownOptions; let i = index">
               <input
                 class="govuk-radios__input"
-                id="vacanciesKnown-{{ i }}"
-                name="vacanciesKnown"
-                [formControlName]="'vacanciesKnown'"
+                id="startersLeaversVacanciesKnown-{{ i }}"
+                name="startersLeaversVacanciesKnown"
+                [formControlName]="'startersLeaversVacanciesKnown'"
                 type="radio"
                 [value]="option.value"
               />
-              <label class="govuk-label govuk-radios__label" for="vacanciesKnown-{{ i }}">
+              <label class="govuk-label govuk-radios__label" for="startersLeaversVacanciesKnown-{{ i }}">
                 {{ option.label }}
               </label>
             </div>

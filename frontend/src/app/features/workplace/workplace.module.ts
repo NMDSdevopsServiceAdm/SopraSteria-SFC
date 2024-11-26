@@ -69,6 +69,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
 import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
+import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
 
 @NgModule({
   imports: [
@@ -132,6 +133,7 @@ import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacanci
     DoYouHaveVacanciesComponent,
     SelectVacancyJobRolesComponent,
     HowManyVacanciesComponent,
+    DoYouHaveStartersComponent,
   ],
   providers: [
     DialogService,
