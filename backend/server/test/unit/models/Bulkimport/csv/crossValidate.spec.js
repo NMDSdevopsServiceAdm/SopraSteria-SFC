@@ -304,7 +304,7 @@ describe('crossValidate', () => {
         errCode: 1402,
         errType: 'TRANSFERSTAFFRECORD_ERROR',
         error:
-          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID",
+          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID.",
         worker: movingWorker.uniqueWorkerId,
         name: movingWorker.localId,
         lineNumber: movingWorker.lineNumber,
@@ -337,7 +337,7 @@ describe('crossValidate', () => {
         errCode: 1402,
         errType: 'TRANSFERSTAFFRECORD_ERROR',
         error:
-          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID",
+          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID.",
         worker: movingWorker.uniqueWorkerId,
         name: movingWorker.localId,
         lineNumber: movingWorker.lineNumber,
@@ -424,7 +424,7 @@ describe('crossValidate', () => {
         errCode: 1402,
         errType: 'TRANSFERSTAFFRECORD_ERROR',
         error:
-          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID",
+          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID.",
         worker: movingWorker.uniqueWorkerId,
         name: movingWorker.localId,
         lineNumber: movingWorker.lineNumber,
@@ -496,7 +496,7 @@ describe('crossValidate', () => {
         errCode: 1402,
         errType: 'TRANSFERSTAFFRECORD_ERROR',
         error:
-          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID",
+          "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID.",
         worker: movingWorker.uniqueWorkerId,
         name: movingWorker.localId,
         lineNumber: movingWorker.lineNumber,
