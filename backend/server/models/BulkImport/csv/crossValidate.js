@@ -65,7 +65,7 @@ const crossValidateTransferStaffRecord = async (
   const allNewWorkers = myJSONWorkers.filter((worker) => worker.status === 'NEW');
   const allOtherWorkers = myJSONWorkers.filter((worker) => !isMovingToNewWorkplace(worker) && worker.status !== 'NEW');
 
-  const newWorkerWithDuplicateIdErrorAdded = _crossValidateWorkersWithSameRefMovingToSameWorkplace(
+  const newWorkerWithDuplicateIdErrorAdded = _crossValidateWorkersWithDuplicateRefsMovingToWorkplace(
     csvWorkerSchemaErrors,
     allMovingWorkers,
     allNewWorkers,
@@ -74,7 +74,7 @@ const crossValidateTransferStaffRecord = async (
 
   if (newWorkerWithDuplicateIdErrorAdded) return;
 
-  const existingWorkerWithDuplicateIdErrorAdded = _crossValidateWorkersWithSameRefMovingToSameWorkplace(
+  const existingWorkerWithDuplicateIdErrorAdded = _crossValidateWorkersWithDuplicateRefsMovingToWorkplace(
     csvWorkerSchemaErrors,
     allMovingWorkers,
     allOtherWorkers,
@@ -88,7 +88,6 @@ const crossValidateTransferStaffRecord = async (
       csvWorkerSchemaErrors,
       relatedEstablishmentIds,
       JSONWorker,
-      allOtherWorkers,
     );
 
     if (newWorkplaceId) {
@@ -101,12 +100,7 @@ const isMovingToNewWorkplace = (JSONWorker) => {
   return JSONWorker.status === 'UPDATE' && JSONWorker.transferStaffRecord;
 };
 
-const _validateTransferIsPossible = async (
-  csvWorkerSchemaErrors,
-  relatedEstablishmentIds,
-  JSONWorker,
-  allOtherWorkers,
-) => {
+const _validateTransferIsPossible = async (csvWorkerSchemaErrors, relatedEstablishmentIds, JSONWorker) => {
   const newWorkplaceLocalRef = JSONWorker.transferStaffRecord;
   const newWorkplaceId = await _getNewWorkplaceId(newWorkplaceLocalRef, relatedEstablishmentIds);
 
@@ -176,13 +170,13 @@ const _addNewWorkplaceIdToWorkerEntity = (myAPIEstablishments, JSONWorker, newWo
   }
 };
 
-const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (
+const _crossValidateWorkersWithDuplicateRefsMovingToWorkplace = (
   csvWorkerSchemaErrors,
   allMovingWorkers,
   otherWorkers,
   errorType,
 ) => {
-  const workplacesDict = _buildWorkplaceDictWithNewWorkers(otherWorkers);
+  const workplacesDict = _buildWorkplaceDictWithOtherWorkers(otherWorkers);
 
   let errorAdded = false;
 
@@ -211,8 +205,8 @@ const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (
   return errorAdded;
 };
 
-const _buildWorkplaceDictWithNewWorkers = (allNewWorkers) => {
-  return chain(allNewWorkers)
+const _buildWorkplaceDictWithOtherWorkers = (otherWorkers) => {
+  return chain(otherWorkers)
     .groupBy('localId') // workplace ref
     .mapValues((JSONWorkers) =>
       JSONWorkers.map((JSONWorker) => {
