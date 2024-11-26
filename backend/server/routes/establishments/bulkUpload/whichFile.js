@@ -4,7 +4,15 @@ const isWorkerFile = (fileAsString) => {
   const headersRegexBaseCase = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,/;
   const headersRegexChangeUniqueWorkerId = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,/;
   const headersRegexTransferStaffRecord = /LOCALESTID,UNIQUEWORKERID,TRANSFERSTAFFRECORD,STATUS,DISPLAYID,/;
-  const regexToCheckHeaders = [headersRegexBaseCase, headersRegexChangeUniqueWorkerId, headersRegexTransferStaffRecord];
+  const headersRegexChangeUniqueWorkerIdTransferStaffRecord =
+    /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,TRANSFERSTAFFRECORD,STATUS,DISPLAYID,/;
+
+  const regexToCheckHeaders = [
+    headersRegexBaseCase,
+    headersRegexChangeUniqueWorkerId,
+    headersRegexTransferStaffRecord,
+    headersRegexChangeUniqueWorkerIdTransferStaffRecord,
+  ];
 
   const headerRow = fileAsString.split('\n')[0];
 

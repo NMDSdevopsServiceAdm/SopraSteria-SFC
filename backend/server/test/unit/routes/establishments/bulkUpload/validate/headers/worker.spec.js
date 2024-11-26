@@ -17,6 +17,11 @@ const workerHeadersWithTRANSFERSTAFFRECORD = workerHeadersWithCHGUNIQUEWRKID.rep
   'TRANSFERSTAFFRECORD',
 );
 
+const workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD = workerHeadersWithCHGUNIQUEWRKID.replace(
+  'CHGUNIQUEWRKID',
+  'CHGUNIQUEWRKID,TRANSFERSTAFFRECORD',
+);
+
 const workerHeadersWithoutCHGUNIQUEWRKID =
   'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMBER,' +
   'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
@@ -39,6 +44,10 @@ describe('server/routes/establishments/bulkUpload/validate/headers/worker', () =
       expect(validateWorkerHeaders(workerHeadersWithoutCHGUNIQUEWRKID)).to.deep.equal(true);
     });
 
+    it('should return true when headings match with CHGUNIQUEWRKID and TRANSFERSTAFFRECORD', async () => {
+      expect(validateWorkerHeaders(workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD)).to.equal(true);
+    });
+
     it('should return false when header (NATIONALITY) missing', async () => {
       const invalidHeaders = workerHeadersWithoutCHGUNIQUEWRKID.replace('NATIONALITY,', '');
 
@@ -50,6 +59,7 @@ describe('server/routes/establishments/bulkUpload/validate/headers/worker', () =
         workerHeadersWithCHGUNIQUEWRKID,
         workerHeadersWithoutCHGUNIQUEWRKID,
         workerHeadersWithTRANSFERSTAFFRECORD,
+        workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD,
       ];
 
       testCases.forEach((workerHeaders) => {

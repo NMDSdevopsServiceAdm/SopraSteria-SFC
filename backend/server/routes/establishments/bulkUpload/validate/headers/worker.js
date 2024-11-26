@@ -2,6 +2,7 @@ const {
   workerHeadersWithCHGUNIQUEWRKID,
   workerHeadersWithoutCHGUNIQUEWRKID,
   workerHeadersWithTRANSFERSTAFFRECORD,
+  workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD,
 } = require('../../data/workerHeaders');
 
 const validateWorkerHeaders = (headers) => {
@@ -9,6 +10,7 @@ const validateWorkerHeaders = (headers) => {
     workerHeadersWithoutCHGUNIQUEWRKID,
     workerHeadersWithCHGUNIQUEWRKID,
     workerHeadersWithTRANSFERSTAFFRECORD,
+    workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD,
   ];
 
   for (const workerHeadersBeforeExtraQuals of allowedWorkerHeaders) {

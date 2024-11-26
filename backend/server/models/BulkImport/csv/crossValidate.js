@@ -62,9 +62,26 @@ const crossValidateTransferStaffRecord = async (
   const relatedEstablishmentIds = myEstablishments.map((establishment) => establishment.id);
 
   const allMovingWorkers = myJSONWorkers.filter(isMovingToNewWorkplace);
-  const allNewWorkers = myJSONWorkers.filter((JSONWorker) => JSONWorker.status === 'NEW');
+  const allNewWorkers = myJSONWorkers.filter((worker) => worker.status === 'NEW');
+  const allOtherWorkers = myJSONWorkers.filter((worker) => !isMovingToNewWorkplace(worker) && worker.status !== 'NEW');
 
-  _crossValidateWorkersWithSameRefMovingToSameWorkplace(csvWorkerSchemaErrors, allMovingWorkers, allNewWorkers);
+  const newWorkerWithDuplicateIdErrorAdded = _crossValidateWorkersWithDuplicateRefsMovingToWorkplace(
+    csvWorkerSchemaErrors,
+    allMovingWorkers,
+    allNewWorkers,
+    TRANSFER_STAFF_RECORD_ERRORS.SameRefsMovingToWorkplace,
+  );
+
+  if (newWorkerWithDuplicateIdErrorAdded) return;
+
+  const existingWorkerWithDuplicateIdErrorAdded = _crossValidateWorkersWithDuplicateRefsMovingToWorkplace(
+    csvWorkerSchemaErrors,
+    allMovingWorkers,
+    allOtherWorkers,
+    TRANSFER_STAFF_RECORD_ERRORS.SameLocalIdExistInNewWorkplace,
+  );
+
+  if (existingWorkerWithDuplicateIdErrorAdded) return;
 
   for (const JSONWorker of allMovingWorkers) {
     const newWorkplaceId = await _validateTransferIsPossible(
@@ -92,12 +109,21 @@ const _validateTransferIsPossible = async (csvWorkerSchemaErrors, relatedEstabli
     return;
   }
 
-  const sameLocalIdExistInNewWorkplace = await models.worker.findOneWithConflictingLocalRef(
+  const workerReferenceToLookup = JSONWorker.changeUniqueWorker
+    ? JSONWorker.changeUniqueWorker
+    : JSONWorker.uniqueWorkerId;
+
+  // if worker with duplicated reference found in database but not in csv file,
+  // changes to unique worker ID are applied before deleting workers not in file,
+  // which would cause bulk upload to break
+  // the code below prevents this issue
+
+  const uniqueWorkerIdFoundInWorkplaceInDatabase = await models.worker.findOneWithConflictingLocalRef(
     newWorkplaceId,
-    JSONWorker.uniqueWorkerId,
+    workerReferenceToLookup,
   );
 
-  if (sameLocalIdExistInNewWorkplace) {
+  if (uniqueWorkerIdFoundInWorkplaceInDatabase) {
     addCrossValidateError(
       csvWorkerSchemaErrors,
       TRANSFER_STAFF_RECORD_ERRORS.SameLocalIdExistInNewWorkplace,
@@ -139,19 +165,27 @@ const _addNewWorkplaceIdToWorkerEntity = (myAPIEstablishments, JSONWorker, newWo
 
   const workerEntity = myAPIEstablishments[oldWorkplaceKey].theWorker(workerEntityKey);
 
-  workerEntity._newWorkplaceId = newWorkplaceId;
+  if (workerEntity) {
+    workerEntity._newWorkplaceId = newWorkplaceId;
+  }
 };
 
-const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (
+const _crossValidateWorkersWithDuplicateRefsMovingToWorkplace = (
   csvWorkerSchemaErrors,
   allMovingWorkers,
-  allNewWorkers,
+  otherWorkers,
+  errorType,
 ) => {
-  const workplacesDict = _buildWorkplaceDictWithNewWorkers(allNewWorkers);
+  const workplacesDict = _buildWorkplaceDictWithOtherWorkers(otherWorkers);
+
+  let errorAdded = false;
 
   for (const JSONWorker of allMovingWorkers) {
     const newWorkplaceRef = JSONWorker.transferStaffRecord;
-    const workerRef = JSONWorker.uniqueWorkerId.replace(/\s/g, '');
+
+    const workerRef = JSONWorker.changeUniqueWorker
+      ? JSONWorker.changeUniqueWorker.replace(/\s/g, '')
+      : JSONWorker.uniqueWorkerId.replace(/\s/g, '');
 
     if (!workplacesDict[newWorkplaceRef]) {
       workplacesDict[newWorkplaceRef] = new Set([workerRef]);
@@ -162,17 +196,27 @@ const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (
       workplacesDict[newWorkplaceRef].add(workerRef);
       continue;
     }
+    // worker's ID exists in workplace in file
+    addCrossValidateError(csvWorkerSchemaErrors, errorType, JSONWorker);
 
-    // if arrive at here, there is already another new or moving worker with that workerRef coming to the same new workplace
-    addCrossValidateError(csvWorkerSchemaErrors, TRANSFER_STAFF_RECORD_ERRORS.SameRefsMovingToWorkplace, JSONWorker);
+    errorAdded = true;
   }
+
+  return errorAdded;
 };
 
-const _buildWorkplaceDictWithNewWorkers = (allNewWorkers) => {
-  return chain(allNewWorkers)
+const _buildWorkplaceDictWithOtherWorkers = (otherWorkers) => {
+  return chain(otherWorkers)
     .groupBy('localId') // workplace ref
-    .mapValues((JSONWorkers) => JSONWorkers.map((JSONWorker) => JSONWorker.uniqueWorkerId.replace(/\s/g, '')))
-    .mapValues((workerRefs) => new Set(workerRefs))
+    .mapValues((JSONWorkers) =>
+      JSONWorkers.map((JSONWorker) => {
+        if (JSONWorker.changeUniqueWorker) {
+          return [JSONWorker.changeUniqueWorker.replace(/\s/g, ''), JSONWorker.uniqueWorkerId.replace(/\s/g, '')];
+        }
+        return [JSONWorker.uniqueWorkerId.replace(/\s/g, '')];
+      }),
+    )
+    .mapValues((workerRefs) => new Set(workerRefs.flat()))
     .value();
 };
 

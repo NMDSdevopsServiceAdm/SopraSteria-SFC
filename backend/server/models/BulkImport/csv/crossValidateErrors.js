@@ -25,7 +25,8 @@ const TRANSFER_STAFF_RECORD_ERRORS = {
     errType: 'TRANSFERSTAFFRECORD_ERROR',
     column: 'UNIQUEWORKERID',
     _sourceFieldName: 'uniqueWorkerId',
-    error: 'The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD',
+    error:
+      "The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD. Use CHGUNIQUEWRKID to change this worker's UNIQUEWORKERID.",
   }),
   SameRefsMovingToWorkplace: Object.freeze({
     errCode: TRANSFER_STAFF_RECORD_BASE_ERROR_CODE + 3,

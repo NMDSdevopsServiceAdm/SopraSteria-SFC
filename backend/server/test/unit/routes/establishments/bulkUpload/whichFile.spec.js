@@ -22,6 +22,11 @@ describe('whichFile', () => {
       expect(isWorkerFile(header)).to.deep.equal(true);
     });
 
+    it('return true when headings match with CHGUNIQUEWRKID and TRANSFERSTAFFRECORD', async () => {
+      const header = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,TRANSFERSTAFFRECORD,STATUS,DISPLAYID,NINUMBER';
+      expect(isWorkerFile(header)).to.deep.equal(true);
+    });
+
     it("return false when headings don't match", async () => {
       const header = 'NOTATALLWHATWEEXPECT,HOWCOULDYOUUPLOADTHISFILE,';
       expect(isWorkerFile(header)).to.deep.equal(false);
