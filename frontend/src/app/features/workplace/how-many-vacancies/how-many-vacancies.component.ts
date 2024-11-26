@@ -60,7 +60,7 @@ export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDi
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'starters'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-starters'];
     // TODO: change to 'do-you-have-starters' page after #1560 complete
   }
 }

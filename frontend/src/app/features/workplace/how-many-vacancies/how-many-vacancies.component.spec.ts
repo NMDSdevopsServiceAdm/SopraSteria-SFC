@@ -196,14 +196,14 @@ describe('HowManyVacanciesComponent', () => {
         });
       });
 
-      it('should navigate to the starters page if in the flow', async () => {
+      it('should navigate to the do-you-have-starters page if in the flow', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
         userEvent.type(getInputBoxForJobRole('Care worker'), '2');
         userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'starters']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-starters']);
       });
 
       it('should navigate to workplace summary page if not in the flow', async () => {
