@@ -171,7 +171,9 @@ const _addNewWorkplaceIdToWorkerEntity = (myAPIEstablishments, JSONWorker, newWo
 
   const workerEntity = myAPIEstablishments[oldWorkplaceKey].theWorker(workerEntityKey);
 
-  workerEntity._newWorkplaceId = newWorkplaceId;
+  if (workerEntity) {
+    workerEntity._newWorkplaceId = newWorkplaceId;
+  }
 };
 
 const _crossValidateWorkersWithSameRefMovingToSameWorkplace = (
