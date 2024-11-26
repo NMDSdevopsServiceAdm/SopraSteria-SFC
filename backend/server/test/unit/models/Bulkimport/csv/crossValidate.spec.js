@@ -450,6 +450,49 @@ describe('crossValidate', () => {
       expect(workerEntity._newWorkplaceId).to.equal(789);
     });
 
+    it("should add an error to csvWorkerSchemaErrors if transferring worker to workplace with worker with same ref and moving worker's ID is being changed to existing ref", async () => {
+      const movingWorker = buildMockJSONWorker({
+        uniqueWorkerId: 'mock_worker_ref',
+        localId: 'workplace A',
+        changeUniqueWorker: 'changed_but_still_duplicate_worker_ref',
+      });
+
+      const existingWorkerInWorkplace = buildMockJSONWorker({
+        uniqueWorkerId: 'mock_worker_ref',
+        status: 'UPDATE',
+        transferStaffRecord: null,
+        localId: 'target workplace',
+      });
+
+      const existingWorker2InWorkplace = buildMockJSONWorker({
+        uniqueWorkerId: 'changed_but_still_duplicate_worker_ref',
+        status: 'UPDATE',
+        transferStaffRecord: null,
+        localId: 'target workplace',
+      });
+
+      const csvWorkerSchemaErrors = [];
+
+      await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, [
+        movingWorker,
+        existingWorkerInWorkplace,
+        existingWorker2InWorkplace,
+      ]);
+
+      const expectedError = {
+        column: 'UNIQUEWORKERID',
+        errCode: 1402,
+        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        error: 'The UNIQUEWORKERID already exists in the LOCALESTID given in TRANSFERSTAFFRECORD',
+        worker: movingWorker.uniqueWorkerId,
+        name: movingWorker.localId,
+        lineNumber: movingWorker.lineNumber,
+        source: movingWorker.uniqueWorkerId,
+      };
+
+      expect(csvWorkerSchemaErrors).to.deep.equal([expectedError]);
+    });
+
     it('should add newWorkplaceId to the worker entity if all validations pass for worker with transferStaffRecord', async () => {
       const JSONWorker = buildMockJSONWorker({ localId: 'workplace A', uniqueWorkerId: 'mock_worker_ref' });
 

@@ -45,7 +45,6 @@ describe('server/routes/establishments/bulkUpload/validate/headers/worker', () =
     });
 
     it('should return true when headings match with CHGUNIQUEWRKID and TRANSFERSTAFFRECORD', async () => {
-      console.log(workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD);
       expect(validateWorkerHeaders(workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD)).to.equal(true);
     });
 
