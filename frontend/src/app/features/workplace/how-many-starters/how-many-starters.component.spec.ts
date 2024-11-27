@@ -335,7 +335,8 @@ fdescribe('HowManyStartersComponent', () => {
 
         userEvent.click(getByText('Cancel'));
 
-        expect(localStorageSpy).toHaveBeenCalled();
+        expect(localStorageSpy).toHaveBeenCalledWith('hasStarters');
+        expect(localStorageSpy).toHaveBeenCalledWith('startersJobRoles');
       });
     });
   });
