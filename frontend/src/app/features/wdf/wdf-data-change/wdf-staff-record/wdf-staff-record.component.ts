@@ -69,8 +69,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
         this.isStandalone = this.checkIfStandalone();
-        this.setBreadcrumbs();
-        this.establishmentService.setState(workplace);
+        this.breadcrumbService.show(JourneyType.WDF);
       }),
     );
   }
@@ -114,12 +113,6 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
       return !this.workplace.isParent;
     }
     return true;
-  }
-
-  private setBreadcrumbs(): void {
-    this.isStandalone
-      ? this.breadcrumbService.show(JourneyType.WDF)
-      : this.breadcrumbService.show(JourneyType.WDF_PARENT);
   }
 
   private setNewWdfReturn(): void {
