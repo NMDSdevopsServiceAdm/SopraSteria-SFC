@@ -15,6 +15,7 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   @Input() parentOverallWdfEligibility: boolean;
   @Input() overallWdfEligibility: boolean;
   @Input() activatedFragment: string;
+  @Input() onDataPage: boolean = true;
 
   public sections: any = [];
 
@@ -59,7 +60,9 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
 
   public onClick(event: Event, fragment: string): void {
     event.preventDefault();
-    this.router.navigate(['/wdf/data'], { fragment: fragment });
+
+    const urlToNavigateTo = this.onDataPage ? [] : ['/wdf/data'];
+    this.router.navigate(urlToNavigateTo, { fragment: fragment });
   }
 
   public showLink(fragment: string): void {

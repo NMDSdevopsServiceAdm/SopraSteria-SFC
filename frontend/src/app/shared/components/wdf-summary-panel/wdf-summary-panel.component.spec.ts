@@ -123,7 +123,7 @@ describe('WdfSummaryPanel', () => {
     });
 
     describe('funding message links', () => {
-      it('should show both messages as links', async () => {
+      it('should show both messages as links when no active fragment', async () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
@@ -141,7 +141,7 @@ describe('WdfSummaryPanel', () => {
         expect(staffFundingMessage).toBeTruthy();
       });
 
-      it('should show workplace without a link and staff with a link', async () => {
+      it('should show workplace without a link and staff with a link when workplace is the active fragment', async () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
@@ -160,7 +160,7 @@ describe('WdfSummaryPanel', () => {
         expect(staffFundingMessage).toBeTruthy();
       });
 
-      it('should show workplace with a link and staff without a link', async () => {
+      it('should show workplace with a link and staff without a link when staff is the active fragment', async () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
@@ -178,48 +178,10 @@ describe('WdfSummaryPanel', () => {
         expect(workplaceFundingMessage).toBeTruthy();
         expect(staffFundingMessage).toBeFalsy();
       });
-
-      it('should navigate to workplace when clicked', async () => {
-        const overrides = {
-          workplaceWdfEligibilityStatus: true,
-        };
-
-        const { fixture, getByTestId, routerSpy } = await setup(overrides);
-
-        const workplaceRow = getByTestId('workplace-row');
-
-        const metFundingMessage = within(workplaceRow).getByTestId('met-funding-message');
-
-        expect(metFundingMessage).toBeTruthy();
-
-        fireEvent.click(metFundingMessage);
-        fixture.detectChanges();
-
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf/data'], { fragment: 'workplace' });
-      });
-
-      it('should navigate to staff when clicked', async () => {
-        const overrides = {
-          staffWdfEligibilityStatus: true,
-        };
-
-        const { fixture, getByTestId, routerSpy } = await setup(overrides);
-
-        const staffRow = getByTestId('staff-row');
-
-        const metFundingMessage = within(staffRow).getByTestId('met-funding-message');
-
-        expect(metFundingMessage).toBeTruthy();
-
-        fireEvent.click(metFundingMessage);
-        fixture.detectChanges();
-
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf/data'], { fragment: 'staff' });
-      });
     });
 
     describe('parent', () => {
-      it('should show all messages as clickable links', async () => {
+      it('should show all messages as clickable links when no active fragment', async () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
@@ -242,7 +204,7 @@ describe('WdfSummaryPanel', () => {
         expect(allWorkplacesFundingMessage).toBeTruthy();
       });
 
-      it('should show all workplace without a link', async () => {
+      it('should show your other workplaces without a link when fragment is active', async () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
@@ -264,26 +226,6 @@ describe('WdfSummaryPanel', () => {
         expect(workplaceFundingMessage).toBeTruthy();
         expect(staffFundingMessage).toBeTruthy();
         expect(allWorkplacesFundingMessage).toBeFalsy();
-      });
-
-      it('should navigate to all workplaces when clicked', async () => {
-        const overrides = {
-          parentOverallWdfEligibility: true,
-          isParent: true,
-        };
-
-        const { fixture, getByTestId, routerSpy } = await setup(overrides);
-
-        const allWorkplacesRow = getByTestId('workplaces-row');
-
-        const metFundingMessage = within(allWorkplacesRow).getByTestId('met-funding-message');
-
-        expect(metFundingMessage).toBeTruthy();
-
-        fireEvent.click(metFundingMessage);
-        fixture.detectChanges();
-
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf/data'], { fragment: 'workplaces' });
       });
     });
   });
@@ -341,66 +283,85 @@ describe('WdfSummaryPanel', () => {
       expect(within(workplacesRow).getByText(messages.fundingNotMet)).toBeTruthy();
       expect(within(workplacesRow).getByTestId('red-flag')).toBeTruthy();
     });
+  });
 
-    describe('funding message links', () => {
-      it('should navigate to workplace when clicked', async () => {
-        const overrides = {
-          workplaceWdfEligibilityStatus: false,
-          overallWdfEligibility: false,
-        };
+  describe('Navigation', () => {
+    [
+      {
+        scenario: 'with wdf/data in url when not on data page',
+        expectedLink: ['/wdf/data'],
+        onDataPage: false,
+      },
+      {
+        scenario: 'with no url when already on the data page',
+        expectedLink: [],
+        onDataPage: true,
+      },
+    ].forEach(({ scenario, onDataPage, expectedLink }) => {
+      [{ isEligible: true }, { isEligible: false }].forEach(({ isEligible }) => {
+        const linkId = isEligible ? 'met-funding-message' : 'not-met-funding-message';
 
-        const { fixture, getByTestId, routerSpy } = await setup(overrides);
+        it(`should navigate to workplace when ${linkId} clicked ${scenario}`, async () => {
+          const overrides = {
+            workplaceWdfEligibilityStatus: isEligible,
+            overallWdfEligibility: isEligible,
+            onDataPage,
+          };
 
-        const workplaceRow = getByTestId('workplace-row');
+          const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
-        const notMetFundingMessage = within(workplaceRow).getByTestId('not-met-funding-message');
+          const workplaceRow = getByTestId('workplace-row');
 
-        expect(notMetFundingMessage).toBeTruthy();
+          const notMetFundingMessage = within(workplaceRow).getByTestId(linkId);
 
-        fireEvent.click(notMetFundingMessage);
-        fixture.detectChanges();
+          expect(notMetFundingMessage).toBeTruthy();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf/data'], { fragment: 'workplace' });
-      });
+          fireEvent.click(notMetFundingMessage);
+          fixture.detectChanges();
 
-      it('should navigate to staff when clicked', async () => {
-        const overrides = {
-          staffWdfEligibilityStatus: false,
-          overallWdfEligibility: false,
-        };
+          expect(routerSpy).toHaveBeenCalledWith(expectedLink, { fragment: 'workplace' });
+        });
 
-        const { fixture, getByTestId, routerSpy } = await setup(overrides);
+        it(`should navigate to staff when ${linkId} clicked ${scenario}`, async () => {
+          const overrides = {
+            staffWdfEligibilityStatus: isEligible,
+            overallWdfEligibility: isEligible,
+            onDataPage,
+          };
 
-        const staffRow = getByTestId('staff-row');
+          const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
-        const notMetFundingMessage = within(staffRow).getByTestId('not-met-funding-message');
+          const staffRow = getByTestId('staff-row');
 
-        expect(notMetFundingMessage).toBeTruthy();
+          const notMetFundingMessage = within(staffRow).getByTestId(linkId);
 
-        fireEvent.click(notMetFundingMessage);
-        fixture.detectChanges();
+          expect(notMetFundingMessage).toBeTruthy();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf/data'], { fragment: 'staff' });
-      });
+          fireEvent.click(notMetFundingMessage);
 
-      it('should navigate to all workplaces when clicked', async () => {
-        const overrides = {
-          parentOverallWdfEligibility: false,
-          isParent: true,
-        };
+          expect(routerSpy).toHaveBeenCalledWith(expectedLink, { fragment: 'staff' });
+        });
 
-        const { fixture, getByTestId, routerSpy } = await setup(overrides);
+        it(`should navigate to your other workplaces when clicked ${scenario}`, async () => {
+          const overrides = {
+            parentOverallWdfEligibility: isEligible,
+            isParent: true,
+            onDataPage,
+          };
 
-        const workplacesRow = getByTestId('workplaces-row');
+          const { fixture, getByTestId, routerSpy } = await setup(overrides);
 
-        const notMetFundingMessage = within(workplacesRow).getByTestId('not-met-funding-message');
+          const workplacesRow = getByTestId('workplaces-row');
 
-        expect(notMetFundingMessage).toBeTruthy();
+          const notMetFundingMessage = within(workplacesRow).getByTestId(linkId);
 
-        fireEvent.click(notMetFundingMessage);
-        fixture.detectChanges();
+          expect(notMetFundingMessage).toBeTruthy();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf/data'], { fragment: 'workplaces' });
+          fireEvent.click(notMetFundingMessage);
+          fixture.detectChanges();
+
+          expect(routerSpy).toHaveBeenCalledWith(expectedLink, { fragment: 'workplaces' });
+        });
       });
     });
   });
