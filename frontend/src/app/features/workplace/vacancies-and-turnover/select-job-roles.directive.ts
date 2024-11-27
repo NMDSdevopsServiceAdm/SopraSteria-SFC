@@ -51,6 +51,11 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
 
   protected setupRoutes(): void {}
 
+  public setBackLink() {
+    this.back = { url: this.previousRoute };
+    this.backService.setBackLink(this.back);
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
       selectedJobRoles: [[], CustomValidators.validateArrayNotEmpty()],

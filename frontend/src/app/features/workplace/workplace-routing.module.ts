@@ -61,11 +61,11 @@ import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UsersComponent } from './users/users.component';
-import { VacanciesComponent } from './vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
 import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
 
 // eslint-disable-next-line max-len
@@ -264,16 +264,6 @@ const routes: Routes = [
         },
       },
       {
-        path: 'vacancies',
-        component: VacanciesComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Vacancies',
-        },
-      },
-      {
         path: 'do-you-have-vacancies',
         component: DoYouHaveVacanciesComponent,
         canActivate: [CheckPermissionsGuard],
@@ -291,6 +281,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Vacancies job role selection',
+        },
+      },
+      {
+        path: 'how-many-vacancies',
+        component: HowManyVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'How many vacancies',
         },
       },
       {

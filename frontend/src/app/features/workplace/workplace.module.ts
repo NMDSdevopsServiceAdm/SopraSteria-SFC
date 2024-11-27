@@ -60,7 +60,6 @@ import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/u
 import { UserAccountEditDetailsComponent } from './user-account-edit-details/user-account-edit-details.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UsersComponent } from './users/users.component';
-import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
@@ -69,6 +68,7 @@ import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-
 import { WorkplaceRoutingModule } from './workplace-routing.module';
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
 import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
 
 @NgModule({
@@ -102,7 +102,6 @@ import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-s
     UserAccountSavedComponent,
     UserAccountViewComponent,
     TotalStaffQuestionComponent,
-    VacanciesComponent,
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
@@ -133,6 +132,7 @@ import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-s
     ChangeDataOwnerComponent,
     DoYouHaveVacanciesComponent,
     SelectVacancyJobRolesComponent,
+    HowManyVacanciesComponent,
     DoYouHaveStartersComponent,
   ],
   providers: [

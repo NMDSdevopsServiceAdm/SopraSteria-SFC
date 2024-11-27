@@ -61,7 +61,6 @@ import { UserAccountEditDetailsComponent } from '@features/workplace/user-accoun
 import { UserAccountEditPermissionsComponent } from '@features/workplace/user-account-edit-permissions/user-account-edit-permissions.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
-import { VacanciesComponent } from '@features/workplace/vacancies/vacancies.component';
 import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
 
@@ -73,6 +72,7 @@ import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-su
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
 import { DoYouHaveVacanciesComponent } from '@features/workplace/do-you-have-vacancies/do-you-have-vacancies.component';
 import { SelectVacancyJobRolesComponent } from '../workplace/select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { HowManyVacanciesComponent } from '@features/workplace/how-many-vacancies/how-many-vacancies.component';
 import { DoYouHaveStartersComponent } from '@features/workplace/do-you-have-starters/do-you-have-starters.component';
 
 // eslint-disable-next-line max-len
@@ -375,16 +375,6 @@ const routes: Routes = [
         },
       },
       {
-        path: 'vacancies',
-        component: VacanciesComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Vacancies',
-        },
-      },
-      {
         path: 'do-you-have-vacancies',
         component: DoYouHaveVacanciesComponent,
         canActivate: [CheckPermissionsGuard],
@@ -402,6 +392,15 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Vacancies job role selection',
+        },
+      },
+      {
+        path: 'how-many-vacancies',
+        component: HowManyVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'How many vacancies',
         },
       },
       {
