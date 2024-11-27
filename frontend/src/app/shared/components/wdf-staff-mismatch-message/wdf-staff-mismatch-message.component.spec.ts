@@ -11,30 +11,30 @@ import { render } from '@testing-library/angular';
 import { WdfStaffMismatchMessageComponent } from './wdf-staff-mismatch-message.component';
 
 describe('WdfStaffMismatchMessageComponent', () => {
-  const setup = async (uid = '') => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(
-      WdfStaffMismatchMessageComponent,
-      {
-        imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
-        providers: [
-          { provide: EstablishmentService, useClass: MockEstablishmentService },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                params: {
-                  establishmentuid: uid,
-                },
+  const setup = async (overrides: any = {}) => {
+    const setupTools = await render(WdfStaffMismatchMessageComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+      providers: [
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              params: {
+                establishmentuid: overrides.uidInParams ?? null,
               },
             },
           },
-        ],
-        componentProperties: { workplace: establishmentBuilder() as Establishment, workerCount: 1 },
+        },
+      ],
+      componentProperties: {
+        workplace: overrides.workplace ?? (establishmentBuilder() as Establishment),
+        workerCount: 1,
       },
-    );
+    });
 
-    const component = fixture.componentInstance;
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+    const component = setupTools.fixture.componentInstance;
+    return { ...setupTools, component };
   };
 
   it('should create', async () => {
@@ -120,27 +120,20 @@ describe('WdfStaffMismatchMessageComponent', () => {
 
   describe('setStaffRecordsUrl', async () => {
     it("should set URL to subs's staff records if user is a parent viewing their subsidiary", async () => {
-      const { component, fixture } = await setup('123');
-      const expectedUrl = { url: ['/workplace', '456'], fragment: 'staff-records' };
+      const workplace = establishmentBuilder();
+      workplace.uid = 'abc12323123';
 
-      component.primaryWorkplaceUid = '123';
-      component.workplace.uid = '456';
-      fixture.componentInstance.setStaffRecordsUrl();
-      fixture.detectChanges();
+      const { getByText } = await setup({ uidInParams: workplace.uid, workplace });
 
-      expect(component.staffRecordsUrl).toEqual(expectedUrl);
+      const viewStaffRecordsLink = getByText('view staff records');
+      expect((viewStaffRecordsLink as HTMLAnchorElement).href).toContain(`/subsidiary/${workplace.uid}/staff-records`);
     });
 
-    it('should set URL to staff records tab on dashboard if the user is the primary user', async () => {
-      const { component, fixture } = await setup();
-      const expectedUrl = { url: ['/dashboard'], fragment: 'staff-records' };
+    it('should set URL to staff records tab on dashboard if the user is viewing primary workplace', async () => {
+      const { getByText } = await setup();
 
-      component.primaryWorkplaceUid = '123';
-      component.workplace.uid = '123';
-      fixture.componentInstance.setStaffRecordsUrl();
-      fixture.detectChanges();
-
-      expect(component.staffRecordsUrl).toEqual(expectedUrl);
+      const viewStaffRecordsLink = getByText('view staff records');
+      expect((viewStaffRecordsLink as HTMLAnchorElement).href).toContain(`dashboard#staff-records`);
     });
   });
 });
