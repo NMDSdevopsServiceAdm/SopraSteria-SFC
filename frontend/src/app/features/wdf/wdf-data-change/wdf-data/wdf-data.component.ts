@@ -4,14 +4,12 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
-import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import dayjs from 'dayjs';
 import orderBy from 'lodash/orderBy';
 import sortBy from 'lodash/sortBy';
@@ -30,16 +28,12 @@ export class WdfDataComponent implements OnInit {
   public workplaceUid: string;
   public workers: Array<Worker>;
   public workerCount: number;
-  public canViewWorker = false;
+  public canViewWorker: boolean;
   public canEditWorker: boolean;
   public report: WDFReport;
   public wdfStartDate: string;
   public wdfEndDate: string;
-  public returnUrl: URLStructure;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
-  public isStandalone = true;
-  public newHomeDesignFlag: boolean;
-  public standAloneAccount = false;
   private subscriptions: Subscription = new Subscription();
   private activeTabIndex: number;
   public parentOverallWdfEligibility: boolean;
@@ -62,16 +56,12 @@ export class WdfDataComponent implements OnInit {
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    private featureFlagsService: FeatureFlagsService,
     private userService: UserService,
     private router: Router,
-  ) {
-    this.featureFlagsService.start();
-  }
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
-    this.standAloneAccount = this.establishmentService.standAloneAccount;
 
     if (this.route.snapshot?.params?.establishmentuid) {
       this.viewingSub = true;
@@ -79,11 +69,9 @@ export class WdfDataComponent implements OnInit {
       this.primaryWorkplaceNmdsId = this.establishmentService.primaryWorkplace.nmdsId;
 
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
-      this.returnUrl = { url: ['/wdf', 'workplaces', this.workplaceUid] };
     } else {
       this.viewingSub = false;
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
-      this.returnUrl = { url: ['/wdf', 'data'] };
     }
 
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');

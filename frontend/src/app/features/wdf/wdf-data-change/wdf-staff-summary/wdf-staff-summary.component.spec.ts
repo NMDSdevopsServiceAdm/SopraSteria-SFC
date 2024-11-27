@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -9,23 +10,22 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
+import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
+import { PaginationComponent } from '@shared/components/pagination/pagination.component';
+import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
+import { TablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper/table-pagination-wrapper.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+import { of } from 'rxjs';
+import sinon from 'sinon';
 
 import { WdfModule } from '../wdf.module';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
-import { PaginationComponent } from '@shared/components/pagination/pagination.component';
-import { TablePaginationWrapperComponent } from '@shared/components/table-pagination-wrapper/table-pagination-wrapper.component';
-import { WorkerService } from '@core/services/worker.service';
-import sinon from 'sinon';
-import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
-import { getTestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
-import userEvent from '@testing-library/user-event';
 
 describe('WdfStaffSummaryComponent', () => {
   const setup = async (overrides: any = {}) => {
@@ -173,7 +173,6 @@ describe('WdfStaffSummaryComponent', () => {
       const overrides = {
         workers: [],
         workerCount: 0,
-        standAloneAccount: true,
       };
 
       const { getByTestId } = await setup(overrides);

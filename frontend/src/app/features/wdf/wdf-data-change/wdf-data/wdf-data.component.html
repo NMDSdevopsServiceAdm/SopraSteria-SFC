@@ -38,7 +38,6 @@
     [workplace]="workplace"
     [workerCount]="workerCount"
     [return]="returnUrl"
-    [wdfView]="true"
     [overallWdfEligibility]="wdfEligibilityStatus.overall"
     (allFieldsConfirmed)="getWdfReport()"
   ></app-wdf-workplace-summary>
@@ -53,7 +52,7 @@
   ></app-wdf-staff-summary>
 
   <app-wdf-workplaces-summary
-    *ngIf="activeTab.index === 2"
+    *ngIf="isParent && activeTab.index === 2"
     data-testid="yourOtherWorkplacesTab"
     [workplaces]="subsidiaryWorkplaces"
   ></app-wdf-workplaces-summary>

@@ -13,14 +13,11 @@ import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
-import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { getByText, render, within } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
@@ -31,7 +28,7 @@ describe('WdfDataComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfDataComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
-      declarations: [WdfStaffSummaryComponent, WdfSummaryPanel],
+      declarations: [WdfStaffSummaryComponent],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
@@ -45,7 +42,6 @@ describe('WdfDataComponent', () => {
           useFactory: MockPermissionsService.factory(['canViewWorker', 'canEditWorker']),
           deps: [HttpClient, Router, UserService],
         },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
         {
           provide: UserService,
           useValue: {
