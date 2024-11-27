@@ -20,7 +20,7 @@ import { WdfStaffRecordComponent } from './wdf-staff-record.component';
 
 describe('WdfStaffRecordComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfStaffRecordComponent, {
+    const setupTools = await render(WdfStaffRecordComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -35,7 +35,7 @@ describe('WdfStaffRecordComponent', () => {
               data: {
                 worker: {},
               },
-              params: [{ id: 123 }],
+              params: overrides.establishmentuid ? { establishmentuid: overrides.establishmentuid } : {},
               paramMap: {
                 get(id) {
                   return 123;
@@ -46,9 +46,9 @@ describe('WdfStaffRecordComponent', () => {
         },
       ],
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+    return { ...setupTools, component };
   };
 
   it('should render a WdfStaffRecordComponent', async () => {
@@ -110,5 +110,31 @@ describe('WdfStaffRecordComponent', () => {
     const { getByText } = await setup({ worker });
 
     expect(getByText('Last update, 1 January 2023')).toBeTruthy();
+  });
+
+  it('should set the Close this staff record buttons to navigate back to primary workplace staff tab when viewing primary workplace', async () => {
+    const { getAllByText } = await setup();
+
+    const closeRecordButtons = getAllByText('Close this staff record');
+    const expectedLink = '/wdf/data#staff';
+
+    expect(closeRecordButtons.length).toEqual(2);
+
+    expect((closeRecordButtons[0] as HTMLAnchorElement).href).toContain(expectedLink);
+    expect((closeRecordButtons[1] as HTMLAnchorElement).href).toContain(expectedLink);
+  });
+
+  it('should set the Close this staff record buttons to navigate back to sub workplace staff tab when viewing sub workplace', async () => {
+    const establishmentuid = 'mockEstablishmentUid123';
+
+    const { getAllByText } = await setup({ establishmentuid });
+
+    const closeRecordButtons = getAllByText('Close this staff record');
+    const expectedLink = `wdf/workplaces/${establishmentuid}#staff`;
+
+    expect(closeRecordButtons.length).toEqual(2);
+
+    expect((closeRecordButtons[0] as HTMLAnchorElement).href).toContain(expectedLink);
+    expect((closeRecordButtons[1] as HTMLAnchorElement).href).toContain(expectedLink);
   });
 });
