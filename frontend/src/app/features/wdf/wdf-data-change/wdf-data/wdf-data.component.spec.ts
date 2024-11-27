@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -56,7 +57,7 @@ describe('WdfDataComponent', () => {
           useValue: {
             snapshot: {
               data: { workplace: overrides.workplace ?? establishmentBuilder() },
-              params: { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' },
+              params: overrides.viewingSub ? { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } : {},
             },
             fragment: of(overrides.fragment ?? undefined),
           },
@@ -66,9 +67,11 @@ describe('WdfDataComponent', () => {
         workerCount: 1,
       },
     });
-    const component = setupTools.fixture.componentInstance;
 
-    return { ...setupTools, component };
+    const component = setupTools.fixture.componentInstance;
+    const establishmentService = TestBed.inject(EstablishmentService);
+
+    return { ...setupTools, component, establishmentService };
   };
 
   it('should render a WdfDataComponent', async () => {
@@ -83,18 +86,42 @@ describe('WdfDataComponent', () => {
   });
 
   describe('Header', () => {
-    it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
-      const { component, getByTestId } = await setup();
+    describe('Parent or standalone', () => {
+      it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
+        const workplace = establishmentBuilder();
+        workplace.name = 'Test Workplace';
+        workplace.nmdsId = 'AB123456';
 
-      expect(getByTestId('pre-header').innerHTML).toContain(component.workplace.name);
-      expect(getByTestId('pre-header').innerHTML).toContain(component.workplace.nmdsId);
+        const { getByText } = await setup({ workplace });
+
+        expect(getByText(`${workplace.name} (Workplace ID: ${workplace.nmdsId})`)).toBeTruthy();
+      });
+
+      it('should display header text', async () => {
+        const { getByText } = await setup();
+        const headerText = 'Your data';
+
+        expect(getByText(headerText)).toBeTruthy();
+      });
     });
 
-    it('should display header text', async () => {
-      const { getByText } = await setup();
-      const headerText = 'Your data';
+    describe('Viewing sub workplace', () => {
+      it('should display the parent workplace name and nmds ID in brackets in caption above title', async () => {
+        const { establishmentService, getByText } = await setup({ viewingSub: true });
+        const parentName = establishmentService.primaryWorkplace.name;
+        const parentNmdsId = establishmentService.primaryWorkplace.nmdsId;
 
-      expect(getByText(headerText)).toBeTruthy();
+        expect(getByText(`${parentName} (Workplace ID: ${parentNmdsId})`)).toBeTruthy();
+      });
+
+      it('should display the sub workplace name and data in title', async () => {
+        const workplace = establishmentBuilder();
+        workplace.name = 'Test Sub Workplace';
+
+        const { getByText } = await setup({ workplace, viewingSub: true });
+
+        expect(getByText(`${workplace.name}: data`)).toBeTruthy();
+      });
     });
   });
 

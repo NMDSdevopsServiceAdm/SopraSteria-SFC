@@ -1,10 +1,16 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
-      <span class="govuk-caption-xl" data-testid="pre-header"
-        >{{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})</span
-      >
-      Your data
+      <span class="govuk-caption-xl">
+        <ng-container *ngIf="viewingSub; else primaryWorkplacePreHeader">
+          {{ primaryWorkplaceName }} (Workplace ID: {{ primaryWorkplaceNmdsId }})
+        </ng-container>
+        <ng-template #primaryWorkplacePreHeader>
+          {{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})
+        </ng-template>
+      </span>
+      <ng-container *ngIf="viewingSub; else mainWorkplace"> {{ workplace?.name }}: data </ng-container>
+      <ng-template #mainWorkplace> Your data </ng-template>
     </h1>
   </div>
 </div>

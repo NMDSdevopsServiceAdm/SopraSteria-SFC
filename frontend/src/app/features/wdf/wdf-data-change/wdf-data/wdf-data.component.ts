@@ -28,7 +28,6 @@ import { Worker } from '../../../../core/model/worker.model';
 export class WdfDataComponent implements OnInit {
   public workplace: Establishment;
   public workplaceUid: string;
-  public primaryWorkplaceUid: string;
   public workers: Array<Worker>;
   public workerCount: number;
   public canViewWorker = false;
@@ -47,6 +46,10 @@ export class WdfDataComponent implements OnInit {
   public overallWdfEligibility: boolean;
   public isParent: boolean;
   public subsidiaryWorkplaces = [];
+  public viewingSub: boolean;
+  public primaryWorkplaceUid: string;
+  public primaryWorkplaceName: string;
+  public primaryWorkplaceNmdsId: string;
   public tabs: { name: string; fragment: string }[] = [
     { name: 'Workplace', fragment: 'workplace' },
     { name: 'Staff records', fragment: 'staff' },
@@ -71,9 +74,14 @@ export class WdfDataComponent implements OnInit {
     this.standAloneAccount = this.establishmentService.standAloneAccount;
 
     if (this.route.snapshot?.params?.establishmentuid) {
+      this.viewingSub = true;
+      this.primaryWorkplaceName = this.establishmentService.primaryWorkplace.name;
+      this.primaryWorkplaceNmdsId = this.establishmentService.primaryWorkplace.nmdsId;
+
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
       this.returnUrl = { url: ['/wdf', 'workplaces', this.workplaceUid] };
     } else {
+      this.viewingSub = false;
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
       this.returnUrl = { url: ['/wdf', 'data'] };
     }
