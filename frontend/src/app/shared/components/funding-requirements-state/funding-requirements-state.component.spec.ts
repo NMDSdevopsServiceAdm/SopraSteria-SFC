@@ -1,5 +1,6 @@
-import { render, within } from '@testing-library/angular';
 import { SharedModule } from '@shared/shared.module';
+import { render, within } from '@testing-library/angular';
+
 import { WdfModule } from '../../../features/wdf/wdf-data-change/wdf.module';
 import { FundingRequirementsStateComponent } from './funding-requirements-state.component';
 
@@ -48,24 +49,24 @@ describe('FundingRequirementsStateComponent', () => {
   });
 
   describe('orange warning flag', () => {
-    it('should show the correct message if singeStaffRecord is true', async () => {
+    it('should show the input message if orangeFlagMessage is passed in', async () => {
+      const inputMessage = 'New staff record';
       const overrides = {
         currentWdfEligibility: false,
         overallWdfEligibility: true,
-        singeStaffRecord: true,
+        orangeFlagMessage: inputMessage,
       };
       const { getByTestId } = await setup(overrides);
       const requirementsStateText = getByTestId('requirements-state');
 
       expect(getByTestId('orange-flag')).toBeTruthy();
-      expect(within(requirementsStateText).getByText('New staff record')).toBeTruthy();
+      expect(within(requirementsStateText).getByText(inputMessage)).toBeTruthy();
     });
 
-    it('should show the correct message if singeStaffRecord false', async () => {
+    it('should show the default not meeting message if no orange flag message passed in', async () => {
       const overrides = {
         currentWdfEligibility: false,
         overallWdfEligibility: true,
-        singeStaffRecord: false,
       };
       const { getByTestId } = await setup(overrides);
       const requirementsStateText = getByTestId('requirements-state');

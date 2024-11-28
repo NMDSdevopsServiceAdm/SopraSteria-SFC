@@ -42,6 +42,18 @@ describe('WdfWorkplacesSummaryComponent', () => {
     },
   ];
 
+  const overallEligible = {
+    overall: true,
+    staff: true,
+    workplace: true,
+  };
+
+  const allIneligible = {
+    overall: false,
+    staff: false,
+    workplace: false,
+  };
+
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfWorkplacesSummaryComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
@@ -97,29 +109,113 @@ describe('WdfWorkplacesSummaryComponent', () => {
   });
 
   describe('Table', () => {
-    const overallEligible = {
-      overall: true,
-      staff: true,
-      workplace: true,
-    };
-
-    const allIneligible = {
-      overall: false,
-      staff: false,
-      workplace: false,
-    };
-
-    it('should display two green ticks for each workplace when the workplace has qualified for WDF and the workplace and staff records are eligible', async () => {
-      const workplaces = mockWorkplaces();
-      workplaces[0].wdf = overallEligible;
-      workplaces[1].wdf = overallEligible;
-
-      const { getAllByText } = await setup({ workplaces });
+    describe('eligibility messages', () => {
       const greenTickVisuallyHiddenMessage = 'Green tick';
       const meetingMessage = 'Meeting';
+      const redFlagVisuallyHiddenMessage = 'Red flag';
+      const notMeetingMessage = 'Not meeting';
+      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
-      expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(4);
-      expect(getAllByText(meetingMessage, { exact: true }).length).toBe(4);
+      it('should display two green ticks for each workplace when the workplace has qualified for funding and the workplace and staff records are eligible', async () => {
+        const workplaces = mockWorkplaces();
+        workplaces[0].wdf = overallEligible;
+        workplaces[1].wdf = overallEligible;
+
+        const { getAllByText } = await setup({ workplaces });
+
+        expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(4);
+        expect(getAllByText(meetingMessage, { exact: true }).length).toBe(4);
+      });
+
+      it('should display two red flags for workplace when the workplace has not qualified for funding and the workplace and staff records are ineligible', async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: allIneligible,
+          },
+        ];
+
+        const { getAllByText } = await setup({ workplaces });
+
+        expect(getAllByText(redFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+        expect(getAllByText(notMeetingMessage, { exact: true }).length).toBe(2);
+      });
+
+      it('should display one red flag and one green for workplace when the workplace has not qualified for funding, workplace is eligible but staff records are ineligible', async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: {
+              overall: false,
+              staff: false,
+              workplace: true,
+            },
+          },
+        ];
+
+        const { getByText } = await setup({ workplaces });
+
+        expect(getByText(redFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
+        expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText(meetingMessage, { exact: true })).toBeTruthy();
+      });
+
+      it('should display one red flag and one green for workplace when the workplace has not qualified for funding, staff records are eligible but workplace is ineligible', async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: {
+              overall: false,
+              staff: true,
+              workplace: false,
+            },
+          },
+        ];
+
+        const { getByText } = await setup({ workplaces });
+
+        expect(getByText(redFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
+        expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText(meetingMessage, { exact: true })).toBeTruthy();
+      });
+
+      it("should display orange flag and 'Number of staff mismatch' message when the workplace has qualified for funding but workplace is ineligible", async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: {
+              overall: true,
+              staff: true,
+              workplace: false,
+            },
+          },
+        ];
+
+        const { getByText } = await setup({ workplaces });
+
+        expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText('Number of staff mismatch', { exact: true })).toBeTruthy();
+      });
+
+      it("should display orange flag and 'New staff records' message when the workplace has qualified for funding but staff records are ineligible", async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: {
+              overall: true,
+              staff: false,
+              workplace: true,
+            },
+          },
+        ];
+
+        const { getByText } = await setup({ workplaces });
+
+        expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText('New staff records', { exact: true })).toBeTruthy();
+      });
     });
 
     it('should not display a link for workplaces without rights', async () => {
@@ -143,16 +239,6 @@ describe('WdfWorkplacesSummaryComponent', () => {
       const { getAllByText } = await setup({ workplaces });
 
       expect(getAllByText('Test Workplace', { exact: false })[0].outerHTML).toContain('</a>');
-    });
-
-    it('canViewWorkplace should return true if parent', async () => {
-      const { component } = await setup();
-
-      const workplace = component.workplaces[0];
-      workplace.isParent = true;
-
-      const canViewWorkplace = component.canViewWorkplace(workplace);
-      expect(canViewWorkplace).toBeTruthy(true);
     });
 
     describe('sortByColumn', async () => {

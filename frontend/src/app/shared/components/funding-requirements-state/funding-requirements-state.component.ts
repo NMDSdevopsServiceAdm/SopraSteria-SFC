@@ -1,13 +1,11 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-funding-requirements-state',
   templateUrl: './funding-requirements-state.component.html',
 })
-export class FundingRequirementsStateComponent implements OnInit {
+export class FundingRequirementsStateComponent {
   @Input() overallWdfEligibility: boolean;
   @Input() currentWdfEligibility: boolean;
-  @Input() singeStaffRecord: boolean;
-
-  ngOnInit(): void {}
+  @Input() orangeFlagMessage: string;
 }
