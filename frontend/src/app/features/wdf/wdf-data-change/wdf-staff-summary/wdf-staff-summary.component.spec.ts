@@ -28,7 +28,7 @@ import { WdfModule } from '../wdf.module';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 
 describe('WdfStaffSummaryComponent', () => {
-  const setup = async (overrides: any = {}) => {
+  const setup = async (overrides: { componentProperties?: any; report?: any } = {}) => {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
@@ -37,7 +37,7 @@ describe('WdfStaffSummaryComponent', () => {
         imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule, RouterModule],
         declarations: [PaginationComponent, TablePaginationWrapperComponent, SearchInputComponent],
         providers: [
-          { provide: ReportService, useClass: MockReportService },
+          { provide: ReportService, useFactory: MockReportService.factory(overrides?.report) },
           {
             provide: PermissionsService,
             useFactory: MockPermissionsService.factory(['canViewWorker']),
@@ -64,7 +64,7 @@ describe('WdfStaffSummaryComponent', () => {
           wdfView: true,
           workers: workers,
           workerCount: workers.length,
-          ...overrides,
+          ...overrides?.componentProperties,
         },
       });
     const component = fixture.componentInstance;
@@ -117,7 +117,7 @@ describe('WdfStaffSummaryComponent', () => {
 
     for (const option of sortByOptions) {
       it(`should call getAllWorkers with sortBy set to ${option[1]} when sorting by ${option[2]}`, async () => {
-        const { fixture, getAllWorkersSpy, getByLabelText } = await setup(true);
+        const { fixture, getAllWorkersSpy, getByLabelText } = await setup();
 
         const select = getByLabelText('Sort by', { exact: false });
         fireEvent.change(select, { target: { value: option[0] } });
@@ -141,7 +141,9 @@ describe('WdfStaffSummaryComponent', () => {
 
     it('should display the label for the search input', async () => {
       const overrides = {
-        workerCount: 16,
+        componentProperties: {
+          workerCount: 16,
+        },
       };
 
       const { fixture, getByText, getByLabelText, getAllWorkersSpy } = await setup(overrides);
@@ -160,7 +162,9 @@ describe('WdfStaffSummaryComponent', () => {
 
     it('should reset the pageIndex before calling getAllWorkers when handling search', async () => {
       const overrides = {
-        workerCount: 16,
+        componentProperties: {
+          workerCount: 16,
+        },
       };
 
       const { getAllWorkersSpy, getByLabelText } = await setup(overrides);
@@ -171,8 +175,10 @@ describe('WdfStaffSummaryComponent', () => {
 
     it('should display the message when there is no staff', async () => {
       const overrides = {
-        workers: [],
-        workerCount: 0,
+        componentProperties: {
+          workers: [],
+          workerCount: 0,
+        },
       };
 
       const { getByTestId } = await setup(overrides);
@@ -186,86 +192,105 @@ describe('WdfStaffSummaryComponent', () => {
     });
   });
 
-  it('should display green ticks on 3 staff records when the user has qualified for WDF and all staff records are eligible', async () => {
-    const { component, fixture, getAllByText } = await setup();
+  describe('Eligibility icons for staff', () => {
+    const redFlagVisuallyHiddenMessage = 'Red flag';
     const greenTickVisuallyHiddenMessage = 'Green tick';
-    const meetingMessage = 'Meeting';
-
-    component.overallWdfEligibility = true;
-    component.workers[0].wdfEligible = true;
-    component.workers[1].wdfEligible = true;
-    component.workers[2].wdfEligible = true;
-    fixture.detectChanges();
-
-    expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(3);
-    expect(getAllByText(meetingMessage, { exact: true }).length).toBe(3);
-  });
-
-  it('should display an orange flag on staff record when the user has qualified for WDF but 1 staff record is no longer eligible', async () => {
-    const { component, fixture, getByText } = await setup();
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
     const notMeetingMessage = 'Not meeting';
-
-    component.overallWdfEligibility = true;
-    component.workers[0].wdfEligible = false;
-    component.workers[1].wdfEligible = true;
-    component.workers[2].wdfEligible = true;
-    fixture.detectChanges();
-
-    expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
-  });
-
-  it('should display one orange flag and two green flags when the user has qualified for WDF but 1 staff record is no longer eligible and two still are', async () => {
-    const { component, fixture, getByText, getAllByText } = await setup();
-    const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
-    const notMeetingMessage = 'Not meeting';
-    const greenTickVisuallyHiddenMessage = 'Green tick';
     const meetingMessage = 'Meeting';
 
-    component.overallWdfEligibility = true;
-    component.workers[0].wdfEligible = false;
-    component.workers[1].wdfEligible = true;
-    component.workers[2].wdfEligible = true;
-    fixture.detectChanges();
+    it('should display green ticks on 3 staff records when the user has qualified for WDF and all staff records are eligible', async () => {
+      const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+      workers[0].wdfEligible = true;
+      workers[1].wdfEligible = true;
+      workers[2].wdfEligible = true;
+      const overrides = {
+        componentProperties: {
+          workers,
+        },
+        report: { wdf: { overall: true } },
+      };
 
-    expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
-    expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(2);
-    expect(getAllByText(meetingMessage, { exact: true }).length).toBe(2);
-  });
+      const { getAllByText } = await setup(overrides);
 
-  it('should display a red flag on staff record when the user has not qualified for WDF overall and 1 staff record is not eligible', async () => {
-    const { component, fixture, getByText } = await setup();
-    const redFlagVisuallyHiddenMessage = 'Red flag';
-    const notMeetingMessage = 'Not meeting';
+      expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(3);
+      expect(getAllByText(meetingMessage, { exact: true }).length).toBe(3);
+    });
 
-    component.overallWdfEligibility = false;
-    component.workers[0].wdfEligible = false;
-    component.workers[1].wdfEligible = true;
-    component.workers[2].wdfEligible = true;
-    fixture.detectChanges();
+    it('should display an orange flag on staff record when the user has qualified for WDF but 1 staff record is no longer eligible', async () => {
+      const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+      workers[0].wdfEligible = false;
+      workers[1].wdfEligible = true;
+      workers[2].wdfEligible = true;
+      const overrides = {
+        componentProperties: {
+          workers,
+        },
+        report: { wdf: { overall: true } },
+      };
 
-    expect(getByText(redFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
-  });
+      const { getByText } = await setup(overrides);
 
-  it('should display two red flags and one green tick when the user has not qualified for WDF but 1 staff record is eligible and two are not', async () => {
-    const { component, fixture, getByText, getAllByText } = await setup();
-    const redFlagVisuallyHiddenMessage = 'Red flag';
-    const notMeetingMessage = 'Not meeting';
-    const greenTickVisuallyHiddenMessage = 'Green tick';
-    const meetingMessage = 'Meeting';
+      expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
+    });
 
-    component.overallWdfEligibility = false;
-    component.workers[0].wdfEligible = false;
-    component.workers[1].wdfEligible = true;
-    component.workers[2].wdfEligible = false;
-    fixture.detectChanges();
+    it('should display one orange flag and two green flags when the user has qualified for WDF but 1 staff record is no longer eligible and two still are', async () => {
+      const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+      workers[0].wdfEligible = false;
+      workers[1].wdfEligible = true;
+      workers[2].wdfEligible = true;
+      const overrides = {
+        componentProperties: {
+          workers,
+        },
+        report: { wdf: { overall: true } },
+      };
 
-    expect(getAllByText(redFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
-    expect(getAllByText(notMeetingMessage, { exact: true }).length).toBe(2);
-    expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-    expect(getByText(meetingMessage, { exact: true })).toBeTruthy();
+      const { getByText, getAllByText } = await setup(overrides);
+
+      expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
+      expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+      expect(getAllByText(meetingMessage, { exact: true }).length).toBe(2);
+    });
+
+    it('should display a red flag on staff record when the user has not qualified for WDF overall and 1 staff record is not eligible', async () => {
+      const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+      workers[0].wdfEligible = false;
+      workers[1].wdfEligible = true;
+      workers[2].wdfEligible = true;
+      const overrides = {
+        componentProperties: {
+          workers,
+        },
+        report: { wdf: { overall: false } },
+      };
+
+      const { getByText } = await setup(overrides);
+
+      expect(getByText(redFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
+    });
+
+    it('should display two red flags and one green tick when the user has not qualified for WDF but 1 staff record is eligible and two are not', async () => {
+      const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
+      workers[0].wdfEligible = false;
+      workers[1].wdfEligible = true;
+      workers[2].wdfEligible = false;
+      const overrides = {
+        componentProperties: {
+          workers,
+        },
+        report: { wdf: { overall: false } },
+      };
+
+      const { getByText, getAllByText } = await setup(overrides);
+
+      expect(getAllByText(redFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+      expect(getAllByText(notMeetingMessage, { exact: true }).length).toBe(2);
+      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(getByText(meetingMessage, { exact: true })).toBeTruthy();
+    });
   });
 });
