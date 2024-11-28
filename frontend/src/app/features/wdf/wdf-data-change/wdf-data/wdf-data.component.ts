@@ -4,6 +4,7 @@ import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
+import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -34,6 +35,7 @@ export class WdfDataComponent implements OnInit {
   public wdfStartDate: string;
   public wdfEndDate: string;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
+  public returnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
   private activeTabIndex: number;
   public parentOverallWdfEligibility: boolean;
@@ -69,9 +71,11 @@ export class WdfDataComponent implements OnInit {
       this.primaryWorkplaceNmdsId = this.establishmentService.primaryWorkplace.nmdsId;
 
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
+      this.returnUrl = { url: ['/wdf', 'workplaces', this.workplaceUid] };
     } else {
       this.viewingSub = false;
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
+      this.returnUrl = { url: ['/wdf', 'data'] };
     }
 
     this.canViewWorker = this.permissionsService.can(this.workplaceUid, 'canViewWorker');
@@ -91,6 +95,7 @@ export class WdfDataComponent implements OnInit {
   private setWorkplace(): void {
     this.workplace = this.route.snapshot.data.workplace;
     this.isParent = this.workplace.isParent;
+    this.establishmentService.setState(this.workplace);
 
     if (this.workplace.isParent) {
       this.tabs.push({ name: 'Your other workplaces', fragment: 'workplaces' });
