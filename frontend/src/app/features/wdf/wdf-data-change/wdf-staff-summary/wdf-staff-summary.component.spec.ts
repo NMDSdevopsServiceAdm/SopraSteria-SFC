@@ -32,42 +32,41 @@ describe('WdfStaffSummaryComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
-    const { fixture, getByText, getAllByText, getByTestId, queryByText, getByLabelText, queryByLabelText } =
-      await render(WdfStaffSummaryComponent, {
-        imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule, RouterModule],
-        declarations: [PaginationComponent, TablePaginationWrapperComponent, SearchInputComponent],
-        providers: [
-          { provide: ReportService, useFactory: MockReportService.factory(overrides?.report) },
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(['canViewWorker']),
-            deps: [HttpClient, Router, UserService],
-          },
-          WorkerService,
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                queryParamMap: {
-                  get: sinon.fake(),
-                },
-                params: {
-                  establishmentuid: establishment.uid,
-                },
+    const setupTools = await render(WdfStaffSummaryComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule, RouterModule],
+      declarations: [PaginationComponent, TablePaginationWrapperComponent, SearchInputComponent],
+      providers: [
+        { provide: ReportService, useFactory: MockReportService.factory(overrides?.report) },
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(['canViewWorker']),
+          deps: [HttpClient, Router, UserService],
+        },
+        WorkerService,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              queryParamMap: {
+                get: sinon.fake(),
+              },
+              params: {
+                establishmentuid: establishment.uid,
               },
             },
           },
-          { provide: EstablishmentService, useClass: MockEstablishmentService },
-        ],
-        componentProperties: {
-          workplace: establishment,
-          wdfView: true,
-          workers: workers,
-          workerCount: workers.length,
-          ...overrides?.componentProperties,
         },
-      });
-    const component = fixture.componentInstance;
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
+      ],
+      componentProperties: {
+        workplace: establishment,
+        wdfView: true,
+        workers: workers,
+        workerCount: workers.length,
+        ...overrides?.componentProperties,
+      },
+    });
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
@@ -78,14 +77,8 @@ describe('WdfStaffSummaryComponent', () => {
     );
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByTestId,
-      queryByText,
-      getByLabelText,
-      queryByLabelText,
       router,
       getAllWorkersSpy,
     };
