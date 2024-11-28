@@ -273,6 +273,12 @@ describe('StartersComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'leavers']);
   });
 
+  it('should return to vacancies page when you click on the back link', async () => {
+    const { component } = await setup();
+
+    expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'do-you-have-vacancies']);
+  });
+
   describe('errors', () => {
     it('should show an error if the job role and number of starters are not filled in, and neither radio button has been selected', async () => {
       const { fixture, getByText, getAllByText } = await setup();

@@ -28,6 +28,12 @@ import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.
 import { SanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
 
 import {
+  AccordionGroupComponent,
+} from './components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import {
+  AccordionSectionComponent,
+} from './components/accordions/generic-accordion/accordion-section/accordion-section.component';
+import {
   GroupedRadioButtonAccordionComponent,
 } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import {
@@ -294,6 +300,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewTrainingLinkPanelComponent,
     CertificationsTableComponent,
     SelectUploadFileComponent,
+    AccordionGroupComponent,
+    AccordionSectionComponent,
     SelectUploadCertificateComponent,
   ],
   exports: [
@@ -415,6 +423,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewTrainingLinkPanelComponent,
     CertificationsTableComponent,
     SelectUploadFileComponent,
+    AccordionGroupComponent,
+    AccordionSectionComponent,
     SelectUploadCertificateComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
