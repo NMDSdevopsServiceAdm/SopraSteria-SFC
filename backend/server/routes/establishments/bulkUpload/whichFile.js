@@ -1,11 +1,22 @@
 const WorkplaceCSVValidator = require('../../../models/BulkImport/csv/workplaceCSVValidator').WorkplaceCSVValidator;
 
 const isWorkerFile = (fileAsString) => {
-  //TODO investiagte
-  const contentRegex1 = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI/;
-  const contentRegex2 = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,/;
+  const headersRegexBaseCase = /LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,/;
+  const headersRegexChangeUniqueWorkerId = /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,/;
+  const headersRegexTransferStaffRecord = /LOCALESTID,UNIQUEWORKERID,TRANSFERSTAFFRECORD,STATUS,DISPLAYID,/;
+  const headersRegexChangeUniqueWorkerIdTransferStaffRecord =
+    /LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,TRANSFERSTAFFRECORD,STATUS,DISPLAYID,/;
 
-  return contentRegex1.test(fileAsString.substring(0, 50)) || contentRegex2.test(fileAsString.substring(0, 50));
+  const regexToCheckHeaders = [
+    headersRegexBaseCase,
+    headersRegexChangeUniqueWorkerId,
+    headersRegexTransferStaffRecord,
+    headersRegexChangeUniqueWorkerIdTransferStaffRecord,
+  ];
+
+  const headerRow = fileAsString.split('\n')[0];
+
+  return regexToCheckHeaders.some((regex) => regex.test(headerRow));
 };
 
 const isTrainingFile = (fileAsString) => {

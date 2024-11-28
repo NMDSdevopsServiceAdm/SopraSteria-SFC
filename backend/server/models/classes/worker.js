@@ -11,6 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 uuidv4();
 
 // database models
+const { Op } = require('sequelize');
 const models = require('../index');
 
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
@@ -75,6 +76,8 @@ class Worker extends EntityValidator {
 
     // bulk upload status - this is never stored in database
     this._status = bulkUploadStatus;
+
+    this._transferStaffRecord = null;
   }
 
   // returns true if valid establishment id
@@ -191,6 +194,14 @@ class Worker extends EntityValidator {
 
   get status() {
     return this._status;
+  }
+
+  get transferStaffRecord() {
+    return this._transferStaffRecord;
+  }
+
+  get newWorkplaceId() {
+    return this._newWorkplaceId;
   }
 
   get contract() {
@@ -353,6 +364,14 @@ class Worker extends EntityValidator {
       // bulk upload status
       if (document.status) {
         this._status = document.status;
+      }
+
+      if (document.transferStaffRecord) {
+        this._transferStaffRecord = document.transferStaffRecord;
+      }
+
+      if (document.newWorkplaceId) {
+        this._newWorkplaceId = document.newWorkplaceId;
       }
 
       // Consequential updates when one value means another should be empty or null
@@ -549,11 +568,11 @@ class Worker extends EntityValidator {
           currentTrainingRecord.workerId = this._id;
           currentTrainingRecord.workerUid = this._uid;
           currentTrainingRecord.establishmentId = this._establishmentId;
-          newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
+          newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, externalTransaction));
         });
       }
 
-      if (bulkUploaded && ['NEW', 'UPDATE', 'CHGSUB'].includes(this.status)) {
+      if (bulkUploaded && ['NEW', 'UPDATE'].includes(this.status)) {
         const qualificationHelper = new BulkUploadQualificationHelper({
           workerId: this._id,
           workerUid: this._uid,
@@ -670,7 +689,6 @@ class Worker extends EntityValidator {
           if (associatedEntities) {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
           }
-
           if (this.nurseSpecialisms && this.nurseSpecialisms.value === 'Yes') {
             await models.workerNurseSpecialisms.bulkCreate(
               this.nurseSpecialisms.specialisms.map((thisSpecialism) => ({
@@ -746,6 +764,10 @@ class Worker extends EntityValidator {
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
           };
+
+          if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord && this.newWorkplaceId) {
+            updateDocument.establishmentFk = this.newWorkplaceId;
+          }
 
           if (this._changeLocalIdentifer) {
             // during bulk upload only, if the change local identifier value is set, then when saving this worker, update it's local identifier;
@@ -1350,6 +1372,14 @@ class Worker extends EntityValidator {
       // bulk upload status
       if (this._status !== null) {
         myDefaultJSON.status = this._status;
+      }
+
+      if (this._transferStaffRecord !== null) {
+        myDefaultJSON.transferStaffRecord = this._transferStaffRecord;
+      }
+
+      if (this._newWorkplaceId !== null) {
+        myDefaultJSON.newWorkplaceId = this._newWorkplaceId;
       }
 
       // TODO: JSON schema validation
