@@ -268,7 +268,6 @@ const routes: Routes = [
         path: 'do-you-have-vacancies',
         component: DoYouHaveVacanciesComponent,
         canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Do You Have Vacancies',
@@ -307,7 +306,6 @@ const routes: Routes = [
         path: 'do-you-have-starters',
         component: DoYouHaveStartersComponent,
         canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Do You Have Starters',
@@ -317,7 +315,6 @@ const routes: Routes = [
         path: 'do-you-have-leavers',
         component: DoYouHaveLeaversComponent,
         canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Do You Have Leavers',
