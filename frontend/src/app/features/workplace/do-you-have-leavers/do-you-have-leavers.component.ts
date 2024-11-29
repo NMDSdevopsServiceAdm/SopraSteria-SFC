@@ -10,7 +10,7 @@ export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacancies
   public heading = 'Have you had any staff leave in the last 12 months?';
   public hintText = 'We only want to know about leavers who have left permanent and temporary job roles.';
   public revealText =
-    "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
+    'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
   public localStorageKey = 'hasLeavers';
   public valueToUpdate = 'leavers';
 

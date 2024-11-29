@@ -80,7 +80,7 @@ describe('DoYouHaveLeaversComponent', () => {
 
     const reveal = getByText('Why we ask for this information');
     const revealText = getByText(
-      "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.",
+      'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.',
     );
 
     expect(reveal).toBeTruthy();
