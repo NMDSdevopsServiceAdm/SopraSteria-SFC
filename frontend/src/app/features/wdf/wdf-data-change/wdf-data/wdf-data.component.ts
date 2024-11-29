@@ -102,10 +102,12 @@ export class WdfDataComponent implements OnInit {
       this.getParentAndSubs();
     }
 
-    this.route.fragment.subscribe((fragment) => {
-      const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
-      this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
-    });
+    this.subscriptions.add(
+      this.route.fragment.subscribe((fragment) => {
+        const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
+        this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
+      }),
+    );
   }
 
   private getWorkers(): void {
