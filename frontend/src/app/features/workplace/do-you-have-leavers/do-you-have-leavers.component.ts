@@ -15,9 +15,9 @@ export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacancies
   public valueToUpdate = 'leavers';
 
   protected setupRoutes(): void {
-    this.previousRoute = ['/workplace', this.establishment?.uid, 'how-many-starters'];
     this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'recruitment-advertising-cost'];
     this.startersLeaversOrVacanciesPageTwo = 'select-leaver-job-roles';
+    this.previousRoute = this.getPreviousRoute('starters');
   }
 
   protected getDataFromEstablishment(): any {

@@ -4,7 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { jobOptionsEnum } from '@core/model/establishment.model';
+import { jobOptionsEnum, Starter } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
@@ -22,9 +22,11 @@ describe('DoYouHaveLeaversComponent', () => {
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, overrides?.returnUrl, {
-            leavers: overrides?.leavers,
-          }),
+          useFactory: MockEstablishmentService.factory(
+            { cqc: null, localAuthorities: null },
+            overrides?.returnUrl,
+            overrides?.workplace,
+          ),
           deps: [HttpClient],
         },
       ],
@@ -98,7 +100,9 @@ describe('DoYouHaveLeaversComponent', () => {
   describe('Prefilling form', () => {
     it('should not prefill the form when no leavers in workplace data', async () => {
       const overrides = {
-        leavers: null,
+        workplace: {
+          leavers: null,
+        },
       };
 
       const { component } = await setup(overrides);
@@ -124,7 +128,7 @@ describe('DoYouHaveLeaversComponent', () => {
     ].forEach(({ leavers, radioOption }) => {
       it(`should preselect ${radioOption} if there was a saved value`, async () => {
         const overrides = {
-          leavers,
+          workplace: { leavers },
         };
         const { component } = await setup(overrides);
 
@@ -144,7 +148,7 @@ describe('DoYouHaveLeaversComponent', () => {
     });
 
     it("should preselect 'Yes' if hasLeavers is true and the database has a different value", async () => {
-      const overrides = { leavers: jobOptionsEnum.NONE };
+      const overrides = { workplace: { leavers: jobOptionsEnum.NONE } };
       localStorage.setItem('hasLeavers', 'true');
 
       const { component } = await setup(overrides);
@@ -227,12 +231,46 @@ describe('DoYouHaveLeaversComponent', () => {
       expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
     });
 
-    it('should return to how many starters page when you click on the back link', async () => {
-      const overrides = { returnUrl: false };
+    describe('Back link', () => {
+      it('should set back link to go to how many starters page when workplace has starters', async () => {
+        const starters: Starter[] = [
+          {
+            jobId: 10,
+            title: 'Care worker',
+            total: null,
+          },
+        ];
 
-      const { component } = await setup(overrides);
+        const overrides = { returnUrl: false, workplace: { starters } };
 
-      expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'how-many-starters']);
+        const { component } = await setup(overrides);
+
+        expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'how-many-starters']);
+      });
+
+      it('should set back link to go to do you have starters page when workplace does not have starters', async () => {
+        const overrides = { returnUrl: false, workplace: { starters: jobOptionsEnum.NONE } };
+
+        const { component } = await setup(overrides);
+
+        expect(component.previousRoute).toEqual([
+          '/workplace',
+          `${component.establishment.uid}`,
+          'do-you-have-starters',
+        ]);
+      });
+
+      it("should set back link to go to do you have starters page when starters response is don't know", async () => {
+        const overrides = { returnUrl: false, workplace: { starters: jobOptionsEnum.DONT_KNOW } };
+
+        const { component } = await setup(overrides);
+
+        expect(component.previousRoute).toEqual([
+          '/workplace',
+          `${component.establishment.uid}`,
+          'do-you-have-starters',
+        ]);
+      });
     });
   });
 

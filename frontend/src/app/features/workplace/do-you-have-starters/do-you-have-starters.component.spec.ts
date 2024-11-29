@@ -1,15 +1,16 @@
-import { fireEvent, render, within } from '@testing-library/angular';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { SharedModule } from '@shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpClient } from '@angular/common/http';
-import { jobOptionsEnum } from '@core/model/establishment.model';
-import { getTestBed } from '@angular/core/testing';
+import { jobOptionsEnum, Vacancy } from '@core/model/establishment.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
+
 import { DoYouHaveStartersComponent } from './do-you-have-starters.component';
 
 describe('DoYouHaveStartersComponent', () => {
@@ -21,9 +22,11 @@ describe('DoYouHaveStartersComponent', () => {
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, overrides?.returnUrl, {
-            starters: overrides?.starters,
-          }),
+          useFactory: MockEstablishmentService.factory(
+            { cqc: null, localAuthorities: null },
+            overrides?.returnUrl,
+            overrides?.workplace,
+          ),
           deps: [HttpClient],
         },
       ],
@@ -95,18 +98,10 @@ describe('DoYouHaveStartersComponent', () => {
     expect(getByLabelText('I do not know')).toBeTruthy();
   });
 
-  it('should return to how many vacancies page when you click on the back link', async () => {
-    const overrides = { returnUrl: false };
-
-    const { component } = await setup(overrides);
-
-    expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'how-many-vacancies']);
-  });
-
   describe('prefill form', () => {
     it('should not prefill the form', async () => {
       const overrides = {
-        starters: null,
+        workplace: { starters: null },
       };
 
       const { component } = await setup(overrides);
@@ -134,7 +129,7 @@ describe('DoYouHaveStartersComponent', () => {
     starterAnswers.forEach((test: any) => {
       it(`should preselect ${test.value} if there was a saved value`, async () => {
         const overrides = {
-          starters: test.starterAnswer,
+          workplace: { starters: test.starterAnswer },
         };
         const { component } = await setup(overrides);
 
@@ -158,7 +153,7 @@ describe('DoYouHaveStartersComponent', () => {
     });
 
     it("should preselect 'Yes' if hasStarters is true and the database has a different value", async () => {
-      const overrides = { returnUrl: false, starters: jobOptionsEnum.NONE };
+      const overrides = { returnUrl: false, workplace: { starters: jobOptionsEnum.NONE } };
 
       const { component } = await setup(overrides);
 
@@ -319,6 +314,52 @@ describe('DoYouHaveStartersComponent', () => {
         fireEvent.click(link);
 
         expect(setSubmitActionSpy).toHaveBeenCalledWith({ action: 'skip', save: false });
+      });
+
+      describe('Back link', () => {
+        it('should set back link to go to how many vacancies page when workplace has vacancies', async () => {
+          const vacancies: Vacancy[] = [
+            {
+              jobId: 10,
+              title: 'Care worker',
+              total: null,
+            },
+          ];
+
+          const overrides = { returnUrl: false, workplace: { vacancies } };
+
+          const { component } = await setup(overrides);
+
+          expect(component.previousRoute).toEqual([
+            '/workplace',
+            `${component.establishment.uid}`,
+            'how-many-vacancies',
+          ]);
+        });
+
+        it('should set back link to go to do you have vacancies page when workplace does not have vacancies', async () => {
+          const overrides = { returnUrl: false, workplace: { vacancies: jobOptionsEnum.NONE } };
+
+          const { component } = await setup(overrides);
+
+          expect(component.previousRoute).toEqual([
+            '/workplace',
+            `${component.establishment.uid}`,
+            'do-you-have-vacancies',
+          ]);
+        });
+
+        it("should set back link to go to do you have vacancies page when vacancies response is don't know", async () => {
+          const overrides = { returnUrl: false, workplace: { vacancies: jobOptionsEnum.DONT_KNOW } };
+
+          const { component } = await setup(overrides);
+
+          expect(component.previousRoute).toEqual([
+            '/workplace',
+            `${component.establishment.uid}`,
+            'do-you-have-vacancies',
+          ]);
+        });
       });
     });
 

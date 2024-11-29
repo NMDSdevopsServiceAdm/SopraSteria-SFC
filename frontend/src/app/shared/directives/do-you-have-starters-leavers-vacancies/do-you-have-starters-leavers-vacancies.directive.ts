@@ -110,6 +110,14 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
     );
   }
 
+  protected getPreviousRoute(field: string): Array<string> {
+    if (Array.isArray(this.establishment[field]) && this.establishment[field].length > 0) {
+      return ['/workplace', this.establishment?.uid, `how-many-${field}`];
+    } else {
+      return ['/workplace', this.establishment?.uid, `do-you-have-${field}`];
+    }
+  }
+
   protected onSuccess(): void {
     if (this.hasSelectedYesWithoutSavingJobRoles) {
       this.nextRoute = ['/workplace', `${this.establishment.uid}`, this.startersLeaversOrVacanciesPageTwo];
