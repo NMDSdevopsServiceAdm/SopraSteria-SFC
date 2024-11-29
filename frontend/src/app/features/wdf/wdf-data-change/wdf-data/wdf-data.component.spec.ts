@@ -1,5 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -11,15 +12,12 @@ import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockReportService } from '@core/test-utils/MockReportService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
-import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { getByText, render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import { of } from 'rxjs';
 
 import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
@@ -28,12 +26,15 @@ import { WdfDataComponent } from './wdf-data.component';
 
 describe('WdfDataComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfDataComponent, {
+    const setupTools = await render(WdfDataComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
-      declarations: [WdfStaffSummaryComponent, WdfSummaryPanel],
+      declarations: [WdfStaffSummaryComponent],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
         { provide: ReportService, useClass: MockReportService },
         { provide: WorkerService, useClass: MockWorkerService },
         {
@@ -41,11 +42,19 @@ describe('WdfDataComponent', () => {
           useFactory: MockPermissionsService.factory(['canViewWorker', 'canEditWorker']),
           deps: [HttpClient, Router, UserService],
         },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: UserService,
+          useValue: {
+            getEstablishments: () => of(overrides.getEstablishments ?? null),
+          },
+        },
         {
           provide: ActivatedRoute,
           useValue: {
-            snapshot: { params: { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } },
+            snapshot: {
+              data: { workplace: overrides.workplace ?? establishmentBuilder() },
+              params: overrides.viewingSub ? { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } : {},
+            },
             fragment: of(overrides.fragment ?? undefined),
           },
         },
@@ -54,9 +63,11 @@ describe('WdfDataComponent', () => {
         workerCount: 1,
       },
     });
-    const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+    const component = setupTools.fixture.componentInstance;
+    const establishmentService = TestBed.inject(EstablishmentService);
+
+    return { ...setupTools, component, establishmentService };
   };
 
   it('should render a WdfDataComponent', async () => {
@@ -71,44 +82,158 @@ describe('WdfDataComponent', () => {
   });
 
   describe('Header', () => {
-    it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
-      const { component, getByTestId } = await setup();
+    describe('Parent or standalone', () => {
+      it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
+        const workplace = establishmentBuilder();
+        workplace.name = 'Test Workplace';
+        workplace.nmdsId = 'AB123456';
 
+        const { getByText } = await setup({ workplace });
 
-      expect(getByTestId('pre-header').innerHTML).toContain(component.workplace.name);
-      expect(getByTestId('pre-header').innerHTML).toContain(component.workplace.nmdsId);
-    })
+        expect(getByText(`${workplace.name} (Workplace ID: ${workplace.nmdsId})`)).toBeTruthy();
+      });
 
-    it('should display header text', async () => {
-      const { component, getByText } = await setup();
-      const headerText = 'Your data';
+      it('should display header text', async () => {
+        const { getByText } = await setup();
+        const headerText = 'Your data';
 
-      expect(getByText(headerText)).toBeTruthy();
-    })
-  })
+        expect(getByText(headerText)).toBeTruthy();
+      });
+    });
+
+    describe('Viewing sub workplace', () => {
+      it('should display the parent workplace name and nmds ID in brackets in caption above title', async () => {
+        const { establishmentService, getByText } = await setup({ viewingSub: true });
+        const parentName = establishmentService.primaryWorkplace.name;
+        const parentNmdsId = establishmentService.primaryWorkplace.nmdsId;
+
+        expect(getByText(`${parentName} (Workplace ID: ${parentNmdsId})`)).toBeTruthy();
+      });
+
+      it('should display the sub workplace name and data in title', async () => {
+        const workplace = establishmentBuilder();
+        workplace.name = 'Test Sub Workplace';
+
+        const { getByText } = await setup({ workplace, viewingSub: true });
+
+        expect(getByText(`${workplace.name}: data`)).toBeTruthy();
+      });
+    });
+  });
 
   describe('Tabs', () => {
     it('should display the workplace tab when no fragment in params', async () => {
       const { fixture, getByTestId } = await setup();
 
-      fixture.detectChanges()
+      fixture.detectChanges();
       expect(getByTestId('workplaceSummaryTab')).toBeTruthy();
     });
 
     it('should display the workplace tab when workplace fragment in params', async () => {
       const { fixture, getByTestId } = await setup({ fragment: 'workplace' });
 
-      fixture.detectChanges()
+      fixture.detectChanges();
       expect(getByTestId('workplaceSummaryTab')).toBeTruthy();
     });
 
     it('should display the staff records tab when staff-records fragment in params', async () => {
       const { fixture, getByTestId } = await setup({ fragment: 'staff' });
 
-      fixture.detectChanges()
+      fixture.detectChanges();
       expect(getByTestId('staffRecordsTab')).toBeTruthy();
     });
-  })
+
+    it("should have 'Your other workplaces' tab when workplace is parent", async () => {
+      const workplace = establishmentBuilder();
+      workplace.isParent = true;
+
+      const { getByTestId } = await setup({ workplace });
+
+      const tabSection = getByTestId('tabSection');
+
+      expect(within(tabSection).queryByText('Your other workplaces')).toBeTruthy();
+    });
+
+    it('should display the Your other workplaces tab on page load when workplaces fragment in params', async () => {
+      const { fixture, getByTestId } = await setup({ workplace: { isParent: true }, fragment: 'workplaces' });
+
+      fixture.detectChanges();
+      expect(getByTestId('yourOtherWorkplacesTab')).toBeTruthy();
+    });
+
+    it("should not have 'Your other workplaces' tab when workplace is not parent", async () => {
+      const workplace = establishmentBuilder();
+      workplace.isParent = false;
+
+      const { getByTestId } = await setup({ workplace });
+
+      const tabSection = getByTestId('tabSection');
+
+      expect(within(tabSection).queryByText('Your other workplaces')).toBeFalsy();
+    });
+  });
+
+  describe('Your other workplaces row in summary panel', () => {
+    let getEstablishments;
+
+    beforeEach(() => {
+      const parent = establishmentBuilder();
+      parent.isParent = true;
+
+      getEstablishments = {
+        primary: parent,
+        subsidaries: {
+          count: 2,
+          establishments: [establishmentBuilder(), establishmentBuilder()],
+        },
+      };
+    });
+
+    it('should display the row when workplace is parent', async () => {
+      const { getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(yourOtherWorkplacesRow).toBeTruthy();
+    });
+
+    it('should display the met funding requirements message when parent and subs all have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: true };
+
+      const { getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(within(yourOtherWorkplacesRow).getByTestId('met-funding-message')).toBeTruthy();
+    });
+
+    it('should display the not meeting funding requirements message when parent does not have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: false };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: true };
+
+      const { getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(within(yourOtherWorkplacesRow).getByTestId('not-met-funding-message')).toBeTruthy();
+    });
+
+    it('should display the not meeting funding requirements message when one sub does not have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: false };
+
+      const { fixture, getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      fixture.detectChanges();
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(within(yourOtherWorkplacesRow).getByTestId('not-met-funding-message')).toBeTruthy();
+    });
+  });
 
   describe('getStaffWdfEligibility', () => {
     it('should return true when all workers are WDF eligible', async () => {

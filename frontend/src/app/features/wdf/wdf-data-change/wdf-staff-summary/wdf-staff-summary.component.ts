@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -13,8 +13,6 @@ import { orderBy } from 'lodash';
   templateUrl: './wdf-staff-summary.component.html',
 })
 export class WdfStaffSummaryComponent extends StaffSummaryDirective implements OnInit {
-  @Input() standAloneAccount: boolean;
-
   public workplaceUid: string;
   public primaryWorkplaceUid: string;
   public overallWdfEligibility: boolean;

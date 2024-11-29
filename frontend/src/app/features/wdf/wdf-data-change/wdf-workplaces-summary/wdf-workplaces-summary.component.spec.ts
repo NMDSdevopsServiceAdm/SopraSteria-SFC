@@ -4,6 +4,7 @@ import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -22,8 +23,39 @@ import { WdfModule } from '../wdf.module';
 import { WdfWorkplacesSummaryComponent } from './wdf-workplaces-summary.component';
 
 describe('WdfWorkplacesSummaryComponent', () => {
-  const setup = async (viewPermission?) => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfWorkplacesSummaryComponent, {
+  const mockWorkplaces = (): any[] => [
+    {
+      name: 'Workplace name',
+      wdf: {
+        overall: true,
+        staff: true,
+        workplace: true,
+      },
+    },
+    {
+      name: 'Workplace name 2',
+      wdf: {
+        overall: true,
+        staff: true,
+        workplace: true,
+      },
+    },
+  ];
+
+  const overallEligible = {
+    overall: true,
+    staff: true,
+    workplace: true,
+  };
+
+  const allIneligible = {
+    overall: false,
+    staff: false,
+    workplace: false,
+  };
+
+  const setup = async (overrides: any = {}) => {
+    const setupTools = await render(WdfWorkplacesSummaryComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
@@ -32,16 +64,20 @@ describe('WdfWorkplacesSummaryComponent', () => {
         { provide: UserService, useClass: MockUserService },
         {
           provide: PermissionsService,
-          useFactory: viewPermission
+          useFactory: overrides.viewPermission
             ? MockPermissionsService.factory(['canViewEstablishment'])
             : MockPermissionsService.factory(['canEditEstablishment']),
           deps: [HttpClient, Router, UserService],
         },
       ],
+      componentProperties: {
+        workplaces: mockWorkplaces(),
+        ...overrides,
+      },
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+    return { ...setupTools, component };
   };
 
   it('should render a WdfWorkplacesSummaryComponent', async () => {
@@ -49,82 +85,242 @@ describe('WdfWorkplacesSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the download a WDF report when the user has edit permissions', async () => {
+  it('should show the download your funding report link when user has edit permissions', async () => {
     const { getByText } = await setup();
-    expect(getByText('Download your WDF report (Excel)', { exact: false })).toBeTruthy();
+    expect(getByText('Download your funding report (Excel)', { exact: false })).toBeTruthy();
   });
 
-  it('should not show the download a WDF report when the user has view permissions', async () => {
-    const { queryByText } = await setup(true);
-    expect(queryByText('Download your WDF report (Excel)', { exact: false })).toBeFalsy();
+  it('should not show the download your funding report link when user only has view permissions', async () => {
+    const { queryByText } = await setup({ viewPermission: true });
+    expect(queryByText('Download your funding report (Excel)', { exact: false })).toBeFalsy();
   });
 
-  it('should download a WDF report when the download link is clicked', async () => {
+  it('should download the funding report when the download link is clicked', async () => {
     const { fixture, getByText } = await setup();
 
     const reportService = TestBed.inject(ReportService);
     const getReport = spyOn(reportService, 'getParentWDFReport').and.callFake(() => of(null));
     const saveAs = spyOn(fixture.componentInstance, 'saveFile').and.callFake(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
-    fireEvent.click(getByText('Download your WDF report (Excel)', { exact: false }));
+    fireEvent.click(getByText('Download your funding report (Excel)', { exact: false }));
 
     expect(getReport).toHaveBeenCalled();
     expect(saveAs).toHaveBeenCalled();
   });
 
-  describe('WdfParentStatusMessageComponent', async () => {
-    it('should display the correct message and timeframe if meeting WDF requirements', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `All your workplaces' data meets the WDF ${year} to ${year + 1} requirements`;
+  describe('Table', () => {
+    describe('eligibility messages', () => {
+      const greenTickVisuallyHiddenMessage = 'Green tick';
+      const meetingMessage = 'Meeting';
+      const redFlagVisuallyHiddenMessage = 'Red flag';
+      const notMeetingMessage = 'Not meeting';
+      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
 
-      component.parentOverallEligibilityStatus = true;
-      component.parentCurrentEligibilityStatus = true;
-      fixture.detectChanges();
+      it('should display two green ticks for each workplace when the workplace has qualified for funding and the workplace and staff records are eligible', async () => {
+        const workplaces = mockWorkplaces();
+        workplaces[0].wdf = overallEligible;
+        workplaces[1].wdf = overallEligible;
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
+        const { getAllByText } = await setup({ workplaces });
+
+        expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(4);
+        expect(getAllByText(meetingMessage, { exact: true }).length).toBe(4);
+      });
+
+      it('should display two red flags for workplace when the workplace has not qualified for funding and the workplace and staff records are ineligible', async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: allIneligible,
+          },
+        ];
+
+        const { getAllByText } = await setup({ workplaces });
+
+        expect(getAllByText(redFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+        expect(getAllByText(notMeetingMessage, { exact: true }).length).toBe(2);
+      });
+
+      it('should display one red flag and one green for workplace when the workplace has not qualified for funding, workplace is eligible but staff records are ineligible', async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: {
+              overall: false,
+              staff: false,
+              workplace: true,
+            },
+          },
+        ];
+
+        const { getByText } = await setup({ workplaces });
+
+        expect(getByText(redFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
+        expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText(meetingMessage, { exact: true })).toBeTruthy();
+      });
+
+      it('should display one red flag and one green for workplace when the workplace has not qualified for funding, staff records are eligible but workplace is ineligible', async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: {
+              overall: false,
+              staff: true,
+              workplace: false,
+            },
+          },
+        ];
+
+        const { getByText } = await setup({ workplaces });
+
+        expect(getByText(redFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
+        expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText(meetingMessage, { exact: true })).toBeTruthy();
+      });
+
+      it("should display orange flag and 'Number of staff mismatch' message when the workplace has qualified for funding but workplace is ineligible", async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: {
+              overall: true,
+              staff: true,
+              workplace: false,
+            },
+          },
+        ];
+
+        const { getByText } = await setup({ workplaces });
+
+        expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText('Number of staff mismatch', { exact: true })).toBeTruthy();
+      });
+
+      it("should display orange flag and 'New staff records' message when the workplace has qualified for funding but staff records are ineligible", async () => {
+        const workplaces = [
+          {
+            name: 'Workplace name',
+            wdf: {
+              overall: true,
+              staff: false,
+              workplace: true,
+            },
+          },
+        ];
+
+        const { getByText } = await setup({ workplaces });
+
+        expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+        expect(getByText('New staff records', { exact: true })).toBeTruthy();
+      });
     });
 
-    it('should display the correct message if workplaces have met WDF requirements this year but not meeting currently', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Your workplaces met the WDF ${year} to ${
-        year + 1
-      } requirements, but updating those currently shown as 'not meeting' will save you time next year.`;
+    it('should not display a link for workplaces without rights', async () => {
+      const workplaces = mockWorkplaces();
+      workplaces[0].isParent = false;
+      workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
+      workplaces[0].dataPermissions = DataPermissions.None;
+      workplaces[0].name = 'Test Workplace';
 
-      component.parentOverallEligibilityStatus = true;
-      component.parentCurrentEligibilityStatus = false;
-      fixture.detectChanges();
+      const { getAllByText } = await setup({ workplaces });
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
+      expect(getAllByText('Test Workplace', { exact: false })[0].outerHTML).toContain('<p>');
     });
 
-    it('should display the correct message if workplaces have not met WDF requirements this year', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Some of your workplaces' data does not meet the WDF ${year} to ${
-        year + 1
-      } requirements`;
+    it('should display a link for workplaces with rights to at least workplace', async () => {
+      const workplaces = mockWorkplaces();
+      workplaces[0].dataPermissions = DataPermissions.Workplace;
+      workplaces[0].name = 'Test Workplace';
+      workplaces[0].dataOwner = WorkplaceDataOwner.Workplace;
 
-      component.parentOverallEligibilityStatus = false;
-      component.parentCurrentEligibilityStatus = false;
-      fixture.detectChanges();
+      const { getAllByText } = await setup({ workplaces });
 
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
+      expect(getAllByText('Test Workplace', { exact: false })[0].outerHTML).toContain('</a>');
     });
-  });
 
-  describe('workplace rendering', async () => {
-    it('Should not display a sub workplace with a ustatus of PENDING or IN PROGRESS', async () => {
-      const { fixture } = await setup();
-      const wdfWorkplaceTableRows = fixture.nativeElement.querySelectorAll('tr');
-      const rowOne = wdfWorkplaceTableRows[1];
+    describe('sortByColumn', async () => {
+      it('should put workplaces not meeting WDF at top of table when sorting by WDF requirements (not meeting)', async () => {
+        const workplaces = mockWorkplaces();
+        workplaces[0].wdf = overallEligible;
+        workplaces[1].wdf = allIneligible;
 
-      //One array location as headings, another as the primary workplace and the final as the only valid sub account
-      expect(wdfWorkplaceTableRows.length).toEqual(3);
-      expect(rowOne.cells['0'].innerHTML).toContain('First Subsid Workplace');
-      expect(rowOne.cells['1'].innerHTML).toContain('Not meeting');
-      expect(rowOne.cells['2'].innerHTML).toContain('Not meeting');
+        const { component, fixture } = await setup({ workplaces });
+
+        fixture.componentInstance.sortByColumn('1_not_meeting');
+
+        const sortedWorkplaces = component.workplaces;
+
+        expect(sortedWorkplaces[0].wdf.overall).toEqual(false);
+        expect(sortedWorkplaces[1].wdf.overall).toEqual(true);
+      });
+
+      it('should put workplaces not meeting for either workplace or staff record at top of table when sorting by funding requirements (not meeting)', async () => {
+        const workplaces = mockWorkplaces();
+        workplaces[0].wdf.overall = false;
+        workplaces[0].wdf.workplace = false;
+        workplaces[0].wdf.staff = true;
+
+        workplaces[1].wdf = allIneligible;
+
+        const { component, fixture } = await setup({ workplaces });
+
+        fixture.componentInstance.sortByColumn('1_not_meeting');
+        const sortedWorkplaces = component.workplaces;
+
+        expect(sortedWorkplaces[0].wdf.workplace).toEqual(false);
+        expect(sortedWorkplaces[0].wdf.staff).toEqual(false);
+        expect(sortedWorkplaces[1].wdf.workplace).toEqual(false);
+        expect(sortedWorkplaces[1].wdf.staff).toEqual(true);
+      });
+
+      it('should put workplaces not meeting (red flag) before those meeting with changes (orange flags) when sorting by funding requirements (not meeting)', async () => {
+        const workplaces = mockWorkplaces();
+        workplaces[0].wdf.overall = false;
+        workplaces[0].wdf.workplace = true;
+        workplaces[0].wdf.staff = false;
+
+        workplaces[1].wdf.overall = true;
+        workplaces[1].wdf.workplace = true;
+        workplaces[1].wdf.staff = false;
+
+        const { component, fixture } = await setup({ workplaces });
+
+        fixture.componentInstance.sortByColumn('1_not_meeting');
+        const sortedWorkplaces = component.workplaces;
+
+        expect(sortedWorkplaces[0].wdf.overall).toEqual(false);
+        expect(sortedWorkplaces[0].wdf.workplace).toEqual(true);
+        expect(sortedWorkplaces[0].wdf.staff).toEqual(false);
+
+        expect(sortedWorkplaces[1].wdf.overall).toEqual(true);
+        expect(sortedWorkplaces[1].wdf.workplace).toEqual(true);
+        expect(sortedWorkplaces[1].wdf.staff).toEqual(false);
+      });
+
+      it('should put workplaces meeting WDF with changes (orange flags) before those not meeting (red crosses) when sorting by WDF requirements (meeting)', async () => {
+        const workplaces = mockWorkplaces();
+        workplaces[0].wdf = allIneligible;
+
+        workplaces[1].wdf.overall = true;
+        workplaces[1].wdf.workplace = false;
+        workplaces[1].wdf.staff = true;
+
+        const { component, fixture } = await setup({ workplaces });
+
+        fixture.componentInstance.sortByColumn('2_meeting');
+        const sortedWorkplaces = component.workplaces;
+
+        expect(sortedWorkplaces[0].wdf.overall).toEqual(true);
+        expect(sortedWorkplaces[0].wdf.workplace).toEqual(false);
+        expect(sortedWorkplaces[0].wdf.staff).toEqual(true);
+
+        expect(sortedWorkplaces[1].wdf.overall).toEqual(false);
+        expect(sortedWorkplaces[1].wdf.workplace).toEqual(false);
+        expect(sortedWorkplaces[1].wdf.staff).toEqual(false);
+      });
     });
   });
 });

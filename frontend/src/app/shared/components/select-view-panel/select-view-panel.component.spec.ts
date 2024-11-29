@@ -5,7 +5,7 @@ import { SelectViewPanelComponent } from './select-view-panel.component';
 
 describe('SelectViewPanelComponent', () => {
   async function setup(overrides: any = {}) {
-    const setupSuite = await render(SelectViewPanelComponent, {
+    const setupTools = await render(SelectViewPanelComponent, {
       imports: [],
       declarations: [],
       providers: [],
@@ -21,13 +21,13 @@ describe('SelectViewPanelComponent', () => {
       },
     });
 
-    const component = setupSuite.fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const handleTabChangeSpy = spyOn(component.handleTabChange, 'emit').and.callThrough();
 
     return {
       component,
       handleTabChangeSpy,
-      ...setupSuite,
+      ...setupTools,
     };
   }
 
@@ -43,14 +43,14 @@ describe('SelectViewPanelComponent', () => {
         { name: 'Tab1', fragment: 'tab1' },
       ];
 
-      const setupSuite = await setup({ tabs, ...overrides });
+      const setupTools = await setup({ tabs, ...overrides });
 
-      const firstTab = setupSuite.getByTestId('tab0');
-      const secondTab = setupSuite.getByTestId('tab1');
+      const firstTab = setupTools.getByTestId('tab0');
+      const secondTab = setupTools.getByTestId('tab1');
       const firstTabLink = within(firstTab).getByText(tabs[0].name);
       const secondTabLink = within(secondTab).getByText(tabs[1].name);
 
-      return { ...setupSuite, firstTab, secondTab, firstTabLink, secondTabLink, tabs };
+      return { ...setupTools, firstTab, secondTab, firstTabLink, secondTabLink, tabs };
     }
 
     it('should set the first tab as active on load if no activeTabIndex passed in', async () => {
@@ -63,7 +63,7 @@ describe('SelectViewPanelComponent', () => {
     });
 
     it('should set the second tab as active on load if activeTabIndex passed in as 1', async () => {
-      const { fixture, firstTab, firstTabLink, secondTab, secondTabLink } = await setupTwoTabs({ activeTabIndex: 1 });
+      const { firstTab, firstTabLink, secondTab, secondTabLink } = await setupTwoTabs({ activeTabIndex: 1 });
 
       expect(secondTab.getAttribute('class')).toContain('asc-tabs__list-item--active');
       expect(secondTabLink.getAttribute('class')).toContain('asc-tabs__link--active');
@@ -100,6 +100,48 @@ describe('SelectViewPanelComponent', () => {
       fireEvent.click(firstTabLink);
 
       expect(handleTabChangeSpy).toHaveBeenCalledWith(0);
+    });
+  });
+
+  describe('More than two tabs', () => {
+    async function setupThreeTabs(overrides = {}) {
+      const tabs = [
+        { name: 'Tab0', fragment: 'tab0' },
+        { name: 'Tab1', fragment: 'tab1' },
+        { name: 'Tab2', fragment: 'tab2' },
+      ];
+
+      const setupTools = await setup({ tabs, ...overrides });
+
+      const thirdTab = setupTools.getByTestId('tab2');
+      const thirdTabLink = within(thirdTab).getByText(tabs[2].name);
+
+      return { ...setupTools, thirdTab, thirdTabLink, tabs };
+    }
+
+    it('should set the third tab as active on load if activeTabIndex passed in as 2', async () => {
+      const { thirdTab, thirdTabLink } = await setupThreeTabs({ activeTabIndex: 2 });
+
+      expect(thirdTab.getAttribute('class')).toContain('asc-tabs__list-item--active');
+      expect(thirdTabLink.getAttribute('class')).toContain('asc-tabs__link--active');
+    });
+
+    it('should set the third tab as active after clicking third tab', async () => {
+      const { fixture, thirdTab, thirdTabLink } = await setupThreeTabs({ activeTabIndex: 0 });
+
+      fireEvent.click(thirdTabLink);
+      fixture.detectChanges();
+
+      expect(thirdTab.getAttribute('class')).toContain('asc-tabs__list-item--active');
+      expect(thirdTabLink.getAttribute('class')).toContain('asc-tabs__link--active');
+    });
+
+    it('should emit handleTabChange with third index (2) when third tab is clicked', async () => {
+      const { thirdTabLink, handleTabChangeSpy } = await setupThreeTabs({ activeTabIndex: 0 });
+
+      fireEvent.click(thirdTabLink);
+
+      expect(handleTabChangeSpy).toHaveBeenCalledWith(2);
     });
   });
 });

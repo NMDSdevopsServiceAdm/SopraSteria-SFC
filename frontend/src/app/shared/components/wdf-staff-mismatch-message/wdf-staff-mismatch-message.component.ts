@@ -78,7 +78,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
 
   public setStaffRecordsUrl(): void {
     if (this.route.snapshot.params.establishmentuid && this.primaryWorkplaceUid !== this.workplace.uid) {
-      this.staffRecordsUrl = { url: ['/workplace', this.workplace.uid], fragment: 'staff-records' };
+      this.staffRecordsUrl = { url: ['/subsidiary', this.workplace.uid, 'staff-records'] };
     } else {
       this.staffRecordsUrl = { url: ['/dashboard'], fragment: 'staff-records' };
     }

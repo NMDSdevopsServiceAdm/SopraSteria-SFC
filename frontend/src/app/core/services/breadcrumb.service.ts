@@ -35,7 +35,7 @@ import {
 } from '@core/breadcrumb/journey.parent-requests';
 import { publicJourney } from '@core/breadcrumb/journey.public';
 import { subsidiaryJourney } from '@core/breadcrumb/journey.subsidiary';
-import { wdfJourney, wdfParentJourney } from '@core/breadcrumb/journey.wdf';
+import { wdfJourney } from '@core/breadcrumb/journey.wdf';
 import {
   allWorkplacesJourney,
   benchmarksTabJourney,
@@ -251,10 +251,6 @@ export class BreadcrumbService {
       }
       case JourneyType.WDF: {
         routes = wdfJourney;
-        break;
-      }
-      case JourneyType.WDF_PARENT: {
-        routes = wdfParentJourney;
         break;
       }
       case JourneyType.BENCHMARKS_SUBSIDIARIES_PAY: {

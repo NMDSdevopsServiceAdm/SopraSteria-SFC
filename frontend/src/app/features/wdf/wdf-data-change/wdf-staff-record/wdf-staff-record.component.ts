@@ -69,8 +69,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
         this.isStandalone = this.checkIfStandalone();
-        this.setBreadcrumbs();
-        this.establishmentService.setState(workplace);
+        this.breadcrumbService.show(JourneyType.WDF);
       }),
     );
   }
@@ -99,10 +98,10 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   private setExitUrl(): void {
     if (this.route.snapshot.params.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
-      this.exitUrl = { url: ['/wdf', 'workplaces', this.workplaceUid], fragment: 'staff-records' };
+      this.exitUrl = { url: ['/wdf', 'workplaces', this.workplaceUid], fragment: 'staff' };
     } else {
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
-      this.exitUrl = { url: ['/wdf', 'data'], fragment: 'staff-records' };
+      this.exitUrl = { url: ['/wdf', 'data'], fragment: 'staff' };
     }
   }
 
@@ -114,12 +113,6 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
       return !this.workplace.isParent;
     }
     return true;
-  }
-
-  private setBreadcrumbs(): void {
-    this.isStandalone
-      ? this.breadcrumbService.show(JourneyType.WDF)
-      : this.breadcrumbService.show(JourneyType.WDF_PARENT);
   }
 
   private setNewWdfReturn(): void {
