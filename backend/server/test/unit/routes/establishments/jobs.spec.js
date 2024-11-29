@@ -1,8 +1,6 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
-const { build, fake, sequence, oneOf } = require('@jackfranklin/test-data-bot');
 const httpMocks = require('node-mocks-http');
-const moment = require('moment');
 const lodash = require('lodash');
 
 const models = require('../../../../models/index');
@@ -10,7 +8,7 @@ const { Establishment } = require('../../../../models/classes/establishment');
 const { establishmentBuilder } = require('../../../factories/models');
 const { getJobs, updateJobs } = require('../../../../routes/establishments/jobs');
 
-describe.only('backend/server/routes/establishments/jobs.js', () => {
+describe('backend/server/routes/establishments/jobs.js', () => {
   const mockEstablishment = establishmentBuilder();
   mockEstablishment.VacanciesValue = 'With Jobs';
   mockEstablishment.StartersValue = 'With Jobs';
@@ -51,13 +49,23 @@ describe.only('backend/server/routes/establishments/jobs.js', () => {
   ];
 
   beforeEach(() => {
-    sinon.stub(console, 'log'); // suppress irrelevant console.log calls
     sinon.stub(models.establishment, 'findOne').resolves(mockEstablishment);
+    sinon.stub(models.job, 'findAll').resolves([
+      { id: 10, title: 'Care worker' },
+      { id: 17, title: 'Nursing associate' },
+      { id: 15, title: 'Senior care worker' },
+      { id: 20, title: 'Other (directly involved in providing care)' },
+    ]);
+
     sinon.stub(models.services, 'findOne').resolves(null);
     sinon.stub(models.serviceUsers, 'findAll').resolves([]);
+    sinon.stub(models.establishmentServiceUsers, 'findAll').resolves([]);
+    sinon.stub(models.establishmentServices, 'findAll').resolves([]);
+    sinon.stub(models.establishmentAudit, 'findAll').resolves([]);
     sinon.stub(models.establishmentCapacity, 'findAll').resolves([]);
     sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').resolves(null);
     sinon.stub(Establishment.prototype, 'isWdfEligible').resolves({ currentEligibility: false });
+    sinon.stub(models.sequelize, 'transaction').callsFake((func) => func('fake-transaction'));
 
     sinon
       .stub(models.establishmentJobs, 'findAll')
