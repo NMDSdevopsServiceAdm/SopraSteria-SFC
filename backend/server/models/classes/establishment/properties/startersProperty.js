@@ -46,7 +46,7 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
             jobId: thisJob.reference.id,
             title: thisJob.reference.title,
             total: thisJob.total,
-            ...(thisJob.other ? { other: thisJob.other } : {}),
+            other: thisJob.other ? thisJob.other : null,
           };
         });
       return restoredProperty;
