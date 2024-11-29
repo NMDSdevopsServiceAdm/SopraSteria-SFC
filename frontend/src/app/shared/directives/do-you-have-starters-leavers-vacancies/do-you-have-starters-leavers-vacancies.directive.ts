@@ -45,10 +45,12 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
 
   public init(): void {
     this.setupForm();
-    this.setPageVariables();
     this.prefillForm();
     this.setupRoutes();
   }
+
+  protected setupRoutes(): void {}
+  protected getDataFromEstablishment(): any {}
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
@@ -56,17 +58,9 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
     });
   }
 
-  protected setupRoutes(): void {}
-
-  protected setPageVariables(): void {}
-
   protected getFromLocalStorage(): boolean {
     return localStorage.getItem(this.localStorageKey) === 'true' ? true : false;
   }
-
-  protected setToLocalStorage(): void {}
-
-  protected getDataFromEstablishment(): any {}
 
   protected prefillForm(): void {
     this.dataFromEstablishment = this.getDataFromEstablishment();
