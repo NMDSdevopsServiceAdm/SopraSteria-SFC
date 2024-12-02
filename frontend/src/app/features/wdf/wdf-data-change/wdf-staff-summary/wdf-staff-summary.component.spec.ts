@@ -189,6 +189,7 @@ describe('WdfStaffSummaryComponent', () => {
     const redFlagVisuallyHiddenMessage = 'Red flag';
     const greenTickVisuallyHiddenMessage = 'Green tick';
     const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
+    const newStaffRecordMessage = 'New staff record';
     const notMeetingMessage = 'Not meeting';
     const meetingMessage = 'Meeting';
 
@@ -210,7 +211,7 @@ describe('WdfStaffSummaryComponent', () => {
       expect(getAllByText(meetingMessage, { exact: true }).length).toBe(3);
     });
 
-    it('should display an orange flag on staff record when the user has qualified for WDF but 1 staff record is no longer eligible', async () => {
+    it("should display an orange flag and 'New staff record' on staff record when the user has qualified for WDF but 1 staff record is not eligible (new)", async () => {
       const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
       workers[0].wdfEligible = false;
       workers[1].wdfEligible = true;
@@ -225,10 +226,10 @@ describe('WdfStaffSummaryComponent', () => {
       const { getByText } = await setup(overrides);
 
       expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-      expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
+      expect(getByText(newStaffRecordMessage, { exact: true })).toBeTruthy();
     });
 
-    it('should display one orange flag and two green flags when the user has qualified for WDF but 1 staff record is no longer eligible and two still are', async () => {
+    it('should display one orange flag and two green flags when the user has qualified for WDF but 1 staff record is not eligible and two still are', async () => {
       const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
       workers[0].wdfEligible = false;
       workers[1].wdfEligible = true;
@@ -243,7 +244,7 @@ describe('WdfStaffSummaryComponent', () => {
       const { getByText, getAllByText } = await setup(overrides);
 
       expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-      expect(getByText(notMeetingMessage, { exact: true })).toBeTruthy();
+      expect(getByText(newStaffRecordMessage, { exact: true })).toBeTruthy();
       expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(2);
       expect(getAllByText(meetingMessage, { exact: true }).length).toBe(2);
     });
