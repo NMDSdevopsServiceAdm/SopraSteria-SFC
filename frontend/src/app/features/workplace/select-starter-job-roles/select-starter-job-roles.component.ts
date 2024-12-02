@@ -29,7 +29,7 @@ export class SelectStarterJobRolesComponent extends SelectJobRolesDirective {
     const startersFromDatabase = Array.isArray(this.establishment.starters) ? this.establishment.starters : [];
     const updatedStarters: Starter[] = selectedJobIds.map((jobId) => {
       const job = this.jobsAvailable.find((job) => job.id === jobId);
-      const starterCount = startersFromDatabase.find((vacancy) => vacancy.jobId === jobId)?.total ?? null;
+      const starterCount = startersFromDatabase.find((starter) => starter.jobId === jobId)?.total ?? null;
       if (job.id === this.jobIdOfOtherCareProvidingRole && otherCareProvidingRoleName) {
         return { jobId, title: job.title, total: starterCount, other: otherCareProvidingRoleName };
       }
