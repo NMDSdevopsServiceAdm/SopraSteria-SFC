@@ -12,31 +12,33 @@ h1 {
 
   .asc-job-role-numbers-table__row {
     display: grid;
-    grid-template-columns: 2fr minmax(0, 1fr);
+    grid-template-columns: 2fr minmax(0, 1.1fr);
     text-align: left;
+    align-items: baseline;
+    border-bottom: 1px solid $govuk-border-colour;
 
     .asc-job-role-numbers-table__cell {
-      border-bottom: 1px solid $govuk-border-colour;
       padding: 10px 20px 10px 0;
 
       &--align-center {
         @extend .asc-job-role-numbers-table__cell;
         display: flex;
-        align-items: center;
       }
       &--no-border {
         @extend .asc-job-role-numbers-table__cell;
         border-bottom: none;
+        margin-bottom: 2px;
+        padding-bottom: 0px;
       }
       &--number-input-column {
         @extend .asc-job-role-numbers-table__cell;
-        @media only screen and (min-width: 40.0625em) {
-          margin-right: -10px;
-        }
       }
       &--number-input-header {
         @extend .asc-job-role-numbers-table__cell--number-input-column;
         padding-right: 0px;
+      }
+      &--border-bottom {
+        border-bottom: 1px solid $govuk-border-colour;
       }
       input {
         width: 100%;
@@ -54,10 +56,16 @@ h1 {
       grid-column: 1 / span 2;
       padding: 5px 0 0 15px;
       margin-top: 10px;
+      margin-bottom: -10px;
 
       p {
         margin-bottom: 5px;
       }
+    }
+
+    &--no-border {
+      @extend .asc-job-role-numbers-table__row;
+      border-bottom: none;
     }
   }
 }

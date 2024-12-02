@@ -119,6 +119,21 @@ fdescribe('HowManyStartersComponent', () => {
           expect(numberInput).toBeTruthy();
         });
       });
+
+      it('should show the job role title together with additonal optional text if given', async () => {
+        const selectedJobRoles = [
+          {
+            jobId: 20,
+            title: 'Other (directly involved in providing care)',
+            other: 'Special care worker',
+            total: null,
+          },
+        ];
+        const { getByText } = await setup({ selectedJobRoles });
+
+        const expectedText = 'Other (directly involved in providing care): Special care worker';
+        expect(getByText(expectedText)).toBeTruthy();
+      });
     });
   });
 
@@ -195,6 +210,26 @@ fdescribe('HowManyStartersComponent', () => {
             { jobId: 10, total: 2 },
             { jobId: 23, total: 4 },
           ],
+        });
+      });
+
+      it('should call updateJobs with any optional job role name from previous page', async () => {
+        const selectedJobRoles = [
+          {
+            jobId: 20,
+            title: 'Other (directly involved in providing care)',
+            other: 'Special care worker',
+            total: null,
+          },
+        ];
+        const { component, getByRole, updateJobsSpy } = await setup({ selectedJobRoles });
+        const jobRoleTitle = 'Other (directly involved in providing care): Special care worker';
+
+        userEvent.type(getInputBoxForJobRole(jobRoleTitle), '5');
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+
+        expect(updateJobsSpy).toHaveBeenCalledWith(component.establishment.uid, {
+          starters: [{ jobId: 20, total: 5, other: 'Special care worker' }],
         });
       });
 

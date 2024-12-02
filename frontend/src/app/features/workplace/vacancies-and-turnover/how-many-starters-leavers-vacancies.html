@@ -44,8 +44,11 @@
                   <span class="asc-job-role-numbers-table__cell--align-center">
                     <span class="govuk-util__block" [class.govuk-form-group--error]="submitted && numberInput.errors">
                       <label for="jobRole-{{ i }}" class="govuk-label">
-                        <span class="govuk-visually-hidden">Number of {{ jobRoleType }} for</span>{{
-                        selectedJobRoles[i].title }}
+                        <span class="govuk-visually-hidden">Number of {{ jobRoleType }} for</span>
+                        <ng-container *ngIf="selectedJobRoles[i].other?.length; else jobRoleTitleOnly">
+                          {{selectedJobRoles[i].title + ': ' + selectedJobRoles[i].other}}
+                        </ng-container>
+                        <ng-template #jobRoleTitleOnly> {{selectedJobRoles[i].title}} </ng-template>
                       </label>
                     </span>
                   </span>
@@ -64,14 +67,17 @@
                   </span>
                 </div>
               </ng-container>
-              <div class="asc-job-role-numbers-table__row">
-                <span class="asc-job-role-numbers-table__cell--no-border"></span>
-                <span class="asc-job-role-numbers-table__cell--number-input-column govuk-util__bold">Total</span>
-              </div>
-              <div class="asc-job-role-numbers-table__row">
-                <span class="asc-job-role-numbers-table__cell--no-border"></span>
+              <div class="asc-job-role-numbers-table__row--no-border">
+                <span class="asc-job-role-numbers-table__cell"></span>
                 <span
-                  class="asc-job-role-numbers-table__cell--number-input-column govuk-util__bold"
+                  class="asc-job-role-numbers-table__cell--number-input-column asc-job-role-numbers-table__cell--border-bottom govuk-util__bold"
+                  >Total</span
+                >
+              </div>
+              <div class="asc-job-role-numbers-table__row--no-border">
+                <span class="asc-job-role-numbers-table__cell"></span>
+                <span
+                  class="asc-job-role-numbers-table__cell--number-input-column asc-job-role-numbers-table__cell--border-bottom govuk-util__bold"
                   data-testid="total-number"
                   >{{ totalNumber }}</span
                 >
