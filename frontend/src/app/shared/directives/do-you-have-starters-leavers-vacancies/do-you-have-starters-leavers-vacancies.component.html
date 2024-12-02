@@ -1,3 +1,5 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+
 <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
@@ -17,6 +19,9 @@
         </app-details>
 
         <div class="govuk-form-group govuk-!-margin-bottom-3">
+          <span id="startersLeaversVacanciesKnown-error" class="govuk-error-message" *ngIf="submitted && form.invalid"
+            >{{ requiredWarningMessage }}
+          </span>
           <div class="govuk-radios">
             <div class="govuk-radios__item" *ngFor="let option of knownOptions; let i = index">
               <input

@@ -13,6 +13,7 @@ export class DoYouHaveStartersComponent extends DoYouHaveStartersLeaversVacancie
   public valueToUpdate = 'starters';
   public revealText =
     "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
+  public requiredWarningMessage = "Select yes if you've had any new starters in the last 12 months";
 
   protected setupRoutes(): void {
     this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'do-you-have-leavers'];

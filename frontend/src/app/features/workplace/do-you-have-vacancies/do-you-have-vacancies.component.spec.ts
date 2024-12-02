@@ -1,15 +1,16 @@
-import { fireEvent, render, within } from '@testing-library/angular';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { HttpClient } from '@angular/common/http';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { SharedModule } from '@shared/shared.module';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { HttpClient } from '@angular/common/http';
 import { jobOptionsEnum } from '@core/model/establishment.model';
-import { getTestBed } from '@angular/core/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { WindowRef } from '@core/services/window.ref';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render, within } from '@testing-library/angular';
+
 import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies.component';
 
 describe('DoYouHaveVacanciesComponent', () => {
@@ -391,6 +392,18 @@ describe('DoYouHaveVacanciesComponent', () => {
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
       });
+    });
+  });
+
+  describe('Validation', () => {
+    it('should display required warning message when user submits without inputting answer', async () => {
+      const { fixture, getByText, getAllByText } = await setup();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(getAllByText("Select yes if you've any current staff vacancies").length).toBe(2);
     });
   });
 

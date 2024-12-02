@@ -13,6 +13,7 @@ export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacancies
     'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
   public localStorageKey = 'hasLeavers';
   public valueToUpdate = 'leavers';
+  public requiredWarningMessage = "Select yes if you've had any staff leave in the last 12 months";
 
   protected setupRoutes(): void {
     this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'recruitment-advertising-cost'];

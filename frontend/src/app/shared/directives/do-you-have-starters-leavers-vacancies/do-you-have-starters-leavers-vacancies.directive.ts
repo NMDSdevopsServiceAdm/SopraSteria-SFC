@@ -1,5 +1,5 @@
-import { Directive, OnInit } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
+import { Directive } from '@angular/core';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
@@ -8,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Question } from '@features/workplace/question/question.component';
 
 @Directive({})
-export class DoYouHaveStartersLeaversVacanciesDirective extends Question implements OnInit {
+export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
   public section = 'Vacancies and turnover';
   public heading: string;
   public hintText: string;
@@ -18,6 +18,7 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
   public localStorageKey: string;
   public startersLeaversOrVacanciesPageTwo: string;
   public valueToUpdate: string;
+  public requiredWarningMessage: string;
   public knownOptions = [
     {
       label: 'Yes',
@@ -54,8 +55,22 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      startersLeaversVacanciesKnown: null,
+      startersLeaversVacanciesKnown: [null, [Validators.required]],
     });
+  }
+
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'startersLeaversVacanciesKnown',
+        type: [
+          {
+            name: 'required',
+            message: this.requiredWarningMessage,
+          },
+        ],
+      },
+    ];
   }
 
   protected getFromLocalStorage(): boolean {

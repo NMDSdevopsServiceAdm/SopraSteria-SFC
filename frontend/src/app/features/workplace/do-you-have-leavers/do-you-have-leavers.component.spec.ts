@@ -408,6 +408,18 @@ describe('DoYouHaveLeaversComponent', () => {
     });
   });
 
+  describe('Validation', () => {
+    it('should display required warning message when user submits without inputting answer', async () => {
+      const { fixture, getByText, getAllByText } = await setup();
+
+      const continueButton = getByText('Continue');
+      fireEvent.click(continueButton);
+      fixture.detectChanges();
+
+      expect(getAllByText("Select yes if you've had any staff leave in the last 12 months").length).toBe(2);
+    });
+  });
+
   describe('progress-bar', () => {
     it('should render the section, the question but not the progress bar when not in the flow', async () => {
       const overrides = { returnUrl: true };
