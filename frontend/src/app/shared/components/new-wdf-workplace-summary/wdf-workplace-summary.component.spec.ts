@@ -771,6 +771,14 @@ describe('WDFWorkplaceSummaryComponent', () => {
     });
 
     describe('New starters', () => {
+      it('should show the correct wording', async () => {
+        const { getByTestId } = await setup();
+
+        const startersRow = getByTestId('starters');
+
+        expect(within(startersRow).getByText('New starters in the last 12 months')).toBeTruthy();
+      });
+
       it('should show dash and have Add information button on when starters is null', async () => {
         const { component, fixture } = await setup();
 
@@ -893,6 +901,14 @@ describe('WDFWorkplaceSummaryComponent', () => {
     });
 
     describe('Staff leavers', () => {
+      it('should show the correct wording', async () => {
+        const { getByTestId } = await setup();
+
+        const leaversRow = getByTestId('leavers');
+
+        expect(within(leaversRow).getByText('Staff leavers in the last 12 months')).toBeTruthy();
+      });
+
       it('should show dash and have Add information button on when leavers is null', async () => {
         const { component, fixture } = await setup();
 
