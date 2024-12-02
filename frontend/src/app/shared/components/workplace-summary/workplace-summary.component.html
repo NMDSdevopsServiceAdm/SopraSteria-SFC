@@ -500,7 +500,7 @@
             workplace.wdf?.leavers.isEligible === 'Yes' &&
             !workplace.wdf?.leavers.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('leavers', wdfView)"
+          [changeLink]="getRoutePath('do-you-have-leavers', wdfView)"
           (fieldConfirmation)="this.confirmField('leavers')"
           (setReturnClicked)="this.setReturn()"
         >
@@ -516,7 +516,7 @@
             )
           "
           [explanationText]="' leavers'"
-          [link]="['/workplace', workplace.uid, 'leavers']"
+          [link]="['/workplace', workplace.uid, 'do-you-have-leavers']"
           [hasData]="workplace.leavers?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
