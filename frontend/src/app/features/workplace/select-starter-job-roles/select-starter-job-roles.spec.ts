@@ -156,7 +156,7 @@ describe('SelectStarterJobRolesComponent', () => {
       });
     });
     describe('prefill', () => {
-      const mockVacancies: Starter[] = [
+      const mockStarters: Starter[] = [
         {
           jobId: 10,
           title: 'Care worker',
@@ -169,7 +169,7 @@ describe('SelectStarterJobRolesComponent', () => {
         },
       ];
       it('should tick the checkboxes according to previously saved starters for the workplace', async () => {
-        const { getAllByRole } = await setup({ startersFromDatabase: mockVacancies });
+        const { getAllByRole } = await setup({ startersFromDatabase: mockStarters });
         const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(2);
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
@@ -203,14 +203,14 @@ describe('SelectStarterJobRolesComponent', () => {
         expect(inputBox.value).toEqual('Some really special job role name');
       });
       it('should prefill from the data in localStorage if editing the same workplace', async () => {
-        const mockLocalStorageData = { establishmentUid: 'mocked-uid', starters: mockVacancies };
+        const mockLocalStorageData = { establishmentUid: 'mocked-uid', starters: mockStarters };
         const { getAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
         const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(2);
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
       });
       it('should not prefill from the data in localStorage if editing a different workplace', async () => {
-        const mockLocalStorageData = { establishmentUid: 'other-workplace-uid', starters: mockVacancies };
+        const mockLocalStorageData = { establishmentUid: 'other-workplace-uid', starters: mockStarters };
         const { queryAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
         const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(0);
@@ -252,7 +252,7 @@ describe('SelectStarterJobRolesComponent', () => {
         expect(setLocalStorageSpy).toHaveBeenCalledWith('startersJobRoles', JSON.stringify(expectedData));
       });
       it('should keep the starters numbers that was loaded from database', async () => {
-        const mockVacanciesFromDatabase: Starter[] = [
+        const mockStartersFromDatabase: Starter[] = [
           {
             jobId: 10,
             title: 'Care worker',
@@ -265,7 +265,7 @@ describe('SelectStarterJobRolesComponent', () => {
           },
         ];
         const { component, getByText, setLocalStorageSpy } = await setup({
-          startersFromDatabase: mockVacanciesFromDatabase,
+          startersFromDatabase: mockStartersFromDatabase,
         });
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Registered nurse')); // untick this job
