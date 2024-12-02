@@ -1,5 +1,11 @@
 @import 'govuk-frontend/govuk/base';
 
+h1 {
+  @media only screen and (min-width: 40.0625em) {
+    margin-right: -40px;
+  }
+}
+
 .asc-job-role-numbers-table {
   display: grid;
   grid-auto-flow: row;
@@ -21,6 +27,16 @@
       &--no-border {
         @extend .asc-job-role-numbers-table__cell;
         border-bottom: none;
+      }
+      &--number-input-column {
+        @extend .asc-job-role-numbers-table__cell;
+        @media only screen and (min-width: 40.0625em) {
+          margin-right: -10px;
+        }
+      }
+      &--number-input-header {
+        @extend .asc-job-role-numbers-table__cell--number-input-column;
+        padding-right: 0px;
       }
       input {
         width: 100%;
