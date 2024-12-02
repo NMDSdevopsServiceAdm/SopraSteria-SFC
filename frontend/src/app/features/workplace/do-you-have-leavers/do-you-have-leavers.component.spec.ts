@@ -98,42 +98,15 @@ describe('DoYouHaveLeaversComponent', () => {
   });
 
   describe('Prefilling form', () => {
-    it('should not prefill the form when no leavers in workplace data', async () => {
-      const overrides = {
-        workplace: {
-          leavers: null,
-        },
-      };
-
-      const { component } = await setup(overrides);
-
-      const form = component.form;
-
-      expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
-    });
-
-    [
-      {
-        leavers: [{ jobRole: 1, total: 1 }],
-        radioOption: jobOptionsEnum.YES,
-      },
-      {
-        leavers: jobOptionsEnum.NONE,
-        radioOption: jobOptionsEnum.NONE,
-      },
-      {
-        leavers: jobOptionsEnum.DONT_KNOW,
-        radioOption: jobOptionsEnum.DONT_KNOW,
-      },
-    ].forEach(({ leavers, radioOption }) => {
-      it(`should preselect ${radioOption} if there was a saved value`, async () => {
+    [[{ jobRole: 1, total: 1 }], jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW, null].forEach((answer) => {
+      it(`should not preselect answer from database (${answer}) even if there is a value saved`, async () => {
         const overrides = {
-          workplace: { leavers },
+          workplace: { leavers: answer },
         };
         const { component } = await setup(overrides);
 
         const form = component.form;
-        expect(form.value).toEqual({ startersLeaversVacanciesKnown: radioOption });
+        expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
       });
     });
 
@@ -147,7 +120,7 @@ describe('DoYouHaveLeaversComponent', () => {
       expect(form.value).toEqual({ startersLeaversVacanciesKnown: 'With Jobs' });
     });
 
-    it("should preselect 'Yes' if hasLeavers is true and the database has a different value", async () => {
+    it("should preselect 'Yes' if hasLeavers is true even if database has a different value (user has gone back to page)", async () => {
       const overrides = { workplace: { leavers: jobOptionsEnum.NONE } };
       localStorage.setItem('hasLeavers', 'true');
 

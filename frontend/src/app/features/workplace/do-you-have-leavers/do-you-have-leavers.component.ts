@@ -20,8 +20,4 @@ export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacancies
     this.startersLeaversOrVacanciesPageTwo = 'select-leaver-job-roles';
     this.previousRoute = this.getPreviousRoute('starters');
   }
-
-  protected getDataFromEstablishment(): any {
-    return this.establishment?.leavers;
-  }
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.directive';
 
 @Component({
@@ -6,7 +6,7 @@ import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/d
   templateUrl:
     '../../../shared/directives/do-you-have-starters-leavers-vacancies/do-you-have-starters-leavers-vacancies.component.html',
 })
-export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanciesDirective implements OnInit {
+export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanciesDirective {
   public heading = 'Do you have any current staff vacancies?';
   public hintText = 'We only want to know about current staff vacancies for permanent and temporary job roles.';
   public localStorageKey = 'hasVacancies';
@@ -19,9 +19,5 @@ export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanci
     this.previousRoute = ['/workplace', this.establishment?.uid, 'service-users'];
     this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'do-you-have-starters'];
     this.startersLeaversOrVacanciesPageTwo = 'select-vacancy-job-roles';
-  }
-
-  protected getDataFromEstablishment(): any {
-    return this.establishment?.vacancies;
   }
 }

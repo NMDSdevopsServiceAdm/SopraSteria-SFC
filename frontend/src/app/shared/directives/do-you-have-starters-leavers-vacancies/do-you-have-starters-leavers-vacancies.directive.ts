@@ -13,7 +13,6 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
   public heading: string;
   public hintText: string;
   public revealText: string;
-  public dataFromEstablishment: any;
   public hasSelectedYesWithoutSavingJobRoles: boolean;
   public localStorageKey: string;
   public startersLeaversOrVacanciesPageTwo: string;
@@ -51,7 +50,6 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
   }
 
   protected setupRoutes(): void {}
-  protected getDataFromEstablishment(): any {}
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
@@ -78,21 +76,10 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
   }
 
   protected prefillForm(): void {
-    this.dataFromEstablishment = this.getDataFromEstablishment();
     this.hasSelectedYesWithoutSavingJobRoles = this.getFromLocalStorage();
-    if (
-      (typeof this.dataFromEstablishment === 'object' && this.dataFromEstablishment?.length > 0) ||
-      this.hasSelectedYesWithoutSavingJobRoles
-    ) {
+    if (this.hasSelectedYesWithoutSavingJobRoles) {
       this.form.setValue({
         startersLeaversVacanciesKnown: jobOptionsEnum.YES,
-      });
-    } else if (
-      this.dataFromEstablishment === jobOptionsEnum.NONE ||
-      this.dataFromEstablishment === jobOptionsEnum.DONT_KNOW
-    ) {
-      this.form.setValue({
-        startersLeaversVacanciesKnown: this.dataFromEstablishment,
       });
     }
   }

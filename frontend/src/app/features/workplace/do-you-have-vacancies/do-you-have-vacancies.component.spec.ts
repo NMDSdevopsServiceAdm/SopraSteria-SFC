@@ -105,67 +105,36 @@ describe('DoYouHaveVacanciesComponent', () => {
   });
 
   describe('prefill form', () => {
-    it('should not prefill the form', async () => {
-      const overrides = {
-        vacancies: null,
-      };
+    const vacancyAnswers: any = [[{ jobRole: 1, total: 1 }], jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW, null];
 
-      const { component } = await setup(overrides);
-
-      const form = component.form;
-
-      expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
-    });
-
-    const vacancyAnswers: any = [
-      {
-        vacancyAnswer: [{ jobRole: 1, total: 1 }],
-        value: jobOptionsEnum.YES,
-      },
-      {
-        vacancyAnswer: jobOptionsEnum.NONE,
-        value: jobOptionsEnum.NONE,
-      },
-      {
-        vacancyAnswer: jobOptionsEnum.DONT_KNOW,
-        value: jobOptionsEnum.DONT_KNOW,
-      },
-    ];
-
-    vacancyAnswers.forEach((test: any) => {
-      it(`should preselect ${test.value} if there was a saved value`, async () => {
+    vacancyAnswers.forEach((answer: any) => {
+      it(`should not preselect answer from database (${answer}) even if there is a value saved`, async () => {
         const overrides = {
-          vacancies: test.vacancyAnswer,
+          vacancies: answer,
         };
         const { component } = await setup(overrides);
 
         const form = component.form;
-        expect(form.value).toEqual({ startersLeaversVacanciesKnown: test.value });
+        expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
       });
     });
 
     it("should preselect 'Yes' if hasVacancies is true in local storage", async () => {
       const overrides = { returnUrl: false };
-
-      const { component } = await setup(overrides);
-
       localStorage.setItem('hasVacancies', 'true');
 
-      component.init();
+      const { component } = await setup(overrides);
 
       const form = component.form;
 
       expect(form.value).toEqual({ startersLeaversVacanciesKnown: 'With Jobs' });
     });
 
-    it("should preselect 'Yes' if hasVacancies is true the database has a different value", async () => {
+    it("should preselect 'Yes' if hasVacancies is true and the database has a different value", async () => {
       const overrides = { returnUrl: false, vacancies: jobOptionsEnum.NONE };
-
-      const { component } = await setup(overrides);
-
       localStorage.setItem('hasVacancies', 'true');
 
-      component.init();
+      const { component } = await setup(overrides);
 
       const form = component.form;
 

@@ -99,53 +99,25 @@ describe('DoYouHaveStartersComponent', () => {
   });
 
   describe('prefill form', () => {
-    it('should not prefill the form', async () => {
-      const overrides = {
-        workplace: { starters: null },
-      };
+    const starterAnswers: any = [[{ jobRole: 1, total: 1 }], jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW, null];
 
-      const { component } = await setup(overrides);
-
-      const form = component.form;
-
-      expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
-    });
-
-    const starterAnswers: any = [
-      {
-        starterAnswer: [{ jobRole: 1, total: 1 }],
-        value: jobOptionsEnum.YES,
-      },
-      {
-        starterAnswer: jobOptionsEnum.NONE,
-        value: jobOptionsEnum.NONE,
-      },
-      {
-        starterAnswer: jobOptionsEnum.DONT_KNOW,
-        value: jobOptionsEnum.DONT_KNOW,
-      },
-    ];
-
-    starterAnswers.forEach((test: any) => {
-      it(`should preselect ${test.value} if there was a saved value`, async () => {
+    starterAnswers.forEach((answer: any) => {
+      it(`should not preselect answer from database (${answer}) even if there is a value saved`, async () => {
         const overrides = {
-          workplace: { starters: test.starterAnswer },
+          workplace: { starters: answer },
         };
         const { component } = await setup(overrides);
 
         const form = component.form;
-        expect(form.value).toEqual({ startersLeaversVacanciesKnown: test.value });
+        expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
       });
     });
 
     it("should preselect 'Yes' if hasStarters is true in local storage", async () => {
       const overrides = { returnUrl: false };
-
-      const { component } = await setup(overrides);
-
       localStorage.setItem('hasStarters', 'true');
 
-      component.init();
+      const { component } = await setup(overrides);
 
       const form = component.form;
 
@@ -154,12 +126,9 @@ describe('DoYouHaveStartersComponent', () => {
 
     it("should preselect 'Yes' if hasStarters is true and the database has a different value", async () => {
       const overrides = { returnUrl: false, workplace: { starters: jobOptionsEnum.NONE } };
-
-      const { component } = await setup(overrides);
-
       localStorage.setItem('hasStarters', 'true');
 
-      component.init();
+      const { component } = await setup(overrides);
 
       const form = component.form;
 
