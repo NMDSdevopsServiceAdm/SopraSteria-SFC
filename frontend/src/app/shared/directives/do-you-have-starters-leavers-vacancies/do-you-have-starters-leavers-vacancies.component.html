@@ -18,7 +18,10 @@
           </p>
         </app-details>
 
-        <div class="govuk-form-group govuk-!-margin-bottom-3">
+        <div
+          class="govuk-form-group govuk-!-margin-bottom-3"
+          [class.govuk-form-group--error]="submitted && form.invalid"
+        >
           <span id="startersLeaversVacanciesKnown-error" class="govuk-error-message" *ngIf="submitted && form.invalid"
             >{{ requiredWarningMessage }}
           </span>
