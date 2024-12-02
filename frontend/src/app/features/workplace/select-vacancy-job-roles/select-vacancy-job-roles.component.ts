@@ -14,11 +14,6 @@ export class SelectVacancyJobRolesComponent extends SelectJobRolesDirective impl
   protected prefillData: Vacancy[] = [];
   protected field = 'vacancies';
 
-  protected setupRoutes(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'how-many-vacancies'];
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-vacancies'];
-  }
-
   protected onSuccess(): void {
     const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
     const otherCareProvidingRoleName: string = this.form.get('otherCareProvidingRoleName').value;

@@ -14,11 +14,6 @@ export class SelectLeaverJobRolesComponent extends SelectJobRolesDirective {
   protected prefillData: Leaver[] = [];
   protected field = 'leavers';
 
-  protected setupRoutes(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'how-many-leavers'];
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-leavers'];
-  }
-
   protected onSuccess(): void {
     const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
     const otherCareProvidingRoleName: string = this.form.get('otherCareProvidingRoleName').value;
