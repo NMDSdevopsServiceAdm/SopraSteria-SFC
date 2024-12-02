@@ -17,7 +17,7 @@ import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-delete-workplace',
-  templateUrl: '/delete-workplace.component.html',
+  templateUrl: './delete-workplace.component.html',
 })
 export class DeleteWorkplaceComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
