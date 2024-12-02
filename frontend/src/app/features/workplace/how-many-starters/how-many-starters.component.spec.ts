@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 
 import { HowManyStartersComponent } from './how-many-starters.component';
 
-fdescribe('HowManyStartersComponent', () => {
+describe('HowManyStartersComponent', () => {
   const mockSelectedJobRoles: Starter[] = [
     {
       jobId: 10,
