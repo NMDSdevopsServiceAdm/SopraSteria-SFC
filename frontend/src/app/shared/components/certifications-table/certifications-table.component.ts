@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { TrainingCertificate } from '@core/model/training.model';
+import { Certificate } from '@core/model/trainingAndQualifications.model';
 
 @Component({
   selector: 'app-certifications-table',
@@ -7,7 +7,7 @@ import { TrainingCertificate } from '@core/model/training.model';
   styleUrls: ['./certifications-table.component.scss'],
 })
 export class CertificationsTableComponent implements OnInit {
-  @Input() certificates: TrainingCertificate[] = [];
+  @Input() certificates: Certificate[] = [];
   @Input() filesToUpload: File[] = [];
   @Output() removeFileToUpload = new EventEmitter<number>();
   @Output() removeSavedFile = new EventEmitter<number>();

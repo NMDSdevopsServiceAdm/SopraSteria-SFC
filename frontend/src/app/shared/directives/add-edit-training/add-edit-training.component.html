@@ -182,41 +182,7 @@
         </div>
         <div *ngIf="!multipleTrainingDetails" class="govuk-grid-row">
           <div class="govuk-grid-column-full">
-            <div class="govuk-form-group govuk-!-margin-bottom-4" data-testid="uploadCertificate">
-              <h2 class="govuk-!-margin-top-0 govuk-!-margin-bottom-2">Certificates</h2>
-              <fieldset class="govuk-fieldset" aria-describedby="uploadCertificate-hint" role="group">
-                <label class="govuk-label govuk-!-font-weight-bold" for="uploadCertificate">
-                  Upload a certificate
-                </label>
-                <div id="uploadCertificate-hint" class="govuk-hint govuk-!-margin-bottom-4">
-                  The certificate must be a PDF file that's no larger than 5MB
-                </div>
-                <div class="govuk__flex govuk__align-items-center">
-                  <app-select-upload-file
-                    accept=".pdf"
-                    multiple="true"
-                    buttonId="uploadCertificate"
-                    buttonClasses="govuk-!-margin-bottom-4 govuk-!-margin-right-2"
-                    (selectFiles)="onSelectFiles($event)"
-                    [aria-describedby]="getUploadComponentAriaDescribedBy()"
-                  ></app-select-upload-file>
-                  <span
-                    id="uploadCertificate-aria-text"
-                    class="govuk-body"
-                    aria-live="polite"
-                    [class.govuk-visually-hidden]="filesToUpload?.length > 0"
-                  >
-                    {{ filesToUpload?.length > 0 ? filesToUpload.length + ' file chosen' : 'No file chosen' }}
-                  </span>
-                </div>
-                <div id="uploadCertificate-errors">
-                  <app-validation-error-message
-                    *ngFor="let errorMessage of certificateErrors"
-                    [errorMessage]="errorMessage"
-                  ></app-validation-error-message>
-                </div>
-              </fieldset>
-            </div>
+            <app-select-upload-certificate [filesToUpload]="filesToUpload" (selectFiles)="onSelectFiles($event)" [certificateErrors]="certificateErrors" />
             <app-certifications-table
               *ngIf="trainingCertificates?.length > 0 || filesToUpload?.length > 0"
               data-testid="trainingCertificatesTable"
@@ -239,7 +205,7 @@
                 <button
                   type="button"
                   (click)="toggleNotesOpen()"
-                  class="govuk-accordion__show-all"
+                  class="govuk-accordion__show-all govuk-!-margin-bottom-0"
                   [attr.aria-expanded]="notesOpen"
                 >
                   <span
@@ -251,7 +217,7 @@
                   ></span>
                   <span class="govuk-accordion__show-all-text">{{ !notesOpen ? 'Open notes' : 'Close notes' }}</span>
                 </button>
-                <div data-testid="notesSection" [ngClass]="{ 'govuk-visually-hidden': !notesOpen }">
+                <div data-testid="notesSection"  class="govuk-!-margin-top-3 govuk-!-padding-bottom-1" [ngClass]="{ 'govuk-visually-hidden': !notesOpen }">
                   <textarea
                     class="govuk-textarea"
                     [class.govuk-textarea--error]="submitted && form.get('notes').invalid"

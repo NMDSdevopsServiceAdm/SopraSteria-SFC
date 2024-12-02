@@ -8,12 +8,22 @@ const expect = require('chai').expect;
 describe('whichFile', () => {
   describe('isWorkerFile()', () => {
     it('return true when headings match with CHGUNIQUEWRKID', async () => {
-      const header = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI';
+      const header = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,NINUMBER';
       expect(isWorkerFile(header)).to.deep.equal(true);
     });
 
     it('return true when headings match without CHGUNIQUEWRKID', async () => {
       const header = 'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,';
+      expect(isWorkerFile(header)).to.deep.equal(true);
+    });
+
+    it('return true when headings match with TRANSFERSTAFFRECORD', async () => {
+      const header = 'LOCALESTID,UNIQUEWORKERID,TRANSFERSTAFFRECORD,STATUS,DISPLAYID,NINUMBER';
+      expect(isWorkerFile(header)).to.deep.equal(true);
+    });
+
+    it('return true when headings match with CHGUNIQUEWRKID and TRANSFERSTAFFRECORD', async () => {
+      const header = 'LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,TRANSFERSTAFFRECORD,STATUS,DISPLAYID,NINUMBER';
       expect(isWorkerFile(header)).to.deep.equal(true);
     });
 
@@ -49,7 +59,7 @@ describe('whichFile', () => {
     });
 
     it('should return the correct file type for workers if CHGUNIQUEWRKID column present', () => {
-      const fileType = getFileType('LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DI');
+      const fileType = getFileType('LOCALESTID,UNIQUEWORKERID,CHGUNIQUEWRKID,STATUS,DISPLAYID,NINUMBER');
 
       expect(fileType).to.deep.equal('Worker');
     });

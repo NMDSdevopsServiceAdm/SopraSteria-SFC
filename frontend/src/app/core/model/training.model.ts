@@ -1,3 +1,5 @@
+import { Certificate, CertificateDownload } from './trainingAndQualifications.model';
+
 export interface TrainingCategory {
   id: number;
   seq: number;
@@ -36,21 +38,21 @@ export interface TrainingResponse {
   training: TrainingRecord[];
 }
 
-export interface CertificateDownload {
-  uid: string;
-  filename: string;
+export interface TrainingCertificateDownloadEvent {
+  recordType: 'training';
+  recordUid: string;
+  categoryName: string;
+  filesToDownload: CertificateDownload[];
 }
 
-export interface CertificateUpload {
+export interface TrainingCertificateUploadEvent {
+  recordType: 'training';
+  recordUid: string;
+  categoryName: string;
   files: File[];
-  trainingRecord: TrainingRecord;
 }
 
-export interface TrainingCertificate {
-  uid: string;
-  filename: string;
-  uploadDate: string;
-}
+export interface TrainingCertificate extends Certificate {}
 
 export interface TrainingRecord {
   accredited?: boolean;
@@ -131,30 +133,4 @@ export interface TrainingRecordCategories {
   category: string;
   training: Training[];
   isMandatory: boolean;
-}
-
-export interface UploadCertificateSignedUrlRequest {
-  files: { filename: string }[];
-}
-
-export interface UploadCertificateSignedUrlResponse {
-  files: { filename: string; fileId: string; signedUrl: string; key: string }[];
-}
-
-export interface DownloadCertificateSignedUrlResponse {
-  files: { filename: string; signedUrl: string }[];
-}
-
-export interface S3UploadResponse {
-  headers: { etag: string };
-}
-export interface FileInfoWithETag {
-  filename: string;
-  fileId: string;
-  etag: string;
-  key: string;
-}
-
-export interface ConfirmUploadRequest {
-  files: { filename: string; fileId: string; etag: string }[];
 }

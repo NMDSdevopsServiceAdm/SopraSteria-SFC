@@ -66,6 +66,7 @@ import { RejectRequestDialogComponent } from './components/reject-request-dialog
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
+import { SelectUploadCertificateComponent } from './components/select-upload-certificate/select-upload-certificate.component';
 import { SelectUploadFileComponent } from './components/select-upload-file/select-upload-file.component';
 import { SelectViewPanelComponent } from './components/select-view-panel/select-view-panel.component';
 import { SelectWorkplaceDropdownFormComponent } from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
@@ -251,6 +252,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewTrainingLinkPanelComponent,
     CertificationsTableComponent,
     SelectUploadFileComponent,
+    SelectUploadCertificateComponent,
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
@@ -375,6 +377,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewTrainingLinkPanelComponent,
     CertificationsTableComponent,
     SelectUploadFileComponent,
+    SelectUploadCertificateComponent,
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
