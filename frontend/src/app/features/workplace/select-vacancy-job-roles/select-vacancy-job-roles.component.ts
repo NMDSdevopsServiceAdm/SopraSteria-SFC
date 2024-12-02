@@ -1,5 +1,6 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Vacancy } from '@core/model/establishment.model';
+
 import { SelectJobRolesDirective } from '../vacancies-and-turnover/select-job-roles.directive';
 
 @Component({
@@ -11,19 +12,11 @@ export class SelectVacancyJobRolesComponent extends SelectJobRolesDirective impl
   public heading = 'Select job roles for all your current staff vacancies';
   protected localStorageKey = 'vacanciesJobRoles';
   protected prefillData: Vacancy[] = [];
+  protected field = 'vacancies';
 
   protected setupRoutes(): void {
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'how-many-vacancies'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-vacancies'];
-  }
-
-  protected getPrefillData() {
-    const previousData = this.loadFromLocal();
-    if (previousData?.establishmentUid === this.establishment.uid && Array.isArray(previousData?.vacancies)) {
-      this.prefillData = previousData.vacancies;
-    } else if (Array.isArray(this.establishment.vacancies)) {
-      this.prefillData = this.establishment.vacancies;
-    }
   }
 
   protected onSuccess(): void {

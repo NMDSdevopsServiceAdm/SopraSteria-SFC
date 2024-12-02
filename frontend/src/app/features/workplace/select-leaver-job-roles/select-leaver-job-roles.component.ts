@@ -12,19 +12,11 @@ export class SelectLeaverJobRolesComponent extends SelectJobRolesDirective {
   public heading = 'Select job roles of all your staff leavers';
   protected localStorageKey = 'leaversJobRoles';
   protected prefillData: Leaver[] = [];
+  protected field = 'leavers';
 
   protected setupRoutes(): void {
     this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'how-many-leavers'];
     this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-leavers'];
-  }
-
-  protected getPrefillData() {
-    const previousData = this.loadFromLocal();
-    if (previousData?.establishmentUid === this.establishment.uid && Array.isArray(previousData?.leavers)) {
-      this.prefillData = previousData.leavers;
-    } else if (Array.isArray(this.establishment.leavers)) {
-      this.prefillData = this.establishment.leavers;
-    }
   }
 
   protected onSuccess(): void {

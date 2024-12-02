@@ -21,6 +21,7 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
   public jobGroupsToOpenAtStart: string[] = [];
   public jobGroups: JobGroup[] = [];
 
+  protected field: string;
   protected localStorageKey: string;
   protected jobsAvailable: Job[] = [];
   protected prefillData: Array<Vacancy | Starter | Leaver>;
@@ -80,7 +81,15 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
       otherCareProvidingRoleName: otherCareProvidingRole?.other ?? null,
     });
   }
-  protected getPrefillData(): void {}
+
+  protected getPrefillData(): void {
+    const previousData = this.loadFromLocal();
+    if (previousData?.establishmentUid === this.establishment.uid && Array.isArray(previousData?.[this.field])) {
+      this.prefillData = previousData[this.field];
+    } else if (Array.isArray(this.establishment[this.field])) {
+      this.prefillData = this.establishment[this.field] as Array<Vacancy | Starter | Leaver>;
+    }
+  }
 
   public onCheckboxClick(target: HTMLInputElement) {
     const jobId = Number(target.value);
