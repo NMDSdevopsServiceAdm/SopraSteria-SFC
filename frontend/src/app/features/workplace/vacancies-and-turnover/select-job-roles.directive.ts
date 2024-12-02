@@ -114,8 +114,6 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
     super.onSubmit();
   }
 
-  protected onSuccess(): void {}
-
   protected saveToLocal(dataToStore) {
     localStorage.setItem(this.localStorageKey, JSON.stringify(dataToStore));
   }
@@ -145,5 +143,24 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
   protected generateUpdateProps() {
     // suppress the default action of making calls to backend
     return null;
+  }
+
+  protected onSuccess(): void {
+    const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
+    const otherCareProvidingRoleName: string = this.form.get('otherCareProvidingRoleName').value;
+    const fieldFromDatabase = Array.isArray(this.establishment[this.field]) ? this.establishment[this.field] : [];
+
+    const updatedField: Vacancy | Starter | Leaver[] = selectedJobIds.map((jobId) => {
+      const job = this.jobsAvailable.find((job) => job.id === jobId);
+      const fieldCount = fieldFromDatabase.find((field) => field.jobId === jobId)?.total ?? null;
+
+      if (job.id === this.jobIdOfOtherCareProvidingRole && otherCareProvidingRoleName) {
+        return { jobId, title: job.title, total: fieldCount, other: otherCareProvidingRoleName };
+      }
+
+      return { jobId, title: job.title, total: fieldCount };
+    });
+    const dataToStore = { establishmentUid: this.establishment.uid, [this.field]: updatedField };
+    this.saveToLocal(dataToStore);
   }
 }
