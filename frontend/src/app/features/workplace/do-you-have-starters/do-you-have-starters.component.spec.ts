@@ -267,7 +267,7 @@ describe('DoYouHaveStartersComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-starter-job-roles']);
       });
 
-      it("should navigate to the leavers page when submitting 'None'", async () => {
+      it("should navigate to the do-you-have-leavers page when submitting 'None'", async () => {
         const overrides = { returnUrl: false };
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
@@ -277,10 +277,10 @@ describe('DoYouHaveStartersComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'leavers']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-leavers']);
       });
 
-      it("should navigate to the leavers page when submitting 'I do not know' ", async () => {
+      it("should navigate to the do-you-have-leavers page when submitting 'I do not know' ", async () => {
         const overrides = { returnUrl: false };
         const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
@@ -290,10 +290,10 @@ describe('DoYouHaveStartersComponent', () => {
         fireEvent.click(button);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'leavers']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-leavers']);
       });
 
-      it('should navigate to the leavers page when clicking Skip this question link', async () => {
+      it('should navigate to the do-you-have-leavers page when clicking Skip this question link', async () => {
         const overrides = { returnUrl: false };
         const { fixture, getByText, routerSpy } = await setup(overrides);
 
@@ -301,7 +301,7 @@ describe('DoYouHaveStartersComponent', () => {
         fireEvent.click(link);
         fixture.detectChanges();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'leavers']);
+        expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'do-you-have-leavers']);
       });
 
       it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {

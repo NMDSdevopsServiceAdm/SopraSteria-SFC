@@ -15,7 +15,7 @@ export class DoYouHaveStartersComponent extends DoYouHaveStartersLeaversVacancie
     "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
 
   protected setupRoutes(): void {
-    this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'leavers'];
+    this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'do-you-have-leavers'];
     this.startersLeaversOrVacanciesPageTwo = 'select-starter-job-roles';
     this.previousRoute = this.getPreviousRoute('vacancies');
   }
