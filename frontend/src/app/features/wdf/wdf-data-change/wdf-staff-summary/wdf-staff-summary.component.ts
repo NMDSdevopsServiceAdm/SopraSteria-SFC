@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -12,10 +12,11 @@ import { orderBy } from 'lodash';
   selector: 'app-wdf-staff-summary',
   templateUrl: './wdf-staff-summary.component.html',
 })
-export class WdfStaffSummaryComponent extends StaffSummaryDirective implements OnInit {
+export class WdfStaffSummaryComponent extends StaffSummaryDirective {
   public workplaceUid: string;
   public primaryWorkplaceUid: string;
   public overallWdfEligibility: boolean;
+  public wdfView = true;
 
   constructor(
     protected permissionsService: PermissionsService,
@@ -41,9 +42,7 @@ export class WdfStaffSummaryComponent extends StaffSummaryDirective implements O
 
   protected init() {
     this.getOverallWdfEligibility();
-
     this.saveWorkerList();
-    this.wdfView = true;
   }
 
   ngOnChanges() {

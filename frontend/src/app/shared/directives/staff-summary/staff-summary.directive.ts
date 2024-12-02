@@ -54,6 +54,7 @@ export class StaffSummaryDirective implements OnInit {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
     this.sortStaffOptions = this.wdfView ? WdfSortStaffOptions : SortStaffOptions;
     this.setSearchIfPrevious();
+    this.init();
   }
 
   protected init(): void {}
