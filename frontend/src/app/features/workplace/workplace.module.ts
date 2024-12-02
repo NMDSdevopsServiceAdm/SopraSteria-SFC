@@ -47,6 +47,7 @@ import { OtherServicesComponent } from './other-services/other-services.componen
 import { PensionsComponent } from './pensions/pensions.component';
 import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
+import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles/select-leaver-job-roles.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
 import { SelectPrimaryUserComponent } from './select-primary-user/select-primary-user.component';
@@ -136,6 +137,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     HowManyVacanciesComponent,
     DoYouHaveStartersComponent,
     DoYouHaveLeaversComponent,
+    SelectLeaverJobRolesComponent,
   ],
   providers: [
     DialogService,
