@@ -16,6 +16,7 @@ export class WdfStaffSummaryComponent extends StaffSummaryDirective {
   public workplaceUid: string;
   public primaryWorkplaceUid: string;
   public overallWdfEligibility: boolean;
+  public wdfView = true;
 
   constructor(
     protected permissionsService: PermissionsService,
@@ -41,9 +42,7 @@ export class WdfStaffSummaryComponent extends StaffSummaryDirective {
 
   protected init() {
     this.getOverallWdfEligibility();
-
     this.saveWorkerList();
-    this.wdfView = true;
   }
 
   ngOnChanges() {

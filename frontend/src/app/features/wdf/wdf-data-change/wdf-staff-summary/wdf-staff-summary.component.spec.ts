@@ -104,18 +104,20 @@ describe('WdfStaffSummaryComponent', () => {
       ['0_dsc', 'staffNameDesc', 'Staff name (Z to A)'],
       ['1_asc', 'jobRoleAsc', 'Job role (A to Z)'],
       ['1_dsc', 'jobRoleDesc', 'Job role (Z to A)'],
-      ['2_meeting', 'wdfMeeting', 'WDF requirements (meeting)'],
-      ['2_not_meeting', 'wdfNotMeeting', 'WDF requirements (not meeting)'],
+      ['2_meeting', 'wdfMeeting', 'Funding requirements (meeting)'],
+      ['2_not_meeting', 'wdfNotMeeting', 'Funding requirements (not meeting)'],
     ];
 
     for (const option of sortByOptions) {
       it(`should call getAllWorkers with sortBy set to ${option[1]} when sorting by ${option[2]}`, async () => {
-        const { fixture, getAllWorkersSpy, getByLabelText } = await setup();
+        const { component, getAllWorkersSpy, getByLabelText, getByText } = await setup();
 
         const select = getByLabelText('Sort by', { exact: false });
-        fireEvent.change(select, { target: { value: option[0] } });
 
-        const establishmentUid = fixture.componentInstance.workplace.uid;
+        const optionElement = getByText(option[2]) as HTMLOptionElement;
+        fireEvent.change(select, { target: { value: optionElement.value } });
+
+        const establishmentUid = component.workplace.uid;
         const paginationEmission = { pageIndex: 0, itemsPerPage: 15, sortBy: option[1] };
 
         expect(getAllWorkersSpy.calls.mostRecent().args[0]).toEqual(establishmentUid);
