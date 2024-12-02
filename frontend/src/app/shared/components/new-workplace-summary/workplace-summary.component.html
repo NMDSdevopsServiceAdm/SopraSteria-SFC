@@ -327,7 +327,7 @@
       </div>
       <dl class="govuk-summary-list govuk-summary-list--medium">
         <div class="govuk-summary-list__row" data-testid="starters">
-          <dt class="govuk-summary-list__key">New starters</dt>
+          <dt class="govuk-summary-list__key">New starters in the last 12 months</dt>
           <dd class="govuk-summary-list__value">
             <app-summary-record-value>
               <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
@@ -354,7 +354,7 @@
         </div>
 
         <div class="govuk-summary-list__row" data-testid="leavers">
-          <dt class="govuk-summary-list__key">Leavers</dt>
+          <dt class="govuk-summary-list__key">Staff leavers in the last 12 months</dt>
           <dd class="govuk-summary-list__value">
             <app-summary-record-value>
               <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
