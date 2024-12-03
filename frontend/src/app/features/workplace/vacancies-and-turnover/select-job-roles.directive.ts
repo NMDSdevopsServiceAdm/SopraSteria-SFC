@@ -1,4 +1,4 @@
-import { Directive, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Directive, ViewChild } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
@@ -12,7 +12,7 @@ import { AccordionGroupComponent } from '@shared/components/accordions/generic-a
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Directive()
-export class SelectJobRolesDirective extends Question implements OnInit, OnDestroy {
+export class SelectJobRolesDirective extends Question {
   @ViewChild('accordion') accordion: AccordionGroupComponent;
   public section = 'Vacancies and turnover';
   public heading: string;
