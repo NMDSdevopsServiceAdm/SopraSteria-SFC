@@ -1,7 +1,7 @@
-import { sum } from 'lodash';
 import { Directive, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { UntypedFormArray, Validators } from '@angular/forms';
 import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
+import { sum } from 'lodash';
 
 import { Question } from '../question/question.component';
 
@@ -9,10 +9,10 @@ import { Question } from '../question/question.component';
 export class HowManyStartersLeaversVacanciesDirective extends Question implements OnInit, OnDestroy {
   @ViewChildren('numberInputRef') numberInputs: QueryList<ElementRef<HTMLInputElement>>;
   public heading: string;
-  public section: string;
   public instruction: string;
   public revealTextContent: string;
   public jobRoleType: string;
+  public section: string = 'Vacancies and turnover';
   public totalNumber = 0;
 
   protected selectedJobRoles: Array<Starter | Leaver | Vacancy> = [];

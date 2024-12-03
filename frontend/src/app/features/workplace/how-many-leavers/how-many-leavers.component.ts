@@ -10,7 +10,6 @@ import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turno
 })
 export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDirective {
   public heading = 'How many leavers have you had for each job role in the last 12 months?';
-  public section = 'Vacancies and turnover';
   public instruction = 'Only add the number of leavers who have left permanent and temporary job roles.';
   public revealTextContent =
     'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';

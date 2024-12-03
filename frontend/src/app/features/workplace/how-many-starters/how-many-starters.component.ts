@@ -10,7 +10,6 @@ import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turno
 })
 export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDirective {
   public heading = 'How many new starters have you had for each job role in the last 12 months?';
-  public section = 'Vacancies and turnover';
   public instruction = 'Only add the number of new starters who are in permanent and temporary job roles.';
   public revealTextContent =
     "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
