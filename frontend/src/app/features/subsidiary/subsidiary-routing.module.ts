@@ -38,6 +38,7 @@ import { DoYouHaveVacanciesComponent } from '@features/workplace/do-you-have-vac
 import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-workplace.component';
 import { EmployedFromOutsideUkExistingWorkersComponent } from '@features/workplace/employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
 import { HealthAndCareVisaExistingWorkers } from '@features/workplace/health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
+import { HowManyLeaversComponent } from '@features/workplace/how-many-leavers/how-many-leavers.component';
 import { HowManyVacanciesComponent } from '@features/workplace/how-many-vacancies/how-many-vacancies.component';
 import { LeaversComponent } from '@features/workplace/leavers/leavers.component';
 import { NumberOfInterviewsComponent } from '@features/workplace/number-of-interviews/number-of-interviews.component';
@@ -452,6 +453,16 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Leavers job role selection',
+        },
+      },
+      {
+        path: 'how-many-leavers',
+        component: HowManyLeaversComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'How many leavers',
         },
       },
       {

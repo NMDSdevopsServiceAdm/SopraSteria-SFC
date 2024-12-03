@@ -40,6 +40,7 @@ import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EmployedFromOutsideUkExistingWorkersComponent } from './employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
 import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
+import { HowManyLeaversComponent } from './how-many-leavers/how-many-leavers.component';
 import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
@@ -140,6 +141,7 @@ import { HowManyStartersComponent } from './how-many-starters/how-many-starters.
     HowManyStartersComponent,
     DoYouHaveLeaversComponent,
     SelectLeaverJobRolesComponent,
+    HowManyLeaversComponent,
   ],
   providers: [
     DialogService,
