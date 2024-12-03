@@ -46,6 +46,7 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
             jobId: thisJob.reference.id,
             title: thisJob.reference.title,
             total: thisJob.total,
+            other: thisJob.other ? thisJob.other : null,
           };
         });
       return restoredProperty;
@@ -68,6 +69,7 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
             jobId: thisJob.jobId,
             type: 'Starters',
             total: thisJob.total,
+            other: thisJob.other ? thisJob.other : null,
           };
         }),
       };
@@ -94,7 +96,9 @@ exports.StartersProperty = class StartersProperty extends ChangePropertyPrototyp
         //  Array.every will drop out on the first iteration to return false
         arraysEqual = currentValue.every((thisJob) => {
           return newValue.find((thatJob) => {
-            return thatJob.jobId === thisJob.jobId && thatJob.total === thisJob.total;
+            return (
+              thatJob.jobId === thisJob.jobId && thatJob.total === thisJob.total && thatJob.other === thisJob.other
+            );
           });
         });
       } else {

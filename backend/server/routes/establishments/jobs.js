@@ -132,3 +132,5 @@ router.route('/').get(hasPermission('canViewEstablishment'), getJobs);
 router.route('/').post(hasPermission('canEditEstablishment'), updateJobs);
 
 module.exports = router;
+module.exports.getJobs = getJobs;
+module.exports.updateJobs = updateJobs;
