@@ -19,7 +19,6 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
 
   private minNumberPerJobRole = 1;
   private maxNumberPerJobRole = 999;
-  private errorMessagesTemplate = [];
 
   protected init(): void {
     this.loadSelectedJobRoles();
