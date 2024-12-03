@@ -2,16 +2,31 @@ import { ForgotYourUsernameOrPasswordComponent } from './forgot-your-username-or
 import { render, within } from '@testing-library/angular';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
+import userEvent from '@testing-library/user-event';
+import { ActivatedRoute, Router } from '@angular/router';
+import { getTestBed } from '@angular/core/testing';
 
 fdescribe('ForgotYourUsernameOrPasswordComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameOrPasswordComponent, {
       imports: [FormsModule, ReactiveFormsModule, SharedModule],
+      providers: [
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {},
+          },
+        },
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
 
-    return { ...setupTools, component };
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    return { ...setupTools, component, routerSpy };
   };
 
   it('should create', async () => {
@@ -51,6 +66,19 @@ fdescribe('ForgotYourUsernameOrPasswordComponent', () => {
 
       expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
       expect(getByText('Back to sign in')).toBeTruthy();
+    });
+  });
+
+  describe('form submit and navigation', () => {
+    describe('error', () => {
+      it('should show an error message on submit if neither of radio buttons were selected', async () => {
+        const { fixture, getByText, getByRole } = await setup();
+
+        userEvent.click(getByRole('button', { name: 'Continue' }));
+        fixture.detectChanges();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+      });
     });
   });
 });
