@@ -773,6 +773,7 @@ describe('WorkplaceSummaryComponent', () => {
         component.workplace.vacancies = [
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
+          { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
         ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -782,6 +783,7 @@ describe('WorkplaceSummaryComponent', () => {
         expect(within(vacanciesRow).queryByText('Change')).toBeTruthy();
         expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
       });
 
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Current Staff Vacancies', async () => {
@@ -903,6 +905,7 @@ describe('WorkplaceSummaryComponent', () => {
         component.workplace.starters = [
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
+          { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
         ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -912,6 +915,7 @@ describe('WorkplaceSummaryComponent', () => {
         expect(within(startersRow).queryByText('Change')).toBeTruthy();
         expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(startersRow).queryByText('2 Nursing')).toBeTruthy();
+        expect(within(startersRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
       });
 
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for New Starters', async () => {
@@ -1033,6 +1037,7 @@ describe('WorkplaceSummaryComponent', () => {
         component.workplace.leavers = [
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
+          { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
         ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1042,6 +1047,7 @@ describe('WorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText('Change')).toBeTruthy();
         expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(leaversRow).queryByText('2 Nursing')).toBeTruthy();
+        expect(within(leaversRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
       });
 
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Staff Leavers', async () => {

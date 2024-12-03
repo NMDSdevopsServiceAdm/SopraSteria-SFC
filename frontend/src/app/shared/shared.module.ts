@@ -125,6 +125,7 @@ import { CertificationsTableComponent } from './components/certifications-table/
 import { SelectUploadFileComponent } from './components/select-upload-file/select-upload-file.component';
 import { AccordionGroupComponent } from './components/accordions/generic-accordion/accordion-group/accordion-group.component';
 import { AccordionSectionComponent } from './components/accordions/generic-accordion/accordion-section/accordion-section.component';
+import { FormatStartersLeaversVacanciesPipe } from './pipes/format-starters-leavers-vacancies.pipe';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -251,6 +252,7 @@ import { AccordionSectionComponent } from './components/accordions/generic-accor
     SelectUploadFileComponent,
     AccordionGroupComponent,
     AccordionSectionComponent,
+    FormatStartersLeaversVacanciesPipe,
   ],
   exports: [
     AbsoluteNumberPipe,
