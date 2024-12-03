@@ -76,6 +76,7 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
+import { HowManyStartersComponent } from '@features/workplace/how-many-starters/how-many-starters.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -421,6 +422,17 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Do You Have Starters',
+        },
+      },
+
+      {
+        path: 'how-many-starters',
+        component: HowManyStartersComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'How many starters',
         },
       },
       {

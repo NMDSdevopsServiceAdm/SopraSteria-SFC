@@ -69,6 +69,7 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -310,6 +311,17 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Do You Have Starters',
+        },
+      },
+
+      {
+        path: 'how-many-starters',
+        component: HowManyStartersComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'How many starters',
         },
       },
       {

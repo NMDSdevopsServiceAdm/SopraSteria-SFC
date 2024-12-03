@@ -37,7 +37,6 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
 
   restorePropertyFromSequelize(document) {
     if (document.VacanciesValue && document.VacanciesValue === 'With Jobs' && document.jobs) {
-      //console.log("WA DEBUG - all establishment jobs: ", document.jobs)
       // we're only interested in Vacancy jobs
       const restoredProperty = document.jobs
         .filter((thisJob) => thisJob.type === 'Vacancies')
@@ -47,6 +46,7 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
             jobId: thisJob.reference.id,
             title: thisJob.reference.title,
             total: thisJob.total,
+            other: thisJob.other ? thisJob.other : null,
           };
         });
       return restoredProperty;
@@ -69,6 +69,7 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
             jobId: thisJob.jobId,
             type: 'Vacancies',
             total: thisJob.total,
+            other: thisJob.other ? thisJob.other : null,
           };
         }),
       };
@@ -78,7 +79,6 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
         establishmentVacancies: [],
       };
     }
-
     return vacanciesDocument;
   }
 
@@ -95,7 +95,9 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
         //  Array.every will drop out on the first iteration to return false
         arraysEqual = currentValue.every((thisJob) => {
           return newValue.find((thatJob) => {
-            return thatJob.jobId === thisJob.jobId && thatJob.total === thisJob.total;
+            return (
+              thatJob.jobId === thisJob.jobId && thatJob.total === thisJob.total && thatJob.other === thisJob.other
+            );
           });
         });
       } else {

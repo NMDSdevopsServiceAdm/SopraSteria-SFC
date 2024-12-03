@@ -387,7 +387,7 @@
           <ng-template #vacancies>
             <ng-container *ngIf="isArray(workplace.vacancies)">
               <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
+                <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy | formatSLV }}</li>
               </ul>
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
@@ -435,7 +435,7 @@
           <ng-template #starters>
             <ng-container *ngIf="isArray(workplace.starters)">
               <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
+                <li *ngFor="let starter of workplace.starters">{{ starter | formatSLV }}</li>
               </ul>
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.starters)">
@@ -485,7 +485,7 @@
           <ng-template #leavers>
             <ng-container *ngIf="isArray(workplace.leavers)">
               <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let leaver of workplace.leavers">{{ leaver.total }} {{ leaver.title }}</li>
+                <li *ngFor="let leaver of workplace.leavers">{{ leaver | formatSLV }}</li>
               </ul>
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.leavers)">

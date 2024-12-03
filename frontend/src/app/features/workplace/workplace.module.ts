@@ -72,6 +72,7 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
+import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 
 @NgModule({
   imports: [
@@ -136,6 +137,7 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     SelectVacancyJobRolesComponent,
     HowManyVacanciesComponent,
     DoYouHaveStartersComponent,
+    HowManyStartersComponent,
     DoYouHaveLeaversComponent,
     SelectLeaverJobRolesComponent,
   ],
