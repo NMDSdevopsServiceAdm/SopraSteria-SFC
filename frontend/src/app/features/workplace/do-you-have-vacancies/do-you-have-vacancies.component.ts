@@ -9,7 +9,8 @@ import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/d
 export class DoYouHaveVacanciesComponent extends DoYouHaveStartersLeaversVacanciesDirective {
   public heading = 'Do you have any current staff vacancies?';
   public hintText = 'We only want to know about current staff vacancies for permanent and temporary job roles.';
-  public localStorageKey = 'hasVacancies';
+  public hasStartersLeaversVacanciesField = 'hasVacancies';
+  public numbersField = 'vacanciesJobRoles';
   public valueToUpdate = 'vacancies';
   public revealText =
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';

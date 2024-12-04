@@ -9,7 +9,8 @@ import { DoYouHaveStartersLeaversVacanciesDirective } from '@shared/directives/d
 export class DoYouHaveStartersComponent extends DoYouHaveStartersLeaversVacanciesDirective {
   public heading = 'Have you had any new starters in the last 12 months?';
   public hintText = 'We only want to know about new starters who are in permanent and temporary job roles.';
-  public localStorageKey = 'hasStarters';
+  public hasStartersLeaversVacanciesField = 'hasStarters';
+  public numbersField = 'startersJobRoles';
   public valueToUpdate = 'starters';
   public revealText =
     "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
