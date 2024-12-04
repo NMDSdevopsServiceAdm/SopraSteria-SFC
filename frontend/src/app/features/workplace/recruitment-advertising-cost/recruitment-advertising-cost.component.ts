@@ -50,7 +50,7 @@ export class RecruitmentAdvertisingCostComponent extends Question implements OnI
   private setRoutes(): void {
     this.previousRoute = this.inStaffRecruitmentFlow
       ? ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-start']
-      : ['/workplace', `${this.establishment.uid}`, 'leavers'];
+      : ['/workplace', this.establishment.uid, 'how-many-leavers'];
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'number-of-interviews'];
   }
 
