@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { Leaver, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
+import { Leaver, UpdateJobsRequest } from '@core/model/establishment.model';
 
 import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turnover/how-many-starters-leavers-vacancies.directive';
 
@@ -14,21 +14,10 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
   public revealTextContent =
     'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
   public jobRoleType = 'leavers';
+  public fieldName = 'leavers';
+  public fieldJobRoles = 'leaversJobRoles';
 
-  protected selectedJobRoles: Array<Vacancy> = [];
-
-  public loadSelectedJobRoles(): void {
-    try {
-      const loadedJobRoles = JSON.parse(localStorage.getItem('leaversJobRoles'));
-      this.selectedJobRoles = loadedJobRoles?.leavers;
-    } catch (err) {
-      this.returnToFirstPage();
-    }
-
-    if (!Array.isArray(this.selectedJobRoles) || this.selectedJobRoles?.length === 0) {
-      this.returnToFirstPage();
-    }
-  }
+  protected selectedJobRoles: Array<Leaver> = [];
 
   protected clearLocalStorageData(): void {
     localStorage.removeItem('hasLeavers');
@@ -59,6 +48,6 @@ export class HowManyLeaversComponent extends HowManyStartersLeaversVacanciesDire
   }
 
   protected onSuccess(): void {
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'recruitment-advertising-cost'];
+    this.nextRoute = ['/workplace', this.establishment.uid, 'recruitment-advertising-cost'];
   }
 }

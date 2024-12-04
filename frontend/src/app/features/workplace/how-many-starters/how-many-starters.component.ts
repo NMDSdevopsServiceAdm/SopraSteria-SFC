@@ -14,21 +14,10 @@ export class HowManyStartersComponent extends HowManyStartersLeaversVacanciesDir
   public revealTextContent =
     "To see if the care sector is attracting new workers and see whether DHSC and the government's national and local recruitment plans are working.";
   public jobRoleType = 'new starters';
+  public fieldName = 'starters';
+  public fieldJobRoles = 'startersJobRoles';
 
   protected selectedJobRoles: Array<Starter> = [];
-
-  public loadSelectedJobRoles(): void {
-    try {
-      const loadedJobRoles = JSON.parse(localStorage.getItem('startersJobRoles'));
-      this.selectedJobRoles = loadedJobRoles?.starters;
-    } catch (err) {
-      this.returnToFirstPage();
-    }
-
-    if (!Array.isArray(this.selectedJobRoles) || this.selectedJobRoles?.length === 0) {
-      this.returnToFirstPage();
-    }
-  }
 
   protected clearLocalStorageData(): void {
     localStorage.removeItem('hasStarters');

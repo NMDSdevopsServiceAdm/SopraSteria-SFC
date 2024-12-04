@@ -30,10 +30,12 @@ describe('HowManyLeaversComponent', () => {
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ?? false;
     const availableJobs = override.availableJobs;
+    const workplace = override.workplace ?? {};
 
     const selectedJobRoles = override.selectedJobRoles ?? mockSelectedJobRoles;
-    const localStorageData =
-      override.localStorageData ?? JSON.stringify({ establishmentUid: 'mock-uid', leavers: selectedJobRoles });
+    const localStorageData = override.noLocalStorageData
+      ? null
+      : JSON.stringify({ establishmentUid: 'mock-uid', leavers: selectedJobRoles });
     spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
 
     const renderResults = await render(HowManyLeaversComponent, {
@@ -42,7 +44,7 @@ describe('HowManyLeaversComponent', () => {
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnToUrl, {}),
+          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, returnToUrl, workplace),
           deps: [HttpClient],
         },
         {
@@ -185,11 +187,28 @@ describe('HowManyLeaversComponent', () => {
             total: null,
           },
         ];
+
         const { getByTestId } = await setup({ selectedJobRoles: mockSelectedJobRoles });
 
         expect(getInputBoxForJobRole('Care worker').value).toEqual('3');
         expect(getInputBoxForJobRole('Registered nurse').value).toEqual('');
         expect(getByTestId('total-number').innerText).toEqual('3');
+      });
+
+      it('should prefill job roles from workplace when not in local storage (when user has submitted previously and gone back to third page)', async () => {
+        const mockSelectedJobRole = {
+          jobId: 4,
+          title: 'Allied health professional (not occupational therapist)',
+          total: 6,
+        };
+
+        const { getByTestId } = await setup({
+          noLocalStorageData: true,
+          workplace: { leavers: [mockSelectedJobRole] },
+        });
+
+        expect(getInputBoxForJobRole(mockSelectedJobRole.title).value).toEqual('6');
+        expect(getByTestId('total-number').innerText).toEqual('6');
       });
     });
   });
