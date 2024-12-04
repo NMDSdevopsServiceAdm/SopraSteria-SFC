@@ -10,7 +10,8 @@ import { SelectJobRolesDirective } from '../vacancies-and-turnover/select-job-ro
 export class SelectVacancyJobRolesComponent extends SelectJobRolesDirective implements OnInit, OnDestroy {
   public errorMessageOnEmptyInput = 'Select job roles for all your current staff vacancies';
   public heading = 'Select job roles for all your current staff vacancies';
-  protected localStorageKey = 'vacanciesJobRoles';
+  protected numbersField = 'vacanciesJobRoles';
+  protected hasStartersLeaversVacanciesField = 'hasVacancies';
   protected prefillData: Vacancy[] = [];
   protected field = 'vacancies';
 }

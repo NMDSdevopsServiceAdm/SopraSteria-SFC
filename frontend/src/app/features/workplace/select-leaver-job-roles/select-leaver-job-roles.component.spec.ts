@@ -8,7 +8,7 @@ import { Leaver } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles.component';
@@ -184,7 +184,7 @@ describe('SelectLeaverJobRolesComponent', () => {
       });
     });
 
-    describe('prefill', () => {
+    describe('Setting and clearing data from local storage', () => {
       const mockLeavers: Leaver[] = [
         {
           jobId: 10,
@@ -255,6 +255,19 @@ describe('SelectLeaverJobRolesComponent', () => {
 
         const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(0);
+      });
+
+      it('should clear data in local storage when user clicks "Cancel" button', async () => {
+        const { getByText } = await setup({ returnToUrl: true });
+
+        const localStorageRemoveItemSpy = spyOn(localStorage, 'removeItem');
+        const cancelButton = getByText('Cancel');
+
+        fireEvent.click(cancelButton);
+
+        expect(localStorageRemoveItemSpy).toHaveBeenCalledTimes(2);
+        expect(localStorageRemoveItemSpy.calls.all()[0].args).toEqual(['hasLeavers']);
+        expect(localStorageRemoveItemSpy.calls.all()[1].args).toEqual(['leaversJobRoles']);
       });
     });
   });
