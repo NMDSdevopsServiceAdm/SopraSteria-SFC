@@ -1,4 +1,4 @@
-import { Directive, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { Directive, ViewChild } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
@@ -12,7 +12,7 @@ import { AccordionGroupComponent } from '@shared/components/accordions/generic-a
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Directive()
-export class SelectJobRolesDirective extends Question implements OnInit, OnDestroy {
+export class SelectJobRolesDirective extends Question {
   @ViewChild('accordion') accordion: AccordionGroupComponent;
   public section = 'Vacancies and turnover';
   public heading: string;
@@ -21,6 +21,7 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
   public jobGroupsToOpenAtStart: string[] = [];
   public jobGroups: JobGroup[] = [];
 
+  protected field: string;
   protected localStorageKey: string;
   protected jobsAvailable: Job[] = [];
   protected prefillData: Array<Vacancy | Starter | Leaver>;
@@ -49,7 +50,10 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
     this.jobGroups = JobService.sortJobsByJobGroup(this.jobsAvailable);
   }
 
-  protected setupRoutes(): void {}
+  protected setupRoutes(): void {
+    this.nextRoute = ['/workplace', this.establishment.uid, `how-many-${this.field}`];
+    this.previousRoute = ['/workplace', this.establishment.uid, `do-you-have-${this.field}`];
+  }
 
   public setBackLink() {
     this.back = { url: this.previousRoute };
@@ -80,7 +84,15 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
       otherCareProvidingRoleName: otherCareProvidingRole?.other ?? null,
     });
   }
-  protected getPrefillData(): void {}
+
+  protected getPrefillData(): void {
+    const previousData = this.loadFromLocal();
+    if (previousData?.establishmentUid === this.establishment.uid && Array.isArray(previousData?.[this.field])) {
+      this.prefillData = previousData[this.field];
+    } else if (Array.isArray(this.establishment[this.field])) {
+      this.prefillData = this.establishment[this.field] as Array<Vacancy | Starter | Leaver>;
+    }
+  }
 
   public onCheckboxClick(target: HTMLInputElement) {
     const jobId = Number(target.value);
@@ -101,8 +113,6 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
     }
     super.onSubmit();
   }
-
-  protected onSuccess(): void {}
 
   protected saveToLocal(dataToStore) {
     localStorage.setItem(this.localStorageKey, JSON.stringify(dataToStore));
@@ -133,5 +143,24 @@ export class SelectJobRolesDirective extends Question implements OnInit, OnDestr
   protected generateUpdateProps() {
     // suppress the default action of making calls to backend
     return null;
+  }
+
+  protected onSuccess(): void {
+    const selectedJobIds: number[] = this.form.get('selectedJobRoles').value;
+    const otherCareProvidingRoleName: string = this.form.get('otherCareProvidingRoleName').value;
+    const fieldFromDatabase = Array.isArray(this.establishment[this.field]) ? this.establishment[this.field] : [];
+
+    const updatedField: Vacancy | Starter | Leaver[] = selectedJobIds.map((jobId) => {
+      const job = this.jobsAvailable.find((job) => job.id === jobId);
+      const fieldCount = fieldFromDatabase.find((field) => field.jobId === jobId)?.total ?? null;
+
+      if (job.id === this.jobIdOfOtherCareProvidingRole && otherCareProvidingRoleName) {
+        return { jobId, title: job.title, total: fieldCount, other: otherCareProvidingRoleName };
+      }
+
+      return { jobId, title: job.title, total: fieldCount };
+    });
+    const dataToStore = { establishmentUid: this.establishment.uid, [this.field]: updatedField };
+    this.saveToLocal(dataToStore);
   }
 }

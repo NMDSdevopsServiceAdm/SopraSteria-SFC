@@ -45,6 +45,7 @@ import { OtherServicesComponent } from '@features/workplace/other-services/other
 import { PensionsComponent } from '@features/workplace/pensions/pensions.component';
 import { RecruitmentAdvertisingCostComponent } from '@features/workplace/recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from '@features/workplace/regulated-by-cqc/regulated-by-cqc.component';
+import { SelectLeaverJobRolesComponent } from '@features/workplace/select-leaver-job-roles/select-leaver-job-roles.component';
 import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
 import { SelectMainServiceComponent } from '@features/workplace/select-main-service/select-main-service.component';
@@ -441,6 +442,16 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Do You Have Leavers',
+        },
+      },
+      {
+        path: 'select-leaver-job-roles',
+        component: SelectLeaverJobRolesComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Leavers job role selection',
         },
       },
       {
