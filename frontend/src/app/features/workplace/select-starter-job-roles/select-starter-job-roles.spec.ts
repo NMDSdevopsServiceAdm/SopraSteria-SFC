@@ -88,6 +88,7 @@ describe('SelectStarterJobRolesComponent', () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
+
   describe('rendering', () => {
     it('should display a heading and a section heading', async () => {
       const { getByRole } = await setup();
@@ -96,17 +97,20 @@ describe('SelectStarterJobRolesComponent', () => {
       expect(heading.textContent).toEqual('Select job roles for all your new starters');
       expect(sectionHeading.textContent).toEqual('Vacancies and turnover');
     });
+
     describe('accordion', () => {
       it('should render an accordion for job role selection', async () => {
         const { getByTestId, getByText } = await setup();
         expect(getByTestId('selectJobRolesAccordion')).toBeTruthy();
         expect(getByText('Show all job roles')).toBeTruthy();
       });
+
       it('should render an accordion section for each job role group', async () => {
         const { getByText } = await setup();
         expect(getByText('Care providing roles')).toBeTruthy();
         expect(getByText('Professional and related roles')).toBeTruthy();
       });
+
       it('should render a checkbox for each job role', async () => {
         const { getByRole } = await setup();
         mockAvailableJobs.forEach((job) => {
@@ -114,6 +118,7 @@ describe('SelectStarterJobRolesComponent', () => {
           expect(checkbox).toBeTruthy();
         });
       });
+
       it('should render a text input when "Care providing roles - Other" is ticked', async () => {
         const { fixture, getByRole, getByLabelText } = await setup();
         userEvent.click(getByLabelText('Care providing roles'));
@@ -127,28 +132,34 @@ describe('SelectStarterJobRolesComponent', () => {
         const { getByRole } = await setup();
         expect(getByRole('button', { name: 'Save and continue' })).toBeTruthy();
       });
+
       it('should render a "Continue" CTA button when not in the flow', async () => {
         const { getByRole } = await setup({ returnToUrl: true });
         expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
       });
+
       it('should not render a "Skip this question" button', async () => {
         const { queryByText } = await setup();
         expect(queryByText('Skip this question')).toBeFalsy();
       });
+
       it('should render a "Cancel" button when not in flow', async () => {
         const { getByText } = await setup({ returnToUrl: true });
         expect(getByText('Cancel')).toBeTruthy();
       });
+
       it('should not render a "Cancel" button when in flow', async () => {
         const { queryByText } = await setup();
         expect(queryByText('Cancel')).toBeFalsy();
       });
     });
+
     describe('progress bar', () => {
       it('should render a progress bar when in the flow', async () => {
         const { getByTestId } = await setup();
         expect(getByTestId('progress-bar')).toBeTruthy();
       });
+
       it('should not render a progress bar when not in the flow', async () => {
         const { getByTestId, queryByTestId } = await setup({ returnToUrl: true });
         expect(getByTestId('section-heading')).toBeTruthy();
@@ -168,12 +179,14 @@ describe('SelectStarterJobRolesComponent', () => {
           total: 2,
         },
       ];
+
       it('should tick the checkboxes according to previously saved starters for the workplace', async () => {
         const { getAllByRole } = await setup({ startersFromDatabase: mockStarters });
         const tickedCheckboxes = getAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(2);
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
       });
+
       it('should expand the accordion for job groups that have prefilled starters', async () => {
         const careWorkerOnly: Starter[] = [
           {
@@ -188,6 +201,7 @@ describe('SelectStarterJobRolesComponent', () => {
         expect(within(careProvidingRolesAccordion).getByText('Hide')).toBeTruthy(); // is expanded
         expect(within(professionalRolesAccordion).getByText('Show')).toBeTruthy(); // not expanded
       });
+
       it('should prefill the optional job role name for "Care providing role - Other" if given', async () => {
         const otherCareProvidingRole: Starter[] = [
           {
@@ -202,6 +216,7 @@ describe('SelectStarterJobRolesComponent', () => {
         expect(inputBox).toBeTruthy();
         expect(inputBox.value).toEqual('Some really special job role name');
       });
+
       it('should prefill from the data in localStorage if editing the same workplace', async () => {
         const mockLocalStorageData = { establishmentUid: 'mocked-uid', starters: mockStarters };
         const { getAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
@@ -209,6 +224,7 @@ describe('SelectStarterJobRolesComponent', () => {
         expect(tickedCheckboxes.length).toEqual(2);
         expect(tickedCheckboxes.map((el) => el.name)).toEqual(['Care worker', 'Registered nurse']);
       });
+
       it('should not prefill from the data in localStorage if editing a different workplace', async () => {
         const mockLocalStorageData = { establishmentUid: 'other-workplace-uid', starters: mockStarters };
         const { queryAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
@@ -251,6 +267,7 @@ describe('SelectStarterJobRolesComponent', () => {
         };
         expect(setLocalStorageSpy).toHaveBeenCalledWith('startersJobRoles', JSON.stringify(expectedData));
       });
+
       it('should keep the starters numbers that was loaded from database', async () => {
         const mockStartersFromDatabase: Starter[] = [
           {
@@ -288,6 +305,7 @@ describe('SelectStarterJobRolesComponent', () => {
         };
         expect(setLocalStorageSpy).toHaveBeenCalledWith('startersJobRoles', JSON.stringify(expectedData));
       });
+
       it('should navigate to the starters number input page after submit', async () => {
         const { component, getByText, routerSpy } = await setup();
         userEvent.click(getByText('Show all job roles'));
@@ -296,6 +314,7 @@ describe('SelectStarterJobRolesComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'how-many-starters']);
       });
     });
+
     describe('errors', () => {
       it('should display an error message on submit if no job roles are selected', async () => {
         const { fixture, getByRole, getByText, getByTestId, setLocalStorageSpy } = await setup();
@@ -345,6 +364,7 @@ describe('SelectStarterJobRolesComponent', () => {
       });
     });
   });
+
   describe('navigation', () => {
     it('should return to the workplace summary page when cancel button is clicked', async () => {
       const { getByText, routerSpy } = await setup({ returnToUrl: true });
@@ -352,6 +372,7 @@ describe('SelectStarterJobRolesComponent', () => {
       userEvent.click(cancelButton);
       expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
     });
+
     it('should return to the wdf workplace summary page when visited from wdf and cancel button is clicked', async () => {
       const { component, getByText, routerSpy } = await setup({ returnToUrl: true });
       component.return = { url: ['/wdf', 'workplaces', 'mock-uid'] };
@@ -359,12 +380,14 @@ describe('SelectStarterJobRolesComponent', () => {
       userEvent.click(cancelButton);
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'workplaces', 'mock-uid'], jasmine.anything());
     });
+
     it('should set the backlink to "do you have starter" page', async () => {
       const { component } = await setup();
       expect(component.back).toEqual({
         url: ['/workplace', component.establishment.uid, 'do-you-have-starters'],
       });
     });
+
     it('should set the backlink to "do you have starter" when not in the flow', async () => {
       const { component } = await setup({ returnToUrl: true });
       expect(component.back).toEqual({
