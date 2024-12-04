@@ -715,6 +715,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         component.workplace.vacancies = [
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
+          { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
         ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -724,6 +725,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(vacanciesRow).queryByText('Change')).toBeTruthy();
         expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
       });
 
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Current Staff Vacancies', async () => {
@@ -771,6 +773,14 @@ describe('WDFWorkplaceSummaryComponent', () => {
     });
 
     describe('New starters', () => {
+      it('should show the correct wording', async () => {
+        const { getByTestId } = await setup();
+
+        const startersRow = getByTestId('starters');
+
+        expect(within(startersRow).getByText('New starters in the last 12 months')).toBeTruthy();
+      });
+
       it('should show dash and have Add information button on when starters is null', async () => {
         const { component, fixture } = await setup();
 
@@ -837,6 +847,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         component.workplace.starters = [
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
+          { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
         ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -846,6 +857,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(startersRow).queryByText('Change')).toBeTruthy();
         expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(startersRow).queryByText('2 Nursing')).toBeTruthy();
+        expect(within(startersRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
       });
 
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for New Starters', async () => {
@@ -893,6 +905,14 @@ describe('WDFWorkplaceSummaryComponent', () => {
     });
 
     describe('Staff leavers', () => {
+      it('should show the correct wording', async () => {
+        const { getByTestId } = await setup();
+
+        const leaversRow = getByTestId('leavers');
+
+        expect(within(leaversRow).getByText('Staff leavers in the last 12 months')).toBeTruthy();
+      });
+
       it('should show dash and have Add information button on when leavers is null', async () => {
         const { component, fixture } = await setup();
 
@@ -904,7 +924,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
         expect(within(leaversRow).queryByText('-')).toBeTruthy();
       });
 
@@ -919,7 +939,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
         expect(within(leaversRow).queryByText(`Don't know`)).toBeTruthy();
       });
 
@@ -934,7 +954,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
         expect(within(leaversRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -949,7 +969,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
         expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
       });
 
@@ -959,6 +979,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         component.workplace.leavers = [
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
+          { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
         ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -968,6 +989,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText('Change')).toBeTruthy();
         expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(leaversRow).queryByText('2 Nursing')).toBeTruthy();
+        expect(within(leaversRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
       });
 
       it('should show WdfFieldConfirmation component when is eligible but needs to be confirmed for Staff Leavers', async () => {

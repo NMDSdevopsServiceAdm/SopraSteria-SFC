@@ -1,5 +1,5 @@
-import { Directive, OnInit } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
+import { Directive } from '@angular/core';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
@@ -8,16 +8,16 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Question } from '@features/workplace/question/question.component';
 
 @Directive({})
-export class DoYouHaveStartersLeaversVacanciesDirective extends Question implements OnInit {
+export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
   public section = 'Vacancies and turnover';
   public heading: string;
   public hintText: string;
   public revealText: string;
-  public dataFromEstablishment: any;
   public hasSelectedYesWithoutSavingJobRoles: boolean;
   public localStorageKey: string;
   public startersLeaversOrVacanciesPageTwo: string;
   public valueToUpdate: string;
+  public requiredWarningMessage: string;
   public knownOptions = [
     {
       label: 'Yes',
@@ -45,45 +45,41 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
 
   public init(): void {
     this.setupForm();
-    this.setPageVariables();
     this.prefillForm();
     this.setupRoutes();
   }
 
+  protected setupRoutes(): void {}
+
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      startersLeaversVacanciesKnown: null,
+      startersLeaversVacanciesKnown: [null, [Validators.required]],
     });
   }
 
-  protected setupRoutes(): void {}
-
-  protected setPageVariables(): void {}
+  protected setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'startersLeaversVacanciesKnown',
+        type: [
+          {
+            name: 'required',
+            message: this.requiredWarningMessage,
+          },
+        ],
+      },
+    ];
+  }
 
   protected getFromLocalStorage(): boolean {
     return localStorage.getItem(this.localStorageKey) === 'true' ? true : false;
   }
 
-  protected setToLocalStorage(): void {}
-
-  protected getDataFromEstablishment(): any {}
-
   protected prefillForm(): void {
-    this.dataFromEstablishment = this.getDataFromEstablishment();
     this.hasSelectedYesWithoutSavingJobRoles = this.getFromLocalStorage();
-    if (
-      (typeof this.dataFromEstablishment === 'object' && this.dataFromEstablishment?.length > 0) ||
-      this.hasSelectedYesWithoutSavingJobRoles
-    ) {
+    if (this.hasSelectedYesWithoutSavingJobRoles) {
       this.form.setValue({
         startersLeaversVacanciesKnown: jobOptionsEnum.YES,
-      });
-    } else if (
-      this.dataFromEstablishment === jobOptionsEnum.NONE ||
-      this.dataFromEstablishment === jobOptionsEnum.DONT_KNOW
-    ) {
-      this.form.setValue({
-        startersLeaversVacanciesKnown: this.dataFromEstablishment,
       });
     }
   }
@@ -114,6 +110,14 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
         (error) => this.onError(error),
       ),
     );
+  }
+
+  protected getPreviousRoute(field: string): Array<string> {
+    if (Array.isArray(this.establishment[field]) && this.establishment[field].length > 0) {
+      return ['/workplace', this.establishment?.uid, `how-many-${field}`];
+    } else {
+      return ['/workplace', this.establishment?.uid, `do-you-have-${field}`];
+    }
   }
 
   protected onSuccess(): void {

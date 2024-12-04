@@ -44,8 +44,7 @@ import {
 } from './confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
-import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
-import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
+import { DoYouHaveLeaversComponent } from './do-you-have-leavers/do-you-have-leavers.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import {
   EmployedFromOutsideUkExistingWorkersComponent,
@@ -53,18 +52,17 @@ import {
 import {
   HealthAndCareVisaExistingWorkers,
 } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
-import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
 import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { PensionsComponent } from './pensions/pensions.component';
 import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
+import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles/select-leaver-job-roles.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
 import { SelectPrimaryUserComponent } from './select-primary-user/select-primary-user.component';
 import { SelectStarterJobRolesComponent } from './select-starter-job-roles/select-starter-job-roles.component';
-import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
@@ -84,6 +82,11 @@ import {
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
+import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
+import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
+import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
+import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
+import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -284,7 +287,6 @@ const routes: Routes = [
         path: 'do-you-have-vacancies',
         component: DoYouHaveVacanciesComponent,
         canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Do You Have Vacancies',
@@ -323,7 +325,6 @@ const routes: Routes = [
         path: 'do-you-have-starters',
         component: DoYouHaveStartersComponent,
         canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Do You Have Starters',
@@ -338,6 +339,35 @@ const routes: Routes = [
           permissions: ['canEditEstablishment'],
           title: 'Starters job role selection'
         }
+      },
+      {
+        path: 'how-many-starters',
+        component: HowManyStartersComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'How many starters',
+        },
+      },
+      {
+        path: 'do-you-have-leavers',
+        component: DoYouHaveLeaversComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Do You Have Leavers',
+        },
+      },
+      {
+        path: 'select-leaver-job-roles',
+        component: SelectLeaverJobRolesComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Leavers job role selection',
+        },
       },
       {
         path: 'leavers',

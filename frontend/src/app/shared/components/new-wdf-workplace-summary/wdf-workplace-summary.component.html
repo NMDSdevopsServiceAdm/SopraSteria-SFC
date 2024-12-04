@@ -389,7 +389,7 @@
           <ng-template #vacancies>
             <ng-container *ngIf="isArray(workplace.vacancies)">
               <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
+                <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy | formatSLV }}</li>
               </ul>
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
@@ -426,7 +426,7 @@
     </div>
 
     <div class="govuk-summary-list__row" data-testid="starters">
-      <dt class="govuk-summary-list__key">New starters</dt>
+      <dt class="govuk-summary-list__key">New starters in the last 12 months</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
           [wdfView]="wdfView"
@@ -437,7 +437,7 @@
           <ng-template #starters>
             <ng-container *ngIf="isArray(workplace.starters)">
               <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
+                <li *ngFor="let starter of workplace.starters">{{ starter | formatSLV }}</li>
               </ul>
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.starters)">
@@ -476,7 +476,7 @@
     </div>
 
     <div class="govuk-summary-list__row" data-testid="leavers">
-      <dt class="govuk-summary-list__key">Leavers</dt>
+      <dt class="govuk-summary-list__key">Staff leavers in the last 12 months</dt>
       <dd class="govuk-summary-list__value">
         <app-summary-record-value
           [wdfView]="wdfView"
@@ -487,7 +487,7 @@
           <ng-template #leavers>
             <ng-container *ngIf="isArray(workplace.leavers)">
               <ul class="govuk-list govuk-!-margin-bottom-0">
-                <li *ngFor="let leaver of workplace.leavers">{{ leaver.total }} {{ leaver.title }}</li>
+                <li *ngFor="let leaver of workplace.leavers">{{ leaver | formatSLV }}</li>
               </ul>
             </ng-container>
             <ng-container *ngIf="!isArray(workplace.leavers)">
@@ -502,7 +502,7 @@
             workplace.wdf?.leavers.isEligible === 'Yes' &&
             !workplace.wdf?.leavers.updatedSinceEffectiveDate
           "
-          [changeLink]="getRoutePath('leavers', wdfView)"
+          [changeLink]="getRoutePath('do-you-have-leavers', wdfView)"
           (fieldConfirmation)="this.confirmField('leavers')"
           (setReturnClicked)="this.setReturn()"
         >
@@ -518,7 +518,7 @@
             )
           "
           [explanationText]="' leavers'"
-          [link]="['/workplace', workplace.uid, 'leavers']"
+          [link]="['/workplace', workplace.uid, 'do-you-have-leavers']"
           [hasData]="workplace.leavers?.length"
           (setReturnClicked)="this.setReturn()"
         ></app-summary-record-change>
