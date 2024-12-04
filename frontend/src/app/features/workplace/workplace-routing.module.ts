@@ -43,8 +43,8 @@ import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.componen
 import { EmployedFromOutsideUkExistingWorkersComponent } from './employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
 import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 import { HowManyLeaversComponent } from './how-many-leavers/how-many-leavers.component';
+import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
-import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { PensionsComponent } from './pensions/pensions.component';
@@ -70,7 +70,6 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -352,16 +351,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'How many leavers',
-        },
-      },
-      {
-        path: 'leavers',
-        component: LeaversComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Leavers',
         },
       },
       {

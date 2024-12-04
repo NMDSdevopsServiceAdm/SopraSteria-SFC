@@ -39,8 +39,8 @@ import { EditWorkplaceComponent } from '@features/workplace/edit-workplace/edit-
 import { EmployedFromOutsideUkExistingWorkersComponent } from '@features/workplace/employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
 import { HealthAndCareVisaExistingWorkers } from '@features/workplace/health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
 import { HowManyLeaversComponent } from '@features/workplace/how-many-leavers/how-many-leavers.component';
+import { HowManyStartersComponent } from '@features/workplace/how-many-starters/how-many-starters.component';
 import { HowManyVacanciesComponent } from '@features/workplace/how-many-vacancies/how-many-vacancies.component';
-import { LeaversComponent } from '@features/workplace/leavers/leavers.component';
 import { NumberOfInterviewsComponent } from '@features/workplace/number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from '@features/workplace/other-services/other-services.component';
 import { PensionsComponent } from '@features/workplace/pensions/pensions.component';
@@ -77,7 +77,6 @@ import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsid
 import { ViewSubsidiaryTrainingAndQualificationsComponent } from './training-and-qualifications/view-subsidiary-training-and-qualifications.component';
 import { ViewSubsidiaryWorkplaceUsersComponent } from './workplace-users/view-subsidiary-workplace-users.component';
 import { ViewSubsidiaryWorkplaceComponent } from './workplace/view-subsidiary-workplace.component';
-import { HowManyStartersComponent } from '@features/workplace/how-many-starters/how-many-starters.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -463,16 +462,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'How many leavers',
-        },
-      },
-      {
-        path: 'leavers',
-        component: LeaversComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Leavers',
         },
       },
       {
