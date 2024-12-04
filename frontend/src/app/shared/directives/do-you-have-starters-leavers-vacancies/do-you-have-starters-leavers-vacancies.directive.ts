@@ -54,7 +54,7 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      startersLeaversVacanciesKnown: [null, [Validators.required]],
+      startersLeaversVacanciesKnown: [null, { validators: [Validators.required], updateOn: 'submit' }],
     });
   }
 
