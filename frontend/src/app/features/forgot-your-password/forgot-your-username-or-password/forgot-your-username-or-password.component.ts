@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 
@@ -16,7 +17,11 @@ export class ForgotYourUsernameOrPasswordComponent implements OnInit, AfterViewI
 
   private nextRoute: string[];
 
-  constructor(private formBuilder: UntypedFormBuilder, private errorSummaryService: ErrorSummaryService) {}
+  constructor(
+    private router: Router,
+    private formBuilder: UntypedFormBuilder,
+    private errorSummaryService: ErrorSummaryService,
+  ) {}
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -43,26 +48,22 @@ export class ForgotYourUsernameOrPasswordComponent implements OnInit, AfterViewI
     ];
   }
 
-  get usernameOrPassword(): AbstractControl {
-    return this.form.get('usernameOrPassword');
-  }
-
   onSubmit(): void {
     this.submitted = true;
 
-    switch (this.usernameOrPassword.value) {
-      case 'password':
-        this.nextRoute = ['/forgot-your-password'];
-        this.navigate();
-        break;
+    const selectedOption = this.form.get('usernameOrPassword').value;
+
+    switch (selectedOption) {
       case 'username':
         this.nextRoute = ['/forgot-your-username'];
-        this.navigate();
+        break;
+      case 'password':
+        this.nextRoute = ['/forgot-your-password'];
         break;
       default:
         return;
     }
-  }
 
-  navigate() {}
+    this.router.navigate(this.nextRoute);
+  }
 }

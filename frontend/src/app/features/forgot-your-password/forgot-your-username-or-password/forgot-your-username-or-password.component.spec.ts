@@ -5,11 +5,12 @@ import { SharedModule } from '@shared/shared.module';
 import userEvent from '@testing-library/user-event';
 import { ActivatedRoute, Router } from '@angular/router';
 import { getTestBed } from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
 
 fdescribe('ForgotYourUsernameOrPasswordComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameOrPasswordComponent, {
-      imports: [FormsModule, ReactiveFormsModule, SharedModule],
+      imports: [FormsModule, ReactiveFormsModule, SharedModule, RouterTestingModule],
       providers: [
         {
           provide: ActivatedRoute,
@@ -50,34 +51,64 @@ fdescribe('ForgotYourUsernameOrPasswordComponent', () => {
     });
 
     it('it should show an reveal text of "Forgot both?"', async () => {
-      const { getByTestId } = await setup();
+      const { getByTestId, getByText } = await setup();
 
-      const revealText = getByTestId('reveal-text');
-      const expectedText =
-        'Request a link to reset your password and then come back here to find your username. Alternatively, call the ASC-WDS Support Team on 0113 241 0969 for help.';
+      const revealTextElement = getByTestId('reveal-text');
+      const hiddenText =
+        'Request a link to reset your password and then come back here to find your username. ' +
+        'Alternatively, call the ASC-WDS Support Team on 0113 241 0969 for help.';
 
-      expect(revealText).toBeTruthy();
-      expect(within(revealText).getByText('Forgot both?')).toBeTruthy();
-      expect(revealText.textContent).toContain(expectedText);
+      expect(revealTextElement).toBeTruthy();
+      expect(within(revealTextElement).getByText('Forgot both?')).toBeTruthy();
+      expect(revealTextElement.textContent).toContain(hiddenText);
+
+      const linkToResetPassword = getByText('Request a link to reset your password');
+      expect(linkToResetPassword.getAttribute('href')).toEqual('/forgot-your-password');
     });
 
     it('should show a "Continue" CTA button and a "Back to sign in" link', async () => {
       const { getByText, getByRole } = await setup();
 
       expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
-      expect(getByText('Back to sign in')).toBeTruthy();
+
+      const backToSignIn = getByText('Back to sign in');
+      expect(backToSignIn).toBeTruthy();
+      expect(backToSignIn.getAttribute('href')).toEqual('/login');
     });
   });
 
-  describe('form submit and navigation', () => {
-    describe('error', () => {
-      it('should show an error message on submit if neither of radio buttons were selected', async () => {
-        const { fixture, getByText, getByRole } = await setup();
+  describe('form submit and validation', () => {
+    describe('on submit', () => {
+      it('should nagivate to forgot-your-username page if username was selected', async () => {
+        const { getByRole, routerSpy } = await setup();
 
+        userEvent.click(getByRole('radio', { name: 'Username' }));
         userEvent.click(getByRole('button', { name: 'Continue' }));
-        fixture.detectChanges();
 
-        expect(getByText('There is a problem')).toBeTruthy();
+        expect(routerSpy).toHaveBeenCalledWith(['/forgot-your-username']);
+      });
+
+      it('should nagivate to forgot-your-password page if password was selected', async () => {
+        const { getByRole, routerSpy } = await setup();
+
+        userEvent.click(getByRole('radio', { name: 'Password' }));
+        userEvent.click(getByRole('button', { name: 'Continue' }));
+
+        expect(routerSpy).toHaveBeenCalledWith(['/forgot-your-password']);
+      });
+
+      describe('error', () => {
+        it('should show an error message if neither of radio buttons were selected', async () => {
+          const { fixture, getByText, getByRole, getAllByText, routerSpy } = await setup();
+
+          userEvent.click(getByRole('button', { name: 'Continue' }));
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+          expect(getAllByText('Select username or password')).toHaveSize(2);
+
+          expect(routerSpy).not.toHaveBeenCalled();
+        });
       });
     });
   });
