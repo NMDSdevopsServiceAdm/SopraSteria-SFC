@@ -301,19 +301,47 @@ describe('SelectStarterJobRolesComponent', () => {
         const { fixture, getByRole, getByText, getByTestId, setLocalStorageSpy } = await setup();
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
+
         const expectedErrorMessage = 'Select job roles for all your new starters';
+
         const accordion = getByTestId('selectJobRolesAccordion');
         expect(within(accordion).getByText(expectedErrorMessage)).toBeTruthy();
         expect(getByText('There is a problem')).toBeTruthy();
+
         const errorSummaryBox = getByText('There is a problem').parentElement;
         expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
         expect(setLocalStorageSpy).not.toHaveBeenCalled();
       });
+
       it('should expand the whole accordion on error', async () => {
         const { fixture, getByRole, getByText } = await setup();
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
         fixture.detectChanges();
         expect(getByText('Hide all job roles')).toBeTruthy();
+      });
+
+      it('should continue to display error messages after empty submit and then user selects job roles', async () => {
+        const { fixture, getByRole, getByText } = await setup();
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+        fixture.detectChanges();
+
+        const errorSummaryBoxHeading = 'There is a problem';
+        const expectedErrorMessage = 'Select job roles for all your new starters';
+
+        const errorSummaryBox = getByText(errorSummaryBoxHeading).parentElement;
+
+        expect(errorSummaryBox).toBeTruthy();
+        expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
+
+        userEvent.click(getByText('Care worker'));
+        userEvent.click(getByText('Registered nurse'));
+
+        fixture.detectChanges();
+
+        const errorSummaryBoxStillThere = getByText(errorSummaryBoxHeading).parentElement;
+
+        expect(errorSummaryBoxStillThere).toBeTruthy();
+        expect(within(errorSummaryBoxStillThere).getByText(expectedErrorMessage)).toBeTruthy();
       });
     });
   });
