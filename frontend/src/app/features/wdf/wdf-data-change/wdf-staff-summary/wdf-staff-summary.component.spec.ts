@@ -28,7 +28,7 @@ import { WdfModule } from '../wdf.module';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 
 describe('WdfStaffSummaryComponent', () => {
-  const setup = async (overrides: { componentProperties?: any; report?: any } = {}) => {
+  const setup = async (overrides: any = {}) => {
     const establishment = establishmentBuilder() as Establishment;
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
@@ -50,7 +50,7 @@ describe('WdfStaffSummaryComponent', () => {
               queryParamMap: {
                 get: sinon.fake(),
               },
-              params: {
+              params: overrides?.params ?? {
                 establishmentuid: establishment.uid,
               },
             },
@@ -60,7 +60,6 @@ describe('WdfStaffSummaryComponent', () => {
       ],
       componentProperties: {
         workplace: establishment,
-        wdfView: true,
         workers: workers,
         workerCount: workers.length,
         ...overrides?.componentProperties,
@@ -70,6 +69,7 @@ describe('WdfStaffSummaryComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(null);
     const workerService = injector.inject(WorkerService) as WorkerService;
 
     const getAllWorkersSpy = spyOn(workerService, 'getAllWorkers').and.returnValue(
@@ -79,7 +79,7 @@ describe('WdfStaffSummaryComponent', () => {
     return {
       ...setupTools,
       component,
-      router,
+      routerSpy,
       getAllWorkersSpy,
     };
   };
@@ -167,8 +167,10 @@ describe('WdfStaffSummaryComponent', () => {
       userEvent.type(getByLabelText('Search by name or ID number for staff records'), 'search term here{enter}');
       expect(getAllWorkersSpy.calls.mostRecent().args[1].pageIndex).toEqual(0);
     });
+  });
 
-    it('should display the message when there is no staff', async () => {
+  describe('No staff records message', () => {
+    it('should display the message when there are no staff records', async () => {
       const overrides = {
         componentProperties: {
           workers: [],
@@ -184,6 +186,44 @@ describe('WdfStaffSummaryComponent', () => {
         'You need to add some staff records before you can check whether your data meets funding requirements.';
       expect(noRecordsTestId).toBeTruthy();
       expect(noRecordsTestId.textContent).toContain(message);
+    });
+
+    it('should navigate to staff records tab when is not parent user viewing sub workplace (no uid in params)', async () => {
+      const overrides = {
+        componentProperties: {
+          workers: [],
+          workerCount: 0,
+        },
+        params: {},
+      };
+
+      const { getByText, routerSpy } = await setup(overrides);
+
+      const staffRecordsLink = getByText('add some staff records');
+      userEvent.click(staffRecordsLink);
+
+      expect(routerSpy).toHaveBeenCalledWith(['dashboard'], { fragment: 'staff-records' });
+    });
+
+    it('should navigate to subsidiary staff records tab when parent user viewing sub workplace (uid in params)', async () => {
+      const workplace = establishmentBuilder();
+      workplace.uid = 'a123koj3213233';
+
+      const overrides = {
+        componentProperties: {
+          workers: [],
+          workerCount: 0,
+          workplace,
+        },
+        params: { establishmentuid: workplace.uid },
+      };
+
+      const { getByText, routerSpy } = await setup(overrides);
+
+      const staffRecordsLink = getByText('add some staff records');
+      userEvent.click(staffRecordsLink);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', workplace.uid, 'staff-records']);
     });
   });
 
