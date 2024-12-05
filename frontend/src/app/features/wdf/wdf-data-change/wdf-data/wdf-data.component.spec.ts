@@ -8,13 +8,12 @@ import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockReportService } from '@core/test-utils/MockReportService';
+import { createMockWdfReport } from '@core/test-utils/MockReportService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -35,7 +34,6 @@ describe('WdfDataComponent', () => {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
         },
-        { provide: ReportService, useClass: MockReportService },
         { provide: WorkerService, useClass: MockWorkerService },
         {
           provide: PermissionsService,
@@ -52,7 +50,7 @@ describe('WdfDataComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { workplace: overrides.workplace ?? establishmentBuilder() },
+              data: { workplace: overrides.workplace ?? establishmentBuilder(), report: createMockWdfReport() },
               params: overrides.viewingSub ? { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } : {},
             },
             fragment: of(overrides.fragment ?? undefined),

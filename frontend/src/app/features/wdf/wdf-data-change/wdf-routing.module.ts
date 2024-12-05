@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
@@ -65,6 +66,7 @@ const routes: Routes = [
     resolve: {
       workers: WorkersResolver,
       workplace: WorkplaceResolver,
+      report: FundingReportResolver,
     },
   },
   {
@@ -78,7 +80,7 @@ const routes: Routes = [
             component: WdfDataComponent,
             canActivate: [HasPermissionsGuard],
             data: { permissions: ['canViewWdfReport'], title: 'WDF data', withFunding: true },
-            resolve: { workplace: WorkplaceResolver },
+            resolve: { workplace: WorkplaceResolver, report: FundingReportResolver },
           },
           {
             path: 'staff-record/:id',

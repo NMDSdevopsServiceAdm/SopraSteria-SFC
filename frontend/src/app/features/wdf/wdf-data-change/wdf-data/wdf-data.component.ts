@@ -8,7 +8,6 @@ import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
@@ -53,7 +52,6 @@ export class WdfDataComponent implements OnInit {
 
   constructor(
     private establishmentService: EstablishmentService,
-    private reportService: ReportService,
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
@@ -124,14 +122,10 @@ export class WdfDataComponent implements OnInit {
     }
   }
 
-  private getWdfReport() {
-    this.subscriptions.add(
-      this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
-        this.report = report;
-        this.setDates(report);
-        this.setWdfEligibility(report);
-      }),
-    );
+  private getWdfReport(): void {
+    this.report = this.route.snapshot.data?.report;
+    this.setDates(this.report);
+    this.setWdfEligibility(this.report);
   }
 
   public handleTabChange(activeTabIndex: number): void {
