@@ -283,6 +283,7 @@ const routes: Routes = [
     data: { title: 'Funding Requirements' },
     resolve: {
       pages: PageResolver,
+      report: FundingReportResolver,
     },
   },
   {

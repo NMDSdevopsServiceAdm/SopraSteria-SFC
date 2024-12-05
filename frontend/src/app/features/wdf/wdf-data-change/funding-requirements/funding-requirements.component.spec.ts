@@ -1,19 +1,18 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { MockPagesService } from '@core/test-utils/MockPagesService';
-import { fireEvent, render } from '@testing-library/angular';
 import { RouterTestingModule } from '@angular/router/testing';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { PagesService } from '@core/services/pages.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { PagesService } from '@core/services/pages.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { MockPagesService } from '@core/test-utils/MockPagesService';
+import { createMockWdfReport } from '@core/test-utils/MockReportService';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { FundingRequirementsComponent } from './funding-requirements.component';
-import { ReportService } from '@core/services/report.service';
-import { MockReportService } from '@core/test-utils/MockReportService';
 
 describe('FundingRequirementsComponent', () => {
   const pages = MockPagesService.pagesFactory();
@@ -27,15 +26,12 @@ describe('FundingRequirementsComponent', () => {
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
         {
-          provide: ReportService,
-          useClass: MockReportService,
-        },
-        {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
             snapshot: {
               data: {
                 pages,
+                report: createMockWdfReport(),
               },
             },
           }),
