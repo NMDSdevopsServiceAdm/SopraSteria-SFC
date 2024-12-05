@@ -91,6 +91,7 @@ const routes: Routes = [
                 path: '',
                 component: WdfStaffRecordComponent,
                 data: { title: 'WDF Staff Record' },
+                resolve: { report: FundingReportResolver },
               },
               {
                 path: 'staff-details',
@@ -293,6 +294,7 @@ const routes: Routes = [
         path: '',
         component: WdfStaffRecordComponent,
         data: { title: 'WDF Staff Record' },
+        resolve: { report: FundingReportResolver },
       },
       {
         path: 'staff-details',
