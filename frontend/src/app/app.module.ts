@@ -16,6 +16,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
@@ -206,6 +207,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     GetMissingCqcLocationsResolver,
     WorkplaceResolver,
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
+    FundingReportResolver,
   ],
   bootstrap: [AppComponent],
 })
