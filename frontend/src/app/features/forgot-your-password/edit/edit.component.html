@@ -10,11 +10,14 @@
   <div class="govuk-grid-column-two-thirds-from-desktop">
     <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
       <fieldset class="govuk-fieldset">
-        <legend class="govuk-fieldset__legend govuk-fieldset__legend--xl">
-          <h1 class="govuk-fieldset__heading">Forgot your password?</h1>
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <h1 class="govuk-fieldset__heading">Forgot password</h1>
         </legend>
 
-        <p>Enter your username or email address and we will send you a link to reset your password.</p>
+        <p>
+          Enter your username or your ASC-WDS email address (this'll be the one you used when you created your account,
+          unless you've changed it) and we'll send you a link to reset your password.
+        </p>
 
         <div
           class="govuk-form-group govuk-!-margin-bottom-7"
@@ -29,7 +32,7 @@
             <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('usernameOrEmail', 'required') }}
           </span>
           <input
-            class="govuk-input govuk-!-width-full"
+            class="govuk-input govuk-!-width-two-thirds"
             [class.govuk-input--error]="form.get('usernameOrEmail').errors && submitted"
             id="usernameOrEmail"
             name="usernameOrEmail"
@@ -39,8 +42,17 @@
         </div>
       </fieldset>
 
-      <button type="submit" class="govuk-button">Send reset link</button>
+      <div class="govuk-button-group--gap-between">
+        <button type="submit" class="govuk-button">Send password reset link</button>
+        <span class="govuk-visually-hidden">or</span>
+        <a
+          class="govuk-link govuk-link--no-visited-state govuk__nowrap"
+          [routerLink]="['/login']"
+          role="button"
+          draggable="false"
+          >Back to sign in</a
+        >
+      </div>
     </form>
-    <p><a [routerLink]="['/login']">Back to sign in</a></p>
   </div>
 </div>

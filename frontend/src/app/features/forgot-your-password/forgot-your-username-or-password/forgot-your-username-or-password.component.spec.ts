@@ -7,7 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { getTestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
 
-fdescribe('ForgotYourUsernameOrPasswordComponent', () => {
+describe('ForgotYourUsernameOrPasswordComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameOrPasswordComponent, {
       imports: [FormsModule, ReactiveFormsModule, SharedModule, RouterTestingModule],
