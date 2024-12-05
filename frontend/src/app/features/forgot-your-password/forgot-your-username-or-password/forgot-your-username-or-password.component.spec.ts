@@ -1,11 +1,12 @@
-import { ForgotYourUsernameOrPasswordComponent } from './forgot-your-username-or-password.component';
-import { render, within } from '@testing-library/angular';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { SharedModule } from '@shared/shared.module';
-import userEvent from '@testing-library/user-event';
-import { ActivatedRoute, Router } from '@angular/router';
 import { getTestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { SharedModule } from '@shared/shared.module';
+import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
+
+import { ForgotYourUsernameOrPasswordComponent } from './forgot-your-username-or-password.component';
 
 describe('ForgotYourUsernameOrPasswordComponent', () => {
   const setup = async () => {

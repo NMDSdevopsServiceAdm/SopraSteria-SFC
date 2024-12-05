@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -8,10 +10,9 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { ForgotYourPasswordComponent } from './forgot-your-password.component';
-import { of } from 'rxjs';
-import { ForgotYourPasswordEditComponent } from './edit/edit.component';
 import { ForgotYourPasswordConfirmationComponent } from './confirmation/confirmation.component';
+import { ForgotYourPasswordEditComponent } from './edit/edit.component';
+import { ForgotYourPasswordComponent } from './forgot-your-password.component';
 
 describe('ForgotYourPasswordComponent', () => {
   const setup = async () => {
