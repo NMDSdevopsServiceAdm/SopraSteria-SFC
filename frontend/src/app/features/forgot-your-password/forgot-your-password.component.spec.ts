@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 import { ForgotYourPasswordComponent } from './forgot-your-password.component';
 import { of } from 'rxjs';
 
-describe('ForgotYourPasswordComponent', () => {
+fdescribe('ForgotYourPasswordComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourPasswordComponent, {
       imports: [

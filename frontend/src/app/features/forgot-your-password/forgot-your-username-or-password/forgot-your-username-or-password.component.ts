@@ -48,6 +48,11 @@ export class ForgotYourUsernameOrPasswordComponent implements OnInit, AfterViewI
     ];
   }
 
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
   onSubmit(): void {
     this.submitted = true;
 
