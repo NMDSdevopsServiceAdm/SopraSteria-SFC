@@ -51,12 +51,11 @@ import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.com
 const routes: Routes = [
   {
     path: '',
-    // remove following 2 lines when wdf new design feature is live
     component: WdfOverviewComponent,
     data: { title: 'Workforce Development Fund' },
-    // uncomment following 2 lines when wdf new design feature is live
-    // redirectTo: 'data',
-    // pathMatch: 'full',
+    resolve: {
+      report: FundingReportResolver,
+    },
   },
   {
     path: 'data',
