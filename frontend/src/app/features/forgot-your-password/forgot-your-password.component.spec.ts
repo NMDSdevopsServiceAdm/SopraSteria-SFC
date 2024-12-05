@@ -1,6 +1,3 @@
-import sinon from 'sinon';
-import { AppModule } from 'src/app/app.module';
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -13,18 +10,14 @@ import userEvent from '@testing-library/user-event';
 
 import { ForgotYourPasswordComponent } from './forgot-your-password.component';
 import { of } from 'rxjs';
+import { ForgotYourPasswordEditComponent } from './edit/edit.component';
+import { ForgotYourPasswordConfirmationComponent } from './confirmation/confirmation.component';
 
 describe('ForgotYourPasswordComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourPasswordComponent, {
-      imports: [
-        HttpClientTestingModule,
-        FormsModule,
-        ReactiveFormsModule,
-        RouterTestingModule,
-        SharedModule,
-        AppModule,
-      ],
+      imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
+      declarations: [ForgotYourPasswordEditComponent, ForgotYourPasswordConfirmationComponent],
       providers: [
         {
           provide: ActivatedRoute,
