@@ -8,6 +8,7 @@ import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
+import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
@@ -58,6 +59,7 @@ export class WdfDataComponent implements OnInit {
     private route: ActivatedRoute,
     private userService: UserService,
     private router: Router,
+    private reportService: ReportService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -81,7 +83,11 @@ export class WdfDataComponent implements OnInit {
 
     this.getWorkers();
     this.setWorkplace();
-    this.getWdfReport();
+
+    this.report = this.route.snapshot.data?.report;
+    this.setDates(this.report);
+    this.setWdfEligibility(this.report);
+
     this.setWorkerCount();
     this.breadcrumbService.show(JourneyType.WDF);
   }
@@ -123,9 +129,13 @@ export class WdfDataComponent implements OnInit {
   }
 
   private getWdfReport(): void {
-    this.report = this.route.snapshot.data?.report;
-    this.setDates(this.report);
-    this.setWdfEligibility(this.report);
+    this.subscriptions.add(
+      this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
+        this.report = report;
+        this.setDates(report);
+        this.setWdfEligibility(report);
+      }),
+    );
   }
 
   public handleTabChange(activeTabIndex: number): void {
