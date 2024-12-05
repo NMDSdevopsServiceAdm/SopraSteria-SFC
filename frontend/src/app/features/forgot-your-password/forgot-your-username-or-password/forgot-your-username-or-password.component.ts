@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -7,7 +7,6 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 @Component({
   selector: 'app-forgot-your-username-or-password',
   templateUrl: './forgot-your-username-or-password.component.html',
-  styleUrls: ['./forgot-your-username-or-password.component.scss'],
 })
 export class ForgotYourUsernameOrPasswordComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
