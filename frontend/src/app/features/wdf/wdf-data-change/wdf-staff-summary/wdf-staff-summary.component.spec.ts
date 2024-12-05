@@ -8,12 +8,10 @@ import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockReportService } from '@core/test-utils/MockReportService';
 import { workerBuilder } from '@core/test-utils/MockWorkerService';
 import { PaginationComponent } from '@shared/components/pagination/pagination.component';
 import { SearchInputComponent } from '@shared/components/search-input/search-input.component';
@@ -36,7 +34,6 @@ describe('WdfStaffSummaryComponent', () => {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule, RouterModule],
       declarations: [PaginationComponent, TablePaginationWrapperComponent, SearchInputComponent],
       providers: [
-        { provide: ReportService, useFactory: MockReportService.factory(overrides?.report) },
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(['canViewWorker']),
@@ -243,8 +240,8 @@ describe('WdfStaffSummaryComponent', () => {
       const overrides = {
         componentProperties: {
           workers,
+          overallWdfEligibility: true,
         },
-        report: { wdf: { overall: true } },
       };
 
       const { getAllByText } = await setup(overrides);
@@ -259,10 +256,7 @@ describe('WdfStaffSummaryComponent', () => {
       workers[1].wdfEligible = true;
       workers[2].wdfEligible = true;
       const overrides = {
-        componentProperties: {
-          workers,
-        },
-        report: { wdf: { overall: true } },
+        componentProperties: { workers, overallWdfEligibility: true },
       };
 
       const { getByText } = await setup(overrides);
@@ -277,10 +271,7 @@ describe('WdfStaffSummaryComponent', () => {
       workers[1].wdfEligible = true;
       workers[2].wdfEligible = true;
       const overrides = {
-        componentProperties: {
-          workers,
-        },
-        report: { wdf: { overall: true } },
+        componentProperties: { workers, overallWdfEligibility: true },
       };
 
       const { getByText, getAllByText } = await setup(overrides);
@@ -297,10 +288,7 @@ describe('WdfStaffSummaryComponent', () => {
       workers[1].wdfEligible = true;
       workers[2].wdfEligible = true;
       const overrides = {
-        componentProperties: {
-          workers,
-        },
-        report: { wdf: { overall: false } },
+        componentProperties: { workers, overallWdfEligibility: false },
       };
 
       const { getByText } = await setup(overrides);
@@ -315,10 +303,7 @@ describe('WdfStaffSummaryComponent', () => {
       workers[1].wdfEligible = true;
       workers[2].wdfEligible = false;
       const overrides = {
-        componentProperties: {
-          workers,
-        },
-        report: { wdf: { overall: false } },
+        componentProperties: { workers, overallWdfEligibility: false },
       };
 
       const { getByText, getAllByText } = await setup(overrides);

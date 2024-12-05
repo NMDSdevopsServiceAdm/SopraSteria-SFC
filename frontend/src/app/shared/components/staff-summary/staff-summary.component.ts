@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { ReportService } from '@core/services/report.service';
 import { TabsService } from '@core/services/tabs.service';
 import { WorkerService } from '@core/services/worker.service';
 import { StaffSummaryDirective } from '@shared/directives/staff-summary/staff-summary.directive';
@@ -19,10 +18,9 @@ export class StaffSummaryComponent extends StaffSummaryDirective implements OnIn
     protected router: Router,
     protected route: ActivatedRoute,
     protected establishmentService: EstablishmentService,
-    protected reportService: ReportService,
     protected tabsService: TabsService,
   ) {
-    super(permissionsService, workerService, router, route, establishmentService, reportService, tabsService);
+    super(permissionsService, workerService, router, route, establishmentService, tabsService);
   }
 
   protected init(): void {}
