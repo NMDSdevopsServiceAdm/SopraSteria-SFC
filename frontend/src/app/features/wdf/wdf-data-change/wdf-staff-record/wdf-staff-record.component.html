@@ -10,7 +10,7 @@
       <p>Last update, {{ workerUpdatedDate }}</p>
     </div>
   </div>
-  <div class="govuk-!-margin-bottom-4">
+  <div class="govuk-!-margin-bottom-1">
     <app-wdf-staff-record-status-message
       [overallWdfEligibility]="overallWdfEligibility"
       [worker]="updatedWorker"
@@ -30,5 +30,11 @@
     (allFieldsConfirmed)="refreshUpdatedWorkerAndWdfEligibility()"
   ></app-staff-record-summary>
 
-  <app-wdf-pagination [workplaceUid]="workplaceUid" [workerList]="workerList" [exitUrl]="exitUrl"></app-wdf-pagination>
+  <div class="govuk-!-margin-top-4">
+    <app-wdf-pagination
+      [workplaceUid]="workplaceUid"
+      [workerList]="workerList"
+      [exitUrl]="exitUrl"
+    ></app-wdf-pagination>
+  </div>
 </ng-container>
