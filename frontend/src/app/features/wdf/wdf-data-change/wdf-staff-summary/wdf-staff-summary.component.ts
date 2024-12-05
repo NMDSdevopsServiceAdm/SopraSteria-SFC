@@ -14,9 +14,7 @@ import { orderBy } from 'lodash';
 })
 export class WdfStaffSummaryComponent extends StaffSummaryDirective {
   public workplaceUid: string;
-  public primaryWorkplaceUid: string;
   public overallWdfEligibility: boolean;
-  public wdfView = true;
 
   constructor(
     protected permissionsService: PermissionsService,
@@ -70,6 +68,10 @@ export class WdfStaffSummaryComponent extends StaffSummaryDirective {
 
   public navigateToStaffRecords(event: Event): void {
     event.preventDefault();
-    this.tabsService.selectedTab = 'staff-records';
+    if (this.route.snapshot.params.establishmentuid) {
+      this.router.navigate(['/subsidiary', this.workplace.uid, 'staff-records']);
+    } else {
+      this.router.navigate(['dashboard'], { fragment: 'staff-records' });
+    }
   }
 }
