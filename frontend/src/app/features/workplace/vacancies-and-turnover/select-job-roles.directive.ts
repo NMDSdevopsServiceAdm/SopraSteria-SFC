@@ -17,7 +17,6 @@ export class SelectJobRolesDirective extends Question {
   public section = 'Vacancies and turnover';
   public heading: string;
   public errorMessageOnEmptyInput: string;
-  public jobIdOfOtherCareProvidingRole = 20;
   public jobGroupsToOpenAtStart: string[] = [];
   public jobGroups: JobGroup[] = [];
 
@@ -79,10 +78,8 @@ export class SelectJobRolesDirective extends Question {
       .filter((group) => group.items.some((job) => this.selectedJobIds.includes(job.id)))
       .map((group) => group.title);
 
-    const otherCareProvidingRole = this.prefillData.find((job) => job.jobId === this.jobIdOfOtherCareProvidingRole);
     this.form.patchValue({
       selectedJobRoles: this.selectedJobIds,
-      otherCareProvidingRoleName: otherCareProvidingRole?.other ?? null,
     });
   }
 
@@ -163,10 +160,6 @@ export class SelectJobRolesDirective extends Question {
     const updatedField: Vacancy | Starter | Leaver[] = selectedJobIds.map((jobId) => {
       const job = this.jobsAvailable.find((job) => job.id === jobId);
       const fieldCount = fieldFromDatabase.find((field) => field.jobId === jobId)?.total ?? null;
-
-      if (job.id === this.jobIdOfOtherCareProvidingRole && otherCareProvidingRoleName) {
-        return { jobId, title: job.title, total: fieldCount, other: otherCareProvidingRoleName };
-      }
 
       return { jobId, title: job.title, total: fieldCount };
     });

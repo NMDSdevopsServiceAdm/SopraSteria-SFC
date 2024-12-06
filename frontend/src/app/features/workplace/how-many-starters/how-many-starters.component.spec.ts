@@ -233,26 +233,6 @@ describe('HowManyStartersComponent', () => {
         });
       });
 
-      it('should call updateJobs with any optional job role name from previous page', async () => {
-        const selectedJobRoles = [
-          {
-            jobId: 20,
-            title: 'Other (directly involved in providing care)',
-            other: 'Special care worker',
-            total: null,
-          },
-        ];
-        const { component, getByRole, updateJobsSpy } = await setup({ selectedJobRoles });
-        const jobRoleTitle = 'Other (directly involved in providing care): Special care worker';
-
-        userEvent.type(getInputBoxForJobRole(jobRoleTitle), '5');
-        userEvent.click(getByRole('button', { name: 'Save and continue' }));
-
-        expect(updateJobsSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          starters: [{ jobId: 20, total: 5, other: 'Special care worker' }],
-        });
-      });
-
       it('should navigate to the do-you-have-leavers page if in the flow', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
