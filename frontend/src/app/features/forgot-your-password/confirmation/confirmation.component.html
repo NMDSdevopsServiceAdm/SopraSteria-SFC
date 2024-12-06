@@ -1,14 +1,17 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds-from-desktop">
-    <h1 class="govuk-heading-xl">Reset link sent</h1>
-    <p>If there's an ASC-WDS account for {{ emailAddress }}, you'll receive an email with a reset password link.</p>
+  <div class="govuk-grid-column-two-thirds-from-desktop" data-testid="confirmation-message">
+    <h1 class="govuk-heading-l">Password reset link sent</h1>
     <p>
-      The email should be in your inbox soon, if not, check your spam folder before you
+      If there's an ASC-WDS account for <strong>{{ emailAddress }}</strong> you'll get an email soon, with a link to
+      reset your password.
+    </p>
+    <p>
+      The email should go to your inbox, but if not then check your spam folder before you
       <a [routerLink]="['/contact-us']">contact us</a> for help.
     </p>
 
     <a [routerLink]="['/login']" role="button" draggable="false" class="govuk-button govuk-!-margin-top-4">
-      Return to sign in
+      Back to sign in
     </a>
   </div>
 </div>
