@@ -64,7 +64,6 @@ import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from './start/start.component';
-import { StartersComponent } from './starters/starters.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
@@ -293,16 +292,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'How many vacancies',
-        },
-      },
-      {
-        path: 'starters',
-        component: StartersComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Starters',
         },
       },
       {

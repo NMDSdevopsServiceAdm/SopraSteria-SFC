@@ -52,6 +52,7 @@ import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-s
 import { SelectMainServiceComponent } from '@features/workplace/select-main-service/select-main-service.component';
 import { SelectPrimaryUserDeleteComponent } from '@features/workplace/select-primary-user-delete/select-primary-user-delete.component';
 import { SelectPrimaryUserComponent } from '@features/workplace/select-primary-user/select-primary-user.component';
+import { SelectVacancyJobRolesComponent } from '@features/workplace/select-vacancy-job-roles/select-vacancy-job-roles.component';
 import { SelectWorkplaceComponent } from '@features/workplace/select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from '@features/workplace/service-users/service-users.component';
 import { ServicesCapacityComponent } from '@features/workplace/services-capacity/services-capacity.component';
@@ -60,7 +61,6 @@ import { StaffBenefitHolidayLeaveComponent } from '@features/workplace/staff-ben
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from '@features/workplace/staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StaffRecruitmentStartComponent } from '@features/workplace/staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from '@features/workplace/start/start.component';
-import { StartersComponent } from '@features/workplace/starters/starters.component';
 import { TotalStaffQuestionComponent } from '@features/workplace/total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
 import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
@@ -70,7 +70,6 @@ import { UserAccountViewComponent } from '@features/workplace/user-account-view/
 import { WorkplaceNameAddressComponent } from '@features/workplace/workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from '@features/workplace/workplace-not-found/workplace-not-found.component';
 
-import { SelectVacancyJobRolesComponent } from '../workplace/select-vacancy-job-roles/select-vacancy-job-roles.component';
 import { ViewSubsidiaryBenchmarksComponent } from './benchmarks/view-subsidiary-benchmarks.component';
 import { ViewSubsidiaryHomeComponent } from './home/view-subsidiary-home.component';
 import { ViewSubsidiaryStaffRecordsComponent } from './staff-records/view-subsidiary-staff-records.component';
@@ -406,16 +405,6 @@ const routes: Routes = [
         },
       },
       {
-        path: 'starters',
-        component: StartersComponent,
-        canActivate: [CheckPermissionsGuard],
-        resolve: { jobs: JobsResolver },
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Starters',
-        },
-      },
-      {
         path: 'do-you-have-starters',
         component: DoYouHaveStartersComponent,
         canActivate: [CheckPermissionsGuard],
@@ -424,7 +413,6 @@ const routes: Routes = [
           title: 'Do You Have Starters',
         },
       },
-
       {
         path: 'how-many-starters',
         component: HowManyStartersComponent,
