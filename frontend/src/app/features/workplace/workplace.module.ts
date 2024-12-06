@@ -60,7 +60,6 @@ import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/s
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
-import { StartersComponent } from './starters/starters.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
@@ -97,7 +96,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ServiceUsersComponent,
     StartComponent,
     StaffRecruitmentStartComponent,
-    StartersComponent,
     TypeOfEmployerComponent,
     UserAccountDeleteDialogComponent,
     UserAccountEditPermissionsComponent,
