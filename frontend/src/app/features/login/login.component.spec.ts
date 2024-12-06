@@ -9,13 +9,13 @@ import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByTestId, render, within } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 
-fdescribe('LoginComponent', () => {
+describe('LoginComponent', () => {
   async function setup(isAdmin = false, employerTypeSet = true, isAuthenticated = true) {
     const setupTools = await render(LoginComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -40,7 +40,7 @@ fdescribe('LoginComponent', () => {
     spy.and.returnValue(Promise.resolve(true));
 
     const authService = injector.inject(AuthService) as AuthService;
-    let authSpy;
+    let authSpy: any;
     if (isAuthenticated) {
       authSpy = spyOn(authService, 'authenticate');
       authSpy.and.callThrough();
@@ -74,7 +74,7 @@ fdescribe('LoginComponent', () => {
 
   describe('username', () => {
     it('should show the username hint', async () => {
-      const { component, getByTestId } = await setup();
+      const { getByTestId } = await setup();
 
       const usernameHint = getByTestId('username-hint');
       const hintText = 'You cannot use an email address to sign in';
@@ -109,7 +109,7 @@ fdescribe('LoginComponent', () => {
     });
 
     it("should initially show 'Show password' text for the password toggle", async () => {
-      const { component, getByTestId } = await setup();
+      const { getByTestId } = await setup();
 
       const passwordToggle = getByTestId('password-toggle');
       const toggleText = 'Show password';
@@ -118,7 +118,7 @@ fdescribe('LoginComponent', () => {
     });
 
     it("should show 'Hide password' text for the password toggle when 'Show password' is clicked", async () => {
-      const { component, fixture, getByTestId, getByText } = await setup();
+      const { fixture, getByTestId, getByText } = await setup();
 
       const passwordToggle = getByTestId('password-toggle');
       const showToggleText = 'Show password';
@@ -132,7 +132,7 @@ fdescribe('LoginComponent', () => {
   });
 
   it('should show the link to forgot username or password', async () => {
-    const { component, getByTestId } = await setup();
+    const { getByTestId } = await setup();
 
     const forgotUsernamePasswordText = 'Forgot your username or password?';
     const forgotUsernamePasswordLink = getByTestId('forgot-username-password');
@@ -142,7 +142,7 @@ fdescribe('LoginComponent', () => {
   });
 
   it('should show the link to create an account', async () => {
-    const { component, getByTestId } = await setup();
+    const { getByTestId } = await setup();
 
     const createAccountText = 'Create an account';
     const createAccountLink = getByTestId('create-account');
@@ -263,8 +263,8 @@ fdescribe('LoginComponent', () => {
 
       expect(form.invalid).toBeTruthy();
       expect(
-        getAllByText("You've entered an @ symbol (remember, your username cannot be an email address)"),
-      ).toBeTruthy();
+        getAllByText("You've entered an @ symbol (remember, your username cannot be an email address)").length,
+      ).toBe(2);
     });
   });
 });

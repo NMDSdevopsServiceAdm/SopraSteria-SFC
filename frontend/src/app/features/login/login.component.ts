@@ -49,7 +49,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       username: [
         null,
         {
-          validators: [Validators.required, this.checkAtSignInUsername()],
+          validators: [Validators.required, this.checkUsernameForAtSign()],
           updateOn: 'submit',
         },
       ],
@@ -74,7 +74,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.unsubscribe();
   }
 
-  public checkAtSignInUsername(): ValidatorFn {
+  public checkUsernameForAtSign(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value;
 
@@ -84,7 +84,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
       const userNameHasAtSign = /@/.test(value);
 
-      return userNameHasAtSign ? { isUsernameNotEmail: true } : null;
+      return userNameHasAtSign ? { atSignInUsername: true } : null;
     };
   }
 
@@ -98,7 +98,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             message: 'Enter your username',
           },
           {
-            name: 'isUsernameNotEmail',
+            name: 'atSignInUsername',
             message: "You've entered an @ symbol (remember, your username cannot be an email address)",
           },
         ],
