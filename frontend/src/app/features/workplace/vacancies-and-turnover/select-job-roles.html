@@ -41,25 +41,6 @@
                   />
                   <label class="govuk-label govuk-checkboxes__label" [for]="'job-' + job.id"> {{ job.label }} </label>
                 </div>
-                <ng-container *ngIf="job.id === jobIdOfOtherCareProvidingRole">
-                  <div
-                    class="govuk-checkboxes__conditional"
-                    [class.govuk-checkboxes__conditional--hidden]="
-                      !form.get('selectedJobRoles').value?.includes(job.id)
-                    "
-                  >
-                    <div class="govuk-form-group">
-                      <label class="govuk-label" for="other-care-providing-role"> Job role (optional) </label>
-                      <input
-                        class="govuk-input govuk-!-width-one-third"
-                        id="other-care-providing-role"
-                        name="otherCareProvidingRoleName"
-                        type="text"
-                        formControlName="otherCareProvidingRoleName"
-                      />
-                    </div>
-                  </div>
-                </ng-container>
               </ng-container>
             </app-accordion-section>
           </app-accordion-group>

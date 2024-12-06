@@ -63,7 +63,6 @@ exports.validateJobs = async (jobDefs) => {
           jobId: referenceJob.id,
           title: referenceJob.title,
           total: thisJob.total,
-          other: thisJob.other ? thisJob.other : null,
         });
       }
     } else {
@@ -90,7 +89,6 @@ exports.formatJSON = (jobs, propName, propTotalName) => {
         jobId: thisJob.jobId,
         title: thisJob.title,
         total: thisJob.total,
-        ...(thisJob.other ? { other: thisJob.other } : {}),
       };
     });
     jsonResponse[propTotalName] = jobTotal;

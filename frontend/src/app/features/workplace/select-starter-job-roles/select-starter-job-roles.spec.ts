@@ -118,15 +118,8 @@ describe('SelectStarterJobRolesComponent', () => {
           expect(checkbox).toBeTruthy();
         });
       });
-
-      it('should render a text input when "Care providing roles - Other" is ticked', async () => {
-        const { fixture, getByRole, getByLabelText } = await setup();
-        userEvent.click(getByLabelText('Care providing roles'));
-        userEvent.click(getByRole('checkbox', { name: 'Other (directly involved in providing care)' }));
-        fixture.detectChanges();
-        expect(getByRole('textbox', { name: 'Job role (optional)' })).toBeTruthy();
-      });
     });
+
     describe('buttons', () => {
       it('should render a "Save and continue" CTA button when in the flow', async () => {
         const { getByRole } = await setup();
@@ -203,21 +196,6 @@ describe('SelectStarterJobRolesComponent', () => {
         expect(within(professionalRolesAccordion).getByText('Show')).toBeTruthy(); // not expanded
       });
 
-      it('should prefill the optional job role name for "Care providing role - Other" if given', async () => {
-        const otherCareProvidingRole: Starter[] = [
-          {
-            jobId: 20,
-            title: 'Other (directly involved in providing care)',
-            total: 2,
-            other: 'Some really special job role name',
-          },
-        ];
-        const { getByRole } = await setup({ startersFromDatabase: otherCareProvidingRole });
-        const inputBox = getByRole('textbox', { name: 'Job role (optional)' }) as HTMLInputElement;
-        expect(inputBox).toBeTruthy();
-        expect(inputBox.value).toEqual('Some really special job role name');
-      });
-
       it('should prefill from the data in localStorage if editing the same workplace', async () => {
         const mockLocalStorageData = { establishmentUid: 'mocked-uid', starters: mockStarters };
         const { getAllByRole } = await setup({ localStorageData: JSON.stringify(mockLocalStorageData) });
@@ -255,8 +233,7 @@ describe('SelectStarterJobRolesComponent', () => {
         userEvent.click(getByText('Care worker'));
         userEvent.click(getByText('Registered nurse'));
         userEvent.click(getByText('Other (directly involved in providing care)'));
-        const otherJobRoleInput = getByRole('textbox', { name: 'Job role (optional)' });
-        userEvent.type(otherJobRoleInput, 'example job role name');
+
         userEvent.click(getByText('Save and continue'));
         const expectedData = {
           establishmentUid: component.establishment.uid,
@@ -275,7 +252,6 @@ describe('SelectStarterJobRolesComponent', () => {
               jobId: 20,
               title: 'Other (directly involved in providing care)',
               total: null,
-              other: 'example job role name',
             },
           ],
         };

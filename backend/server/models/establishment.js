@@ -1435,7 +1435,7 @@ module.exports = function (sequelize, DataTypes) {
         },
         {
           model: sequelize.models.establishmentJobs,
-          attributes: ['jobId', 'type', 'total', 'other'],
+          attributes: ['jobId', 'type', 'total'],
           as: 'jobs',
         },
       ],

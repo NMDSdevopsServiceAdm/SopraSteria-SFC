@@ -32,11 +32,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: '"Total"',
       },
-      other: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"OtherJobRoleName"',
-      },
     },
     {
       tableName: '"EstablishmentJobs"',

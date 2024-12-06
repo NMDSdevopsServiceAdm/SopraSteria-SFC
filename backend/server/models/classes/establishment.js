@@ -1450,7 +1450,7 @@ class Establishment extends EntityValidator {
                 order: [['title', 'ASC']],
               },
             ],
-            attributes: ['id', 'type', 'total', 'other'],
+            attributes: ['id', 'type', 'total'],
             order: [['type', 'ASC']],
           }),
         ]);
