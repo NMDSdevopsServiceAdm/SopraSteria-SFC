@@ -10,6 +10,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockInternationalRecruitmentService } from '@core/test-utils/MockInternationalRecruitmentService';
+import { createMockWdfReport } from '@core/test-utils/MockReportService';
 import { MockWorkerService, workerBuilder, workerWithWdf } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -34,6 +35,7 @@ describe('WdfStaffRecordComponent', () => {
             snapshot: {
               data: {
                 worker: {},
+                report: createMockWdfReport(),
               },
               params: overrides.establishmentuid ? { establishmentuid: overrides.establishmentuid } : {},
               paramMap: {

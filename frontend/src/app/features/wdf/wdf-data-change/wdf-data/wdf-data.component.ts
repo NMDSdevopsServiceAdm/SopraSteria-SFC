@@ -53,13 +53,13 @@ export class WdfDataComponent implements OnInit {
 
   constructor(
     private establishmentService: EstablishmentService,
-    private reportService: ReportService,
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private userService: UserService,
     private router: Router,
+    private reportService: ReportService,
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -83,7 +83,11 @@ export class WdfDataComponent implements OnInit {
 
     this.getWorkers();
     this.setWorkplace();
-    this.getWdfReport();
+
+    this.report = this.route.snapshot.data?.report;
+    this.setDates(this.report);
+    this.setWdfEligibility(this.report);
+
     this.setWorkerCount();
     this.breadcrumbService.show(JourneyType.WDF);
   }
@@ -124,7 +128,7 @@ export class WdfDataComponent implements OnInit {
     }
   }
 
-  private getWdfReport() {
+  private getWdfReport(): void {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
         this.report = report;

@@ -86,13 +86,11 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   }
 
   public getOverallWdfEligibility(): void {
-    this.subscriptions.add(
-      this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
-        this.overallWdfEligibility = report.wdf.overall;
-        this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
-        this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
-      }),
-    );
+    const report = this.route.snapshot.data.report;
+
+    this.overallWdfEligibility = report.wdf.overall;
+    this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
+    this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
   }
 
   private setExitUrl(): void {

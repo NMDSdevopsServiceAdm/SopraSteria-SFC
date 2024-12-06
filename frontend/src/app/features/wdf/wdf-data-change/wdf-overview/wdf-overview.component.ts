@@ -1,4 +1,4 @@
-import { Component, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
@@ -7,7 +7,6 @@ import { WDFReport } from '@core/model/reports.model';
 import { WdfEligibilityStatus } from '@core/model/wdf.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import dayjs from 'dayjs';
 import orderBy from 'lodash/orderBy';
@@ -38,7 +37,6 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
 
   constructor(
     private establishmentService: EstablishmentService,
-    private reportService: ReportService,
     private breadcrumbService: BreadcrumbService,
     private userService: UserService,
     protected router: Router,
@@ -50,8 +48,13 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.workplace = this.establishmentService.primaryWorkplace;
     this.isParent = this.workplace.isParent;
 
-    this.getParentAndSubs();
-    this.getWdfReport();
+    this.report = this.route.snapshot.data?.report;
+    this.setEligibilityStatus();
+    this.setDates();
+
+    if (this.isParent) {
+      this.getParentAndSubs();
+    }
   }
 
   ngOnDestroy(): void {
@@ -84,23 +87,17 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  private getWdfReport(): void {
-    this.subscriptions.add(
-      this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
-        this.report = report;
-        this.overallWdfEligibility = report.wdf.overall;
-        this.wdfEligibilityStatus.overall = report.wdf.overall;
-        this.wdfEligibilityStatus.currentWorkplace = report.wdf.workplace;
-        this.wdfEligibilityStatus.currentStaff = report.wdf.staff;
-        this.setDates(report);
-      }),
-    );
+  private setEligibilityStatus(): void {
+    this.overallWdfEligibility = this.report.wdf.overall;
+    this.wdfEligibilityStatus.overall = this.report.wdf.overall;
+    this.wdfEligibilityStatus.currentWorkplace = this.report.wdf.workplace;
+    this.wdfEligibilityStatus.currentStaff = this.report.wdf.staff;
   }
 
-  private setDates(report: WDFReport): void {
-    this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
-    this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
-    this.overallEligibilityDate = dayjs(report.wdf.overallWdfEligibility).format('D MMMM YYYY');
+  private setDates(): void {
+    this.wdfStartDate = dayjs(this.report.effectiveFrom).format('D MMMM YYYY');
+    this.wdfEndDate = dayjs(this.report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
+    this.overallEligibilityDate = dayjs(this.report.wdf.overallWdfEligibility).format('D MMMM YYYY');
   }
 
   public viewYourData(): void {

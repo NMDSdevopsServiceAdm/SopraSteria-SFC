@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
 import { HasPermissionsGuard } from '@core/guards/permissions/has-permissions/has-permissions.guard';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
@@ -50,12 +51,11 @@ import { WdfStaffRecordComponent } from './wdf-staff-record/wdf-staff-record.com
 const routes: Routes = [
   {
     path: '',
-    // remove following 2 lines when wdf new design feature is live
     component: WdfOverviewComponent,
     data: { title: 'Workforce Development Fund' },
-    // uncomment following 2 lines when wdf new design feature is live
-    // redirectTo: 'data',
-    // pathMatch: 'full',
+    resolve: {
+      report: FundingReportResolver,
+    },
   },
   {
     path: 'data',
@@ -65,6 +65,7 @@ const routes: Routes = [
     resolve: {
       workers: WorkersResolver,
       workplace: WorkplaceResolver,
+      report: FundingReportResolver,
     },
   },
   {
@@ -78,7 +79,7 @@ const routes: Routes = [
             component: WdfDataComponent,
             canActivate: [HasPermissionsGuard],
             data: { permissions: ['canViewWdfReport'], title: 'WDF data', withFunding: true },
-            resolve: { workplace: WorkplaceResolver },
+            resolve: { workplace: WorkplaceResolver, report: FundingReportResolver },
           },
           {
             path: 'staff-record/:id',
@@ -90,6 +91,7 @@ const routes: Routes = [
                 path: '',
                 component: WdfStaffRecordComponent,
                 data: { title: 'WDF Staff Record' },
+                resolve: { report: FundingReportResolver },
               },
               {
                 path: 'staff-details',
@@ -281,6 +283,7 @@ const routes: Routes = [
     data: { title: 'Funding Requirements' },
     resolve: {
       pages: PageResolver,
+      report: FundingReportResolver,
     },
   },
   {
@@ -291,6 +294,7 @@ const routes: Routes = [
         path: '',
         component: WdfStaffRecordComponent,
         data: { title: 'WDF Staff Record' },
+        resolve: { report: FundingReportResolver },
       },
       {
         path: 'staff-details',

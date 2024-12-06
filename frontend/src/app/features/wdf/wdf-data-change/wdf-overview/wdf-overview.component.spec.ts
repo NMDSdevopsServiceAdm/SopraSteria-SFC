@@ -1,17 +1,17 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { ReportService } from '@core/services/report.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockReportService } from '@core/test-utils/MockReportService';
+import { createMockWdfReport } from '@core/test-utils/MockReportService';
+import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+
 import { WdfOverviewComponent } from './wdf-overview.component';
-import { getTestBed } from '@angular/core/testing';
-import { Router } from '@angular/router';
-import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
 
 describe('WdfOverviewComponent', () => {
   const currentYear = new Date().getFullYear();
@@ -35,8 +35,12 @@ describe('WdfOverviewComponent', () => {
             },
           },
           {
-            provide: ReportService,
-            useFactory: MockReportService.factory(overrides),
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                data: { report: createMockWdfReport(overrides) },
+              },
+            },
           },
         ],
         componentProperties: {
@@ -148,7 +152,7 @@ describe('WdfOverviewComponent', () => {
       const keepYourDataCurrentLink = getByText('Keep your data current');
 
       expect(dataMetFundingParagraph).toBeTruthy();
-      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/data');
+      expect(keepYourDataCurrentLink.getAttribute('ng-reflect-router-link')).toEqual('data');
     });
 
     it('should navigate to your data when Check your data is clicked', async () => {
@@ -168,7 +172,7 @@ describe('WdfOverviewComponent', () => {
       const learnMoreLink = getByText('Learn more about the funds that you can claim from');
 
       expect(learnMoreLink).toBeTruthy();
-      expect(learnMoreLink.getAttribute('href')).toEqual('/learn-more');
+      expect(learnMoreLink.getAttribute('ng-reflect-router-link')).toEqual('learn-more');
     });
 
     it('should show the funding requirements link', async () => {
@@ -184,7 +188,7 @@ describe('WdfOverviewComponent', () => {
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
-      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/funding-requirements');
+      expect(fundingRequirementsLink.getAttribute('ng-reflect-router-link')).toEqual('funding-requirements');
     });
   });
 
@@ -229,7 +233,7 @@ describe('WdfOverviewComponent', () => {
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
-      expect(fundingRequirementsLink.getAttribute('href')).toEqual('/funding-requirements');
+      expect(fundingRequirementsLink.getAttribute('ng-reflect-router-link')).toEqual('funding-requirements');
     });
   });
 
@@ -279,7 +283,7 @@ describe('WdfOverviewComponent', () => {
       const keepYourDataCurrentLink = getByText('Keep your data current');
 
       expect(dataMetFundingParagraph).toBeTruthy();
-      expect(keepYourDataCurrentLink.getAttribute('href')).toEqual('/data');
+      expect(keepYourDataCurrentLink.getAttribute('ng-reflect-router-link')).toEqual('data');
     });
 
     it('should not display the funding requirements inset text when requirements are met', async () => {

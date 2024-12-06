@@ -18,25 +18,29 @@ export class MockReportService extends ReportService {
   }
 
   public getWDFReport(workplaceUid: string): Observable<WDFReport> {
-    const d = new Date();
-    //21 July YEAR
-    d.setMonth(6);
-    d.setDate(21);
-    d.setHours(0, 0, 0, 0);
-    const dateString = d.toISOString();
-
-    return of({
-      establishmentId: 1,
-      timestamp: dateString,
-      effectiveFrom: dateString,
-      wdf: {
-        overall: true,
-        overallWdfEligibility: dateString,
-        workplace: true,
-        staff: true,
-      },
-      customEffectiveFrom: true,
-      ...this.overrides,
-    });
+    return of(createMockWdfReport(this.overrides));
   }
 }
+
+export const createMockWdfReport = (overrides: any = {}) => {
+  const d = new Date();
+  //21 July YEAR
+  d.setMonth(6);
+  d.setDate(21);
+  d.setHours(0, 0, 0, 0);
+  const dateString = d.toISOString();
+
+  return {
+    establishmentId: 1,
+    timestamp: dateString,
+    effectiveFrom: dateString,
+    wdf: {
+      overall: true,
+      overallWdfEligibility: dateString,
+      workplace: true,
+      staff: true,
+    },
+    customEffectiveFrom: true,
+    ...overrides,
+  };
+};

@@ -4,7 +4,6 @@ import { Establishment, SortStaffOptions, WdfSortStaffOptions } from '@core/mode
 import { Worker } from '@core/model/worker.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { ReportService } from '@core/services/report.service';
 import { TabsService } from '@core/services/tabs.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
@@ -43,7 +42,6 @@ export class StaffSummaryDirective implements OnInit {
     protected router: Router,
     protected route: ActivatedRoute,
     protected establishmentService: EstablishmentService,
-    protected reportService: ReportService,
     protected tabsService: TabsService,
   ) {}
 

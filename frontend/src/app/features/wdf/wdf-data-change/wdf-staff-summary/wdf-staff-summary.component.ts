@@ -1,8 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { ReportService } from '@core/services/report.service';
 import { TabsService } from '@core/services/tabs.service';
 import { WorkerService } from '@core/services/worker.service';
 import { StaffSummaryDirective } from '@shared/directives/staff-summary/staff-summary.directive';
@@ -13,8 +12,10 @@ import { orderBy } from 'lodash';
   templateUrl: './wdf-staff-summary.component.html',
 })
 export class WdfStaffSummaryComponent extends StaffSummaryDirective {
+  @Input() overallWdfEligibility: boolean;
+
+  public wdfView = true;
   public workplaceUid: string;
-  public overallWdfEligibility: boolean;
 
   constructor(
     protected permissionsService: PermissionsService,
@@ -22,10 +23,9 @@ export class WdfStaffSummaryComponent extends StaffSummaryDirective {
     protected router: Router,
     protected route: ActivatedRoute,
     protected establishmentService: EstablishmentService,
-    protected reportService: ReportService,
     protected tabsService: TabsService,
   ) {
-    super(permissionsService, workerService, router, route, establishmentService, reportService, tabsService);
+    super(permissionsService, workerService, router, route, establishmentService, tabsService);
   }
 
   public getWorkerRecordPath(worker) {
@@ -39,7 +39,6 @@ export class WdfStaffSummaryComponent extends StaffSummaryDirective {
   }
 
   protected init() {
-    this.getOverallWdfEligibility();
     this.saveWorkerList();
   }
 
@@ -56,14 +55,6 @@ export class WdfStaffSummaryComponent extends StaffSummaryDirective {
   public saveWorkerList() {
     const listOfWorkerUids = this.workers.map((worker) => worker.uid);
     localStorage.setItem('ListOfWorkers', JSON.stringify(listOfWorkerUids));
-  }
-
-  private getOverallWdfEligibility() {
-    this.subscriptions.add(
-      this.reportService.getWDFReport(this.workplace.uid).subscribe((report) => {
-        this.overallWdfEligibility = report.wdf.overall;
-      }),
-    );
   }
 
   public navigateToStaffRecords(event: Event): void {
