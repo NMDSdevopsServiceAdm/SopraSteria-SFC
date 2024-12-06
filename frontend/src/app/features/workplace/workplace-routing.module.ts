@@ -54,6 +54,7 @@ import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles/select-
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
 import { SelectPrimaryUserComponent } from './select-primary-user/select-primary-user.component';
+import { SelectStarterJobRolesComponent } from './select-starter-job-roles/select-starter-job-roles.component';
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
@@ -313,7 +314,16 @@ const routes: Routes = [
           title: 'Do You Have Starters',
         },
       },
-
+      {
+        path: 'select-starter-job-roles',
+        component: SelectStarterJobRolesComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Starters job role selection',
+        },
+      },
       {
         path: 'how-many-starters',
         component: HowManyStartersComponent,

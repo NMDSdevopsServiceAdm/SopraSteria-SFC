@@ -1,5 +1,5 @@
 import { Directive, ViewChild } from '@angular/core';
-import { UntypedFormBuilder } from '@angular/forms';
+import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
@@ -26,7 +26,7 @@ export class SelectJobRolesDirective extends Question {
   protected hasStartersLeaversVacanciesField: string;
   protected jobsAvailable: Job[] = [];
   protected prefillData: Array<Vacancy | Starter | Leaver>;
-  protected prefilledJobIds: number[] = [];
+  protected selectedJobIds: number[] = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -63,7 +63,7 @@ export class SelectJobRolesDirective extends Question {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      selectedJobRoles: [[], CustomValidators.validateArrayNotEmpty()],
+      selectedJobRoles: [[], { validators: CustomValidators.validateArrayNotEmpty(), updateOn: 'submit' }],
       otherCareProvidingRoleName: ['', null],
     });
   }
@@ -74,14 +74,14 @@ export class SelectJobRolesDirective extends Question {
       return;
     }
 
-    this.prefilledJobIds = this.prefillData.map((job) => Number(job.jobId));
+    this.selectedJobIds = this.prefillData.map((job) => Number(job.jobId));
     this.jobGroupsToOpenAtStart = this.jobGroups
-      .filter((group) => group.items.some((job) => this.prefilledJobIds.includes(job.id)))
+      .filter((group) => group.items.some((job) => this.selectedJobIds.includes(job.id)))
       .map((group) => group.title);
 
     const otherCareProvidingRole = this.prefillData.find((job) => job.jobId === this.jobIdOfOtherCareProvidingRole);
     this.form.patchValue({
-      selectedJobRoles: this.prefilledJobIds,
+      selectedJobRoles: this.selectedJobIds,
       otherCareProvidingRoleName: otherCareProvidingRole?.other ?? null,
     });
   }
@@ -97,18 +97,17 @@ export class SelectJobRolesDirective extends Question {
 
   public onCheckboxClick(target: HTMLInputElement) {
     const jobId = Number(target.value);
-    const selectedJobRoles = this.form.get('selectedJobRoles');
-    const currentSelectedIds: number[] = selectedJobRoles.value;
 
-    if (currentSelectedIds.includes(jobId)) {
-      const updatedSelection = currentSelectedIds.filter((id) => id !== jobId);
-      selectedJobRoles.setValue(updatedSelection);
+    if (this.selectedJobIds.includes(jobId)) {
+      this.selectedJobIds = this.selectedJobIds.filter((id) => id !== jobId);
     } else {
-      selectedJobRoles.setValue([...currentSelectedIds, jobId]);
+      this.selectedJobIds = [...this.selectedJobIds, jobId];
     }
   }
 
   public onSubmit(): void {
+    this.form.get('selectedJobRoles').setValue(this.selectedJobIds);
+
     if (this.form.invalid) {
       this.accordion.showAll();
     }

@@ -8,7 +8,7 @@ import { Vacancy } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render, within } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles.component';
@@ -263,7 +263,7 @@ describe('SelectVacancyJobRolesComponent', () => {
         const localStorageRemoveItemSpy = spyOn(localStorage, 'removeItem');
         const cancelButton = getByText('Cancel');
 
-        fireEvent.click(cancelButton);
+        userEvent.click(cancelButton);
 
         expect(localStorageRemoveItemSpy).toHaveBeenCalledTimes(2);
         expect(localStorageRemoveItemSpy.calls.all()[0].args).toEqual(['hasVacancies']);
@@ -391,6 +391,30 @@ describe('SelectVacancyJobRolesComponent', () => {
         fixture.detectChanges();
 
         expect(getByText('Hide all job roles')).toBeTruthy();
+      });
+
+      it('should continue to display error messages after empty submit and then user selects job roles', async () => {
+        const { fixture, getByRole, getByText } = await setup();
+        userEvent.click(getByRole('button', { name: 'Save and continue' }));
+        fixture.detectChanges();
+
+        const errorSummaryBoxHeading = 'There is a problem';
+        const expectedErrorMessage = 'Select job roles for all your current staff vacancies';
+
+        const errorSummaryBox = getByText(errorSummaryBoxHeading).parentElement;
+
+        expect(errorSummaryBox).toBeTruthy();
+        expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
+
+        userEvent.click(getByText('Care worker'));
+        userEvent.click(getByText('Registered nurse'));
+
+        fixture.detectChanges();
+
+        const errorSummaryBoxStillThere = getByText(errorSummaryBoxHeading).parentElement;
+
+        expect(errorSummaryBoxStillThere).toBeTruthy();
+        expect(within(errorSummaryBoxStillThere).getByText(expectedErrorMessage)).toBeTruthy();
       });
     });
   });
