@@ -30,7 +30,16 @@
             </div>
           </div>
           <div class="govuk-grid-row">
-            <div class="govuk-grid-column-three-quarters">
+            <div class="govuk-grid-column-three-quarters"></div>
+              <app-grouped-radio-button-accordion
+                formControlName="mainJob"
+                [accordions]="trainings"
+                textShowHideAll="job roles"
+                data-testid="groupedAccordion"
+                [hasError]="submitted && form.invalid"
+                [errorMessage]="formErrorsMap[0].type[0].message"
+              ></app-grouped-radio-button-accordion>
+
               <select
                 class="govuk-select govuk-!-width-full"
                 [class.govuk-select--error]="submitted && form.get('trainingCategory').invalid"
@@ -55,7 +64,6 @@
           </div>
         </div>
       </div>
-    </div>
     <div class="govuk-grid-row">
       <div class="govuk-grid-column-two-thirds">
         <div

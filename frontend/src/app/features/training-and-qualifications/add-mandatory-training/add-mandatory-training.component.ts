@@ -13,6 +13,8 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
+import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { SelectTrainingCategoryDirective } from '@shared/directives/select-training-category/select-training-category.directive';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/internal/operators/take';
 
@@ -20,28 +22,18 @@ import { take } from 'rxjs/internal/operators/take';
   selector: 'app-add-mandatory-training',
   templateUrl: './add-mandatory-training.component.html',
 })
-export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
+export class AddMandatoryTrainingComponent extends SelectTrainingCategoryDirective implements OnInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
-  public form: UntypedFormGroup;
   public renderAsEditMandatoryTraining: boolean;
-  public submitted = false;
   public preExistingTraining: any;
-  public categories: TrainingCategory[];
+  public trainingCategories: TrainingCategory[] = [];
   public filteredTrainingCategories: TrainingCategory[];
-  private subscriptions: Subscription = new Subscription();
-  public jobs: Job[] = [];
-  public allJobsLength: Number;
-  public previousAllJobsLength = [29, 31, 32];
-  public hasDuplicateJobRoles: boolean;
-  public filteredJobs: Array<Job[]> = [];
   public trainings: TrainingCategory[] = [];
   public establishment: Establishment;
   public primaryWorkplace: Establishment;
-  public formErrorsMap: Array<ErrorDetails> = [];
   public serverError: string;
   public serverErrorsMap: Array<ErrorDefinition> = [];
   public return: URLStructure;
-  public existingMandatoryTrainings: allMandatoryTrainingCategories;
   public allOrSelectedJobRoleOptions = [
     {
       label: 'All job roles',
@@ -52,10 +44,10 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
       value: mandatoryTrainingJobOption.selected,
     },
   ];
+
   constructor(
+    protected trainingService: TrainingService,
     protected backLinkService: BackLinkService,
-    private trainingService: TrainingService,
-    private trainingCategoryService: TrainingCategoryService,
     protected formBuilder: UntypedFormBuilder,
     protected errorSummaryService: ErrorSummaryService,
     protected establishmentService: EstablishmentService,
@@ -63,13 +55,13 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     protected router: Router,
     private route: ActivatedRoute,
     private alertService: AlertService,
-  ) {}
+  ) { super( formBuilder, trainingService, router, backLinkService, /* Some refactoring may be necessary for worker/establishment service here */ route, errorSummaryService)}
 
   get selectedJobRolesArray(): UntypedFormArray {
     return this.form.get('selectedJobRoles') as UntypedFormArray;
   }
 
-  ngOnInit(): void {
+  init(): void {
     this.primaryWorkplace = this.establishmentService.primaryWorkplace;
     this.establishment = this.route.snapshot.parent.data.establishment;
 
@@ -77,7 +69,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     this.return = { url: ['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training'] };
 
     this.getAllJobs();
-    this.setUpForm();
+    this.getAllTrainingCategories();
     this.setupServerErrorsMap();
     this.backLinkService.showBackLink();
 
@@ -135,14 +127,6 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     );
   }
 
-  private setUpForm(trainingId = null): void {
-    this.form = this.formBuilder.group({
-      trainingCategory: [trainingId, [Validators.required]],
-      allOrSelectedJobRoles: [null, [Validators.required]],
-      selectedJobRoles: this.formBuilder.array([]),
-    });
-  }
-
   private setupServerErrorsMap(): void {
     const serverErrorMessage = 'There has been a problem saving your mandatory training. Please try again.';
     this.serverErrorsMap = [
@@ -161,7 +145,7 @@ export class AddMandatoryTrainingComponent implements OnInit, OnDestroy {
     ];
   }
 
-  protected setupFormErrorsMap(): void {
+  protected override setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'trainingCategory',
