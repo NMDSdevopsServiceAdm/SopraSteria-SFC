@@ -22,7 +22,8 @@ export class SelectJobRolesDirective extends Question {
   public jobGroups: JobGroup[] = [];
 
   protected field: string;
-  protected localStorageKey: string;
+  protected numbersField: string;
+  protected hasStartersLeaversVacanciesField: string;
   protected jobsAvailable: Job[] = [];
   protected prefillData: Array<Vacancy | Starter | Leaver>;
   protected selectedJobIds: number[] = [];
@@ -110,16 +111,26 @@ export class SelectJobRolesDirective extends Question {
     if (this.form.invalid) {
       this.accordion.showAll();
     }
+
+    if (!this.submitAction.save) {
+      this.clearLocalStorageData();
+    }
+
     super.onSubmit();
   }
 
+  protected clearLocalStorageData(): void {
+    localStorage.removeItem(this.hasStartersLeaversVacanciesField);
+    localStorage.removeItem(this.numbersField);
+  }
+
   protected saveToLocal(dataToStore) {
-    localStorage.setItem(this.localStorageKey, JSON.stringify(dataToStore));
+    localStorage.setItem(this.numbersField, JSON.stringify(dataToStore));
   }
 
   protected loadFromLocal() {
     try {
-      return JSON.parse(localStorage.getItem(this.localStorageKey));
+      return JSON.parse(localStorage.getItem(this.numbersField));
     } catch (err) {
       return null;
     }

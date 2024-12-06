@@ -9,7 +9,8 @@ import { SelectJobRolesDirective } from '@features/workplace/vacancies-and-turno
 export class SelectStarterJobRolesComponent extends SelectJobRolesDirective {
   public errorMessageOnEmptyInput = 'Select job roles for all your new starters';
   public heading = 'Select job roles for all your new starters';
-  protected localStorageKey = 'startersJobRoles';
+  protected numbersField = 'startersJobRoles';
+  protected hasStartersLeaversVacanciesField = 'hasStarters';
   protected prefillData: Starter[] = [];
   protected field = 'starters';
 }

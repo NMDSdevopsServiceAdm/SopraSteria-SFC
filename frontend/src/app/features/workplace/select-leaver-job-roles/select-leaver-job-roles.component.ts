@@ -10,7 +10,8 @@ import { SelectJobRolesDirective } from '../vacancies-and-turnover/select-job-ro
 export class SelectLeaverJobRolesComponent extends SelectJobRolesDirective {
   public errorMessageOnEmptyInput = 'Select job roles of all your staff leavers';
   public heading = 'Select job roles of all your staff leavers';
-  protected localStorageKey = 'leaversJobRoles';
+  protected numbersField = 'leaversJobRoles';
+  protected hasStartersLeaversVacanciesField = 'hasLeavers';
   protected prefillData: Leaver[] = [];
   protected field = 'leavers';
 }

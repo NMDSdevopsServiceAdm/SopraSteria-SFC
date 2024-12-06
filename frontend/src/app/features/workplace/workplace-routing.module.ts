@@ -20,39 +20,31 @@ import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AboutParentsComponent } from '@features/pages/about-parents/about-parents.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
-import {
-  SelectMainServiceCqcConfirmComponent,
-} from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
+import { SelectMainServiceCqcConfirmComponent } from '@features/workplace/select-main-service/select-main-service-cqc-confirm.component';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import {
-  UserAccountEditDetailsComponent,
-} from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
+import { UserAccountEditDetailsComponent } from '@features/workplace/user-account-edit-details/user-account-edit-details.component';
 import { UserAccountSavedComponent } from '@features/workplace/user-account-saved/user-account-saved.component';
 import { UserAccountViewComponent } from '@features/workplace/user-account-view/user-account-view.component';
 import { ViewMyWorkplacesComponent } from '@features/workplace/view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from '@features/workplace/view-workplace/view-workplace.component';
 
-import {
-  AcceptPreviousCareCertificateComponent,
-} from './accept-previous-care-certificate/accept-previous-care-certificate.component';
+import { AcceptPreviousCareCertificateComponent } from './accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from './benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.component';
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
-import {
-  ConfirmStaffRecruitmentAndBenefitsComponent,
-} from './confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
+import { ConfirmStaffRecruitmentAndBenefitsComponent } from './confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
 import { DoYouHaveLeaversComponent } from './do-you-have-leavers/do-you-have-leavers.component';
+import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
+import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
-import {
-  EmployedFromOutsideUkExistingWorkersComponent,
-} from './employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
-import {
-  HealthAndCareVisaExistingWorkers,
-} from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
-import { LeaversComponent } from './leavers/leavers.component';
+import { EmployedFromOutsideUkExistingWorkersComponent } from './employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
+import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
+import { HowManyLeaversComponent } from './how-many-leavers/how-many-leavers.component';
+import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
+import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { PensionsComponent } from './pensions/pensions.component';
@@ -63,30 +55,22 @@ import { SelectMainServiceComponent } from './select-main-service/select-main-se
 import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
 import { SelectPrimaryUserComponent } from './select-primary-user/select-primary-user.component';
 import { SelectStarterJobRolesComponent } from './select-starter-job-roles/select-starter-job-roles.component';
+import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
 import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
-import {
-  StaffRecruitmentCaptureTrainingRequirementComponent,
-} from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
+import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from './start/start.component';
 import { StartersComponent } from './starters/starters.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
-import {
-  UserAccountEditPermissionsComponent,
-} from './user-account-edit-permissions/user-account-edit-permissions.component';
+import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
-import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
-import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
-import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
-import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -337,8 +321,8 @@ const routes: Routes = [
         resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Starters job role selection'
-        }
+          title: 'Starters job role selection',
+        },
       },
       {
         path: 'how-many-starters',
@@ -370,13 +354,13 @@ const routes: Routes = [
         },
       },
       {
-        path: 'leavers',
-        component: LeaversComponent,
+        path: 'how-many-leavers',
+        component: HowManyLeaversComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Leavers',
+          title: 'How many leavers',
         },
       },
       {

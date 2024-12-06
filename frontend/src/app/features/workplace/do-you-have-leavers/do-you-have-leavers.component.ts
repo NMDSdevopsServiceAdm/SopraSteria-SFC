@@ -11,7 +11,8 @@ export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacancies
   public hintText = 'We only want to know about leavers who have left permanent and temporary job roles.';
   public revealText =
     'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
-  public localStorageKey = 'hasLeavers';
+  public hasStartersLeaversVacanciesField = 'hasLeavers';
+  public numbersField = 'leaversJobRoles';
   public valueToUpdate = 'leavers';
   public requiredWarningMessage = "Select yes if you've had any staff leave in the last 12 months";
 

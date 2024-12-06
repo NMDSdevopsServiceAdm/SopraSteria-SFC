@@ -4,17 +4,17 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { Vacancy } from '@core/model/establishment.model';
+import { Leaver } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { HowManyVacanciesComponent } from './how-many-vacancies.component';
+import { HowManyLeaversComponent } from './how-many-leavers.component';
 
-describe('HowManyVacanciesComponent', () => {
-  const mockSelectedJobRoles: Vacancy[] = [
+describe('HowManyLeaversComponent', () => {
+  const mockSelectedJobRoles: Leaver[] = [
     {
       jobId: 10,
       title: 'Care worker',
@@ -35,10 +35,10 @@ describe('HowManyVacanciesComponent', () => {
     const selectedJobRoles = override.selectedJobRoles ?? mockSelectedJobRoles;
     const localStorageData = override.noLocalStorageData
       ? null
-      : JSON.stringify({ establishmentUid: 'mock-uid', vacancies: selectedJobRoles });
+      : JSON.stringify({ establishmentUid: 'mock-uid', leavers: selectedJobRoles });
     spyOn(localStorage, 'getItem').and.returnValue(localStorageData);
 
-    const renderResults = await render(HowManyVacanciesComponent, {
+    const renderResults = await render(HowManyLeaversComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
@@ -79,7 +79,7 @@ describe('HowManyVacanciesComponent', () => {
   };
 
   const getInputBoxForJobRole = (jobTitle: string): HTMLInputElement => {
-    return screen.getByRole('spinbutton', { name: 'Number of vacancies for ' + jobTitle });
+    return screen.getByRole('spinbutton', { name: 'Number of leavers for ' + jobTitle });
   };
 
   it('should create', async () => {
@@ -93,7 +93,7 @@ describe('HowManyVacanciesComponent', () => {
       const heading = getByRole('heading', { level: 1 });
       const sectionHeading = heading.previousSibling;
 
-      expect(heading.textContent).toEqual('How many current staff vacancies do you have for each job role?');
+      expect(heading.textContent).toEqual('How many leavers have you had for each job role in the last 12 months?');
       expect(sectionHeading.textContent).toEqual('Vacancies and turnover');
     });
 
@@ -105,17 +105,17 @@ describe('HowManyVacanciesComponent', () => {
       userEvent.click(revealText);
 
       const revealTextContent =
-        'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
+        'To show DHSC and the government the size of staff retention issues and help them make national and local policy and funding decisions.';
       expect(getByText(revealTextContent)).toBeTruthy();
     });
 
-    describe('vacancy numbers input form', () => {
-      it('should render a input box for each selected job roles', async () => {
+    describe('Leaver numbers input form', () => {
+      it('should render a input box for each selected job role', async () => {
         const { getByText, getByRole } = await setup();
 
         mockSelectedJobRoles.forEach((role) => {
           expect(getByText(role.title)).toBeTruthy();
-          const numberInput = getByRole('spinbutton', { name: 'Number of vacancies for ' + role.title });
+          const numberInput = getByRole('spinbutton', { name: 'Number of leavers for ' + role.title });
           expect(numberInput).toBeTruthy();
         });
       });
@@ -204,7 +204,7 @@ describe('HowManyVacanciesComponent', () => {
 
         const { getByTestId } = await setup({
           noLocalStorageData: true,
-          workplace: { vacancies: [mockSelectedJobRole] },
+          workplace: { leavers: [mockSelectedJobRole] },
         });
 
         expect(getInputBoxForJobRole(mockSelectedJobRole.title).value).toEqual('6');
@@ -215,7 +215,7 @@ describe('HowManyVacanciesComponent', () => {
 
   describe('form submit and validations', () => {
     describe('on Success', () => {
-      it('should call updateJobs with the input vacancies number', async () => {
+      it('should call updateJobs with the input leavers number', async () => {
         const { component, getByRole, updateJobsSpy } = await setup();
 
         userEvent.type(getInputBoxForJobRole('Care worker'), '2');
@@ -223,7 +223,7 @@ describe('HowManyVacanciesComponent', () => {
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
         expect(updateJobsSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          vacancies: [
+          leavers: [
             { jobId: 10, total: 2 },
             { jobId: 23, total: 4 },
           ],
@@ -246,18 +246,22 @@ describe('HowManyVacanciesComponent', () => {
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
         expect(updateJobsSpy).toHaveBeenCalledWith(component.establishment.uid, {
-          vacancies: [{ jobId: 20, total: 5, other: 'Special care worker' }],
+          leavers: [{ jobId: 20, total: 5, other: 'Special care worker' }],
         });
       });
 
-      it('should navigate to the do-you-have-starters page if in the flow', async () => {
+      it('should navigate to the recruitment-advertising-cost page if in the flow', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
         userEvent.type(getInputBoxForJobRole('Care worker'), '2');
         userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and continue' }));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-starters']);
+        expect(routerSpy).toHaveBeenCalledWith([
+          '/workplace',
+          component.establishment.uid,
+          'recruitment-advertising-cost',
+        ]);
       });
 
       it('should navigate to workplace summary page if not in the flow', async () => {
@@ -302,11 +306,11 @@ describe('HowManyVacanciesComponent', () => {
 
         expect(getByText('There is a problem')).toBeTruthy();
         const errorSummaryBox = getByText('There is a problem').parentElement;
-        expect(within(errorSummaryBox).getByText('Enter the number of vacancies (care worker)')).toBeTruthy();
-        expect(within(errorSummaryBox).getByText('Enter the number of vacancies (registered nurse)')).toBeTruthy();
+        expect(within(errorSummaryBox).getByText('Enter the number of leavers (care worker)')).toBeTruthy();
+        expect(within(errorSummaryBox).getByText('Enter the number of leavers (registered nurse)')).toBeTruthy();
 
         const numberInputsTable = getByTestId('number-inputs-table');
-        expect(within(numberInputsTable).getAllByText('Enter the number of vacancies')).toHaveSize(2);
+        expect(within(numberInputsTable).getAllByText('Enter the number of leavers')).toHaveSize(2);
 
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
@@ -321,14 +325,14 @@ describe('HowManyVacanciesComponent', () => {
 
         const errorSummaryBox = getByText('There is a problem').parentElement;
         expect(
-          within(errorSummaryBox).getByText('Number of vacancies must be between 1 and 999 (care worker)'),
+          within(errorSummaryBox).getByText('Number of leavers must be between 1 and 999 (care worker)'),
         ).toBeTruthy();
         expect(
-          within(errorSummaryBox).getByText('Number of vacancies must be between 1 and 999 (registered nurse)'),
+          within(errorSummaryBox).getByText('Number of leavers must be between 1 and 999 (registered nurse)'),
         ).toBeTruthy();
 
         const numberInputsTable = getByTestId('number-inputs-table');
-        expect(within(numberInputsTable).getAllByText('Number of vacancies must be between 1 and 999')).toHaveSize(2);
+        expect(within(numberInputsTable).getAllByText('Number of leavers must be between 1 and 999')).toHaveSize(2);
 
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
@@ -336,24 +340,24 @@ describe('HowManyVacanciesComponent', () => {
   });
 
   describe('navigation', async () => {
-    it('should navigate to "Do you have vacancies" page if failed to load selected job roles data', async () => {
+    it('should navigate to "Do you have leavers" page if failed to load selected job roles data', async () => {
       const { component, routerSpy } = await setup({ selectedJobRoles: '[]' });
       component.loadSelectedJobRoles();
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-vacancies']);
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'do-you-have-leavers']);
     });
 
     describe('backlink', () => {
       it('should set the backlink to job role selection page', async () => {
         const { component } = await setup();
         expect(component.back).toEqual({
-          url: ['/workplace', component.establishment.uid, 'select-vacancy-job-roles'],
+          url: ['/workplace', component.establishment.uid, 'select-leaver-job-roles'],
         });
       });
 
       it('should set the backlink to job role selection page when not in the flow', async () => {
         const { component } = await setup({ returnToUrl: '/dashboard#workplace' });
         expect(component.back).toEqual({
-          url: ['/workplace', component.establishment.uid, 'select-vacancy-job-roles'],
+          url: ['/workplace', component.establishment.uid, 'select-leaver-job-roles'],
         });
       });
     });

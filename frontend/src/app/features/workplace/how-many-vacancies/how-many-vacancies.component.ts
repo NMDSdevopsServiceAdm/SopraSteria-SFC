@@ -10,26 +10,14 @@ import { HowManyStartersLeaversVacanciesDirective } from '../vacancies-and-turno
 })
 export class HowManyVacanciesComponent extends HowManyStartersLeaversVacanciesDirective {
   public heading = 'How many current staff vacancies do you have for each job role?';
-  public section = 'Vacancies and turnover';
   public instruction = 'Only add the number of vacancies for permanent and temporary job roles.';
   public revealTextContent =
     'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
   public jobRoleType = 'vacancies';
+  public fieldName = 'vacancies';
+  public fieldJobRoles = 'vacanciesJobRoles';
 
   protected selectedJobRoles: Array<Vacancy> = [];
-
-  public loadSelectedJobRoles(): void {
-    try {
-      const loadedJobRoles = JSON.parse(localStorage.getItem('vacanciesJobRoles'));
-      this.selectedJobRoles = loadedJobRoles?.vacancies;
-    } catch (err) {
-      this.returnToFirstPage();
-    }
-
-    if (!Array.isArray(this.selectedJobRoles) || this.selectedJobRoles?.length === 0) {
-      this.returnToFirstPage();
-    }
-  }
 
   protected clearLocalStorageData(): void {
     localStorage.removeItem('hasVacancies');

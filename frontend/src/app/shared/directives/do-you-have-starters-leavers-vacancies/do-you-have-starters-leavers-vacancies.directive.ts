@@ -1,4 +1,4 @@
-import { Directive } from '@angular/core';
+import { Directive, OnDestroy } from '@angular/core';
 import { UntypedFormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.model';
@@ -8,13 +8,14 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { Question } from '@features/workplace/question/question.component';
 
 @Directive({})
-export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
+export class DoYouHaveStartersLeaversVacanciesDirective extends Question implements OnDestroy {
   public section = 'Vacancies and turnover';
   public heading: string;
   public hintText: string;
   public revealText: string;
   public hasSelectedYesWithoutSavingJobRoles: boolean;
-  public localStorageKey: string;
+  protected hasStartersLeaversVacanciesField: string;
+  protected numbersField: string;
   public startersLeaversOrVacanciesPageTwo: string;
   public valueToUpdate: string;
   public requiredWarningMessage: string;
@@ -53,7 +54,7 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({
-      startersLeaversVacanciesKnown: [null, [Validators.required]],
+      startersLeaversVacanciesKnown: [null, { validators: [Validators.required], updateOn: 'submit' }],
     });
   }
 
@@ -72,7 +73,7 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
   }
 
   protected getFromLocalStorage(): boolean {
-    return localStorage.getItem(this.localStorageKey) === 'true' ? true : false;
+    return localStorage.getItem(this.hasStartersLeaversVacanciesField) === 'true' ? true : false;
   }
 
   protected prefillForm(): void {
@@ -91,13 +92,13 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
       startersLeaversVacanciesKnown.value === jobOptionsEnum.NONE ||
       startersLeaversVacanciesKnown.value === jobOptionsEnum.DONT_KNOW
     ) {
-      localStorage.setItem(this.localStorageKey, 'false');
+      localStorage.setItem(this.hasStartersLeaversVacanciesField, 'false');
       this.hasSelectedYesWithoutSavingJobRoles = false;
 
       return { [this.valueToUpdate]: startersLeaversVacanciesKnown.value };
     } else if (startersLeaversVacanciesKnown.value === jobOptionsEnum.YES) {
       this.hasSelectedYesWithoutSavingJobRoles = true;
-      localStorage.setItem(this.localStorageKey, 'true');
+      localStorage.setItem(this.hasStartersLeaversVacanciesField, 'true');
     }
 
     return null;
@@ -127,6 +128,17 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question {
       this.submitAction = { action: 'return', save: true };
     } else {
       this.nextRoute = this.skipRoute;
+    }
+  }
+
+  protected clearLocalStorageData(): void {
+    localStorage.removeItem(this.hasStartersLeaversVacanciesField);
+    localStorage.removeItem(this.numbersField);
+  }
+
+  ngOnDestroy(): void {
+    if (!this.submitted) {
+      this.clearLocalStorageData();
     }
   }
 }

@@ -184,7 +184,7 @@ describe('SelectVacancyJobRolesComponent', () => {
       });
     });
 
-    describe('prefill', () => {
+    describe('Setting and clearing data from local storage', () => {
       const mockVacancies: Vacancy[] = [
         {
           jobId: 10,
@@ -255,6 +255,19 @@ describe('SelectVacancyJobRolesComponent', () => {
 
         const tickedCheckboxes = queryAllByRole('checkbox', { checked: true }) as HTMLInputElement[];
         expect(tickedCheckboxes.length).toEqual(0);
+      });
+
+      it('should clear data in local storage when user clicks "Cancel" button', async () => {
+        const { getByText } = await setup({ returnToUrl: true });
+
+        const localStorageRemoveItemSpy = spyOn(localStorage, 'removeItem');
+        const cancelButton = getByText('Cancel');
+
+        userEvent.click(cancelButton);
+
+        expect(localStorageRemoveItemSpy).toHaveBeenCalledTimes(2);
+        expect(localStorageRemoveItemSpy.calls.all()[0].args).toEqual(['hasVacancies']);
+        expect(localStorageRemoveItemSpy.calls.all()[1].args).toEqual(['vacanciesJobRoles']);
       });
     });
   });

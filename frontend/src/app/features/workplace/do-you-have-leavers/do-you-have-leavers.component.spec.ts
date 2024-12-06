@@ -331,7 +331,7 @@ describe('DoYouHaveLeaversComponent', () => {
       expect(updateJobsSpy).not.toHaveBeenCalled();
     });
 
-    it("should clear local storage when 'No' is selected and is submitted", async () => {
+    it("should set hasLeavers in local storage to false when 'No' is selected and is submitted", async () => {
       const { component, fixture, getByText } = await setup();
 
       localStorage.setItem('hasLeavers', 'true');
@@ -348,7 +348,7 @@ describe('DoYouHaveLeaversComponent', () => {
       expect(localStorageSpy.calls.all()[0].args).toEqual(['hasLeavers', 'false']);
     });
 
-    it("should clear local storage when 'I do not know' is selected and is submitted", async () => {
+    it("should set hasLeavers in local storage to false when 'I do not know' is selected and is submitted", async () => {
       const { component, fixture, getByText } = await setup();
 
       localStorage.setItem('hasLeavers', 'true');

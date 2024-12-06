@@ -1,7 +1,7 @@
-import { sum } from 'lodash';
 import { Directive, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { UntypedFormArray, Validators } from '@angular/forms';
 import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
+import { sum } from 'lodash';
 
 import { Question } from '../question/question.component';
 
@@ -9,10 +9,12 @@ import { Question } from '../question/question.component';
 export class HowManyStartersLeaversVacanciesDirective extends Question implements OnInit, OnDestroy {
   @ViewChildren('numberInputRef') numberInputs: QueryList<ElementRef<HTMLInputElement>>;
   public heading: string;
-  public section: string;
   public instruction: string;
   public revealTextContent: string;
   public jobRoleType: string;
+  public fieldName: string;
+  public fieldJobRoles: string;
+  public section: string = 'Vacancies and turnover';
   public totalNumber = 0;
 
   protected selectedJobRoles: Array<Starter | Leaver | Vacancy> = [];
@@ -25,8 +27,6 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
     this.setPreviousRoute();
     this.setupForm();
   }
-
-  public loadSelectedJobRoles(): void {}
 
   protected clearLocalStorageData(): void {}
 
@@ -106,6 +106,22 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
       case 'min':
       case 'max':
         return `Number of ${this.jobRoleType} must be between ${this.minNumberPerJobRole} and ${this.maxNumberPerJobRole}${jobRoleTitleSuffix}`;
+    }
+  }
+
+  public loadSelectedJobRoles(): void {
+    try {
+      const loadedJobRoles = JSON.parse(localStorage.getItem(this.fieldJobRoles));
+      this.selectedJobRoles = loadedJobRoles?.[this.fieldName];
+      if (!this.selectedJobRoles) {
+        this.selectedJobRoles = this.establishment[this.fieldName];
+      }
+    } catch (err) {
+      this.returnToFirstPage();
+    }
+
+    if (!Array.isArray(this.selectedJobRoles) || this.selectedJobRoles?.length === 0) {
+      this.returnToFirstPage();
     }
   }
 

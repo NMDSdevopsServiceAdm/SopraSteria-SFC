@@ -40,8 +40,9 @@ import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EmployedFromOutsideUkExistingWorkersComponent } from './employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
 import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
+import { HowManyLeaversComponent } from './how-many-leavers/how-many-leavers.component';
+import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
-import { LeaversComponent } from './leavers/leavers.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { PensionsComponent } from './pensions/pensions.component';
@@ -72,7 +73,6 @@ import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-in
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
 import { WorkplaceRoutingModule } from './workplace-routing.module';
-import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 
 @NgModule({
   imports: [
@@ -92,7 +92,6 @@ import { HowManyStartersComponent } from './how-many-starters/how-many-starters.
     CreateUserAccountComponent,
     DataSharingComponent,
     EditWorkplaceComponent,
-    LeaversComponent,
     OtherServicesComponent,
     ServicesCapacityComponent,
     ServiceUsersComponent,
@@ -140,6 +139,7 @@ import { HowManyStartersComponent } from './how-many-starters/how-many-starters.
     HowManyStartersComponent,
     DoYouHaveLeaversComponent,
     SelectLeaverJobRolesComponent,
+    HowManyLeaversComponent,
   ],
   providers: [
     DialogService,
