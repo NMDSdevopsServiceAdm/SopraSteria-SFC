@@ -100,7 +100,7 @@ describe('ForgotYourPasswordComponent', () => {
 
   describe('after form submit', async () => {
     it('should show a confirmation screen', async () => {
-      const { fixture, getByRole, getByText } = await setup();
+      const { fixture, getByRole, getByText, getByTestId } = await setup();
 
       userEvent.type(getByRole('textbox'), 'test@example.com');
       userEvent.click(getByRole('button', { name: 'Send password reset link' }));
@@ -108,10 +108,10 @@ describe('ForgotYourPasswordComponent', () => {
       fixture.detectChanges();
 
       const expectedMessage =
-        "If there's an ASC-WDS account for test@example.com, you'll get an email soon, with a link to reset your password.";
+        "If there's an ASC-WDS account for test@example.com you'll get an email soon, with a link to reset your password.";
 
       expect(getByRole('heading', { name: 'Password reset link sent' })).toBeTruthy();
-      expect(getByText(expectedMessage)).toBeTruthy();
+      expect(getByTestId('confirmation-message').textContent).toContain(expectedMessage);
       expect(getByText('Back to sign in')).toBeTruthy();
     });
   });
