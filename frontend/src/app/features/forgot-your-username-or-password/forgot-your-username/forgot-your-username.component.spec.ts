@@ -8,7 +8,7 @@ import { render } from '@testing-library/angular';
 
 import { ForgotYourUsernameComponent } from './forgot-your-username.component';
 
-describe('ForgotYourUsernameComponent', () => {
+fdescribe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
@@ -35,5 +35,11 @@ describe('ForgotYourUsernameComponent', () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
+  });
+
+  it('should show a page heading', async () => {
+    const { getByRole } = await setup();
+
+    expect(getByRole('heading', { name: 'Forgot username' })).toBeTruthy();
   });
 });
