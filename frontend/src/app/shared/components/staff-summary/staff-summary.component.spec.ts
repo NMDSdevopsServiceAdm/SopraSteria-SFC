@@ -148,7 +148,7 @@ describe('StaffSummaryComponent', () => {
       component.fixture.componentInstance.totalWorkerCount = 16;
       component.fixture.detectChanges();
 
-      const searchInput = component.getByLabelText('Search for staff records');
+      const searchInput = component.getByLabelText('Search by name or ID number for staff records');
       expect(searchInput).toBeTruthy();
       userEvent.type(searchInput, 'search term here{enter}');
 
@@ -162,7 +162,10 @@ describe('StaffSummaryComponent', () => {
       component.fixture.componentInstance.totalWorkerCount = 16;
       component.fixture.detectChanges();
 
-      userEvent.type(component.getByLabelText('Search for staff records'), 'search term here{enter}');
+      userEvent.type(
+        component.getByLabelText('Search by name or ID number for staff records'),
+        'search term here{enter}',
+      );
       expect(getAllWorkersSpy.calls.mostRecent().args[1].pageIndex).toEqual(0);
     });
 
@@ -190,7 +193,9 @@ describe('StaffSummaryComponent', () => {
       component.fixture.componentInstance.totalWorkerCount = 16;
       component.fixture.detectChanges();
 
-      expect((component.getByLabelText('Search for staff records') as HTMLInputElement).value).toBe('mysupersearch');
+      expect(
+        (component.getByLabelText('Search by name or ID number for staff records') as HTMLInputElement).value,
+      ).toBe('mysupersearch');
     });
   });
 

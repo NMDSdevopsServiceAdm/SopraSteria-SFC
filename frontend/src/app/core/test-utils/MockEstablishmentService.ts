@@ -323,6 +323,10 @@ export class MockEstablishmentService extends EstablishmentService {
       mainService: { id: 100, name: 'Some kind of service' },
     });
   }
+
+  public getEstablishment(workplaceUid: string, wdf: boolean = false): Observable<any> {
+    return of(this.establishmentObj as Establishment);
+  }
 }
 
 @Injectable()

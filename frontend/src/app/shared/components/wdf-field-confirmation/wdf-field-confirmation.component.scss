@@ -1,0 +1,16 @@
+@import 'govuk-frontend/govuk/base';
+
+:host {
+  display: contents;
+}
+
+.govuk-summary-list__message {
+  padding-bottom: 0px;
+  padding-top: 15px;
+  background-color: govuk-colour('light-grey');
+}
+
+.confirmation-content {
+  width: calc(100% + 4rem);
+  margin-top: 0px;
+}

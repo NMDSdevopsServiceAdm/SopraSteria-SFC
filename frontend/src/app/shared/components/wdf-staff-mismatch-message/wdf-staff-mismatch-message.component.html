@@ -1,8 +1,19 @@
-<span class="govuk-!-margin-bottom-2 govuk-!-margin-top-2 govuk__flex govuk__nowrap">
-  <img class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />{{ staffMismatchMessage }}
-</span>
-<span *ngIf="workplace.numberOfStaff !== 0" class="govuk__nowrap">
-  Either change the total or
-  <a [routerLink]="staffRecordsUrl.url" [fragment]="staffRecordsUrl.fragment">view staff records</a> to
-  {{ addOrDeleteRecordsMessage }}.
-</span>
+<div class="govuk-summary-list__row govuk-summary-list__row--no-bottom-border">
+  <dt class="govuk-summary-list__key"></dt>
+  <dd class="govuk-summary-list__value govuk-summary-list__message">
+    <span class="govuk-!-margin-bottom-2 govuk-!-margin-top-2 govuk__flex">
+      <img class="govuk-!-margin-right-1" src="/assets/images/{{ icon }}.svg" alt="" />{{ staffMismatchMessage }}
+    </span>
+    <span *ngIf="workplace.numberOfStaff !== 0" class="govuk__nowrap">
+      Either change the total or
+      <a [routerLink]="staffRecordsUrl.url" [fragment]="staffRecordsUrl.fragment">view staff records</a> to
+      {{ addOrDeleteRecordsMessage }}.
+    </span>
+  </dd>
+  <dd class="govuk-summary-list__value govuk-summary-list__message"></dd>
+</div>
+<div class="govuk-summary-list__row">
+  <dt class="govuk-!-padding-top-2"></dt>
+  <dd></dd>
+  <dd></dd>
+</div>

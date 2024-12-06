@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="x14ac" xmlns:x14ac="http://schemas.microsoft.com/office/spreadsheetml/2009/9/ac">
-  <dimension ref="A1:M16" />
+  <dimension ref="A1:M14" />
   <sheetViews>
     <sheetView showGridLines="0" topLeftCell="A1" tabSelected="1" workbookViewId="0">
       <pane ySplit="3" topLeftCell="A4" activePane="bottomLeft" state="frozenSplit" />
@@ -170,43 +170,8 @@
         <v>0</v>
       </c>
     </row>
-    <row r="12" spans="2:12" ht="409.6" hidden="1" customHeight="1" x14ac:dyDescent="0.25" />
-    <row r="13" spans="2:12" ht="8.65" customHeight="1" x14ac:dyDescent="0.25" />
-    <row r="14" spans="2:12" ht="22.9" customHeight="1" x14ac:dyDescent="0.25">
-      <c r="B14" s="43" t="s">
-        <v>29</v>
-      </c>
-      <c r="C14" s="44" />
-      <c r="D14" s="44" />
-      <c r="E14" s="44" />
-      <c r="F14" s="44" />
-      <c r="G14" s="44" />
-      <c r="H14" s="44" />
-      <c r="I14" s="44" />
-      <c r="J14" s="44" />
-      <c r="K14" s="44" />
-      <c r="L14" s="45" />
-    </row>
-    <row r="15" spans="2:12" ht="71.650000000000006" customHeight="1" x14ac:dyDescent="0.25">
-      <c r="B15" s="46" t="s">
-        <v>1</v>
-      </c>
-      <c r="C15" s="44" />
-      <c r="D15" s="44" />
-      <c r="E15" s="44" />
-      <c r="F15" s="44" />
-      <c r="G15" s="44" />
-      <c r="H15" s="44" />
-      <c r="I15" s="44" />
-      <c r="J15" s="44" />
-      <c r="K15" s="44" />
-      <c r="L15" s="45" />
-    </row>
-    <row r="16" spans="2:12" ht="409.6" hidden="1" customHeight="1" x14ac:dyDescent="0.25" />
   </sheetData>
-  <mergeCells count="9">
-    <mergeCell ref="B14:L14" />
-    <mergeCell ref="B15:L15" />
+  <mergeCells count="7">
     <mergeCell ref="A2:M2" />
     <mergeCell ref="B4:L4" />
     <mergeCell ref="B6:L6" />

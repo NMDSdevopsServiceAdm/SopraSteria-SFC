@@ -93,8 +93,17 @@
 }
 
 .asc-summary-list--wide-value {
+  .govuk-summary-list__key {
+    width: 35%;
+  }
+
   .govuk-summary-list__value {
-    width: 70%;
+    width: 55%;
+    padding-left: 15px;
+  }
+
+  .govuk-summary-list__actions {
+    width: 10%;
   }
 }
 
@@ -151,13 +160,19 @@
     }
   }
 }
+
 .govuk-summary-list--wide-key {
   .govuk-summary-list__key {
-    width: 40%;
+    width: 45%;
   }
 
   .govuk-summary-list__value {
-    width: 60%;
+    width: 45%;
+    padding-left: 15px;
+  }
+
+  .govuk-summary-list__actions {
+    width: 10%;
   }
 }
 

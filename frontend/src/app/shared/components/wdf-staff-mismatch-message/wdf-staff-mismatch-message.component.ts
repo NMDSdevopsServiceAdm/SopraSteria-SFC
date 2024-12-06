@@ -7,6 +7,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 @Component({
   selector: 'app-wdf-staff-mismatch-message',
   templateUrl: './wdf-staff-mismatch-message.component.html',
+  styleUrls: ['./wdf-staff-mismatch-message.component.scss'],
 })
 export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
   @Input() public workplace: Establishment;
@@ -55,7 +56,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
       return;
     }
     if (this.overallWdfEligibility == false) {
-      this.icon = 'cross-icon';
+      this.icon = 'red-flag-wdf-table';
       return;
     }
   }
@@ -77,7 +78,7 @@ export class WdfStaffMismatchMessageComponent implements OnInit, OnChanges {
 
   public setStaffRecordsUrl(): void {
     if (this.route.snapshot.params.establishmentuid && this.primaryWorkplaceUid !== this.workplace.uid) {
-      this.staffRecordsUrl = { url: ['/workplace', this.workplace.uid], fragment: 'staff-records' };
+      this.staffRecordsUrl = { url: ['/subsidiary', this.workplace.uid, 'staff-records'] };
     } else {
       this.staffRecordsUrl = { url: ['/dashboard'], fragment: 'staff-records' };
     }
