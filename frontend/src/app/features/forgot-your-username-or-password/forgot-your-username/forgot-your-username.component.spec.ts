@@ -4,20 +4,29 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, screen } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
+import { FindUsernameService } from '../../../core/services/find-username.service';
+import { FindAccountComponent } from './find-account/find-account.component';
 import { ForgotYourUsernameComponent } from './forgot-your-username.component';
+import { MockFindUsernameService } from '@core/test-utils/MockFindUsernameService';
 
 fdescribe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
+      declarations: [FindAccountComponent],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {},
           },
+        },
+        {
+          provide: FindUsernameService,
+          useClass: MockFindUsernameService,
         },
       ],
     });
@@ -28,7 +37,17 @@ fdescribe('ForgotYourUsernameComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { ...setupTools, component, routerSpy };
+    const findUsernameService = injector.inject(FindUsernameService) as FindUsernameService;
+
+    return { ...setupTools, component, routerSpy, findUsernameService };
+  };
+
+  const fillInAndSubmitForm = async (name: string, workplaceIdOrPostcode: string, email: string) => {
+    userEvent.type(screen.getByRole('textbox', { name: 'Name' }), name);
+    userEvent.type(screen.getByRole('textbox', { name: 'Workplace ID or postcode' }), workplaceIdOrPostcode);
+    userEvent.type(screen.getByRole('textbox', { name: 'Email address' }), email);
+
+    userEvent.click(screen.getByRole('button', { name: 'Find account' }));
   };
 
   it('should create', async () => {
@@ -41,5 +60,65 @@ fdescribe('ForgotYourUsernameComponent', () => {
     const { getByRole } = await setup();
 
     expect(getByRole('heading', { name: 'Forgot username' })).toBeTruthy();
+  });
+
+  describe('find account', () => {
+    it('should show text inputs for "Name", "Workplace ID or postcode" and "Email address"', async () => {
+      const { getByRole } = await setup();
+
+      expect(getByRole('textbox', { name: 'Name' })).toBeTruthy();
+      expect(getByRole('textbox', { name: 'Workplace ID or postcode' })).toBeTruthy();
+      expect(getByRole('textbox', { name: 'Email address' })).toBeTruthy();
+    });
+
+    it('should show a "Find account" CTA button and a "Back to sign in" link', async () => {
+      const { getByRole, getByText } = await setup();
+
+      expect(getByRole('button', { name: 'Find account' })).toBeTruthy();
+
+      const backToSignIn = getByText('Back to sign in');
+      expect(backToSignIn).toBeTruthy();
+      expect(backToSignIn.getAttribute('href')).toEqual('/login');
+    });
+
+    describe('submit and validation', () => {
+      it('should show an error message if any of the text input is blank', async () => {
+        const { fixture, getByRole, getByText, getAllByText } = await setup();
+
+        userEvent.click(getByRole('button', { name: 'Find account' }));
+        fixture.detectChanges();
+
+        expect(getByText('There is a problem')).toBeTruthy();
+
+        expect(getAllByText('Enter your name')).toHaveSize(2);
+        expect(getAllByText('Enter your workplace ID or postcode')).toHaveSize(2);
+        expect(getAllByText('Enter your email address')).toHaveSize(2);
+      });
+
+      it('should call forgetUsernameService findUserAccount() on submit', async () => {
+        const { fixture, findUsernameService } = await setup();
+
+        spyOn(findUsernameService, 'findUserAccount');
+
+        await fillInAndSubmitForm('Test User', 'A1234567', 'test@example.com');
+        fixture.detectChanges();
+
+        expect(findUsernameService.findUserAccount).toHaveBeenCalledWith({
+          name: 'Test User',
+          workplaceIdOrPostcode: 'A1234567',
+          email: 'test@example.com',
+        });
+      });
+
+      it('should show "Account found" and stop showing "Find account" button when an account is found', async () => {
+        const { fixture, getByText, queryByRole, findUsernameService } = await setup();
+
+        await fillInAndSubmitForm('Test User', 'A1234567', 'test@example.com');
+        fixture.detectChanges();
+
+        expect(getByText('Account found')).toBeTruthy();
+        expect(queryByRole('button', { name: 'Find account' })).toBeFalsy();
+      });
+    });
   });
 });
