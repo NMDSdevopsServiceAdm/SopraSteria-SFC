@@ -181,7 +181,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
         expect(getByText(meetingMessage, { exact: true })).toBeTruthy();
       });
 
-      it("should display orange flag and 'Number of staff mismatch' message when the workplace has qualified for funding but workplace is ineligible", async () => {
+      it("should display orange flag and 'Check your workplace data' message when the workplace has qualified for funding but workplace is ineligible", async () => {
         const workplaces = [
           {
             name: 'Workplace name',
@@ -196,7 +196,7 @@ describe('WdfWorkplacesSummaryComponent', () => {
         const { getByText } = await setup({ workplaces });
 
         expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
-        expect(getByText('Number of staff mismatch', { exact: true })).toBeTruthy();
+        expect(getByText('Check your workplace data', { exact: true })).toBeTruthy();
       });
 
       it("should display orange flag and 'New staff records' message when the workplace has qualified for funding but staff records are ineligible", async () => {
