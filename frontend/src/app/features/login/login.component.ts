@@ -32,7 +32,6 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
   public showPassword: boolean = false;
-  public regex = "^[A-Za-z0-9._'%+-]*$";
 
   constructor(
     private idleService: IdleService,

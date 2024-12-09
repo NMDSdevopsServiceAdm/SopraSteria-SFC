@@ -85,11 +85,7 @@ describe('LoginComponent', () => {
 
   describe('password', () => {
     it('should show the password as password field when show password is false', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.showPassword = false;
-
-      fixture.detectChanges();
+      const { getByTestId } = await setup();
 
       const passwordInput = getByTestId('password');
 
@@ -97,10 +93,11 @@ describe('LoginComponent', () => {
     });
 
     it('should show the password as text field when show password is true', async () => {
-      const { component, fixture, getByTestId } = await setup();
+      const { fixture, getByTestId, getByText } = await setup();
 
-      component.showPassword = true;
+      const showToggleText = 'Show password';
 
+      fireEvent.click(getByText(showToggleText));
       fixture.detectChanges();
 
       const passwordInput = getByTestId('password');
