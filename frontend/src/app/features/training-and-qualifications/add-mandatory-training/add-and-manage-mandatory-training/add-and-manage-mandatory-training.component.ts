@@ -78,7 +78,7 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
       '/workplace',
       this.establishmentService.establishment.uid,
       'add-and-manage-mandatory-training',
-      'add-new-mandatory-training',
+      'select-training-category',
     ]);
   }
 

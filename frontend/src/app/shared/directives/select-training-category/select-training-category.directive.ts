@@ -29,6 +29,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   public previousUrl: string[];
   public preFilledId: number;
   public error = false;
+  public requiredErrorMessage: string = 'Select the training category';
 
   private summaryText = {
     'Care skills and knowledge': "'duty of care', 'safeguarding adults'",
@@ -167,7 +168,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Select the training category',
+            message: this.requiredErrorMessage,
           },
         ],
       },
