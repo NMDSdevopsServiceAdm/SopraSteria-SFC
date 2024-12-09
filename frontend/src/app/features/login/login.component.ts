@@ -1,6 +1,13 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { AuthService } from '@core/services/auth.service';
@@ -14,6 +21,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
+  styleUrls: ['./login.component.scss'],
 })
 export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
@@ -23,6 +31,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
+  public showPassword: boolean = false;
 
   constructor(
     private idleService: IdleService,
@@ -36,8 +45,20 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
   ngOnInit() {
     this.form = this.formBuilder.group({
-      username: [null, { validators: [Validators.required], updateOn: 'submit' }],
-      password: [null, { validators: [Validators.required], updateOn: 'submit' }],
+      username: [
+        null,
+        {
+          validators: [Validators.required, this.checkUsernameForAtSign()],
+          updateOn: 'submit',
+        },
+      ],
+      password: [
+        null,
+        {
+          validators: [Validators.required],
+          updateOn: 'submit',
+        },
+      ],
     });
 
     this.setupFormErrorsMap();
@@ -52,6 +73,20 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.unsubscribe();
   }
 
+  public checkUsernameForAtSign(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      const value = control.value;
+
+      if (!value) {
+        return null;
+      }
+
+      const userNameHasAtSign = /@/.test(value);
+
+      return userNameHasAtSign ? { atSignInUsername: true } : null;
+    };
+  }
+
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -60,6 +95,10 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           {
             name: 'required',
             message: 'Enter your username',
+          },
+          {
+            name: 'atSignInUsername',
+            message: "You've entered an @ symbol (remember, your username cannot be an email address)",
           },
         ],
       },
@@ -153,5 +192,10 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         },
       ),
     );
+  }
+
+  public setShowPassword(event: Event): void {
+    event.preventDefault();
+    this.showPassword = !this.showPassword;
   }
 }
