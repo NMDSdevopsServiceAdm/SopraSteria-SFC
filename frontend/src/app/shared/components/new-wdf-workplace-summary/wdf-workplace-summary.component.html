@@ -256,6 +256,7 @@
     <app-wdf-warning-message
       *ngIf="workplace.wdf?.capacities?.isEligible === Eligibility.NO"
       [overallWdfEligibility]="overallWdfEligibility"
+      warningMessage="Add the capacity of your main service"
       data-testid="capacitiesWdfWarning"
     ></app-wdf-warning-message>
 

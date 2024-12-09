@@ -12,7 +12,9 @@ describe('WdfWarningMessageComponent', () => {
     const { fixture, getByText, queryByAltText, queryByText } = await render(WdfWarningMessageComponent, {
       imports: [SharedModule, RouterTestingModule, HttpClientTestingModule, BrowserModule, WdfModule],
       componentProperties: {
-        overallWdfEligibility: overrides.overallWdfEligibility,
+        overallWdfEligibility: false,
+        warningMessage: null,
+        ...overrides,
       },
     });
 
@@ -42,6 +44,34 @@ describe('WdfWarningMessageComponent', () => {
     expect(queryByAltText('Red flag icon')).toBeFalsy();
 
     expect(getByText('Add this information')).toBeTruthy();
+    expect(queryByAltText('Orange flag icon')).toBeTruthy();
+  });
+
+  it('should display message passed in and red flag when not eligible overall  and specific warning message provided', async () => {
+    const specificMessage = 'Add the capacity of your main service';
+
+    const { getByText, queryByAltText } = await setup({
+      overallWdfEligibility: false,
+      warningMessage: specificMessage,
+    });
+
+    expect(getByText(specificMessage)).toBeTruthy();
+    expect(queryByAltText('Red flag icon')).toBeTruthy();
+
+    expect(queryByAltText('Orange flag icon')).toBeFalsy();
+  });
+
+  it('should display message passed in and orange flag when eligible overall and specific warning message provided', async () => {
+    const specificMessage = 'Add the capacity of your main service';
+
+    const { getByText, queryByAltText } = await setup({
+      overallWdfEligibility: true,
+      warningMessage: specificMessage,
+    });
+
+    expect(queryByAltText('Red flag icon')).toBeFalsy();
+
+    expect(getByText(specificMessage)).toBeTruthy();
     expect(queryByAltText('Orange flag icon')).toBeTruthy();
   });
 });
