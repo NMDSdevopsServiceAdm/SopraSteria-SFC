@@ -67,6 +67,8 @@ import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-u
 import { ForgotYourPasswordEditComponent } from '@features/forgot-your-username-or-password/forgot-your-password/edit/edit.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
 import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { FindAccountComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-account/find-account.component';
+import { FindUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-username/find-username.component';
 import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
@@ -95,7 +97,6 @@ import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { FindAccountComponent } from './features/forgot-your-username-or-password/forgot-your-username/find-account/find-account.component';
 
 @NgModule({
   declarations: [
@@ -140,6 +141,7 @@ import { FindAccountComponent } from './features/forgot-your-username-or-passwor
     ForgotYourUsernameOrPasswordComponent,
     ForgotYourUsernameComponent,
     FindAccountComponent,
+    FindUsernameComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

@@ -1,1 +1,35 @@
-<p>find-account works!</p>
+<p class="govuk-!-width-three-quarters">
+  Enter your name, workplace ID or postcode, and your ASC-WDS email address (this'll be the one you used when you
+  created your account, unless you've changed it).
+</p>
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+  <ng-container *ngFor="let field of formFields">
+    <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(field.id).errors">
+      <label class="govuk-label" [for]="field.id"> {{ field.label }} </label>
+      <span *ngIf="submitted && form.get(field.id).errors" [id]="field.id + '-error'" class="govuk-error-message">
+        <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(field.id) }}
+      </span>
+      <input
+        class="govuk-input govuk-input--width-20"
+        [id]="field.id"
+        [name]="field.id"
+        [formControlName]="field.id"
+        type="text"
+      />
+    </div>
+  </ng-container>
+
+  <div *ngIf="accountFound"><h2>Account found</h2></div>
+
+  <div *ngIf="!(submitted && accountFound)" class="govuk-button-group--gap-between govuk-!-margin-top-8">
+    <button type="submit" class="govuk-button">Find account</button>
+    <span class="govuk-visually-hidden">or</span>
+    <a
+      class="govuk-link govuk-link--no-visited-state govuk__nowrap"
+      [routerLink]="['/login']"
+      role="button"
+      draggable="false"
+      >Back to sign in
+    </a>
+  </div>
+</form>
