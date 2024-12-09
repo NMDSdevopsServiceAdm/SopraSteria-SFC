@@ -30,6 +30,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   public preFilledId: number;
   public error = false;
   public requiredErrorMessage: string = 'Select the training category';
+  public submitButtonText: string = 'Continue';
 
   private summaryText = {
     'Care skills and knowledge': "'duty of care', 'safeguarding adults'",
@@ -38,7 +39,6 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     'Specific conditions and disabilities': "'dementia care', 'Oliver McGowan Mandatory Training'",
     'Staff development': "'communication', 'leadership and management' ",
   };
-  submitButtonText: string = 'Continue';
 
   constructor(
     protected formBuilder: FormBuilder,
@@ -62,6 +62,9 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   }
 
   protected init(): void {}
+  protected submit(selectedCategory: any): void {}
+  protected setSectionHeading(): void {}
+  public onCancel(event: Event) {}
 
   protected prefillForm(): void {
     let selectedCategory = this.trainingService.selectedTraining?.trainingCategory;
@@ -78,13 +81,9 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     this.form.get('category').updateValueAndValidity();
   }
 
-  protected submit(selectedCategory: any): void {}
-
   protected setTitle(): void {
     this.title = 'Select the category that best matches the training taken';
   }
-
-  protected setSectionHeading(): void {}
 
   private getCategories(): void {
     this.categories = this.route.snapshot.data.trainingCategories;
@@ -141,8 +140,6 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
       return;
     }
   }
-
-  public onCancel(event: Event) {}
 
   public setBackLink(): void {
     this.backLinkService.showBackLink();

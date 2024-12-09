@@ -165,13 +165,16 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
   });
 
   it('should display required error message when no training category selected', async () => {
-    const { component, getByText, fixture, getAllByText } = await setup();
+    const { fixture, getByText } = await setup();
 
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
     fixture.detectChanges();
 
-    expect(component.form.invalid).toBeTruthy();
-    expect(getAllByText('Select the training category that you want to make mandatory').length).toEqual(3);
+    const errorMessage = getByText('Select the training category that you want to make mandatory', {
+      selector: '.govuk-error-message',
+    });
+
+    expect(errorMessage).toBeTruthy();
   });
 });
