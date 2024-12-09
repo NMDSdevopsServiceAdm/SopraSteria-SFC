@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
 
 @Component({
   selector: 'app-wdf-pagination',
@@ -9,6 +10,7 @@ import { Establishment } from '@core/model/establishment.model';
 export class WdfPaginationComponent implements OnInit {
   @Input() workerList: string[];
   @Input() workplaceUid: Establishment;
+  @Input() exitUrl: URLStructure;
   public isFirst = false;
   public isLast = false;
   public nextID: string;

@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angu
 import { ActivatedRoute } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { Ethnicity } from '@core/model/ethnicity.model';
+import { Eligibility } from '@core/model/wdf.model';
 import { Worker } from '@core/model/worker.model';
 import { EthnicityService } from '@core/services/ethnicity.service';
 import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
@@ -38,6 +39,7 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   public ethnicGroupData: string;
   public ethnicityData: string;
   private ethnicityObject: Ethnicity;
+  public Eligibility = Eligibility;
 
   constructor(
     private permissionsService: PermissionsService,
@@ -213,5 +215,14 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
 
     await this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).toPromise();
     this.allFieldsConfirmed.emit();
+  }
+
+  public showWdfConfirmation(field: string): boolean {
+    return (
+      this.canEditWorker &&
+      this.wdfView &&
+      this.worker.wdf?.[field].isEligible === 'Yes' &&
+      !this.worker.wdf?.[field].updatedSinceEffectiveDate
+    );
   }
 }

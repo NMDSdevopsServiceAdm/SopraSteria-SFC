@@ -1,0 +1,19 @@
+<div class="govuk-!-margin-bottom-7">
+  <ul class="govuk-tabs__list asc-tabs__list" role="tablist">
+    <li
+      *ngFor="let tab of tabs; let i = index"
+      class="govuk-tabs__list-item asc-tabs__list-item"
+      [attr.data-testid]="'tab' + i"
+      [class.asc-tabs__list-item--active]="activeTabIndex === i"
+    >
+      <a
+        class="govuk-tabs__tab asc-tabs__link"
+        [class.asc-tabs__link--active]="activeTabIndex === i"
+        href="#"
+        role="tab"
+        (click)="this.handleViewChange($event, i)"
+        >{{ tabs[i].name }}</a
+      >
+    </li>
+  </ul>
+</div>

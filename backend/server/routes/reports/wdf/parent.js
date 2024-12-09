@@ -1496,7 +1496,7 @@ const reportGet = async (req, res) => {
             'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             'Content-disposition': `attachment; filename=${moment(date).format(
               'YYYY-MM-DD',
-            )}-SFC-Parent-Wdf-Report.xlsx`,
+            )}-SFC-Parent-Funding-Report.xlsx`,
           });
           console.log('report/wdf/parent - 200 response');
         } else {
