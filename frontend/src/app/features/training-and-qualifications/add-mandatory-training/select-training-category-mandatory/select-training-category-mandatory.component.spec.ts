@@ -25,7 +25,8 @@ import { SelectTrainingCategoryMandatoryComponent } from './select-training-cate
 describe('SelectTrainingCategoryMandatoryComponent', () => {
   async function setup() {
     const establishment = establishmentBuilder() as Establishment;
-    const { fixture, getByText, getAllByText, getByTestId } = await render(SelectTrainingCategoryMandatoryComponent, {
+
+    const setupTools = await render(SelectTrainingCategoryMandatoryComponent, {
       imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMandatoryTrainingModule],
       declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
@@ -46,11 +47,8 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
           useValue: {
             snapshot: {
               data: {
-                establishment: establishment,
-                trainingCategories: trainingCategories,
-              },
-              parent: {
-                url: [{ path: 'select-staff' }],
+                establishment,
+                trainingCategories,
               },
               queryParamMap: {
                 get: sinon.stub(),
@@ -60,7 +58,8 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
         },
       ],
     });
-    const component = fixture.componentInstance;
+
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
     const router = injector.inject(Router) as Router;
@@ -68,17 +67,12 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    const trainingServiceSpy = spyOn(trainingService, 'resetSelectedStaff').and.callThrough();
-
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByTestId,
       routerSpy,
       trainingService,
-      trainingServiceSpy,
+      establishment,
     };
   }
 
@@ -103,43 +97,33 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
     expect(heading).toBeTruthy();
   });
 
-  it('should show the cancel link', async () => {
+  it('should display the training category groups and descriptions in the accordion', async () => {
     const { getByText } = await setup();
 
-    const cancelLink = getByText('Cancel');
+    const trainingCategoryGroups = [
+      { name: 'Care skills and knowledge', description: "Training like 'duty of care', 'safeguarding adults'" },
+      { name: 'Health and safety in the workplace', description: "Training like 'fire safety', 'first aid'" },
+      {
+        name: 'IT, digital and data in the workplace',
+        description: "Training like 'online safety and security', 'working with digital technology'",
+      },
+      {
+        name: 'Specific conditions and disabilities',
+        description: "Training like 'dementia care', 'Oliver McGowan Mandatory Training'",
+      },
+      { name: 'Staff development', description: "Training like 'communication', 'leadership and management'" },
+    ];
 
-    expect(cancelLink).toBeTruthy();
+    trainingCategoryGroups.forEach((group) => {
+      expect(getByText(group.name)).toBeTruthy();
+      expect(getByText(group.description)).toBeTruthy();
+    });
   });
 
-  it('should reset selected staff in training service and navigate back to the add-and-manage-mandatory-training after clicking Cancel', async () => {
-    const { component, getByText, fixture, routerSpy, trainingServiceSpy } = await setup();
+  it('should set the selected training category in the training service after selecting category and clicking continue', async () => {
+    const { getByText, trainingService } = await setup();
 
-    const cancelLink = getByText('Cancel');
-    fireEvent.click(cancelLink);
-    fixture.detectChanges();
-
-    expect(trainingServiceSpy).toHaveBeenCalled();
-    expect(routerSpy).toHaveBeenCalledWith([
-      'workplace',
-      component.establishmentUid,
-      'add-and-manage-mandatory-training',
-    ]);
-  });
-
-  it('should show an accordion with the correct categories in', async () => {
-    const { component, getByTestId } = await setup();
-    expect(component.categories).toEqual([
-      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
-      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
-      { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
-    ]);
-    expect(getByTestId('groupedAccordion')).toBeTruthy();
-  });
-
-  it('should call the training service and navigate to the select-job-roles page after selecting category and clicking continue', async () => {
-    const { component, getByText, routerSpy, trainingService } = await setup();
-
-    const trainingServiceSpy = spyOn(trainingService, 'setSelectedTrainingCategory');
+    const setSelectedTrainingCategorySpy = spyOn(trainingService, 'setSelectedTrainingCategory');
 
     const openAllLinkLink = getByText('Show all categories');
     fireEvent.click(openAllLinkLink);
@@ -150,18 +134,42 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
 
-    expect(trainingServiceSpy).toHaveBeenCalledWith({
+    expect(setSelectedTrainingCategorySpy).toHaveBeenCalledWith({
       id: 2,
       seq: 20,
       category: 'Autism',
       trainingCategoryGroup: 'Specific conditions and disabilities',
     });
+  });
+
+  it('should navigate to the select-job-roles page after selecting category and clicking continue', async () => {
+    const { getByText, routerSpy, establishment } = await setup();
+
+    const openAllLinkLink = getByText('Show all categories');
+    fireEvent.click(openAllLinkLink);
+
+    const autismCategory = getByText('Autism');
+    fireEvent.click(autismCategory);
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
     expect(routerSpy).toHaveBeenCalledWith([
       'workplace',
-      component.establishmentUid,
+      establishment.uid,
       'add-and-manage-mandatory-training',
       'select-job-roles',
     ]);
+  });
+
+  it('should navigate back to the add-and-manage-mandatory-training after clicking Cancel', async () => {
+    const { getByText, fixture, routerSpy, establishment } = await setup();
+
+    const cancelLink = getByText('Cancel');
+    fireEvent.click(cancelLink);
+    fixture.detectChanges();
+
+    expect(routerSpy).toHaveBeenCalledWith(['workplace', establishment.uid, 'add-and-manage-mandatory-training']);
   });
 
   it('should display required error message when no training category selected', async () => {
