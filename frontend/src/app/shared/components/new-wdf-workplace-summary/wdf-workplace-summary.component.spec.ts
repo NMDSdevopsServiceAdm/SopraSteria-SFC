@@ -1215,6 +1215,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
       {
         name: 'capacities',
         validResponse: [{ message: '10 beds used (care home)' }],
+        specificMessage: 'Add the capacity of your main service',
       },
       {
         name: 'serviceUsers',
@@ -1247,7 +1248,9 @@ describe('WDFWorkplaceSummaryComponent', () => {
         validResponse: { name: 'Care Giving' },
       },
     ].forEach((field) => {
-      it(`should show 'Add this information' message and red flag when workplace is not eligible and needs to add ${field.name}`, async () => {
+      const expectedWarningMessage = field.specificMessage ?? 'Add this information';
+
+      it(`should show '${expectedWarningMessage}' message and red flag when workplace is not eligible and needs to add ${field.name}`, async () => {
         const workplace = establishmentWithWdfBuilder() as Establishment;
         workplace[field.name] = null;
         workplace.wdf[field.name].isEligible = Eligibility.NO;
@@ -1256,11 +1259,11 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
 
-        expect(within(wdfWarningSection).getByText('Add this information')).toBeTruthy();
+        expect(within(wdfWarningSection).getByText(expectedWarningMessage)).toBeTruthy();
         expect(within(wdfWarningSection).getByAltText('Red flag icon')).toBeTruthy();
       });
 
-      it(`should not show 'Add this information' message when workplace is not eligible but has added ${field.name}`, async () => {
+      it(`should not show '${expectedWarningMessage}' message when workplace is not eligible but has added ${field.name}`, async () => {
         const workplace = establishmentWithWdfBuilder() as Establishment;
         workplace[field.name] = field.validResponse;
         workplace.wdf[field.name].isEligible = Eligibility.YES;
@@ -1272,7 +1275,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         expect(wdfWarningSection).toBeFalsy();
       });
 
-      it(`should show 'Add this information' and orange flag when workplace does not have ${field.name} added but workplace has met WDF eligibility`, async () => {
+      it(`should show '${expectedWarningMessage}' and orange flag when workplace does not have ${field.name} added but workplace has met WDF eligibility`, async () => {
         const workplace = establishmentWithWdfBuilder() as Establishment;
         workplace[field.name] = null;
         workplace.wdf[field.name].isEligible = Eligibility.NO;
@@ -1281,7 +1284,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         const wdfWarningSection = getByTestId(field.name + 'WdfWarning');
 
-        expect(within(wdfWarningSection).queryByText('Add this information')).toBeTruthy();
+        expect(within(wdfWarningSection).queryByText(expectedWarningMessage)).toBeTruthy();
         expect(within(wdfWarningSection).getByAltText('Orange flag icon')).toBeTruthy();
       });
     });
