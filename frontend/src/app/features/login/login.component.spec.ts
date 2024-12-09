@@ -84,7 +84,7 @@ describe('LoginComponent', () => {
   });
 
   describe('password', () => {
-    it('should show the password as password field when show password is false', async () => {
+    it('should set the password as password field (to hide input) on page load', async () => {
       const { getByTestId } = await setup();
 
       const passwordInput = getByTestId('password');
@@ -92,7 +92,7 @@ describe('LoginComponent', () => {
       expect(passwordInput.getAttribute('type')).toEqual('password');
     });
 
-    it('should show the password as text field when show password is true', async () => {
+    it("should show the password as text field after user clicks 'Show password'", async () => {
       const { fixture, getByTestId, getByText } = await setup();
 
       const showToggleText = 'Show password';
