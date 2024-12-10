@@ -109,7 +109,7 @@ describe('WdfSummaryPanel', () => {
 
     it('should display the correct message with timeframe for meeting WDF requirements for all other workplaces', async () => {
       const overrides = {
-        parentOverallWdfEligibility: true,
+        subsidiariesOverallWdfEligibility: true,
         isParent: true,
       };
 
@@ -186,7 +186,7 @@ describe('WdfSummaryPanel', () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
-          parentOverallWdfEligibility: true,
+          subsidiariesOverallWdfEligibility: true,
           isParent: true,
         };
 
@@ -209,7 +209,7 @@ describe('WdfSummaryPanel', () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
-          parentOverallWdfEligibility: true,
+          subsidiariesOverallWdfEligibility: true,
           isParent: true,
           activatedFragment: 'workplaces',
         };
@@ -270,7 +270,7 @@ describe('WdfSummaryPanel', () => {
       const overrides = {
         workplaceWdfEligibilityStatus: false,
         staffWdfEligibilityStatus: false,
-        parentOverallWdfEligibility: false,
+        subsidiariesOverallWdfEligibility: false,
         isParent: true,
         overallWdfEligibility: false,
       };
@@ -289,7 +289,7 @@ describe('WdfSummaryPanel', () => {
       const overrides = {
         workplaceWdfEligibilityStatus: false,
         staffWdfEligibilityStatus: false,
-        parentOverallWdfEligibility: false,
+        subsidiariesOverallWdfEligibility: false,
         someSubsidiariesMeetingRequirements: true,
         isParent: true,
         overallWdfEligibility: false,
@@ -366,7 +366,7 @@ describe('WdfSummaryPanel', () => {
 
         it(`should navigate to your other workplaces when clicked ${scenario}`, async () => {
           const overrides = {
-            parentOverallWdfEligibility: isEligible,
+            subsidiariesOverallWdfEligibility: isEligible,
             isParent: true,
             onDataPage,
           };

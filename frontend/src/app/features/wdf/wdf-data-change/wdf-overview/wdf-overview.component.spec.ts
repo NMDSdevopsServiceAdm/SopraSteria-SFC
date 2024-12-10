@@ -314,7 +314,15 @@ describe('WdfOverviewComponent', () => {
       const overrides = {
         wdf: { overall: false, workplace: false, staff: false },
         isParent: true,
-        parentOverallWdfEligibility: false,
+        getParentAndSubs: {
+          primary: { wdf: { overall: false, overallWdfEligibility: null } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+              { wdf: { overall: false, overallWdfEligibility: null } },
+            ],
+          },
+        },
       };
 
       const { queryByText, queryByTestId } = await setup(overrides);
@@ -328,9 +336,17 @@ describe('WdfOverviewComponent', () => {
 
     it('should display the funding requirements inset text when requirements are not met', async () => {
       const overrides = {
-        wdf: { overall: false, workplace: true, staff: true },
+        wdf: { overall: false, workplace: false, staff: true },
         isParent: true,
-        parentOverallWdfEligibility: false,
+        getParentAndSubs: {
+          primary: { wdf: { overall: false, overallWdfEligibility: null } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: false, overallWdfEligibility: null } },
+              { wdf: { overall: false, overallWdfEligibility: null } },
+            ],
+          },
+        },
       };
 
       const { queryByTestId } = await setup(overrides);
@@ -338,6 +354,49 @@ describe('WdfOverviewComponent', () => {
       const fundingInsetText = queryByTestId('fundingInsetText');
 
       expect(fundingInsetText).toBeTruthy();
+    });
+
+    it('should display some data not meeting message when not eligible overall but some sub workplaces are eligible', async () => {
+      const overrides = {
+        isParent: true,
+        getParentAndSubs: {
+          primary: { wdf: { overall: true, overallWdfEligibility: '2021-08-31' } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+              { wdf: { overall: false, overallWdfEligibility: null } },
+            ],
+          },
+        },
+      };
+
+      const { getByText } = await setup(overrides);
+
+      expect(
+        getByText(`Some data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`),
+      ).toBeTruthy();
+    });
+
+    it('should display meeting message for Your other workplaces when parent not eligible but all sub workplaces are eligible', async () => {
+      const overrides = {
+        isParent: true,
+        wdf: { overall: false, workplace: false, staff: false },
+        getParentAndSubs: {
+          primary: { wdf: { overall: false, overallWdfEligibility: null } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+              { wdf: { overall: true, overallWdfEligibility: '2021-09-31' } },
+            ],
+          },
+        },
+      };
+
+      const { getByText } = await setup(overrides);
+
+      expect(
+        getByText(`Your data has met the funding requirements for ${currentYear} to ${currentYear + 1}`),
+      ).toBeTruthy();
     });
   });
 
@@ -403,25 +462,6 @@ describe('WdfOverviewComponent', () => {
       fixture.detectChanges();
 
       expect(component.parentOverallEligibilityDate).toEqual('31 July 2021');
-    });
-
-    it('should display some data not meeting message when not eligible overall but some sub workplaces are eligible', async () => {
-      const overrides = {
-        isParent: true,
-        getParentAndSubs: {
-          primary: { wdf: { overall: true, overallWdfEligibility: '2021-08-31' } },
-          subsidaries: {
-            establishments: [
-              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
-              { wdf: { overall: false, overallWdfEligibility: null } },
-            ],
-          },
-        },
-      };
-
-      const { getByText } = await setup(overrides);
-
-      expect(getByText('Some data does not meet the funding requirements for 2024 to 2025')).toBeTruthy();
     });
   });
 });

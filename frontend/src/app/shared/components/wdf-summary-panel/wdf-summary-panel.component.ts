@@ -14,7 +14,7 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   @Input() wdfStartDate: string;
   @Input() wdfEndDate: string;
   @Input() isParent: boolean;
-  @Input() parentOverallWdfEligibility: boolean;
+  @Input() subsidiariesOverallWdfEligibility: boolean;
   @Input() overallWdfEligibility: boolean;
   @Input() activatedFragment: string;
   @Input() onDataPage: boolean = true;
@@ -71,7 +71,7 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
     if (this.isParent) {
       this.sections.push({
         title: 'Your other workplaces',
-        eligibility: this.parentOverallWdfEligibility,
+        eligibility: this.subsidiariesOverallWdfEligibility,
         fragment: 'workplaces',
         showLink: true,
         meetingMessage: this.meetingMessage,
@@ -88,7 +88,7 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   }
 
   private getOtherWorkplacesNotMeetingMessage(): string {
-    if (!this.parentOverallWdfEligibility && this.someSubsidiariesMeetingRequirements) {
+    if (!this.subsidiariesOverallWdfEligibility && this.someSubsidiariesMeetingRequirements) {
       return this.someSubsMeetingMessage;
     }
     return this.notMeetingMessage;

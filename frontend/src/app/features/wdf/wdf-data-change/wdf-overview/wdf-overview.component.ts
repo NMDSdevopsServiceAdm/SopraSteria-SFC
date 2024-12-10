@@ -24,6 +24,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
   public wdfEndDate: string;
   public overallWdfEligibility: boolean;
   public parentOverallWdfEligibility: boolean;
+  public subsidiariesOverallWdfEligibility: boolean;
   public someSubsidiariesMeetingRequirements: boolean;
   public overallEligibilityDate: string;
   public parentOverallEligibilityDate: string;
@@ -73,7 +74,8 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
           this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
 
           this.getParentOverallWdfEligibility();
-          this.setSomeSubsidiariesMeetingRequirements(activeSubsidiaryWorkplaces);
+          this.getLastOverallEligibilityDate();
+          this.setSubsidiariesEligibility(activeSubsidiaryWorkplaces);
         }
       }),
     );
@@ -91,7 +93,8 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     }
   }
 
-  public setSomeSubsidiariesMeetingRequirements(subsidiaryWorkplaces): void {
+  public setSubsidiariesEligibility(subsidiaryWorkplaces): void {
+    this.subsidiariesOverallWdfEligibility = subsidiaryWorkplaces.every((workplace) => workplace.wdf.overall === true);
     this.someSubsidiariesMeetingRequirements = subsidiaryWorkplaces.some((workplace) => workplace.wdf.overall === true);
   }
 
