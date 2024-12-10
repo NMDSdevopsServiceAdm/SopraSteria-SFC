@@ -1,10 +1,8 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { FormGroupDirective, UntypedFormGroup } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { BehaviorSubject, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { FindAccountComponent } from './find-account/find-account.component';
 import { FindUsernameComponent } from './find-username/find-username.component';
-import { FindUsernameService } from '../../../core/services/find-username.service';
 
 @Component({
   selector: 'app-forgot-your-username',
@@ -17,15 +15,9 @@ export class ForgotYourUsernameComponent implements OnInit {
   public accountUid: string;
   private subscriptions = new Subscription();
 
-  constructor(private cd: ChangeDetectorRef, private findUsernameService: FindUsernameService) {}
+  constructor(private cd: ChangeDetectorRef) {}
 
-  ngOnInit(): void {
-    this.subscriptions.add(
-      this.findUsernameService.accountUid$.subscribe((accountUid) => {
-        this.accountUid = accountUid;
-      }),
-    );
-  }
+  ngOnInit(): void {}
 
   public setCurrentForm(childForm: FindAccountComponent | FindUsernameComponent): void {
     this.currentForm = childForm;
