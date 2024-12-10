@@ -486,5 +486,36 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  User.findByRelevantInfo = async function ({ name, workplaceId, postcode, email }) {
+    if (!workplaceId && !postcode) {
+      return null;
+    }
+    const workplaceIdWithSpacePadded = workplaceId.padEnd(8, ' ');
+
+    const establishmentWhereClause = workplaceId
+      ? { NmdsID: [workplaceId, workplaceIdWithSpacePadded] }
+      : { postcode: postcode };
+
+    const query = {
+      attributes: ['uid', 'SecurityQuestionValue'],
+      where: {
+        Archived: false,
+        FullNameValue: name,
+        EmailValue: email,
+      },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          where: establishmentWhereClause,
+          required: true,
+          attributes: [],
+        },
+      ],
+      raw: true,
+    };
+
+    return await this.findOne(query);
+  };
+
   return User;
 };
