@@ -22,26 +22,28 @@
         </div>
       </ng-container>
 
-      <ng-container *ngIf="submitted">
-        <ng-container *ngIf="accountFound; else accountNotFound">
-          <div><h2 class="govuk-heading-m">Account found</h2></div>
+      <div #searchResult>
+        <ng-container *ngIf="submitted">
+          <ng-container *ngIf="accountFound; else accountNotFound">
+            <h2 class="govuk-heading-m">Account found</h2>
+          </ng-container>
+          <ng-template #accountNotFound>
+            <ng-container *ngIf="remainingAttempts">
+              <h2 class="govuk-heading-m">Account not found</h2>
+              <p class="govuk-error-message">
+                Some or all of the information you entered does not match that which we have for your account.
+              </p>
+              <p>
+                <strong>You've {{ remainingAttempts }} more chances to enter the same information that we have.</strong>
+              </p>
+              <p>
+                Make sure the details you entered are correct or call the ASC-WDS Support Team on
+                <strong class="govuk__nowrap">0113 241 0969</strong> for help.
+              </p>
+            </ng-container>
+          </ng-template>
         </ng-container>
-        <ng-template #accountNotFound>
-          <div *ngIf="remainingAttempts">
-            <h2 class="govuk-heading-m">Account not found</h2>
-            <p class="govuk-error-message">
-              Some or all of the information you entered does not match that which we have for your account.
-            </p>
-            <p>
-              <strong>You've {{ remainingAttempts }} more chances to enter the same information that we have.</strong>
-            </p>
-            <p>
-              Make sure the details you entered are correct or call the ASC-WDS Support Team on
-              <strong class="govuk__nowrap">0113 241 0969</strong> for help.
-            </p>
-          </div>
-        </ng-template>
-      </ng-container>
+      </div>
 
       <div *ngIf="!(submitted && accountFound)" class="govuk-button-group--gap-between govuk-!-margin-top-8">
         <button type="submit" class="govuk-button">Find account</button>

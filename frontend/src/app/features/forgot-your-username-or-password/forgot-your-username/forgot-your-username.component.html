@@ -8,4 +8,4 @@
 
 
 <h1 class="govuk-heading-l">Forgot username</h1>
-<app-find-account (setCurrentForm)="setCurrentForm($event)" />
+<app-find-account (setCurrentForm)="setCurrentForm($event)" (accountFoundEvent)="onAccountFound($event)"/>
