@@ -1,5 +1,6 @@
 /* jshint indent: 2 */
 const { Op } = require('sequelize');
+const { padEnd } = require('lodash');
 const { sanitise } = require('../utils/db');
 
 module.exports = function (sequelize, DataTypes) {
@@ -490,7 +491,7 @@ module.exports = function (sequelize, DataTypes) {
     if (!workplaceId && !postcode) {
       return null;
     }
-    const workplaceIdWithSpacePadded = workplaceId.padEnd(8, ' ');
+    const workplaceIdWithSpacePadded = padEnd(workplaceId, 8, ' ');
 
     const establishmentWhereClause = workplaceId
       ? { NmdsID: [workplaceId, workplaceIdWithSpacePadded] }
