@@ -19,13 +19,11 @@
               class="govuk-link--no-visited-state"
               data-testid="met-funding-message"
             >
-              Your data has met the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
-              {{ wdfEndDate | date: 'yyyy' }}
+              {{ section.meetingMessage }}
             </a>
           </ng-container>
           <ng-template #noLink>
-            Your data has met the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
-            {{ wdfEndDate | date: 'yyyy' }}
+            {{ section.meetingMessage }}
           </ng-template>
         </ng-container>
         <ng-template #redFlag>
@@ -42,13 +40,11 @@
               class="govuk-link--no-visited-state"
               data-testid="not-met-funding-message"
             >
-              Your data does not meet the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
-              {{ wdfEndDate | date: 'yyyy' }}
+              {{ section.notMeetingMessage }}
             </a>
           </ng-container>
           <ng-template #noLink>
-            Your data does not meet the funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
-            {{ wdfEndDate | date: 'yyyy' }}
+            {{ section.notMeetingMessage }}
           </ng-template>
         </ng-template>
       </div>

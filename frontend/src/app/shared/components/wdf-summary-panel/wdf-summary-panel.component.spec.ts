@@ -14,6 +14,7 @@ describe('WdfSummaryPanel', () => {
   const messages = {
     fundingMet: `Your data has met the funding requirements for ${currentYear} to ${currentYear + 1}`,
     fundingNotMet: `Your data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`,
+    fundingMetBySomeSubs: `Some data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`,
   };
 
   const setup = async (overrides: any = {}) => {
@@ -282,6 +283,27 @@ describe('WdfSummaryPanel', () => {
       expect(within(workplacesRow).queryByText(messages.fundingMet)).toBeFalsy();
       expect(within(workplacesRow).getByText(messages.fundingNotMet)).toBeTruthy();
       expect(within(workplacesRow).getByTestId('red-flag')).toBeTruthy();
+    });
+
+    it('should display some subs not meeting requirements message when some sub workplaces are meeting', async () => {
+      const overrides = {
+        workplaceWdfEligibilityStatus: false,
+        staffWdfEligibilityStatus: false,
+        parentOverallWdfEligibility: false,
+        someSubsidiariesMeetingRequirements: true,
+        isParent: true,
+        overallWdfEligibility: false,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const workplacesRow = getByTestId('workplaces-row');
+
+      expect(within(workplacesRow).getByText(messages.fundingMetBySomeSubs)).toBeTruthy();
+      expect(within(workplacesRow).getByTestId('red-flag')).toBeTruthy();
+
+      expect(within(workplacesRow).queryByText(messages.fundingMet)).toBeFalsy();
+      expect(within(workplacesRow).queryByText(messages.fundingNotMet)).toBeFalsy();
     });
   });
 
