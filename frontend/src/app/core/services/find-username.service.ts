@@ -31,9 +31,9 @@ export class FindUsernameService {
   constructor(private http: HttpClient) {}
 
   findUserAccount(params: FindAccountRequest): Observable<FindUserAccountResponse> {
-    return this.http.post(
+    return this.http.post<FindUserAccountResponse>(
       `${environment.appRunnerEndpoint}/api/registration/findUserAccount`,
       params,
-    ) as Observable<FindUserAccountResponse>;
+    );
   }
 }

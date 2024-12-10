@@ -20,6 +20,8 @@ const InputFields = [
 })
 export class FindAccountComponent {
   @ViewChild('formEl') formEl: ElementRef;
+  @ViewChild('searchResult') searchResult: ElementRef;
+
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public formFields = InputFields;
@@ -80,11 +82,25 @@ export class FindAccountComponent {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public handleFindUserAccountResponse(response: FindUserAccountResponse): void {
+  public onSubmit() {
+    this.submitted = true;
+
+    if (!this.form.valid) {
+      this.accountFound = null;
+      this.remainingAttempts = null;
+      return;
+    }
+
+    this.subscriptions.add(
+      this.findUsernameService.findUserAccount(this.form.value).subscribe((response) => this.handleResponse(response)),
+    );
+  }
+
+  public handleResponse(response: FindUserAccountResponse): void {
     switch (response?.accountFound) {
       case true:
         this.accountFound = true;
-        // emit info to parent
+        this.accountFoundEvent.emit(response);
         break;
       case false:
         this.accountFound = false;
@@ -92,19 +108,13 @@ export class FindAccountComponent {
         // to navigate to error page when remaining attempt = 0
         break;
     }
+
+    setTimeout(() => {
+      this.scrollToResult();
+    }, 0);
   }
 
-  public onSubmit() {
-    this.submitted = true;
-
-    if (!this.form.valid) {
-      return;
-    }
-
-    this.subscriptions.add(
-      this.findUsernameService
-        .findUserAccount(this.form.value)
-        .subscribe((response) => this.handleFindUserAccountResponse(response)),
-    );
+  private scrollToResult() {
+    this.searchResult.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 }
