@@ -30,6 +30,7 @@ import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certific
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
 import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-password/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { FoundUsernameComponent } from '@features/found-username/found-username.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
@@ -104,6 +105,11 @@ const routes: Routes = [
         path: 'satisfaction-survey',
         component: SatisfactionSurveyComponent,
         data: { title: 'Satisfaction Survey' },
+      },
+      {
+        path: 'username-found',
+        component: FoundUsernameComponent,
+        data: { title: 'Username Found' },
       },
     ],
   },

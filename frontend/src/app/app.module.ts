@@ -93,6 +93,7 @@ import { MigratedUserTermsConditionsComponent } from './features/migrated-user-t
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { ForgotYourUsernameOrPasswordComponent } from './features/forgot-your-password/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { FoundUsernameComponent } from '@features/found-username/found-username.component';
 
 @NgModule({
   declarations: [
@@ -135,6 +136,7 @@ import { ForgotYourUsernameOrPasswordComponent } from './features/forgot-your-pa
     ParentWorkplaceAccounts,
     DeleteWorkplaceComponent,
     ForgotYourUsernameOrPasswordComponent,
+    FoundUsernameComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
