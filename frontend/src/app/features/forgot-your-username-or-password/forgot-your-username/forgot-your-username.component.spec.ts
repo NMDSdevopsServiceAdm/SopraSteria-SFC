@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { FindUsernameService } from '../../../core/services/find-username.service';
@@ -62,7 +62,7 @@ fdescribe('ForgotYourUsernameComponent', () => {
     expect(getByRole('heading', { name: 'Forgot username' })).toBeTruthy();
   });
 
-  describe('find account', () => {
+  describe('Find account', () => {
     it('should show text inputs for "Name", "Workplace ID or postcode" and "Email address"', async () => {
       const { getByRole } = await setup();
 
@@ -81,9 +81,11 @@ fdescribe('ForgotYourUsernameComponent', () => {
       expect(backToSignIn.getAttribute('href')).toEqual('/login');
     });
 
-    describe('submit and validation', () => {
+    describe('submit form and validation', () => {
       it('should show an error message if any of the text input is blank', async () => {
-        const { fixture, getByRole, getByText, getAllByText } = await setup();
+        const { fixture, getByRole, getByText, getAllByText, findUsernameService } = await setup();
+
+        spyOn(findUsernameService, 'findUserAccount').and.callThrough();
 
         userEvent.click(getByRole('button', { name: 'Find account' }));
         fixture.detectChanges();
@@ -93,12 +95,14 @@ fdescribe('ForgotYourUsernameComponent', () => {
         expect(getAllByText('Enter your name')).toHaveSize(2);
         expect(getAllByText('Enter your workplace ID or postcode')).toHaveSize(2);
         expect(getAllByText('Enter your email address')).toHaveSize(2);
+
+        expect(findUsernameService.findUserAccount).not.toHaveBeenCalled();
       });
 
       it('should call forgetUsernameService findUserAccount() on submit', async () => {
         const { fixture, findUsernameService } = await setup();
 
-        spyOn(findUsernameService, 'findUserAccount');
+        spyOn(findUsernameService, 'findUserAccount').and.callThrough();
 
         await fillInAndSubmitForm('Test User', 'A1234567', 'test@example.com');
         fixture.detectChanges();
@@ -111,13 +115,33 @@ fdescribe('ForgotYourUsernameComponent', () => {
       });
 
       it('should show "Account found" and stop showing "Find account" button when an account is found', async () => {
-        const { fixture, getByText, queryByRole, findUsernameService } = await setup();
+        const { fixture, getByText, queryByRole } = await setup();
 
         await fillInAndSubmitForm('Test User', 'A1234567', 'test@example.com');
         fixture.detectChanges();
 
         expect(getByText('Account found')).toBeTruthy();
         expect(queryByRole('button', { name: 'Find account' })).toBeFalsy();
+      });
+
+      it('should show a "Account not found" message and still showing "Find account" button when an account is not found', async () => {
+        const { fixture, getByText, getByRole } = await setup();
+        fixture.autoDetectChanges();
+
+        await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
+
+        const expectedText = [
+          'Some or all of the information you entered does not match that which we have for your account.',
+          "You've 4 more chances to enter the same information that we have.",
+          'Make sure the details you entered are correct or call the ASC-WDS Support Team on 0113 241 0969 for help.',
+        ];
+
+        expect(getByText('Account not found')).toBeTruthy();
+        expect(getByRole('button', { name: 'Find account' })).toBeTruthy();
+
+        const accountNotFoundMessage = getByText('Account not found').parentElement;
+
+        expectedText.forEach((text) => expect(accountNotFoundMessage.innerText).toContain(text));
       });
     });
   });

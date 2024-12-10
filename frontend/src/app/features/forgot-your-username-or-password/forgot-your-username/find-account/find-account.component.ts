@@ -1,12 +1,13 @@
-import { Component, ElementRef, EventEmitter, Input, Output, ViewChild } from '@angular/core';
+import { lowerFirst } from 'lodash';
+import { Subscription } from 'rxjs';
+
+import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { lowerFirst } from 'lodash';
-import { FindUsernameService } from '../../../../core/services/find-username.service';
-import { Subscription } from 'rxjs';
+import { AccountFound, FindUserAccountResponse, FindUsernameService } from '@core/services/find-username.service';
 
-const Fields = [
+const InputFields = [
   { id: 'name', label: 'Name', maxlength: 120 },
   { id: 'workplaceIdOrPostcode', label: 'Workplace ID or postcode', maxlength: 8 },
   { id: 'email', label: 'Email address', maxlength: 120 },
@@ -20,13 +21,17 @@ const Fields = [
 export class FindAccountComponent {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
-  public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
-  public formFields = Fields;
+  public formFields = InputFields;
 
-  @Input() public serverError: string;
-  @Input() public accountFound: false;
+  public submitted = false;
+  public accountFound: boolean;
+  public remainingAttempts: number;
+
+  private subscriptions = new Subscription();
+
   @Output() setCurrentForm = new EventEmitter<FindAccountComponent>();
+  @Output() accountFoundEvent = new EventEmitter<AccountFound>();
 
   constructor(
     private FormBuilder: UntypedFormBuilder,
@@ -36,7 +41,7 @@ export class FindAccountComponent {
 
   ngOnInit() {
     const formElements = {};
-    Fields.forEach((field) => {
+    InputFields.forEach((field) => {
       formElements[field.id] = [
         '',
         { validators: [Validators.required, Validators.maxLength(field.maxlength)], updateOn: 'submit' },
@@ -53,7 +58,7 @@ export class FindAccountComponent {
   }
 
   public setupFormErrorsMap(): void {
-    this.formErrorsMap = Fields.map((field) => {
+    this.formErrorsMap = InputFields.map((field) => {
       return {
         item: field.id,
         type: [
@@ -75,11 +80,31 @@ export class FindAccountComponent {
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  onSubmit() {
+  public handleFindUserAccountResponse(response: FindUserAccountResponse): void {
+    switch (response?.accountFound) {
+      case true:
+        this.accountFound = true;
+        // emit info to parent
+        break;
+      case false:
+        this.accountFound = false;
+        this.remainingAttempts = response.remainingAttempts;
+        // to navigate to error page when remaining attempt = 0
+        break;
+    }
+  }
+
+  public onSubmit() {
     this.submitted = true;
 
-    if (this.form.valid) {
-      this.findUsernameService.findUserAccount(this.form.value);
+    if (!this.form.valid) {
+      return;
     }
+
+    this.subscriptions.add(
+      this.findUsernameService
+        .findUserAccount(this.form.value)
+        .subscribe((response) => this.handleFindUserAccountResponse(response)),
+    );
   }
 }
