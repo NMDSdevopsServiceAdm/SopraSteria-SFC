@@ -19,12 +19,12 @@ import { Subscription } from 'rxjs';
 })
 export class WdfOverviewComponent implements OnInit, OnDestroy {
   public workplace: Establishment;
-  public primaryWorkplace: Establishment;
   public report: WDFReport;
   public wdfStartDate: string;
   public wdfEndDate: string;
   public overallWdfEligibility: boolean;
   public parentOverallWdfEligibility: boolean;
+  public someSubsidiariesMeetingRequirements: boolean;
   public overallEligibilityDate: string;
   public parentOverallEligibilityDate: string;
   public isParent: boolean;
@@ -65,12 +65,16 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
         if (workplaces.subsidaries) {
-          this.workplaces = workplaces.subsidaries.establishments.filter((item) => item.ustatus !== 'PENDING');
+          const activeSubsidiaryWorkplaces = workplaces.subsidaries.establishments.filter(
+            (item) => item.ustatus !== 'PENDING',
+          );
+
+          this.workplaces = [...activeSubsidiaryWorkplaces, workplaces.primary];
+          this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
+
+          this.getParentOverallWdfEligibility();
+          this.setSomeSubsidiariesMeetingRequirements(activeSubsidiaryWorkplaces);
         }
-        this.workplaces.push(workplaces.primary);
-        this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
-        this.getParentOverallWdfEligibility();
-        this.getLastOverallEligibilityDate();
       }),
     );
   }
@@ -85,6 +89,10 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
     if (this.parentOverallWdfEligibility) {
       this.parentOverallEligibilityDate = dayjs(this.workplaces[0].wdf.overallWdfEligibility).format('D MMMM YYYY');
     }
+  }
+
+  public setSomeSubsidiariesMeetingRequirements(subsidiaryWorkplaces): void {
+    this.someSubsidiariesMeetingRequirements = subsidiaryWorkplaces.some((workplace) => workplace.wdf.overall === true);
   }
 
   private setEligibilityStatus(): void {
