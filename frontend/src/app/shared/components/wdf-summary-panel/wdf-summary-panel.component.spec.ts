@@ -18,7 +18,7 @@ describe('WdfSummaryPanel', () => {
   };
 
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(WdfSummaryPanel, {
+    const setupTools = await render(WdfSummaryPanel, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
       providers: [],
       componentProperties: {
@@ -27,13 +27,13 @@ describe('WdfSummaryPanel', () => {
         ...overrides,
       },
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByText, queryByText, getByTestId, queryByTestId, routerSpy };
+    return { ...setupTools, component, routerSpy };
   };
 
   it('should create', async () => {
@@ -285,7 +285,7 @@ describe('WdfSummaryPanel', () => {
       expect(within(workplacesRow).getByTestId('red-flag')).toBeTruthy();
     });
 
-    it('should display some subs not meeting requirements message when some sub workplaces are meeting', async () => {
+    it('should display some data not meeting requirements message when ineligible but some sub workplaces are meeting', async () => {
       const overrides = {
         workplaceWdfEligibilityStatus: false,
         staffWdfEligibilityStatus: false,
