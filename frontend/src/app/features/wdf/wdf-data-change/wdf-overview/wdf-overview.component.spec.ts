@@ -278,22 +278,6 @@ describe('WdfOverviewComponent', () => {
       expect(workplacesRow).toBeTruthy();
     });
 
-    it('should display data has met paragraph', async () => {
-      const overrides = {
-        wdf: { overall: true, workplace: true, staff: true },
-        isParent: true,
-        parentOverallWdfEligibility: true,
-      };
-
-      const { getByText, getByTestId } = await setup(overrides);
-
-      const dataMetFundingParagraph = getByTestId('dataMetFunding');
-      const keepYourDataCurrentLink = getByText('Keep your data current');
-
-      expect(dataMetFundingParagraph).toBeTruthy();
-      expect(keepYourDataCurrentLink.getAttribute('ng-reflect-router-link')).toEqual('data');
-    });
-
     it('should not display the funding requirements inset text when requirements are met', async () => {
       const overrides = {
         wdf: { overall: true, workplace: true, staff: true },
@@ -306,6 +290,64 @@ describe('WdfOverviewComponent', () => {
       const fundingInsetText = queryByTestId('fundingInsetText');
 
       expect(fundingInsetText).toBeFalsy();
+    });
+
+    describe('Data has met paragraph', () => {
+      it('should display data has met paragraph', async () => {
+        const overrides = {
+          wdf: { overall: true, workplace: true, staff: true },
+          isParent: true,
+          parentOverallWdfEligibility: true,
+        };
+
+        const { getByText, getByTestId } = await setup(overrides);
+
+        const dataMetFundingParagraph = getByTestId('dataMetFunding');
+        const keepYourDataCurrentLink = getByText('Keep your data current');
+
+        expect(dataMetFundingParagraph).toBeTruthy();
+        expect(keepYourDataCurrentLink.getAttribute('ng-reflect-router-link')).toEqual('data');
+      });
+
+      it('should display overall eligibility date from parent when parent has latest eligibility date', async () => {
+        const overrides = {
+          wdf: { overall: true, workplace: true, staff: true, overallWdfEligibility: '2024-07-31' },
+          isParent: true,
+          getParentAndSubs: {
+            primary: { wdf: { overall: true, overallWdfEligibility: '2024-07-31' } },
+            subsidaries: {
+              establishments: [
+                { wdf: { overall: true, overallWdfEligibility: '2024-06-11' } },
+                { wdf: { overall: true, overallWdfEligibility: '2024-05-13' } },
+              ],
+            },
+          },
+        };
+
+        const { getByText } = await setup(overrides);
+
+        expect(getByText('Your data met the funding requirements on 31 July', { exact: false })).toBeTruthy();
+      });
+
+      it('should display overall eligibility date from latest sub when a sub has latest eligibility date', async () => {
+        const overrides = {
+          wdf: { overall: true, workplace: true, staff: true, overallWdfEligibility: '2024-07-31' },
+          isParent: true,
+          getParentAndSubs: {
+            primary: { wdf: { overall: true, overallWdfEligibility: '2024-07-31' } },
+            subsidaries: {
+              establishments: [
+                { wdf: { overall: true, overallWdfEligibility: '2024-06-11' } },
+                { wdf: { overall: true, overallWdfEligibility: '2024-10-13' } },
+              ],
+            },
+          },
+        };
+
+        const { getByText } = await setup(overrides);
+
+        expect(getByText('Your data met the funding requirements on 13 October', { exact: false })).toBeTruthy();
+      });
     });
   });
 
@@ -440,28 +482,6 @@ describe('WdfOverviewComponent', () => {
       fixture.detectChanges();
 
       expect(component.parentOverallWdfEligibility).toBeFalse();
-    });
-
-    it('should correctly calculate parentOverallEligibilityDate if all workplaces are eligible', async () => {
-      const overrides = {
-        isParent: true,
-        getParentAndSubs: {
-          primary: { wdf: { overall: true, overallWdfEligibility: '2021-08-31' } },
-          subsidaries: {
-            establishments: [
-              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
-              { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
-            ],
-          },
-        },
-      };
-
-      const { component, fixture } = await setup(overrides);
-
-      component.getLastOverallEligibilityDate();
-      fixture.detectChanges();
-
-      expect(component.parentOverallEligibilityDate).toEqual('31 July 2021');
     });
   });
 });

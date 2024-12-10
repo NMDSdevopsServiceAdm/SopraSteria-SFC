@@ -71,7 +71,7 @@ export class WdfOverviewComponent implements OnInit, OnDestroy {
           );
 
           this.workplaces = [...activeSubsidiaryWorkplaces, workplaces.primary];
-          this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
+          this.workplaces = orderBy(this.workplaces, ['wdf.overall', 'wdf.overallWdfEligibility'], ['desc', 'desc']);
 
           this.getParentOverallWdfEligibility();
           this.getLastOverallEligibilityDate();

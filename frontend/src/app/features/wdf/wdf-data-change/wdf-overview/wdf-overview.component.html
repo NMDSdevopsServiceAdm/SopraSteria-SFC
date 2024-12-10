@@ -36,8 +36,8 @@
     >
       <div data-testid="dataMetFunding">
         <p>
-          Your data met the funding requirements on {{ overallEligibilityDate }} and will continue to meet them until 31
-          March {{ wdfEndDate | date: 'yyyy' }}.
+          Your data met the funding requirements on {{ parentOverallEligibilityDate ?? overallEligibilityDate }} and
+          will continue to meet them until 31 March {{ wdfEndDate | date: 'yyyy' }}.
           <a [routerLink]="['data']" [relativeTo]="route">Keep your data current</a>, it might save you time next year.
         </p>
         <p class="govuk-!-margin-bottom-6">
