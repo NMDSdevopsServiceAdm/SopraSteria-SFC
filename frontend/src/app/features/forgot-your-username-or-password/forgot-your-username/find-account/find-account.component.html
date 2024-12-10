@@ -22,11 +22,12 @@
         </div>
       </ng-container>
 
-      <div #searchResult>
+      <div #searchResult aria-live="polite">
         <ng-container *ngIf="submitted">
           <ng-container *ngIf="accountFound; else accountNotFound">
             <h2 class="govuk-heading-m">Account found</h2>
           </ng-container>
+
           <ng-template #accountNotFound>
             <ng-container *ngIf="remainingAttempts">
               <h2 class="govuk-heading-m">Account not found</h2>
