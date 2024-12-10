@@ -25,6 +25,8 @@ import { WdfModule } from '../wdf.module';
 import { WdfDataComponent } from './wdf-data.component';
 
 describe('WdfDataComponent', () => {
+  const report = createMockWdfReport();
+
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(WdfDataComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
@@ -52,7 +54,7 @@ describe('WdfDataComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              data: { workplace: overrides.workplace ?? establishmentBuilder(), report: createMockWdfReport() },
+              data: { workplace: overrides.workplace ?? establishmentBuilder(), report },
               params: overrides.viewingSub ? { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } : {},
             },
             fragment: of(overrides.fragment ?? undefined),
@@ -67,7 +69,7 @@ describe('WdfDataComponent', () => {
     const component = setupTools.fixture.componentInstance;
     const establishmentService = TestBed.inject(EstablishmentService);
 
-    return { ...setupTools, component, establishmentService };
+    return { ...setupTools, component, establishmentService, report };
   };
 
   it('should render a WdfDataComponent', async () => {
@@ -197,7 +199,7 @@ describe('WdfDataComponent', () => {
       expect(yourOtherWorkplacesRow).toBeTruthy();
     });
 
-    it('should display the met funding requirements message when parent and subs all have overall eligibility', async () => {
+    it('should display the met funding requirements message when subs all have overall eligibility', async () => {
       getEstablishments.primary.wdf = { overall: true };
       getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
       getEstablishments.subsidaries.establishments[1].wdf = { overall: true };
@@ -209,7 +211,7 @@ describe('WdfDataComponent', () => {
       expect(within(yourOtherWorkplacesRow).getByTestId('met-funding-message')).toBeTruthy();
     });
 
-    it('should display the not meeting funding requirements message when parent does not have overall eligibility', async () => {
+    it('should display the met funding requirements message when all subs have eligibility even if parent does not', async () => {
       getEstablishments.primary.wdf = { overall: false };
       getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
       getEstablishments.subsidaries.establishments[1].wdf = { overall: true };
@@ -218,20 +220,41 @@ describe('WdfDataComponent', () => {
 
       const yourOtherWorkplacesRow = getByTestId('workplaces-row');
 
-      expect(within(yourOtherWorkplacesRow).getByTestId('not-met-funding-message')).toBeTruthy();
+      expect(within(yourOtherWorkplacesRow).getByTestId('met-funding-message')).toBeTruthy();
     });
 
-    it('should display the not meeting funding requirements message when one sub does not have overall eligibility', async () => {
+    it('should display the some data not meeting funding requirements message when not all meeting but some subs have overall eligibility', async () => {
       getEstablishments.primary.wdf = { overall: true };
       getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
       getEstablishments.subsidaries.establishments[1].wdf = { overall: false };
 
-      const { fixture, getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+      const { getByTestId, report } = await setup({ workplace: getEstablishments.primary, getEstablishments });
 
-      fixture.detectChanges();
+      const currentYear = new Date(report.effectiveFrom).getFullYear();
       const yourOtherWorkplacesRow = getByTestId('workplaces-row');
 
-      expect(within(yourOtherWorkplacesRow).getByTestId('not-met-funding-message')).toBeTruthy();
+      expect(
+        within(yourOtherWorkplacesRow).getByText(
+          `Some data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`,
+        ),
+      ).toBeTruthy();
+    });
+
+    it('should display the not meeting funding requirements message when no subs have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: false };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: false };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: false };
+
+      const { getByTestId, report } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      const currentYear = new Date(report.effectiveFrom).getFullYear();
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(
+        within(yourOtherWorkplacesRow).getByText(
+          `Your data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`,
+        ),
+      ).toBeTruthy();
     });
   });
 

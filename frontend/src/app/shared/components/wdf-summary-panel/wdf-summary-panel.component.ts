@@ -43,7 +43,7 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
     const formattedEndDate = this.datePipe.transform(this.wdfEndDate, 'yyyy');
 
     this.meetingMessage = `Your data has met the funding requirements for ${formattedStartDate} to ${formattedEndDate}`;
-    this.notMeetingMessage = `Your data does not meet the funding requirements for  ${formattedStartDate} to ${formattedEndDate}`;
+    this.notMeetingMessage = `Your data does not meet the funding requirements for ${formattedStartDate} to ${formattedEndDate}`;
     this.someSubsMeetingMessage = `Some data does not meet the funding requirements for ${formattedStartDate} to ${formattedEndDate}`;
   }
 
