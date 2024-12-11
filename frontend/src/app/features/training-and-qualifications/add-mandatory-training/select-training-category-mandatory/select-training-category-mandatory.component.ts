@@ -26,6 +26,7 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
   }
 
   public requiredErrorMessage: string = 'Select the training category that you want to make mandatory';
+  public hideOtherCheckbox: boolean = true;
 
   init(): void {
     this.establishmentUid = this.route.snapshot.data.establishment.uid;

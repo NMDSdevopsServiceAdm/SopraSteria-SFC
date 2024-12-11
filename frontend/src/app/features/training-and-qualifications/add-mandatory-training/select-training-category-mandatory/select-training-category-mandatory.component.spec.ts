@@ -185,4 +185,11 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
 
     expect(errorMessage).toBeTruthy();
   });
+
+  it("should not display 'The training is not in any of these categories' checkbox which is option on other 'Select training category' pages", async () => {
+    const { fixture, queryByText } = await setup();
+
+    expect(queryByText('The training is not in any of these categories')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('#otherCheckbox')).toBeFalsy();
+  });
 });

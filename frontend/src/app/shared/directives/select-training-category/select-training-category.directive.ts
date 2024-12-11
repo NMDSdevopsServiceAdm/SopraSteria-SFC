@@ -31,6 +31,7 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
   public error = false;
   public requiredErrorMessage: string = 'Select the training category';
   public submitButtonText: string = 'Continue';
+  public hideOtherCheckbox: boolean = false;
 
   private summaryText = {
     'Care skills and knowledge': "'duty of care', 'safeguarding adults'",
