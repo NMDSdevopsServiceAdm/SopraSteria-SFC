@@ -27,7 +27,7 @@ describe('SelectTrainingCategoryComponent', () => {
     const establishment = establishmentBuilder() as Establishment;
     const worker = workerBuilder();
 
-    const { fixture, getByText, getAllByText, getByTestId } = await render(SelectTrainingCategoryComponent, {
+    const setupTools = await render(SelectTrainingCategoryComponent, {
       imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, ReactiveFormsModule],
       declarations: [
         SelectTrainingCategoryComponent,
@@ -64,7 +64,7 @@ describe('SelectTrainingCategoryComponent', () => {
         },
       ],
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
     const router = injector.inject(Router) as Router;
@@ -75,11 +75,8 @@ describe('SelectTrainingCategoryComponent', () => {
     const trainingServiceSpy = spyOn(trainingService, 'resetSelectedStaff').and.callThrough();
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByTestId,
       routerSpy,
       trainingService,
       trainingServiceSpy,
@@ -130,6 +127,13 @@ describe('SelectTrainingCategoryComponent', () => {
       { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
     expect(getByTestId('groupedAccordion')).toBeTruthy();
+  });
+
+  it("should display 'The training is not in any of these categories' checkbox", async () => {
+    const { fixture, getByText } = await setup();
+
+    expect(getByText('The training is not in any of these categories')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('#otherCheckbox')).toBeTruthy();
   });
 
   it('should call the training service and navigate to the details page', async () => {

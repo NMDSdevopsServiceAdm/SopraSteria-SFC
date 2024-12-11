@@ -1,0 +1,195 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { FormBuilder } from '@angular/forms';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
+import { BackLinkService } from '@core/services/backLink.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { MockTrainingService } from '@core/test-utils/MockTrainingService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
+import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render } from '@testing-library/angular';
+import sinon from 'sinon';
+
+import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
+import { SelectTrainingCategoryMandatoryComponent } from './select-training-category-mandatory.component';
+
+describe('SelectTrainingCategoryMandatoryComponent', () => {
+  async function setup() {
+    const establishment = establishmentBuilder() as Establishment;
+
+    const setupTools = await render(SelectTrainingCategoryMandatoryComponent, {
+      imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMandatoryTrainingModule],
+      declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
+      providers: [
+        BackLinkService,
+        ErrorSummaryService,
+        WindowRef,
+        FormBuilder,
+        {
+          provide: WorkerService,
+          useClass: MockWorkerService,
+        },
+        {
+          provide: TrainingService,
+          useClass: MockTrainingService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                establishment,
+                trainingCategories,
+              },
+              queryParamMap: {
+                get: sinon.stub(),
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    const component = setupTools.fixture.componentInstance;
+    const injector = getTestBed();
+
+    const router = injector.inject(Router) as Router;
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    return {
+      ...setupTools,
+      component,
+      routerSpy,
+      trainingService,
+      establishment,
+    };
+  }
+
+  it('should create', async () => {
+    const { component } = await setup();
+    expect(component).toBeTruthy();
+  });
+
+  it('should show the page caption', async () => {
+    const { getByText } = await setup();
+
+    const caption = getByText('Add a mandatory training category');
+
+    expect(caption).toBeTruthy();
+  });
+
+  it('should show the page heading', async () => {
+    const { getByText } = await setup();
+
+    const heading = getByText('Select the training category that you want to make mandatory');
+
+    expect(heading).toBeTruthy();
+  });
+
+  it('should display the training category groups and descriptions in the accordion', async () => {
+    const { getByText } = await setup();
+
+    const trainingCategoryGroups = [
+      { name: 'Care skills and knowledge', description: "Training like 'duty of care', 'safeguarding adults'" },
+      { name: 'Health and safety in the workplace', description: "Training like 'fire safety', 'first aid'" },
+      {
+        name: 'IT, digital and data in the workplace',
+        description: "Training like 'online safety and security', 'working with digital technology'",
+      },
+      {
+        name: 'Specific conditions and disabilities',
+        description: "Training like 'dementia care', 'Oliver McGowan Mandatory Training'",
+      },
+      { name: 'Staff development', description: "Training like 'communication', 'leadership and management'" },
+    ];
+
+    trainingCategoryGroups.forEach((group) => {
+      expect(getByText(group.name)).toBeTruthy();
+      expect(getByText(group.description)).toBeTruthy();
+    });
+  });
+
+  it('should set the selected training category in the training service after selecting category and clicking continue', async () => {
+    const { getByText, trainingService } = await setup();
+
+    const setSelectedTrainingCategorySpy = spyOn(trainingService, 'setSelectedTrainingCategory');
+
+    const openAllLinkLink = getByText('Show all categories');
+    fireEvent.click(openAllLinkLink);
+
+    const autismCategory = getByText('Autism');
+    fireEvent.click(autismCategory);
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(setSelectedTrainingCategorySpy).toHaveBeenCalledWith({
+      id: 2,
+      seq: 20,
+      category: 'Autism',
+      trainingCategoryGroup: 'Specific conditions and disabilities',
+    });
+  });
+
+  it('should navigate to the all-or-selected-job-roles page after selecting category and clicking continue', async () => {
+    const { getByText, routerSpy, establishment } = await setup();
+
+    const openAllLinkLink = getByText('Show all categories');
+    fireEvent.click(openAllLinkLink);
+
+    const autismCategory = getByText('Autism');
+    fireEvent.click(autismCategory);
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(routerSpy).toHaveBeenCalledWith([
+      'workplace',
+      establishment.uid,
+      'add-and-manage-mandatory-training',
+      'all-or-selected-job-roles',
+    ]);
+  });
+
+  it('should navigate back to the add-and-manage-mandatory-training after clicking Cancel', async () => {
+    const { getByText, fixture, routerSpy, establishment } = await setup();
+
+    const cancelLink = getByText('Cancel');
+    fireEvent.click(cancelLink);
+    fixture.detectChanges();
+
+    expect(routerSpy).toHaveBeenCalledWith(['workplace', establishment.uid, 'add-and-manage-mandatory-training']);
+  });
+
+  it('should display required error message when no training category selected', async () => {
+    const { fixture, getByText } = await setup();
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+    fixture.detectChanges();
+
+    const errorMessage = getByText('Select the training category that you want to make mandatory', {
+      selector: '.govuk-error-message',
+    });
+
+    expect(errorMessage).toBeTruthy();
+  });
+
+  it("should not display 'The training is not in any of these categories' checkbox which is option on other 'Select training category' pages", async () => {
+    const { fixture, queryByText } = await setup();
+
+    expect(queryByText('The training is not in any of these categories')).toBeFalsy();
+    expect(fixture.nativeElement.querySelector('#otherCheckbox')).toBeFalsy();
+  });
+});
