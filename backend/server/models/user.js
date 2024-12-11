@@ -503,6 +503,8 @@ module.exports = function (sequelize, DataTypes) {
         Archived: false,
         FullNameValue: name,
         EmailValue: email,
+        SecurityQuestionValue: { [Op.ne]: null },
+        SecurityQuestionAnswerValue: { [Op.ne]: null },
       },
       include: [
         {
