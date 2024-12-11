@@ -3,20 +3,40 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TrainingService } from '@core/services/training.service';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
+import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { Observable } from 'rxjs';
 
 import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles.component';
 
 describe('AllOrSelectedJobRolesComponent', () => {
-  async function setup() {
+  async function setup(overrides: any = {}) {
+    const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
+
     const setupTools = await render(AllOrSelectedJobRolesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMandatoryTrainingModule],
       providers: [
-        { provide: TrainingService, useClass: MockTrainingService },
+        {
+          provide: TrainingService,
+          useValue: {
+            selectedTraining:
+              overrides.selectedTraining !== undefined
+                ? overrides.selectedTraining
+                : {
+                    trainingCategory: {
+                      category: 'Activity provision, wellbeing',
+                      id: 1,
+                      seq: 0,
+                      trainingCategoryGroup: 'Care skills and knowledge',
+                    },
+                  },
+            clearSelectedTrainingCategory: () => {},
+          },
+        },
+        { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -31,8 +51,6 @@ describe('AllOrSelectedJobRolesComponent', () => {
 
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
-    const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const clearSelectedTrainingCategorySpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
 
@@ -63,6 +81,21 @@ describe('AllOrSelectedJobRolesComponent', () => {
     const heading = getByText('Which job roles need this training?');
 
     expect(heading).toBeTruthy();
+  });
+
+  it('should navigate back to the select training category page if no training category set in training service', async () => {
+    const { component, routerSpy } = await setup({ selectedTraining: null });
+
+    expect(routerSpy).toHaveBeenCalledWith(['../select-training-category'], { relativeTo: component.route });
+  });
+
+  it('should navigate to the add-and-manage-mandatory-training page (relative route ../)  if Cancel button is clicked', async () => {
+    const { component, getByText, routerSpy } = await setup({ selectedTraining: null });
+
+    const cancelButton = getByText('Cancel');
+    userEvent.click(cancelButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
   });
 
   describe('Error messages', () => {

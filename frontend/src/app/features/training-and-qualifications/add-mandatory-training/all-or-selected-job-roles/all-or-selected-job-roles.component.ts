@@ -2,9 +2,11 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { SelectedTraining } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingService } from '@core/services/training.service';
 
 @Component({
   selector: 'app-all-or-selected-job-roles',
@@ -18,18 +20,26 @@ export class AllOrSelectedJobRolesComponent {
   public returnTo: URLStructure;
   public workplaceUid: string;
   public requiredErrorMessage: string = 'Select whether this training is for all job roles or only selected job roles';
+  public selectedTrainingCategory: SelectedTraining;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private backLinkService: BackLinkService,
-    private route: ActivatedRoute,
+    public route: ActivatedRoute,
+    private trainingService: TrainingService,
   ) {
     this.setupForm();
   }
 
   ngOnInit() {
+    this.selectedTrainingCategory = this.trainingService.selectedTraining;
+
+    if (!this.selectedTrainingCategory) {
+      this.router.navigate(['../select-training-category'], { relativeTo: this.route });
+    }
+
     this.backLinkService.showBackLink();
     this.workplaceUid = this.route.snapshot.data?.establishment?.uid;
   }
@@ -56,7 +66,7 @@ export class AllOrSelectedJobRolesComponent {
   public onCancel(event: Event): void {
     event.preventDefault();
 
-    this.router.navigate(['workplace', this.workplaceUid, 'add-and-manage-mandatory-training']);
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   private setupForm(): void {
