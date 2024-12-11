@@ -1,12 +1,11 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 @Component({
-  selector: 'app-download-pdf-traininf-and-qualification',
+  selector: 'app-download-pdf-training-and-qualification',
   templateUrl: './download-pdf-training-and-qualification.component.html',
 })
 export class DownloadPdfTrainingAndQualificationComponent {
   @Input() linkUrl: string;
-  @Input() pdfCount: number;
   @Output() downloadPDF = new EventEmitter();
 
   public downloadAsPDF(event: Event): void {

@@ -21,9 +21,7 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { NewArticleListComponent } from '@features/articles/new-article-list/new-article-list.component';
-import {
-  OwnershipChangeMessageDialogComponent,
-} from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
+import { OwnershipChangeMessageDialogComponent } from '@shared/components/ownership-change-message/ownership-change-message-dialog.component';
 import { SummarySectionComponent } from '@shared/components/summary-section/summary-section.component';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
@@ -48,6 +46,7 @@ describe('NewHomeTabComponent', () => {
     establishment = Establishment,
     comparisonDataAvailable = true,
     noOfWorkplaces = 9,
+    overrides: any = {},
   ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId, getByRole, getByLabelText } = await render(
       NewHomeTabComponent,
@@ -63,7 +62,9 @@ describe('NewHomeTabComponent', () => {
           },
           {
             provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(['canViewEstablishment', 'canViewListOfWorkers']),
+            useFactory: MockPermissionsService.factory(
+              overrides?.permissions ?? ['canViewEstablishment', 'canViewListOfWorkers'],
+            ),
             deps: [HttpClient, Router, UserService],
           },
           {
@@ -179,21 +180,23 @@ describe('NewHomeTabComponent', () => {
       });
     });
 
-    describe('Does your data meet WDF requirements link', () => {
-      it('should render the link with the correct href', async () => {
-        const { getByText, component, fixture } = await setup();
-        component.canViewReports = true;
-        fixture.detectChanges();
-        const link = getByText('Does your data meet WDF requirements?');
+    describe('Does your data meet funding requirements card', () => {
+      it('should render the funding card with link to wdf section', async () => {
+        const overrides = {
+          permissions: ['canViewEstablishment', 'canViewListOfWorkers', 'canViewWdfReport'],
+        };
+
+        const { getByText } = await setup(false, Establishment, true, 9, overrides);
+
+        const link = getByText('Does your data meet funding requirements?');
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual('/wdf');
       });
 
-      it('should not render the link with the correct href when view reports is false', async () => {
-        const { queryByText, component, fixture } = await setup();
-        component.canViewReports = false;
-        fixture.detectChanges();
-        expect(queryByText('Does your data meet WDF requirements?')).toBeFalsy();
+      it('should not render the funding card or link when view reports is false', async () => {
+        const { queryByText } = await setup();
+
+        expect(queryByText('Does your data meet funding requirements?')).toBeFalsy();
       });
     });
 

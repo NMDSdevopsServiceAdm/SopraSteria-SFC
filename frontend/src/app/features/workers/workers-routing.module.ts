@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
 import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
@@ -57,6 +58,7 @@ import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
 
 const routes: Routes = [
   {
@@ -300,8 +302,21 @@ const routes: Routes = [
           },
           {
             path: 'add-qualification',
-            component: AddEditQualificationComponent,
-            data: { title: 'Add Qualification' },
+            resolve: {
+              availableQualifications: AvailableQualificationsResolver,
+            },
+            children: [
+              {
+                path: '',
+                component: SelectQualificationTypeComponent,
+                data: { title: 'Add Qualification' },
+              },
+              {
+                path: 'qualification-details',
+                component: AddEditQualificationComponent,
+                data: { title: 'Add Qualification' },
+              },
+            ],
           },
           {
             path: 'qualification/:qualificationId',
@@ -310,6 +325,14 @@ const routes: Routes = [
                 path: '',
                 component: AddEditQualificationComponent,
                 data: { title: 'Qualification' },
+              },
+              {
+                path: 'select-qualification-type',
+                component: SelectQualificationTypeComponent,
+                data: { title: 'Select Qualification Type' },
+                resolve: {
+                  availableQualifications: AvailableQualificationsResolver,
+                },
               },
               {
                 path: 'delete',
@@ -572,8 +595,21 @@ const routes: Routes = [
       },
       {
         path: 'add-qualification',
-        component: AddEditQualificationComponent,
-        data: { title: 'Add Qualification' },
+        resolve: {
+          availableQualifications: AvailableQualificationsResolver,
+        },
+        children: [
+          {
+            path: '',
+            component: SelectQualificationTypeComponent,
+            data: { title: 'Add Qualification' },
+          },
+          {
+            path: 'qualification-details',
+            component: AddEditQualificationComponent,
+            data: { title: 'Add Qualification' },
+          },
+        ],
       },
       {
         path: 'qualification/:qualificationId',
@@ -582,6 +618,14 @@ const routes: Routes = [
             path: '',
             component: AddEditQualificationComponent,
             data: { title: 'Qualification' },
+          },
+          {
+            path: 'select-qualification-type',
+            component: SelectQualificationTypeComponent,
+            data: { title: 'Select Qualification Type' },
+            resolve: {
+              availableQualifications: AvailableQualificationsResolver,
+            },
           },
           {
             path: 'delete',

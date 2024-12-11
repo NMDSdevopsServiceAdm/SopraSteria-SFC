@@ -1,80 +1,61 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-4">
-      <span class="govuk-caption-l">Workforce Development Fund (WDF)</span>
-      WDF data<ng-container *ngIf="workplace && !isStandalone">: {{ workplace.name }}</ng-container>
+    <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
+      <span class="govuk-caption-xl">
+        <ng-container *ngIf="viewingSub; else primaryWorkplacePreHeader">
+          {{ primaryWorkplaceName }} (Workplace ID: {{ primaryWorkplaceNmdsId }})
+        </ng-container>
+        <ng-template #primaryWorkplacePreHeader>
+          {{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})
+        </ng-template>
+      </span>
+      <ng-container *ngIf="viewingSub; else mainWorkplace"> {{ workplace?.name }}: data </ng-container>
+      <ng-template #mainWorkplace> Your data </ng-template>
     </h1>
-    <app-wdf-data-status-message
+  </div>
+</div>
+<div class="govuk-grid-row govuk-!-margin-bottom-7">
+  <div class="govuk-grid-column-full-width">
+    <app-wdf-summary-panel
       [wdfStartDate]="wdfStartDate"
       [wdfEndDate]="wdfEndDate"
-      [wdfEligibilityStatus]="wdfEligibilityStatus"
-      [isStandalone]="isStandalone"
-    ></app-wdf-data-status-message>
+      [workplaceWdfEligibilityStatus]="wdfEligibilityStatus.currentWorkplace"
+      [staffWdfEligibilityStatus]="wdfEligibilityStatus.currentStaff"
+      [overallWdfEligibility]="wdfEligibilityStatus.overall"
+      [isParent]="isParent"
+      [subsidiariesOverallWdfEligibility]="subsidiariesOverallWdfEligibility"
+      [someSubsidiariesMeetingRequirements]="someSubsidiariesMeetingRequirements"
+      [activatedFragment]="activeTab.fragment"
+    ></app-wdf-summary-panel>
   </div>
 </div>
 
-<ng-container *ngIf="standAloneAccount && newHomeDesignFlag; else parentView">
-  <app-new-wdf-tab
-    [viewWDFData]="viewWDFData"
-    (handleViewToggle)="handleViewTrainingByCategory($event)"
-    [workplaceGreenTick]="wdfEligibilityStatus.currentWorkplace"
-    [workplaceAlert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-    [workplaceRedCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-    [staffGreenTick]="wdfEligibilityStatus.currentStaff"
-    [staffAlert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
-    [staffRedCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
-  >
-  </app-new-wdf-tab>
+<span data-testid="tabSection">
+  <app-select-view-panel [tabs]="tabs" (handleTabChange)="handleTabChange($event)" [activeTabIndex]="activeTab.index">
+  </app-select-view-panel>
   <app-wdf-workplace-summary
-    *ngIf="!viewWDFData && workplace"
+    *ngIf="activeTab.index === 0 && workplace"
+    data-testid="workplaceSummaryTab"
     [workplace]="workplace"
     [workerCount]="workerCount"
     [return]="returnUrl"
-    [wdfView]="true"
     [overallWdfEligibility]="wdfEligibilityStatus.overall"
     (allFieldsConfirmed)="getWdfReport()"
   ></app-wdf-workplace-summary>
 
   <app-wdf-staff-summary
-    *ngIf="viewWDFData && workers && workplace"
+    *ngIf="activeTab.index === 1 && workers && workplace"
+    data-testid="staffRecordsTab"
     [workplace]="workplace"
     [workers]="workers"
-    [canEditWorker]="canEditWorker"
     [standAloneAccount]="standAloneAccount"
+    [workerCount]="workerCount"
+    [overallWdfEligibility]="wdfEligibilityStatus.overall"
   ></app-wdf-staff-summary>
-</ng-container>
 
-<ng-template #parentView>
-  <app-tabs>
-    <app-tab
-      [greenTick]="wdfEligibilityStatus.currentWorkplace"
-      [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-      [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentWorkplace"
-      [title]="'Workplace'"
-    >
-      <app-workplace-summary
-        *ngIf="workplace"
-        [workplace]="workplace"
-        [workerCount]="workerCount"
-        [return]="returnUrl"
-        [wdfView]="true"
-        [overallWdfEligibility]="wdfEligibilityStatus.overall"
-        (allFieldsConfirmed)="getWdfReport()"
-      ></app-workplace-summary>
-    </app-tab>
-    <app-tab
-      *ngIf="canViewWorker"
-      [greenTick]="wdfEligibilityStatus.currentStaff"
-      [alert]="wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
-      [redCross]="!wdfEligibilityStatus.overall && !wdfEligibilityStatus.currentStaff"
-      [title]="'Staff records'"
-    >
-      <app-wdf-staff-summary
-        *ngIf="workers && workplace"
-        [workplace]="workplace"
-        [workers]="workers"
-        [canEditWorker]="canEditWorker"
-      ></app-wdf-staff-summary>
-    </app-tab>
-  </app-tabs>
-</ng-template>
+  <app-wdf-workplaces-summary
+    *ngIf="isParent && activeTab.index === 2"
+    data-testid="yourOtherWorkplacesTab"
+    [workplaces]="subsidiaryWorkplaces"
+  ></app-wdf-workplaces-summary>
+</span>

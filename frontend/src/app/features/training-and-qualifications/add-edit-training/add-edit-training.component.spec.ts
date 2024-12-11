@@ -4,11 +4,13 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
+import { TrainingCertificateService } from '@core/services/certificate.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockTrainingCertificateService } from '@core/test-utils/MockCertificateService';
 import { MockTrainingCategoryService, trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { trainingRecord } from '@core/test-utils/MockWorkerService';
@@ -55,6 +57,10 @@ describe('AddEditTrainingComponent', () => {
           { provide: TrainingService, useClass: MockTrainingService },
           { provide: WorkerService, useClass: MockWorkerServiceWithWorker },
           { provide: TrainingCategoryService, useClass: MockTrainingCategoryService },
+          {
+            provide: TrainingCertificateService,
+            useClass: MockTrainingCertificateService,
+          },
         ],
       },
     );
@@ -72,6 +78,7 @@ describe('AddEditTrainingComponent', () => {
     const alertServiceSpy = spyOn(alertService, 'addAlert');
 
     const trainingService = injector.inject(TrainingService) as TrainingService;
+    const certificateService = injector.inject(TrainingCertificateService) as TrainingCertificateService;
 
     return {
       component,
@@ -88,6 +95,7 @@ describe('AddEditTrainingComponent', () => {
       workerService,
       alertServiceSpy,
       trainingService,
+      certificateService,
     };
   }
 
@@ -563,8 +571,8 @@ describe('AddEditTrainingComponent', () => {
     describe('upload certificate of an existing training', () => {
       const mockUploadFile = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
 
-      it('should call both `addCertificateToTraining` and `updateTrainingRecord` if an upload file is selected', async () => {
-        const { component, fixture, getByText, getByLabelText, getByTestId, updateSpy, routerSpy, trainingService } =
+      it('should call both `addCertificates` and `updateTrainingRecord` if an upload file is selected', async () => {
+        const { component, fixture, getByText, getByLabelText, getByTestId, updateSpy, routerSpy, certificateService } =
           await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
@@ -572,9 +580,7 @@ describe('AddEditTrainingComponent', () => {
         openNotesButton.click();
         fixture.detectChanges();
 
-        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining').and.returnValue(
-          of(null),
-        );
+        const addCertificatesSpy = spyOn(certificateService, 'addCertificates').and.returnValue(of(null));
 
         userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
         userEvent.upload(getByTestId('fileInput'), mockUploadFile);
@@ -595,7 +601,7 @@ describe('AddEditTrainingComponent', () => {
           },
         );
 
-        expect(addCertificateToTrainingSpy).toHaveBeenCalledWith(
+        expect(addCertificatesSpy).toHaveBeenCalledWith(
           component.workplace.uid,
           component.worker.uid,
           component.trainingRecordId,
@@ -605,28 +611,28 @@ describe('AddEditTrainingComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       });
 
-      it('should not call addCertificateToTraining if no file was selected', async () => {
-        const { component, fixture, getByText, getByLabelText, trainingService } = await setup();
+      it('should not call addCertificates if no file was selected', async () => {
+        const { component, fixture, getByText, getByLabelText, certificateService } = await setup();
 
         component.previousUrl = ['/goToPreviousUrl'];
         const openNotesButton = getByText('Open notes');
         openNotesButton.click();
         fixture.detectChanges();
 
-        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining');
+        const addCertificatesSpy = spyOn(certificateService, 'addCertificates');
 
         userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
         fireEvent.click(getByText('Save and return'));
 
-        expect(addCertificateToTrainingSpy).not.toHaveBeenCalled();
+        expect(addCertificatesSpy).not.toHaveBeenCalled();
       });
     });
 
     describe('add a new training record and upload certificate together', async () => {
       const mockUploadFile = new File(['some file content'], 'First aid 2022.pdf', { type: 'application/pdf' });
 
-      it('should call both `addCertificateToTraining` and `createTrainingRecord` if an upload file is selected', async () => {
-        const { component, fixture, getByText, getByLabelText, getByTestId, createSpy, routerSpy, trainingService } =
+      it('should call both `addCertificates` and `createTrainingRecord` if an upload file is selected', async () => {
+        const { component, fixture, getByText, getByLabelText, getByTestId, createSpy, routerSpy, certificateService } =
           await setup(null);
 
         component.previousUrl = ['/goToPreviousUrl'];
@@ -637,9 +643,7 @@ describe('AddEditTrainingComponent', () => {
 
         fixture.detectChanges();
 
-        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining').and.returnValue(
-          of(null),
-        );
+        const addCertificatesSpy = spyOn(certificateService, 'addCertificates').and.returnValue(of(null));
 
         userEvent.type(getByLabelText('Training name'), 'Understanding Autism');
         userEvent.click(getByLabelText('Yes'));
@@ -657,7 +661,7 @@ describe('AddEditTrainingComponent', () => {
           notes: null,
         });
 
-        expect(addCertificateToTrainingSpy).toHaveBeenCalledWith(
+        expect(addCertificatesSpy).toHaveBeenCalledWith(
           component.workplace.uid,
           component.worker.uid,
           trainingRecord.uid,
@@ -667,8 +671,8 @@ describe('AddEditTrainingComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       });
 
-      it('should not call `addCertificateToTraining` when no upload file was selected', async () => {
-        const { component, fixture, getByText, getByLabelText, createSpy, routerSpy, trainingService } = await setup(
+      it('should not call `addCertificates` when no upload file was selected', async () => {
+        const { component, fixture, getByText, getByLabelText, createSpy, routerSpy, certificateService } = await setup(
           null,
         );
 
@@ -681,14 +685,14 @@ describe('AddEditTrainingComponent', () => {
         openNotesButton.click();
         fixture.detectChanges();
 
-        const addCertificateToTrainingSpy = spyOn(trainingService, 'addCertificateToTraining');
+        const addCertificatesSpy = spyOn(certificateService, 'addCertificates');
 
         userEvent.type(getByLabelText('Add a note'), 'Some notes added to this training');
         fireEvent.click(getByText('Save record'));
 
         expect(createSpy).toHaveBeenCalled;
 
-        expect(addCertificateToTrainingSpy).not.toHaveBeenCalled;
+        expect(addCertificatesSpy).not.toHaveBeenCalled;
 
         expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
       });
@@ -983,6 +987,23 @@ describe('AddEditTrainingComponent', () => {
         });
         expect(uploadButton).toBeTruthy();
       });
+
+      it('should clear any error message when remove button of an upload file is clicked', async () => {
+        const { fixture, getByTestId, getByText, queryByText } = await setup(null);
+        fixture.autoDetectChanges();
+
+        const mockUploadFileValid = new File(['some file content'], 'cerfificate.pdf', { type: 'application/pdf' });
+        const mockUploadFileInvalid = new File(['some file content'], 'non-pdf.png', { type: 'image/png' });
+        userEvent.upload(getByTestId('fileInput'), [mockUploadFileValid]);
+        userEvent.upload(getByTestId('fileInput'), [mockUploadFileInvalid]);
+
+        expect(getByText('The certificate must be a PDF file')).toBeTruthy();
+
+        const removeButton = within(getByText('cerfificate.pdf').parentElement).getByText('Remove');
+        userEvent.click(removeButton);
+
+        expect(queryByText('The certificate must be a PDF file')).toBeFalsy();
+      });
     });
   });
 
@@ -1052,9 +1073,9 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should make call to downloadCertificates with required uids and file uid in array when Download button clicked', async () => {
-        const { component, fixture, getByTestId, trainingService } = await setup();
+        const { component, fixture, getByTestId, certificateService } = await setup();
 
-        const downloadCertificatesSpy = spyOn(trainingService, 'downloadCertificates').and.returnValue(
+        const downloadCertificatesSpy = spyOn(certificateService, 'downloadCertificates').and.returnValue(
           of({ files: ['abc123'] }),
         );
         component.trainingCertificates = [mockTrainingCertificate];
@@ -1073,9 +1094,9 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should make call to downloadCertificates with all certificate file uids in array when Download all button clicked', async () => {
-        const { component, fixture, getByTestId, trainingService } = await setup();
+        const { component, fixture, getByTestId, certificateService } = await setup();
 
-        const downloadCertificatesSpy = spyOn(trainingService, 'downloadCertificates').and.returnValue(
+        const downloadCertificatesSpy = spyOn(certificateService, 'downloadCertificates').and.returnValue(
           of({ files: ['abc123'] }),
         );
         component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
@@ -1097,9 +1118,9 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should display error message when Download fails', async () => {
-        const { component, fixture, getByText, getByTestId, trainingService } = await setup();
+        const { component, fixture, getByText, getByTestId, certificateService } = await setup();
 
-        spyOn(trainingService, 'downloadCertificates').and.returnValue(throwError('403 forbidden'));
+        spyOn(certificateService, 'downloadCertificates').and.returnValue(throwError('403 forbidden'));
         component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
 
         fixture.detectChanges();
@@ -1116,9 +1137,9 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should display error message when Download all fails', async () => {
-        const { component, fixture, getByText, getByTestId, trainingService } = await setup();
+        const { component, fixture, getByText, getByTestId, certificateService } = await setup();
 
-        spyOn(trainingService, 'downloadCertificates').and.returnValue(throwError('some download error'));
+        spyOn(certificateService, 'downloadCertificates').and.returnValue(throwError('some download error'));
         component.trainingCertificates = [mockTrainingCertificate, mockTrainingCertificate2];
 
         fixture.detectChanges();
@@ -1173,33 +1194,6 @@ describe('AddEditTrainingComponent', () => {
         expect(within(certificationTable).queryByText(mockUploadFile1.name)).toBeTruthy();
         expect(component.filesToUpload).toHaveSize(1);
         expect(component.filesToUpload[0]).toEqual(mockUploadFile1);
-      });
-
-      xit('should allow a file to be added again after removal', async () => {
-        /* TODO: unskip this test when we bump up @testing-library/user-event to >= 14.0.0 in the future
-         *
-         * This test is skipped because the version of @testing-library/user-event we are using
-         * does not handle fileinput.value = '' or fileinput.files = null correctly.
-         */
-        const { component, fixture, getByText, getByTestId, queryByText } = await setup();
-        fixture.autoDetectChanges();
-
-        const fileInput = getByTestId('fileInput') as HTMLInputElement;
-        await userEvent.upload(fileInput, [mockUploadFile1]);
-
-        const certificateRow = getByText(mockUploadFile1.name).parentElement;
-        const removeButton = within(certificateRow).getByText('Remove');
-        await userEvent.click(removeButton);
-
-        expect(queryByText(mockUploadFile1.name)).toBeFalsy();
-        expect(component.filesToUpload).toEqual([]);
-        expect(fileInput.value).toBeFalsy();
-
-        // select the removed file again
-        await userEvent.upload(fileInput, [mockUploadFile1]);
-
-        expect(getByText(mockUploadFile1.name)).toBeTruthy();
-        expect(component.filesToUpload).toEqual([mockUploadFile1]);
       });
     });
 
@@ -1278,7 +1272,7 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should call the training service when save and return is clicked', async () => {
-        const { component, fixture, getByTestId, getByText, trainingService } = await setup();
+        const { component, fixture, getByTestId, getByText, certificateService } = await setup();
 
         component.trainingCertificates = [
           {
@@ -1298,7 +1292,7 @@ describe('AddEditTrainingComponent', () => {
         const certificateRow = getByTestId('certificate-row-0');
 
         const removeButtonForRow = within(certificateRow).getByText('Remove');
-        const trainingServiceSpy = spyOn(trainingService, 'deleteCertificates').and.callThrough();
+        const trainingServiceSpy = spyOn(certificateService, 'deleteCertificates').and.callThrough();
         fireEvent.click(removeButtonForRow);
         fireEvent.click(getByText('Save and return'));
 
@@ -1313,13 +1307,13 @@ describe('AddEditTrainingComponent', () => {
       });
 
       it('should not call the training service when save and return is clicked and there are no files to remove ', async () => {
-        const { component, fixture, getByText, trainingService } = await setup();
+        const { component, fixture, getByText, certificateService } = await setup();
 
         component.trainingCertificates = [];
 
         fixture.detectChanges();
 
-        const trainingServiceSpy = spyOn(trainingService, 'deleteCertificates').and.callThrough();
+        const trainingServiceSpy = spyOn(certificateService, 'deleteCertificates').and.callThrough();
 
         fireEvent.click(getByText('Save and return'));
 

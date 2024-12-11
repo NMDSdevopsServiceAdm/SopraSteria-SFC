@@ -1401,5 +1401,24 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Worker.findOneWithConflictingLocalRef = async function (establishmentIds, localIdentifierValue) {
+    /** Check if there is a worker having the same localIdentifierValue when whitespaces are not considered.
+     *
+     * As the legacy code does a /\s/g replacement in several different places,
+     * this helps to ensure uniqueness and prevent unexpected reference collision.
+     */
+    return await this.findOne({
+      attributes: ['id', 'NameOrIdValue', 'LocalIdentifierValue'],
+      where: {
+        [Op.and]: [
+          { establishmentFk: establishmentIds },
+          sequelize.where(sequelize.fn('REPLACE', sequelize.col('LocalIdentifierValue'), ' ', ''), {
+            [Op.eq]: localIdentifierValue.replace(/\s/g, ''),
+          }),
+        ],
+      },
+    });
+  };
+
   return Worker;
 };

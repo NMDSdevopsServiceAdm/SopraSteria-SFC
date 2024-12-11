@@ -48,16 +48,16 @@
         >
       </div>
 
-      <div class="govuk-grid-column-one-third asc-card-padding">
+      <div *ngIf="canViewReports" class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/wdf.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
             routerLink="/wdf"
             href="#"
-            >Does your data meet WDF requirements?</a
+            >Does your data meet funding requirements?</a
           >
           <p class="govuk-!-margin-top-5">
-            Check to see whether your data meets the {{ certificateYears }} Workforce Development Fund requirements.
+            Update your data so that you can claim money back against the costs of training your staff.
           </p></app-card
         >
       </div>

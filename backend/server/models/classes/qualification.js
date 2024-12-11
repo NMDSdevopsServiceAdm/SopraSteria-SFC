@@ -56,6 +56,7 @@ class Qualification extends EntityValidator {
     this._qualification = null;
     this._year = null;
     this._notes = null;
+    this._qualificationCertificates = null;
 
     // lifecycle properties
     this._isNew = false;
@@ -105,7 +106,7 @@ class Qualification extends EntityValidator {
   }
 
   get workerId() {
-    return this._workerUid;
+    return this._workerId;
   }
   get workerUid() {
     return this._workerUid;
@@ -139,6 +140,11 @@ class Qualification extends EntityValidator {
   get created() {
     return this._created;
   }
+
+  get qualificationCertificates() {
+    return this._qualificationCertificates;
+  }
+
   get updated() {
     return this._updated;
   }
@@ -156,8 +162,16 @@ class Qualification extends EntityValidator {
     if (this._notes === null) return null;
     return unescape(this._notes);
   }
+
+  get qualificationCertificates() {
+    return this._qualificationCertificates;
+  }
+
   set qualification(qualification) {
     this._qualification = qualification;
+  }
+  set qualificationCertificates(qualificationCertificates) {
+    this._qualificationCertificates = qualificationCertificates;
   }
   set year(year) {
     this._year = year;
@@ -169,6 +183,10 @@ class Qualification extends EntityValidator {
     } else {
       this._notes = null;
     }
+  }
+
+  set qualificationCertificates(qualificationCertificates) {
+    this._qualificationCertificates = qualificationCertificates;
   }
 
   // used by save to initialise a new Qualification Record; returns true if having initialised this Qualification Record
@@ -542,6 +560,15 @@ class Qualification extends EntityValidator {
             model: models.workerAvailableQualifications,
             as: 'qualification',
           },
+          {
+            model: models.qualificationCertificates,
+            as: 'qualificationCertificates',
+            attributes: ['uid', 'filename', 'uploadDate'],
+            order: [
+              [models.qualificationCertificates, 'uploadDate', 'DESC'],
+              [models.qualificationCertificates, 'filename', 'ASC'],
+            ],
+          },
         ],
       };
 
@@ -560,10 +587,12 @@ class Qualification extends EntityValidator {
         };
         this._year = fetchResults.year;
         this._notes = fetchResults.notes !== null && fetchResults.notes.length === 0 ? null : fetchResults.notes;
+        this._qualificationCertificates = fetchResults.qualificationCertificates;
 
         this._created = fetchResults.created;
         this._updated = fetchResults.updated;
         this._updatedBy = fetchResults.updatedBy;
+        this._qualificationCertificates = fetchResults.qualificationCertificates;
 
         return true;
       }
@@ -573,7 +602,7 @@ class Qualification extends EntityValidator {
       // typically errors when making changes to model or database schema!
       this._log(Qualification.LOG_ERROR, err);
 
-      throw new Error(`Failed to load Qualification record with uid (${this.uid})`);
+      throw new Error(`Failed to load Qualification record with uid (${uid})`);
     }
   }
 
@@ -618,6 +647,7 @@ class Qualification extends EntityValidator {
         this._qualification = null;
         this._year = null;
         this._notes = null;
+        this._qualificationCertificates = null;
 
         this._created = null;
         this._updated = null;
@@ -655,6 +685,11 @@ class Qualification extends EntityValidator {
           as: 'qualification',
           attributes: ['id', 'group', 'title', 'level'],
         },
+        {
+          model: models.qualificationCertificates,
+          as: 'qualificationCertificates',
+          attributes: ['uid', 'filename', 'uploadDate'],
+        },
       ],
       order: [
         //['completed', 'DESC'],
@@ -674,6 +709,13 @@ class Qualification extends EntityValidator {
           },
           year: thisRecord.year != null ? thisRecord.year : undefined,
           notes: thisRecord.notes !== null && thisRecord.notes.length > 0 ? unescape(thisRecord.notes) : undefined,
+          qualificationCertificates: thisRecord.qualificationCertificates?.map((certificate) => {
+            return {
+              uid: certificate.uid,
+              filename: certificate.filename,
+              uploadDate: certificate.uploadDate?.toISOString(),
+            };
+          }),
           created: thisRecord.created.toISOString(),
           updated: thisRecord.updated.toISOString(),
           updatedBy: thisRecord.updatedBy,
@@ -712,6 +754,7 @@ class Qualification extends EntityValidator {
       qualification: this.qualification,
       year: this.year !== null ? this.year : undefined,
       notes: this._notes !== null ? this.notes : undefined,
+      qualificationCertificates: this.qualificationCertificates ?? [],
     };
 
     return myDefaultJSON;

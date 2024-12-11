@@ -1429,5 +1429,74 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         });
       });
     });
+
+    describe('_validateTransferStaffRecord', () => {
+      const worker = buildWorkerCsv({
+        overrides: {
+          STATUS: 'UPDATE',
+        },
+      });
+      worker.TRANSFERSTAFFRECORD = 'workplace B';
+
+      it('should emit an error when TRANSFERSTAFFRECORD is provided but the worker does not exist', async () => {
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        const expectedError = {
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.TRANSFERSTAFFRECORD_ERROR,
+          errType: 'TRANSFERSTAFFRECORD_ERROR',
+          error: 'Staff record has TRANSFERSTAFFRECORD given but does not exist',
+          source: worker.LOCALESTID,
+          column: 'LOCALESTID',
+          name: 'MARMA',
+          worker: '3',
+        };
+
+        expect(validator._validationErrors).to.deep.include(expectedError);
+        expect(validator._transferStaffRecord).to.equal(null);
+      });
+
+      it('should set the _transferStaffRecord field if validation passed', async () => {
+        const mockExistingWorker = { nameOrId: 'mock worker name', id: 100, uid: 'mock-uid' };
+        const validator = new WorkerCsvValidator(worker, 2, mockExistingWorker, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([]);
+        expect(validator._transferStaffRecord).to.equal('workplace B');
+      });
+    });
+
+    describe('_validateStatus', () => {
+      it('should give an error if CHGSUB (a deprecated option) is supplied in STATUS column', async () => {
+        const worker = buildWorkerCsv({
+          overrides: {
+            STATUS: 'CHGSUB',
+          },
+        });
+        const expectedWarning = {
+          column: 'STATUS',
+          lineNumber: 2,
+          name: 'MARMA',
+          source: 'CHGSUB',
+          errCode: WorkerCsvValidator.STATUS_ERROR,
+          errType: 'STATUS_ERROR',
+          error: 'The STATUS you have supplied is incorrect',
+          worker: '3',
+        };
+
+        const validator = new WorkerCsvValidator(worker, 2, null, mappings);
+
+        validator.validate();
+        validator.transform();
+
+        expect(validator._validationErrors).to.deep.equal([expectedWarning]);
+        expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
   });
 });

@@ -1,15 +1,14 @@
 const sinon = require('sinon');
 const expect = require('chai').expect;
 const httpMocks = require('node-mocks-http');
-const uuid = require('uuid');
 
-const models = require('../../../../../models');
 const buildUser = require('../../../../factories/user');
 const { trainingBuilder } = require('../../../../factories/models');
 const s3 = require('../../../../../routes/establishments/workerCertificate/s3');
-const config = require('../../../../../config/config');
 
 const trainingCertificateRoute = require('../../../../../routes/establishments/workerCertificate/trainingCertificate');
+const WorkerCertificateService = require('../../../../../routes/establishments/workerCertificate/workerCertificateService');
+const HttpError = require('../../../../../utils/errors/httpError');
 
 describe('backend/server/routes/establishments/workerCertificate/trainingCertificate.js', () => {
   const user = buildUser();
@@ -19,10 +18,9 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
     sinon.restore();
   });
 
-  beforeEach(() => {});
+  beforeEach(() => { });
 
   describe('requestUploadUrl', () => {
-    const mockUploadFiles = ['cert1.pdf', 'cert2.pdf'];
     const mockSignedUrl = 'http://localhost/mock-upload-url';
     let res;
 
@@ -42,229 +40,158 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
 
     beforeEach(() => {
       sinon.stub(s3, 'getSignedUrlForUpload').returns(mockSignedUrl);
+      responsePayload = [{ data: 'someData' }, { data: 'someData2' }];
+      stubGetUrl = sinon.stub(WorkerCertificateService.prototype, "requestUploadUrl").returns(responsePayload);
       res = httpMocks.createResponse();
     });
 
     it('should reply with a status of 200', async () => {
       const req = createReq();
 
-      await trainingCertificateRoute.requestUploadUrl(req, res);
+      await trainingCertificateRoute.requestUploadUrlEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
 
-    it('should include a signed url for upload and a uuid for each file', async () => {
+    it('should wrap the response data in a files property', async () => {
       const req = createReq();
 
-      await trainingCertificateRoute.requestUploadUrl(req, res);
+      await trainingCertificateRoute.requestUploadUrlEndpoint(req, res);
 
       const actual = await res._getJSONData();
 
-      expect(actual.files).to.have.lengthOf(mockUploadFiles.length);
-
-      actual.files.forEach((file) => {
-        const { fileId, filename, signedUrl } = file;
-        expect(uuid.validate(fileId)).to.be.true;
-        expect(filename).to.be.oneOf(mockUploadFiles);
-        expect(signedUrl).to.equal(mockSignedUrl);
-      });
+      expect(actual).to.deep.equal({ files: responsePayload });
     });
 
-    it('should reply with status 400 if files param was missing in body', async () => {
+    it('should reply with status 400 if an exception is thrown', async () => {
       const req = createReq({ body: {} });
 
-      await trainingCertificateRoute.requestUploadUrl(req, res);
+      stubGetUrl.throws(new HttpError('Test message', 400))
+
+      await trainingCertificateRoute.requestUploadUrlEndpoint(req, res);
 
       expect(res.statusCode).to.equal(400);
-      expect(res._getData()).to.equal('Missing `files` param in request body');
+      expect(res._getData()).to.equal('Test message');
+    });
+  });
+
+  describe('confirmUpload', () => {
+    const mockUploadFiles = [
+      { filename: 'cert1.pdf', fileId: 'uuid1', etag: 'etag1', key: 'mockKey' },
+      { filename: 'cert2.pdf', fileId: 'uuid2', etag: 'etag2', key: 'mockKey2' },
+    ];
+
+    let res;
+
+    beforeEach(() => {
+      stubConfirmUpload = sinon.stub(WorkerCertificateService.prototype, "confirmUpload").returns();
+      sinon.stub(console, 'error'); // mute error log
+      res = httpMocks.createResponse();
     });
 
-    it('should reply with status 400 if filename was missing in any of the files', async () => {
-      const req = createReq({ body: { files: [{ filename: 'file1.pdf' }, { anotherItem: 'no file name' }] } });
+    const createPutReq = (override) => {
+      return createReq({ method: 'PUT', body: { files: mockUploadFiles }, ...override });
+    };
 
-      await trainingCertificateRoute.requestUploadUrl(req, res);
+    it('should reply with a status of 200 when no exception is thrown', async () => {
+      const req = createPutReq();
+
+      await trainingCertificateRoute.confirmUploadEndpoint(req, res);
+
+      expect(res.statusCode).to.equal(200);
+    });
+
+    it('should call workerCertificateService.confirmUpload with the correct parameter format', async () => {
+      const req = createPutReq({ body: { files: ['fileName'] }, params: { id: 1, trainingUid: 3 } });
+
+      await trainingCertificateRoute.confirmUploadEndpoint(req, res);
+
+      expect(stubConfirmUpload).to.have.been.calledWith(
+        ['fileName'],
+        3
+      );
+    })
+
+    it('should reply with status code 400 when a HttpError is thrown with status code 400', async () => {
+      const req = createPutReq();
+
+      stubConfirmUpload.throws(new HttpError('Test exception 400', 400));
+
+      await trainingCertificateRoute.confirmUploadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(400);
-      expect(res._getData()).to.equal('Missing file name in request body');
+      expect(res._getData()).to.equal('Test exception 400');
     });
 
-    describe('confirmUpload', () => {
-      const mockUploadFiles = [
-        { filename: 'cert1.pdf', fileId: 'uuid1', etag: 'etag1', key: 'mockKey' },
-        { filename: 'cert2.pdf', fileId: 'uuid2', etag: 'etag2', key: 'mockKey2' },
-      ];
-      const mockWorkerFk = user.id;
-      const mockTrainingRecord = { dataValues: { workerFk: user.id, id: training.id } };
+    it('should reply with status code 500 when a HttpError is thrown with status code 500', async () => {
+      const req = createPutReq();
 
-      let stubAddCertificate;
+      stubConfirmUpload.throws(new HttpError('Test exception 500', 500));
 
-      beforeEach(() => {
-        sinon.stub(models.workerTraining, 'findOne').returns(mockTrainingRecord);
-        sinon.stub(s3, 'verifyEtag').returns(true);
-        stubAddCertificate = sinon.stub(models.trainingCertificates, 'addCertificate');
-        sinon.stub(console, 'error'); // mute error log
-      });
+      await trainingCertificateRoute.confirmUploadEndpoint(req, res);
 
-      const createPutReq = (override) => {
-        return createReq({ method: 'PUT', body: { files: mockUploadFiles }, ...override });
-      };
-
-      it('should reply with a status of 200', async () => {
-        const req = createPutReq();
-
-        await trainingCertificateRoute.confirmUpload(req, res);
-
-        expect(res.statusCode).to.equal(200);
-      });
-
-      it('should add a new record to database for each file', async () => {
-        const req = createPutReq();
-
-        await trainingCertificateRoute.confirmUpload(req, res);
-
-        expect(stubAddCertificate).to.have.been.callCount(mockUploadFiles.length);
-
-        mockUploadFiles.forEach((file) => {
-          expect(stubAddCertificate).to.have.been.calledWith({
-            trainingRecordId: training.id,
-            workerFk: mockWorkerFk,
-            filename: file.filename,
-            fileId: file.fileId,
-            key: file.key,
-          });
-        });
-      });
-
-      it('should reply with status 400 if file param was missing', async () => {
-        const req = createPutReq({ body: {} });
-
-        await trainingCertificateRoute.confirmUpload(req, res);
-
-        expect(res.statusCode).to.equal(400);
-        expect(stubAddCertificate).not.to.be.called;
-      });
-
-      it(`should reply with status 400 if training record does not exist in database`, async () => {
-        models.workerTraining.findOne.restore();
-        sinon.stub(models.workerTraining, 'findOne').returns(null);
-
-        const req = createPutReq();
-
-        await trainingCertificateRoute.confirmUpload(req, res);
-
-        expect(res.statusCode).to.equal(400);
-        expect(stubAddCertificate).not.to.be.called;
-      });
-
-      it(`should reply with status 400 if etag from request does not match the etag on s3`, async () => {
-        s3.verifyEtag.restore();
-        sinon.stub(s3, 'verifyEtag').returns(false);
-
-        const req = createPutReq();
-
-        await trainingCertificateRoute.confirmUpload(req, res);
-
-        expect(res.statusCode).to.equal(400);
-        expect(stubAddCertificate).not.to.be.called;
-      });
-
-      it('should reply with status 400 if the file does not exist on s3', async () => {
-        s3.verifyEtag.restore();
-        sinon.stub(s3, 'verifyEtag').throws('403: UnknownError');
-
-        const req = createPutReq();
-
-        await trainingCertificateRoute.confirmUpload(req, res);
-
-        expect(res.statusCode).to.equal(400);
-        expect(stubAddCertificate).not.to.be.called;
-      });
-
-      it('should reply with status 500 if failed to add new certificate record to database', async () => {
-        stubAddCertificate.throws('DatabaseError');
-
-        const req = createPutReq();
-
-        await trainingCertificateRoute.confirmUpload(req, res);
-
-        expect(res.statusCode).to.equal(500);
-      });
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.equal('Test exception 500');
     });
   });
 
   describe('getPresignedUrlForCertificateDownload', () => {
-    const mockSignedUrl = 'http://localhost/mock-download-url';
     let res;
     let mockFileUid;
     let mockFileName;
 
     beforeEach(() => {
-      getSignedUrlForDownloadSpy = sinon.stub(s3, 'getSignedUrlForDownload').returns(mockSignedUrl);
+      responsePayload = {};
+      stubPresignedCertificate = sinon.stub(WorkerCertificateService.prototype, "getPresignedUrlForCertificateDownload").returns(responsePayload);
       mockFileUid = 'mockFileUid';
       mockFileName = 'mockFileName';
       req = httpMocks.createRequest({
         method: 'POST',
         url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/download`,
-        body: { filesToDownload: [{ uid: mockFileUid, filename: mockFileName }] },
-        establishmentId: user.establishment.uid,
+        body: { files: [{ uid: mockFileUid, filename: mockFileName }] },
         params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
       });
       res = httpMocks.createResponse();
     });
 
-    it('should reply with a status of 200', async () => {
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+    it('should reply with a status of 200 when no exception is thrown', async () => {
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
 
-    it('should return an array with signed url for download and file name in response', async () => {
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
-      const actual = await res._getJSONData();
+    it('should call workerCertificateService.getPresignedUrlForCertificateDowload with the correct parameter format', async () => {
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
-      expect(actual.files).to.deep.equal([{ signedUrl: mockSignedUrl, filename: mockFileName }]);
+      expect(stubPresignedCertificate).to.have.been.calledWith(
+        [{ uid: mockFileUid, filename: mockFileName }],
+        user.establishment.uid,
+        user.uid,
+        training.uid,
+      );
     });
 
-    it('should call getSignedUrlForDownload with bucket name from config', async () => {
-      const bucketName = config.get('workerCertificate.bucketname');
+    it('should return reply with status code 400 when a HttpError is thrown with status code 400', async () => {
+      stubPresignedCertificate.throws(new HttpError('Test exception', 400));
 
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
-      expect(getSignedUrlForDownloadSpy.args[0][0].bucket).to.equal(bucketName);
-    });
-
-    it('should call getSignedUrlForDownload with key of formatted uids passed in params', async () => {
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
-
-      const expectedKey = `${req.params.id}/${req.params.workerId}/trainingCertificate/${req.params.trainingUid}/${mockFileUid}`;
-      expect(getSignedUrlForDownloadSpy.args[0][0].key).to.equal(expectedKey);
-    });
-
-    it('should return 400 status and no files message if no file uids in req body', async () => {
-      req.body = { filesToDownload: [] };
-
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
       expect(res.statusCode).to.equal(400);
-      expect(res._getData()).to.equal('No files provided in request body');
-      expect(getSignedUrlForDownloadSpy).not.to.be.called;
+      expect(res._getData()).to.equal('Test exception');
     });
 
-    it('should return 400 status and no files message if no req body', async () => {
-      req.body = {};
+    it('should return reply with status code 500 when a HttpError is thrown with status code 500', async () => {
+      stubPresignedCertificate.throws(new HttpError('Test exception', 500));
 
-      await trainingCertificateRoute.getPresignedUrlForCertificateDownload(req, res);
+      await trainingCertificateRoute.getPresignedUrlForCertificateDownloadEndpoint(req, res);
 
-      expect(res.statusCode).to.equal(400);
-      expect(res._getData()).to.equal('No files provided in request body');
-      expect(getSignedUrlForDownloadSpy).not.to.be.called;
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.equal('Test exception');
     });
   });
 
   describe('delete certificates', () => {
     let res;
-    let stubDeleteCertificatesFromS3;
-    let stubDeleteCertificate;
-    let errorMessage;
     let mockFileUid1;
     let mockFileUid2;
     let mockFileUid3;
@@ -284,84 +211,48 @@ describe('backend/server/routes/establishments/workerCertificate/trainingCertifi
       req = httpMocks.createRequest({
         method: 'POST',
         url: `/api/establishment/${user.establishment.uid}/worker/${user.uid}/training/${training.uid}/certificate/delete`,
-        body: { filesToDelete: [{ uid: mockFileUid1, filename: 'mockFileName1' }] },
-        establishmentId: user.establishment.uid,
+        body: { files: [{ uid: mockFileUid1, filename: 'mockFileName1' }] },
         params: { id: user.establishment.uid, workerId: user.uid, trainingUid: training.uid },
       });
       res = httpMocks.createResponse();
       errorMessage = 'DatabaseError';
-      stubDeleteCertificatesFromS3 = sinon.stub(s3, 'deleteCertificatesFromS3');
-      stubDeleteCertificate = sinon.stub(models.trainingCertificates, 'deleteCertificate');
-      stubCountCertificatesToBeDeleted = sinon.stub(models.trainingCertificates, 'countCertificatesToBeDeleted');
+      stubDeleteCertificates = sinon.stub(WorkerCertificateService.prototype, 'deleteCertificates');
     });
 
-    it('should return a 200 status when files successfully deleted', async () => {
-      stubDeleteCertificate.returns(1);
-      stubDeleteCertificatesFromS3.returns({ Deleted: [{ Key: mockKey1 }] });
-      stubCountCertificatesToBeDeleted.returns(1);
-
-      await trainingCertificateRoute.deleteCertificates(req, res);
+    it('should return a 200 status when no exceptions are thrown', async () => {
+      await trainingCertificateRoute.deleteCertificatesEndpoint(req, res);
 
       expect(res.statusCode).to.equal(200);
     });
 
+    it('should call workerCertificateService.deleteCertificates with the correct parameter format', async () => {
+      await trainingCertificateRoute.deleteCertificatesEndpoint(req, res);
+
+      expect(stubDeleteCertificates).to.have.been.calledWith(
+        [{ uid: mockFileUid1, filename: 'mockFileName1' }],
+        user.establishment.uid,
+        user.uid,
+        training.uid,
+      );
+    });
+
     describe('errors', () => {
-      it('should return 400 status and message if no files in req body', async () => {
-        req.body = {};
+      it('should return status code 400 when a HttpError is thrown with status code 400', async () => {
+        stubDeleteCertificates.throws(new HttpError('Test exception', 400));
 
-        await trainingCertificateRoute.deleteCertificates(req, res);
-
-        expect(res.statusCode).to.equal(400);
-        expect(res._getData()).to.equal('No files provided in request body');
-      });
-
-      it('should return 500 if there was a database error when calling countCertificatesToBeDeleted', async () => {
-        req.body = {
-          filesToDelete: [
-            { uid: mockFileUid1, filename: 'mockFileName1' },
-            { uid: mockFileUid2, filename: 'mockFileName2' },
-            { uid: mockFileUid3, filename: 'mockFileName3' },
-          ],
-        };
-        stubCountCertificatesToBeDeleted.throws(errorMessage);
-
-        await trainingCertificateRoute.deleteCertificates(req, res);
-
-        expect(res.statusCode).to.equal(500);
-      });
-
-      it('should return 500 if there was a database error on DB deleteCertificate call', async () => {
-        req.body = {
-          filesToDelete: [
-            { uid: mockFileUid1, filename: 'mockFileName1' },
-            { uid: mockFileUid2, filename: 'mockFileName2' },
-            { uid: mockFileUid3, filename: 'mockFileName3' },
-          ],
-        };
-        stubCountCertificatesToBeDeleted.returns(3);
-        stubDeleteCertificate.throws(errorMessage);
-
-        await trainingCertificateRoute.deleteCertificates(req, res);
-
-        expect(res.statusCode).to.equal(500);
-      });
-
-      it('should return 400 status code if the number of records in database does not match request', async () => {
-        req.body = {
-          filesToDelete: [
-            { uid: mockFileUid1, filename: 'mockFileName1' },
-            { uid: mockFileUid2, filename: 'mockFileName2' },
-            { uid: mockFileUid3, filename: 'mockFileName3' },
-          ],
-        };
-
-        stubCountCertificatesToBeDeleted.returns(3);
-        stubCountCertificatesToBeDeleted.returns(0);
-
-        await trainingCertificateRoute.deleteCertificates(req, res);
+        await trainingCertificateRoute.deleteCertificatesEndpoint(req, res);
 
         expect(res.statusCode).to.equal(400);
-        expect(res._getData()).to.equal('Invalid request');
+        expect(res._getData()).to.equal('Test exception');
+      });
+
+      it('should return status code 500 when a HttpError is thrown with status code 500', async () => {
+        stubDeleteCertificates.throws(new HttpError('Test exception', 500));
+
+        await trainingCertificateRoute.deleteCertificatesEndpoint(req, res);
+
+        expect(res.statusCode).to.equal(500);
+        expect(res._getData()).to.equal('Test exception');
       });
     });
   });

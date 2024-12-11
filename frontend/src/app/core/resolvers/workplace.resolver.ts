@@ -9,11 +9,14 @@ export class WorkplaceResolver implements Resolve<any> {
   constructor(private router: Router, private establishmentService: EstablishmentService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
+    const withFunding = route.data?.withFunding ? true : false;
+
     return this.establishmentService
       .getEstablishment(
         route.paramMap.get('establishmentuid')
           ? route.paramMap.get('establishmentuid')
           : this.establishmentService.establishmentId,
+        withFunding,
       )
       .pipe(
         catchError(() => {

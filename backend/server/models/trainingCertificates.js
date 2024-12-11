@@ -66,13 +66,13 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  TrainingCertificates.addCertificate = function ({ trainingRecordId, workerFk, filename, fileId, key }) {
+  TrainingCertificates.addCertificate = function ({ recordId, workerFk, filename, fileId, key }) {
     const timeNow = dayjs().format();
 
     return this.create({
       uid: fileId,
       workerFk: workerFk,
-      workerTrainingFk: trainingRecordId,
+      workerTrainingFk: recordId,
       filename: filename,
       uploadDate: timeNow,
       key,
@@ -96,7 +96,7 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  TrainingCertificates.getAllTrainingCertificateRecordsForWorker = async function (workerFk) {
+  TrainingCertificates.getAllCertificateRecordsForWorker = async function (workerFk) {
     return await this.findAll({
       where: {
         workerFk,

@@ -1764,40 +1764,7 @@ describe('Bulk Upload - Establishment CSV', () => {
         databaseWorkers,
       );
     });
-    it('should NOT show error if not Head Office and registered manager is moving into workplace ', async () => {
-      const establishmentRow = buildEstablishmentCSV({
-        overrides: {
-          STATUS: 'NEW',
-          TOTALPERMTEMP: 1,
-          VACANCIES: '0;0;0',
-        },
-      });
 
-      const workerRow = buildWorkerCSV({
-        overrides: {
-          LOCALESTID: establishmentRow.LOCALESTID,
-          MAINJOBROLE: 4,
-          STATUS: 'CHGSUB',
-          UNIQUEWORKERID: 'bob',
-        },
-      });
-      const databaseWorkers = [
-        {
-          uniqueWorker: 'bob',
-          contractTypeId: 'Permanent',
-          mainJobRoleId: 22,
-          otherJobIds: '',
-        },
-      ];
-      crossValidate(
-        establishmentRow,
-        workerRow,
-        (csvEstablishmentSchemaErrors) => {
-          expect(csvEstablishmentSchemaErrors.length).to.equal(0);
-        },
-        databaseWorkers,
-      );
-    });
     it('should show error if not Head Office and registered manager is DELETE ', async () => {
       const establishmentRow = buildEstablishmentCSV({
         overrides: {

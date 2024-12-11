@@ -1,11 +1,11 @@
 <h2 class="govuk-heading-m">{{ basicTitle }}</h2>
 <dl
-  class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top govuk-!-margin-bottom-0"
+  class="govuk-summary-list govuk-summary-list--no-border asc-summarylist-border-top govuk-summary-list--wide-key govuk-!-margin-bottom-0"
   data-testid="name-and-contract-section"
 >
   <div class="govuk-summary-list__row">
-    <dt class="govuk-summary-list__key govuk-!-padding-right-0 govuk-!-width-one-half">Name or ID number</dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-9': !mandatoryDetailsPage }">
+    <dt class="govuk-summary-list__key">Name or ID number</dt>
+    <dd class="govuk-summary-list__value">
       {{ worker.nameOrId }}
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
@@ -21,62 +21,42 @@
 
   <div class="govuk-summary-list__row">
     <dt class="govuk-summary-list__key">Contract type</dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-9': !mandatoryDetailsPage }">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.contract"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        <ng-container *ngIf="showPoolBankTag; else notPoolBankTag">Pool, Bank</ng-container>
-        <ng-template #notPoolBankTag>
-          {{ worker.contract }}
-        </ng-template>
-      </app-summary-record-value>
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.contract.isEligible === 'Yes' &&
-          !worker.wdf?.contract.updatedSinceEffectiveDate
-        "
-        [changeLink]="getRoutePath('staff-details', wdfView)"
-        (fieldConfirmation)="this.confirmField('contract')"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
+    <dd class="govuk-summary-list__value">
+      <ng-container *ngIf="showPoolBankTag; else notPoolBankTag">Pool, Bank</ng-container>
+      <ng-template #notPoolBankTag>
+        {{ worker.contract }}
+      </ng-template>
     </dd>
   </div>
+  <app-wdf-field-confirmation
+    *ngIf="showWdfConfirmations.contract"
+    [changeLink]="getRoutePath('staff-details', wdfView)"
+    (fieldConfirmation)="this.confirmField('contract')"
+    [workerUid]="worker.uid"
+    [staffRecordView]="true"
+  ></app-wdf-field-confirmation>
 </dl>
 
-<dl class="govuk-summary-list asc-summarylist-border-top asc-summarylist-border-bottom">
-  <div class="govuk-summary-list__row" data-testid="main-job-role-section">
-    <dt class="govuk-summary-list__key govuk-!-padding-right-0 govuk-!-width-one-half">Main job role</dt>
-    <dd class="govuk-summary-list__value" [ngClass]="{ 'govuk-!-padding-left-9': !mandatoryDetailsPage }">
-      <app-summary-record-value
-        [wdfView]="wdfView"
-        [wdfValue]="worker.wdf?.mainJob"
-        [overallWdfEligibility]="overallWdfEligibility"
-      >
-        <ng-container *ngIf="worker.mainJob.other; else title">
-          <span>{{ worker.mainJob.other }}</span>
-        </ng-container>
-        <ng-template #title>
-          <span>{{ worker.mainJob.title }}</span>
-        </ng-template>
-      </app-summary-record-value>
-      <app-wdf-field-confirmation
-        *ngIf="
-          canEditWorker &&
-          wdfView &&
-          worker.wdf?.mainJob.isEligible === 'Yes' &&
-          !worker.wdf?.mainJob.updatedSinceEffectiveDate
-        "
-        [changeLink]="getRoutePath('main-job-role', wdfView)"
-        (fieldConfirmation)="this.confirmField('mainJob')"
-        [workerUid]="worker.uid"
-      ></app-wdf-field-confirmation>
+<dl class="govuk-summary-list asc-summarylist-border-top asc-summarylist-border-bottom govuk-summary-list--wide-key">
+  <div
+    class="govuk-summary-list__row"
+    [ngClass]="{
+      'govuk-summary-list__row--no-bottom-border': showWdfConfirmations.mainJob
+    }"
+    data-testid="main-job-role-section"
+  >
+    <dt class="govuk-summary-list__key">Main job role</dt>
+    <dd class="govuk-summary-list__value">
+      <ng-container *ngIf="worker.mainJob?.other; else title">
+        <span>{{ worker.mainJob.other }}</span>
+      </ng-container>
+      <ng-template #title>
+        <span>{{ worker.mainJob.title }}</span>
+      </ng-template>
     </dd>
     <dd *ngIf="canEditWorker" class="govuk-summary-list__actions">
       <app-summary-record-change
+        *ngIf="!showWdfConfirmations.mainJob"
         [explanationText]="' basic record details'"
         [link]="
           mandatoryDetailsPage ? getMandatoryDetailsRoute('main-job-role') : getRoutePath('main-job-role', wdfView)
@@ -85,4 +65,11 @@
       ></app-summary-record-change>
     </dd>
   </div>
+  <app-wdf-field-confirmation
+    *ngIf="showWdfConfirmations.mainJob"
+    [changeLink]="getRoutePath('main-job-role', wdfView)"
+    (fieldConfirmation)="this.confirmField('mainJob')"
+    [workerUid]="worker.uid"
+    [staffRecordView]="true"
+  ></app-wdf-field-confirmation>
 </dl>

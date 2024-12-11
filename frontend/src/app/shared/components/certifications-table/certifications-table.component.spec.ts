@@ -144,7 +144,7 @@ describe('CertificationsTableComponent', () => {
       (filename) => new File(['some file content'], filename, { type: 'application/pdf' }),
     );
 
-    it("should show the file name, today's date and remove link for the new files to be uploaded", async () => {
+ it("should show the file name, today's date and remove link for the new files to be uploaded", async () => {
       const { getByTestId } = await setup([], mockUploadFiles);
 
       const datePipe = new DatePipe('en-GB');
