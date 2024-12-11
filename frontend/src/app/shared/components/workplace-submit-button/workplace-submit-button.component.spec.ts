@@ -5,17 +5,19 @@ import { fireEvent, render } from '@testing-library/angular';
 import { WorkplaceSubmitButtonComponent } from './workplace-submit-button.component';
 
 describe('WorkplaceSubmitButtonComponent', () => {
-  const setup = async (shouldReturn = false) =>
+  const setup = async (overrides: any = {}) =>
     render(WorkplaceSubmitButtonComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule],
       componentProperties: {
-        return: shouldReturn,
+        return: false,
         callToAction: 'Save and continue',
         recordSummary: true,
         canExit: false,
         exitText: 'Cancel',
         marginTop2: false,
         marginTop4: false,
+        continue: false,
+        ...overrides,
       },
     });
 
@@ -90,21 +92,45 @@ describe('WorkplaceSubmitButtonComponent', () => {
   });
 
   describe('return is true', () => {
-    it(`should render the 'Save and continue' button and 'Cancel' link`, async () => {
-      const { getByText } = await setup(true);
+    describe('continue is true', () => {
+      it(`should render the 'Continue' button and 'Cancel' link`, async () => {
+        const overrides = { return: true, continue: true };
+        const { getByText } = await setup(overrides);
 
-      expect(getByText('Save and return')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
+        expect(getByText('Continue')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
+      });
+
+      it('should render the correct cancel text with a fallback', async () => {
+        const overrides = { return: true, continue: true };
+        const { rerender, getByText } = await setup(overrides);
+
+        expect(getByText('Cancel')).toBeTruthy();
+
+        // update directive
+        rerender({ exitText: 'Exit' });
+        expect(getByText('Exit')).toBeTruthy();
+      });
     });
+    describe('continue is false', () => {
+      it(`should render the 'Save and continue' button and 'Cancel' link`, async () => {
+        const overrides = { return: true, continue: false };
+        const { getByText } = await setup(overrides);
 
-    it('should render the correct cancel text with a fallback', async () => {
-      const { rerender, getByText } = await setup(true);
+        expect(getByText('Save and return')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
+      });
 
-      expect(getByText('Cancel')).toBeTruthy();
+      it('should render the correct cancel text with a fallback', async () => {
+        const overrides = { return: true, continue: false };
+        const { rerender, getByText } = await setup(overrides);
 
-      // update directive
-      rerender({ exitText: 'Exit' });
-      expect(getByText('Exit')).toBeTruthy();
+        expect(getByText('Cancel')).toBeTruthy();
+
+        // update directive
+        rerender({ exitText: 'Exit' });
+        expect(getByText('Exit')).toBeTruthy();
+      });
     });
   });
 

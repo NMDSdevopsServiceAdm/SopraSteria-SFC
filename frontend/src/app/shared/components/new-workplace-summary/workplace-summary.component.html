@@ -300,7 +300,7 @@
                 <ng-template #vacancies>
                   <ng-container *ngIf="isArray(workplace.vacancies)">
                     <ul class="govuk-list govuk-!-margin-bottom-0">
-                      <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy.total }} {{ vacancy.title }}</li>
+                      <li *ngFor="let vacancy of workplace.vacancies">{{ vacancy | formatSLV }}</li>
                     </ul>
                   </ng-container>
                   <ng-container *ngIf="!isArray(workplace.vacancies)">{{ workplace.vacancies }} </ng-container>
@@ -310,7 +310,7 @@
             <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
               <app-summary-record-change
                 [explanationText]="' staff vacancies'"
-                [link]="['/workplace', workplace.uid, 'vacancies']"
+                [link]="['/workplace', workplace.uid, 'do-you-have-vacancies']"
                 [hasData]="workplace.vacancies?.length"
                 (setReturnClicked)="this.setReturn()"
               ></app-summary-record-change>
@@ -327,14 +327,14 @@
       </div>
       <dl class="govuk-summary-list govuk-summary-list--medium">
         <div class="govuk-summary-list__row" data-testid="starters">
-          <dt class="govuk-summary-list__key">New starters</dt>
+          <dt class="govuk-summary-list__key">New starters in the last 12 months</dt>
           <dd class="govuk-summary-list__value">
             <app-summary-record-value>
               <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
               <ng-template #starters>
                 <ng-container *ngIf="isArray(workplace.starters)">
                   <ul class="govuk-list govuk-!-margin-bottom-0">
-                    <li *ngFor="let starter of workplace.starters">{{ starter.total }} {{ starter.title }}</li>
+                    <li *ngFor="let starter of workplace.starters">{{ starter | formatSLV }}</li>
                   </ul>
                 </ng-container>
                 <ng-container *ngIf="!isArray(workplace.starters)">
@@ -346,7 +346,7 @@
           <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
             <app-summary-record-change
               [explanationText]="' new starters'"
-              [link]="['/workplace', workplace.uid, 'starters']"
+              [link]="['/workplace', workplace.uid, 'do-you-have-starters']"
               [hasData]="workplace.starters?.length"
               (setReturnClicked)="this.setReturn()"
             ></app-summary-record-change>
@@ -354,14 +354,14 @@
         </div>
 
         <div class="govuk-summary-list__row" data-testid="leavers">
-          <dt class="govuk-summary-list__key">Leavers</dt>
+          <dt class="govuk-summary-list__key">Staff leavers in the last 12 months</dt>
           <dd class="govuk-summary-list__value">
             <app-summary-record-value>
               <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
               <ng-template #leavers>
                 <ng-container *ngIf="isArray(workplace.leavers)">
                   <ul class="govuk-list govuk-!-margin-bottom-0">
-                    <li *ngFor="let leaver of workplace.leavers">{{ leaver.total }} {{ leaver.title }}</li>
+                    <li *ngFor="let leaver of workplace.leavers">{{ leaver | formatSLV }}</li>
                   </ul>
                 </ng-container>
                 <ng-container *ngIf="!isArray(workplace.leavers)">
@@ -373,7 +373,7 @@
           <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
             <app-summary-record-change
               [explanationText]="' leavers'"
-              [link]="['/workplace', workplace.uid, 'leavers']"
+              [link]="['/workplace', workplace.uid, 'do-you-have-leavers']"
               [hasData]="workplace.leavers?.length"
               (setReturnClicked)="this.setReturn()"
             ></app-summary-record-change>

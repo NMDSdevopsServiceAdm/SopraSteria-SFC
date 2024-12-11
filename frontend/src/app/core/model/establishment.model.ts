@@ -51,18 +51,21 @@ export interface Vacancy {
   jobId: number;
   title?: string;
   total: number;
+  other?: string;
 }
 
 export interface Starter {
   jobId: number;
   title?: string;
   total: number;
+  other?: string;
 }
 
 export interface Leaver {
   jobId: number;
   title?: string;
   total: number;
+  other?: string;
 }
 
 export interface Category {
@@ -171,6 +174,7 @@ export interface UpdateJobsRequest {
 }
 
 export enum jobOptionsEnum {
+  YES = 'With Jobs',
   DONT_KNOW = "Don't know",
   NONE = 'None',
 }

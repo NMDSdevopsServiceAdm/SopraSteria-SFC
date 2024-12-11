@@ -13,6 +13,7 @@ export class WorkplaceSubmitButtonComponent {
   @Input() exitText = 'Cancel';
   @Input() marginTop2 = false;
   @Input() marginTop4 = false;
+  @Input() continue = false;
   @Output() clicked = new EventEmitter<{ action: string; save: boolean }>();
 
   onLinkClick(event: Event, action: string, save: boolean): void {

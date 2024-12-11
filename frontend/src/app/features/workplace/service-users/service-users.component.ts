@@ -46,7 +46,7 @@ export class ServiceUsersComponent extends Question {
       }),
     );
 
-    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
+    this.nextRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-vacancies'];
     this.subscriptions.add(
       this.establishmentService.getCapacity(this.establishment.uid, true).subscribe(
         (response) => {
@@ -59,7 +59,7 @@ export class ServiceUsersComponent extends Question {
         (error) => this.onError(error),
       ),
     );
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'vacancies'];
+    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'do-you-have-vacancies'];
   }
 
   private addFormControls(): void {

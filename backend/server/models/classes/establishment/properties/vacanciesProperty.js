@@ -37,7 +37,6 @@ exports.VacanciesProperty = class VacanciesProperty extends ChangePropertyProtot
 
   restorePropertyFromSequelize(document) {
     if (document.VacanciesValue && document.VacanciesValue === 'With Jobs' && document.jobs) {
-      //console.log("WA DEBUG - all establishment jobs: ", document.jobs)
       // we're only interested in Vacancy jobs
       const restoredProperty = document.jobs
         .filter((thisJob) => thisJob.type === 'Vacancies')
