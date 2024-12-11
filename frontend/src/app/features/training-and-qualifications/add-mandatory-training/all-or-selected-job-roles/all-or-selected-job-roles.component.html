@@ -1,0 +1,55 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" novalidate>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-6">
+          <span class="govuk-caption-l">Add a mandatory training category</span>
+          <h1 class="govuk-fieldset__heading">Which job roles need this training?</h1>
+        </legend>
+      </fieldset>
+
+      <div class="govuk-radios">
+        <span id="allOrSelectedJobRoles-error" class="govuk-error-message" *ngIf="submitted && form.invalid">
+          <span class="govuk-visually-hidden">Error:</span> {{ requiredErrorMessage }}
+        </span>
+        <div class="govuk-radios__item">
+          <input
+            class="govuk-radios__input"
+            id="allJobRoles"
+            name="allOrSelectedJobRoles"
+            type="radio"
+            value="allJobRoles"
+            formControlName="allOrSelectedJobRoles"
+            [class.govuk-input--error]="submitted && form.invalid"
+          />
+          <label class="govuk-label govuk-radios__label" for="allJobRoles"> All job roles </label>
+        </div>
+        <div class="govuk-radios__item">
+          <input
+            class="govuk-radios__input"
+            id="selectJobRoles"
+            name="allOrSelectedJobRoles"
+            type="radio"
+            value="selectJobRoles"
+            formControlName="allOrSelectedJobRoles"
+          />
+          <label class="govuk-label govuk-radios__label" for="selectJobRoles">Only selected job roles</label>
+        </div>
+
+        <div class="govuk-button-group govuk-!-margin-top-8">
+          <button type="submit" class="govuk-button govuk-!-margin-right-9">Continue</button>
+          <a
+            role="button"
+            href="#"
+            class="govuk-button govuk-button--link govuk-!-margin-left-9"
+            draggable="false"
+            (click)="onCancel($event)"
+            >Cancel</a
+          >
+        </div>
+      </div>
+    </div>
+  </div>
+</form>

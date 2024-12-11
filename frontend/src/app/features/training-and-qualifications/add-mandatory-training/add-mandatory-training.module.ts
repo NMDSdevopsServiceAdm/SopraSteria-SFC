@@ -8,6 +8,7 @@ import { SharedModule } from '@shared/shared.module';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training/add-and-manage-mandatory-training.component';
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
+import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles/all-or-selected-job-roles.component';
 import { RemoveAllMandatoryTrainingComponent } from './delete-mandatory-training/delete-all-mandatory-training.component';
 import { SelectTrainingCategoryMandatoryComponent } from './select-training-category-mandatory/select-training-category-mandatory.component';
 
@@ -19,6 +20,7 @@ import { SelectTrainingCategoryMandatoryComponent } from './select-training-cate
     RemoveAllMandatoryTrainingComponent,
     AddAndManageMandatoryTrainingComponent,
     DeleteMandatoryTrainingCategoryComponent,
+    AllOrSelectedJobRolesComponent,
   ],
   providers: [TrainingCategoriesResolver],
 })
