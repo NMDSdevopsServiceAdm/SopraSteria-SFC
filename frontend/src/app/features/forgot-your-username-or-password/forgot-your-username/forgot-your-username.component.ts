@@ -1,14 +1,15 @@
+import { Subscription } from 'rxjs';
+
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Subscription } from 'rxjs';
+import { AccountFound } from '@core/services/find-username.service';
+
 import { FindAccountComponent } from './find-account/find-account.component';
 import { FindUsernameComponent } from './find-username/find-username.component';
-import { AccountFound } from '../../../core/services/find-username.service';
 
 @Component({
   selector: 'app-forgot-your-username',
   templateUrl: './forgot-your-username.component.html',
-  styleUrls: ['./forgot-your-username.component.scss'],
 })
 export class ForgotYourUsernameComponent implements OnInit {
   public currentForm: FindAccountComponent | FindUsernameComponent;

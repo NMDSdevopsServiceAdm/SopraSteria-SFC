@@ -3,6 +3,7 @@ import { Subscription } from 'rxjs';
 
 import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { EMAIL_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { AccountFound, FindUserAccountResponse, FindUsernameService } from '@core/services/find-username.service';
@@ -10,13 +11,12 @@ import { AccountFound, FindUserAccountResponse, FindUsernameService } from '@cor
 const InputFields = [
   { id: 'name', label: 'Name', maxlength: 120 },
   { id: 'workplaceIdOrPostcode', label: 'Workplace ID or postcode', maxlength: 8 },
-  { id: 'email', label: 'Email address', maxlength: 120 },
+  { id: 'email', label: 'Email address', maxlength: 120, pattern: EMAIL_PATTERN },
 ];
 
 @Component({
   selector: 'app-find-account',
   templateUrl: './find-account.component.html',
-  styleUrls: ['./find-account.component.scss'],
 })
 export class FindAccountComponent {
   @ViewChild('formEl') formEl: ElementRef;
@@ -42,15 +42,16 @@ export class FindAccountComponent {
   ) {}
 
   ngOnInit() {
-    const formElements = {};
-    InputFields.forEach((field) => {
-      formElements[field.id] = [
-        '',
-        { validators: [Validators.required, Validators.maxLength(field.maxlength)], updateOn: 'submit' },
-      ];
+    const formConfigs = {};
+    this.formFields.forEach((field) => {
+      const validators = [Validators.required, Validators.maxLength(field.maxlength)];
+      if (field.pattern) {
+        validators.push(Validators.pattern(field.pattern));
+      }
+      formConfigs[field.id] = ['', { validators, updateOn: 'submit' }];
     });
 
-    this.form = this.FormBuilder.group(formElements);
+    this.form = this.FormBuilder.group(formConfigs);
     this.setupFormErrorsMap();
     this.setCurrentForm.emit(this);
   }
@@ -60,20 +61,25 @@ export class FindAccountComponent {
   }
 
   public setupFormErrorsMap(): void {
-    this.formErrorsMap = InputFields.map((field) => {
-      return {
+    this.formErrorsMap = this.formFields.map((field) => {
+      const errorMap = {
         item: field.id,
         type: [
-          {
-            name: 'required',
-            message: `Enter your ${lowerFirst(field.label)}`,
-          },
+          { name: 'required', message: `Enter your ${lowerFirst(field.label)}` },
           {
             name: 'maxlength',
             message: `Your ${lowerFirst(field.label)} must be ${field.maxlength} characters or fewer`,
           },
         ],
       };
+      if (field.id === 'email') {
+        errorMap.type.push({
+          name: 'pattern',
+          message: 'Enter the email address in the correct format, like name@example.com',
+        });
+      }
+
+      return errorMap;
     });
   }
 
@@ -86,8 +92,6 @@ export class FindAccountComponent {
     this.submitted = true;
 
     if (!this.form.valid) {
-      this.accountFound = null;
-      this.remainingAttempts = null;
       return;
     }
 

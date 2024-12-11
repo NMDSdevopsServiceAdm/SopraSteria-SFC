@@ -5,7 +5,6 @@ import { ErrorDetails } from '@core/model/errorSummary.model';
 @Component({
   selector: 'app-find-username',
   templateUrl: './find-username.component.html',
-  styleUrls: ['./find-username.component.scss'],
 })
 export class FindUsernameComponent {
   @ViewChild('formEl') formEl: ElementRef;

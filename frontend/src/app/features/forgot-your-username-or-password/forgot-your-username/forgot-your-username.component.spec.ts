@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
-import { render, screen, within } from '@testing-library/angular';
+import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { FindUsernameService } from '../../../core/services/find-username.service';
@@ -42,14 +42,6 @@ fdescribe('ForgotYourUsernameComponent', () => {
     return { ...setupTools, component, routerSpy, findUsernameService };
   };
 
-  const fillInAndSubmitForm = async (name: string, workplaceIdOrPostcode: string, email: string) => {
-    userEvent.type(screen.getByRole('textbox', { name: 'Name' }), name);
-    userEvent.type(screen.getByRole('textbox', { name: 'Workplace ID or postcode' }), workplaceIdOrPostcode);
-    userEvent.type(screen.getByRole('textbox', { name: 'Email address' }), email);
-
-    userEvent.click(screen.getByRole('button', { name: 'Find account' }));
-  };
-
   it('should create', async () => {
     const { component } = await setup();
 
@@ -63,42 +55,35 @@ fdescribe('ForgotYourUsernameComponent', () => {
   });
 
   describe('Find account', () => {
-    it('should show text inputs for "Name", "Workplace ID or postcode" and "Email address"', async () => {
-      const { getByRole } = await setup();
+    const fillInAndSubmitForm = async (name: string, workplaceIdOrPostcode: string, email: string) => {
+      userEvent.type(screen.getByRole('textbox', { name: 'Name' }), name);
+      userEvent.type(screen.getByRole('textbox', { name: 'Workplace ID or postcode' }), workplaceIdOrPostcode);
+      userEvent.type(screen.getByRole('textbox', { name: 'Email address' }), email);
 
-      expect(getByRole('textbox', { name: 'Name' })).toBeTruthy();
-      expect(getByRole('textbox', { name: 'Workplace ID or postcode' })).toBeTruthy();
-      expect(getByRole('textbox', { name: 'Email address' })).toBeTruthy();
-    });
+      userEvent.click(screen.getByRole('button', { name: 'Find account' }));
+    };
 
-    it('should show a "Find account" CTA button and a "Back to sign in" link', async () => {
-      const { getByRole, getByText } = await setup();
+    describe('rendering', () => {
+      it('should show text inputs for "Name", "Workplace ID or postcode" and "Email address"', async () => {
+        const { getByRole } = await setup();
 
-      expect(getByRole('button', { name: 'Find account' })).toBeTruthy();
+        expect(getByRole('textbox', { name: 'Name' })).toBeTruthy();
+        expect(getByRole('textbox', { name: 'Workplace ID or postcode' })).toBeTruthy();
+        expect(getByRole('textbox', { name: 'Email address' })).toBeTruthy();
+      });
 
-      const backToSignIn = getByText('Back to sign in');
-      expect(backToSignIn).toBeTruthy();
-      expect(backToSignIn.getAttribute('href')).toEqual('/login');
+      it('should show a "Find account" CTA button and a "Back to sign in" link', async () => {
+        const { getByRole, getByText } = await setup();
+
+        expect(getByRole('button', { name: 'Find account' })).toBeTruthy();
+
+        const backToSignIn = getByText('Back to sign in');
+        expect(backToSignIn).toBeTruthy();
+        expect(backToSignIn.getAttribute('href')).toEqual('/login');
+      });
     });
 
     describe('submit form and validation', () => {
-      it('should show an error message if any of the text input is blank', async () => {
-        const { fixture, getByRole, getByText, getAllByText, findUsernameService } = await setup();
-
-        spyOn(findUsernameService, 'findUserAccount').and.callThrough();
-
-        userEvent.click(getByRole('button', { name: 'Find account' }));
-        fixture.detectChanges();
-
-        expect(getByText('There is a problem')).toBeTruthy();
-
-        expect(getAllByText('Enter your name')).toHaveSize(2);
-        expect(getAllByText('Enter your workplace ID or postcode')).toHaveSize(2);
-        expect(getAllByText('Enter your email address')).toHaveSize(2);
-
-        expect(findUsernameService.findUserAccount).not.toHaveBeenCalled();
-      });
-
       it('should call forgetUsernameService findUserAccount() on submit', async () => {
         const { fixture, findUsernameService } = await setup();
 
@@ -142,6 +127,40 @@ fdescribe('ForgotYourUsernameComponent', () => {
         const accountNotFoundMessage = getByText('Account not found').parentElement;
 
         expectedText.forEach((text) => expect(accountNotFoundMessage.innerText).toContain(text));
+      });
+
+      describe('errors', () => {
+        it('should show an error message if any of the text input is blank', async () => {
+          const { fixture, getByRole, getByText, getAllByText, findUsernameService } = await setup();
+
+          spyOn(findUsernameService, 'findUserAccount').and.callThrough();
+
+          userEvent.click(getByRole('button', { name: 'Find account' }));
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+
+          expect(getAllByText('Enter your name')).toHaveSize(2);
+          expect(getAllByText('Enter your workplace ID or postcode')).toHaveSize(2);
+          expect(getAllByText('Enter your email address')).toHaveSize(2);
+
+          expect(findUsernameService.findUserAccount).not.toHaveBeenCalled();
+        });
+
+        it('should show an error message if the email address not in a right format', async () => {
+          const { fixture, getByText, getAllByText, findUsernameService } = await setup();
+
+          spyOn(findUsernameService, 'findUserAccount').and.callThrough();
+
+          await fillInAndSubmitForm('Test User', 'A1234567', 'not-a-email-address');
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+
+          expect(getAllByText('Enter the email address in the correct format, like name@example.com')).toHaveSize(2);
+
+          expect(findUsernameService.findUserAccount).not.toHaveBeenCalled();
+        });
       });
     });
   });
