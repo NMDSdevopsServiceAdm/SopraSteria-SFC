@@ -142,7 +142,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
     });
   });
 
-  it('should navigate to the select-job-roles page after selecting category and clicking continue', async () => {
+  it('should navigate to the all-or-selected-job-roles page after selecting category and clicking continue', async () => {
     const { getByText, routerSpy, establishment } = await setup();
 
     const openAllLinkLink = getByText('Show all categories');
@@ -158,7 +158,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
       'workplace',
       establishment.uid,
       'add-and-manage-mandatory-training',
-      'select-job-roles',
+      'all-or-selected-job-roles',
     ]);
   });
 

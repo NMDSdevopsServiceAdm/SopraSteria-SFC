@@ -48,6 +48,11 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
   protected submit(selectedCategory): void {
     this.trainingService.setSelectedTrainingCategory(selectedCategory);
-    this.router.navigate(['workplace', this.establishmentUid, 'add-and-manage-mandatory-training', 'select-job-roles']);
+    this.router.navigate([
+      'workplace',
+      this.establishmentUid,
+      'add-and-manage-mandatory-training',
+      'all-or-selected-job-roles',
+    ]);
   }
 }
