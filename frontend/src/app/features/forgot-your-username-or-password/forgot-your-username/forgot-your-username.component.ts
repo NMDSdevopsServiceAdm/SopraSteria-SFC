@@ -13,7 +13,6 @@ import { FindUsernameComponent } from './find-username/find-username.component';
 })
 export class ForgotYourUsernameComponent implements OnInit {
   public currentForm: FindAccountComponent | FindUsernameComponent;
-  public formErrorsMap: Array<ErrorDetails>;
   public accountUid: string;
   public securityQuestion: string;
   private subscriptions = new Subscription();
@@ -24,7 +23,6 @@ export class ForgotYourUsernameComponent implements OnInit {
 
   public setCurrentForm(childForm: FindAccountComponent | FindUsernameComponent): void {
     this.currentForm = childForm;
-    this.formErrorsMap = childForm.formErrorsMap;
     this.cd.detectChanges();
   }
 

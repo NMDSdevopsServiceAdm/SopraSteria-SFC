@@ -22,18 +22,17 @@ export class FindAccountComponent {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('searchResult') searchResult: ElementRef;
 
+  @Output() setCurrentForm = new EventEmitter<FindAccountComponent>();
+  @Output() accountFoundEvent = new EventEmitter<AccountFound>();
+
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public formFields = InputFields;
-
   public submitted = false;
   public accountFound: boolean;
   public remainingAttempts: number;
 
   private subscriptions = new Subscription();
-
-  @Output() setCurrentForm = new EventEmitter<FindAccountComponent>();
-  @Output() accountFoundEvent = new EventEmitter<AccountFound>();
 
   constructor(
     private FormBuilder: UntypedFormBuilder,
