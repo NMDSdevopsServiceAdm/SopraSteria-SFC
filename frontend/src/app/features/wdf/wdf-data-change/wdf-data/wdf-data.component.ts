@@ -38,8 +38,10 @@ export class WdfDataComponent implements OnInit {
   public returnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
   private activeTabIndex: number;
-  public parentOverallWdfEligibility: boolean;
   public overallWdfEligibility: boolean;
+  public subsidiariesOverallWdfEligibility: boolean;
+  public someSubsidiariesMeetingRequirements: boolean;
+
   public isParent: boolean;
   public subsidiaryWorkplaces = [];
   public viewingSub: boolean;
@@ -176,15 +178,19 @@ export class WdfDataComponent implements OnInit {
           );
           this.subsidiaryWorkplaces = orderBy(activeSubsidiaryWorkplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
         }
-        this.getParentOverallWdfEligibility();
+
+        this.setSubsidiariesEligibility();
       }),
     );
   }
 
-  public getParentOverallWdfEligibility(): void {
-    this.parentOverallWdfEligibility = ![this.workplace, ...this.subsidiaryWorkplaces].some((workplace) => {
-      return workplace.wdf.overall === false;
-    });
+  public setSubsidiariesEligibility(): void {
+    this.subsidiariesOverallWdfEligibility = this.subsidiaryWorkplaces.every(
+      (workplace) => workplace.wdf.overall === true,
+    );
+    this.someSubsidiariesMeetingRequirements = this.subsidiaryWorkplaces.some(
+      (workplace) => workplace.wdf.overall === true,
+    );
   }
 
   ngOnDestroy() {

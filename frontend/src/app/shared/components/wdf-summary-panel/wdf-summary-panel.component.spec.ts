@@ -14,10 +14,11 @@ describe('WdfSummaryPanel', () => {
   const messages = {
     fundingMet: `Your data has met the funding requirements for ${currentYear} to ${currentYear + 1}`,
     fundingNotMet: `Your data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`,
+    fundingMetBySomeSubs: `Some data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`,
   };
 
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(WdfSummaryPanel, {
+    const setupTools = await render(WdfSummaryPanel, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
       providers: [],
       componentProperties: {
@@ -26,13 +27,13 @@ describe('WdfSummaryPanel', () => {
         ...overrides,
       },
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    return { component, fixture, getByText, queryByText, getByTestId, queryByTestId, routerSpy };
+    return { ...setupTools, component, routerSpy };
   };
 
   it('should create', async () => {
@@ -108,7 +109,7 @@ describe('WdfSummaryPanel', () => {
 
     it('should display the correct message with timeframe for meeting WDF requirements for all other workplaces', async () => {
       const overrides = {
-        parentOverallWdfEligibility: true,
+        subsidiariesOverallWdfEligibility: true,
         isParent: true,
       };
 
@@ -185,7 +186,7 @@ describe('WdfSummaryPanel', () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
-          parentOverallWdfEligibility: true,
+          subsidiariesOverallWdfEligibility: true,
           isParent: true,
         };
 
@@ -208,7 +209,7 @@ describe('WdfSummaryPanel', () => {
         const overrides = {
           workplaceWdfEligibilityStatus: true,
           staffWdfEligibilityStatus: true,
-          parentOverallWdfEligibility: true,
+          subsidiariesOverallWdfEligibility: true,
           isParent: true,
           activatedFragment: 'workplaces',
         };
@@ -269,7 +270,7 @@ describe('WdfSummaryPanel', () => {
       const overrides = {
         workplaceWdfEligibilityStatus: false,
         staffWdfEligibilityStatus: false,
-        parentOverallWdfEligibility: false,
+        subsidiariesOverallWdfEligibility: false,
         isParent: true,
         overallWdfEligibility: false,
       };
@@ -282,6 +283,27 @@ describe('WdfSummaryPanel', () => {
       expect(within(workplacesRow).queryByText(messages.fundingMet)).toBeFalsy();
       expect(within(workplacesRow).getByText(messages.fundingNotMet)).toBeTruthy();
       expect(within(workplacesRow).getByTestId('red-flag')).toBeTruthy();
+    });
+
+    it('should display some data not meeting requirements message when ineligible but some sub workplaces are meeting', async () => {
+      const overrides = {
+        workplaceWdfEligibilityStatus: false,
+        staffWdfEligibilityStatus: false,
+        subsidiariesOverallWdfEligibility: false,
+        someSubsidiariesMeetingRequirements: true,
+        isParent: true,
+        overallWdfEligibility: false,
+      };
+
+      const { getByTestId } = await setup(overrides);
+
+      const workplacesRow = getByTestId('workplaces-row');
+
+      expect(within(workplacesRow).getByText(messages.fundingMetBySomeSubs)).toBeTruthy();
+      expect(within(workplacesRow).getByTestId('red-flag')).toBeTruthy();
+
+      expect(within(workplacesRow).queryByText(messages.fundingMet)).toBeFalsy();
+      expect(within(workplacesRow).queryByText(messages.fundingNotMet)).toBeFalsy();
     });
   });
 
@@ -344,7 +366,7 @@ describe('WdfSummaryPanel', () => {
 
         it(`should navigate to your other workplaces when clicked ${scenario}`, async () => {
           const overrides = {
-            parentOverallWdfEligibility: isEligible,
+            subsidiariesOverallWdfEligibility: isEligible,
             isParent: true,
             onDataPage,
           };

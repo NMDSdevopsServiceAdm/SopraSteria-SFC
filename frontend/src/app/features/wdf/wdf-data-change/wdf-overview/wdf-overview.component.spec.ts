@@ -5,11 +5,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UserService } from '@core/services/user.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { createMockWdfReport } from '@core/test-utils/MockReportService';
 import { WdfSummaryPanel } from '@shared/components/wdf-summary-panel/wdf-summary-panel.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+import { of } from 'rxjs';
 
 import { WdfOverviewComponent } from './wdf-overview.component';
 
@@ -40,6 +42,12 @@ describe('WdfOverviewComponent', () => {
               snapshot: {
                 data: { report: createMockWdfReport(overrides) },
               },
+            },
+          },
+          {
+            provide: UserService,
+            useValue: {
+              getEstablishments: () => of(overrides.getParentAndSubs ?? null),
             },
           },
         ],
@@ -270,22 +278,6 @@ describe('WdfOverviewComponent', () => {
       expect(workplacesRow).toBeTruthy();
     });
 
-    it('should display data has met paragraph', async () => {
-      const overrides = {
-        wdf: { overall: true, workplace: true, staff: true },
-        isParent: true,
-        parentOverallWdfEligibility: true,
-      };
-
-      const { getByText, getByTestId } = await setup(overrides);
-
-      const dataMetFundingParagraph = getByTestId('dataMetFunding');
-      const keepYourDataCurrentLink = getByText('Keep your data current');
-
-      expect(dataMetFundingParagraph).toBeTruthy();
-      expect(keepYourDataCurrentLink.getAttribute('ng-reflect-router-link')).toEqual('data');
-    });
-
     it('should not display the funding requirements inset text when requirements are met', async () => {
       const overrides = {
         wdf: { overall: true, workplace: true, staff: true },
@@ -299,6 +291,64 @@ describe('WdfOverviewComponent', () => {
 
       expect(fundingInsetText).toBeFalsy();
     });
+
+    describe('Data has met paragraph', () => {
+      it('should display data has met paragraph', async () => {
+        const overrides = {
+          wdf: { overall: true, workplace: true, staff: true },
+          isParent: true,
+          parentOverallWdfEligibility: true,
+        };
+
+        const { getByText, getByTestId } = await setup(overrides);
+
+        const dataMetFundingParagraph = getByTestId('dataMetFunding');
+        const keepYourDataCurrentLink = getByText('Keep your data current');
+
+        expect(dataMetFundingParagraph).toBeTruthy();
+        expect(keepYourDataCurrentLink.getAttribute('ng-reflect-router-link')).toEqual('data');
+      });
+
+      it('should display overall eligibility date from parent when parent has latest eligibility date', async () => {
+        const overrides = {
+          wdf: { overall: true, workplace: true, staff: true, overallWdfEligibility: '2024-07-31' },
+          isParent: true,
+          getParentAndSubs: {
+            primary: { wdf: { overall: true, overallWdfEligibility: '2024-07-31' } },
+            subsidaries: {
+              establishments: [
+                { wdf: { overall: true, overallWdfEligibility: '2024-06-11' } },
+                { wdf: { overall: true, overallWdfEligibility: '2024-05-13' } },
+              ],
+            },
+          },
+        };
+
+        const { getByText } = await setup(overrides);
+
+        expect(getByText('Your data met the funding requirements on 31 July', { exact: false })).toBeTruthy();
+      });
+
+      it('should display overall eligibility date from latest sub when a sub has latest eligibility date', async () => {
+        const overrides = {
+          wdf: { overall: true, workplace: true, staff: true, overallWdfEligibility: '2024-07-31' },
+          isParent: true,
+          getParentAndSubs: {
+            primary: { wdf: { overall: true, overallWdfEligibility: '2024-07-31' } },
+            subsidaries: {
+              establishments: [
+                { wdf: { overall: true, overallWdfEligibility: '2024-06-11' } },
+                { wdf: { overall: true, overallWdfEligibility: '2024-10-13' } },
+              ],
+            },
+          },
+        };
+
+        const { getByText } = await setup(overrides);
+
+        expect(getByText('Your data met the funding requirements on 13 October', { exact: false })).toBeTruthy();
+      });
+    });
   });
 
   describe('Parent workplaces unhappy path', () => {
@@ -306,7 +356,15 @@ describe('WdfOverviewComponent', () => {
       const overrides = {
         wdf: { overall: false, workplace: false, staff: false },
         isParent: true,
-        parentOverallWdfEligibility: false,
+        getParentAndSubs: {
+          primary: { wdf: { overall: false, overallWdfEligibility: null } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+              { wdf: { overall: false, overallWdfEligibility: null } },
+            ],
+          },
+        },
       };
 
       const { queryByText, queryByTestId } = await setup(overrides);
@@ -320,9 +378,17 @@ describe('WdfOverviewComponent', () => {
 
     it('should display the funding requirements inset text when requirements are not met', async () => {
       const overrides = {
-        wdf: { overall: false, workplace: true, staff: true },
+        wdf: { overall: false, workplace: false, staff: true },
         isParent: true,
-        parentOverallWdfEligibility: false,
+        getParentAndSubs: {
+          primary: { wdf: { overall: false, overallWdfEligibility: null } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: false, overallWdfEligibility: null } },
+              { wdf: { overall: false, overallWdfEligibility: null } },
+            ],
+          },
+        },
       };
 
       const { queryByTestId } = await setup(overrides);
@@ -331,62 +397,91 @@ describe('WdfOverviewComponent', () => {
 
       expect(fundingInsetText).toBeTruthy();
     });
+
+    it('should display some data not meeting message when not eligible overall but some sub workplaces are eligible', async () => {
+      const overrides = {
+        isParent: true,
+        getParentAndSubs: {
+          primary: { wdf: { overall: true, overallWdfEligibility: '2021-08-31' } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+              { wdf: { overall: false, overallWdfEligibility: null } },
+            ],
+          },
+        },
+      };
+
+      const { getByText } = await setup(overrides);
+
+      expect(
+        getByText(`Some data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`),
+      ).toBeTruthy();
+    });
+
+    it('should display meeting message for Your other workplaces when parent not eligible but all sub workplaces are eligible', async () => {
+      const overrides = {
+        isParent: true,
+        wdf: { overall: false, workplace: false, staff: false },
+        getParentAndSubs: {
+          primary: { wdf: { overall: false, overallWdfEligibility: null } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+              { wdf: { overall: true, overallWdfEligibility: '2021-09-31' } },
+            ],
+          },
+        },
+      };
+
+      const { getByText } = await setup(overrides);
+
+      expect(
+        getByText(`Your data has met the funding requirements for ${currentYear} to ${currentYear + 1}`),
+      ).toBeTruthy();
+    });
   });
 
   describe('getParentAndSubs', async () => {
     it('should calculate parentOverallWdfEligibility to be true if all workplaces are eligible', async () => {
       const overrides = {
         isParent: true,
+        getParentAndSubs: {
+          primary: { wdf: { overall: true, overallWdfEligibility: '2021-08-31' } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+              { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
+            ],
+          },
+        },
       };
 
       const { component, fixture } = await setup(overrides);
-
-      component.workplaces = [
-        { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
-        { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
-      ];
-
       component.getParentOverallWdfEligibility();
       fixture.detectChanges();
-
       expect(component.parentOverallWdfEligibility).toBeTrue();
     });
 
     it('should calculate parentOverallWdfEligibility to be false if a workplace is ineligible', async () => {
       const overrides = {
         isParent: true,
+        getParentAndSubs: {
+          primary: { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+          subsidaries: {
+            establishments: [
+              { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
+              { wdf: { overall: false, overallWdfEligibility: '' } },
+            ],
+          },
+        },
       };
 
       const { component, fixture } = await setup(overrides);
-
-      component.workplaces = [
-        { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
-        { wdf: { overall: false, overallWdfEligibility: '' } },
-      ];
-
       component.getParentOverallWdfEligibility();
       fixture.detectChanges();
 
       expect(component.parentOverallWdfEligibility).toBeFalse();
-    });
-
-    it('should correctly calculate parentOverallEligibilityDate if all workplaces are eligible', async () => {
-      const overrides = {
-        isParent: true,
-        parentOverallWdfEligibility: true,
-      };
-
-      const { component, fixture } = await setup(overrides);
-
-      component.workplaces = [
-        { wdf: { overall: true, overallWdfEligibility: '2021-07-31' } },
-        { wdf: { overall: true, overallWdfEligibility: '2021-05-01' } },
-      ];
-
-      component.getLastOverallEligibilityDate();
-      fixture.detectChanges();
-
-      expect(component.parentOverallEligibilityDate).toEqual('31 July 2021');
     });
   });
 });

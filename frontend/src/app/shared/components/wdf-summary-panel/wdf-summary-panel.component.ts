@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -5,6 +6,7 @@ import { Router } from '@angular/router';
   selector: 'app-wdf-summary-panel',
   templateUrl: './wdf-summary-panel.component.html',
   styleUrls: ['../summary-section/summary-section.component.scss', './wdf-summary-panel.component.scss'],
+  providers: [DatePipe],
 })
 export class WdfSummaryPanel implements OnInit, OnChanges {
   @Input() workplaceWdfEligibilityStatus: boolean;
@@ -12,16 +14,21 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   @Input() wdfStartDate: string;
   @Input() wdfEndDate: string;
   @Input() isParent: boolean;
-  @Input() parentOverallWdfEligibility: boolean;
+  @Input() subsidiariesOverallWdfEligibility: boolean;
   @Input() overallWdfEligibility: boolean;
   @Input() activatedFragment: string;
   @Input() onDataPage: boolean = true;
+  @Input() someSubsidiariesMeetingRequirements: boolean;
 
   public sections: any = [];
+  public meetingMessage: string;
+  public notMeetingMessage: string;
+  public someSubsMeetingMessage: string;
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private datePipe: DatePipe) {}
 
   ngOnInit(): void {
+    this.setMessages();
     this.getSections();
     this.showLink(this.activatedFragment);
   }
@@ -29,6 +36,15 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
   ngOnChanges(): void {
     this.getSections();
     this.showLink(this.activatedFragment);
+  }
+
+  private setMessages(): void {
+    const formattedStartDate = this.datePipe.transform(this.wdfStartDate, 'yyyy');
+    const formattedEndDate = this.datePipe.transform(this.wdfEndDate, 'yyyy');
+
+    this.meetingMessage = `Your data has met the funding requirements for ${formattedStartDate} to ${formattedEndDate}`;
+    this.notMeetingMessage = `Your data does not meet the funding requirements for ${formattedStartDate} to ${formattedEndDate}`;
+    this.someSubsMeetingMessage = `Some data does not meet the funding requirements for ${formattedStartDate} to ${formattedEndDate}`;
   }
 
   public getSections(): void {
@@ -39,21 +55,27 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
           this.workplaceWdfEligibilityStatus || (!this.workplaceWdfEligibilityStatus && this.overallWdfEligibility),
         fragment: 'workplace',
         showLink: true,
+        meetingMessage: this.meetingMessage,
+        notMeetingMessage: this.notMeetingMessage,
       },
       {
         title: 'Staff records',
         eligibility: this.staffWdfEligibilityStatus || (!this.staffWdfEligibilityStatus && this.overallWdfEligibility),
         fragment: 'staff',
         showLink: true,
+        meetingMessage: this.meetingMessage,
+        notMeetingMessage: this.notMeetingMessage,
       },
     ];
 
     if (this.isParent) {
       this.sections.push({
         title: 'Your other workplaces',
-        eligibility: this.parentOverallWdfEligibility,
+        eligibility: this.subsidiariesOverallWdfEligibility,
         fragment: 'workplaces',
         showLink: true,
+        meetingMessage: this.meetingMessage,
+        notMeetingMessage: this.getOtherWorkplacesNotMeetingMessage(),
       });
     }
   }
@@ -63,6 +85,13 @@ export class WdfSummaryPanel implements OnInit, OnChanges {
 
     const urlToNavigateTo = this.onDataPage ? [] : ['/wdf/data'];
     this.router.navigate(urlToNavigateTo, { fragment: fragment });
+  }
+
+  private getOtherWorkplacesNotMeetingMessage(): string {
+    if (!this.subsidiariesOverallWdfEligibility && this.someSubsidiariesMeetingRequirements) {
+      return this.someSubsMeetingMessage;
+    }
+    return this.notMeetingMessage;
   }
 
   public showLink(fragment: string): void {
