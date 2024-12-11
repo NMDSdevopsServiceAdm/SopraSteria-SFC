@@ -23,10 +23,11 @@
             value="allJobRoles"
             formControlName="allOrSelectedJobRoles"
             [class.govuk-input--error]="submitted && form.invalid"
+            (click)="selectRadio('allJobRoles')"
           />
           <label class="govuk-label govuk-radios__label" for="allJobRoles"> All job roles </label>
         </div>
-        <div class="govuk-radios__conditional">
+        <div *ngIf="selectedRadio === 'allJobRoles'" class="govuk-radios__conditional">
           If you click Continue, '{{ selectedTrainingCategory?.trainingCategory?.category }}' will be mandatory for
           everybody in your workplace.
         </div>
@@ -38,6 +39,7 @@
             type="radio"
             value="selectJobRoles"
             formControlName="allOrSelectedJobRoles"
+            (click)="selectRadio('selectJobRoles')"
           />
           <label class="govuk-label govuk-radios__label" for="selectJobRoles">Only selected job roles</label>
         </div>

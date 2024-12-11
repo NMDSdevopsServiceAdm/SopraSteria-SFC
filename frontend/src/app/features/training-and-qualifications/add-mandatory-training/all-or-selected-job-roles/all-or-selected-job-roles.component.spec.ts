@@ -75,24 +75,64 @@ describe('AllOrSelectedJobRolesComponent', () => {
     expect(caption).toBeTruthy();
   });
 
-  ['Activity provision, wellbeing', 'Digital leadership skills'].forEach((category) => {
-    it('should display mandatory for everybody message with selected training category when All job roles radio is clicked', async () => {
-      const selectedTraining = {
-        trainingCategory: {
-          category,
-          id: 1,
-          seq: 0,
-          trainingCategoryGroup: 'Care skills and knowledge',
-        },
-      };
+  describe('Mandatory for everybody message', () => {
+    ['Activity provision, wellbeing', 'Digital leadership skills'].forEach((category) => {
+      it(`should display with selected training category (${category}) when All job roles radio is clicked`, async () => {
+        const selectedTraining = {
+          trainingCategory: {
+            category,
+            id: 1,
+            seq: 0,
+            trainingCategoryGroup: 'Care skills and knowledge',
+          },
+        };
 
-      const { component, getByText, routerSpy } = await setup({ selectedTraining });
+        const { fixture, getByText } = await setup({ selectedTraining });
 
-      const expectedMessage = `If you click Continue, '${selectedTraining.trainingCategory.category}' will be mandatory for everybody in your workplace.`;
+        const expectedMessage = `If you click Continue, '${selectedTraining.trainingCategory.category}' will be mandatory for everybody in your workplace.`;
+
+        const allJobRolesRadio = getByText('All job roles');
+        userEvent.click(allJobRolesRadio);
+        fixture.detectChanges();
+
+        expect(getByText(expectedMessage)).toBeTruthy();
+      });
+    });
+
+    it('should not display on page load when no radio is selected', async () => {
+      const { queryByText } = await setup();
+
+      const mandatoryForEverybodyMessage = 'If you click Continue';
+
+      expect(queryByText(mandatoryForEverybodyMessage, { exact: false })).toBeFalsy();
+    });
+
+    it('should not display after user clicks Only selected jobs radio', async () => {
+      const { fixture, getByText, queryByText } = await setup();
+
+      const mandatoryForEverybodyMessage = 'If you click Continue';
+
+      const selectedJobRolesRadio = getByText('Only selected job roles');
+      userEvent.click(selectedJobRolesRadio);
+      fixture.detectChanges();
+
+      expect(queryByText(mandatoryForEverybodyMessage, { exact: false })).toBeFalsy();
+    });
+
+    it('should stop displaying if user has clicked All job roles and then clicks Only selected jobs radio', async () => {
+      const { fixture, getByText, queryByText } = await setup();
+
+      const mandatoryForEverybodyMessage = 'If you click Continue';
+
       const allJobRolesRadio = getByText('All job roles');
       userEvent.click(allJobRolesRadio);
+      fixture.detectChanges();
 
-      expect(getByText(expectedMessage)).toBeTruthy();
+      const selectedJobRolesRadio = getByText('Only selected job roles');
+      userEvent.click(selectedJobRolesRadio);
+      fixture.detectChanges();
+
+      expect(queryByText(mandatoryForEverybodyMessage, { exact: false })).toBeFalsy();
     });
   });
 

@@ -21,6 +21,7 @@ export class AllOrSelectedJobRolesComponent {
   public workplaceUid: string;
   public requiredErrorMessage: string = 'Select whether this training is for all job roles or only selected job roles';
   public selectedTrainingCategory: SelectedTraining;
+  public selectedRadio: string = null;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -33,7 +34,7 @@ export class AllOrSelectedJobRolesComponent {
     this.setupForm();
   }
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.selectedTrainingCategory = this.trainingService.selectedTraining;
 
     if (!this.selectedTrainingCategory) {
@@ -50,6 +51,10 @@ export class AllOrSelectedJobRolesComponent {
 
   private navigateToNextPage() {
     this.router.navigate(['']);
+  }
+
+  public selectRadio(selectedRadio: string): void {
+    this.selectedRadio = selectedRadio;
   }
 
   public onSubmit(): void {
