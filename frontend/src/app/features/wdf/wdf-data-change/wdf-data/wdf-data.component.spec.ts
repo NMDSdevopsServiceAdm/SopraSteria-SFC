@@ -1,7 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { TestBed } from '@angular/core/testing';
 import { BrowserModule } from '@angular/platform-browser';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -11,38 +12,64 @@ import { ReportService } from '@core/services/report.service';
 import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockReportService } from '@core/test-utils/MockReportService';
+import { createMockWdfReport, MockReportService } from '@core/test-utils/MockReportService';
 import { MockWorkerService, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
+import { render, within } from '@testing-library/angular';
+import { of } from 'rxjs';
 
+import { WdfStaffSummaryComponent } from '../wdf-staff-summary/wdf-staff-summary.component';
 import { WdfModule } from '../wdf.module';
 import { WdfDataComponent } from './wdf-data.component';
-import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 
 describe('WdfDataComponent', () => {
-  const setup = async () => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText } = await render(WdfDataComponent, {
+  const report = createMockWdfReport();
+
+  const setup = async (overrides: any = {}) => {
+    const setupTools = await render(WdfDataComponent, {
       imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule],
+      declarations: [WdfStaffSummaryComponent],
       providers: [
         { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-        { provide: EstablishmentService, useClass: MockEstablishmentService },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
         { provide: ReportService, useClass: MockReportService },
         { provide: WorkerService, useClass: MockWorkerService },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canViewWorker']),
+          useFactory: MockPermissionsService.factory(['canViewWorker', 'canEditWorker']),
           deps: [HttpClient, Router, UserService],
         },
-        { provide: FeatureFlagsService, useClass: MockFeatureFlagsService },
+        {
+          provide: UserService,
+          useValue: {
+            getEstablishments: () => of(overrides.getEstablishments ?? null),
+          },
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { workplace: overrides.workplace ?? establishmentBuilder(), report },
+              params: overrides.viewingSub ? { establishmentuid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de' } : {},
+            },
+            fragment: of(overrides.fragment ?? undefined),
+          },
+        },
       ],
+      componentProperties: {
+        workerCount: 1,
+      },
     });
-    const component = fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText };
+    const component = setupTools.fixture.componentInstance;
+    const establishmentService = TestBed.inject(EstablishmentService);
+
+    return { ...setupTools, component, establishmentService, report };
   };
 
   it('should render a WdfDataComponent', async () => {
@@ -50,120 +77,184 @@ describe('WdfDataComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('Tab icons', async () => {
-    it('should display a green tick on the workplace tab when the user has qualified for WDF and workplace is still eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const greenTickVisuallyHiddenMessage = 'Green tick';
+  it('should display the summary panel', async () => {
+    const { getByTestId } = await setup();
 
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
+    expect(getByTestId('summaryPanel')).toBeTruthy();
+  });
 
-      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+  describe('Header', () => {
+    describe('Parent or standalone', () => {
+      it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
+        const workplace = establishmentBuilder();
+        workplace.name = 'Test Workplace';
+        workplace.nmdsId = 'AB123456';
+
+        const { getByText } = await setup({ workplace });
+
+        expect(getByText(`${workplace.name} (Workplace ID: ${workplace.nmdsId})`)).toBeTruthy();
+      });
+
+      it('should display header text', async () => {
+        const { getByText } = await setup();
+        const headerText = 'Your data';
+
+        expect(getByText(headerText)).toBeTruthy();
+      });
     });
 
-    it('should display a green tick in staff tab when the user has qualified for WDF and is still eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const greenTickVisuallyHiddenMessage = 'Green tick';
+    describe('Viewing sub workplace', () => {
+      it('should display the parent workplace name and nmds ID in brackets in caption above title', async () => {
+        const { establishmentService, getByText } = await setup({ viewingSub: true });
+        const parentName = establishmentService.primaryWorkplace.name;
+        const parentNmdsId = establishmentService.primaryWorkplace.nmdsId;
 
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = true;
+        expect(getByText(`${parentName} (Workplace ID: ${parentNmdsId})`)).toBeTruthy();
+      });
+
+      it('should display the sub workplace name and data in title', async () => {
+        const workplace = establishmentBuilder();
+        workplace.name = 'Test Sub Workplace';
+
+        const { getByText } = await setup({ workplace, viewingSub: true });
+
+        expect(getByText(`${workplace.name}: data`)).toBeTruthy();
+      });
+    });
+  });
+
+  describe('Tabs', () => {
+    it('should display the workplace tab when no fragment in params', async () => {
+      const { fixture, getByTestId } = await setup();
+
       fixture.detectChanges();
-
-      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(getByTestId('workplaceSummaryTab')).toBeTruthy();
     });
 
-    it('should display a green tick on the workplace tab when the user has not qualified for WDF but workplace is currently eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const greenTickVisuallyHiddenMessage = 'Green tick';
+    it('should display the workplace tab when workplace fragment in params', async () => {
+      const { fixture, getByTestId } = await setup({ fragment: 'workplace' });
 
-      component.wdfEligibilityStatus.overall = false;
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = false;
       fixture.detectChanges();
-
-      expect(getByText(greenTickVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(getByTestId('workplaceSummaryTab')).toBeTruthy();
     });
 
-    it('should display a green tick on the staff tab and the workplace tab when the user has qualified for WDF and staff records and workplace are still eligible', async () => {
-      const { component, fixture, getAllByText } = await setup();
-      const greenTickVisuallyHiddenMessage = 'Green tick';
+    it('should display the staff records tab when staff-records fragment in params', async () => {
+      const { fixture, getByTestId } = await setup({ fragment: 'staff' });
 
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = true;
       fixture.detectChanges();
-
-      expect(getAllByText(greenTickVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+      expect(getByTestId('staffRecordsTab')).toBeTruthy();
     });
 
-    it('should display an orange flag on the workplace tab when the user has qualified for WDF but workplace is no longer eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
+    it("should have 'Your other workplaces' tab when workplace is parent", async () => {
+      const workplace = establishmentBuilder();
+      workplace.isParent = true;
 
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = true;
-      fixture.detectChanges();
+      const { getByTestId } = await setup({ workplace });
 
-      expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      const tabSection = getByTestId('tabSection');
+
+      expect(within(tabSection).queryByText('Your other workplaces')).toBeTruthy();
     });
 
-    it('should display an orange flag on the staff tab when the user has qualified for WDF but staff records are no longer eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
+    it('should display the Your other workplaces tab on page load when workplaces fragment in params', async () => {
+      const { fixture, getByTestId } = await setup({ workplace: { isParent: true }, fragment: 'workplaces' });
 
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = false;
       fixture.detectChanges();
-
-      expect(getByText(orangeFlagVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(getByTestId('yourOtherWorkplacesTab')).toBeTruthy();
     });
 
-    it('should display an orange flag on the staff tab and workplace tab when the user has qualified for WDF but staff records and workplace are no longer eligible', async () => {
-      const { component, fixture, getAllByText } = await setup();
-      const orangeFlagVisuallyHiddenMessage = 'Orange warning flag';
+    it("should not have 'Your other workplaces' tab when workplace is not parent", async () => {
+      const workplace = establishmentBuilder();
+      workplace.isParent = false;
 
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
+      const { getByTestId } = await setup({ workplace });
 
-      expect(getAllByText(orangeFlagVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+      const tabSection = getByTestId('tabSection');
+
+      expect(within(tabSection).queryByText('Your other workplaces')).toBeFalsy();
+    });
+  });
+
+  describe('Your other workplaces row in summary panel', () => {
+    let getEstablishments;
+
+    beforeEach(() => {
+      const parent = establishmentBuilder();
+      parent.isParent = true;
+
+      getEstablishments = {
+        primary: parent,
+        subsidaries: {
+          count: 2,
+          establishments: [establishmentBuilder(), establishmentBuilder()],
+        },
+      };
     });
 
-    it('should display a red cross on the workplace tab when the user has not qualified for WDF and workplace is not currently eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const redCrossVisuallyHiddenMessage = 'Red cross';
+    it('should display the row when workplace is parent', async () => {
+      const { getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
 
-      component.wdfEligibilityStatus.overall = false;
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = true;
-      fixture.detectChanges();
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
 
-      expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(yourOtherWorkplacesRow).toBeTruthy();
     });
 
-    it('should display a red cross on the staff tab when the user has not qualified for WDF and staff records are not currently eligible', async () => {
-      const { component, fixture, getByText } = await setup();
-      const redCrossVisuallyHiddenMessage = 'Red cross';
+    it('should display the met funding requirements message when subs all have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: true };
 
-      component.wdfEligibilityStatus.overall = false;
-      component.wdfEligibilityStatus.currentStaff = false;
-      component.wdfEligibilityStatus.currentWorkplace = true;
+      const { getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
 
-      fixture.detectChanges();
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
 
-      expect(getByText(redCrossVisuallyHiddenMessage, { exact: false })).toBeTruthy();
+      expect(within(yourOtherWorkplacesRow).getByTestId('met-funding-message')).toBeTruthy();
     });
 
-    it('should display a red cross on the staff tab and workplace tab when the user has not qualified for WDF and staff records and workplace are not currently eligible', async () => {
-      const { component, fixture, getAllByText } = await setup();
-      const redCrossVisuallyHiddenMessage = 'Red cross';
+    it('should display the met funding requirements message when all subs have eligibility even if parent does not', async () => {
+      getEstablishments.primary.wdf = { overall: false };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: true };
 
-      component.wdfEligibilityStatus.overall = false;
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
+      const { getByTestId } = await setup({ workplace: getEstablishments.primary, getEstablishments });
 
-      expect(getAllByText(redCrossVisuallyHiddenMessage, { exact: false }).length).toBe(2);
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(within(yourOtherWorkplacesRow).getByTestId('met-funding-message')).toBeTruthy();
+    });
+
+    it('should display the some data not meeting funding requirements message when not all meeting but some subs have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: true };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: false };
+
+      const { getByTestId, report } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      const currentYear = new Date(report.effectiveFrom).getFullYear();
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(
+        within(yourOtherWorkplacesRow).getByText(
+          `Some data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`,
+        ),
+      ).toBeTruthy();
+    });
+
+    it('should display the not meeting funding requirements message when no subs have overall eligibility', async () => {
+      getEstablishments.primary.wdf = { overall: false };
+      getEstablishments.subsidaries.establishments[0].wdf = { overall: false };
+      getEstablishments.subsidaries.establishments[1].wdf = { overall: false };
+
+      const { getByTestId, report } = await setup({ workplace: getEstablishments.primary, getEstablishments });
+
+      const currentYear = new Date(report.effectiveFrom).getFullYear();
+      const yourOtherWorkplacesRow = getByTestId('workplaces-row');
+
+      expect(
+        within(yourOtherWorkplacesRow).getByText(
+          `Your data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`,
+        ),
+      ).toBeTruthy();
     });
   });
 
@@ -199,89 +290,6 @@ describe('WdfDataComponent', () => {
       fixture.detectChanges();
 
       expect(component.getStaffWdfEligibility(component.workers)).toBeFalse();
-    });
-  });
-
-  describe('WdfDataStatusMessageComponent', async () => {
-    it('should display the correct message and timeframe if meeting WDF requirements', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Your data meets the WDF ${year} to ${year + 1} requirements`;
-
-      component.isStandalone = true;
-      component.wdfEligibilityStatus.overall = true;
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = true;
-      fixture.detectChanges();
-
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
-    });
-
-    it('should display the "Keeping data up to date" message if meeting WDF requirements with data changes', async () => {
-      const { component, fixture, getByText } = await setup();
-      const keepUpToDateMessage = 'Keeping your data up to date will save you time next year';
-
-      component.isStandalone = true;
-      component.wdfEligibilityStatus.overall = true;
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
-
-      expect(getByText(keepUpToDateMessage, { exact: false })).toBeTruthy();
-    });
-
-    it('should display the not meeting message if not meeting WDF requirements overall', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const notMeetingMessage = `Your data does not meet the WDF ${year} to ${year + 1} requirements`;
-
-      component.isStandalone = true;
-      component.wdfEligibilityStatus.overall = false;
-      fixture.detectChanges();
-
-      expect(getByText(notMeetingMessage, { exact: false })).toBeTruthy();
-    });
-
-    it('should display the correct message and timeframe for parents if meeting WDF requirements', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const timeFrameSentence = `Your data meets the WDF ${year} to ${year + 1} requirements`;
-
-      component.isStandalone = false;
-      component.wdfEligibilityStatus.overall = true;
-      component.wdfEligibilityStatus.currentWorkplace = true;
-      component.wdfEligibilityStatus.currentStaff = true;
-      fixture.detectChanges();
-
-      expect(getByText(timeFrameSentence, { exact: false })).toBeTruthy();
-    });
-
-    it('should display the "keeping data up to date" message for parents if meeting WDF requirements with data changes', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const keepUpToDateMessage = `Your workplace met the WDF ${year} to ${
-        year + 1
-      } requirements, but keeping your data up to date will save you time next year`;
-
-      component.isStandalone = false;
-      component.wdfEligibilityStatus.overall = true;
-      component.wdfEligibilityStatus.currentWorkplace = false;
-      component.wdfEligibilityStatus.currentStaff = false;
-      fixture.detectChanges();
-
-      expect(getByText(keepUpToDateMessage, { exact: false })).toBeTruthy();
-    });
-
-    it('should display the not meeting message for parents if not meeting WDF requirements overall', async () => {
-      const { component, fixture, getByText } = await setup();
-      const year = new Date().getFullYear();
-      const notMeetingMessage = `Your data does not meet the WDF ${year} to ${year + 1} requirements`;
-
-      component.isStandalone = false;
-      component.wdfEligibilityStatus.overall = false;
-      fixture.detectChanges();
-
-      expect(getByText(notMeetingMessage, { exact: false })).toBeTruthy();
     });
   });
 });

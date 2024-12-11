@@ -165,6 +165,10 @@ export const workerWithWdf = () => {
         careCertificate: { isEligible: true, updatedSinceEffectiveDate: true },
         otherQualification: { isEligible: true, updatedSinceEffectiveDate: true },
         highestQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+        gender: { isEligible: true, updatedSinceEffectiveDate: true },
+        nationality: { isEligible: true, updatedSinceEffectiveDate: true },
+        dateOfBirth: { isEligible: true, updatedSinceEffectiveDate: true },
+        recruitedFrom: { isEligible: true, updatedSinceEffectiveDate: true },
       },
     },
   });
@@ -413,6 +417,10 @@ export class MockWorkerService extends WorkerService {
 
   public get worker() {
     return this._worker;
+  }
+
+  public getWorker() {
+    return of(this._worker);
   }
 
   public set worker(val) {
