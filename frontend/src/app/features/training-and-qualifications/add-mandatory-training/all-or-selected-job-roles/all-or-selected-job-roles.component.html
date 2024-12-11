@@ -26,6 +26,10 @@
           />
           <label class="govuk-label govuk-radios__label" for="allJobRoles"> All job roles </label>
         </div>
+        <div class="govuk-radios__conditional">
+          If you click Continue, '{{ selectedTrainingCategory?.trainingCategory?.category }}' will be mandatory for
+          everybody in your workplace.
+        </div>
         <div class="govuk-radios__item">
           <input
             class="govuk-radios__input"

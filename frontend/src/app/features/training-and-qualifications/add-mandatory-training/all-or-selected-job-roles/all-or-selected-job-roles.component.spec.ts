@@ -75,6 +75,27 @@ describe('AllOrSelectedJobRolesComponent', () => {
     expect(caption).toBeTruthy();
   });
 
+  ['Activity provision, wellbeing', 'Digital leadership skills'].forEach((category) => {
+    it('should display mandatory for everybody message with selected training category when All job roles radio is clicked', async () => {
+      const selectedTraining = {
+        trainingCategory: {
+          category,
+          id: 1,
+          seq: 0,
+          trainingCategoryGroup: 'Care skills and knowledge',
+        },
+      };
+
+      const { component, getByText, routerSpy } = await setup({ selectedTraining });
+
+      const expectedMessage = `If you click Continue, '${selectedTraining.trainingCategory.category}' will be mandatory for everybody in your workplace.`;
+      const allJobRolesRadio = getByText('All job roles');
+      userEvent.click(allJobRolesRadio);
+
+      expect(getByText(expectedMessage)).toBeTruthy();
+    });
+  });
+
   it('should show the page heading', async () => {
     const { getByText } = await setup();
 
