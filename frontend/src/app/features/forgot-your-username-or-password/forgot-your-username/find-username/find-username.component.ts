@@ -16,10 +16,12 @@ export class FindUsernameComponent implements OnInit {
   @Output() setCurrentForm = new EventEmitter<FindUsernameComponent>();
 
   @ViewChild('formEl') formEl: ElementRef;
+  @ViewChild('securityQuestionEl') securityQuestionEl: ElementRef;
 
   public form: UntypedFormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
+  public errorMessage = 'Enter the answer to your security question';
 
   constructor(
     private FormBuilder: UntypedFormBuilder,
@@ -29,17 +31,37 @@ export class FindUsernameComponent implements OnInit {
 
   ngOnInit(): void {
     this.form = this.FormBuilder.group({
-      securityQuestionAnswer: [Validators.required],
+      securityQuestionAnswer: ['', { validators: [Validators.required], updateOn: 'submit' }],
     });
     this.setupFormErrorsMap();
     this.setCurrentForm.emit(this);
+    this.focusOnQuestion();
+  }
+
+  public focusOnQuestion() {
+    setTimeout(() => {
+      this.securityQuestionEl.nativeElement.focus();
+    }, 0);
+  }
+  public setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'securityQuestionAnswer',
+        type: [
+          {
+            name: 'required',
+            message: this.errorMessage,
+          },
+        ],
+      },
+    ];
   }
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  public setupFormErrorsMap(): void {}
-
-  public onSubmit(): void {}
+  public onSubmit(): void {
+    this.submitted = true;
+  }
 }

@@ -182,42 +182,58 @@ fdescribe('ForgotYourUsernameComponent', () => {
       return setuptools;
     };
 
-    it('should show the security question of the user', async () => {
-      const { getByText } = await setupAndProceedToFindUsername();
+    describe('rendering', () => {
+      it('should show the security question of the user', async () => {
+        const { getByText } = await setupAndProceedToFindUsername();
 
-      expect(getByText('Your security question')).toBeTruthy();
-      expect(getByText('You chose this question when you created your account')).toBeTruthy();
-      expect(getByText('Question')).toBeTruthy();
-      expect(getByText(mockTestUser.securityQuestion)).toBeTruthy();
+        expect(getByText('Your security question')).toBeTruthy();
+        expect(getByText('You chose this question when you created your account')).toBeTruthy();
+        expect(getByText('Question')).toBeTruthy();
+        expect(getByText(mockTestUser.securityQuestion)).toBeTruthy();
+      });
+
+      it('should show a text input for answer', async () => {
+        const { getByText, getByRole } = await setupAndProceedToFindUsername();
+
+        expect(getByText("What's the answer to your security question?")).toBeTruthy();
+        expect(getByText('Answer')).toBeTruthy();
+        expect(getByRole('textbox', { name: "What's the answer to your security question?" })).toBeTruthy();
+      });
+
+      it('should show a reveal text of "Cannot remember the answer?"', async () => {
+        const { getByTestId } = await setupAndProceedToFindUsername();
+
+        const revealTextElement = getByTestId('reveal-text');
+        const hiddenText = 'Call the ASC-WDS Support Team on 0113 241 0969 for help.';
+
+        expect(revealTextElement).toBeTruthy();
+        expect(within(revealTextElement).getByText('Cannot remember the answer?')).toBeTruthy();
+        expect(revealTextElement.textContent).toContain(hiddenText);
+      });
+
+      it('should render a "Find username" CTA button and a "Back to sign in" link', async () => {
+        const { getByRole, getByText } = await setupAndProceedToFindUsername();
+
+        expect(getByRole('button', { name: 'Find username' })).toBeTruthy();
+
+        const backToSignIn = getByText('Back to sign in');
+        expect(backToSignIn).toBeTruthy();
+        expect(backToSignIn.getAttribute('href')).toEqual('/login');
+      });
     });
 
-    it('should show a text input for answer', async () => {
-      const { getByText, getByRole } = await setupAndProceedToFindUsername();
+    describe('submit form and validation', () => {
+      describe('error', () => {
+        it('should show an error message if answer is blank', async () => {
+          const { fixture, getByRole, getByText, getAllByText } = await setupAndProceedToFindUsername();
+          userEvent.click(getByRole('button', { name: 'Find username' }));
 
-      expect(getByText("What's the answer to your security question?")).toBeTruthy();
-      expect(getByText('Answer')).toBeTruthy();
-      expect(getByRole('textbox', { name: "What's the answer to your security question?" })).toBeTruthy();
-    });
+          fixture.detectChanges();
 
-    it('should show a reveal text of "Cannot remember the answer?"', async () => {
-      const { getByTestId } = await setupAndProceedToFindUsername();
-
-      const revealTextElement = getByTestId('reveal-text');
-      const hiddenText = 'Call the ASC-WDS Support Team on 0113 241 0969 for help.';
-
-      expect(revealTextElement).toBeTruthy();
-      expect(within(revealTextElement).getByText('Cannot remember the answer?')).toBeTruthy();
-      expect(revealTextElement.textContent).toContain(hiddenText);
-    });
-
-    it('should render a "Find username" CTA button and a "Back to sign in" link', async () => {
-      const { getByRole, getByText } = await setupAndProceedToFindUsername();
-
-      expect(getByRole('button', { name: 'Find username' })).toBeTruthy();
-
-      const backToSignIn = getByText('Back to sign in');
-      expect(backToSignIn).toBeTruthy();
-      expect(backToSignIn.getAttribute('href')).toEqual('/login');
+          expect(getByText('There is a problem')).toBeTruthy();
+          expect(getAllByText('Enter the answer to your security question')).toHaveSize(2);
+        });
+      });
     });
   });
 });
