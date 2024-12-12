@@ -192,30 +192,40 @@ describe('AllOrSelectedJobRolesComponent', () => {
   });
 
   describe('On submit', () => {
-    it("should navigate back to add-and-manage-mandatory-training main page when user submits with 'All job roles' selected", async () => {
-      const { component, fixture, getByText, routerSpy } = await setup();
+    describe("when 'All job roles selected'", () => {
+      const selectAllJobRolesAndSubmit = (fixture, getByText) => {
+        fireEvent.click(getByText('All job roles'));
+        fixture.detectChanges();
 
-      fireEvent.click(getByText('All job roles'));
-      fixture.detectChanges();
+        fireEvent.click(getByText('Continue'));
+        fixture.detectChanges();
+      };
 
-      fireEvent.click(getByText('Continue'));
-      fixture.detectChanges();
+      it('should navigate back to add-and-manage-mandatory-training main page', async () => {
+        const { component, fixture, getByText, routerSpy } = await setup();
 
-      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
-    });
+        selectAllJobRolesAndSubmit(fixture, getByText);
 
-    it("should display 'Mandatory training category added' banner when 'All job roles' selected", async () => {
-      const { fixture, getByText, alertSpy } = await setup();
+        expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+      });
 
-      fireEvent.click(getByText('All job roles'));
-      fixture.detectChanges();
+      it("should display 'Mandatory training category added' banner", async () => {
+        const { fixture, getByText, alertSpy } = await setup();
 
-      fireEvent.click(getByText('Continue'));
-      fixture.detectChanges();
+        selectAllJobRolesAndSubmit(fixture, getByText);
 
-      expect(alertSpy).toHaveBeenCalledWith({
-        type: 'success',
-        message: 'Mandatory training category added',
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Mandatory training category added',
+        });
+      });
+
+      it('should clear state in training service', async () => {
+        const { fixture, getByText, resetStateInTrainingServiceSpy } = await setup();
+
+        selectAllJobRolesAndSubmit(fixture, getByText);
+
+        expect(resetStateInTrainingServiceSpy).toHaveBeenCalled();
       });
     });
 

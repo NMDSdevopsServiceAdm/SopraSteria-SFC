@@ -70,6 +70,8 @@ export class AllOrSelectedJobRolesComponent {
     if (this.form.valid) {
       if (this.selectedRadio == 'allJobRoles') {
         this.navigateBackToAddMandatoryTrainingPage();
+        this.trainingService.resetState();
+
         this.alertService.addAlert({
           type: 'success',
           message: 'Mandatory training category added',
