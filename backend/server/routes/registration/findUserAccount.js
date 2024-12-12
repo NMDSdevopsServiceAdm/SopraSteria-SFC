@@ -4,11 +4,11 @@ const models = require('../../models/index');
 
 const findUserAccount = async (req, res) => {
   try {
-    const { name, workplaceIdOrPostcode, email } = req.body ?? {};
-    if ([name, workplaceIdOrPostcode, email].some((field) => isEmpty(field))) {
+    if (!validateRequest(req)) {
       return res.status(400).send('Invalid request');
     }
 
+    const { name, workplaceIdOrPostcode, email } = req.body;
     let userFound = null;
 
     const postcode = sanitisePostcode(workplaceIdOrPostcode);
@@ -28,6 +28,15 @@ const findUserAccount = async (req, res) => {
     console.error('registration POST findUserAccount - failed', err);
     return res.status(500).send('Internal server error');
   }
+};
+
+const validateRequest = (req) => {
+  if (!req.body) {
+    return false;
+  }
+  const { name, workplaceIdOrPostcode, email } = req.body;
+
+  return [name, workplaceIdOrPostcode, email].every((field) => !isEmpty(field));
 };
 
 const sendSuccessResponse = (res, userFound) => {

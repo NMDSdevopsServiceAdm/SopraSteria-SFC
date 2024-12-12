@@ -52,7 +52,7 @@ describe.only('backend/server/routes/registration/findUserAccount', () => {
     });
   });
 
-  it('should call find user with postcode if request body contains a postcode', async () => {
+  it('should find user with postcode if request body contains a postcode', async () => {
     const req = buildRequest({ ...mockRequestBody, workplaceIdOrPostcode: 'LS1 2RP' });
     const res = httpMocks.createResponse();
 
@@ -68,6 +68,25 @@ describe.only('backend/server/routes/registration/findUserAccount', () => {
     expect(stubFindUser).to.have.been.calledWith({
       name: 'Test User',
       postcode: 'LS1 2RP',
+      email: 'test@example.com',
+    });
+  });
+
+  it('should try to search with both postcode and workplace ID if incoming param is not distinguishable', async () => {
+    const req = buildRequest({ ...mockRequestBody, workplaceIdOrPostcode: 'AB101AB' });
+    const res = httpMocks.createResponse();
+
+    await findUserAccount(req, res);
+
+    expect(stubFindUser).to.have.been.calledWith({
+      name: 'Test User',
+      postcode: 'AB10 1AB',
+      email: 'test@example.com',
+    });
+
+    expect(stubFindUser).to.have.been.calledWith({
+      name: 'Test User',
+      workplaceId: 'AB101AB',
       email: 'test@example.com',
     });
   });
