@@ -13,7 +13,7 @@ import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
@@ -138,6 +138,57 @@ describe('SelectJobRolesMandatoryComponent', () => {
         const checkbox = getByRole('checkbox', { name: job.title });
         expect(checkbox).toBeTruthy();
       });
+    });
+  });
+
+  describe('Errors', () => {
+    const expectedErrorMessage = 'Select the job roles that need this training';
+    const errorSummaryBoxHeading = 'There is a problem';
+
+    it('should display an error message on submit if no job roles are selected', async () => {
+      const { fixture, getByRole, getByText, getByTestId } = await setup();
+
+      userEvent.click(getByRole('button', { name: 'Save mandatory training' }));
+      fixture.detectChanges();
+
+      const accordion = getByTestId('selectJobRolesAccordion');
+      expect(within(accordion).getByText(expectedErrorMessage)).toBeTruthy();
+
+      const thereIsAProblemMessage = getByText(errorSummaryBoxHeading);
+
+      const errorSummaryBox = thereIsAProblemMessage.parentElement;
+      expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
+    });
+
+    it('should expand the whole accordion on error', async () => {
+      const { fixture, getByRole, getByText } = await setup();
+
+      userEvent.click(getByRole('button', { name: 'Save mandatory training' }));
+      fixture.detectChanges();
+
+      expect(getByText('Hide all job roles')).toBeTruthy();
+    });
+
+    it('should continue to display error messages after empty submit and then user selects job roles', async () => {
+      const { fixture, getByRole, getByText } = await setup();
+
+      userEvent.click(getByRole('button', { name: 'Save mandatory training' }));
+      fixture.detectChanges();
+
+      const errorSummaryBox = getByText(errorSummaryBoxHeading).parentElement;
+
+      expect(errorSummaryBox).toBeTruthy();
+      expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
+
+      userEvent.click(getByText('Care worker'));
+      userEvent.click(getByText('Registered nurse'));
+
+      fixture.detectChanges();
+
+      const errorSummaryBoxStillThere = getByText(errorSummaryBoxHeading).parentElement;
+
+      expect(errorSummaryBoxStillThere).toBeTruthy();
+      expect(within(errorSummaryBoxStillThere).getByText(expectedErrorMessage)).toBeTruthy();
     });
   });
 

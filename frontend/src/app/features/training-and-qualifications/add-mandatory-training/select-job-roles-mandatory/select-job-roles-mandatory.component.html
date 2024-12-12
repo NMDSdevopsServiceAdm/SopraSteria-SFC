@@ -1,6 +1,8 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"> </app-error-summary>
+
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
-    <form #formEl [formGroup]="form">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <div class="govuk-form-group govuk-!-margin-bottom-2">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
@@ -38,18 +40,18 @@
           </app-accordion-group>
         </div>
       </fieldset>
-    </form>
 
-    <div class="govuk-button-group govuk-!-margin-top-4">
-      <button type="submit" class="govuk-button govuk-!-margin-right-9">Save mandatory training</button>
-      <a
-        role="button"
-        href="#"
-        class="govuk-button govuk-button--link govuk-!-margin-left-9"
-        draggable="false"
-        (click)="onCancel($event)"
-        >Cancel</a
-      >
-    </div>
+      <div class="govuk-button-group govuk-!-margin-top-4">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Save mandatory training</button>
+        <a
+          role="button"
+          href="#"
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          draggable="false"
+          (click)="onCancel($event)"
+          >Cancel</a
+        >
+      </div>
+    </form>
   </div>
 </div>
