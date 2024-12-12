@@ -32,7 +32,10 @@
             />
             <label class="govuk-label govuk-radios__label" for="allJobRoles"> All job roles </label>
           </div>
-          <div *ngIf="selectedRadio === 'allJobRoles'" class="govuk-radios__conditional">
+          <div
+            [class.govuk-radios__conditional--hidden]="selectedRadio !== 'allJobRoles'"
+            class="govuk-radios__conditional"
+          >
             <p class="govuk-!-padding-top-1 govuk-!-padding-bottom-1">
               If you click Continue, '{{ selectedTrainingCategory?.trainingCategory?.category }}' will be mandatory for
               everybody in your workplace.

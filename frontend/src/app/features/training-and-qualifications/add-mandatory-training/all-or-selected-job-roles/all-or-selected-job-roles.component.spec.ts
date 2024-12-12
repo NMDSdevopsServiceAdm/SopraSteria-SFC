@@ -132,34 +132,35 @@ describe('AllOrSelectedJobRolesComponent', () => {
         userEvent.click(allJobRolesRadio);
         fixture.detectChanges();
 
-        expect(getByText(expectedMessage)).toBeTruthy();
+        const mandatoryForEverybodyMessage = getByText(expectedMessage);
+
+        expect(mandatoryForEverybodyMessage).toBeTruthy();
+        expect(mandatoryForEverybodyMessage.parentElement).not.toHaveClass('govuk-radios__conditional--hidden');
       });
     });
 
     it('should not display on page load when no radio is selected', async () => {
       const { queryByText } = await setup();
 
-      const mandatoryForEverybodyMessage = 'If you click Continue';
+      const mandatoryForEverybodyMessage = queryByText('If you click Continue', { exact: false });
 
-      expect(queryByText(mandatoryForEverybodyMessage, { exact: false })).toBeFalsy();
+      expect(mandatoryForEverybodyMessage.parentElement).toHaveClass('govuk-radios__conditional--hidden');
     });
 
     it('should not display after user clicks Only selected jobs radio', async () => {
       const { fixture, getByText, queryByText } = await setup();
 
-      const mandatoryForEverybodyMessage = 'If you click Continue';
-
       const selectedJobRolesRadio = getByText('Only selected job roles');
       userEvent.click(selectedJobRolesRadio);
       fixture.detectChanges();
 
-      expect(queryByText(mandatoryForEverybodyMessage, { exact: false })).toBeFalsy();
+      const mandatoryForEverybodyMessage = queryByText('If you click Continue', { exact: false });
+
+      expect(mandatoryForEverybodyMessage.parentElement).toHaveClass('govuk-radios__conditional--hidden');
     });
 
     it('should stop displaying if user has clicked All job roles and then clicks Only selected jobs radio', async () => {
       const { fixture, getByText, queryByText } = await setup();
-
-      const mandatoryForEverybodyMessage = 'If you click Continue';
 
       const allJobRolesRadio = getByText('All job roles');
       userEvent.click(allJobRolesRadio);
@@ -169,7 +170,9 @@ describe('AllOrSelectedJobRolesComponent', () => {
       userEvent.click(selectedJobRolesRadio);
       fixture.detectChanges();
 
-      expect(queryByText(mandatoryForEverybodyMessage, { exact: false })).toBeFalsy();
+      const mandatoryForEverybodyMessage = queryByText('If you click Continue', { exact: false });
+
+      expect(mandatoryForEverybodyMessage.parentElement).toHaveClass('govuk-radios__conditional--hidden');
     });
   });
 
