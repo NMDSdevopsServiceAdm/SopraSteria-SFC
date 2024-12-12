@@ -33,7 +33,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
                       trainingCategoryGroup: 'Care skills and knowledge',
                     },
                   },
-            clearSelectedTrainingCategory: () => {},
+            resetState: () => {},
           },
         },
         { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
@@ -52,13 +52,13 @@ describe('AllOrSelectedJobRolesComponent', () => {
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const trainingService = injector.inject(TrainingService) as TrainingService;
-    const clearSelectedTrainingCategorySpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
+    const resetStateInTrainingServiceSpy = spyOn(trainingService, 'resetState').and.callThrough();
 
     return {
       ...setupTools,
       component,
       routerSpy,
-      clearSelectedTrainingCategorySpy,
+      resetStateInTrainingServiceSpy,
     };
   }
 
@@ -73,6 +73,20 @@ describe('AllOrSelectedJobRolesComponent', () => {
     const caption = getByText('Add a mandatory training category');
 
     expect(caption).toBeTruthy();
+  });
+
+  it('should show the page heading', async () => {
+    const { getByText } = await setup();
+
+    const heading = getByText('Which job roles need this training?');
+
+    expect(heading).toBeTruthy();
+  });
+
+  it('should navigate back to the select training category page if no training category set in training service', async () => {
+    const { component, routerSpy } = await setup({ selectedTraining: null });
+
+    expect(routerSpy).toHaveBeenCalledWith(['../select-training-category'], { relativeTo: component.route });
   });
 
   describe('Mandatory for everybody message', () => {
@@ -136,27 +150,24 @@ describe('AllOrSelectedJobRolesComponent', () => {
     });
   });
 
-  it('should show the page heading', async () => {
-    const { getByText } = await setup();
+  describe('Cancel button', () => {
+    it('should navigate to the add-and-manage-mandatory-training page (relative route ../) when clicked', async () => {
+      const { component, getByText, routerSpy } = await setup({ selectedTraining: null });
 
-    const heading = getByText('Which job roles need this training?');
+      const cancelButton = getByText('Cancel');
+      userEvent.click(cancelButton);
 
-    expect(heading).toBeTruthy();
-  });
+      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+    });
 
-  it('should navigate back to the select training category page if no training category set in training service', async () => {
-    const { component, routerSpy } = await setup({ selectedTraining: null });
+    it('should clear state in training service when clicked', async () => {
+      const { getByText, resetStateInTrainingServiceSpy } = await setup({ selectedTraining: null });
 
-    expect(routerSpy).toHaveBeenCalledWith(['../select-training-category'], { relativeTo: component.route });
-  });
+      const cancelButton = getByText('Cancel');
+      userEvent.click(cancelButton);
 
-  it('should navigate to the add-and-manage-mandatory-training page (relative route ../)  if Cancel button is clicked', async () => {
-    const { component, getByText, routerSpy } = await setup({ selectedTraining: null });
-
-    const cancelButton = getByText('Cancel');
-    userEvent.click(cancelButton);
-
-    expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+      expect(resetStateInTrainingServiceSpy).toHaveBeenCalled();
+    });
   });
 
   describe('Error messages', () => {

@@ -71,6 +71,7 @@ export class AllOrSelectedJobRolesComponent {
   public onCancel(event: Event): void {
     event.preventDefault();
 
+    this.trainingService.resetState();
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 
