@@ -1,4 +1,9 @@
-<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+></app-error-summary>
 
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" novalidate>
   <div class="govuk-grid-row">

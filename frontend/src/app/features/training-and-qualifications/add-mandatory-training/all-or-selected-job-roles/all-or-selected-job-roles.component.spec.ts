@@ -11,7 +11,7 @@ import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 
 import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles.component';
@@ -272,6 +272,18 @@ describe('AllOrSelectedJobRolesComponent', () => {
         selectAllJobRolesAndSubmit(fixture, getByText);
 
         expect(resetStateInTrainingServiceSpy).toHaveBeenCalled();
+      });
+
+      it('should display server error message if call to backend fails', async () => {
+        const { fixture, getByText, createAndUpdateMandatoryTrainingSpy } = await setup();
+
+        createAndUpdateMandatoryTrainingSpy.and.returnValue(throwError(() => new Error('Unexpected error')));
+
+        selectAllJobRolesAndSubmit(fixture, getByText);
+
+        const expectedErrorMessage = 'There has been a problem saving your mandatory training. Please try again.';
+
+        expect(getByText(expectedErrorMessage)).toBeTruthy();
       });
     });
 

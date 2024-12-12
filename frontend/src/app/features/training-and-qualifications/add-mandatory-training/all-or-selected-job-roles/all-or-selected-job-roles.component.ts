@@ -26,6 +26,7 @@ export class AllOrSelectedJobRolesComponent {
   public requiredErrorMessage: string = 'Select whether this training is for all job roles or only selected job roles';
   public selectedTrainingCategory: SelectedTraining;
   public selectedRadio: string = null;
+  public serverError: string;
   private subscriptions: Subscription = new Subscription();
   private establishment: Establishment;
 
@@ -103,8 +104,8 @@ export class AllOrSelectedJobRolesComponent {
             message: 'Mandatory training category added',
           });
         },
-        (error) => {
-          console.log(error);
+        () => {
+          this.serverError = 'There has been a problem saving your mandatory training. Please try again.';
         },
       ),
     );
