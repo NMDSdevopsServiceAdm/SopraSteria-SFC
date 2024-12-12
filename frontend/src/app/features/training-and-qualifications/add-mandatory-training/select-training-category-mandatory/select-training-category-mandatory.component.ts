@@ -9,7 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { SelectTrainingCategoryDirective } from '../../../../shared/directives/select-training-category/select-training-category.directive';
 
 @Component({
-  selector: 'app-select-training-category-multiple',
+  selector: 'app-select-training-category-mandatory',
   templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
 })
 export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCategoryDirective {
