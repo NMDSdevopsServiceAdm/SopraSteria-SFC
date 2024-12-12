@@ -491,8 +491,8 @@ module.exports = function (sequelize, DataTypes) {
     if (!workplaceId && !postcode) {
       return null;
     }
-    const workplaceIdWithSpacePadded = padEnd(workplaceId, 8, ' ');
 
+    const workplaceIdWithSpacePadded = padEnd(workplaceId ?? '', 8, ' ');
     const establishmentWhereClause = workplaceId
       ? { NmdsID: [workplaceId, workplaceIdWithSpacePadded] }
       : { postcode: postcode };
@@ -517,7 +517,7 @@ module.exports = function (sequelize, DataTypes) {
       raw: true,
     };
 
-    return await this.findOne(query);
+    return this.findOne(query);
   };
 
   return User;
