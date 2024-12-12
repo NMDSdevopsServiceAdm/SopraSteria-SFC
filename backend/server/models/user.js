@@ -492,9 +492,9 @@ module.exports = function (sequelize, DataTypes) {
       return null;
     }
 
-    const workplaceIdWithSpacePadded = padEnd(workplaceId ?? '', 8, ' ');
+    const workplaceIdWithTrailingSpace = padEnd(workplaceId ?? '', 8, ' ');
     const establishmentWhereClause = workplaceId
-      ? { NmdsID: [workplaceId, workplaceIdWithSpacePadded] }
+      ? { NmdsID: [workplaceId, workplaceIdWithTrailingSpace] }
       : { postcode: postcode };
 
     const query = {

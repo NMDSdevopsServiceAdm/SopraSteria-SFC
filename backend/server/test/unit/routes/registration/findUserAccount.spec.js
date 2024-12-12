@@ -6,7 +6,7 @@ const httpMocks = require('node-mocks-http');
 const { findUserAccount } = require('../../../../routes/registration/findUserAccount');
 const models = require('../../../../models/index');
 
-describe.only('backend/server/routes/registration/findUserAccount', () => {
+describe('backend/server/routes/registration/findUserAccount', () => {
   const mockRequestBody = { name: 'Test User', workplaceIdOrPostcode: 'A1234567', email: 'test@example.com' };
 
   const buildRequest = (body) => {

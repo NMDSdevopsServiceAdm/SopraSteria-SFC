@@ -108,7 +108,7 @@ export class FindAccountComponent {
       case false:
         this.accountFound = false;
         this.remainingAttempts = response.remainingAttempts;
-        // to navigate to error page when remaining attempt = 0
+        // TODO for #1570:  navigate to error page when remaining attempt = 0
         break;
     }
 
