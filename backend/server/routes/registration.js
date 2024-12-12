@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
-uuidv4();
 const isLocal = require('../utils/security/isLocalTest').isLocal;
 const { registerAccount } = require('./registration/registerAccount');
 const models = require('../models');
@@ -9,6 +8,7 @@ const models = require('../models');
 const generateJWT = require('../utils/security/generateJWT');
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 const { authLimiter } = require('../utils/middleware/rateLimiting');
+const { findUserAccount } = require('./registration/findUserAccount');
 
 router.use('/establishmentExistsCheck', require('./registration/establishmentExistsCheck'));
 
@@ -367,5 +367,7 @@ router.post('/validateResetPassword', async (req, res) => {
     return res.status(500).send();
   }
 });
+
+router.post('/findUserAccount', findUserAccount);
 
 module.exports = router;

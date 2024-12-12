@@ -1,0 +1,80 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds-from-desktop">
+    <p>
+      Enter your name, workplace ID or postcode, and your ASC-WDS email address (this'll be the one you used when you
+      created your account, unless you've changed it).
+    </p>
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+      <ng-container *ngFor="let field of formFields">
+        <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get(field.id).errors">
+          <label class="govuk-label" [for]="field.id"> {{ field.label }} </label>
+          <span *ngIf="submitted && form.get(field.id).errors" [id]="field.id + '-error'" class="govuk-error-message">
+            <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage(field.id) }}
+          </span>
+          <input
+            class="govuk-input govuk-input--width-20"
+            [class.govuk-input--error]="submitted && form.get(field.id).errors"
+            [id]="field.id"
+            [name]="field.id"
+            [formControlName]="field.id"
+            type="text"
+            [readonly]="accountFound"
+          />
+        </div>
+      </ng-container>
+
+      <div #searchResult>
+        <ng-container *ngIf="submitted">
+          <ng-container *ngIf="accountFound; else accountNotFound">
+            <h2 class="govuk-heading-m">Account found</h2>
+          </ng-container>
+
+          <ng-template #accountNotFound>
+            <div *ngIf="remainingAttempts" role="alert" data-testid="account-not-found">
+              <h2 class="govuk-heading-m">
+                <span class="govuk__flex govuk__align-items-center">
+                  <img class="govuk-!-margin-right-2" src="/assets/images/cross-icon.svg" alt="Error" />
+                  Account not found
+                </span>
+              </h2>
+
+              <p class="govuk-util__bold">
+                Some or all of the information you entered does not match that which we have for your account.
+              </p>
+              <p>
+                <strong>
+                  <ng-container [ngPlural]="remainingAttempts">
+                    <ng-template ngPluralCase="=1">
+                      You've 1 more chance to enter the same information that we have, otherwise you'll need to call the
+                      Support Team.
+                    </ng-template>
+                    <ng-template ngPluralCase="other">
+                      You've {{ remainingAttempts }} more chances to enter the same information that we have.
+                    </ng-template>
+                  </ng-container>
+                </strong>
+              </p>
+              <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+              <p>
+                Make sure the details you entered are correct or call the ASC-WDS Support Team on
+                <strong class="govuk__nowrap">0113 241 0969</strong> for help.
+              </p>
+            </div>
+          </ng-template>
+        </ng-container>
+      </div>
+
+      <div *ngIf="!(submitted && accountFound)" class="govuk-button-group--gap-between govuk-!-margin-top-8">
+        <button type="submit" class="govuk-button">Find account</button>
+        <span class="govuk-visually-hidden">or</span>
+        <a
+          class="govuk-link govuk-link--no-visited-state govuk__nowrap"
+          [routerLink]="['/login']"
+          role="button"
+          draggable="false"
+          >Back to sign in
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

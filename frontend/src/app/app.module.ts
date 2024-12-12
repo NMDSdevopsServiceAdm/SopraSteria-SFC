@@ -1,3 +1,6 @@
+import { Angulartics2Module } from 'angulartics2';
+import { HighchartsChartModule } from 'highcharts-angular';
+
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
@@ -57,13 +60,19 @@ import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certific
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
+import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { FirstLoginWizardComponent } from '@features/first-login-wizard/first-login-wizard.component';
-import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
-import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/edit/edit.component';
-import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
+import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-username-or-password/forgot-your-password/confirmation/confirmation.component';
+import { ForgotYourPasswordEditComponent } from '@features/forgot-your-username-or-password/forgot-your-password/edit/edit.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
+import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { FindAccountComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-account/find-account.component';
+import { FindUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-username/find-username.component';
+import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
+import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
@@ -79,20 +88,15 @@ import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
+import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { Angulartics2Module } from 'angulartics2';
-import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
-import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
-import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { ForgotYourUsernameOrPasswordComponent } from './features/forgot-your-password/forgot-your-username-or-password/forgot-your-username-or-password.component';
 
 @NgModule({
   declarations: [
@@ -135,6 +139,9 @@ import { ForgotYourUsernameOrPasswordComponent } from './features/forgot-your-pa
     ParentWorkplaceAccounts,
     DeleteWorkplaceComponent,
     ForgotYourUsernameOrPasswordComponent,
+    ForgotYourUsernameComponent,
+    FindAccountComponent,
+    FindUsernameComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
