@@ -11,6 +11,7 @@ import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandato
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
 import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles/all-or-selected-job-roles.component';
 import { RemoveAllMandatoryTrainingComponent } from './delete-mandatory-training/delete-all-mandatory-training.component';
+import { SelectJobRolesMandatoryComponent } from './select-job-roles-mandatory/select-job-roles-mandatory.component';
 import { SelectTrainingCategoryMandatoryComponent } from './select-training-category-mandatory/select-training-category-mandatory.component';
 
 @NgModule({
@@ -22,6 +23,7 @@ import { SelectTrainingCategoryMandatoryComponent } from './select-training-cate
     AddAndManageMandatoryTrainingComponent,
     DeleteMandatoryTrainingCategoryComponent,
     AllOrSelectedJobRolesComponent,
+    SelectJobRolesMandatoryComponent,
   ],
   providers: [TrainingCategoriesResolver, MandatoryTrainingCategoriesResolver],
 })
