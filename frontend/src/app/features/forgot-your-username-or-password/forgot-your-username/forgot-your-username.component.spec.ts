@@ -3,20 +3,21 @@ import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { MockFindUsernameService } from '@core/test-utils/MockFindUsernameService';
+import { MockFindUsernameService, mockTestUser } from '@core/test-utils/MockFindUsernameService';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { FindUsernameService } from '../../../core/services/find-username.service';
 import { FindAccountComponent } from './find-account/find-account.component';
+import { FindUsernameComponent } from './find-username/find-username.component';
 import { ForgotYourUsernameComponent } from './forgot-your-username.component';
 
-describe('ForgotYourUsernameComponent', () => {
+fdescribe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
-      declarations: [FindAccountComponent],
+      declarations: [FindAccountComponent, FindUsernameComponent],
       providers: [
         {
           provide: ActivatedRoute,
@@ -161,6 +162,62 @@ describe('ForgotYourUsernameComponent', () => {
           expect(findUsernameService.findUserAccount).not.toHaveBeenCalled();
         });
       });
+    });
+  });
+
+  fdescribe('Find username', () => {
+    const setupAndProceedToFindUsername = async () => {
+      const setuptools = await setup();
+
+      const { fixture, getByRole } = setuptools;
+
+      userEvent.type(getByRole('textbox', { name: 'Name' }), 'Test User');
+      userEvent.type(getByRole('textbox', { name: 'Workplace ID or postcode' }), 'A1234567');
+      userEvent.type(getByRole('textbox', { name: 'Email address' }), 'test@example.com');
+
+      userEvent.click(getByRole('button', { name: 'Find account' }));
+      fixture.detectChanges();
+      await fixture.whenStable();
+
+      return setuptools;
+    };
+
+    it('should show the security question of the user', async () => {
+      const { getByText } = await setupAndProceedToFindUsername();
+
+      expect(getByText('Your security question')).toBeTruthy();
+      expect(getByText('You chose this question when you created your account')).toBeTruthy();
+      expect(getByText('Question')).toBeTruthy();
+      expect(getByText(mockTestUser.securityQuestion)).toBeTruthy();
+    });
+
+    it('should show a text input for answer', async () => {
+      const { getByText, getByRole } = await setupAndProceedToFindUsername();
+
+      expect(getByText("What's the answer to your security question?")).toBeTruthy();
+      expect(getByText('Answer')).toBeTruthy();
+      expect(getByRole('textbox', { name: "What's the answer to your security question?" })).toBeTruthy();
+    });
+
+    it('should show a reveal text of "Cannot remember the answer?"', async () => {
+      const { getByTestId } = await setupAndProceedToFindUsername();
+
+      const revealTextElement = getByTestId('reveal-text');
+      const hiddenText = 'Call the ASC-WDS Support Team on 0113 241 0969 for help.';
+
+      expect(revealTextElement).toBeTruthy();
+      expect(within(revealTextElement).getByText('Cannot remember the answer?')).toBeTruthy();
+      expect(revealTextElement.textContent).toContain(hiddenText);
+    });
+
+    it('should render a "Find username" CTA button and a "Back to sign in" link', async () => {
+      const { getByRole, getByText } = await setupAndProceedToFindUsername();
+
+      expect(getByRole('button', { name: 'Find username' })).toBeTruthy();
+
+      const backToSignIn = getByText('Back to sign in');
+      expect(backToSignIn).toBeTruthy();
+      expect(backToSignIn.getAttribute('href')).toEqual('/login');
     });
   });
 });

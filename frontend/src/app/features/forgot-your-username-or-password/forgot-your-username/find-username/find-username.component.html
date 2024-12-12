@@ -1,4 +1,44 @@
-<div>
-  <h3 class="govuk-heading-s govuk-!-margin-bottom-0">Your security question</h3>
-  <p>{{ securityQuestion }}</p>
+<hr class="govuk-section-break govuk-section-break--m govuk-!-width-two-thirds govuk-section-break--visible" />
+<div class="govuk-grid-row">
+  <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="asc-security-question__container">
+        <h3 class="govuk-heading-m">Your security question</h3>
+        <p>You chose this question when you created your account</p>
+        <h4 class="govuk-heading-s">Question</h4>
+        <div class="asc-security-question">
+          {{ securityQuestion }}
+        </div>
+      </div>
+
+      <div class="govuk-form-group">
+        <label class="govuk-label govuk-label--m" for="securityQuestionAnwser">
+          What's the answer to your security question?
+        </label>
+        <label class="govuk-label govuk-label--s">Answer</label>
+        <input
+          class="govuk-input govuk-input--width-20"
+          id="securityQuestionAnwser"
+          name="securityQuestionAnwser"
+          type="text"
+        />
+      </div>
+
+      <app-details title="Cannot remember the answer?" data-testid="reveal-text">
+        <p>Call the ASC-WDS Support Team on <strong class="govuk__nowrap">0113 241 0969</strong> for help.</p>
+      </app-details>
+
+      <div class="govuk-button-group--gap-between govuk-!-margin-top-8">
+        <button class="govuk-button">Find username</button>
+        <span class="govuk-visually-hidden">or</span>
+        <a
+          class="govuk-link govuk-link--no-visited-state govuk__nowrap"
+          [routerLink]="['/login']"
+          role="button"
+          draggable="false"
+          >Back to sign in</a
+        >
+      </div>
+    </div>
+  </form>
 </div>

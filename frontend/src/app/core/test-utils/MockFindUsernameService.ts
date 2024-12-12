@@ -2,6 +2,12 @@ import { Injectable } from '@angular/core';
 import { FindAccountRequest, FindUsernameService } from '@core/services/find-username.service';
 import { of } from 'rxjs';
 
+export const mockTestUser = {
+  accountUid: 'mock-user-uid',
+  securityQuestion: 'What is your favourite colour?',
+  securityQuestionAnswer: 'Blue',
+};
+
 @Injectable()
 export class MockFindUsernameService extends FindUsernameService {
   findUserAccount(params: FindAccountRequest): ReturnType<FindUsernameService['findUserAccount']> {
