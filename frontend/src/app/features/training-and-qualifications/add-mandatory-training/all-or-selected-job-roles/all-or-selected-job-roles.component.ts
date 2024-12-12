@@ -49,8 +49,12 @@ export class AllOrSelectedJobRolesComponent {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  private navigateToNextPage() {
-    this.router.navigate(['']);
+  private navigateToSelectJobRolesPage(): void {
+    this.router.navigate(['../', 'select-job-roles'], { relativeTo: this.route });
+  }
+
+  private navigateBackToAddMandatoryTrainingPage(): void {
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   public selectRadio(selectedRadio: string): void {
@@ -62,7 +66,9 @@ export class AllOrSelectedJobRolesComponent {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.navigateToNextPage();
+      this.selectedRadio == 'allJobRoles'
+        ? this.navigateBackToAddMandatoryTrainingPage()
+        : this.navigateToSelectJobRolesPage();
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

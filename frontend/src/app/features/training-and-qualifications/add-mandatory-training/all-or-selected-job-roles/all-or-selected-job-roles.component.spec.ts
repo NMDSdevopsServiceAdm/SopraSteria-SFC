@@ -182,4 +182,30 @@ describe('AllOrSelectedJobRolesComponent', () => {
       ).toEqual(2);
     });
   });
+
+  describe('On submit', () => {
+    it("should navigate back to add-and-manage-mandatory-training main page when user submits with 'All job roles' selected", async () => {
+      const { component, fixture, getByText, routerSpy } = await setup();
+
+      fireEvent.click(getByText('All job roles'));
+      fixture.detectChanges();
+
+      fireEvent.click(getByText('Continue'));
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+    });
+
+    it("should navigate to select-job-roles page when user submits with 'Only selected job roles' selected", async () => {
+      const { component, fixture, getByText, routerSpy } = await setup();
+
+      fireEvent.click(getByText('Only selected job roles'));
+      fixture.detectChanges();
+
+      fireEvent.click(getByText('Continue'));
+      fixture.detectChanges();
+
+      expect(routerSpy).toHaveBeenCalledWith(['../', 'select-job-roles'], { relativeTo: component.route });
+    });
+  });
 });
