@@ -4,7 +4,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { FindUsernameService } from '../../../core/services/find-username.service';
@@ -109,8 +109,8 @@ fdescribe('ForgotYourUsernameComponent', () => {
         expect(queryByRole('button', { name: 'Find account' })).toBeFalsy();
       });
 
-      it('should show a "Account not found" message and still showing "Find account" button when an account is not found', async () => {
-        const { fixture, getByText, getByRole } = await setup();
+      it('should show a "Account not found" message and keep showing "Find account" button when an account is not found', async () => {
+        const { fixture, getByRole, getByTestId } = await setup();
         fixture.autoDetectChanges();
 
         await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
@@ -121,12 +121,11 @@ fdescribe('ForgotYourUsernameComponent', () => {
           'Make sure the details you entered are correct or call the ASC-WDS Support Team on 0113 241 0969 for help.',
         ];
 
-        expect(getByText('Account not found')).toBeTruthy();
+        const messageDiv = getByTestId('account-not-found');
+        expect(within(messageDiv).getByText('Account not found')).toBeTruthy();
+        expectedText.forEach((text) => expect(messageDiv.innerText).toContain(text));
+
         expect(getByRole('button', { name: 'Find account' })).toBeTruthy();
-
-        const accountNotFoundMessage = getByText('Account not found').parentElement;
-
-        expectedText.forEach((text) => expect(accountNotFoundMessage.innerText).toContain(text));
       });
 
       describe('errors', () => {

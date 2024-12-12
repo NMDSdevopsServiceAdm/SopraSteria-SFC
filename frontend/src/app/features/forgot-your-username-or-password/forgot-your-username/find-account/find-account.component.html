@@ -13,6 +13,7 @@
           </span>
           <input
             class="govuk-input govuk-input--width-20"
+            [class.govuk-input--error]="submitted && form.get(field.id).errors"
             [id]="field.id"
             [name]="field.id"
             [formControlName]="field.id"
@@ -29,17 +30,31 @@
           </ng-container>
 
           <ng-template #accountNotFound>
-            <div *ngIf="remainingAttempts" role="alert">
-              <h2 class="govuk-heading-m">Account not found</h2>
-              <p class="govuk-error-message">
+            <div *ngIf="remainingAttempts" role="alert" data-testid="account-not-found">
+              <h2 class="govuk-heading-m">
+                <span class="govuk__flex govuk__align-items-center">
+                  <img class="govuk-!-margin-right-2" src="/assets/images/cross-icon.svg" alt="Error" />
+                  Account not found
+                </span>
+              </h2>
+
+              <p class="govuk-util__bold">
                 Some or all of the information you entered does not match that which we have for your account.
               </p>
               <p>
-                <strong
-                  >You've {{ remainingAttempts }} more {{ remainingAttempts > 1 ? 'chances' : 'chance' }} to enter the
-                  same information that we have.</strong
-                >
+                <strong>
+                  <ng-container [ngPlural]="remainingAttempts">
+                    <ng-template ngPluralCase="=1">
+                      You've 1 more chance to enter the same information that we have, otherwise you'll need to call the
+                      Support Team.
+                    </ng-template>
+                    <ng-template ngPluralCase="other">
+                      You've {{ remainingAttempts }} more chances to enter the same information that we have.
+                    </ng-template>
+                  </ng-container>
+                </strong>
               </p>
+              <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
               <p>
                 Make sure the details you entered are correct or call the ASC-WDS Support Team on
                 <strong class="govuk__nowrap">0113 241 0969</strong> for help.
