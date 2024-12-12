@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { SelectedTraining } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
@@ -30,6 +31,7 @@ export class AllOrSelectedJobRolesComponent {
     private backLinkService: BackLinkService,
     public route: ActivatedRoute,
     private trainingService: TrainingService,
+    private alertService: AlertService,
   ) {
     this.setupForm();
   }
@@ -66,9 +68,15 @@ export class AllOrSelectedJobRolesComponent {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (this.form.valid) {
-      this.selectedRadio == 'allJobRoles'
-        ? this.navigateBackToAddMandatoryTrainingPage()
-        : this.navigateToSelectJobRolesPage();
+      if (this.selectedRadio == 'allJobRoles') {
+        this.navigateBackToAddMandatoryTrainingPage();
+        this.alertService.addAlert({
+          type: 'success',
+          message: 'Mandatory training category added',
+        });
+      } else {
+        this.navigateToSelectJobRolesPage();
+      }
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }

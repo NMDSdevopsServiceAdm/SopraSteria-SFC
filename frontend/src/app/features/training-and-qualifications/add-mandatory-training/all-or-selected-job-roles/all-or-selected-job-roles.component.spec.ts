@@ -2,7 +2,9 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -46,19 +48,25 @@ describe('AllOrSelectedJobRolesComponent', () => {
             },
           },
         },
+        AlertService,
+        WindowRef,
       ],
     });
 
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
+
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const resetStateInTrainingServiceSpy = spyOn(trainingService, 'resetState').and.callThrough();
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
     return {
       ...setupTools,
       component,
       routerSpy,
       resetStateInTrainingServiceSpy,
+      alertSpy,
     };
   }
 
@@ -194,6 +202,21 @@ describe('AllOrSelectedJobRolesComponent', () => {
       fixture.detectChanges();
 
       expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+    });
+
+    it("should display 'Mandatory training category added' banner when 'All job roles' selected", async () => {
+      const { fixture, getByText, alertSpy } = await setup();
+
+      fireEvent.click(getByText('All job roles'));
+      fixture.detectChanges();
+
+      fireEvent.click(getByText('Continue'));
+      fixture.detectChanges();
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Mandatory training category added',
+      });
     });
 
     it("should navigate to select-job-roles page when user submits with 'Only selected job roles' selected", async () => {
