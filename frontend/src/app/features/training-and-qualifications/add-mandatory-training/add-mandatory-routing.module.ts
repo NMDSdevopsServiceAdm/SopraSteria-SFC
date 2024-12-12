@@ -1,5 +1,6 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { DeleteMandatoryTrainingCategoryComponent } from '@features/training-and-qualifications/add-mandatory-training/delete-mandatory-training-category/delete-mandatory-training-category.component';
 
@@ -24,6 +25,7 @@ const routes: Routes = [
         data: { title: 'Select Training Category' },
         resolve: {
           trainingCategories: TrainingCategoriesResolver,
+          existingMandatoryTraining: MandatoryTrainingCategoriesResolver,
         },
       },
       {

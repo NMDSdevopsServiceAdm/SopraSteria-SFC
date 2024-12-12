@@ -86,13 +86,13 @@ export class SelectTrainingCategoryDirective implements OnInit, AfterViewInit {
     this.title = 'Select the category that best matches the training taken';
   }
 
-  private getCategories(): void {
+  protected getCategories(): void {
     this.categories = this.route.snapshot.data.trainingCategories;
     this.sortCategoriesByTrainingGroup(this.categories);
     this.otherCategory = this.categories.filter((category) => category.trainingCategoryGroup === null)[0];
   }
 
-  private sortCategoriesByTrainingGroup(trainingCategories) {
+  protected sortCategoriesByTrainingGroup(trainingCategories) {
     this.trainingGroups = [];
     for (const group of Object.keys(this.summaryText)) {
       let currentTrainingGroup = {

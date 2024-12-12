@@ -11,7 +11,7 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
+import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
@@ -23,7 +23,7 @@ import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { SelectTrainingCategoryMandatoryComponent } from './select-training-category-mandatory.component';
 
 describe('SelectTrainingCategoryMandatoryComponent', () => {
-  async function setup() {
+  async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
 
     const setupTools = await render(SelectTrainingCategoryMandatoryComponent, {
@@ -40,7 +40,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
         },
         {
           provide: TrainingService,
-          useClass: MockTrainingService,
+          useClass: overrides.prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
         },
         {
           provide: ActivatedRoute,
@@ -48,7 +48,8 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
             snapshot: {
               data: {
                 establishment,
-                trainingCategories,
+                trainingCategories: overrides.trainingCategories ?? trainingCategories,
+                existingMandatoryTraining: overrides.existingMandatoryTraining ?? {},
               },
               queryParamMap: {
                 get: sinon.stub(),
@@ -191,5 +192,41 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
 
     expect(queryByText('The training is not in any of these categories')).toBeFalsy();
     expect(fixture.nativeElement.querySelector('#otherCheckbox')).toBeFalsy();
+  });
+
+  it('should prefill the training category radio when already selected category in training service', async () => {
+    const { component } = await setup({ prefill: true });
+
+    expect(component.form.value).toEqual({ category: 1 });
+  });
+
+  it('should not include training categories which already have mandatory training', async () => {
+    const mockTrainingCategories = [
+      { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
+      { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
+      { id: 3, seq: 20, category: 'Continence care', trainingCategoryGroup: 'Care skills and knowledge' },
+    ];
+
+    const existingMandatoryTraining = {
+      mandatoryTraining: [
+        {
+          category: mockTrainingCategories[2].category,
+          establishmentId: 4090,
+          jobs: [{}, {}],
+          trainingCategoryId: mockTrainingCategories[2].id,
+        },
+      ],
+    };
+
+    const overrides = {
+      trainingCategories: mockTrainingCategories,
+      existingMandatoryTraining,
+    };
+
+    const { queryByText } = await setup(overrides);
+
+    expect(queryByText(mockTrainingCategories[0].category)).toBeTruthy();
+    expect(queryByText(mockTrainingCategories[1].category)).toBeTruthy();
+    expect(queryByText(mockTrainingCategories[2].category)).toBeFalsy();
   });
 });

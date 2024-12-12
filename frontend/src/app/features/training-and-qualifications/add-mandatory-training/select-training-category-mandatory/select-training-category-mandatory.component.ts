@@ -40,6 +40,25 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
     this.title = 'Select the training category that you want to make mandatory';
   }
 
+  protected getCategories(): void {
+    const allTrainingCategories = this.route.snapshot.data.trainingCategories;
+    const existingMandatoryTraining = this.route.snapshot.data.existingMandatoryTraining;
+
+    const trainingCategoryIdsWithExistingMandatoryTraining = existingMandatoryTraining?.mandatoryTraining?.map(
+      (existingMandatoryTrainings) => existingMandatoryTrainings.trainingCategoryId,
+    );
+
+    if (trainingCategoryIdsWithExistingMandatoryTraining?.length) {
+      this.categories = allTrainingCategories.filter(
+        (category) => !trainingCategoryIdsWithExistingMandatoryTraining.includes(category.id),
+      );
+    } else {
+      this.categories = allTrainingCategories;
+    }
+
+    this.sortCategoriesByTrainingGroup(this.categories);
+  }
+
   public onCancel(event: Event) {
     event.preventDefault();
     this.trainingService.resetState();

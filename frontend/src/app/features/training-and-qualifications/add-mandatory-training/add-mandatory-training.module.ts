@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
+import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { AddMandatoryTrainingRoutingModule } from '@features/training-and-qualifications/add-mandatory-training/add-mandatory-routing.module';
 import { DeleteMandatoryTrainingCategoryComponent } from '@features/training-and-qualifications/add-mandatory-training/delete-mandatory-training-category/delete-mandatory-training-category.component';
@@ -22,6 +23,6 @@ import { SelectTrainingCategoryMandatoryComponent } from './select-training-cate
     DeleteMandatoryTrainingCategoryComponent,
     AllOrSelectedJobRolesComponent,
   ],
-  providers: [TrainingCategoriesResolver],
+  providers: [TrainingCategoriesResolver, MandatoryTrainingCategoriesResolver],
 })
 export class AddMandatoryTrainingModule {}
