@@ -4,7 +4,7 @@ const models = require('../../models/index');
 
 const findUserAccount = async (req, res) => {
   try {
-    if (!validateRequest(req)) {
+    if (requestIsInvalid(req)) {
       return res.status(400).send('Invalid request');
     }
 
@@ -30,13 +30,13 @@ const findUserAccount = async (req, res) => {
   }
 };
 
-const validateRequest = (req) => {
+const requestIsInvalid = (req) => {
   if (!req.body) {
-    return false;
+    return true;
   }
   const { name, workplaceIdOrPostcode, email } = req.body;
 
-  return [name, workplaceIdOrPostcode, email].every((field) => !isEmpty(field));
+  return [name, workplaceIdOrPostcode, email].some((field) => isEmpty(field));
 };
 
 const sendSuccessResponse = (res, userFound) => {
