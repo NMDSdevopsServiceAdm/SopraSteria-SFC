@@ -3,6 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { MockFindUsernameService } from '@core/test-utils/MockFindUsernameService';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -10,9 +11,8 @@ import userEvent from '@testing-library/user-event';
 import { FindUsernameService } from '../../../core/services/find-username.service';
 import { FindAccountComponent } from './find-account/find-account.component';
 import { ForgotYourUsernameComponent } from './forgot-your-username.component';
-import { MockFindUsernameService } from '@core/test-utils/MockFindUsernameService';
 
-fdescribe('ForgotYourUsernameComponent', () => {
+describe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
