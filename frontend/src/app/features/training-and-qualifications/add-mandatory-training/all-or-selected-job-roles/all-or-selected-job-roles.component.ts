@@ -2,12 +2,15 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
 import { SelectedTraining } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-all-or-selected-job-roles',
@@ -23,6 +26,8 @@ export class AllOrSelectedJobRolesComponent {
   public requiredErrorMessage: string = 'Select whether this training is for all job roles or only selected job roles';
   public selectedTrainingCategory: SelectedTraining;
   public selectedRadio: string = null;
+  private subscriptions: Subscription = new Subscription();
+  private establishment: Establishment;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -32,11 +37,13 @@ export class AllOrSelectedJobRolesComponent {
     public route: ActivatedRoute,
     private trainingService: TrainingService,
     private alertService: AlertService,
+    private establishmentService: EstablishmentService,
   ) {
     this.setupForm();
   }
 
   ngOnInit(): void {
+    this.establishment = this.route.snapshot.parent?.data?.establishment;
     this.selectedTrainingCategory = this.trainingService.selectedTraining;
 
     if (!this.selectedTrainingCategory) {
@@ -69,19 +76,38 @@ export class AllOrSelectedJobRolesComponent {
 
     if (this.form.valid) {
       if (this.selectedRadio == 'allJobRoles') {
-        this.navigateBackToAddMandatoryTrainingPage();
-        this.trainingService.resetState();
-
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Mandatory training category added',
-        });
+        this.createMandatoryTraining();
       } else {
         this.navigateToSelectJobRolesPage();
       }
     } else {
       this.errorSummaryService.scrollToErrorSummary();
     }
+  }
+
+  private createMandatoryTraining(): void {
+    const props = {
+      trainingCategoryId: this.selectedTrainingCategory.trainingCategory.id,
+      allJobRoles: true,
+      jobs: [],
+    };
+
+    this.subscriptions.add(
+      this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
+        () => {
+          this.navigateBackToAddMandatoryTrainingPage();
+          this.trainingService.resetState();
+
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Mandatory training category added',
+          });
+        },
+        (error) => {
+          console.log(error);
+        },
+      ),
+    );
   }
 
   public onCancel(event: Event): void {
@@ -112,5 +138,9 @@ export class AllOrSelectedJobRolesComponent {
         },
       ],
     });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

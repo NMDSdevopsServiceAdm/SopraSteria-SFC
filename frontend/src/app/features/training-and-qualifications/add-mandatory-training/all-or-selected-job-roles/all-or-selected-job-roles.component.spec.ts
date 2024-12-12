@@ -3,8 +3,10 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -16,6 +18,7 @@ import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles.comp
 
 describe('AllOrSelectedJobRolesComponent', () => {
   async function setup(overrides: any = {}) {
+    const establishment = establishmentBuilder();
     const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(AllOrSelectedJobRolesComponent, {
@@ -39,12 +42,15 @@ describe('AllOrSelectedJobRolesComponent', () => {
           },
         },
         { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
         {
           provide: ActivatedRoute,
           useValue: {
-            params: Observable.from([{ establishmentuid: 'establishmentUid', id: 1 }]),
+            params: Observable.from([{ establishmentuid: establishment.uid }]),
             snapshot: {
-              data: { establishment: { uid: 'testuid' } },
+              parent: {
+                data: { establishment },
+              },
             },
           },
         },
@@ -61,12 +67,21 @@ describe('AllOrSelectedJobRolesComponent', () => {
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const createAndUpdateMandatoryTrainingSpy = spyOn(
+      establishmentService,
+      'createAndUpdateMandatoryTraining',
+    ).and.callThrough();
+
     return {
       ...setupTools,
       component,
       routerSpy,
       resetStateInTrainingServiceSpy,
       alertSpy,
+      createAndUpdateMandatoryTrainingSpy,
+      establishment,
     };
   }
 
@@ -200,6 +215,37 @@ describe('AllOrSelectedJobRolesComponent', () => {
         fireEvent.click(getByText('Continue'));
         fixture.detectChanges();
       };
+
+      it('should call createAndUpdateMandatoryTraining with training category in service and allJobRoles true', async () => {
+        const selectedTraining = {
+          trainingCategory: {
+            category: 'Activity provision, wellbeing',
+            id: 3,
+            seq: 0,
+            trainingCategoryGroup: 'Care skills and knowledge',
+          },
+        };
+
+        const { fixture, getByText, establishment, createAndUpdateMandatoryTrainingSpy } = await setup({
+          selectedTraining,
+        });
+
+        selectAllJobRolesAndSubmit(fixture, getByText);
+
+        expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
+          trainingCategoryId: selectedTraining.trainingCategory.id,
+          allJobRoles: true,
+          jobs: [],
+        });
+      });
+
+      it('should navigate back to add-and-manage-mandatory-training main page', async () => {
+        const { component, fixture, getByText, routerSpy } = await setup();
+
+        selectAllJobRolesAndSubmit(fixture, getByText);
+
+        expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+      });
 
       it('should navigate back to add-and-manage-mandatory-training main page', async () => {
         const { component, fixture, getByText, routerSpy } = await setup();
