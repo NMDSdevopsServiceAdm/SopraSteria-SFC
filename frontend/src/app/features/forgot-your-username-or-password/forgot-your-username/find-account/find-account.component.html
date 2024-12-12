@@ -26,7 +26,11 @@
       <div #searchResult>
         <ng-container *ngIf="submitted">
           <ng-container *ngIf="accountFound; else accountNotFound">
-            <h2 class="govuk-heading-m">Account found</h2>
+            <h2 class="govuk-heading-m">
+              <span class="govuk__flex govuk__align-items-center">
+                <img class="govuk-!-margin-right-2" src="/assets/images/tick-icon.svg" alt="" />Account found
+              </span>
+            </h2>
           </ng-container>
 
           <ng-template #accountNotFound>
