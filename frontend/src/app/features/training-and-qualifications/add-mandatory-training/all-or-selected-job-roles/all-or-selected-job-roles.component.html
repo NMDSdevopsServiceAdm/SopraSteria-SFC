@@ -16,7 +16,12 @@
       </fieldset>
       <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.invalid">
         <div class="govuk-radios">
-          <span id="allOrSelectedJobRoles-error" class="govuk-error-message" *ngIf="submitted && form.invalid">
+          <span
+            id="allOrSelectedJobRoles-error"
+            class="govuk-error-message"
+            style="white-space: nowrap"
+            *ngIf="submitted && form.invalid"
+          >
             <span class="govuk-visually-hidden">Error:</span> {{ requiredErrorMessage }}
           </span>
           <div class="govuk-radios__item">
