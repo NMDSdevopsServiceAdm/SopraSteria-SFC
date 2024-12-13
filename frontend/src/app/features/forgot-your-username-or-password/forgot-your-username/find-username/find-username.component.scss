@@ -25,14 +25,16 @@
 .asc-incorrect-answer-message {
   display: grid;
   grid-template-columns: min-content 1fr;
+  row-gap: 5px;
   margin-top: 30px;
   margin-bottom: 30px;
 
   > img {
     grid-column: 1;
-    margin-top: 1px;
   }
+
   > p {
+    line-height: 22px;
     grid-column: 2;
     font-weight: bold;
     margin-bottom: 0;
