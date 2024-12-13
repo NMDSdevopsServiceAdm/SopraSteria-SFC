@@ -19,6 +19,14 @@ import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles.comp
 describe('AllOrSelectedJobRolesComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder();
+    const selectedTraining = {
+      trainingCategory: {
+        category: 'Activity provision, wellbeing',
+        id: 1,
+        seq: 0,
+        trainingCategoryGroup: 'Care skills and knowledge',
+      },
+    };
     const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(AllOrSelectedJobRolesComponent, {
@@ -27,17 +35,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
         {
           provide: TrainingService,
           useValue: {
-            selectedTraining:
-              overrides.selectedTraining !== undefined
-                ? overrides.selectedTraining
-                : {
-                    trainingCategory: {
-                      category: 'Activity provision, wellbeing',
-                      id: 1,
-                      seq: 0,
-                      trainingCategoryGroup: 'Care skills and knowledge',
-                    },
-                  },
+            selectedTraining: overrides.selectedTraining !== undefined ? overrides.selectedTraining : selectedTraining,
             resetState: () => {},
           },
         },
@@ -82,6 +80,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
       alertSpy,
       createAndUpdateMandatoryTrainingSpy,
       establishment,
+      selectedTraining,
     };
   }
 
@@ -115,16 +114,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
   describe('Mandatory for everybody message', () => {
     ['Activity provision, wellbeing', 'Digital leadership skills'].forEach((category) => {
       it(`should display with selected training category (${category}) when All job roles radio is clicked`, async () => {
-        const selectedTraining = {
-          trainingCategory: {
-            category,
-            id: 1,
-            seq: 0,
-            trainingCategoryGroup: 'Care skills and knowledge',
-          },
-        };
-
-        const { fixture, getByText } = await setup({ selectedTraining });
+        const { fixture, getByText, selectedTraining } = await setup();
 
         const expectedMessage = `If you click Continue, '${selectedTraining.trainingCategory.category}' will be mandatory for everybody in your workplace.`;
 
@@ -178,7 +168,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
 
   describe('Cancel button', () => {
     it('should navigate to the add-and-manage-mandatory-training page (relative route ../) when clicked', async () => {
-      const { component, getByText, routerSpy } = await setup({ selectedTraining: null });
+      const { component, getByText, routerSpy } = await setup();
 
       const cancelButton = getByText('Cancel');
       userEvent.click(cancelButton);
@@ -187,7 +177,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
     });
 
     it('should clear state in training service when clicked', async () => {
-      const { getByText, resetStateInTrainingServiceSpy } = await setup({ selectedTraining: null });
+      const { getByText, resetStateInTrainingServiceSpy } = await setup();
 
       const cancelButton = getByText('Cancel');
       userEvent.click(cancelButton);
