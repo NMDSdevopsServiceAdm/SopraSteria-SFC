@@ -41,6 +41,7 @@ export class SelectJobRolesMandatoryComponent {
   public selectedJobIds: number[] = [];
   public errorMessageOnEmptyInput: string = 'Select the job roles that need this training';
   public formErrorsMap: Array<ErrorDetails> = [];
+  public serverError: string;
   public subscriptions: Subscription = new Subscription();
   private establishment: Establishment;
   private selectedTrainingCategory: SelectedTraining;
@@ -125,7 +126,9 @@ export class SelectJobRolesMandatoryComponent {
             message: 'Mandatory training category added',
           });
         },
-        () => {},
+        () => {
+          this.serverError = 'There has been a problem saving your mandatory training. Please try again.';
+        },
       ),
     );
   }

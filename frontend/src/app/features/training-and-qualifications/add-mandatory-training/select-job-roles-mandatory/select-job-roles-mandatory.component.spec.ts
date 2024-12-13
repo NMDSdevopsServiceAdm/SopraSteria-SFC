@@ -17,6 +17,7 @@ import { RadioButtonAccordionComponent } from '@shared/components/accordions/rad
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { throwError } from 'rxjs';
 
 import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { SelectJobRolesMandatoryComponent } from './select-job-roles-mandatory.component';
@@ -175,26 +176,28 @@ describe('SelectJobRolesMandatoryComponent', () => {
   });
 
   describe('On submit', () => {
-    const selectJobRolesAndSave = (getByText, jobRoles = [mockAvailableJobs[0]]) => {
+    const selectJobRolesAndSave = (fixture, getByText, jobRoles = [mockAvailableJobs[0]]) => {
       userEvent.click(getByText('Show all job roles'));
 
       jobRoles.forEach((role) => userEvent.click(getByText(role.title)));
+      fixture.detectChanges();
 
       userEvent.click(getByText('Save mandatory training'));
+      fixture.detectChanges();
     };
 
     it('should navigate back to add-and-manage-mandatory-training main page', async () => {
-      const { component, getByText, routerSpy } = await setup();
+      const { fixture, component, getByText, routerSpy } = await setup();
 
-      selectJobRolesAndSave(getByText);
+      selectJobRolesAndSave(fixture, getByText);
 
       expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
     });
 
     it("should display 'Mandatory training category added' banner", async () => {
-      const { getByText, alertSpy } = await setup();
+      const { fixture, getByText, alertSpy } = await setup();
 
-      selectJobRolesAndSave(getByText);
+      selectJobRolesAndSave(fixture, getByText);
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
@@ -203,9 +206,9 @@ describe('SelectJobRolesMandatoryComponent', () => {
     });
 
     it('should clear state in training service', async () => {
-      const { getByText, resetStateInTrainingServiceSpy } = await setup();
+      const { fixture, getByText, resetStateInTrainingServiceSpy } = await setup();
 
-      selectJobRolesAndSave(getByText);
+      selectJobRolesAndSave(fixture, getByText);
 
       expect(resetStateInTrainingServiceSpy).toHaveBeenCalled();
     });
@@ -215,9 +218,10 @@ describe('SelectJobRolesMandatoryComponent', () => {
       [mockAvailableJobs[2], mockAvailableJobs[3]],
     ].forEach((jobRoleSet) => {
       it(`should call createAndUpdateMandatoryTraining with training category in service and selected job roles ('${jobRoleSet[0].title}', '${jobRoleSet[1].title}')`, async () => {
-        const { getByText, establishment, selectedTraining, createAndUpdateMandatoryTrainingSpy } = await setup();
+        const { fixture, getByText, establishment, selectedTraining, createAndUpdateMandatoryTrainingSpy } =
+          await setup();
 
-        selectJobRolesAndSave(getByText, jobRoleSet);
+        selectJobRolesAndSave(fixture, getByText, jobRoleSet);
 
         expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
           trainingCategoryId: selectedTraining.trainingCategory.id,
@@ -225,6 +229,18 @@ describe('SelectJobRolesMandatoryComponent', () => {
           jobs: [{ id: jobRoleSet[0].id }, { id: jobRoleSet[1].id }],
         });
       });
+    });
+
+    it('should display server error message if call to backend fails', async () => {
+      const { fixture, getByText, createAndUpdateMandatoryTrainingSpy } = await setup();
+
+      createAndUpdateMandatoryTrainingSpy.and.returnValue(throwError(() => new Error('Unexpected error')));
+
+      selectJobRolesAndSave(fixture, getByText);
+
+      const expectedErrorMessage = 'There has been a problem saving your mandatory training. Please try again.';
+
+      expect(getByText(expectedErrorMessage)).toBeTruthy();
     });
   });
 
