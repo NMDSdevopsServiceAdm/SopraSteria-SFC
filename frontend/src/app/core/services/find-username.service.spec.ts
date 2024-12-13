@@ -5,7 +5,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { FindUsernameService } from './find-username.service';
 
-describe('FindUsernameService', () => {
+fdescribe('FindUsernameService', () => {
   let service: FindUsernameService;
   let http: HttpTestingController;
 
@@ -27,6 +27,18 @@ describe('FindUsernameService', () => {
 
       service.findUserAccount(mockParams).subscribe();
       const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
+
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(mockParams);
+    });
+  });
+
+  describe('findUsername', () => {
+    it('should make a POST request to /registration/findUsername endpoint with uid and security question answer', async () => {
+      const mockParams = { uid: 'mock-uid', securityQuestionAnswer: '42' };
+
+      service.findUsername(mockParams).subscribe();
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUsername`);
 
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(mockParams);

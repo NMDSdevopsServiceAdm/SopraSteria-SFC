@@ -223,6 +223,22 @@ fdescribe('ForgotYourUsernameComponent', () => {
     });
 
     describe('submit form and validation', () => {
+      it('should call findUsernameService () on submit', async () => {
+        const { fixture, findUsernameService, getByRole } = await setupAndProceedToFindUsername();
+
+        spyOn(findUsernameService, 'findUsername').and.callThrough();
+
+        userEvent.type(getByRole('textbox', { name: "What's the answer to your security question?" }), 'Blue');
+        userEvent.click(getByRole('button', { name: 'Find username' }));
+
+        fixture.detectChanges();
+
+        expect(findUsernameService.findUsername).toHaveBeenCalledWith({
+          uid: mockTestUser.accountUid,
+          securityQuestionAnswer: 'Blue',
+        });
+      });
+
       describe('error', () => {
         it('should show an error message if answer is blank', async () => {
           const { fixture, getByRole, getByText, getAllByText } = await setupAndProceedToFindUsername();

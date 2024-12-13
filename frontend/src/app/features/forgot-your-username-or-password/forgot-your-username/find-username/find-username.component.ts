@@ -1,3 +1,5 @@
+import { Subscription } from 'rxjs';
+
 import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -22,6 +24,8 @@ export class FindUsernameComponent implements OnInit {
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
   public errorMessage = 'Enter the answer to your security question';
+
+  private subscriptions = new Subscription();
 
   constructor(
     private FormBuilder: UntypedFormBuilder,
@@ -63,5 +67,20 @@ export class FindUsernameComponent implements OnInit {
 
   public onSubmit(): void {
     this.submitted = true;
+
+    if (!this.form.valid) {
+      return;
+    }
+
+    const params = {
+      uid: this.accountUid,
+      securityQuestionAnswer: this.form.get('securityQuestionAnswer').value,
+    };
+
+    this.subscriptions.add(
+      this.findUsernameService.findUsername(params).subscribe((res) => {
+        console.log(res);
+      }),
+    );
   }
 }

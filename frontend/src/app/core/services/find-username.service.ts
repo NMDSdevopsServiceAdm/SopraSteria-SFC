@@ -22,6 +22,20 @@ interface AccountNotFound {
 
 export type FindUserAccountResponse = AccountFound | AccountNotFound;
 
+export interface FindUsernameRequest {
+  uid: string;
+  securityQuestionAnswer: string;
+}
+
+interface AnswerCorrect {
+  username: string;
+}
+interface AnswerIncorrect {
+  remainingAttempts: number;
+}
+
+export type FindUsernameResponse = AnswerCorrect | AnswerIncorrect;
+
 @Injectable({
   providedIn: 'root',
 })
@@ -33,6 +47,13 @@ export class FindUsernameService {
   findUserAccount(params: FindAccountRequest): Observable<FindUserAccountResponse> {
     return this.http.post<FindUserAccountResponse>(
       `${environment.appRunnerEndpoint}/api/registration/findUserAccount`,
+      params,
+    );
+  }
+
+  findUsername(params: FindUsernameRequest): Observable<FindUsernameResponse> {
+    return this.http.post<FindUsernameResponse>(
+      `${environment.appRunnerEndpoint}/api/registration/findUsername`,
       params,
     );
   }
