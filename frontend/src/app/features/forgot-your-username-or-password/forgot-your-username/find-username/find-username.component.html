@@ -24,7 +24,7 @@
           id="securityQuestionAnswer-error"
           class="govuk-error-message"
         >
-          <span class="govuk-visually-hidden">Error:</span> {{ errorMessage }}
+          <span class="govuk-visually-hidden">Error:</span> {{ requiredErrorMessage }}
         </span>
         <input
           class="govuk-input govuk-input--width-20"
@@ -35,6 +35,20 @@
           aria-describedby="securityQuestion"
           formControlName="securityQuestionAnswer"
         />
+      </div>
+
+      <div *ngIf="remainingAttempts" class="asc-incorrect-answer-message" role="alert">
+        <img class="govuk-!-margin-right-1" src="/assets/images/cross-icon.svg" alt="Error" />
+        <p>Your answer does not match that which we have for your account.</p>
+        <ng-container [ngPlural]="remainingAttempts">
+          <ng-template ngPluralCase="=1">
+            <p>You've 1 more chance to get your security question right.</p>
+            <p>You'll need to call the Support Team if you get it wrong again.</p>
+          </ng-template>
+          <ng-template ngPluralCase="other"
+            ><p>You've {{ remainingAttempts }} more chances to get your security question right.</p>
+          </ng-template>
+        </ng-container>
       </div>
 
       <app-details title="Cannot remember the answer?" data-testid="reveal-text">

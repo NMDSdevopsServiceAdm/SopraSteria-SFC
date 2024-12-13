@@ -1,3 +1,5 @@
+import { of } from 'rxjs';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
@@ -237,6 +239,56 @@ fdescribe('ForgotYourUsernameComponent', () => {
           uid: mockTestUser.accountUid,
           securityQuestionAnswer: 'Blue',
         });
+      });
+
+      it('should set the retrieved username to service and navigate to username-found page if answer is correct', async () => {
+        const { fixture, getByRole, routerSpy, findUsernameService } = await setupAndProceedToFindUsername();
+
+        userEvent.type(
+          getByRole('textbox', { name: "What's the answer to your security question?" }),
+          mockTestUser.securityQuestionAnswer,
+        );
+        userEvent.click(getByRole('button', { name: 'Find username' }));
+
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/username-found']);
+        expect(findUsernameService.usernameFound).toEqual(mockTestUser.username);
+      });
+
+      it('should show an error message if answer is incorrect', async () => {
+        const { fixture, getByRole, getByText, routerSpy, findUsernameService } = await setupAndProceedToFindUsername();
+
+        userEvent.type(
+          getByRole('textbox', { name: "What's the answer to your security question?" }),
+          'some wrong answer',
+        );
+        userEvent.click(getByRole('button', { name: 'Find username' }));
+
+        fixture.detectChanges();
+
+        expect(getByText('Your answer does not match that which we have for your account.')).toBeTruthy();
+        expect(getByText("You've 4 more chances to get your security question right.")).toBeTruthy();
+
+        expect(routerSpy).not.toHaveBeenCalled();
+        expect(findUsernameService.usernameFound).toEqual(null);
+      });
+
+      fit('should show a different error message when only 1 chance remain', async () => {
+        const { fixture, getByRole, getByText, findUsernameService } = await setupAndProceedToFindUsername();
+        spyOn(findUsernameService, 'findUsername').and.returnValue(of({ answerCorrect: false, remainingAttempts: 1 }));
+
+        userEvent.type(
+          getByRole('textbox', { name: "What's the answer to your security question?" }),
+          'some wrong answer',
+        );
+        userEvent.click(getByRole('button', { name: 'Find username' }));
+
+        fixture.detectChanges();
+
+        expect(getByText('Your answer does not match that which we have for your account.')).toBeTruthy();
+        expect(getByText("You've 1 more chance to get your security question right.")).toBeTruthy();
+        expect(getByText("You'll need to call the Support Team if you get it wrong again.")).toBeTruthy();
       });
 
       describe('error', () => {

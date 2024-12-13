@@ -4,7 +4,8 @@ import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild }
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { FindUsernameService } from '@core/services/find-username.service';
+import { FindUsernameResponse, FindUsernameService } from '@core/services/find-username.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-find-username',
@@ -23,7 +24,8 @@ export class FindUsernameComponent implements OnInit {
   public form: UntypedFormGroup;
   public submitted = false;
   public formErrorsMap: Array<ErrorDetails>;
-  public errorMessage = 'Enter the answer to your security question';
+  public requiredErrorMessage = 'Enter the answer to your security question';
+  public remainingAttempts: number;
 
   private subscriptions = new Subscription();
 
@@ -31,6 +33,7 @@ export class FindUsernameComponent implements OnInit {
     private FormBuilder: UntypedFormBuilder,
     private errorSummaryService: ErrorSummaryService,
     private findUsernameService: FindUsernameService,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -47,6 +50,7 @@ export class FindUsernameComponent implements OnInit {
       this.securityQuestionEl.nativeElement.focus();
     }, 0);
   }
+
   public setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
@@ -54,7 +58,7 @@ export class FindUsernameComponent implements OnInit {
         type: [
           {
             name: 'required',
-            message: this.errorMessage,
+            message: this.requiredErrorMessage,
           },
         ],
       },
@@ -79,8 +83,23 @@ export class FindUsernameComponent implements OnInit {
 
     this.subscriptions.add(
       this.findUsernameService.findUsername(params).subscribe((res) => {
-        console.log(res);
+        this.handleResponse(res);
       }),
     );
+  }
+
+  public handleResponse(response: FindUsernameResponse) {
+    switch (response.answerCorrect) {
+      case true: {
+        this.findUsernameService.usernameFound = response.username;
+        this.router.navigate(['/username-found']);
+        break;
+      }
+      case false: {
+        this.remainingAttempts = response.remainingAttempts;
+        // to navigate to failure page when remainingAttempts = 0
+        break;
+      }
+    }
   }
 }
