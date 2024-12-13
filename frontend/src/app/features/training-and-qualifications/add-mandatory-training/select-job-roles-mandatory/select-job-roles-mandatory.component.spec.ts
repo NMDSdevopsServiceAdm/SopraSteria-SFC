@@ -10,7 +10,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
+import { MockRouter } from '@core/test-utils/MockRouter';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
@@ -49,8 +49,9 @@ describe('SelectJobRolesMandatoryComponent', () => {
     },
   ];
 
-  async function setup() {
+  async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
+    const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(SelectJobRolesMandatoryComponent, {
       imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMandatoryTrainingModule],
@@ -61,9 +62,23 @@ describe('SelectJobRolesMandatoryComponent', () => {
         AlertService,
         WindowRef,
         FormBuilder,
+        { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
         {
           provide: TrainingService,
-          useClass: MockTrainingService,
+          useValue: {
+            selectedTraining:
+              overrides.selectedTraining !== undefined
+                ? overrides.selectedTraining
+                : {
+                    trainingCategory: {
+                      category: 'Activity provision, wellbeing',
+                      id: 1,
+                      seq: 0,
+                      trainingCategoryGroup: 'Care skills and knowledge',
+                    },
+                  },
+            resetState: () => {},
+          },
         },
         {
           provide: ActivatedRoute,
@@ -82,9 +97,6 @@ describe('SelectJobRolesMandatoryComponent', () => {
     const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
-
-    const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -120,6 +132,12 @@ describe('SelectJobRolesMandatoryComponent', () => {
     const heading = getByText('Select the job roles which need this training');
 
     expect(heading).toBeTruthy();
+  });
+
+  it('should navigate back to the select training category page if no training category set in training service', async () => {
+    const { component, routerSpy } = await setup({ selectedTraining: null });
+
+    expect(routerSpy).toHaveBeenCalledWith(['../select-training-category'], { relativeTo: component.route });
   });
 
   describe('Accordion', () => {

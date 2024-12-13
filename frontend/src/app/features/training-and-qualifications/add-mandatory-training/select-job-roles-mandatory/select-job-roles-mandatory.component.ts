@@ -3,6 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Job, JobGroup } from '@core/model/job.model';
+import { SelectedTraining } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -36,11 +37,18 @@ export class SelectJobRolesMandatoryComponent {
   public selectedJobIds: number[] = [];
   public errorMessageOnEmptyInput: string = 'Select the job roles that need this training';
   public formErrorsMap: Array<ErrorDetails> = [];
+  private selectedTrainingCategory: SelectedTraining;
 
   ngOnInit(): void {
+    this.selectedTrainingCategory = this.trainingService.selectedTraining;
+
+    if (!this.selectedTrainingCategory) {
+      this.router.navigate(['../select-training-category'], { relativeTo: this.route });
+    }
+
+    this.backLinkService.showBackLink();
     this.getJobs();
     this.setupForm();
-    this.backLinkService.showBackLink();
   }
 
   private getJobs(): void {
