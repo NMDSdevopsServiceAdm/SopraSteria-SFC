@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs';
 
-import { Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -12,7 +12,7 @@ import { Router } from '@angular/router';
   templateUrl: './find-username.component.html',
   styleUrls: ['./find-username.component.scss'],
 })
-export class FindUsernameComponent implements OnInit {
+export class FindUsernameComponent implements OnInit, OnDestroy {
   @Input() accountUid: string;
   @Input() securityQuestion: string;
 
@@ -48,7 +48,7 @@ export class FindUsernameComponent implements OnInit {
   public focusOnQuestion() {
     setTimeout(() => {
       this.securityQuestionEl.nativeElement.focus();
-    }, 0);
+    }, 500);
   }
 
   public setupFormErrorsMap(): void {
@@ -101,5 +101,9 @@ export class FindUsernameComponent implements OnInit {
         break;
       }
     }
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

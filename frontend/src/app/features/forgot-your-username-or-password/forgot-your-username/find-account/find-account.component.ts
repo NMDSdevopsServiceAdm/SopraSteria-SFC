@@ -1,7 +1,16 @@
 import { lowerFirst } from 'lodash';
 import { Subscription } from 'rxjs';
 
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { EMAIL_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -18,7 +27,7 @@ const InputFields = [
   selector: 'app-find-account',
   templateUrl: './find-account.component.html',
 })
-export class FindAccountComponent {
+export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('searchResult') searchResult: ElementRef;
 
@@ -119,5 +128,9 @@ export class FindAccountComponent {
 
   private scrollToResult() {
     this.searchResult.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

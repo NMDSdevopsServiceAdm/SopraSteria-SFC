@@ -1,7 +1,4 @@
-import { Subscription } from 'rxjs';
-
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { ErrorDetails } from '@core/model/errorSummary.model';
 import { AccountFound } from '@core/services/find-username.service';
 
 import { FindAccountComponent } from './find-account/find-account.component';
@@ -15,7 +12,6 @@ export class ForgotYourUsernameComponent implements OnInit {
   public currentForm: FindAccountComponent | FindUsernameComponent;
   public accountUid: string;
   public securityQuestion: string;
-  private subscriptions = new Subscription();
 
   constructor(private cd: ChangeDetectorRef) {}
 
