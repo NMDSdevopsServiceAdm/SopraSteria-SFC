@@ -8,7 +8,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
@@ -75,7 +75,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
         { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         {
-          provide: TrainingService,
+          provide: MandatoryTrainingService,
           useValue: {
             selectedTraining: overrides.selectedTraining !== undefined ? overrides.selectedTraining : selectedTraining,
             resetState: () => {},
@@ -102,7 +102,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
 
-    const trainingService = injector.inject(TrainingService) as TrainingService;
+    const trainingService = injector.inject(MandatoryTrainingService) as MandatoryTrainingService;
     const resetStateInTrainingServiceSpy = spyOn(trainingService, 'resetState').and.callThrough();
 
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;

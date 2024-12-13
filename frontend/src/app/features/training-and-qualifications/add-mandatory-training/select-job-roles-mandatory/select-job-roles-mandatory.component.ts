@@ -10,7 +10,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { Subscription } from 'rxjs';
@@ -22,7 +22,7 @@ import { Subscription } from 'rxjs';
 export class SelectJobRolesMandatoryComponent {
   constructor(
     private formBuilder: UntypedFormBuilder,
-    private trainingService: TrainingService,
+    private trainingService: MandatoryTrainingService,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private backLinkService: BackLinkService,
