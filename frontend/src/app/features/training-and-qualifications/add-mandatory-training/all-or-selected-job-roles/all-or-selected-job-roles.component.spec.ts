@@ -250,14 +250,6 @@ describe('AllOrSelectedJobRolesComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
       });
 
-      it('should navigate back to add-and-manage-mandatory-training main page', async () => {
-        const { component, fixture, getByText, routerSpy } = await setup();
-
-        selectAllJobRolesAndSubmit(fixture, getByText);
-
-        expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
-      });
-
       it("should display 'Mandatory training category added' banner", async () => {
         const { fixture, getByText, alertSpy } = await setup();
 
