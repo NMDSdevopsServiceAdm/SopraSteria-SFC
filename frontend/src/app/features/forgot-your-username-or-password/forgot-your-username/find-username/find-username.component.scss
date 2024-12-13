@@ -10,15 +10,13 @@
 }
 
 .asc-security-question {
-  height: 2.5rem;
+  min-height: 2.5rem;
   max-width: 20.5em;
   padding: 5px 5px 5px 10px;
   font-size: 19px;
   box-sizing: border-box;
   outline: none;
 
-  display: flex;
-  align-items: center;
   background-color: govuk-colour('light-grey');
 }
 
