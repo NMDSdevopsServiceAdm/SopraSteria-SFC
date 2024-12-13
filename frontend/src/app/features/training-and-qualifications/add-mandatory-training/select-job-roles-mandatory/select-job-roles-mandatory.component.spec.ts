@@ -7,9 +7,10 @@ import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
-import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
@@ -52,6 +53,14 @@ describe('SelectJobRolesMandatoryComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
+    const selectedTraining = {
+      trainingCategory: {
+        category: 'Activity provision, wellbeing',
+        id: 1,
+        seq: 0,
+        trainingCategoryGroup: 'Care skills and knowledge',
+      },
+    };
 
     const setupTools = await render(SelectJobRolesMandatoryComponent, {
       imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMandatoryTrainingModule],
@@ -63,20 +72,11 @@ describe('SelectJobRolesMandatoryComponent', () => {
         WindowRef,
         FormBuilder,
         { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
+        { provide: EstablishmentService, useClass: MockEstablishmentService },
         {
           provide: TrainingService,
           useValue: {
-            selectedTraining:
-              overrides.selectedTraining !== undefined
-                ? overrides.selectedTraining
-                : {
-                    trainingCategory: {
-                      category: 'Activity provision, wellbeing',
-                      id: 1,
-                      seq: 0,
-                      trainingCategoryGroup: 'Care skills and knowledge',
-                    },
-                  },
+            selectedTraining: overrides.selectedTraining !== undefined ? overrides.selectedTraining : selectedTraining,
             resetState: () => {},
           },
         },
@@ -104,12 +104,21 @@ describe('SelectJobRolesMandatoryComponent', () => {
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const resetStateInTrainingServiceSpy = spyOn(trainingService, 'resetState').and.callThrough();
 
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const createAndUpdateMandatoryTrainingSpy = spyOn(
+      establishmentService,
+      'createAndUpdateMandatoryTraining',
+    ).and.callThrough();
+
     return {
       ...setupTools,
       component,
       routerSpy,
       resetStateInTrainingServiceSpy,
       alertSpy,
+      selectedTraining,
+      createAndUpdateMandatoryTrainingSpy,
+      establishment,
     };
   }
 
@@ -166,10 +175,10 @@ describe('SelectJobRolesMandatoryComponent', () => {
   });
 
   describe('On submit', () => {
-    const selectJobRolesAndSave = (getByText) => {
+    const selectJobRolesAndSave = (getByText, jobRoles = [mockAvailableJobs[0]]) => {
       userEvent.click(getByText('Show all job roles'));
-      userEvent.click(getByText('Registered nurse'));
-      userEvent.click(getByText('Social worker'));
+
+      jobRoles.forEach((role) => userEvent.click(getByText(role.title)));
 
       userEvent.click(getByText('Save mandatory training'));
     };
@@ -199,6 +208,23 @@ describe('SelectJobRolesMandatoryComponent', () => {
       selectJobRolesAndSave(getByText);
 
       expect(resetStateInTrainingServiceSpy).toHaveBeenCalled();
+    });
+
+    [
+      [mockAvailableJobs[0], mockAvailableJobs[1]],
+      [mockAvailableJobs[2], mockAvailableJobs[3]],
+    ].forEach((jobRoleSet) => {
+      it(`should call createAndUpdateMandatoryTraining with training category in service and selected job roles ('${jobRoleSet[0].title}', '${jobRoleSet[1].title}')`, async () => {
+        const { getByText, establishment, selectedTraining, createAndUpdateMandatoryTrainingSpy } = await setup();
+
+        selectJobRolesAndSave(getByText, jobRoleSet);
+
+        expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
+          trainingCategoryId: selectedTraining.trainingCategory.id,
+          allJobRoles: false,
+          jobs: [{ id: jobRoleSet[0].id }, { id: jobRoleSet[1].id }],
+        });
+      });
     });
   });
 
