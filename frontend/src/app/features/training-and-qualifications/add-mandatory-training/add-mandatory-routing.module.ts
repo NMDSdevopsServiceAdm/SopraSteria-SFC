@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { DeleteMandatoryTrainingCategoryComponent } from '@features/training-and-qualifications/add-mandatory-training/delete-mandatory-training-category/delete-mandatory-training-category.component';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training/add-and-manage-mandatory-training.component';
 import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
+import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles/all-or-selected-job-roles.component';
 import { RemoveAllMandatoryTrainingComponent } from './delete-mandatory-training/delete-all-mandatory-training.component';
 import { SelectTrainingCategoryMandatoryComponent } from './select-training-category-mandatory/select-training-category-mandatory.component';
 
@@ -23,7 +25,13 @@ const routes: Routes = [
         data: { title: 'Select Training Category' },
         resolve: {
           trainingCategories: TrainingCategoriesResolver,
+          existingMandatoryTraining: MandatoryTrainingCategoriesResolver,
         },
+      },
+      {
+        path: 'all-or-selected-job-roles',
+        component: AllOrSelectedJobRolesComponent,
+        data: { title: 'All or Selected Job Roles?' },
       },
       {
         path: 'remove-all-mandatory-training',

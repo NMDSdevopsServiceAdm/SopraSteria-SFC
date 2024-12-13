@@ -9,7 +9,7 @@ import { WorkerService } from '@core/services/worker.service';
 import { SelectTrainingCategoryDirective } from '../../../../shared/directives/select-training-category/select-training-category.directive';
 
 @Component({
-  selector: 'app-select-training-category-multiple',
+  selector: 'app-select-training-category-mandatory',
   templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
 })
 export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCategoryDirective {
@@ -38,6 +38,25 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
   protected setTitle(): void {
     this.title = 'Select the training category that you want to make mandatory';
+  }
+
+  protected getCategories(): void {
+    const allTrainingCategories = this.route.snapshot.data.trainingCategories;
+    const existingMandatoryTraining = this.route.snapshot.data.existingMandatoryTraining;
+
+    const trainingCategoryIdsWithExistingMandatoryTraining = existingMandatoryTraining?.mandatoryTraining?.map(
+      (existingMandatoryTrainings) => existingMandatoryTrainings.trainingCategoryId,
+    );
+
+    if (trainingCategoryIdsWithExistingMandatoryTraining?.length) {
+      this.categories = allTrainingCategories.filter(
+        (category) => !trainingCategoryIdsWithExistingMandatoryTraining.includes(category.id),
+      );
+    } else {
+      this.categories = allTrainingCategories;
+    }
+
+    this.sortCategoriesByTrainingGroup(this.categories);
   }
 
   public onCancel(event: Event) {
