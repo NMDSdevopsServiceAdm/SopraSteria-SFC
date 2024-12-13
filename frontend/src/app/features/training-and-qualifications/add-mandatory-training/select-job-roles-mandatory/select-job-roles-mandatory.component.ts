@@ -3,6 +3,8 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Job, JobGroup } from '@core/model/job.model';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
@@ -19,6 +21,8 @@ export class SelectJobRolesMandatoryComponent {
     private trainingService: TrainingService,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
+    private backLinkService: BackLinkService,
+    private alertService: AlertService,
     public route: ActivatedRoute,
   ) {}
 
@@ -36,6 +40,7 @@ export class SelectJobRolesMandatoryComponent {
   ngOnInit(): void {
     this.getJobs();
     this.setupForm();
+    this.backLinkService.showBackLink();
   }
 
   private getJobs(): void {
@@ -78,13 +83,26 @@ export class SelectJobRolesMandatoryComponent {
 
     if (this.form.invalid) {
       this.accordion.showAll();
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
     }
+
+    this.navigateBackToAddMandatoryTrainingPage();
+    this.alertService.addAlert({
+      type: 'success',
+      message: 'Mandatory training category added',
+    });
+    this.trainingService.resetState();
   }
 
   public onCancel(event: Event): void {
     event.preventDefault();
 
     this.trainingService.resetState();
+    this.navigateBackToAddMandatoryTrainingPage();
+  }
+
+  private navigateBackToAddMandatoryTrainingPage(): void {
     this.router.navigate(['../'], { relativeTo: this.route });
   }
 

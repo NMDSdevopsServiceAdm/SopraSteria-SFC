@@ -4,6 +4,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { TrainingService } from '@core/services/training.service';
@@ -57,6 +58,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
       providers: [
         BackLinkService,
         ErrorSummaryService,
+        AlertService,
         WindowRef,
         FormBuilder,
         {
@@ -84,6 +86,9 @@ describe('SelectJobRolesMandatoryComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
+
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const resetStateInTrainingServiceSpy = spyOn(trainingService, 'resetState').and.callThrough();
 
@@ -92,6 +97,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
       component,
       routerSpy,
       resetStateInTrainingServiceSpy,
+      alertSpy,
     };
   }
 
@@ -138,6 +144,43 @@ describe('SelectJobRolesMandatoryComponent', () => {
         const checkbox = getByRole('checkbox', { name: job.title });
         expect(checkbox).toBeTruthy();
       });
+    });
+  });
+
+  describe('On submit', () => {
+    const selectJobRolesAndSave = (getByText) => {
+      userEvent.click(getByText('Show all job roles'));
+      userEvent.click(getByText('Registered nurse'));
+      userEvent.click(getByText('Social worker'));
+
+      userEvent.click(getByText('Save mandatory training'));
+    };
+
+    it('should navigate back to add-and-manage-mandatory-training main page', async () => {
+      const { component, getByText, routerSpy } = await setup();
+
+      selectJobRolesAndSave(getByText);
+
+      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
+    });
+
+    it("should display 'Mandatory training category added' banner", async () => {
+      const { getByText, alertSpy } = await setup();
+
+      selectJobRolesAndSave(getByText);
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Mandatory training category added',
+      });
+    });
+
+    it('should clear state in training service', async () => {
+      const { getByText, resetStateInTrainingServiceSpy } = await setup();
+
+      selectJobRolesAndSave(getByText);
+
+      expect(resetStateInTrainingServiceSpy).toHaveBeenCalled();
     });
   });
 
