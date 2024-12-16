@@ -1,7 +1,16 @@
 import { lowerFirst } from 'lodash';
 import { Subscription } from 'rxjs';
 
-import { Component, ElementRef, EventEmitter, Output, ViewChild } from '@angular/core';
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  EventEmitter,
+  OnDestroy,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { EMAIL_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -18,7 +27,7 @@ const InputFields = [
   selector: 'app-find-account',
   templateUrl: './find-account.component.html',
 })
-export class FindAccountComponent {
+export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('searchResult') searchResult: ElementRef;
 
@@ -109,15 +118,19 @@ export class FindAccountComponent {
         this.accountFound = false;
         this.remainingAttempts = response.remainingAttempts;
         // TODO for #1570:  navigate to error page when remaining attempt = 0
+
+        this.scrollToResult();
         break;
     }
-
-    setTimeout(() => {
-      this.scrollToResult();
-    }, 0);
   }
 
   private scrollToResult() {
-    this.searchResult.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      this.searchResult.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 0);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

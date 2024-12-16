@@ -520,5 +520,35 @@ module.exports = function (sequelize, DataTypes) {
     return this.findOne(query);
   };
 
+  User.getUsernameWithSecurityQuestionAnswer = async function ({ uid, securityQuestionAnswer }) {
+    if (!uid || !securityQuestionAnswer) {
+      return null;
+    }
+
+    const query = {
+      attributes: ['SecurityQuestionAnswerValue'],
+      where: {
+        Archived: false,
+        uid,
+      },
+      include: [
+        {
+          model: sequelize.models.login,
+          required: true,
+          attributes: ['username'],
+        },
+      ],
+      raw: true,
+    };
+
+    const userFound = await this.findOne(query);
+
+    if (!userFound || userFound.SecurityQuestionAnswerValue !== securityQuestionAnswer) {
+      return null;
+    }
+
+    return { username: userFound['login.username'] };
+  };
+
   return User;
 };

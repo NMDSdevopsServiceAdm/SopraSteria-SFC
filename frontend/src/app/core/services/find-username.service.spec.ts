@@ -32,4 +32,29 @@ describe('FindUsernameService', () => {
       expect(req.request.body).toEqual(mockParams);
     });
   });
+
+  describe('findUsername', () => {
+    it('should make a POST request to /registration/findUsername endpoint with uid and security question answer', async () => {
+      const mockParams = { uid: 'mock-uid', securityQuestionAnswer: '42' };
+
+      service.findUsername(mockParams).subscribe();
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUsername`);
+
+      expect(req.request.method).toBe('POST');
+      expect(req.request.body).toEqual(mockParams);
+    });
+
+    it('should handle a 401 Unauthorised response and convert it to AnswerIncorrect', async () => {
+      const mockParams = { uid: 'mock-uid', securityQuestionAnswer: '42' };
+
+      const mockSubscriber = jasmine.createSpy();
+      service.findUsername(mockParams).subscribe(mockSubscriber);
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUsername`);
+      req.flush({ answerCorrect: false, remainingAttempts: 4 }, { status: 401, statusText: 'Unauthorised' });
+
+      const expectedResult = { answerCorrect: false, remainingAttempts: 4 };
+
+      expect(mockSubscriber).toHaveBeenCalledOnceWith(expectedResult);
+    });
+  });
 });

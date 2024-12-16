@@ -9,6 +9,7 @@ const generateJWT = require('../utils/security/generateJWT');
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 const { authLimiter } = require('../utils/middleware/rateLimiting');
 const { findUserAccount } = require('./registration/findUserAccount');
+const { findUsername } = require('./registration/findUsername');
 
 router.use('/establishmentExistsCheck', require('./registration/establishmentExistsCheck'));
 
@@ -369,5 +370,7 @@ router.post('/validateResetPassword', async (req, res) => {
 });
 
 router.post('/findUserAccount', findUserAccount);
+
+router.post('/findUsername', findUsername);
 
 module.exports = router;
