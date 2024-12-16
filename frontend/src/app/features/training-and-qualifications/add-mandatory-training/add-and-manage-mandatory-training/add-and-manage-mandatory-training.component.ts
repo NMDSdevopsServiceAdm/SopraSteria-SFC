@@ -29,8 +29,8 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
-    this.establishment = this.route.parent.snapshot.data.establishment;
 
+    this.establishment = this.route.snapshot.data?.establishment;
     this.existingMandatoryTrainings = this.route.snapshot.data?.existingMandatoryTraining;
     this.sortTrainingAlphabetically(this.existingMandatoryTrainings.mandatoryTraining);
     this.allJobsLength = this.existingMandatoryTrainings.allJobRolesCount;
@@ -67,12 +67,7 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
   }
 
   public navigateToAddNewMandatoryTraining() {
-    this.router.navigate([
-      '/workplace',
-      this.establishmentService.establishment.uid,
-      'add-and-manage-mandatory-training',
-      'select-training-category',
-    ]);
+    this.router.navigate(['select-training-category'], { relativeTo: this.route });
   }
 
   public navigateToDeletePage(event: Event, trainingCategoryId: number): void {

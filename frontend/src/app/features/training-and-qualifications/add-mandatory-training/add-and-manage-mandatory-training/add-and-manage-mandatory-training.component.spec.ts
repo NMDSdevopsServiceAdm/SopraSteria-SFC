@@ -46,14 +46,8 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
             snapshot: {
               url: [{ path: 'add-and-manage-mandatory-training' }],
               data: {
+                establishment,
                 existingMandatoryTraining: overrides.mandatoryTraining ?? existingMandatoryTraining,
-              },
-            },
-            parent: {
-              snapshot: {
-                data: {
-                  establishment,
-                },
               },
             },
           },
@@ -84,19 +78,25 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show header, paragraph and links for manage mandatory training', async () => {
+  it('should show header and paragraph', async () => {
     const { getByTestId } = await setup();
 
     const mandatoryTrainingHeader = getByTestId('heading');
-
     const mandatoryTrainingInfo = getByTestId('mandatoryTrainingInfo');
 
-    const addMandatoryTrainingButton = getByTestId('mandatoryTrainingButton');
     expect(mandatoryTrainingHeader.textContent).toContain('Add and manage mandatory training categories');
     expect(mandatoryTrainingInfo.textContent).toContain(
       'Add the training categories you want to make mandatory for your staff. It will help you identify who is missing training and let you know when training expires.',
     );
-    expect(addMandatoryTrainingButton.textContent).toContain('Add a mandatory training category');
+  });
+
+  it("should navigate to the select-training-category page when 'Add a mandatory training category' link is clicked", async () => {
+    const { getByText, routerSpy, currentRoute } = await setup();
+
+    const addMandatoryTrainingButton = getByText('Add a mandatory training category');
+    fireEvent.click(addMandatoryTrainingButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['select-training-category'], { relativeTo: currentRoute });
   });
 
   describe('Remove all link', () => {
