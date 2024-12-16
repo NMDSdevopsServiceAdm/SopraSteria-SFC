@@ -3,12 +3,13 @@ import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
@@ -18,6 +19,8 @@ import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandato
 
 describe('AddAndManageMandatoryTrainingComponent', () => {
   async function setup(isOwnWorkplace = true, duplicateJobRoles = false) {
+    const establishment = establishmentBuilder() as Establishment;
+
     const { getByText, getByLabelText, getByTestId, fixture } = await render(AddAndManageMandatoryTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
@@ -47,9 +50,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
             parent: {
               snapshot: {
                 data: {
-                  establishment: {
-                    uid: '123',
-                  },
+                  establishment,
                 },
               },
             },
@@ -73,6 +74,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
       component,
       parentSubsidiaryViewService,
       establishmentService,
+      establishment,
     };
   }
 
@@ -96,11 +98,14 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     expect(addMandatoryTrainingButton.textContent).toContain('Add a mandatory training category');
   });
 
-  it('should show the Remove all mandatory training categories link', async () => {
-    const { getByTestId } = await setup();
+  it('should show the Remove all link with link to the remove all page', async () => {
+    const { getByText, establishment } = await setup();
 
-    const removeMandatoryTrainingLink = getByTestId('removeMandatoryTrainingLink');
-    expect(removeMandatoryTrainingLink).toBeTruthy();
+    const removeMandatoryTrainingLink = getByText('Remove all') as HTMLAnchorElement;
+
+    expect(removeMandatoryTrainingLink.href).toContain(
+      `/workplace/${establishment.uid}/add-and-manage-mandatory-training/remove-all-mandatory-training`,
+    );
   });
 
   it('should show the manage mandatory training table', async () => {
@@ -111,13 +116,13 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     expect(mandatoryTrainingTable).toBeTruthy();
   });
 
-  it('should show the manage mandatory training table heading', async () => {
+  it('should show the manage mandatory training table headings', async () => {
     const { getByTestId } = await setup();
 
     const mandatoryTrainingTableHeading = getByTestId('training-table-heading');
 
-    expect(mandatoryTrainingTableHeading.textContent).toContain('Mandatory training categories');
-    expect(mandatoryTrainingTableHeading.textContent).toContain('Job roles');
+    expect(mandatoryTrainingTableHeading.textContent).toContain('Mandatory training category');
+    expect(mandatoryTrainingTableHeading.textContent).toContain('Job role');
   });
 
   describe('mandatory training table records', () => {

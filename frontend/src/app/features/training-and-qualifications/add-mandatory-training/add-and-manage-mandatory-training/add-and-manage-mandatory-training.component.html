@@ -20,31 +20,29 @@
     </button>
   </div>
 </div>
-<div class="govuk-grid-row">
-  <div
-    class="govuk-grid-column-one-thirds govuk-!-margin-bottom-6 govuk-!-margin-right-4 govuk-util__align-right govuk-list govuk-list--inline"
-    *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
-  >
-    <a
-      data-testid="removeMandatoryTrainingLink"
-      draggable="false"
-      role="button"
-      [routerLink]="[
-        '/workplace',
-        establishment.uid,
-        'add-and-manage-mandatory-training',
-        'remove-all-mandatory-training'
-      ]"
-      >Remove all mandatory training categories</a
-    >
-  </div>
-</div>
 
 <table class="govuk-table" data-testid="training-table" *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row" data-testid="training-table-heading">
-      <th class="govuk-table__header" scope="col">Mandatory training categories</th>
-      <th class="govuk-table__header" scope="col">Job roles</th>
+      <th class="govuk-table__header" scope="col">Mandatory training category</th>
+      <th class="govuk-table__header" scope="col">Job role</th>
+      <th class="govuk-table__header" scope="col">
+        <a
+          *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
+          class="govuk-link govuk-link--no-visited-state"
+          style="font-weight: normal"
+          data-testid="removeMandatoryTrainingLink"
+          draggable="false"
+          role="button"
+          [routerLink]="[
+            '/workplace',
+            establishment.uid,
+            'add-and-manage-mandatory-training',
+            'remove-all-mandatory-training'
+          ]"
+          >Remove all</a
+        >
+      </th>
     </tr>
   </thead>
   <ng-container>
@@ -78,6 +76,7 @@
             <div data-testid="titleJob" *ngFor="let job of records.jobs">{{ job.title }}</div>
           </ng-container>
         </td>
+        <td class="govuk-table__cell"></td>
       </tr>
     </tbody>
   </ng-container>
