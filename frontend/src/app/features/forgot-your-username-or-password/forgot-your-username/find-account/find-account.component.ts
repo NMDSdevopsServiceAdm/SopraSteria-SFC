@@ -118,16 +118,16 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
         this.accountFound = false;
         this.remainingAttempts = response.remainingAttempts;
         // TODO for #1570:  navigate to error page when remaining attempt = 0
+
+        this.scrollToResult();
         break;
     }
-
-    setTimeout(() => {
-      this.scrollToResult();
-    }, 0);
   }
 
   private scrollToResult() {
-    this.searchResult.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      this.searchResult.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 0);
   }
 
   ngOnDestroy(): void {

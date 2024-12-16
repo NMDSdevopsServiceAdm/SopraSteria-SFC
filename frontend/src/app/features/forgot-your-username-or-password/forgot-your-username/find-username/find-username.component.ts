@@ -46,6 +46,7 @@ export class FindUsernameComponent implements OnInit, OnDestroy {
   }
 
   public focusOnQuestion() {
+    this.securityQuestionEl.nativeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
     setTimeout(() => {
       this.securityQuestionEl.nativeElement.focus();
     }, 500);
