@@ -1,5 +1,4 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
@@ -10,17 +9,17 @@ import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { mockMandatoryTraining, MockTrainingService } from '@core/test-utils/MockTrainingService';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training.component';
 
 describe('AddAndManageMandatoryTrainingComponent', () => {
-  async function setup(isOwnWorkplace = true, duplicateJobRoles = false) {
+  async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
+    const mandatoryTraining = mockMandatoryTraining();
 
-    const { getByText, getByLabelText, getByTestId, fixture } = await render(AddAndManageMandatoryTrainingComponent, {
+    const setupTools = await render(AddAndManageMandatoryTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -34,7 +33,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
         },
         {
           provide: TrainingService,
-          useFactory: MockTrainingService.factory(duplicateJobRoles),
+          useFactory: MockTrainingService.factory(overrides.duplicateJobRoles ?? false),
         },
         {
           provide: EstablishmentService,
@@ -46,7 +45,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
             snapshot: {
               url: [{ path: 'add-and-manage-mandatory-training' }],
               data: {
-                existingMandatoryTraining: mockMandatoryTraining(duplicateJobRoles),
+                existingMandatoryTraining: overrides.mandatoryTraining ?? mandatoryTraining,
               },
             },
             parent: {
@@ -61,21 +60,11 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
       ],
     });
 
-    const injector = getTestBed();
-    const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService) as ParentSubsidiaryViewService;
-    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
-    spyOn(establishmentService, 'isOwnWorkplace').and.returnValue(isOwnWorkplace);
-
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     return {
-      getByText,
-      getByLabelText,
-      getByTestId,
-      fixture,
+      ...setupTools,
       component,
-      parentSubsidiaryViewService,
-      establishmentService,
       establishment,
     };
   }
@@ -100,14 +89,29 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     expect(addMandatoryTrainingButton.textContent).toContain('Add a mandatory training category');
   });
 
-  it('should show the Remove all link with link to the remove all page', async () => {
-    const { getByText, establishment } = await setup();
+  describe('Remove all link', () => {
+    it('should show with link to the remove all page when there is mandatory training', async () => {
+      const { getByText, establishment } = await setup();
 
-    const removeMandatoryTrainingLink = getByText('Remove all') as HTMLAnchorElement;
+      const removeMandatoryTrainingLink = getByText('Remove all') as HTMLAnchorElement;
 
-    expect(removeMandatoryTrainingLink.href).toContain(
-      `/workplace/${establishment.uid}/add-and-manage-mandatory-training/remove-all-mandatory-training`,
-    );
+      expect(removeMandatoryTrainingLink.href).toContain(
+        `/workplace/${establishment.uid}/add-and-manage-mandatory-training/remove-all-mandatory-training`,
+      );
+    });
+
+    it('should not show if no mandatory training set up', async () => {
+      const mandatoryTraining = {
+        allJobRolesCount: 37,
+        lastUpdated: new Date(),
+        mandatoryTraining: [],
+        mandatoryTrainingCount: 0,
+      };
+
+      const { queryByText } = await setup({ mandatoryTraining });
+
+      expect(queryByText('Remove all')).toBeFalsy();
+    });
   });
 
   it('should show the manage mandatory training table', async () => {
@@ -148,7 +152,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     });
 
     it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
-      const { getByTestId } = await setup(true, true);
+      const { getByTestId } = await setup({ duplicateJobRoles: true });
 
       const coshCategory = getByTestId('titleAll');
       const autismCategory = getByTestId('titleJob');
@@ -158,7 +162,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     });
 
     it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
-      const { getByTestId } = await setup(true, true);
+      const { getByTestId } = await setup({ duplicateJobRoles: true });
 
       const coshCategory = getByTestId('titleAll');
       const autismCategory = getByTestId('titleJob');

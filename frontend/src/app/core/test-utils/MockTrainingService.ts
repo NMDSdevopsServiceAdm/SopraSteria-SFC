@@ -75,7 +75,7 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
   }
 }
 
-export const mockMandatoryTraining = (duplicateJobRoles) => {
+export const mockMandatoryTraining = (duplicateJobRoles = false) => {
   return {
     allJobRolesCount: 37,
     lastUpdated: new Date(),
