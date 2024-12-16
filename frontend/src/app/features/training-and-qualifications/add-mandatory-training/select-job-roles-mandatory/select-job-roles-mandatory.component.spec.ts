@@ -12,8 +12,12 @@ import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
-import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import {
+  GroupedRadioButtonAccordionComponent,
+} from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import {
+  RadioButtonAccordionComponent,
+} from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -139,7 +143,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
   it('should show the page heading', async () => {
     const { getByText } = await setup();
 
-    const heading = getByText('Select the job roles which need this training');
+    const heading = getByText('Select the job roles that need this training');
 
     expect(heading).toBeTruthy();
   });
