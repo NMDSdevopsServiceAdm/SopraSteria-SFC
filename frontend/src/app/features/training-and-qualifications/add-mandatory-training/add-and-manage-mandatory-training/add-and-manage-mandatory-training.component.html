@@ -6,15 +6,19 @@
     </h1>
   </div>
 </div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half govuk-!-margin-top-2" data-testid="mandatoryTrainingInfo">
+<div class="govuk-grid-row govuk-!-margin-bottom-4">
+  <div class="govuk-grid-column-two-thirds" style="width: 63%" data-testid="mandatoryTrainingInfo">
     <p>
-      Add the training categories you want to make mandatory for your staff. It will help you identify<br />
-      who is missing training and let you know when<br />
-      training expires.
+      Add the training categories you want to make mandatory for your staff. It will help you identify who is missing
+      training and let you know when training expires.
     </p>
   </div>
-  <div class="govuk-grid-column-one-half govuk-util__align-right" data-testid="mandatoryTrainingButton">
+
+  <div
+    class="govuk-grid-column-one-third govuk-util__align-right"
+    style="width: 37%"
+    data-testid="mandatoryTrainingButton"
+  >
     <button (click)="navigateToAddNewMandatoryTraining()" class="govuk-button">
       Add a mandatory training category
     </button>
@@ -29,8 +33,7 @@
       <th class="govuk-table__header" scope="col">
         <a
           *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
-          class="govuk-link govuk-link--no-visited-state"
-          style="font-weight: normal"
+          class="govuk-link govuk-link--no-visited-state govuk-util__normal"
           data-testid="removeMandatoryTrainingLink"
           draggable="false"
           role="button"
