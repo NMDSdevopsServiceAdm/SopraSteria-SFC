@@ -15,7 +15,7 @@ import { FindAccountComponent } from './find-account/find-account.component';
 import { FindUsernameComponent } from './find-username/find-username.component';
 import { ForgotYourUsernameComponent } from './forgot-your-username.component';
 
-fdescribe('ForgotYourUsernameComponent', () => {
+describe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
@@ -167,7 +167,7 @@ fdescribe('ForgotYourUsernameComponent', () => {
     });
   });
 
-  fdescribe('Find username', () => {
+  describe('Find username', () => {
     const setupAndProceedToFindUsername = async () => {
       const setuptools = await setup();
 
@@ -189,7 +189,7 @@ fdescribe('ForgotYourUsernameComponent', () => {
         const { getByText } = await setupAndProceedToFindUsername();
 
         expect(getByText('Your security question')).toBeTruthy();
-        expect(getByText('You chose this question when you created your account')).toBeTruthy();
+        expect(getByText('You chose this question when you created your account.')).toBeTruthy();
         expect(getByText('Question')).toBeTruthy();
         expect(getByText(mockTestUser.securityQuestion)).toBeTruthy();
       });
@@ -274,7 +274,7 @@ fdescribe('ForgotYourUsernameComponent', () => {
         expect(findUsernameService.usernameFound).toEqual(null);
       });
 
-      fit('should show a different error message when only 1 chance remain', async () => {
+      it('should show a different error message when only 1 chance remain', async () => {
         const { fixture, getByRole, getByText, findUsernameService } = await setupAndProceedToFindUsername();
         spyOn(findUsernameService, 'findUsername').and.returnValue(of({ answerCorrect: false, remainingAttempts: 1 }));
 

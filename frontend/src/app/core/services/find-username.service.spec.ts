@@ -5,7 +5,7 @@ import { TestBed } from '@angular/core/testing';
 
 import { FindUsernameService } from './find-username.service';
 
-fdescribe('FindUsernameService', () => {
+describe('FindUsernameService', () => {
   let service: FindUsernameService;
   let http: HttpTestingController;
 
