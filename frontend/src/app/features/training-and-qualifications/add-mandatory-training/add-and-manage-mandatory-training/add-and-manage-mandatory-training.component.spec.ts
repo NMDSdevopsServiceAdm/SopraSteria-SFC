@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -10,7 +9,7 @@ import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
+import { mockMandatoryTraining, MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
@@ -46,6 +45,9 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
           useValue: {
             snapshot: {
               url: [{ path: 'add-and-manage-mandatory-training' }],
+              data: {
+                existingMandatoryTraining: mockMandatoryTraining(duplicateJobRoles),
+              },
             },
             parent: {
               snapshot: {
@@ -163,26 +165,6 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
 
       expect(coshCategory.textContent).toContain('All');
       expect(autismCategory.textContent).toContain('Activities worker, coordinator');
-    });
-  });
-
-  describe('getBreadcrumbsJourney', () => {
-    it('should return mandatory training journey when viewing sub as parent', async () => {
-      const { component, parentSubsidiaryViewService } = await setup();
-      spyOn(parentSubsidiaryViewService, 'getViewingSubAsParent').and.returnValue(true);
-      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MANDATORY_TRAINING);
-    });
-
-    it('should return mandatory training journey when is own workplace', async () => {
-      const { component } = await setup();
-
-      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.MANDATORY_TRAINING);
-    });
-
-    it('should return all workplaces journey when is not own workplace and not in parent sub view', async () => {
-      const { component } = await setup(false);
-
-      expect(component.getBreadcrumbsJourney()).toBe(JourneyType.ALL_WORKPLACES);
     });
   });
 });
