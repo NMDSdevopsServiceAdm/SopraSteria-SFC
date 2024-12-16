@@ -125,3 +125,20 @@ export class TrainingService {
     this.updatingSelectedStaffForMultipleTraining = null;
   }
 }
+
+export class MandatoryTrainingService extends TrainingService {
+  _onlySelectedJobRoles: boolean = null;
+
+  public get onlySelectedJobRoles(): boolean {
+    return this._onlySelectedJobRoles;
+  }
+
+  public set onlySelectedJobRoles(onlySelected: boolean) {
+    this._onlySelectedJobRoles = onlySelected;
+  }
+
+  public resetState(): void {
+    this.onlySelectedJobRoles = null;
+    super.resetState();
+  }
+}

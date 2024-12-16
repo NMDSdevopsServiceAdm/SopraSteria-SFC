@@ -1,0 +1,63 @@
+<app-error-summary
+  *ngIf="submitted && (form.invalid || serverError)"
+  [formErrorsMap]="formErrorsMap"
+  [form]="form"
+  [serverError]="serverError"
+>
+</app-error-summary>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <fieldset class="govuk-fieldset">
+        <div class="govuk-form-group govuk-!-margin-bottom-2">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+            <span class="govuk-caption-l" data-testid="section-heading">Add a mandatory training category</span>
+            <h1 class="govuk-fieldset__heading">Select the job roles that need this training</h1>
+          </legend>
+        </div>
+
+        <div [class.govuk-form-group--error]="submitted && form.invalid">
+          <app-accordion-group #accordion data-testid="selectJobRolesAccordion" contentName="job roles">
+            <p *ngIf="submitted && form.invalid" id="selectedJobRoles-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ errorMessageOnEmptyInput }}
+            </p>
+            <app-accordion-section
+              *ngFor="let group of jobGroups"
+              [title]="group.title"
+              [description]="group.descriptionText"
+              [expandedAtStart]="false"
+            >
+              <ng-container *ngFor="let job of group.items">
+                <div class="govuk-checkboxes__item">
+                  <input
+                    type="checkbox"
+                    class="govuk-checkboxes__input"
+                    [id]="'job-' + job.id"
+                    [name]="job.label"
+                    [value]="job.id"
+                    [checked]="form.get('selectedJobRoles').value.includes(job.id)"
+                    (change)="onCheckboxClick($event.target)"
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" [for]="'job-' + job.id"> {{ job.label }} </label>
+                </div>
+              </ng-container>
+            </app-accordion-section>
+          </app-accordion-group>
+        </div>
+      </fieldset>
+
+      <div class="govuk-button-group govuk-!-margin-top-4">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Save mandatory training</button>
+        <a
+          role="button"
+          href="#"
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          draggable="false"
+          (click)="onCancel($event)"
+          >Cancel</a
+        >
+      </div>
+    </form>
+  </div>
+</div>

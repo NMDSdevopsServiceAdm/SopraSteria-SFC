@@ -3,7 +3,7 @@ import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 
 import { SelectTrainingCategoryDirective } from '../../../../shared/directives/select-training-category/select-training-category.directive';
@@ -15,7 +15,7 @@ import { SelectTrainingCategoryDirective } from '../../../../shared/directives/s
 export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCategoryDirective {
   constructor(
     protected formBuilder: FormBuilder,
-    protected trainingService: TrainingService,
+    protected trainingService: MandatoryTrainingService,
     protected router: Router,
     protected backLinkService: BackLinkService,
     protected workerService: WorkerService,

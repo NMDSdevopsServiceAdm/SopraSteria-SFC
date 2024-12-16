@@ -4,7 +4,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
@@ -33,10 +33,14 @@ describe('AllOrSelectedJobRolesComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, AddMandatoryTrainingModule],
       providers: [
         {
-          provide: TrainingService,
+          provide: MandatoryTrainingService,
           useValue: {
             selectedTraining: overrides.selectedTraining !== undefined ? overrides.selectedTraining : selectedTraining,
             resetState: () => {},
+            set onlySelectedJobRoles(onlySelected) {},
+            get onlySelectedJobRoles() {
+              return overrides.onlySelectedJobRoles ?? false;
+            },
           },
         },
         { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
@@ -60,8 +64,9 @@ describe('AllOrSelectedJobRolesComponent', () => {
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
-    const trainingService = injector.inject(TrainingService) as TrainingService;
+    const trainingService = injector.inject(MandatoryTrainingService) as MandatoryTrainingService;
     const resetStateInTrainingServiceSpy = spyOn(trainingService, 'resetState').and.callThrough();
+    const onlySelectedJobRolesSpy = spyOnProperty(trainingService, 'onlySelectedJobRoles', 'set');
 
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
@@ -81,6 +86,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
       createAndUpdateMandatoryTrainingSpy,
       establishment,
       selectedTraining,
+      onlySelectedJobRolesSpy,
     };
   }
 
@@ -166,6 +172,18 @@ describe('AllOrSelectedJobRolesComponent', () => {
     });
   });
 
+  describe('Prefill', () => {
+    it("should prefill the 'Only selected job roles' radio when set in training service", async () => {
+      const { getByLabelText } = await setup({ onlySelectedJobRoles: true });
+
+      const onlySelectedJobRolesRadio = getByLabelText('Only selected job roles') as HTMLInputElement;
+      const allJobRolesRadio = getByLabelText('All job roles') as HTMLInputElement;
+
+      expect(onlySelectedJobRolesRadio.checked).toBeTruthy();
+      expect(allJobRolesRadio.checked).toBeFalsy();
+    });
+  });
+
   describe('Cancel button', () => {
     it('should navigate to the add-and-manage-mandatory-training page (relative route ../) when clicked', async () => {
       const { component, getByText, routerSpy } = await setup();
@@ -200,7 +218,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
   });
 
   describe('On submit', () => {
-    describe("when 'All job roles selected'", () => {
+    describe("when 'All job roles' selected", () => {
       const selectAllJobRolesAndSubmit = (fixture, getByText) => {
         fireEvent.click(getByText('All job roles'));
         fixture.detectChanges();
@@ -272,16 +290,30 @@ describe('AllOrSelectedJobRolesComponent', () => {
       });
     });
 
-    it("should navigate to select-job-roles page when user submits with 'Only selected job roles' selected", async () => {
-      const { component, fixture, getByText, routerSpy } = await setup();
+    describe("when 'Only selected job roles' selected", () => {
+      it('should navigate to select-job-roles page', async () => {
+        const { component, fixture, getByText, routerSpy } = await setup();
 
-      fireEvent.click(getByText('Only selected job roles'));
-      fixture.detectChanges();
+        fireEvent.click(getByText('Only selected job roles'));
+        fixture.detectChanges();
 
-      fireEvent.click(getByText('Continue'));
-      fixture.detectChanges();
+        fireEvent.click(getByText('Continue'));
+        fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['../', 'select-job-roles'], { relativeTo: component.route });
+        expect(routerSpy).toHaveBeenCalledWith(['../', 'select-job-roles'], { relativeTo: component.route });
+      });
+
+      it('should set onlySelectedJobRoles in training service', async () => {
+        const { fixture, getByText, onlySelectedJobRolesSpy } = await setup();
+
+        fireEvent.click(getByText('Only selected job roles'));
+        fixture.detectChanges();
+
+        fireEvent.click(getByText('Continue'));
+        fixture.detectChanges();
+
+        expect(onlySelectedJobRolesSpy).toHaveBeenCalledWith(true);
+      });
     });
   });
 });

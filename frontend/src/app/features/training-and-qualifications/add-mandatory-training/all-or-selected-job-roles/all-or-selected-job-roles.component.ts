@@ -9,7 +9,7 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -36,7 +36,7 @@ export class AllOrSelectedJobRolesComponent {
     private errorSummaryService: ErrorSummaryService,
     private backLinkService: BackLinkService,
     public route: ActivatedRoute,
-    private trainingService: TrainingService,
+    private trainingService: MandatoryTrainingService,
     private alertService: AlertService,
     private establishmentService: EstablishmentService,
   ) {
@@ -46,6 +46,10 @@ export class AllOrSelectedJobRolesComponent {
   ngOnInit(): void {
     this.establishment = this.route.snapshot.parent?.data?.establishment;
     this.selectedTrainingCategory = this.trainingService.selectedTraining;
+
+    if (this.trainingService.onlySelectedJobRoles) {
+      this.form.setValue({ allOrSelectedJobRoles: 'selectJobRoles' });
+    }
 
     if (!this.selectedTrainingCategory) {
       this.router.navigate(['../select-training-category'], { relativeTo: this.route });
@@ -79,6 +83,7 @@ export class AllOrSelectedJobRolesComponent {
       if (this.selectedRadio == 'allJobRoles') {
         this.createMandatoryTraining();
       } else {
+        this.trainingService.onlySelectedJobRoles = true;
         this.navigateToSelectJobRolesPage();
       }
     } else {

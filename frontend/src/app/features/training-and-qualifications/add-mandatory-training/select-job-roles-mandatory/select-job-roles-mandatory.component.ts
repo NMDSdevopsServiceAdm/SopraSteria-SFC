@@ -1,0 +1,154 @@
+import { Component, ElementRef, ViewChild } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
+import { Establishment } from '@core/model/establishment.model';
+import { Job, JobGroup } from '@core/model/job.model';
+import { SelectedTraining } from '@core/model/training.model';
+import { AlertService } from '@core/services/alert.service';
+import { BackLinkService } from '@core/services/backLink.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { JobService } from '@core/services/job.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
+import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
+import { Subscription } from 'rxjs';
+
+@Component({
+  selector: 'app-select-job-roles-mandatory',
+  templateUrl: './select-job-roles-mandatory.component.html',
+})
+export class SelectJobRolesMandatoryComponent {
+  constructor(
+    private formBuilder: UntypedFormBuilder,
+    private trainingService: MandatoryTrainingService,
+    private router: Router,
+    private errorSummaryService: ErrorSummaryService,
+    private backLinkService: BackLinkService,
+    private alertService: AlertService,
+    private establishmentService: EstablishmentService,
+    public route: ActivatedRoute,
+  ) {}
+
+  @ViewChild('accordion') accordion: AccordionGroupComponent;
+  @ViewChild('formEl') formEl: ElementRef;
+
+  public form: UntypedFormGroup;
+  public jobGroups: JobGroup[] = [];
+  public jobsAvailable: Job[] = [];
+  public submitted: boolean;
+  public selectedJobIds: number[] = [];
+  public errorMessageOnEmptyInput: string = 'Select the job roles that need this training';
+  public formErrorsMap: Array<ErrorDetails> = [];
+  public serverError: string;
+  public subscriptions: Subscription = new Subscription();
+  private establishment: Establishment;
+  private selectedTrainingCategory: SelectedTraining;
+
+  ngOnInit(): void {
+    this.selectedTrainingCategory = this.trainingService.selectedTraining;
+    this.establishment = this.route.snapshot.data?.establishment;
+
+    if (!this.selectedTrainingCategory) {
+      this.router.navigate(['../select-training-category'], { relativeTo: this.route });
+    }
+
+    this.backLinkService.showBackLink();
+    this.getJobs();
+    this.setupForm();
+  }
+
+  private getJobs(): void {
+    this.jobsAvailable = this.route.snapshot.data.jobs;
+    this.jobGroups = JobService.sortJobsByJobGroup(this.jobsAvailable);
+  }
+
+  private setupForm(): void {
+    this.form = this.formBuilder.group({
+      selectedJobRoles: [[], { validators: CustomValidators.validateArrayNotEmpty(), updateOn: 'submit' }],
+    });
+
+    this.formErrorsMap = [
+      {
+        item: 'selectedJobRoles',
+        type: [
+          {
+            name: 'selectedNone',
+            message: this.errorMessageOnEmptyInput,
+          },
+        ],
+      },
+    ];
+  }
+
+  public onCheckboxClick(target: HTMLInputElement) {
+    const jobId = Number(target.value);
+
+    if (this.selectedJobIds.includes(jobId)) {
+      this.selectedJobIds = this.selectedJobIds.filter((id) => id !== jobId);
+    } else {
+      this.selectedJobIds = [...this.selectedJobIds, jobId];
+    }
+  }
+
+  public onSubmit(): void {
+    this.submitted = true;
+
+    this.form.get('selectedJobRoles').setValue(this.selectedJobIds);
+
+    if (this.form.invalid) {
+      this.accordion.showAll();
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
+
+    this.createMandatoryTraining();
+  }
+
+  private createMandatoryTraining(): void {
+    const props = {
+      trainingCategoryId: this.selectedTrainingCategory.trainingCategory.id,
+      allJobRoles: false,
+      jobs: this.selectedJobIds.map((id) => {
+        return { id };
+      }),
+    };
+
+    this.subscriptions.add(
+      this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
+        () => {
+          this.navigateBackToAddMandatoryTrainingPage();
+          this.trainingService.resetState();
+
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Mandatory training category added',
+          });
+        },
+        () => {
+          this.serverError = 'There has been a problem saving your mandatory training. Please try again.';
+        },
+      ),
+    );
+  }
+
+  public onCancel(event: Event): void {
+    event.preventDefault();
+
+    this.trainingService.resetState();
+    this.navigateBackToAddMandatoryTrainingPage();
+  }
+
+  private navigateBackToAddMandatoryTrainingPage(): void {
+    this.router.navigate(['../'], { relativeTo: this.route });
+  }
+
+  ngAfterViewInit(): void {
+    this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
+  }
+}

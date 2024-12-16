@@ -6,7 +6,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
@@ -39,7 +39,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
           useClass: MockWorkerService,
         },
         {
-          provide: TrainingService,
+          provide: MandatoryTrainingService,
           useClass: overrides.prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
         },
         {
@@ -64,7 +64,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
     const injector = getTestBed();
 
     const router = injector.inject(Router) as Router;
-    const trainingService = injector.inject(TrainingService) as TrainingService;
+    const trainingService = injector.inject(MandatoryTrainingService) as MandatoryTrainingService;
 
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
