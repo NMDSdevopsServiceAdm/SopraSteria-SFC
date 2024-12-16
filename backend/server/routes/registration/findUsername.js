@@ -8,13 +8,13 @@ const findUsername = async (req, res) => {
     }
 
     const { uid, securityQuestionAnswer } = req.body;
-    const userFound = await models.user.getUsernameWithSecurityQuestionAnswer({ uid, securityQuestionAnswer });
+    const findUserResult = await models.user.getUsernameWithSecurityQuestionAnswer({ uid, securityQuestionAnswer });
 
-    if (!userFound) {
-      return sendFailedResponse(res);
+    if (!findUserResult || !findUserResult.username) {
+      return sendFailedResponse(res, findUserResult);
     }
 
-    return sendSuccessResponse(res, userFound);
+    return sendSuccessResponse(res, findUserResult);
   } catch (err) {
     console.error('registration POST findUsername - failed', err);
     return res.status(500).send('Internal server error');
@@ -38,8 +38,9 @@ const sendSuccessResponse = (res, userFound) => {
   });
 };
 
-const sendFailedResponse = (res) => {
-  return res.status(401).json({ answerCorrect: false, remainingAttempts: 4 });
+const sendFailedResponse = (res, findUserResult) => {
+  const remainingAttempts = findUserResult?.remainingAttempts ?? 0;
+  return res.status(401).json({ answerCorrect: false, remainingAttempts });
 };
 
 module.exports = { findUsername };
