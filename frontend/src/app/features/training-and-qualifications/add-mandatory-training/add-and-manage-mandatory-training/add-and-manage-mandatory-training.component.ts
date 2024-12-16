@@ -74,4 +74,9 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
       'select-training-category',
     ]);
   }
+
+  public navigateToDeletePage(event: Event, trainingCategoryId: number): void {
+    event.preventDefault();
+    this.router.navigate([trainingCategoryId, 'delete-mandatory-training-category'], { relativeTo: this.route });
+  }
 }

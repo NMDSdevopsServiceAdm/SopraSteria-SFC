@@ -79,7 +79,15 @@
             <div data-testid="titleJob" *ngFor="let job of records.jobs">{{ job.title }}</div>
           </ng-container>
         </td>
-        <td class="govuk-table__cell"></td>
+        <td class="govuk-table__cell">
+          <a
+            href="#"
+            (click)="navigateToDeletePage($event, records.trainingCategoryId)"
+            [attr.data-testid]="'remove-link-' + records.category"
+          >
+            Remove
+          </a>
+        </td>
       </tr>
     </tbody>
   </ng-container>

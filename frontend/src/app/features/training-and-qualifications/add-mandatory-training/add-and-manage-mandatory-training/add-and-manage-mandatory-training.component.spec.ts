@@ -1,5 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { getTestBed } from '@angular/core/testing';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -10,17 +11,17 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { mockMandatoryTraining, MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training.component';
 
 describe('AddAndManageMandatoryTrainingComponent', () => {
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
-    const mandatoryTraining = mockMandatoryTraining();
+    const existingMandatoryTraining = mockMandatoryTraining();
 
     const setupTools = await render(AddAndManageMandatoryTrainingComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [SharedModule, RouterModule, RouterTestingModule.withRoutes([]), HttpClientTestingModule],
       declarations: [],
       providers: [
         {
@@ -45,7 +46,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
             snapshot: {
               url: [{ path: 'add-and-manage-mandatory-training' }],
               data: {
-                existingMandatoryTraining: overrides.mandatoryTraining ?? mandatoryTraining,
+                existingMandatoryTraining: overrides.mandatoryTraining ?? existingMandatoryTraining,
               },
             },
             parent: {
@@ -62,10 +63,19 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
 
     const component = setupTools.fixture.componentInstance;
 
+    const injector = getTestBed();
+
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const currentRoute = injector.inject(ActivatedRoute) as ActivatedRoute;
+
     return {
       ...setupTools,
       component,
       establishment,
+      existingMandatoryTraining,
+      routerSpy,
+      currentRoute,
     };
   }
 
@@ -151,24 +161,40 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
       expect(autismCategory.textContent).toContain('Activities worker, coordinator');
     });
 
-    it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
-      const { getByTestId } = await setup({ duplicateJobRoles: true });
+    it(`should have a Remove link for each training category which takes user to its remove page`, async () => {
+      const { getByTestId, existingMandatoryTraining, routerSpy, currentRoute } = await setup();
 
-      const coshCategory = getByTestId('titleAll');
-      const autismCategory = getByTestId('titleJob');
+      existingMandatoryTraining.mandatoryTraining.forEach((trainingCategory) => {
+        const removeLink = getByTestId('remove-link-' + trainingCategory.category) as HTMLAnchorElement;
+        fireEvent.click(removeLink);
 
-      expect(coshCategory.textContent).toContain('All');
-      expect(autismCategory.textContent).toContain('Activities worker, coordinator');
+        expect(routerSpy).toHaveBeenCalledWith(
+          [trainingCategory.trainingCategoryId, 'delete-mandatory-training-category'],
+          { relativeTo: currentRoute },
+        );
+      });
     });
 
-    it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
-      const { getByTestId } = await setup({ duplicateJobRoles: true });
+    describe('Handling duplicate job roles', () => {
+      it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
+        const { getByTestId } = await setup({ duplicateJobRoles: true });
 
-      const coshCategory = getByTestId('titleAll');
-      const autismCategory = getByTestId('titleJob');
+        const coshCategory = getByTestId('titleAll');
+        const autismCategory = getByTestId('titleJob');
 
-      expect(coshCategory.textContent).toContain('All');
-      expect(autismCategory.textContent).toContain('Activities worker, coordinator');
+        expect(coshCategory.textContent).toContain('All');
+        expect(autismCategory.textContent).toContain('Activities worker, coordinator');
+      });
+
+      it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
+        const { getByTestId } = await setup({ duplicateJobRoles: true });
+
+        const coshCategory = getByTestId('titleAll');
+        const autismCategory = getByTestId('titleJob');
+
+        expect(coshCategory.textContent).toContain('All');
+        expect(autismCategory.textContent).toContain('Activities worker, coordinator');
+      });
     });
   });
 });
