@@ -24,13 +24,15 @@ describe('backend/server/routes/registration/findUsername', () => {
   let stubGetUsername;
 
   beforeEach(() => {
+    let remainingAttempts = 5;
     stubGetUsername = sinon
       .stub(models.user, 'getUsernameWithSecurityQuestionAnswer')
       .callsFake(({ securityQuestionAnswer }) => {
         if (securityQuestionAnswer === '42') {
           return { username: 'test-user' };
         }
-        return null;
+        remainingAttempts = remainingAttempts - 1;
+        return { remainingAttempts };
       });
   });
 
@@ -67,6 +69,21 @@ describe('backend/server/routes/registration/findUsername', () => {
       answerCorrect: false,
       remainingAttempts: 4,
     });
+  });
+
+  it('should respond with reducing number of remainingAttempts on successive wrong answers', async () => {
+    for (const expectedRemainingAttempts of [4, 3, 2, 1, 0]) {
+      const req = buildRequest({ uid: 'mock-uid', securityQuestionAnswer: 'some random answer' });
+      const res = httpMocks.createResponse();
+
+      await findUsername(req, res);
+
+      expect(res.statusCode).to.equal(401);
+      expect(res._getJSONData()).to.deep.equal({
+        answerCorrect: false,
+        remainingAttempts: expectedRemainingAttempts,
+      });
+    }
   });
 
   it('should respond with 400 error if request does not have a body', async () => {

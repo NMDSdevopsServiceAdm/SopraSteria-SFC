@@ -273,6 +273,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CanManageWdfClaimsChangedBy"',
       },
+      ForgotUsernameAttempts: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"ForgotUsernameAttempts"',
+      },
     },
     {
       tableName: '"User"',
@@ -525,8 +530,10 @@ module.exports = function (sequelize, DataTypes) {
       return null;
     }
 
+    const maxForgotUsernameAttempts = 5;
+
     const query = {
-      attributes: ['SecurityQuestionAnswerValue'],
+      attributes: ['SecurityQuestionAnswerValue', 'ForgotUsernameAttempts', 'id'],
       where: {
         Archived: false,
         uid,
@@ -538,13 +545,26 @@ module.exports = function (sequelize, DataTypes) {
           attributes: ['username'],
         },
       ],
-      raw: true,
     };
 
     const userFound = await this.findOne(query);
 
-    if (!userFound || userFound.SecurityQuestionAnswerValue !== securityQuestionAnswer) {
+    if (!userFound) {
       return null;
+    }
+
+    if (userFound.ForgotUsernameAttempts >= maxForgotUsernameAttempts) {
+      return { remainingAttempts: 0 };
+    }
+
+    if (userFound.SecurityQuestionAnswerValue !== securityQuestionAnswer) {
+      const attemptsSoFar = userFound.ForgotUsernameAttempts ?? 0;
+      const remainingAttempts = maxForgotUsernameAttempts - (attemptsSoFar + 1);
+
+      userFound.ForgotUsernameAttempts = attemptsSoFar + 1;
+      await userFound.save();
+
+      return { remainingAttempts };
     }
 
     return { username: userFound['login.username'] };
