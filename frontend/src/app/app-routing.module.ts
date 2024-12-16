@@ -31,6 +31,7 @@ import { FirstLoginPageComponent } from '@features/first-login-page/first-login-
 import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
 import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
 import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
+import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
@@ -100,6 +101,11 @@ const routes: Routes = [
         path: 'forgot-your-username',
         component: ForgotYourUsernameComponent,
         data: { title: 'Forgot Your Username' },
+      },
+      {
+        path: 'security-question-answer-not-match',
+        component: SecurityQuestionAnswerNotMatchComponent,
+        data: { title: 'Security Question Answer Not Match' },
       },
       {
         path: 'reset-password',

@@ -97,6 +97,7 @@ import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { SecurityQuestionAnswerNotMatchComponent } from './features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
 
 @NgModule({
   declarations: [
@@ -142,6 +143,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     ForgotYourUsernameComponent,
     FindAccountComponent,
     FindUsernameComponent,
+    SecurityQuestionAnswerNotMatchComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
