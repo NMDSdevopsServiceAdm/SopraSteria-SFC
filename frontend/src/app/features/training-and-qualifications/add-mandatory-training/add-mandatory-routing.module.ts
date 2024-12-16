@@ -21,14 +21,14 @@ import {
 const routes: Routes = [
   {
     path: '',
+    resolve: {
+      existingMandatoryTraining: MandatoryTrainingCategoriesResolver,
+    },
     children: [
       {
         path: '',
         component: AddAndManageMandatoryTrainingComponent,
         data: { title: 'List Mandatory Training' },
-        resolve: {
-          existingMandatoryTraining: MandatoryTrainingCategoriesResolver,
-        },
       },
       {
         path: 'select-training-category',
@@ -36,7 +36,6 @@ const routes: Routes = [
         data: { title: 'Select Training Category' },
         resolve: {
           trainingCategories: TrainingCategoriesResolver,
-          existingMandatoryTraining: MandatoryTrainingCategoriesResolver,
         },
       },
       {
@@ -60,20 +59,20 @@ const routes: Routes = [
         component: AddMandatoryTrainingComponent,
         data: { title: 'Add New Mandatory Training' },
       },
-    ],
-  },
-  {
-    path: ':trainingCategoryId',
-    children: [
       {
-        path: 'edit-mandatory-training',
-        component: AddMandatoryTrainingComponent,
-        data: { title: 'Edit Mandatory Training' },
-      },
-      {
-        path: 'delete-mandatory-training-category',
-        component: DeleteMandatoryTrainingCategoryComponent,
-        data: { title: 'Delete Mandatory Training Category' },
+        path: ':trainingCategoryId',
+        children: [
+          {
+            path: 'edit-mandatory-training',
+            component: AddMandatoryTrainingComponent,
+            data: { title: 'Edit Mandatory Training' },
+          },
+          {
+            path: 'delete-mandatory-training-category',
+            component: DeleteMandatoryTrainingCategoryComponent,
+            data: { title: 'Delete Mandatory Training Category' },
+          },
+        ],
       },
     ],
   },

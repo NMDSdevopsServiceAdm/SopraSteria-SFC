@@ -8,8 +8,9 @@ import { TrainingCategoryService } from '@core/services/training-category.servic
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { MockRouter } from '@core/test-utils/MockRouter';
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
+import { mockMandatoryTraining, MockTrainingService } from '@core/test-utils/MockTrainingService';
 import {
   AddMandatoryTrainingModule,
 } from '@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module';
@@ -20,8 +21,13 @@ import userEvent from '@testing-library/user-event';
 import { DeleteMandatoryTrainingCategoryComponent } from './delete-mandatory-training-category.component';
 
 describe('DeleteMandatoryTrainingCategoryComponent', () => {
-  async function setup(trainingCategoryId = '1') {
+  async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder();
+    const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
+
+    const existingMandatoryTraining = mockMandatoryTraining();
+    const selectedTraining = existingMandatoryTraining.mandatoryTraining[0];
+    const trainingIdInParams = selectedTraining.trainingCategoryId;
 
     const setupTools = await render(DeleteMandatoryTrainingCategoryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, AddMandatoryTrainingModule, HttpClientTestingModule],
@@ -34,6 +40,7 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
           provide: TrainingService,
           useClass: MockTrainingService,
         },
+        { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
         {
           provide: TrainingCategoryService,
           useClass: MockTrainingCategoryService,
@@ -42,9 +49,12 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              params: { trainingCategoryId },
+              params: {
+                trainingCategoryId: overrides.trainingCategoryId ?? trainingIdInParams,
+              },
               data: {
                 establishment,
+                existingMandatoryTraining: overrides.mandatoryTraining ?? existingMandatoryTraining,
               },
               url: [{ path: 'delete-mandatory-training-category' }],
             },
@@ -61,9 +71,6 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
     const trainingService = injector.inject(TrainingService) as TrainingService;
     const deleteMandatoryTrainingCategorySpy = spyOn(trainingService, 'deleteCategoryById').and.callThrough();
 
-    const router = injector.inject(Router) as Router;
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-
     const component = setupTools.fixture.componentInstance;
 
     return {
@@ -73,6 +80,7 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
       deleteMandatoryTrainingCategorySpy,
       alertSpy,
       establishment,
+      selectedTraining,
     };
   }
 
@@ -87,14 +95,24 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
   });
 
   it('should display the correct training name when navigating to the page with a category ID', async () => {
-    const { getAllByText } = await setup();
-    expect(getAllByText('Activity provision/Well-being', { exact: false }).length).toEqual(2);
+    const { getAllByText, selectedTraining } = await setup();
+
+    expect(getAllByText(selectedTraining.category, { exact: false }).length).toEqual(2);
   });
 
   it('should render Remove categories button and cancel link', async () => {
     const { getByText } = await setup();
+
     expect(getByText('Remove category')).toBeTruthy();
     expect(getByText('Cancel')).toBeTruthy();
+  });
+
+  it('should navigate back to add-and-manage-mandatory-training page if training category not found in existing mandatory training', async () => {
+    const unexpectedTrainingCategoryId = '301';
+
+    const { getByText, routerSpy, establishment } = await setup({ trainingCategoryId: unexpectedTrainingCategoryId });
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', establishment.uid, 'add-and-manage-mandatory-training']);
   });
 
   describe('On submit', () => {
@@ -126,7 +144,7 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
 
   describe('Cancel link', () => {
     it('should navigate back to the mandatory details summary page when clicked', async () => {
-      const { component, getByText, routerSpy, establishment } = await setup();
+      const { getByText, routerSpy, establishment } = await setup();
 
       userEvent.click(getByText('Cancel'));
 

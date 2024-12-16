@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { TrainingCategory } from '@core/model/training.model';
@@ -31,10 +31,15 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit, OnDestr
 
     const trainingCategoryIdInParams = parseInt(this.route.snapshot.params?.trainingCategoryId);
     this.establishment = this.route.snapshot.data.establishment;
+    const existingMandatoryTraining = this.route.snapshot.data.existingMandatoryTraining;
 
-    this.trainingCategoryService.getCategories().subscribe((x) => {
-      this.selectedCategory = x.find((y) => y.id === trainingCategoryIdInParams);
-    });
+    this.selectedCategory = existingMandatoryTraining?.mandatoryTraining.find(
+      (category) => category.trainingCategoryId === trainingCategoryIdInParams,
+    );
+
+    if (!this.selectedCategory) {
+      this.navigateBackToMandatoryTrainingHomePage();
+    }
   }
 
   public onDelete(): void {
@@ -53,7 +58,7 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit, OnDestr
     this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
   }
 
-  private ngOnDestroy(): void {
+  ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 }
