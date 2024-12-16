@@ -50,3 +50,29 @@
 .govuk-panel--gray {
   background-color: govuk-colour('light-grey');
 }
+
+.govuk-panel--with-icon {
+  background-color: govuk-colour('light-grey');
+  text-align: left;
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  align-items: baseline;
+
+  padding-left: 18px;
+  column-gap: 5px;
+  margin-bottom: govuk-spacing(6);
+
+  > img {
+    grid-column: 1;
+
+    @media only screen and (min-width: 641px) {
+      height: 28px;
+      width: 28px;
+    }
+  }
+
+  > h1 {
+    grid-column: 2;
+    margin-bottom: 0;
+  }
+}

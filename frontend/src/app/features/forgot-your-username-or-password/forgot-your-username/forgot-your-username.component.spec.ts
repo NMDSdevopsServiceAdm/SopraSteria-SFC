@@ -15,7 +15,7 @@ import { FindAccountComponent } from './find-account/find-account.component';
 import { FindUsernameComponent } from './find-username/find-username.component';
 import { ForgotYourUsernameComponent } from './forgot-your-username.component';
 
-describe('ForgotYourUsernameComponent', () => {
+fdescribe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
@@ -289,6 +289,21 @@ describe('ForgotYourUsernameComponent', () => {
         expect(getByText('Your answer does not match that which we have for your account.')).toBeTruthy();
         expect(getByText("You've 1 more chance to get your security question right.")).toBeTruthy();
         expect(getByText("You'll need to call the Support Team if you get it wrong again.")).toBeTruthy();
+      });
+
+      it('should navigate to "security-question-answer-not-match" page when remaining attempts = 0', async () => {
+        const { fixture, getByRole, findUsernameService, routerSpy } = await setupAndProceedToFindUsername();
+        spyOn(findUsernameService, 'findUsername').and.returnValue(of({ answerCorrect: false, remainingAttempts: 0 }));
+
+        userEvent.type(
+          getByRole('textbox', { name: "What's the answer to your security question?" }),
+          'some wrong answer',
+        );
+        userEvent.click(getByRole('button', { name: 'Find username' }));
+
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/security-question-answer-not-match']);
       });
 
       describe('error', () => {

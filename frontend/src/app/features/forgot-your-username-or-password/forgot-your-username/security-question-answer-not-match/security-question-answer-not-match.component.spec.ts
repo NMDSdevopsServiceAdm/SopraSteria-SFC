@@ -1,0 +1,50 @@
+import { ComponentFixture, getTestBed, TestBed } from '@angular/core/testing';
+
+import { SecurityQuestionAnswerNotMatchComponent } from './security-question-answer-not-match.component';
+import { render } from '@testing-library/angular';
+import { SharedModule } from '@shared/shared.module';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Router } from '@angular/router';
+
+fdescribe('SecurityQuestionAnswerNotMatchComponent', () => {
+  const setup = async () => {
+    const setupTools = await render(SecurityQuestionAnswerNotMatchComponent, {
+      imports: [SharedModule, RouterTestingModule],
+      providers: [],
+    });
+
+    const component = setupTools.fixture.componentInstance;
+
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    return { ...setupTools, component, routerSpy };
+  };
+
+  it('should create', async () => {
+    const { component } = await setup();
+    expect(component).toBeTruthy();
+  });
+
+  it('should show a page heading', async () => {
+    const { getByText } = await setup();
+
+    const expectedHeadingText = 'None of your security question answers matched that which we have for your account';
+    expect(getByText(expectedHeadingText)).toBeTruthy();
+  });
+
+  it('should show an advice to contact support team', async () => {
+    const { getByText } = await setup();
+
+    const expectedContent = [
+      'Call the ASC-WDS Support Team on',
+      '0113 241 0969',
+      "We're available Monday to Friday, 9am to 5pm (not including bank holidays).",
+    ];
+
+    expectedContent.forEach((text) => {
+      expect(getByText(text, { exact: false })).toBeTruthy();
+    });
+  });
+});

@@ -100,6 +100,7 @@ import { MigratedUserTermsConditionsComponent } from './features/migrated-user-t
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
+import { SecurityQuestionAnswerNotMatchComponent } from './features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
 
 @NgModule({
   declarations: [
@@ -147,6 +148,7 @@ import { UsernameFoundComponent } from '@features/forgot-your-username-or-passwo
     FindAccountComponent,
     FindUsernameComponent,
     SelectStarterJobRolesComponent,
+    SecurityQuestionAnswerNotMatchComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
