@@ -6,7 +6,9 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { MandatoryTrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 
-import { SelectTrainingCategoryDirective } from '../../../../shared/directives/select-training-category/select-training-category.directive';
+import {
+  SelectTrainingCategoryDirective,
+} from '../../../../shared/directives/select-training-category/select-training-category.directive';
 
 @Component({
   selector: 'app-select-training-category-mandatory',
@@ -30,6 +32,15 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
   init(): void {
     this.establishmentUid = this.route.snapshot.data.establishment.uid;
+
+    if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
+      const mandatoryTrainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
+      const categoryId = parseInt(mandatoryTrainingCategory?.id, 10);
+
+      if (categoryId) {
+        this.preFilledId = categoryId;
+      }
+    }
   }
 
   protected setSectionHeading(): void {
@@ -50,7 +61,8 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
     if (trainingCategoryIdsWithExistingMandatoryTraining?.length) {
       this.categories = allTrainingCategories.filter(
-        (category) => !trainingCategoryIdsWithExistingMandatoryTraining.includes(category.id),
+        (category) =>
+          !trainingCategoryIdsWithExistingMandatoryTraining.includes(category.id) || category.id == this.preFilledId,
       );
     } else {
       this.categories = allTrainingCategories;
@@ -59,7 +71,7 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
     this.sortCategoriesByTrainingGroup(this.categories);
   }
 
-  public onCancel(event: Event) {
+  public onCancel(event: Event): void {
     event.preventDefault();
     this.trainingService.resetState();
     this.router.navigate(['workplace', this.establishmentUid, 'add-and-manage-mandatory-training']);

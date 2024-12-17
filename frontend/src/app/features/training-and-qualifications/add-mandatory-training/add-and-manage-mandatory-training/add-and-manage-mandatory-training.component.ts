@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
@@ -66,8 +66,20 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
     });
   }
 
-  public navigateToAddNewMandatoryTraining() {
-    this.router.navigate(['select-training-category'], { relativeTo: this.route });
+  public navigateToAddNewMandatoryTraining(event: Event, existingMandatoryTraining = null): void {
+    event.preventDefault();
+    const extras: NavigationExtras = { relativeTo: this.route };
+
+    if (existingMandatoryTraining) {
+      extras.queryParams = {
+        trainingCategory: JSON.stringify({
+          id: existingMandatoryTraining.trainingCategoryId,
+          category: existingMandatoryTraining.category,
+        }),
+      };
+    }
+
+    this.router.navigate(['select-training-category'], extras);
   }
 
   public navigateToDeletePage(event: Event, trainingCategoryId: number): void {

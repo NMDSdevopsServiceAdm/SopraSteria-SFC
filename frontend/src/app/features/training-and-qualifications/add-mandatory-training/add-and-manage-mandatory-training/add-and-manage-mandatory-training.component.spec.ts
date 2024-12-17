@@ -171,6 +171,21 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
       expect(autismCategory.textContent).toContain('Activities worker, coordinator');
     });
 
+    it('should navigate to select-training-category with training category ID and name in params when category link clicked', async () => {
+      const { getByText, existingMandatoryTraining, routerSpy, currentRoute } = await setup();
+
+      existingMandatoryTraining.mandatoryTraining.forEach((trainingCategory) => {
+        fireEvent.click(getByText(trainingCategory.category));
+
+        expect(routerSpy).toHaveBeenCalledWith(['select-training-category'], {
+          relativeTo: currentRoute,
+          queryParams: {
+            trainingCategory: `{"id":${trainingCategory.trainingCategoryId},"category":"${trainingCategory.category}"}`,
+          },
+        });
+      });
+    });
+
     it(`should have a Remove link for each training category which takes user to its remove page`, async () => {
       const { getByTestId, existingMandatoryTraining, routerSpy, currentRoute } = await setup();
 

@@ -13,11 +13,14 @@ import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService'
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
 import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import {
+  GroupedRadioButtonAccordionComponent,
+} from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import {
+  RadioButtonAccordionComponent,
+} from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import sinon from 'sinon';
 
 import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { SelectTrainingCategoryMandatoryComponent } from './select-training-category-mandatory.component';
@@ -52,7 +55,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
                 existingMandatoryTraining: overrides.existingMandatoryTraining ?? {},
               },
               queryParamMap: {
-                get: sinon.stub(),
+                get: () => overrides.selectedTraining ?? null,
               },
             },
           },
@@ -200,7 +203,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
     expect(component.form.value).toEqual({ category: 1 });
   });
 
-  it('should not include training categories which already have mandatory training', async () => {
+  describe('Existing mandatory training', () => {
     const mockTrainingCategories = [
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
       { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
@@ -218,15 +221,34 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
       ],
     };
 
-    const overrides = {
-      trainingCategories: mockTrainingCategories,
-      existingMandatoryTraining,
-    };
+    it('should not include training categories which already have mandatory training', async () => {
+      const overrides = {
+        trainingCategories: mockTrainingCategories,
+        existingMandatoryTraining,
+      };
 
-    const { queryByText } = await setup(overrides);
+      const { queryByText } = await setup(overrides);
 
-    expect(queryByText(mockTrainingCategories[0].category)).toBeTruthy();
-    expect(queryByText(mockTrainingCategories[1].category)).toBeTruthy();
-    expect(queryByText(mockTrainingCategories[2].category)).toBeFalsy();
+      expect(queryByText(mockTrainingCategories[0].category)).toBeTruthy();
+      expect(queryByText(mockTrainingCategories[1].category)).toBeTruthy();
+      expect(queryByText(mockTrainingCategories[2].category)).toBeFalsy();
+    });
+
+    it('should include training category and prefill the radio when ID of existing mandatory training category in params', async () => {
+      const overrides = {
+        trainingCategories: mockTrainingCategories,
+        existingMandatoryTraining,
+        selectedTraining: JSON.stringify({
+          id: mockTrainingCategories[2].id,
+          category: mockTrainingCategories[2].category,
+        }),
+      };
+
+      const { component, queryByText } = await setup(overrides);
+
+      const selectedExistingMandatoryTrainingCategory = queryByText(mockTrainingCategories[2].category);
+      expect(selectedExistingMandatoryTrainingCategory).toBeTruthy();
+      expect(component.form.value).toEqual({ category: mockTrainingCategories[2].id });
+    });
   });
 });
