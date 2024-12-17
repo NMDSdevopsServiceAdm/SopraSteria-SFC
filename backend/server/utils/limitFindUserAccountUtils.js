@@ -9,11 +9,11 @@ const getNumberOfFailedAttempts = async (ipAddress) => {
 };
 
 const recordFailedAttempt = async (ipAddress) => {
-  const ttl = 24 * 60 * 60; // 24 hours
-  const failedAttemptsSoFar = await redisClient.incr(ipAddress);
+  const ttl = 60 * 60; // 1 hour
+  const failedAttemptsCount = await redisClient.incr(ipAddress);
   await redisClient.expire(ipAddress, ttl);
 
-  return failedAttemptsSoFar;
+  return failedAttemptsCount;
 };
 
 module.exports = { getNumberOfFailedAttempts, recordFailedAttempt };
