@@ -30,8 +30,8 @@ const findUserAccount = async (req, res) => {
       return sendSuccessResponse(res, userFound);
     }
 
-    const failedAttemptsSoFar = await limitFindUserAccountUtils.recordFailedAttempt(req.ip);
-    const remainingAttempts = MaxAttempts - failedAttemptsSoFar;
+    const failedAttemptsCount = await limitFindUserAccountUtils.recordFailedAttempt(req.ip);
+    const remainingAttempts = MaxAttempts - failedAttemptsCount;
 
     return sendNotFoundResponse(res, remainingAttempts);
   } catch (err) {
