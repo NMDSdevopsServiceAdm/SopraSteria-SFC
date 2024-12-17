@@ -4,10 +4,10 @@ const expect = chai.expect;
 const httpMocks = require('node-mocks-http');
 
 const { findUserAccount } = require('../../../../routes/registration/findUserAccount');
-const findUserAccountUtils = require('../../../../utils/findUserAccountUtils');
+const limitFindUserAccountUtils = require('../../../../utils/limitFindUserAccountUtils');
 const models = require('../../../../models/index');
 
-describe.only('backend/server/routes/registration/findUserAccount', () => {
+describe('backend/server/routes/registration/findUserAccount', () => {
   const mockRequestBody = { name: 'Test User', workplaceIdOrPostcode: 'A1234567', email: 'test@example.com' };
 
   const buildRequest = (body) => {
@@ -33,11 +33,11 @@ describe.only('backend/server/routes/registration/findUserAccount', () => {
 
     let failedAttempts = 0;
     stubGetNumberOfFailedAttempts = sinon
-      .stub(findUserAccountUtils, 'getNumberOfFailedAttempts')
+      .stub(limitFindUserAccountUtils, 'getNumberOfFailedAttempts')
       .resolves(failedAttempts);
-    stubRecordFailedAttempt = sinon.stub(findUserAccountUtils, 'recordFailedAttempt').callsFake(async () => {
+    stubRecordFailedAttempt = sinon.stub(limitFindUserAccountUtils, 'recordFailedAttempt').callsFake(() => {
       failedAttempts += 1;
-      return failedAttempts;
+      return Promise.resolve(failedAttempts);
     });
   });
 
