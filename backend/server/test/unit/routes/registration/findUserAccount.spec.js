@@ -4,9 +4,10 @@ const expect = chai.expect;
 const httpMocks = require('node-mocks-http');
 
 const { findUserAccount } = require('../../../../routes/registration/findUserAccount');
+const findUserAccountUtils = require('../../../../utils/findUserAccountUtils');
 const models = require('../../../../models/index');
 
-describe('backend/server/routes/registration/findUserAccount', () => {
+describe.only('backend/server/routes/registration/findUserAccount', () => {
   const mockRequestBody = { name: 'Test User', workplaceIdOrPostcode: 'A1234567', email: 'test@example.com' };
 
   const buildRequest = (body) => {
@@ -19,12 +20,24 @@ describe('backend/server/routes/registration/findUserAccount', () => {
   };
 
   let stubFindUser;
+  let stubGetNumberOfFailedAttempts;
+  let stubRecordFailedAttempt;
+
   beforeEach(() => {
     stubFindUser = sinon.stub(models.user, 'findByRelevantInfo').callsFake(({ workplaceId, postcode }) => {
       if (workplaceId === 'A1234567' || postcode === 'LS1 2RP') {
         return { uid: 'mock-uid', SecurityQuestionValue: 'What is your favourite colour?' };
       }
       return null;
+    });
+
+    let failedAttempts = 0;
+    stubGetNumberOfFailedAttempts = sinon
+      .stub(findUserAccountUtils, 'getNumberOfFailedAttempts')
+      .resolves(failedAttempts);
+    stubRecordFailedAttempt = sinon.stub(findUserAccountUtils, 'recordFailedAttempt').callsFake(async () => {
+      failedAttempts += 1;
+      return failedAttempts;
     });
   });
 
@@ -50,6 +63,7 @@ describe('backend/server/routes/registration/findUserAccount', () => {
       workplaceId: 'A1234567',
       email: 'test@example.com',
     });
+    expect(stubRecordFailedAttempt).not.to.be.called;
   });
 
   it('should find user with postcode if request body contains a postcode', async () => {
@@ -102,6 +116,37 @@ describe('backend/server/routes/registration/findUserAccount', () => {
       accountFound: false,
       remainingAttempts: 4,
     });
+    expect(stubRecordFailedAttempt).to.have.been.calledOnce;
+  });
+
+  it('should respond with reducing number of remainingAttempts on successive failure', async () => {
+    for (const expectedRemainingAttempts of [4, 3, 2, 1, 0]) {
+      const req = buildRequest({ ...mockRequestBody, workplaceIdOrPostcode: 'non-exist-workplace-id' });
+      const res = httpMocks.createResponse();
+
+      await findUserAccount(req, res);
+
+      expect(res._getJSONData()).to.deep.equal({
+        accountFound: false,
+        remainingAttempts: expectedRemainingAttempts,
+      });
+    }
+    expect(stubRecordFailedAttempt).to.have.been.callCount(5);
+  });
+
+  it('should not run user search if already failed for 5 times', async () => {
+    stubGetNumberOfFailedAttempts.resolves(5);
+
+    const req = buildRequest(mockRequestBody);
+    const res = httpMocks.createResponse();
+
+    await findUserAccount(req, res);
+
+    expect(res._getJSONData()).to.deep.equal({
+      accountFound: false,
+      remainingAttempts: 0,
+    });
+    expect(stubFindUser).not.to.be.called;
   });
 
   it('should respond with 400 error if request does not have a body', async () => {
