@@ -30,7 +30,7 @@
     <tr class="govuk-table__row" data-testid="training-table-heading">
       <th class="govuk-table__header" scope="col">Mandatory training category</th>
       <th class="govuk-table__header" scope="col">Job role</th>
-      <th class="govuk-table__header" scope="col">
+      <th class="govuk-table__header govuk-util__align-right" scope="col">
         <a
           *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
           class="govuk-link govuk-link--no-visited-state govuk-util__normal"
@@ -79,7 +79,7 @@
             <div data-testid="titleJob" *ngFor="let job of records.jobs">{{ job.title }}</div>
           </ng-container>
         </td>
-        <td class="govuk-table__cell govuk-util__align-right">
+        <td class="govuk-table__cell govuk-!-padding-right-0 govuk-util__align-right">
           <a
             href="#"
             (click)="navigateToDeletePage($event, records.trainingCategoryId)"
