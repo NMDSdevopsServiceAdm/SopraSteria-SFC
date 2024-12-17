@@ -131,6 +131,33 @@ describe('ForgotYourUsernameComponent', () => {
         expect(getByRole('button', { name: 'Find account' })).toBeTruthy();
       });
 
+      it('should show a different error message when only 1 chance remain', async () => {
+        const { fixture, getByText, findUsernameService } = await setup();
+        spyOn(findUsernameService, 'findUserAccount').and.returnValue(
+          of({ accountFound: false, remainingAttempts: 1 }),
+        );
+
+        await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
+
+        fixture.detectChanges();
+
+        const expectedText =
+          "You've 1 more chance to enter the same information that we have, otherwise you'll need to call the Support Team.";
+
+        expect(getByText(expectedText)).toBeTruthy();
+      });
+
+      it('should navigate to "user-account-not-found" page when remaining attempts = 0', async () => {
+        const { findUsernameService, routerSpy } = await setup();
+        spyOn(findUsernameService, 'findUserAccount').and.returnValue(
+          of({ accountFound: false, remainingAttempts: 0 }),
+        );
+
+        await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
+
+        expect(routerSpy).toHaveBeenCalledWith(['/user-account-not-found']);
+      });
+
       describe('errors', () => {
         it('should show an error message if any of the text input is blank', async () => {
           const { fixture, getByRole, getByText, getAllByText, findUsernameService } = await setup();

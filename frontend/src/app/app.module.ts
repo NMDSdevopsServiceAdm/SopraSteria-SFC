@@ -70,6 +70,8 @@ import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-use
 import { FindAccountComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-account/find-account.component';
 import { FindUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-username/find-username.component';
 import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
+import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
+import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
@@ -100,7 +102,6 @@ import { MigratedUserTermsConditionsComponent } from './features/migrated-user-t
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
-import { SecurityQuestionAnswerNotMatchComponent } from './features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
 
 @NgModule({
   declarations: [
@@ -149,6 +150,7 @@ import { SecurityQuestionAnswerNotMatchComponent } from './features/forgot-your-
     FindUsernameComponent,
     SelectStarterJobRolesComponent,
     SecurityQuestionAnswerNotMatchComponent,
+    UserAccountNotFoundComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
