@@ -6,7 +6,7 @@ import { SharedModule } from '@shared/shared.module';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Router } from '@angular/router';
 
-fdescribe('SecurityQuestionAnswerNotMatchComponent', () => {
+describe('SecurityQuestionAnswerNotMatchComponent', () => {
   const setup = async () => {
     const setupTools = await render(SecurityQuestionAnswerNotMatchComponent, {
       imports: [SharedModule, RouterTestingModule],
@@ -34,7 +34,7 @@ fdescribe('SecurityQuestionAnswerNotMatchComponent', () => {
     expect(getByText(expectedHeadingText)).toBeTruthy();
   });
 
-  it('should show an advice to contact support team', async () => {
+  it('should show a message about contacting support team', async () => {
     const { getByText } = await setup();
 
     const expectedContent = [
@@ -46,5 +46,13 @@ fdescribe('SecurityQuestionAnswerNotMatchComponent', () => {
     expectedContent.forEach((text) => {
       expect(getByText(text, { exact: false })).toBeTruthy();
     });
+  });
+
+  it('should show a "Back to signin" button', async () => {
+    const { getByText } = await setup();
+
+    const backToSignin = getByText('Back to sign in');
+    expect(backToSignin).toBeTruthy();
+    expect(backToSignin.getAttribute('href')).toEqual('/login');
   });
 });

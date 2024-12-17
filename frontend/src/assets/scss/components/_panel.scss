@@ -64,6 +64,8 @@
 
   > img {
     grid-column: 1;
+    height: 20px;
+    width: 20px;
 
     @media only screen and (min-width: 641px) {
       height: 28px;

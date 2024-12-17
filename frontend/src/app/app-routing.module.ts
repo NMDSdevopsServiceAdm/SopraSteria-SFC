@@ -106,7 +106,7 @@ const routes: Routes = [
       {
         path: 'security-question-answer-not-match',
         component: SecurityQuestionAnswerNotMatchComponent,
-        data: { title: 'Security Question Answer Not Match' },
+        data: { title: 'Security Question Answer Does Not Match' },
       },
       {
         path: 'reset-password',
