@@ -24,6 +24,7 @@ const routes: Routes = [
     resolve: {
       existingMandatoryTraining: MandatoryTrainingCategoriesResolver,
     },
+    runGuardsAndResolvers: 'always',
     children: [
       {
         path: '',

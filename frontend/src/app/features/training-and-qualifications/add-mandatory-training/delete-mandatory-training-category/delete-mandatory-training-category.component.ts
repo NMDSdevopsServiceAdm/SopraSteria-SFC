@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingCategory } from '@core/model/training.model';
+import { mandatoryTraining } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
@@ -13,8 +13,9 @@ import { Subscription } from 'rxjs';
   templateUrl: './delete-mandatory-training-category.component.html',
 })
 export class DeleteMandatoryTrainingCategoryComponent implements OnInit, OnDestroy {
-  public selectedCategory: TrainingCategory;
+  public selectedCategory: mandatoryTraining;
   public establishment: Establishment;
+  public allJobRolesCount: number;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -33,6 +34,8 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit, OnDestr
     this.establishment = this.route.snapshot.data.establishment;
     const existingMandatoryTraining = this.route.snapshot.data.existingMandatoryTraining;
 
+    this.allJobRolesCount = existingMandatoryTraining?.allJobRolesCount;
+
     this.selectedCategory = existingMandatoryTraining?.mandatoryTraining.find(
       (category) => category.trainingCategoryId === trainingCategoryIdInParams,
     );
@@ -44,13 +47,15 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit, OnDestr
 
   public onDelete(): void {
     this.subscriptions.add(
-      this.trainingService.deleteCategoryById(this.establishment.id, this.selectedCategory.id).subscribe(() => {
-        this.navigateBackToMandatoryTrainingHomePage();
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'Mandatory training category removed',
-        });
-      }),
+      this.trainingService
+        .deleteCategoryById(this.establishment.id, this.selectedCategory.trainingCategoryId)
+        .subscribe(() => {
+          this.navigateBackToMandatoryTrainingHomePage();
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Mandatory training category removed',
+          });
+        }),
     );
   }
 

@@ -115,12 +115,35 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', establishment.uid, 'add-and-manage-mandatory-training']);
   });
 
+  describe('Displaying job roles', () => {
+    it('should display selected job roles for selected mandatory training when it is not for all job roles', async () => {
+      const { getByText, selectedTraining } = await setup();
+
+      selectedTraining.jobs.forEach((job) => {
+        expect(getByText(job.title)).toBeTruthy();
+      });
+    });
+
+    it('should display All when number of job roles for selected training matches allJobRolesCount', async () => {
+      const mandatoryTraining = mockMandatoryTraining();
+      const selectedTraining = mandatoryTraining.mandatoryTraining[1];
+      const trainingIdInParams = selectedTraining.trainingCategoryId;
+
+      const { getByText } = await setup({ mandatoryTraining, trainingCategoryId: trainingIdInParams });
+
+      expect(getByText('All')).toBeTruthy();
+    });
+  });
+
   describe('On submit', () => {
     it('should call deleteCategoryById in the training service', async () => {
-      const { getByText, deleteMandatoryTrainingCategorySpy } = await setup();
+      const { getByText, deleteMandatoryTrainingCategorySpy, establishment, selectedTraining } = await setup();
 
       userEvent.click(getByText('Remove category'));
-      expect(deleteMandatoryTrainingCategorySpy).toHaveBeenCalled();
+      expect(deleteMandatoryTrainingCategorySpy).toHaveBeenCalledWith(
+        establishment.id,
+        selectedTraining.trainingCategoryId,
+      );
     });
 
     it("should display a success banner with 'Mandatory training category removed'", async () => {

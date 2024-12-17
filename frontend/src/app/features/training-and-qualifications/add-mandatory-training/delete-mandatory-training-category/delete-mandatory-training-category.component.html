@@ -17,7 +17,15 @@
       </div>
       <div class="govuk-summary-list__row" scope="row">
         <dt class="govuk-summary-list__key">Job roles</dt>
-        <dd class="govuk-summary-list__value">All</dd>
+        <dd class="govuk-summary-list__value">
+          <ul
+            *ngIf="selectedCategory?.jobs?.length != allJobRolesCount; else allJobRoles"
+            class="govuk-list govuk-!-margin-bottom-0"
+          >
+            <li *ngFor="let job of selectedCategory?.jobs">{{ job.title }}</li>
+          </ul>
+          <ng-template #allJobRoles> All </ng-template>
+        </dd>
       </div>
     </dl>
 
