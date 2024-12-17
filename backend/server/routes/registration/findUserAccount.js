@@ -1,6 +1,6 @@
 const { isEmpty } = require('lodash');
 const { sanitisePostcode } = require('../../utils/postcodeSanitizer');
-const findUserAccountUtils = require('../../utils/findUserAccountUtils');
+const limitFindUserAccountUtils = require('../../utils/limitFindUserAccountUtils');
 const models = require('../../models/index');
 
 const MaxAttempts = 5;
@@ -30,7 +30,7 @@ const findUserAccount = async (req, res) => {
       return sendSuccessResponse(res, userFound);
     }
 
-    const failedAttemptsSoFar = await findUserAccountUtils.recordFailedAttempt(req.ip);
+    const failedAttemptsSoFar = await limitFindUserAccountUtils.recordFailedAttempt(req.ip);
     const remainingAttempts = MaxAttempts - failedAttemptsSoFar;
 
     return sendNotFoundResponse(res, remainingAttempts);
@@ -50,7 +50,7 @@ const requestIsInvalid = (req) => {
 };
 
 const ipAddressReachedMaxAttempt = async (req) => {
-  const attemptsSoFar = (await findUserAccountUtils.getNumberOfFailedAttempts(req.ip)) ?? 0;
+  const attemptsSoFar = (await limitFindUserAccountUtils.getNumberOfFailedAttempts(req.ip)) ?? 0;
   return attemptsSoFar >= MaxAttempts;
 };
 
