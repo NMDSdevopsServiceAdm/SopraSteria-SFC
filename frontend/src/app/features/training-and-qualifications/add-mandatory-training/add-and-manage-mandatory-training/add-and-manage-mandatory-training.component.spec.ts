@@ -86,7 +86,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
 
     expect(mandatoryTrainingHeader.textContent).toContain('Add and manage mandatory training categories');
     expect(mandatoryTrainingInfo.textContent).toContain(
-      'Add the training categories you want to make mandatory for your staff. It will help you identify who is missing training and let you know when training expires.',
+      'Add the training categories you want to make mandatory for your staff. It will help you to identify who is missing training and let you know when training expires.',
     );
   });
 
