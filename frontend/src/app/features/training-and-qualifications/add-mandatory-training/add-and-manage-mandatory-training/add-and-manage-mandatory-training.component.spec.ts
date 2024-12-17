@@ -16,6 +16,13 @@ import { fireEvent, render } from '@testing-library/angular';
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training.component';
 
 describe('AddAndManageMandatoryTrainingComponent', () => {
+  const noMandatoryTraining = {
+    allJobRolesCount: 37,
+    lastUpdated: new Date(),
+    mandatoryTraining: [],
+    mandatoryTrainingCount: 0,
+  };
+
   async function setup(overrides: any = {}) {
     const establishment = establishmentBuilder() as Establishment;
     const existingMandatoryTraining = mockMandatoryTraining();
@@ -111,34 +118,37 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     });
 
     it('should not show if no mandatory training set up', async () => {
-      const mandatoryTraining = {
-        allJobRolesCount: 37,
-        lastUpdated: new Date(),
-        mandatoryTraining: [],
-        mandatoryTrainingCount: 0,
-      };
-
-      const { queryByText } = await setup({ mandatoryTraining });
+      const { queryByText } = await setup({ mandatoryTraining: noMandatoryTraining });
 
       expect(queryByText('Remove all')).toBeFalsy();
     });
   });
 
-  it('should show the manage mandatory training table', async () => {
-    const { getByTestId } = await setup();
+  describe('Mandatory training table', () => {
+    it('should show the manage mandatory training table', async () => {
+      const { getByTestId } = await setup();
 
-    const mandatoryTrainingTable = getByTestId('training-table');
+      const mandatoryTrainingTable = getByTestId('training-table');
 
-    expect(mandatoryTrainingTable).toBeTruthy();
-  });
+      expect(mandatoryTrainingTable).toBeTruthy();
+    });
 
-  it('should show the manage mandatory training table headings', async () => {
-    const { getByTestId } = await setup();
+    it('should show the manage mandatory training table headings', async () => {
+      const { getByTestId } = await setup();
 
-    const mandatoryTrainingTableHeading = getByTestId('training-table-heading');
+      const mandatoryTrainingTableHeading = getByTestId('training-table-heading');
 
-    expect(mandatoryTrainingTableHeading.textContent).toContain('Mandatory training category');
-    expect(mandatoryTrainingTableHeading.textContent).toContain('Job role');
+      expect(mandatoryTrainingTableHeading.textContent).toContain('Mandatory training category');
+      expect(mandatoryTrainingTableHeading.textContent).toContain('Job role');
+    });
+
+    it('should not show if no mandatory training set up', async () => {
+      const { queryByTestId } = await setup({ mandatoryTraining: noMandatoryTraining });
+
+      const mandatoryTrainingTableHeadings = queryByTestId('training-table-heading');
+
+      expect(mandatoryTrainingTableHeadings).toBeFalsy();
+    });
   });
 
   describe('mandatory training table records', () => {
