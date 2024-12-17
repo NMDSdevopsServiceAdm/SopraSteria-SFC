@@ -4,11 +4,11 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
-import { SecurityQuestionAnswerNotMatchComponent } from './security-question-answer-not-match.component';
+import { UserAccountNotFoundComponent } from './user-account-not-found.component';
 
-describe('SecurityQuestionAnswerNotMatchComponent', () => {
+describe('UserAccountNotFoundComponent', () => {
   const setup = async () => {
-    const setupTools = await render(SecurityQuestionAnswerNotMatchComponent, {
+    const setupTools = await render(UserAccountNotFoundComponent, {
       imports: [SharedModule, RouterTestingModule],
       providers: [],
     });
@@ -30,7 +30,7 @@ describe('SecurityQuestionAnswerNotMatchComponent', () => {
   it('should show a page heading', async () => {
     const { getByText } = await setup();
 
-    const expectedHeadingText = 'None of your security question answers matched that which we have for your account';
+    const expectedHeadingText = 'We did not found your account';
     expect(getByText(expectedHeadingText)).toBeTruthy();
   });
 

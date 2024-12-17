@@ -70,6 +70,8 @@ import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-use
 import { FindAccountComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-account/find-account.component';
 import { FindUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-username/find-username.component';
 import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
+import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
+import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
@@ -97,7 +99,6 @@ import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { SecurityQuestionAnswerNotMatchComponent } from './features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
 
 @NgModule({
   declarations: [
@@ -144,6 +145,7 @@ import { SecurityQuestionAnswerNotMatchComponent } from './features/forgot-your-
     FindAccountComponent,
     FindUsernameComponent,
     SecurityQuestionAnswerNotMatchComponent,
+    UserAccountNotFoundComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

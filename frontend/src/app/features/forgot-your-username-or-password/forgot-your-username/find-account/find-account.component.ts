@@ -12,6 +12,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { EMAIL_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -47,6 +48,7 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     private FormBuilder: UntypedFormBuilder,
     private errorSummaryService: ErrorSummaryService,
     private findUsernameService: FindUsernameService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -117,7 +119,10 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
       case false:
         this.accountFound = false;
         this.remainingAttempts = response.remainingAttempts;
-        // TODO for #1570:  navigate to error page when remaining attempt = 0
+
+        if (this.remainingAttempts === 0) {
+          this.router.navigate(['/user-account-not-found']);
+        }
 
         this.scrollToResult();
         break;
