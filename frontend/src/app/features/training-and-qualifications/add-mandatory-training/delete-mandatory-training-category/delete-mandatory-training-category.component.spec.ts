@@ -94,10 +94,11 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
     expect(getByText("You're about to remove this mandatory training category")).toBeTruthy();
   });
 
-  it('should display the correct training name when navigating to the page with a category ID', async () => {
-    const { getAllByText, selectedTraining } = await setup();
+  it('should display a warning message with training category name', async () => {
+    const { getByText, selectedTraining } = await setup();
 
-    expect(getAllByText(selectedTraining.category, { exact: false }).length).toEqual(2);
+    const expectedMessage = `If you do this, '${selectedTraining?.category}' will no longer be mandatory for any of your staff.`;
+    expect(getByText(expectedMessage)).toBeTruthy();
   });
 
   it('should render Remove categories button and cancel link', async () => {
@@ -110,7 +111,7 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
   it('should navigate back to add-and-manage-mandatory-training page if training category not found in existing mandatory training', async () => {
     const unexpectedTrainingCategoryId = '301';
 
-    const { getByText, routerSpy, establishment } = await setup({ trainingCategoryId: unexpectedTrainingCategoryId });
+    const { routerSpy, establishment } = await setup({ trainingCategoryId: unexpectedTrainingCategoryId });
 
     expect(routerSpy).toHaveBeenCalledWith(['/workplace', establishment.uid, 'add-and-manage-mandatory-training']);
   });
