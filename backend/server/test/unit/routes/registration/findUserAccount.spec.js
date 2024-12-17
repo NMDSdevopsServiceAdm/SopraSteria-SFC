@@ -134,7 +134,7 @@ describe('backend/server/routes/registration/findUserAccount', () => {
     expect(stubRecordFailedAttempt).to.have.been.callCount(5);
   });
 
-  it('should not run user search if already failed for 5 times', async () => {
+  it('should not run user search if already reached maximum failure counts', async () => {
     stubGetNumberOfFailedAttempts.resolves(5);
 
     const req = buildRequest(mockRequestBody);
