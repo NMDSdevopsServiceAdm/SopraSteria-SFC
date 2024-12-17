@@ -46,6 +46,10 @@ export class MockTrainingService extends TrainingService {
   public deleteCategoryById(establishmentId, categoryId) {
     return of({});
   }
+
+  public deleteAllMandatoryTraining(establishmentId) {
+    return of({});
+  }
 }
 
 @Injectable()

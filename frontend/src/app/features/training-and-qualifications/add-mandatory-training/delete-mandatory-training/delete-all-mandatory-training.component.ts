@@ -25,17 +25,13 @@ export class RemoveAllMandatoryTrainingComponent implements OnInit {
 
   ngOnInit(): void {
     this.establishment = this.route.parent.snapshot.data.establishment;
-    this.setBackLink();
-  }
-
-  public setBackLink(): void {
     this.backLinkService.showBackLink();
   }
 
   public deleteMandatoryTraining(): void {
     this.subscriptions.add(
       this.trainingService.deleteAllMandatoryTraining(this.establishment.id).subscribe(() => {
-        this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
+        this.navigateToPreviousPage();
         this.alertService.addAlert({
           type: 'success',
           message: 'All mandatory training categories removed',
