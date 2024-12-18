@@ -48,10 +48,20 @@ export class FindUsernameService {
   constructor(private http: HttpClient) {}
 
   findUserAccount(params: FindAccountRequest): Observable<FindUserAccountResponse> {
-    return this.http.post<FindUserAccountResponse>(
-      `${environment.appRunnerEndpoint}/api/registration/findUserAccount`,
-      params,
-    );
+    return this.http
+      .post<FindUserAccountResponse>(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`, params)
+      .pipe(catchError((res) => this.handleFindUserAccountErrors(res)));
+  }
+
+  handleFindUserAccountErrors(err: HttpErrorResponse): Observable<AccountNotFound> {
+    if (err.status === 423) {
+      return of({
+        accountFound: false,
+        remainingAttempts: 0,
+      });
+    }
+
+    throwError(err);
   }
 
   findUsername(params: FindUsernameRequest): Observable<any> {
