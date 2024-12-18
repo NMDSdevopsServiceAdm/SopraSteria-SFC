@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, NavigationExtras, Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
 
 @Component({
   selector: 'app-add-and-manage-mandatory-training',
@@ -19,7 +19,7 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
   public previousAllJobsLength = [29, 31, 32];
 
   constructor(
-    public trainingService: TrainingService,
+    public trainingService: MandatoryTrainingService,
     private route: ActivatedRoute,
     public jobService: JobService,
     private breadcrumbService: BreadcrumbService,
@@ -68,18 +68,12 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
 
   public navigateToAddNewMandatoryTraining(event: Event, existingMandatoryTraining = null): void {
     event.preventDefault();
-    const extras: NavigationExtras = { relativeTo: this.route };
 
     if (existingMandatoryTraining) {
-      extras.queryParams = {
-        trainingCategory: JSON.stringify({
-          id: existingMandatoryTraining.trainingCategoryId,
-          category: existingMandatoryTraining.category,
-        }),
-      };
+      this.trainingService.existingMandatoryTraining = existingMandatoryTraining;
     }
 
-    this.router.navigate(['select-training-category'], extras);
+    this.router.navigate(['select-training-category'], { relativeTo: this.route });
   }
 
   public navigateToDeletePage(event: Event, trainingCategoryId: number): void {
