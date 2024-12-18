@@ -1,5 +1,6 @@
 /* jshint indent: 2 */
 const { Op } = require('sequelize');
+const { padEnd } = require('lodash');
 const { sanitise } = require('../utils/db');
 
 module.exports = function (sequelize, DataTypes) {
@@ -484,6 +485,69 @@ module.exports = function (sequelize, DataTypes) {
       ],
       order: [['updated', 'DESC']],
     });
+  };
+
+  User.findByRelevantInfo = async function ({ name, workplaceId, postcode, email }) {
+    if (!workplaceId && !postcode) {
+      return null;
+    }
+
+    const workplaceIdWithTrailingSpace = padEnd(workplaceId ?? '', 8, ' ');
+    const establishmentWhereClause = workplaceId
+      ? { NmdsID: [workplaceId, workplaceIdWithTrailingSpace] }
+      : { postcode: postcode };
+
+    const query = {
+      attributes: ['uid', 'SecurityQuestionValue'],
+      where: {
+        Archived: false,
+        FullNameValue: name,
+        EmailValue: email,
+        SecurityQuestionValue: { [Op.ne]: null },
+        SecurityQuestionAnswerValue: { [Op.ne]: null },
+      },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          where: establishmentWhereClause,
+          required: true,
+          attributes: [],
+        },
+      ],
+      raw: true,
+    };
+
+    return this.findOne(query);
+  };
+
+  User.getUsernameWithSecurityQuestionAnswer = async function ({ uid, securityQuestionAnswer }) {
+    if (!uid || !securityQuestionAnswer) {
+      return null;
+    }
+
+    const query = {
+      attributes: ['SecurityQuestionAnswerValue'],
+      where: {
+        Archived: false,
+        uid,
+      },
+      include: [
+        {
+          model: sequelize.models.login,
+          required: true,
+          attributes: ['username'],
+        },
+      ],
+      raw: true,
+    };
+
+    const userFound = await this.findOne(query);
+
+    if (!userFound || userFound.SecurityQuestionAnswerValue !== securityQuestionAnswer) {
+      return null;
+    }
+
+    return { username: userFound['login.username'] };
   };
 
   return User;

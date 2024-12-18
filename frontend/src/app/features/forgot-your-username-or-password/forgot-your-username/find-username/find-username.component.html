@@ -1,0 +1,71 @@
+<hr class="govuk-section-break govuk-section-break--m govuk-!-width-two-thirds govuk-section-break--visible" />
+<div class="govuk-grid-row">
+  <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <div class="asc-security-question__container">
+        <h3 class="govuk-heading-m">Your security question</h3>
+        <p>You chose this question when you created your account.</p>
+        <h4 class="govuk-heading-s">Question</h4>
+        <div id="securityQuestion" class="asc-security-question" #securityQuestionEl tabindex="-1">
+          {{ securityQuestion }}
+        </div>
+      </div>
+
+      <div
+        class="govuk-form-group"
+        [class.govuk-form-group--error]="submitted && form.get('securityQuestionAnswer').errors"
+      >
+        <label class="govuk-label govuk-label--m" for="securityQuestionAnswer">
+          What's the answer to your security question?
+        </label>
+        <label class="govuk-label govuk-label--s">Answer</label>
+        <span
+          *ngIf="submitted && form.get('securityQuestionAnswer').errors"
+          id="securityQuestionAnswer-error"
+          class="govuk-error-message"
+        >
+          <span class="govuk-visually-hidden">Error:</span> {{ requiredErrorMessage }}
+        </span>
+        <input
+          class="govuk-input govuk-input--width-20"
+          [class.govuk-input--error]="submitted && form.get('securityQuestionAnswer').errors"
+          id="securityQuestionAnswer"
+          name="securityQuestionAnswer"
+          type="text"
+          aria-describedby="securityQuestion"
+          formControlName="securityQuestionAnswer"
+        />
+      </div>
+
+      <div *ngIf="remainingAttempts" class="asc-incorrect-answer-message" role="alert">
+        <img class="govuk-!-margin-right-1" src="/assets/images/cross-icon.svg" alt="Error" />
+        <p>Your answer does not match that which we have for your account.</p>
+        <ng-container [ngPlural]="remainingAttempts">
+          <ng-template ngPluralCase="=1">
+            <p>You've 1 more chance to get your security question right.</p>
+            <p>You'll need to call the Support Team if you get it wrong again.</p>
+          </ng-template>
+          <ng-template ngPluralCase="other"
+            ><p>You've {{ remainingAttempts }} more chances to get your security question right.</p>
+          </ng-template>
+        </ng-container>
+      </div>
+
+      <app-details title="Cannot remember the answer?" data-testid="reveal-text">
+        <p>Call the ASC-WDS Support Team on <strong class="govuk__nowrap">0113 241 0969</strong> for help.</p>
+      </app-details>
+
+      <div class="govuk-button-group--gap-between govuk-!-margin-top-8">
+        <button class="govuk-button">Find username</button>
+        <span class="govuk-visually-hidden">or</span>
+        <a
+          class="govuk-link govuk-link--no-visited-state govuk__nowrap"
+          [routerLink]="['/login']"
+          role="button"
+          draggable="false"
+          >Back to sign in</a
+        >
+      </div>
+    </div>
+  </form>
+</div>

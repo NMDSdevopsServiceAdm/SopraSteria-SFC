@@ -9,17 +9,19 @@ import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { fireEvent, render, within } from '@testing-library/angular';
 import { throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 
 describe('LoginComponent', () => {
   async function setup(isAdmin = false, employerTypeSet = true, isAuthenticated = true) {
-    const { fixture, getAllByText, getByText, queryByText, getByTestId } = await render(LoginComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+    const setupTools = await render(LoginComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         FeatureFlagsService,
+        UntypedFormBuilder,
         {
           provide: AuthService,
           useFactory: MockAuthService.factory(true, isAdmin, employerTypeSet),
@@ -38,7 +40,7 @@ describe('LoginComponent', () => {
     spy.and.returnValue(Promise.resolve(true));
 
     const authService = injector.inject(AuthService) as AuthService;
-    let authSpy;
+    let authSpy: any;
     if (isAuthenticated) {
       authSpy = spyOn(authService, 'authenticate');
       authSpy.and.callThrough();
@@ -53,14 +55,13 @@ describe('LoginComponent', () => {
       authSpy = spyOn(authService, 'authenticate').and.returnValue(throwError(mockErrorResponse));
     }
 
+    const fixture = setupTools.fixture;
     const component = fixture.componentInstance;
+
     return {
       component,
       fixture,
-      getAllByText,
-      getByText,
-      queryByText,
-      getByTestId,
+      ...setupTools,
       spy,
       authSpy,
     };
@@ -69,6 +70,82 @@ describe('LoginComponent', () => {
   it('should render a LoginComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('username', () => {
+    it('should show the username hint', async () => {
+      const { getByTestId } = await setup();
+
+      const usernameHint = getByTestId('username-hint');
+      const hintText = 'You cannot use an email address to sign in';
+
+      expect(within(usernameHint).getByText(hintText)).toBeTruthy();
+    });
+  });
+
+  describe('password', () => {
+    it('should set the password as password field (to hide input) on page load', async () => {
+      const { getByTestId } = await setup();
+
+      const passwordInput = getByTestId('password');
+
+      expect(passwordInput.getAttribute('type')).toEqual('password');
+    });
+
+    it("should show the password as text field after user clicks 'Show password'", async () => {
+      const { fixture, getByTestId, getByText } = await setup();
+
+      const showToggleText = 'Show password';
+
+      fireEvent.click(getByText(showToggleText));
+      fixture.detectChanges();
+
+      const passwordInput = getByTestId('password');
+
+      expect(passwordInput.getAttribute('type')).toEqual('text');
+    });
+
+    it("should initially show 'Show password' text for the password toggle", async () => {
+      const { getByTestId } = await setup();
+
+      const passwordToggle = getByTestId('password-toggle');
+      const toggleText = 'Show password';
+
+      expect(within(passwordToggle).getByText(toggleText)).toBeTruthy();
+    });
+
+    it("should show 'Hide password' text for the password toggle when 'Show password' is clicked", async () => {
+      const { fixture, getByTestId, getByText } = await setup();
+
+      const passwordToggle = getByTestId('password-toggle');
+      const showToggleText = 'Show password';
+      const hideToggleText = 'Hide password';
+
+      fireEvent.click(getByText(showToggleText));
+      fixture.detectChanges();
+
+      expect(within(passwordToggle).getByText(hideToggleText)).toBeTruthy();
+    });
+  });
+
+  it('should show the link to forgot username or password', async () => {
+    const { getByTestId } = await setup();
+
+    const forgotUsernamePasswordText = 'Forgot your username or password?';
+    const forgotUsernamePasswordLink = getByTestId('forgot-username-password');
+
+    expect(within(forgotUsernamePasswordLink).getByText(forgotUsernamePasswordText)).toBeTruthy();
+    expect(forgotUsernamePasswordLink.getAttribute('href')).toEqual('/forgot-your-username-or-password');
+  });
+
+  it('should show the link to create an account', async () => {
+    const { getByTestId } = await setup();
+
+    const createAccountText = 'Create an account';
+    const createAccountLink = getByTestId('create-account');
+
+    expect(within(createAccountLink).getByText(createAccountText)).toBeTruthy();
+    expect(createAccountLink.getAttribute('href')).toEqual('/registration/create-account');
   });
 
   it('should send you to dashboard on login as user', async () => {
@@ -164,6 +241,27 @@ describe('LoginComponent', () => {
 
       fixture.detectChanges();
       expect(getAllByText('Your username or your password is incorrect')).toBeTruthy();
+    });
+
+    it('should not let you sign in with a username with special characters', async () => {
+      const { component, fixture, getAllByText, getByTestId } = await setup();
+
+      const signInButton = within(getByTestId('signinButton')).getByText('Sign in');
+      const form = component.form;
+
+      component.form.markAsDirty();
+      form.controls['username'].setValue('username@123.com');
+      form.controls['username'].markAsDirty();
+      component.form.get('password').setValue('1');
+      component.form.get('password').markAsDirty();
+
+      fireEvent.click(signInButton);
+      fixture.detectChanges();
+
+      expect(form.invalid).toBeTruthy();
+      expect(
+        getAllByText("You've entered an @ symbol (remember, your username cannot be an email address)").length,
+      ).toBe(2);
     });
   });
 });

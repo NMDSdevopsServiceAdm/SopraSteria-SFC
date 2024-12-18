@@ -1,0 +1,14 @@
+<app-error-summary
+  *ngIf="currentForm && currentForm.submitted && currentForm.form.invalid"
+  [formErrorsMap]="currentForm.formErrorsMap"
+  [serverError]="serverError"
+  [form]="currentForm.form"
+>
+</app-error-summary>
+
+
+<h1 class="govuk-heading-l">Forgot username</h1>
+<app-find-account (setCurrentForm)="setCurrentForm($event)" (accountFoundEvent)="onAccountFound($event)"/>
+<ng-container *ngIf="accountUid && securityQuestion">
+  <app-find-username [accountUid]="accountUid" [securityQuestion]="securityQuestion" (setCurrentForm)="setCurrentForm($event)" />
+</ng-container>

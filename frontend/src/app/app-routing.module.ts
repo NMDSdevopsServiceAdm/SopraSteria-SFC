@@ -28,8 +28,9 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
-import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
-import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-password/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
+import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
 import { FoundUsernameComponent } from '@features/found-username/found-username.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
@@ -95,6 +96,11 @@ const routes: Routes = [
         path: 'forgot-your-username-or-password',
         component: ForgotYourUsernameOrPasswordComponent,
         data: { title: 'Forgot Your Username Or Password' },
+      },
+      {
+        path: 'forgot-your-username',
+        component: ForgotYourUsernameComponent,
+        data: { title: 'Forgot Your Username' },
       },
       {
         path: 'reset-password',
