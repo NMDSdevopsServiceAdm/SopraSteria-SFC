@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
 const { Op } = require('sequelize');
-const { padEnd } = require('lodash');
+const { padEnd, isEmpty } = require('lodash');
 const { sanitise } = require('../utils/db');
 
 module.exports = function (sequelize, DataTypes) {
@@ -542,7 +542,7 @@ module.exports = function (sequelize, DataTypes) {
         {
           model: sequelize.models.login,
           required: true,
-          attributes: ['username'],
+          attributes: ['username', 'status', 'id'],
         },
       ],
     };
@@ -553,7 +553,7 @@ module.exports = function (sequelize, DataTypes) {
       return null;
     }
 
-    if (userFound.ForgotUsernameAttempts >= maxForgotUsernameAttempts) {
+    if (userFound.ForgotUsernameAttempts >= maxForgotUsernameAttempts || userFound['login.status'] === 'Locked') {
       return { remainingAttempts: 0 };
     }
 
@@ -562,7 +562,20 @@ module.exports = function (sequelize, DataTypes) {
       const remainingAttempts = maxForgotUsernameAttempts - (attemptsSoFar + 1);
 
       userFound.ForgotUsernameAttempts = attemptsSoFar + 1;
-      await userFound.save();
+
+      await sequelize.transaction(async (transaction) => {
+        if (userFound.ForgotUsernameAttempts >= maxForgotUsernameAttempts && isEmpty(userFound['login.status'])) {
+          console.log(
+            'registration POST findUsername - failed: Number of wrong answer for security question reached maximum.',
+          );
+          console.log('Will lock the user account of RegistrationID:', userFound.id);
+          userFound.login.isActive = false;
+          userFound.login.status = 'Locked';
+          await userFound.login.save({ transaction });
+        }
+
+        await userFound.save({ transaction });
+      });
 
       return { remainingAttempts };
     }
