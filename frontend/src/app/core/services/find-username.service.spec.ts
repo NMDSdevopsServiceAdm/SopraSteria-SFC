@@ -31,6 +31,19 @@ describe('FindUsernameService', () => {
       expect(req.request.method).toBe('POST');
       expect(req.request.body).toEqual(mockParams);
     });
+
+    it('should handle a 423 Locked response and convert it to remainingAttempts: 0', async () => {
+      const mockParams = { name: 'Test user', workplaceIdOrPostcode: 'A1234567', email: 'test@example.com' };
+
+      const mockSubscriber = jasmine.createSpy();
+      service.findUserAccount(mockParams).subscribe(mockSubscriber);
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
+      req.flush('', { status: 423, statusText: 'Locked' });
+
+      const expectedResult = { accountFound: false, remainingAttempts: 0 };
+
+      expect(mockSubscriber).toHaveBeenCalledOnceWith(expectedResult);
+    });
   });
 
   describe('findUsername', () => {

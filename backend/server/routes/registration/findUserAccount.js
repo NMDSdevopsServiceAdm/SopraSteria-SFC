@@ -1,19 +1,15 @@
 const { isEmpty } = require('lodash');
 const { sanitisePostcode } = require('../../utils/postcodeSanitizer');
 const limitFindUserAccountUtils = require('../../utils/limitFindUserAccountUtils');
+const HttpError = require('../../utils/errors/httpError');
 const models = require('../../models/index');
 
 const MaxAttempts = 5;
+class FindUserAccountException extends HttpError {}
 
 const findUserAccount = async (req, res) => {
   try {
-    if (requestIsInvalid(req)) {
-      return res.status(400).send('Invalid request');
-    }
-
-    if (await ipAddressReachedMaxAttempt(req)) {
-      return sendNotFoundResponse(res, 0);
-    }
+    await validateRequest(req);
 
     const { name, workplaceIdOrPostcode, email } = req.body;
     let userFound = null;
@@ -35,12 +31,25 @@ const findUserAccount = async (req, res) => {
 
     return sendNotFoundResponse(res, remainingAttempts);
   } catch (err) {
+    if (err instanceof FindUserAccountException) {
+      return res.status(err.statusCode).send(err.message);
+    }
     console.error('registration POST findUserAccount - failed', err);
     return res.status(500).send('Internal server error');
   }
 };
 
-const requestIsInvalid = (req) => {
+const validateRequest = async (req) => {
+  if (requestBodyIsInvalid(req)) {
+    throw new FindUserAccountException('Invalid request', 400);
+  }
+
+  if (await ipAddressReachedMaxAttempt(req)) {
+    throw new FindUserAccountException('Reached maximum retry', 423);
+  }
+};
+
+const requestBodyIsInvalid = (req) => {
   if (!req.body) {
     return true;
   }
