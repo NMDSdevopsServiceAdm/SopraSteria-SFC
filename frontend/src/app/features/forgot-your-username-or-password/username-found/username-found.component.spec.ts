@@ -1,19 +1,25 @@
 import { fireEvent, render, within } from '@testing-library/angular';
-import { FoundUsernameComponent } from './found-username.component';
+import { UsernameFoundComponent } from './username-found.component';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import { FindUsernameService } from '@core/services/find-username.service';
+import { MockFindUsernameService } from '@core/test-utils/MockFindUsernameService';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-describe('FoundUsernameComponent', () => {
+fdescribe('UsernameFoundComponent', () => {
   const setup = async (overrides: any = {}) => {
-    const setupTools = await render(FoundUsernameComponent, {
-      imports: [RouterModule, RouterTestingModule],
+    const setupTools = await render(UsernameFoundComponent, {
+      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [PageNotFoundComponent],
-      providers: [],
-      componentProperties: {
-        username: overrides.username,
-      },
+      providers: [
+        {
+          provide: FindUsernameService,
+          useValue: { usernameFound: overrides.username },
+        },
+      ],
+      componentProperties: {},
     });
 
     const component = setupTools.fixture.componentInstance;
@@ -26,7 +32,7 @@ describe('FoundUsernameComponent', () => {
     return { ...setupTools, component, routerSpy };
   };
 
-  it('should create', async () => {
+  it('should create UsernameFoundComponent', async () => {
     const overrides = {
       username: 'Bighitterhank1000',
     };
@@ -61,18 +67,6 @@ describe('FoundUsernameComponent', () => {
     expect(within(panel).getByText('Bighitterhank1000'));
   });
 
-  it('should show a button to return to the sign in page', async () => {
-    const overrides = {
-      username: 'Bighitterhank1000',
-    };
-
-    const { getByText } = await setup(overrides);
-
-    const buttonText = getByText('Back to sign in');
-
-    expect(buttonText).toBeTruthy();
-  });
-
   it('should go back to the sign in page when the button is clicked', async () => {
     const overrides = {
       username: 'Bighitterhank1000',
@@ -81,6 +75,7 @@ describe('FoundUsernameComponent', () => {
     const { fixture, getByText, routerSpy } = await setup(overrides);
 
     const buttonText = getByText('Back to sign in');
+    expect(buttonText).toBeTruthy();
 
     fireEvent.click(buttonText);
     fixture.detectChanges();
