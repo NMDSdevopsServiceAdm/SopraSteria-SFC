@@ -1,13 +1,12 @@
-<ng-container *ngIf="isUsernameFound; else notFound">
+<ng-container *ngIf="isUsernameFound; else notAvailable">
   <div
     class="govuk-panel govuk-panel--gray govuk-util__align-left govuk-!-margin-top-1 govuk-!-padding-top-1 govuk-!-padding-bottom-5 govuk-!-padding-left-2 govuk-!-padding-right-0 panel"
     data-testid="panel"
   >
     <h1 class="govuk-!-font-size-36 govuk-!-margin-top-4 govuk-!-margin-bottom-3">
       <img
-        class="govuk-!-margin-right-1 govuk-util__vertical-align-top govuk-!-margin-right-2"
+        class="govuk-!-margin-right-1 govuk-util__vertical-align-top govuk-!-margin-right-2 green-tick-icon"
         src="/assets/images/tick-icon.svg"
-        style="height: 28px; vertical-align: baseline"
         alt=""
       />We’ve found your username
     </h1>
@@ -24,6 +23,6 @@
   </div>
 </ng-container>
 
-<ng-template #notFound>
-  <app-page-not-found data-testid="not-found"></app-page-not-found>
+<ng-template #notAvailable>
+  <app-page-not-available data-testid="not-available"></app-page-not-available>
 </ng-template>

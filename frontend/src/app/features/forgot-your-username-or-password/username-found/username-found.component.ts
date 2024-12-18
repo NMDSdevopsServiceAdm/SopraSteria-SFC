@@ -8,8 +8,7 @@ import { FindUsernameService } from '@core/services/find-username.service';
   styleUrls: ['./username-found.component.scss'],
 })
 export class UsernameFoundComponent implements OnInit {
-  //public username: string;
-  public username: string = 'Bighitterhank1000';
+  public username: string;
   public isUsernameFound: boolean;
 
   constructor(private router: Router, private findUsernameService: FindUsernameService) {}
@@ -19,7 +18,7 @@ export class UsernameFoundComponent implements OnInit {
   }
 
   public getUsernameFound(): void {
-    //this.username = this.findUsernameService.usernameFound;
+    this.username = this.findUsernameService.usernameFound;
 
     this.isUsernameFound = this.username !== null ? true : false;
   }

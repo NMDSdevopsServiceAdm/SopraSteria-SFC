@@ -3,16 +3,15 @@ import { UsernameFoundComponent } from './username-found.component';
 import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { FindUsernameService } from '@core/services/find-username.service';
-import { MockFindUsernameService } from '@core/test-utils/MockFindUsernameService';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { PageNotAvailableComponent } from '@core/components/error/page-not-available/page-not-available.component';
 
-fdescribe('UsernameFoundComponent', () => {
+describe('UsernameFoundComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(UsernameFoundComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [PageNotFoundComponent],
+      declarations: [PageNotAvailableComponent],
       providers: [
         {
           provide: FindUsernameService,
@@ -90,6 +89,6 @@ fdescribe('UsernameFoundComponent', () => {
 
     const { getByTestId } = await setup(overrides);
 
-    expect(getByTestId('not-found')).toBeTruthy();
+    expect(getByTestId('not-available')).toBeTruthy();
   });
 });
