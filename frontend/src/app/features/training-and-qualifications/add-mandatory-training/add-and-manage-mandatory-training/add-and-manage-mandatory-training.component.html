@@ -1,5 +1,6 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds" data-testid="heading">
+    <span class="govuk-caption-l">Add a mandatory training category</span>
     <h1 class="govuk-heading-l">
       Add and manage mandatory<br />
       training categories
@@ -8,7 +9,7 @@
 </div>
 <div class="govuk-grid-row govuk-!-margin-bottom-4">
   <div class="govuk-grid-column-two-thirds" style="width: 63%" data-testid="mandatoryTrainingInfo">
-    <p>
+    <p style="padding-top: 7px">
       Add the training categories you want to make mandatory for your staff. It will help you to identify who is missing
       training and let you know when training expires.
     </p>
@@ -32,7 +33,7 @@
       <th class="govuk-table__header" scope="col">Job role</th>
       <th class="govuk-table__header govuk-util__align-right" scope="col">
         <a
-          *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
+          *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 1"
           class="govuk-link govuk-link--no-visited-state govuk-util__normal"
           data-testid="removeMandatoryTrainingLink"
           draggable="false"

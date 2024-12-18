@@ -98,9 +98,9 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
   });
 
   it("should navigate to the select-training-category page when 'Add a mandatory training category' link is clicked", async () => {
-    const { getByText, routerSpy, currentRoute } = await setup();
+    const { getByRole, routerSpy, currentRoute } = await setup();
 
-    const addMandatoryTrainingButton = getByText('Add a mandatory training category');
+    const addMandatoryTrainingButton = getByRole('button', { name: 'Add a mandatory training category' });
     fireEvent.click(addMandatoryTrainingButton);
 
     expect(routerSpy).toHaveBeenCalledWith(['select-training-category'], { relativeTo: currentRoute });
@@ -119,6 +119,17 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
 
     it('should not show if no mandatory training set up', async () => {
       const { queryByText } = await setup({ mandatoryTraining: noMandatoryTraining });
+
+      expect(queryByText('Remove all')).toBeFalsy();
+    });
+
+    it('should not show if mandatory training only set up for one training category', async () => {
+      const existingMandatoryTraining = mockMandatoryTraining();
+
+      existingMandatoryTraining.mandatoryTraining = [existingMandatoryTraining.mandatoryTraining[0]];
+      existingMandatoryTraining.mandatoryTrainingCount = 1;
+
+      const { queryByText } = await setup({ mandatoryTraining: existingMandatoryTraining });
 
       expect(queryByText('Remove all')).toBeFalsy();
     });
