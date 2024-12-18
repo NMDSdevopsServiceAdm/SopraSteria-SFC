@@ -11,7 +11,7 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
-import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import { MockMandatoryTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import {
   GroupedRadioButtonAccordionComponent,
@@ -43,7 +43,9 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
         },
         {
           provide: MandatoryTrainingService,
-          useClass: overrides.prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
+          useFactory: overrides.prefill
+            ? MockTrainingServiceWithPreselectedStaff.factory()
+            : MockMandatoryTrainingService.factory(overrides.trainingService),
         },
         {
           provide: ActivatedRoute,
@@ -234,14 +236,11 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
       expect(queryByText(mockTrainingCategories[2].category)).toBeFalsy();
     });
 
-    it('should include training category and prefill the radio when ID of existing mandatory training category in params', async () => {
+    it('should include training category and prefill the radio when existing mandatory training set in service', async () => {
       const overrides = {
         trainingCategories: mockTrainingCategories,
         existingMandatoryTraining,
-        selectedTraining: JSON.stringify({
-          id: mockTrainingCategories[2].id,
-          category: mockTrainingCategories[2].category,
-        }),
+        trainingService: { existingMandatoryTraining: existingMandatoryTraining.mandatoryTraining[0] },
       };
 
       const { component, queryByText } = await setup(overrides);

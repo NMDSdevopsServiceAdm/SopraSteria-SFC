@@ -32,14 +32,16 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
   init(): void {
     this.establishmentUid = this.route.snapshot.data.establishment.uid;
+    this.getPrefilledId();
+  }
 
-    if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
-      const mandatoryTrainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
-      const categoryId = parseInt(mandatoryTrainingCategory?.id, 10);
+  protected getPrefilledId(): void {
+    const selectedCategory = this.trainingService.selectedTraining?.trainingCategory;
 
-      if (categoryId) {
-        this.preFilledId = categoryId;
-      }
+    if (selectedCategory) {
+      this.preFilledId = selectedCategory?.id;
+    } else if (this.trainingService.existingMandatoryTraining) {
+      this.preFilledId = this.trainingService.existingMandatoryTraining.trainingCategoryId;
     }
   }
 
@@ -69,6 +71,13 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
     }
 
     this.sortCategoriesByTrainingGroup(this.categories);
+  }
+
+  protected prefillForm(): void {
+    if (this.preFilledId) {
+      this.form.setValue({ category: this.preFilledId });
+      this.form.get('category').updateValueAndValidity();
+    }
   }
 
   public onCancel(event: Event): void {
