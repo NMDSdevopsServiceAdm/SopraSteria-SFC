@@ -22,7 +22,7 @@ const { adminRoles } = require('../utils/adminUtils');
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
 const { authLimiter } = require('../utils/middleware/rateLimiting');
-const { MaxLoginAttempts } = require('../data/constants');
+const { MaxLoginAttempts, UserAccountStatus } = require('../data/constants');
 
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
@@ -198,13 +198,13 @@ router.post('/', async (req, res) => {
 
     if (establishmentUser) {
       //check weather posted user is locked or pending
-      if (!establishmentUser.isActive && establishmentUser.status === 'Locked') {
+      if (!establishmentUser.isActive && establishmentUser.status === UserAccountStatus.Locked) {
         //check for locked status, if locked then return with 409 error
         console.error('POST .../login failed: User status is locked');
         return res.status(409).send({
           message: 'Authentication failed.',
         });
-      } else if (!establishmentUser.isActive && establishmentUser.status === 'PENDING') {
+      } else if (!establishmentUser.isActive && establishmentUser.status === UserAccountStatus.Pending) {
         //check for Pending status, if Pending then return with 403 error
         console.error('POST .../login failed: User status is pending');
         return res.status(405).send({
@@ -364,7 +364,7 @@ router.post('/', async (req, res) => {
               // lock the account
               const loginUpdate = {
                 isActive: false,
-                status: 'Locked',
+                status: UserAccountStatus.Locked,
               };
               await establishmentUser.update(loginUpdate, { transaction: t });
 

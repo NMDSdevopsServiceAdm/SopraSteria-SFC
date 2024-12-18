@@ -2,7 +2,7 @@
 const { Op } = require('sequelize');
 const { padEnd, isEmpty } = require('lodash');
 const { sanitise } = require('../utils/db');
-const { MaxFindUsernameAttempts } = require('../data/constants');
+const { MaxFindUsernameAttempts, UserAccountStatus } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define(
@@ -549,7 +549,10 @@ module.exports = function (sequelize, DataTypes) {
 
     const loginAccount = userFound.login;
 
-    if (loginAccount.invalidFindUsernameAttempts >= MaxFindUsernameAttempts || loginAccount.status === 'Locked') {
+    if (
+      loginAccount.invalidFindUsernameAttempts >= MaxFindUsernameAttempts ||
+      loginAccount.status === UserAccountStatus.Locked
+    ) {
       return { remainingAttempts: 0 };
     }
 
@@ -558,13 +561,13 @@ module.exports = function (sequelize, DataTypes) {
       const currentCount = attemptsSoFar + 1;
       const remainingAttempts = MaxFindUsernameAttempts - currentCount;
 
-      if (loginAccount.invalidFindUsernameAttempts >= MaxFindUsernameAttempts && isEmpty(loginAccount.status)) {
+      if (currentCount >= MaxFindUsernameAttempts && isEmpty(loginAccount.status)) {
         console.log(
           'registration POST findUsername - failed: Number of wrong answer for security question reached maximum.',
         );
         console.log('Will lock the user account of RegistrationID:', userFound.id);
         loginAccount.isActive = false;
-        loginAccount.status = 'Locked';
+        loginAccount.status = UserAccountStatus.Locked;
       }
 
       loginAccount.invalidFindUsernameAttempts = currentCount;
