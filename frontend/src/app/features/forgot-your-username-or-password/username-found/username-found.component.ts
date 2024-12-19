@@ -15,12 +15,11 @@ export class UsernameFoundComponent implements OnInit {
 
   ngOnInit(): void {
     this.getUsernameFound();
+    this.isUsernameFound = this.username !== null ? true : false;
   }
 
   public getUsernameFound(): void {
     this.username = this.findUsernameService.usernameFound;
-
-    this.isUsernameFound = this.username !== null ? true : false;
   }
 
   public backToSignInPage(event: Event): void {

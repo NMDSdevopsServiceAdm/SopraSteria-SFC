@@ -5,13 +5,13 @@ import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { FindUsernameService } from '@core/services/find-username.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { PageNotAvailableComponent } from '@core/components/error/page-not-available/page-not-available.component';
+import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 
 describe('UsernameFoundComponent', () => {
   const setup = async (overrides: any = {}) => {
     const setupTools = await render(UsernameFoundComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [PageNotAvailableComponent],
+      declarations: [PageNoLongerAvailableComponent],
       providers: [
         {
           provide: FindUsernameService,
@@ -82,13 +82,13 @@ describe('UsernameFoundComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/login']);
   });
 
-  it('should show page not found if user lands on page and no username was found', async () => {
+  it('should show page no longer available if no username was found', async () => {
     const overrides = {
       username: null,
     };
 
     const { getByTestId } = await setup(overrides);
 
-    expect(getByTestId('not-available')).toBeTruthy();
+    expect(getByTestId('page-no-longer-available')).toBeTruthy();
   });
 });
