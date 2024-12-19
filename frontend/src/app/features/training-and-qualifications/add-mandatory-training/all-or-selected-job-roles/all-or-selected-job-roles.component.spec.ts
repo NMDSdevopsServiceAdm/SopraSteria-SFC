@@ -8,6 +8,7 @@ import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
+import { MockMandatoryTrainingService } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -34,14 +35,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
       providers: [
         {
           provide: MandatoryTrainingService,
-          useValue: {
-            selectedTraining: overrides.selectedTraining !== undefined ? overrides.selectedTraining : selectedTraining,
-            resetState: () => {},
-            set onlySelectedJobRoles(onlySelected) {},
-            get onlySelectedJobRoles() {
-              return overrides.onlySelectedJobRoles ?? false;
-            },
-          },
+          useFactory: MockMandatoryTrainingService.factory({ selectedTraining, ...overrides }),
         },
         { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
