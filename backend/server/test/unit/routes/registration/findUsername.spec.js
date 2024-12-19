@@ -5,7 +5,7 @@ const httpMocks = require('node-mocks-http');
 
 const { findUsername } = require('../../../../routes/registration/findUsername');
 const models = require('../../../../models/index');
-const { MaxFindUsernameAttempts, UserAccountStatus } = require('../../../../data/constants');
+const { UserAccountStatus } = require('../../../../data/constants');
 
 describe('backend/server/routes/registration/findUsername', () => {
   const mockRequestBody = {

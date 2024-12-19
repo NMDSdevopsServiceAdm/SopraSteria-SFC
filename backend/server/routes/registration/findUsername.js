@@ -22,12 +22,11 @@ const findUsername = async (req, res) => {
 
     const answerIsCorrect = securityQuestionAnswer === user.SecurityQuestionAnswerValue;
 
-    if (!answerIsCorrect) {
-      const remainingAttempts = await handleWrongAnswer(loginAccount);
-      return sendFailedResponse(res, remainingAttempts);
+    if (answerIsCorrect) {
+      return sendSuccessResponse(res, unescape(loginAccount.username));
     }
-
-    return sendSuccessResponse(res, unescape(loginAccount.username));
+    const remainingAttempts = await handleWrongAnswer(loginAccount);
+    return sendFailedResponse(res, remainingAttempts);
   } catch (err) {
     console.error('registration POST findUsername - failed', err);
     return res.status(500).send('Internal server error');
