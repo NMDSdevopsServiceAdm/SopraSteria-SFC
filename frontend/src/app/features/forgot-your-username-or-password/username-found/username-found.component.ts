@@ -15,7 +15,7 @@ export class UsernameFoundComponent implements OnInit {
 
   ngOnInit(): void {
     this.getUsernameFound();
-    this.isUsernameFound = this.username !== null ? true : false;
+    this.isUsernameFound = this.username !== null;
   }
 
   public getUsernameFound(): void {
