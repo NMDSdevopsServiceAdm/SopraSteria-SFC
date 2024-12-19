@@ -249,5 +249,26 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
       expect(selectedExistingMandatoryTrainingCategory).toBeTruthy();
       expect(component.form.value).toEqual({ category: mockTrainingCategories[2].id });
     });
+
+    it('should prefill the category in selectedTraining but still include existing mandatory training category in options when both set in service (user changed category and has gone back to page)', async () => {
+      const selectedTraining = {
+        trainingCategory: mockTrainingCategories[0],
+      };
+
+      const overrides = {
+        trainingCategories: mockTrainingCategories,
+        existingMandatoryTraining,
+        trainingService: {
+          existingMandatoryTraining: existingMandatoryTraining.mandatoryTraining[0],
+          _selectedTraining: selectedTraining,
+        },
+      };
+
+      const { component, queryByText } = await setup(overrides);
+
+      const selectedExistingMandatoryTrainingCategory = queryByText(mockTrainingCategories[2].category);
+      expect(selectedExistingMandatoryTrainingCategory).toBeTruthy();
+      expect(component.form.value).toEqual({ category: selectedTraining.trainingCategory.id });
+    });
   });
 });

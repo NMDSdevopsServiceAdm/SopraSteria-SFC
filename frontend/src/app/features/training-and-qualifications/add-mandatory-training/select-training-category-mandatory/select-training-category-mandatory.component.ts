@@ -29,9 +29,12 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
   public requiredErrorMessage: string = 'Select the training category that you want to make mandatory';
   public hideOtherCheckbox: boolean = true;
+  private existingMandatoryTrainingCategoryId: number;
 
   init(): void {
     this.establishmentUid = this.route.snapshot.data.establishment.uid;
+    this.existingMandatoryTrainingCategoryId =
+      this.trainingService.existingMandatoryTraining?.trainingCategoryId ?? null;
     this.getPrefilledId();
   }
 
@@ -40,7 +43,7 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
     if (selectedCategory) {
       this.preFilledId = selectedCategory?.id;
-    } else if (this.trainingService.existingMandatoryTraining) {
+    } else if (this.existingMandatoryTrainingCategoryId) {
       this.preFilledId = this.trainingService.existingMandatoryTraining.trainingCategoryId;
     }
   }
@@ -64,7 +67,8 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
     if (trainingCategoryIdsWithExistingMandatoryTraining?.length) {
       this.categories = allTrainingCategories.filter(
         (category) =>
-          !trainingCategoryIdsWithExistingMandatoryTraining.includes(category.id) || category.id == this.preFilledId,
+          !trainingCategoryIdsWithExistingMandatoryTraining.includes(category.id) ||
+          category.id == this.existingMandatoryTrainingCategoryId,
       );
     } else {
       this.categories = allTrainingCategories;
