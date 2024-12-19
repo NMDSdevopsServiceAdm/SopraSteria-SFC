@@ -30,6 +30,7 @@ describe('backend/server/routes/registration/findUsername', () => {
     mockLoginModel = {
       invalidFindUsernameAttempts: 0,
       status: null,
+      username: 'test-user',
       lockAccount: sinon.stub(),
       recordInvalidFindUsernameAttempts: sinon.stub(),
     };
@@ -39,8 +40,7 @@ describe('backend/server/routes/registration/findUsername', () => {
 
     mockUserModel = {
       uid: 'mock-uid',
-      securityQuestionAnswer: '42',
-      username: 'test-user',
+      SecurityQuestionAnswerValue: '42',
       getLogin: () => mockLoginModel,
     };
     stubFindUserByUUID = sinon.stub(models.user, 'findByUUID').callsFake((uid) => {
