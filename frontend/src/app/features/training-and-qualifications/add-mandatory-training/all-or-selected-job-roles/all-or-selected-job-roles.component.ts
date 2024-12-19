@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { SelectedTraining } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { AlertService } from '@core/services/alert.service';
@@ -29,6 +29,7 @@ export class AllOrSelectedJobRolesComponent {
   public serverError: string;
   private subscriptions: Subscription = new Subscription();
   private establishment: Establishment;
+  private existingMandatoryTraining: mandatoryTraining;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -46,16 +47,20 @@ export class AllOrSelectedJobRolesComponent {
   ngOnInit(): void {
     this.establishment = this.route.snapshot.parent?.data?.establishment;
     this.selectedTrainingCategory = this.trainingService.selectedTraining;
-    const existingMandatoryTraining = this.trainingService.existingMandatoryTraining;
+    this.existingMandatoryTraining = this.trainingService.existingMandatoryTraining;
     const allJobRolesCount = this.trainingService.allJobRolesCount;
 
     if (this.trainingService.onlySelectedJobRoles) {
       this.form.setValue({ allOrSelectedJobRoles: 'selectJobRoles' });
-    } else if (existingMandatoryTraining) {
+      this.selectedRadio = 'selectJobRoles';
+    } else if (this.existingMandatoryTraining) {
+      const selected =
+        this.existingMandatoryTraining.jobs.length == allJobRolesCount ? 'allJobRoles' : 'selectJobRoles';
+
       this.form.setValue({
-        allOrSelectedJobRoles:
-          existingMandatoryTraining.jobs.length == allJobRolesCount ? 'allJobRoles' : 'selectJobRoles',
+        allOrSelectedJobRoles: selected,
       });
+      this.selectedRadio = selected;
     }
 
     if (!this.selectedTrainingCategory) {
@@ -99,11 +104,7 @@ export class AllOrSelectedJobRolesComponent {
   }
 
   private createMandatoryTraining(): void {
-    const props = {
-      trainingCategoryId: this.selectedTrainingCategory.trainingCategory.id,
-      allJobRoles: true,
-      jobs: [],
-    };
+    const props = this.generateUpdateProps();
 
     this.subscriptions.add(
       this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
@@ -121,6 +122,20 @@ export class AllOrSelectedJobRolesComponent {
         },
       ),
     );
+  }
+
+  private generateUpdateProps(): mandatoryTraining {
+    const props: mandatoryTraining = {
+      trainingCategoryId: this.selectedTrainingCategory.trainingCategory.id,
+      allJobRoles: true,
+      jobs: [],
+    };
+
+    if (this.existingMandatoryTraining?.trainingCategoryId) {
+      props.previousTrainingCategoryId = this.existingMandatoryTraining.trainingCategoryId;
+    }
+
+    return props;
   }
 
   public onCancel(event: Event): void {

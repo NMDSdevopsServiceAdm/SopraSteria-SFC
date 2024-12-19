@@ -1,12 +1,8 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import {
-  allMandatoryTrainingCategories,
-  mandatoryTraining,
-  SelectedTraining,
-  TrainingCategory,
-} from '@core/model/training.model';
+import { mandatoryTraining } from '@core/model/establishment.model';
+import { allMandatoryTrainingCategories, SelectedTraining, TrainingCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';

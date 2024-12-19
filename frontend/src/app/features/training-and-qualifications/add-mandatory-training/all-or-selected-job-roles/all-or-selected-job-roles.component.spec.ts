@@ -353,5 +353,28 @@ describe('AllOrSelectedJobRolesComponent', () => {
         expect(onlySelectedJobRolesSpy).toHaveBeenCalledWith(true);
       });
     });
+
+    it('should include previousTrainingCategoryId in submit props when editing existing mandatory training and All job roles selected', async () => {
+      const existingMandatoryTraining = {
+        category: 'Activity provision/Well-being',
+        establishmentId: 4090,
+        jobs: [{}, {}],
+        trainingCategoryId: 1,
+      };
+
+      const { getByText, createAndUpdateMandatoryTrainingSpy, establishment, selectedTraining } = await setup({
+        existingMandatoryTraining,
+        allJobRolesCount: existingMandatoryTraining.jobs.length,
+      });
+
+      fireEvent.click(getByText('Continue'));
+
+      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
+        previousTrainingCategoryId: existingMandatoryTraining.trainingCategoryId,
+        trainingCategoryId: selectedTraining.trainingCategory.id,
+        allJobRoles: true,
+        jobs: [],
+      });
+    });
   });
 });
