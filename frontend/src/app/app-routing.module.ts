@@ -31,6 +31,7 @@ import { FirstLoginPageComponent } from '@features/first-login-page/first-login-
 import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
 import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
 import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
+import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
@@ -110,6 +111,11 @@ const routes: Routes = [
         path: 'satisfaction-survey',
         component: SatisfactionSurveyComponent,
         data: { title: 'Satisfaction Survey' },
+      },
+      {
+        path: 'username-found',
+        component: UsernameFoundComponent,
+        data: { title: 'Username Found' },
       },
     ],
   },
