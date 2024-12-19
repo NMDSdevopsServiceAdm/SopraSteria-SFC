@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
 var bcrypt = require('bcrypt-nodejs');
-const { MaxLoginAttempts, MaxFindUsernameAttempts } = require('../data/constants');
+const { MaxLoginAttempts, MaxFindUsernameAttempts, UserAccountStatus } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
   const Login = sequelize.define(
@@ -138,12 +138,36 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  Login.prototype.unlockAccount = async function () {
+  Login.prototype.recordInvalidFindUsernameAttempts = async function (transaction) {
+    const loginAccount = await Login.findByPk(this.id);
+
+    const previousAttempts = loginAccount.invalidFindUsernameAttempts ?? 0;
+    const updatedFields = {
+      invalidFindUsernameAttempts: previousAttempts + 1,
+    };
+    const options = transaction ? { transaction } : {};
+
+    return this.update(updatedFields, options);
+  };
+
+  Login.prototype.lockAccount = async function (transaction) {
+    const updatedFields = {
+      isActive: false,
+      status: UserAccountStatus.Locked,
+    };
+
+    const options = transaction ? { transaction } : {};
+
+    return this.update(updatedFields, options);
+  };
+
+  Login.prototype.unlockAccount = async function (transaction) {
     const loginAccount = await Login.findByPk(this.id);
     const updatedFields = {
       isActive: true,
       status: null,
     };
+    const options = transaction ? { transaction } : {};
 
     if (loginAccount.invalidAttempt >= MaxLoginAttempts) {
       updatedFields.invalidAttempt = MaxLoginAttempts - 1;
@@ -153,7 +177,7 @@ module.exports = function (sequelize, DataTypes) {
       updatedFields.invalidFindUsernameAttempts = MaxFindUsernameAttempts - 1;
     }
 
-    return loginAccount.update(updatedFields);
+    return this.update(updatedFields, options);
   };
 
   return Login;

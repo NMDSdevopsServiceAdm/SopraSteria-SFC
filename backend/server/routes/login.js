@@ -291,6 +291,7 @@ router.post('/', async (req, res) => {
             // reset the number of failed attempts on any successful login
             const loginUpdate = {
               invalidAttempt: 0,
+              invalidFindUsernameAttempts: 0,
               lastLogin: new Date(),
             };
 
