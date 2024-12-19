@@ -97,6 +97,7 @@ import { SharedModule } from '@shared/shared.module';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 
 @NgModule({
   declarations: [
@@ -139,6 +140,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     ParentWorkplaceAccounts,
     DeleteWorkplaceComponent,
     ForgotYourUsernameOrPasswordComponent,
+    UsernameFoundComponent,
     ForgotYourUsernameComponent,
     FindAccountComponent,
     FindUsernameComponent,
