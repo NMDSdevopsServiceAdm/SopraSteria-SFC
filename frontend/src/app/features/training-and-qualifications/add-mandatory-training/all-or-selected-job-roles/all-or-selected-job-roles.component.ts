@@ -46,9 +46,16 @@ export class AllOrSelectedJobRolesComponent {
   ngOnInit(): void {
     this.establishment = this.route.snapshot.parent?.data?.establishment;
     this.selectedTrainingCategory = this.trainingService.selectedTraining;
+    const existingMandatoryTraining = this.trainingService.existingMandatoryTraining;
+    const allJobRolesCount = this.trainingService.allJobRolesCount;
 
     if (this.trainingService.onlySelectedJobRoles) {
       this.form.setValue({ allOrSelectedJobRoles: 'selectJobRoles' });
+    } else if (existingMandatoryTraining) {
+      this.form.setValue({
+        allOrSelectedJobRoles:
+          existingMandatoryTraining.jobs.length == allJobRolesCount ? 'allJobRoles' : 'selectJobRoles',
+      });
     }
 
     if (!this.selectedTrainingCategory) {

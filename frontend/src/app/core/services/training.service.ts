@@ -134,6 +134,7 @@ export class TrainingService {
 export class MandatoryTrainingService extends TrainingService {
   _onlySelectedJobRoles: boolean = null;
   _existingMandatoryTraining: mandatoryTraining = null;
+  public allJobRolesCount: number;
 
   public get onlySelectedJobRoles(): boolean {
     return this._onlySelectedJobRoles;
@@ -145,6 +146,7 @@ export class MandatoryTrainingService extends TrainingService {
 
   public resetState(): void {
     this.onlySelectedJobRoles = null;
+    this.existingMandatoryTraining = null;
     super.resetState();
   }
 

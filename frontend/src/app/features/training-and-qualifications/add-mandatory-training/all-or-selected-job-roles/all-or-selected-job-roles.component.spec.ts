@@ -176,6 +176,50 @@ describe('AllOrSelectedJobRolesComponent', () => {
       expect(onlySelectedJobRolesRadio.checked).toBeTruthy();
       expect(allJobRolesRadio.checked).toBeFalsy();
     });
+
+    const existingMandatoryTraining = {
+      category: 'Activity provision/Well-being',
+      establishmentId: 4090,
+      jobs: [{}, {}],
+      trainingCategoryId: 1,
+    };
+
+    it("should prefill the 'Only selected job roles' radio when existingMandatoryTraining in training service does not match allJobRolesCount", async () => {
+      const { getByLabelText } = await setup({ existingMandatoryTraining, allJobRolesCount: 37 });
+
+      const onlySelectedJobRolesRadio = getByLabelText('Only selected job roles') as HTMLInputElement;
+      const allJobRolesRadio = getByLabelText('All job roles') as HTMLInputElement;
+
+      expect(onlySelectedJobRolesRadio.checked).toBeTruthy();
+      expect(allJobRolesRadio.checked).toBeFalsy();
+    });
+
+    it("should prefill the 'All job roles' radio when existingMandatoryTraining in training service does match allJobRolesCount", async () => {
+      const { getByLabelText } = await setup({
+        existingMandatoryTraining,
+        allJobRolesCount: existingMandatoryTraining.jobs.length,
+      });
+
+      const allJobRolesRadio = getByLabelText('All job roles') as HTMLInputElement;
+      const onlySelectedJobRolesRadio = getByLabelText('Only selected job roles') as HTMLInputElement;
+
+      expect(allJobRolesRadio.checked).toBeTruthy();
+      expect(onlySelectedJobRolesRadio.checked).toBeFalsy();
+    });
+
+    it("should prefill the 'Only selected job roles' radio when set in training service even if existingMandatoryTraining (for case when user has changed from all to selected and then gone back to this page)", async () => {
+      const { getByLabelText } = await setup({
+        existingMandatoryTraining,
+        allJobRolesCount: existingMandatoryTraining.jobs.length,
+        onlySelectedJobRoles: true,
+      });
+
+      const onlySelectedJobRolesRadio = getByLabelText('Only selected job roles') as HTMLInputElement;
+      const allJobRolesRadio = getByLabelText('All job roles') as HTMLInputElement;
+
+      expect(onlySelectedJobRolesRadio.checked).toBeTruthy();
+      expect(allJobRolesRadio.checked).toBeFalsy();
+    });
   });
 
   describe('Cancel button', () => {

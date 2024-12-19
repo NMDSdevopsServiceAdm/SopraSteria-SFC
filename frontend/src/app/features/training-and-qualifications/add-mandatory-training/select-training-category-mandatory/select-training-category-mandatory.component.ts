@@ -60,6 +60,8 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
     const allTrainingCategories = this.route.snapshot.data.trainingCategories;
     const existingMandatoryTraining = this.route.snapshot.data.existingMandatoryTraining;
 
+    this.trainingService.allJobRolesCount = existingMandatoryTraining.allJobRolesCount;
+
     const trainingCategoryIdsWithExistingMandatoryTraining = existingMandatoryTraining?.mandatoryTraining?.map(
       (existingMandatoryTrainings) => existingMandatoryTrainings.trainingCategoryId,
     );
