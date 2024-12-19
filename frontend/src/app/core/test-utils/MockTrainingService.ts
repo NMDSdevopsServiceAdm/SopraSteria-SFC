@@ -40,35 +40,14 @@ export class MockTrainingService extends TrainingService {
   }
 
   public getAllMandatoryTrainings(): Observable<allMandatoryTrainingCategories> {
-    return of({
-      allJobRolesCount: 37,
-      lastUpdated: new Date(),
-      mandatoryTraining: [
-        {
-          trainingCategoryId: 123,
-          allJobRoles: false,
-          category: 'Autism',
-          selectedJobRoles: true,
-          jobs: [
-            {
-              id: 15,
-              title: 'Activities worker, coordinator',
-            },
-          ],
-        },
-        {
-          trainingCategoryId: 9,
-          allJobRoles: true,
-          category: 'Coshh',
-          selectedJobRoles: true,
-          jobs: this._duplicateJobRoles ? JobsWithDuplicates : AllJobs,
-        },
-      ],
-      mandatoryTrainingCount: 2,
-    });
+    return of(mockMandatoryTraining(this._duplicateJobRoles));
   }
 
   public deleteCategoryById(establishmentId, categoryId) {
+    return of({});
+  }
+
+  public deleteAllMandatoryTraining(establishmentId) {
     return of({});
   }
 }
@@ -99,3 +78,32 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
     };
   }
 }
+
+export const mockMandatoryTraining = (duplicateJobRoles = false) => {
+  return {
+    allJobRolesCount: 37,
+    lastUpdated: new Date(),
+    mandatoryTraining: [
+      {
+        trainingCategoryId: 123,
+        allJobRoles: false,
+        category: 'Autism',
+        selectedJobRoles: true,
+        jobs: [
+          {
+            id: 15,
+            title: 'Activities worker, coordinator',
+          },
+        ],
+      },
+      {
+        trainingCategoryId: 9,
+        allJobRoles: true,
+        category: 'Coshh',
+        selectedJobRoles: true,
+        jobs: duplicateJobRoles ? JobsWithDuplicates : AllJobs,
+      },
+    ],
+    mandatoryTrainingCount: 2,
+  };
+};

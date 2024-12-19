@@ -6,15 +6,12 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
 import { TrainingService } from '@core/services/training.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-add-and-manage-mandatory-training',
   templateUrl: './add-and-manage-mandatory-training.component.html',
 })
 export class AddAndManageMandatoryTrainingComponent implements OnInit {
-  private subscriptions: Subscription = new Subscription();
   public establishment: Establishment;
   public existingMandatoryTrainings: any;
   public allJobsLength: Number;
@@ -28,20 +25,16 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
     private breadcrumbService: BreadcrumbService,
     private router: Router,
     public establishmentService: EstablishmentService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(this.getBreadcrumbsJourney());
-    this.establishment = this.route.parent.snapshot.data.establishment;
-    this.subscriptions.add(
-      this.trainingService.getAllMandatoryTrainings(this.establishment.uid).subscribe((trainings) => {
-        this.existingMandatoryTrainings = trainings;
-        this.sortTrainingAlphabetically(trainings.mandatoryTraining);
-        this.allJobsLength = trainings.allJobRolesCount;
-        this.setMandatoryTrainingHasDuplicateJobRoles();
-      }),
-    );
+    this.breadcrumbService.show(JourneyType.MANDATORY_TRAINING);
+
+    this.establishment = this.route.snapshot.data?.establishment;
+    this.existingMandatoryTrainings = this.route.snapshot.data?.existingMandatoryTraining;
+    this.sortTrainingAlphabetically(this.existingMandatoryTrainings.mandatoryTraining);
+    this.allJobsLength = this.existingMandatoryTrainings.allJobRolesCount;
+    this.setMandatoryTrainingHasDuplicateJobRoles();
   }
 
   public checkDuplicateJobRoles(jobs): boolean {
@@ -74,17 +67,11 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
   }
 
   public navigateToAddNewMandatoryTraining() {
-    this.router.navigate([
-      '/workplace',
-      this.establishmentService.establishment.uid,
-      'add-and-manage-mandatory-training',
-      'select-training-category',
-    ]);
+    this.router.navigate(['select-training-category'], { relativeTo: this.route });
   }
 
-  public getBreadcrumbsJourney(): JourneyType {
-    return this.establishmentService.isOwnWorkplace() || this.parentSubsidiaryViewService.getViewingSubAsParent()
-      ? JourneyType.MANDATORY_TRAINING
-      : JourneyType.ALL_WORKPLACES;
+  public navigateToDeletePage(event: Event, trainingCategoryId: number): void {
+    event.preventDefault();
+    this.router.navigate([trainingCategoryId, 'delete-mandatory-training-category'], { relativeTo: this.route });
   }
 }

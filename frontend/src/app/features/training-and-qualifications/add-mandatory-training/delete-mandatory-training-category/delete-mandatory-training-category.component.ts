@@ -1,11 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormGroup } from '@angular/forms';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingCategory } from '@core/model/training.model';
+import { mandatoryTraining } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { Subscription } from 'rxjs';
@@ -14,12 +12,12 @@ import { Subscription } from 'rxjs';
   selector: 'app-delete-mandatory-training-category',
   templateUrl: './delete-mandatory-training-category.component.html',
 })
-export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
-  public categories: TrainingCategory[];
-  public selectedCategory: TrainingCategory;
-  public form: UntypedFormGroup;
+export class DeleteMandatoryTrainingCategoryComponent implements OnInit, OnDestroy {
+  public selectedCategory: mandatoryTraining;
   public establishment: Establishment;
+  public allJobRolesCount: number;
   private subscriptions: Subscription = new Subscription();
+
   constructor(
     protected backLinkService: BackLinkService,
     protected trainingService: TrainingService,
@@ -27,31 +25,45 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit {
     protected route: ActivatedRoute,
     protected router: Router,
     private alertService: AlertService,
-    protected establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
-    this.setBackLink();
-    const id = parseInt(this.route.snapshot.parent.url[0].path, 10);
-    this.establishment = this.route.snapshot.parent.data.establishment;
-    this.trainingCategoryService.getCategories().subscribe((x) => (this.selectedCategory = x.find((y) => y.id === id)));
+    this.backLinkService.showBackLink();
+
+    const trainingCategoryIdInParams = parseInt(this.route.snapshot.params?.trainingCategoryId);
+    this.establishment = this.route.snapshot.data.establishment;
+    const existingMandatoryTraining = this.route.snapshot.data.existingMandatoryTraining;
+
+    this.allJobRolesCount = existingMandatoryTraining?.allJobRolesCount;
+
+    this.selectedCategory = existingMandatoryTraining?.mandatoryTraining.find(
+      (category) => category.trainingCategoryId === trainingCategoryIdInParams,
+    );
+
+    if (!this.selectedCategory) {
+      this.navigateBackToMandatoryTrainingHomePage();
+    }
   }
 
   public onDelete(): void {
-    this.trainingService.deleteCategoryById(this.establishment.id, this.selectedCategory.id).subscribe(() => {
-      this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
-      this.alertService.addAlert({
-        type: 'success',
-        message: 'Mandatory training category removed',
-      });
-    });
+    this.subscriptions.add(
+      this.trainingService
+        .deleteCategoryById(this.establishment.id, this.selectedCategory.trainingCategoryId)
+        .subscribe(() => {
+          this.navigateBackToMandatoryTrainingHomePage();
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'Mandatory training category removed',
+          });
+        }),
+    );
   }
 
-  public onCancel(): void {
+  public navigateBackToMandatoryTrainingHomePage(): void {
     this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
   }
 
-  public setBackLink(): void {
-    this.backLinkService.showBackLink();
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }
