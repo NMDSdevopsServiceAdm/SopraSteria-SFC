@@ -11,13 +11,15 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
-import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import {
+  MockMandatoryTrainingService,
+  MockTrainingServiceWithPreselectedStaff,
+} from '@core/test-utils/MockTrainingService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
-import sinon from 'sinon';
 
 import { AddMandatoryTrainingModule } from '../add-mandatory-training.module';
 import { SelectTrainingCategoryMandatoryComponent } from './select-training-category-mandatory.component';
@@ -40,7 +42,9 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
         },
         {
           provide: MandatoryTrainingService,
-          useClass: overrides.prefill ? MockTrainingServiceWithPreselectedStaff : MockTrainingService,
+          useFactory: overrides.prefill
+            ? MockTrainingServiceWithPreselectedStaff.factory()
+            : MockMandatoryTrainingService.factory(overrides.trainingService),
         },
         {
           provide: ActivatedRoute,
@@ -52,7 +56,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
                 existingMandatoryTraining: overrides.existingMandatoryTraining ?? {},
               },
               queryParamMap: {
-                get: sinon.stub(),
+                get: () => overrides.selectedTraining ?? null,
               },
             },
           },
@@ -200,7 +204,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
     expect(component.form.value).toEqual({ category: 1 });
   });
 
-  it('should not include training categories which already have mandatory training', async () => {
+  describe('Existing mandatory training', () => {
     const mockTrainingCategories = [
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
       { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
@@ -218,15 +222,52 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
       ],
     };
 
-    const overrides = {
-      trainingCategories: mockTrainingCategories,
-      existingMandatoryTraining,
-    };
+    it('should not include training categories which already have mandatory training', async () => {
+      const overrides = {
+        trainingCategories: mockTrainingCategories,
+        existingMandatoryTraining,
+      };
 
-    const { queryByText } = await setup(overrides);
+      const { queryByText } = await setup(overrides);
 
-    expect(queryByText(mockTrainingCategories[0].category)).toBeTruthy();
-    expect(queryByText(mockTrainingCategories[1].category)).toBeTruthy();
-    expect(queryByText(mockTrainingCategories[2].category)).toBeFalsy();
+      expect(queryByText(mockTrainingCategories[0].category)).toBeTruthy();
+      expect(queryByText(mockTrainingCategories[1].category)).toBeTruthy();
+      expect(queryByText(mockTrainingCategories[2].category)).toBeFalsy();
+    });
+
+    it('should include training category and prefill the radio when existing mandatory training set in service', async () => {
+      const overrides = {
+        trainingCategories: mockTrainingCategories,
+        existingMandatoryTraining,
+        trainingService: { mandatoryTrainingBeingEdited: existingMandatoryTraining.mandatoryTraining[0] },
+      };
+
+      const { component, queryByText } = await setup(overrides);
+
+      const selectedExistingMandatoryTrainingCategory = queryByText(mockTrainingCategories[2].category);
+      expect(selectedExistingMandatoryTrainingCategory).toBeTruthy();
+      expect(component.form.value).toEqual({ category: mockTrainingCategories[2].id });
+    });
+
+    it('should prefill the category in selectedTraining but still include existing mandatory training category in options when both set in service (user changed category and has gone back to page)', async () => {
+      const selectedTraining = {
+        trainingCategory: mockTrainingCategories[0],
+      };
+
+      const overrides = {
+        trainingCategories: mockTrainingCategories,
+        existingMandatoryTraining,
+        trainingService: {
+          mandatoryTrainingBeingEdited: existingMandatoryTraining.mandatoryTraining[0],
+          _selectedTraining: selectedTraining,
+        },
+      };
+
+      const { component, queryByText } = await setup(overrides);
+
+      const selectedExistingMandatoryTrainingCategory = queryByText(mockTrainingCategories[2].category);
+      expect(selectedExistingMandatoryTrainingCategory).toBeTruthy();
+      expect(component.form.value).toEqual({ category: selectedTraining.trainingCategory.id });
+    });
   });
 });
