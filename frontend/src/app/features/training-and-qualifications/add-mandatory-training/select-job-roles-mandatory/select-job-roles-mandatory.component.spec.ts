@@ -12,12 +12,9 @@ import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
-import {
-  GroupedRadioButtonAccordionComponent,
-} from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import {
-  RadioButtonAccordionComponent,
-} from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { MockMandatoryTrainingService } from '@core/test-utils/MockTrainingService';
+import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -80,10 +77,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         {
           provide: MandatoryTrainingService,
-          useValue: {
-            selectedTraining: overrides.selectedTraining !== undefined ? overrides.selectedTraining : selectedTraining,
-            resetState: () => {},
-          },
+          useFactory: MockMandatoryTrainingService.factory({ selectedTraining, ...overrides }),
         },
         {
           provide: ActivatedRoute,
@@ -316,6 +310,51 @@ describe('SelectJobRolesMandatoryComponent', () => {
       userEvent.click(cancelButton);
 
       expect(resetStateInTrainingServiceSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Existing mandatory training', () => {
+    const createExistingMandatoryTraining = (jobs) => {
+      return {
+        category: 'Activity provision/Well-being',
+        establishmentId: 4090,
+        jobs,
+        trainingCategoryId: 1,
+      };
+    };
+
+    it('should check the currently selected job roles if existingMandatoryTraining in training service (when editing existing mandatory training)', async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+
+      const { getByLabelText } = await setup({ existingMandatoryTraining: createExistingMandatoryTraining(jobs) });
+
+      jobs.forEach((jobRole) => {
+        const jobRoleCheckbox = getByLabelText(jobRole.title) as HTMLInputElement;
+        expect(jobRoleCheckbox.checked).toBeTruthy();
+      });
+    });
+
+    it('should expand the accordion for job groups that have job roles selected', async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+
+      const { getByLabelText } = await setup({ existingMandatoryTraining: createExistingMandatoryTraining(jobs) });
+
+      jobs.forEach((jobRole) => {
+        const jobRoleGroupAccordionSection = getByLabelText(jobRole.jobRoleGroup);
+        expect(within(jobRoleGroupAccordionSection).getByText('Hide')).toBeTruthy(); // is expanded
+      });
+    });
+
+    it('should not expand the accordion for job groups that do not have job roles selected', async () => {
+      const jobs = [mockAvailableJobs[0]];
+
+      const { getByLabelText } = await setup({ existingMandatoryTraining: createExistingMandatoryTraining(jobs) });
+
+      const jobRoleGroupAccordionSectionWithPreselected = getByLabelText(jobs[0].jobRoleGroup);
+      expect(within(jobRoleGroupAccordionSectionWithPreselected).getByText('Hide')).toBeTruthy(); // is expanded
+
+      const jobRoleGroupAccordionSectionWithNoneSelected = getByLabelText(mockAvailableJobs[1].jobRoleGroup);
+      expect(within(jobRoleGroupAccordionSectionWithNoneSelected).getByText('Show')).toBeTruthy(); // not expanded
     });
   });
 });

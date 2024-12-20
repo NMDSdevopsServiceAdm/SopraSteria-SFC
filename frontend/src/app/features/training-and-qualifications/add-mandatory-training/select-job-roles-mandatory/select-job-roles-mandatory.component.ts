@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
 import { SelectedTraining } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
@@ -45,6 +45,8 @@ export class SelectJobRolesMandatoryComponent {
   public subscriptions: Subscription = new Subscription();
   private establishment: Establishment;
   private selectedTrainingCategory: SelectedTraining;
+  private existingMandatoryTraining: mandatoryTraining;
+  public jobGroupsToOpenAtStart: string[] = [];
 
   ngOnInit(): void {
     this.selectedTrainingCategory = this.trainingService.selectedTraining;
@@ -57,6 +59,11 @@ export class SelectJobRolesMandatoryComponent {
     this.backLinkService.showBackLink();
     this.getJobs();
     this.setupForm();
+    this.existingMandatoryTraining = this.trainingService.existingMandatoryTraining;
+
+    if (this.existingMandatoryTraining) {
+      this.prefillForm();
+    }
   }
 
   private getJobs(): void {
@@ -131,6 +138,17 @@ export class SelectJobRolesMandatoryComponent {
         },
       ),
     );
+  }
+
+  private prefillForm(): void {
+    this.selectedJobIds = this.existingMandatoryTraining.jobs.map((job) => Number(job.id));
+    this.jobGroupsToOpenAtStart = this.jobGroups
+      .filter((group) => group.items.some((job) => this.selectedJobIds.includes(job.id)))
+      .map((group) => group.title);
+
+    this.form.patchValue({
+      selectedJobRoles: this.selectedJobIds,
+    });
   }
 
   public onCancel(event: Event): void {

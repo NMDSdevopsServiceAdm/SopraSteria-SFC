@@ -26,7 +26,7 @@
               *ngFor="let group of jobGroups"
               [title]="group.title"
               [description]="group.descriptionText"
-              [expandedAtStart]="false"
+              [expandedAtStart]="jobGroupsToOpenAtStart?.includes(group.title)"
             >
               <ng-container *ngFor="let job of group.items">
                 <div class="govuk-checkboxes__item">
