@@ -326,11 +326,28 @@ describe('SelectJobRolesMandatoryComponent', () => {
     it('should check the currently selected job roles if existingMandatoryTraining in training service (when editing existing mandatory training)', async () => {
       const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
 
-      const { getByLabelText } = await setup({ existingMandatoryTraining: createExistingMandatoryTraining(jobs) });
+      const { getByLabelText } = await setup({
+        existingMandatoryTraining: createExistingMandatoryTraining(jobs),
+        allJobRolesCount: 37,
+      });
 
       jobs.forEach((jobRole) => {
         const jobRoleCheckbox = getByLabelText(jobRole.title) as HTMLInputElement;
         expect(jobRoleCheckbox.checked).toBeTruthy();
+      });
+    });
+
+    it('should not check the currently selected job roles if existingMandatoryTraining has all job roles (when editing existing mandatory training)', async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+
+      const { getByLabelText } = await setup({
+        existingMandatoryTraining: createExistingMandatoryTraining(jobs),
+        allJobRolesCount: 2,
+      });
+
+      jobs.forEach((jobRole) => {
+        const jobRoleCheckbox = getByLabelText(jobRole.title) as HTMLInputElement;
+        expect(jobRoleCheckbox.checked).toBeFalsy();
       });
     });
 

@@ -151,6 +151,8 @@ export class SelectJobRolesMandatoryComponent {
   }
 
   private prefillForm(): void {
+    if (this.existingMandatoryTraining.jobs?.length == this.trainingService.allJobRolesCount) return;
+
     this.selectedJobIds = this.existingMandatoryTraining.jobs.map((job) => Number(job.id));
     this.jobGroupsToOpenAtStart = this.jobGroups
       .filter((group) => group.items.some((job) => this.selectedJobIds.includes(job.id)))
