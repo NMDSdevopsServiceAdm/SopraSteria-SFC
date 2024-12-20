@@ -3,7 +3,7 @@ import { environment } from 'src/environments/environment';
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 export interface FindAccountRequest {
   name: string;
@@ -21,7 +21,7 @@ interface AccountNotFound {
   remainingAttempts: number;
 }
 
-interface AccountLocked {
+export interface AccountLocked {
   status: 'AccountLocked';
 }
 
@@ -54,21 +54,25 @@ export class FindUsernameService {
   findUserAccount(params: FindAccountRequest): Observable<FindUserAccountResponse> {
     return this.http
       .post<FindUserAccountResponse>(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`, params)
-      .pipe(catchError((res) => this.handleFindUserAccountErrors(res)));
+      .pipe(
+        map((res) => ({ ...res, status: 'AccountFound' } as AccountFound)),
+        catchError((res) => this.handleFindUserAccountErrors(res)),
+      );
   }
 
   handleFindUserAccountErrors(err: HttpErrorResponse): Observable<AccountNotFound | AccountLocked> {
-    if (err.status === 429) {
-      return of({
-        status: 'AccountNotFound',
-        remainingAttempts: 0,
-      });
-    }
-
-    if (err.status === 423) {
-      return of({
-        status: 'AccountLocked',
-      });
+    switch (err?.status) {
+      case 404: // Not found
+      case 429: // Too many request
+        const remainingAttempts = err.error?.remainingAttempts ?? 0;
+        return of({
+          status: 'AccountNotFound',
+          remainingAttempts,
+        });
+      case 423: // Locked
+        return of({
+          status: 'AccountLocked',
+        });
     }
 
     throwError(err);

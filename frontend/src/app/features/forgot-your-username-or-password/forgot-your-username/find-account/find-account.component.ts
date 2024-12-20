@@ -41,6 +41,7 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
   public accountFound: boolean;
   public remainingAttempts: number;
+  public serverError: string;
 
   private subscriptions = new Subscription();
 
@@ -100,6 +101,7 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public onSubmit() {
     this.submitted = true;
+    this.serverError = null;
 
     if (!this.form.valid) {
       return;
@@ -116,6 +118,7 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
         this.accountFound = true;
         this.accountFoundEvent.emit(response);
         break;
+
       case 'AccountNotFound':
         this.accountFound = false;
         this.remainingAttempts = response.remainingAttempts;
@@ -126,8 +129,12 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.scrollToResult();
         break;
+
       case 'AccountLocked':
-        console.log('accountLocked');
+        this.serverError = 'There is a problem with your account, please contact support on 0113 241 0969';
+        this.accountFound = null;
+        this.remainingAttempts = null;
+        break;
     }
   }
 

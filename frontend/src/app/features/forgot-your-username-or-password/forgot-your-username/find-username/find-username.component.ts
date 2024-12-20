@@ -26,6 +26,7 @@ export class FindUsernameComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   public requiredErrorMessage = 'Enter the answer to your security question';
   public remainingAttempts: number;
+  public serverError: string;
 
   private subscriptions = new Subscription();
 

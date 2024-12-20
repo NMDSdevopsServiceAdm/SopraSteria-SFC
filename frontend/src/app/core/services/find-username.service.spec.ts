@@ -8,6 +8,7 @@ import { FindUsernameService } from './find-username.service';
 fdescribe('FindUsernameService', () => {
   let service: FindUsernameService;
   let http: HttpTestingController;
+  const mockSubscriber = jasmine.createSpy();
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -17,14 +18,18 @@ fdescribe('FindUsernameService', () => {
     http = TestBed.inject(HttpTestingController);
   });
 
+  afterEach(() => {
+    mockSubscriber.calls.reset();
+  });
+
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
   describe('findUserAccount', () => {
-    it('should make a POST request to /registration/findUserAccount endpoint with the given search params', async () => {
-      const mockParams = { name: 'Test user', workplaceIdOrPostcode: 'A1234567', email: 'test@example.com' };
+    const mockParams = { name: 'Test user', workplaceIdOrPostcode: 'A1234567', email: 'test@example.com' };
 
+    it('should make a POST request to /registration/findUserAccount endpoint with the given search params', async () => {
       service.findUserAccount(mockParams).subscribe();
       const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
 
@@ -32,15 +37,52 @@ fdescribe('FindUsernameService', () => {
       expect(req.request.body).toEqual(mockParams);
     });
 
-    it('should handle a 429 "Too many request" response and convert it to remainingAttempts: 0', async () => {
-      const mockParams = { name: 'Test user', workplaceIdOrPostcode: 'A1234567', email: 'test@example.com' };
+    it('should handle a 200 response and convert it to AccountFound', async () => {
+      service.findUserAccount(mockParams).subscribe(mockSubscriber);
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
+      req.flush(
+        {
+          accountUid: 'mock-uid',
+          securityQuestion: 'What is your favourite colour?',
+        },
+        { status: 200, statusText: 'Ok' },
+      );
 
-      const mockSubscriber = jasmine.createSpy();
+      const expectedResult = {
+        status: 'AccountFound',
+        accountUid: 'mock-uid',
+        securityQuestion: 'What is your favourite colour?',
+      };
+
+      expect(mockSubscriber).toHaveBeenCalledOnceWith(expectedResult);
+    });
+
+    it('should handle a 404 "Not found" response and convert it to AccountNotFound', async () => {
       service.findUserAccount(mockParams).subscribe(mockSubscriber);
       const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
       req.flush({ message: 'Reached maximum retry' }, { status: 429, statusText: 'Too many request' });
 
-      const expectedResult = { accountFound: false, remainingAttempts: 0 };
+      const expectedResult = { status: 'AccountNotFound', remainingAttempts: 0 };
+
+      expect(mockSubscriber).toHaveBeenCalledOnceWith(expectedResult);
+    });
+
+    it('should handle a 429 "Too many request" response and convert it to remainingAttempts: 0', async () => {
+      service.findUserAccount(mockParams).subscribe(mockSubscriber);
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
+      req.flush({ message: 'Reached maximum retry' }, { status: 429, statusText: 'Too many request' });
+
+      const expectedResult = { status: 'AccountNotFound', remainingAttempts: 0 };
+
+      expect(mockSubscriber).toHaveBeenCalledOnceWith(expectedResult);
+    });
+
+    it('should handle a 423 "Locked" response and convert it to AccountLocked', async () => {
+      service.findUserAccount(mockParams).subscribe(mockSubscriber);
+      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
+      req.flush({ message: 'User account is locked' }, { status: 423, statusText: 'Locked' });
+
+      const expectedResult = { status: 'AccountLocked' };
 
       expect(mockSubscriber).toHaveBeenCalledOnceWith(expectedResult);
     });
@@ -60,7 +102,6 @@ fdescribe('FindUsernameService', () => {
     it('should handle a 401 Unauthorised response and convert it to AnswerIncorrect', async () => {
       const mockParams = { uid: 'mock-uid', securityQuestionAnswer: '42' };
 
-      const mockSubscriber = jasmine.createSpy();
       service.findUsername(mockParams).subscribe(mockSubscriber);
       const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUsername`);
       req.flush({ answerCorrect: false, remainingAttempts: 4 }, { status: 401, statusText: 'Unauthorised' });

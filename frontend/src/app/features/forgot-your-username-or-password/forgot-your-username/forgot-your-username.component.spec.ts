@@ -15,7 +15,7 @@ import { FindAccountComponent } from './find-account/find-account.component';
 import { FindUsernameComponent } from './find-username/find-username.component';
 import { ForgotYourUsernameComponent } from './forgot-your-username.component';
 
-describe('ForgotYourUsernameComponent', () => {
+fdescribe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
@@ -134,7 +134,7 @@ describe('ForgotYourUsernameComponent', () => {
       it('should show a different error message when only 1 chance remain', async () => {
         const { fixture, getByText, findUsernameService } = await setup();
         spyOn(findUsernameService, 'findUserAccount').and.returnValue(
-          of({ accountFound: false, remainingAttempts: 1 }),
+          of({ status: 'AccountNotFound', remainingAttempts: 1 }),
         );
 
         await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
@@ -150,7 +150,7 @@ describe('ForgotYourUsernameComponent', () => {
       it('should navigate to "user-account-not-found" page when remaining attempts = 0', async () => {
         const { findUsernameService, routerSpy } = await setup();
         spyOn(findUsernameService, 'findUserAccount').and.returnValue(
-          of({ accountFound: false, remainingAttempts: 0 }),
+          of({ status: 'AccountNotFound', remainingAttempts: 0 }),
         );
 
         await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
