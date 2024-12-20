@@ -34,18 +34,25 @@ import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.co
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from './delete-user-account/delete-user-account.component';
+import { DoYouHaveLeaversComponent } from './do-you-have-leavers/do-you-have-leavers.component';
+import { DoYouHaveStartersComponent } from './do-you-have-starters/do-you-have-starters.component';
+import { DoYouHaveVacanciesComponent } from './do-you-have-vacancies/do-you-have-vacancies.component';
 import { EditWorkplaceComponent } from './edit-workplace/edit-workplace.component';
 import { EmployedFromOutsideUkExistingWorkersComponent } from './employed-from-outside-uk-existing-workers/employed-from-outside-uk-existing-workers.component';
 import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existing-workers/health-and-care-visa-existing-workers.component';
-import { LeaversComponent } from './leavers/leavers.component';
+import { HowManyLeaversComponent } from './how-many-leavers/how-many-leavers.component';
+import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
+import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
 import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { PensionsComponent } from './pensions/pensions.component';
 import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
+import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles/select-leaver-job-roles.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
 import { SelectPrimaryUserDeleteComponent } from './select-primary-user-delete/select-primary-user-delete.component';
 import { SelectPrimaryUserComponent } from './select-primary-user/select-primary-user.component';
+import { SelectVacancyJobRolesComponent } from './select-vacancy-job-roles/select-vacancy-job-roles.component';
 import { SelectWorkplaceComponent } from './select-workplace/select-workplace.component';
 import { ServiceUsersComponent } from './service-users/service-users.component';
 import { ServicesCapacityComponent } from './services-capacity/services-capacity.component';
@@ -53,14 +60,12 @@ import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/s
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
 import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
-import { StartersComponent } from './starters/starters.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
 import { UserAccountEditDetailsComponent } from './user-account-edit-details/user-account-edit-details.component';
 import { UserAccountEditPermissionsComponent } from './user-account-edit-permissions/user-account-edit-permissions.component';
 import { UsersComponent } from './users/users.component';
-import { VacanciesComponent } from './vacancies/vacancies.component';
 import { ViewMyWorkplacesComponent } from './view-my-workplaces/view-my-workplaces.component';
 import { ViewWorkplaceComponent } from './view-workplace/view-workplace.component';
 import { WorkplaceInfoPanelComponent } from './workplace-info-panel/workplace-info-panel.component';
@@ -86,20 +91,17 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     CreateUserAccountComponent,
     DataSharingComponent,
     EditWorkplaceComponent,
-    LeaversComponent,
     OtherServicesComponent,
     ServicesCapacityComponent,
     ServiceUsersComponent,
     StartComponent,
     StaffRecruitmentStartComponent,
-    StartersComponent,
     TypeOfEmployerComponent,
     UserAccountDeleteDialogComponent,
     UserAccountEditPermissionsComponent,
     UserAccountSavedComponent,
     UserAccountViewComponent,
     TotalStaffQuestionComponent,
-    VacanciesComponent,
     ViewMyWorkplacesComponent,
     ViewWorkplaceComponent,
     WorkplaceInfoPanelComponent,
@@ -128,6 +130,14 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     EmployedFromOutsideUkExistingWorkersComponent,
     HealthAndCareVisaExistingWorkers,
     ChangeDataOwnerComponent,
+    DoYouHaveVacanciesComponent,
+    SelectVacancyJobRolesComponent,
+    HowManyVacanciesComponent,
+    DoYouHaveStartersComponent,
+    HowManyStartersComponent,
+    DoYouHaveLeaversComponent,
+    SelectLeaverJobRolesComponent,
+    HowManyLeaversComponent,
   ],
   providers: [
     DialogService,

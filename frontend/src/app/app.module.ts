@@ -19,6 +19,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
@@ -60,7 +61,6 @@ import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certific
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
-import { StaffMismatchBannerComponent } from '@features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { FirstLoginWizardComponent } from '@features/first-login-wizard/first-login-wizard.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-username-or-password/forgot-your-password/confirmation/confirmation.component';
@@ -72,7 +72,6 @@ import { FindUsernameComponent } from '@features/forgot-your-username-or-passwor
 import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
-import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
 import { NewDashboardComponent } from '@features/new-dashboard/dashboard/dashboard.component';
@@ -88,7 +87,7 @@ import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
-import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
+import { SelectStarterJobRolesComponent } from '@features/workplace/select-starter-job-roles/select-starter-job-roles.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -96,6 +95,9 @@ import { SharedModule } from '@shared/shared.module';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
+import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 
@@ -144,6 +146,7 @@ import { UsernameFoundComponent } from '@features/forgot-your-username-or-passwo
     ForgotYourUsernameComponent,
     FindAccountComponent,
     FindUsernameComponent,
+    SelectStarterJobRolesComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
@@ -217,6 +220,7 @@ import { UsernameFoundComponent } from '@features/forgot-your-username-or-passwo
     GetMissingCqcLocationsResolver,
     WorkplaceResolver,
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
+    FundingReportResolver,
   ],
   bootstrap: [AppComponent],
 })

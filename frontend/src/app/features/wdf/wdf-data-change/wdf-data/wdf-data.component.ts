@@ -1,22 +1,24 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
+import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { WDFReport } from '@core/model/reports.model';
 import { URLStructure } from '@core/model/url.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { ReportService } from '@core/services/report.service';
+import { UserService } from '@core/services/user.service';
 import { WorkerService } from '@core/services/worker.service';
 import dayjs from 'dayjs';
+import orderBy from 'lodash/orderBy';
 import sortBy from 'lodash/sortBy';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
 import { WdfEligibilityStatus } from '../../../../core/model/wdf.model';
 import { Worker } from '../../../../core/model/worker.model';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 
 @Component({
   selector: 'app-wdf-data',
@@ -25,42 +27,55 @@ import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 export class WdfDataComponent implements OnInit {
   public workplace: Establishment;
   public workplaceUid: string;
-  public primaryWorkplaceUid: string;
   public workers: Array<Worker>;
   public workerCount: number;
-  public canViewWorker = false;
+  public canViewWorker: boolean;
   public canEditWorker: boolean;
   public report: WDFReport;
   public wdfStartDate: string;
   public wdfEndDate: string;
-  public returnUrl: URLStructure;
   public wdfEligibilityStatus: WdfEligibilityStatus = {};
-  public isStandalone = true;
-  public newHomeDesignFlag: boolean;
-  public standAloneAccount = false;
+  public returnUrl: URLStructure;
   private subscriptions: Subscription = new Subscription();
-  public viewWDFData = false;
+  private activeTabIndex: number;
+  public overallWdfEligibility: boolean;
+  public subsidiariesOverallWdfEligibility: boolean;
+  public someSubsidiariesMeetingRequirements: boolean;
+
+  public isParent: boolean;
+  public subsidiaryWorkplaces = [];
+  public viewingSub: boolean;
+  public primaryWorkplaceUid: string;
+  public primaryWorkplaceName: string;
+  public primaryWorkplaceNmdsId: string;
+  public tabs: { name: string; fragment: string }[] = [
+    { name: 'Workplace', fragment: 'workplace' },
+    { name: 'Staff records', fragment: 'staff' },
+  ];
 
   constructor(
     private establishmentService: EstablishmentService,
-    private reportService: ReportService,
     private breadcrumbService: BreadcrumbService,
     private workerService: WorkerService,
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
-    private featureFlagsService: FeatureFlagsService,
-  ) {
-    this.featureFlagsService.start();
-  }
+    private userService: UserService,
+    private router: Router,
+    private reportService: ReportService,
+  ) {}
 
   async ngOnInit(): Promise<void> {
     this.primaryWorkplaceUid = this.establishmentService.primaryWorkplace.uid;
-    this.standAloneAccount = this.establishmentService.standAloneAccount;
 
-    if (this.route.snapshot.params.establishmentuid) {
+    if (this.route.snapshot?.params?.establishmentuid) {
+      this.viewingSub = true;
+      this.primaryWorkplaceName = this.establishmentService.primaryWorkplace.name;
+      this.primaryWorkplaceNmdsId = this.establishmentService.primaryWorkplace.nmdsId;
+
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
       this.returnUrl = { url: ['/wdf', 'workplaces', this.workplaceUid] };
     } else {
+      this.viewingSub = false;
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
       this.returnUrl = { url: ['/wdf', 'data'] };
     }
@@ -70,30 +85,33 @@ export class WdfDataComponent implements OnInit {
 
     this.getWorkers();
     this.setWorkplace();
-    this.getWdfReport();
+
+    this.report = this.route.snapshot.data?.report;
+    this.setDates(this.report);
+    this.setWdfEligibility(this.report);
+
     this.setWorkerCount();
-
-    this.newHomeDesignFlag = await this.featureFlagsService.configCatClient.getValueAsync('homePageNewDesign', false);
-    this.featureFlagsService.newHomeDesignFlag = this.newHomeDesignFlag;
-
-    this.route.fragment.subscribe((params) => {
-      if (params === 'workplace') {
-        this.viewWDFData = true;
-      }
-    });
+    this.breadcrumbService.show(JourneyType.WDF);
   }
 
-  ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+  public get activeTab() {
+    return { ...this.tabs[this.activeTabIndex], index: this.activeTabIndex };
   }
 
   private setWorkplace(): void {
+    this.workplace = this.route.snapshot.data.workplace;
+    this.isParent = this.workplace.isParent;
+    this.establishmentService.setState(this.workplace);
+
+    if (this.workplace.isParent) {
+      this.tabs.push({ name: 'Your other workplaces', fragment: 'workplaces' });
+      this.getParentAndSubs();
+    }
+
     this.subscriptions.add(
-      this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
-        this.workplace = workplace;
-        this.isStandalone = this.checkIfStandalone();
-        this.setBreadcrumbs();
-        this.establishmentService.setState(workplace);
+      this.route.fragment.subscribe((fragment) => {
+        const selectedTabIndex = this.tabs.findIndex((tab) => tab.fragment === fragment);
+        this.activeTabIndex = selectedTabIndex !== -1 ? selectedTabIndex : 0;
       }),
     );
   }
@@ -112,7 +130,7 @@ export class WdfDataComponent implements OnInit {
     }
   }
 
-  private getWdfReport() {
+  private getWdfReport(): void {
     this.subscriptions.add(
       this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
         this.report = report;
@@ -122,8 +140,8 @@ export class WdfDataComponent implements OnInit {
     );
   }
 
-  public handleViewTrainingByCategory(visible: boolean): void {
-    this.viewWDFData = visible;
+  public handleTabChange(activeTabIndex: number): void {
+    this.router.navigate([], { fragment: this.tabs[activeTabIndex].fragment });
   }
 
   private setWorkerCount() {
@@ -151,19 +169,31 @@ export class WdfDataComponent implements OnInit {
     return workers.every((worker) => worker.wdfEligible === true);
   }
 
-  private setBreadcrumbs(): void {
-    this.isStandalone
-      ? this.breadcrumbService.show(JourneyType.WDF)
-      : this.breadcrumbService.show(JourneyType.WDF_PARENT);
+  private getParentAndSubs(): void {
+    this.subscriptions.add(
+      this.userService.getEstablishments(true).subscribe((workplaces: GetWorkplacesResponse) => {
+        if (workplaces.subsidaries) {
+          const activeSubsidiaryWorkplaces = workplaces.subsidaries.establishments.filter(
+            (item) => item.ustatus !== 'PENDING',
+          );
+          this.subsidiaryWorkplaces = orderBy(activeSubsidiaryWorkplaces, ['wdf.overall', 'updated'], ['asc', 'desc']);
+        }
+
+        this.setSubsidiariesEligibility();
+      }),
+    );
   }
 
-  private checkIfStandalone(): boolean {
-    if (this.workplace) {
-      if (this.primaryWorkplaceUid !== this.workplaceUid) {
-        return false;
-      }
-      return !this.workplace.isParent;
-    }
-    return true;
+  public setSubsidiariesEligibility(): void {
+    this.subsidiariesOverallWdfEligibility = this.subsidiaryWorkplaces.every(
+      (workplace) => workplace.wdf.overall === true,
+    );
+    this.someSubsidiariesMeetingRequirements = this.subsidiaryWorkplaces.some(
+      (workplace) => workplace.wdf.overall === true,
+    );
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 }
