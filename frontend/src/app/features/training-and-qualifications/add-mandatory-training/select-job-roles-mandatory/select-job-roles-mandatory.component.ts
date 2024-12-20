@@ -114,13 +114,7 @@ export class SelectJobRolesMandatoryComponent {
   }
 
   private createMandatoryTraining(): void {
-    const props = {
-      trainingCategoryId: this.selectedTrainingCategory.trainingCategory.id,
-      allJobRoles: false,
-      jobs: this.selectedJobIds.map((id) => {
-        return { id };
-      }),
-    };
+    const props = this.generateUpdateProps();
 
     this.subscriptions.add(
       this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
@@ -138,6 +132,22 @@ export class SelectJobRolesMandatoryComponent {
         },
       ),
     );
+  }
+
+  private generateUpdateProps(): mandatoryTraining {
+    const props: mandatoryTraining = {
+      trainingCategoryId: this.selectedTrainingCategory.trainingCategory.id,
+      allJobRoles: false,
+      jobs: this.selectedJobIds.map((id) => {
+        return { id };
+      }),
+    };
+
+    if (this.existingMandatoryTraining?.trainingCategoryId) {
+      props.previousTrainingCategoryId = this.existingMandatoryTraining.trainingCategoryId;
+    }
+
+    return props;
   }
 
   private prefillForm(): void {

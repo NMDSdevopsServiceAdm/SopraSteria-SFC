@@ -356,5 +356,23 @@ describe('SelectJobRolesMandatoryComponent', () => {
       const jobRoleGroupAccordionSectionWithNoneSelected = getByLabelText(mockAvailableJobs[1].jobRoleGroup);
       expect(within(jobRoleGroupAccordionSectionWithNoneSelected).getByText('Show')).toBeTruthy(); // not expanded
     });
+
+    it('should call createAndUpdateMandatoryTraining with training category in service and previous training ID', async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+      const existingMandatoryTraining = createExistingMandatoryTraining(jobs);
+
+      const { getByText, establishment, selectedTraining, createAndUpdateMandatoryTrainingSpy } = await setup({
+        existingMandatoryTraining,
+      });
+
+      userEvent.click(getByText('Save mandatory training'));
+
+      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
+        previousTrainingCategoryId: existingMandatoryTraining.trainingCategoryId,
+        trainingCategoryId: selectedTraining.trainingCategory.id,
+        allJobRoles: false,
+        jobs: [{ id: jobs[0].id }, { id: jobs[1].id }],
+      });
+    });
   });
 });
