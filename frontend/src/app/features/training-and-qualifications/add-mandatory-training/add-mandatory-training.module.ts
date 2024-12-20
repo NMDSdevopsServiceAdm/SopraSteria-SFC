@@ -8,7 +8,6 @@ import { DeleteMandatoryTrainingCategoryComponent } from '@features/training-and
 import { SharedModule } from '@shared/shared.module';
 
 import { AddAndManageMandatoryTrainingComponent } from './add-and-manage-mandatory-training/add-and-manage-mandatory-training.component';
-import { AddMandatoryTrainingComponent } from './add-mandatory-training.component';
 import { AllOrSelectedJobRolesComponent } from './all-or-selected-job-roles/all-or-selected-job-roles.component';
 import { RemoveAllMandatoryTrainingComponent } from './delete-mandatory-training/delete-all-mandatory-training.component';
 import { SelectJobRolesMandatoryComponent } from './select-job-roles-mandatory/select-job-roles-mandatory.component';
@@ -17,7 +16,6 @@ import { SelectTrainingCategoryMandatoryComponent } from './select-training-cate
 @NgModule({
   imports: [CommonModule, AddMandatoryTrainingRoutingModule, ReactiveFormsModule, SharedModule],
   declarations: [
-    AddMandatoryTrainingComponent,
     SelectTrainingCategoryMandatoryComponent,
     RemoveAllMandatoryTrainingComponent,
     AddAndManageMandatoryTrainingComponent,
