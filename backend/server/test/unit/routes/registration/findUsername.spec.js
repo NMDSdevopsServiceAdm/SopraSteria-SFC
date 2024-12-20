@@ -7,7 +7,7 @@ const { findUsername } = require('../../../../routes/registration/findUsername')
 const models = require('../../../../models/index');
 const { UserAccountStatus } = require('../../../../data/constants');
 
-describe('backend/server/routes/registration/findUsername', () => {
+describe.only('backend/server/routes/registration/findUsername', () => {
   const mockRequestBody = {
     uid: 'mock-uid',
     securityQuestionAnswer: '42',

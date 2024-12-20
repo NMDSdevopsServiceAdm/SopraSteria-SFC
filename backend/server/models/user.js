@@ -1,8 +1,8 @@
 /* jshint indent: 2 */
 const { Op } = require('sequelize');
-const { padEnd, isEmpty } = require('lodash');
+const { padEnd } = require('lodash');
 const { sanitise } = require('../utils/db');
-const { MaxFindUsernameAttempts, UserAccountStatus } = require('../data/constants');
+const { UserAccountStatus } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define(
@@ -514,11 +514,22 @@ module.exports = function (sequelize, DataTypes) {
           required: true,
           attributes: [],
         },
+        {
+          model: sequelize.models.login,
+          required: true,
+          attributes: ['status'],
+        },
       ],
       raw: true,
     };
 
-    return this.findOne(query);
+    const userFound = await this.findOne(query);
+
+    if (userFound && userFound['login.status'] === UserAccountStatus.Locked) {
+      return { accountLocked: true };
+    }
+
+    return userFound;
   };
 
   return User;

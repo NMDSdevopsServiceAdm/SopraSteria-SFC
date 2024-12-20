@@ -12,16 +12,20 @@ export interface FindAccountRequest {
 }
 
 export interface AccountFound {
-  accountFound: true;
+  status: 'AccountFound';
   accountUid: string;
   securityQuestion: string;
 }
 interface AccountNotFound {
-  accountFound: false;
+  status: 'AccountNotFound';
   remainingAttempts: number;
 }
 
-export type FindUserAccountResponse = AccountFound | AccountNotFound;
+interface AccountLocked {
+  status: 'AccountLocked';
+}
+
+export type FindUserAccountResponse = AccountFound | AccountNotFound | AccountLocked;
 
 export interface FindUsernameRequest {
   uid: string;
@@ -53,11 +57,17 @@ export class FindUsernameService {
       .pipe(catchError((res) => this.handleFindUserAccountErrors(res)));
   }
 
-  handleFindUserAccountErrors(err: HttpErrorResponse): Observable<AccountNotFound> {
+  handleFindUserAccountErrors(err: HttpErrorResponse): Observable<AccountNotFound | AccountLocked> {
     if (err.status === 429) {
       return of({
-        accountFound: false,
+        status: 'AccountNotFound',
         remainingAttempts: 0,
+      });
+    }
+
+    if (err.status === 423) {
+      return of({
+        status: 'AccountLocked',
       });
     }
 

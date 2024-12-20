@@ -111,12 +111,12 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public handleResponse(response: FindUserAccountResponse): void {
-    switch (response?.accountFound) {
-      case true:
+    switch (response?.status) {
+      case 'AccountFound':
         this.accountFound = true;
         this.accountFoundEvent.emit(response);
         break;
-      case false:
+      case 'AccountNotFound':
         this.accountFound = false;
         this.remainingAttempts = response.remainingAttempts;
 
@@ -126,6 +126,8 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
 
         this.scrollToResult();
         break;
+      case 'AccountLocked':
+        console.log('accountLocked');
     }
   }
 

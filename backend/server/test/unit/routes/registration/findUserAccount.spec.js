@@ -166,6 +166,18 @@ describe.only('backend/server/routes/registration/findUserAccount', () => {
     });
   });
 
+  it('should respond with 423 Locked if the user account is locked', async () => {
+    stubFindUser.resolves({ accountLocked: true });
+
+    const req = buildRequest(mockRequestBody);
+    const res = httpMocks.createResponse();
+
+    await findUserAccount(req, res);
+
+    expect(res.statusCode).to.equal(423);
+    expect(res._getJSONData()).to.deep.equal({ message: 'User account is locked' });
+  });
+
   it('should respond with 429 Too many request and dont run a user search if already reached maximum failure counts', async () => {
     stubGetNumberOfFailedAttempts.resolves(5);
 

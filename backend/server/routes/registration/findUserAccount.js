@@ -22,14 +22,18 @@ const findUserAccount = async (req, res) => {
     userFound =
       userFound ?? (await models.user.findByRelevantInfo({ name, workplaceId: workplaceIdOrPostcode, email }));
 
-    if (userFound) {
-      return sendSuccessResponse(res, userFound);
+    if (!userFound) {
+      const failedAttemptsCount = await limitFindUserAccountUtils.recordFailedAttempt(req.ip);
+      const remainingAttempts = MaxAttempts - failedAttemptsCount;
+
+      return sendNotFoundResponse(res, remainingAttempts);
     }
 
-    const failedAttemptsCount = await limitFindUserAccountUtils.recordFailedAttempt(req.ip);
-    const remainingAttempts = MaxAttempts - failedAttemptsCount;
+    if (userFound.accountLocked) {
+      throw new FindUserAccountException('User account is locked', 423);
+    }
 
-    return sendNotFoundResponse(res, remainingAttempts);
+    return sendSuccessResponse(res, userFound);
   } catch (err) {
     if (err instanceof FindUserAccountException) {
       return res.status(err.statusCode).json({ message: err.message });
@@ -76,4 +80,4 @@ const sendNotFoundResponse = (res, remainingAttempts = 0) => {
   return res.status(200).json({ accountFound: false, remainingAttempts });
 };
 
-module.exports = { findUserAccount };
+module.exports = { findUserAccount, FindUserAccountException };
