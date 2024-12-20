@@ -45,7 +45,7 @@ describe.only('backend/server/routes/registration/findUserAccount', () => {
     sinon.restore();
   });
 
-  it('should respond with 200 and accountFound: true if user account is found', async () => {
+  it('should respond with 200 if user account is found', async () => {
     const req = buildRequest(mockRequestBody);
     const res = httpMocks.createResponse();
 
@@ -53,7 +53,6 @@ describe.only('backend/server/routes/registration/findUserAccount', () => {
 
     expect(res.statusCode).to.equal(200);
     expect(res._getJSONData()).to.deep.equal({
-      accountFound: true,
       accountUid: 'mock-uid',
       securityQuestion: 'What is your favourite colour?',
     });
@@ -74,7 +73,6 @@ describe.only('backend/server/routes/registration/findUserAccount', () => {
 
     expect(res.statusCode).to.equal(200);
     expect(res._getJSONData()).to.deep.equal({
-      accountFound: true,
       accountUid: 'mock-uid',
       securityQuestion: 'What is your favourite colour?',
     });
@@ -105,102 +103,106 @@ describe.only('backend/server/routes/registration/findUserAccount', () => {
     });
   });
 
-  it('should respond with 200 and accountFound: false if user account was not found', async () => {
+  it('should respond with 404 and accountFound: false if user account was not found', async () => {
     const req = buildRequest({ ...mockRequestBody, workplaceIdOrPostcode: 'non-exist-workplace-id' });
     const res = httpMocks.createResponse();
 
     await findUserAccount(req, res);
 
-    expect(res.statusCode).to.equal(200);
+    expect(res.statusCode).to.equal(404);
     expect(res._getJSONData()).to.deep.equal({
-      accountFound: false,
       remainingAttempts: 4,
     });
     expect(stubRecordFailedAttempt).to.have.been.calledOnce;
   });
 
-  it('should respond with reducing number of remainingAttempts on successive failure', async () => {
+  it('should respond with 404 and a reducing number of remainingAttempts on successive failure', async () => {
     for (const expectedRemainingAttempts of [4, 3, 2, 1, 0]) {
       const req = buildRequest({ ...mockRequestBody, workplaceIdOrPostcode: 'non-exist-workplace-id' });
       const res = httpMocks.createResponse();
 
       await findUserAccount(req, res);
 
+      expect(res.statusCode).to.equal(404);
       expect(res._getJSONData()).to.deep.equal({
-        accountFound: false,
         remainingAttempts: expectedRemainingAttempts,
       });
     }
     expect(stubRecordFailedAttempt).to.have.been.callCount(5);
   });
 
-  it('should respond with 400 error if request does not have a body', async () => {
-    const req = httpMocks.createRequest({
-      method: 'POST',
-      url: '/api/registration/findUserAccount',
+  describe('errors', () => {
+    beforeEach(() => {
+      sinon.stub(console, 'error'); // suppress noisy logging
     });
-    const res = httpMocks.createResponse();
 
-    await findUserAccount(req, res);
-    expect(res.statusCode).to.equal(400);
-  });
-
-  it('should respond with 400 error if request body is empty', async () => {
-    const req = buildRequest({});
-    const res = httpMocks.createResponse();
-
-    await findUserAccount(req, res);
-    expect(res.statusCode).to.equal(400);
-  });
-
-  Object.keys(mockRequestBody).forEach((field) => {
-    it(`should respond with 400 error if ${field} is missing from request body`, async () => {
-      const body = { ...mockRequestBody };
-      delete body[field];
-
-      const req = buildRequest(body);
+    it('should respond with 400 error if request does not have a body', async () => {
+      const req = httpMocks.createRequest({
+        method: 'POST',
+        url: '/api/registration/findUserAccount',
+      });
       const res = httpMocks.createResponse();
 
       await findUserAccount(req, res);
       expect(res.statusCode).to.equal(400);
     });
-  });
 
-  it('should respond with 423 Locked if the user account is locked', async () => {
-    stubFindUser.resolves({ accountLocked: true });
+    it('should respond with 400 error if request body is empty', async () => {
+      const req = buildRequest({});
+      const res = httpMocks.createResponse();
 
-    const req = buildRequest(mockRequestBody);
-    const res = httpMocks.createResponse();
+      await findUserAccount(req, res);
+      expect(res.statusCode).to.equal(400);
+    });
 
-    await findUserAccount(req, res);
+    Object.keys(mockRequestBody).forEach((field) => {
+      it(`should respond with 400 error if ${field} is missing from request body`, async () => {
+        const body = { ...mockRequestBody };
+        delete body[field];
 
-    expect(res.statusCode).to.equal(423);
-    expect(res._getJSONData()).to.deep.equal({ message: 'User account is locked' });
-  });
+        const req = buildRequest(body);
+        const res = httpMocks.createResponse();
 
-  it('should respond with 429 Too many request and dont run a user search if already reached maximum failure counts', async () => {
-    stubGetNumberOfFailedAttempts.resolves(5);
+        await findUserAccount(req, res);
+        expect(res.statusCode).to.equal(400);
+      });
+    });
 
-    const req = buildRequest(mockRequestBody);
-    const res = httpMocks.createResponse();
+    it('should respond with 423 Locked if the user account is locked', async () => {
+      stubFindUser.resolves({ accountLocked: true });
 
-    await findUserAccount(req, res);
+      const req = buildRequest(mockRequestBody);
+      const res = httpMocks.createResponse();
 
-    expect(res.statusCode).to.equal(429);
-    expect(res._getJSONData()).to.deep.equal({ message: 'Reached maximum retry' });
-    expect(stubFindUser).not.to.be.called;
-  });
+      await findUserAccount(req, res);
 
-  it('should respond with 500 Internal server error if an error occur when finding user', async () => {
-    const req = buildRequest(mockRequestBody);
-    const res = httpMocks.createResponse();
+      expect(res.statusCode).to.equal(423);
+      expect(res._getJSONData()).to.deep.equal({ message: 'User account is locked' });
+    });
 
-    sinon.stub(console, 'error'); // suppress noisy logging
-    stubFindUser.rejects(new Error('mock database error'));
+    it('should respond with 429 Too many request and dont run a user search if already reached maximum failure counts', async () => {
+      stubGetNumberOfFailedAttempts.resolves(5);
 
-    await findUserAccount(req, res);
+      const req = buildRequest(mockRequestBody);
+      const res = httpMocks.createResponse();
 
-    expect(res.statusCode).to.equal(500);
-    expect(res._getData()).to.equal('Internal server error');
+      await findUserAccount(req, res);
+
+      expect(res.statusCode).to.equal(429);
+      expect(res._getJSONData()).to.deep.equal({ message: 'Reached maximum retry' });
+      expect(stubFindUser).not.to.be.called;
+    });
+
+    it('should respond with 500 Internal server error if an error occur when finding user', async () => {
+      const req = buildRequest(mockRequestBody);
+      const res = httpMocks.createResponse();
+
+      stubFindUser.rejects(new Error('mock database error'));
+
+      await findUserAccount(req, res);
+
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.equal('Internal server error');
+    });
   });
 });

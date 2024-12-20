@@ -35,11 +35,7 @@ const findUserAccount = async (req, res) => {
 
     return sendSuccessResponse(res, userFound);
   } catch (err) {
-    if (err instanceof FindUserAccountException) {
-      return res.status(err.statusCode).json({ message: err.message });
-    }
-    console.error('registration POST findUserAccount - failed', err);
-    return res.status(500).send('Internal server error');
+    return sendErrorResponse(res, err);
   }
 };
 
@@ -70,14 +66,23 @@ const ipAddressReachedMaxAttempt = async (req) => {
 const sendSuccessResponse = (res, userFound) => {
   const { uid, SecurityQuestionValue } = userFound;
   return res.status(200).json({
-    accountFound: true,
     accountUid: uid,
     securityQuestion: SecurityQuestionValue,
   });
 };
 
 const sendNotFoundResponse = (res, remainingAttempts = 0) => {
-  return res.status(200).json({ accountFound: false, remainingAttempts });
+  return res.status(404).json({ remainingAttempts });
+};
+
+const sendErrorResponse = (res, err) => {
+  console.error('registration POST findUserAccount - failed', err);
+
+  if (err instanceof FindUserAccountException) {
+    return res.status(err.statusCode).json({ message: err.message });
+  }
+
+  return res.status(500).send('Internal server error');
 };
 
 module.exports = { findUserAccount, FindUserAccountException };
