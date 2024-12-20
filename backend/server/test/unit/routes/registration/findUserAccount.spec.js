@@ -7,7 +7,7 @@ const { findUserAccount } = require('../../../../routes/registration/findUserAcc
 const limitFindUserAccountUtils = require('../../../../utils/limitFindUserAccountUtils');
 const models = require('../../../../models/index');
 
-describe('backend/server/routes/registration/findUserAccount', () => {
+describe.only('backend/server/routes/registration/findUserAccount', () => {
   const mockRequestBody = { name: 'Test User', workplaceIdOrPostcode: 'A1234567', email: 'test@example.com' };
 
   const buildRequest = (body) => {
@@ -166,7 +166,7 @@ describe('backend/server/routes/registration/findUserAccount', () => {
     });
   });
 
-  it('should respond with 423 Locked and dont run a user search if already reached maximum failure counts', async () => {
+  it('should respond with 429 Too many request and dont run a user search if already reached maximum failure counts', async () => {
     stubGetNumberOfFailedAttempts.resolves(5);
 
     const req = buildRequest(mockRequestBody);
@@ -174,8 +174,8 @@ describe('backend/server/routes/registration/findUserAccount', () => {
 
     await findUserAccount(req, res);
 
-    expect(res.statusCode).to.equal(423);
-    expect(res._getData()).to.deep.equal('Reached maximum retry');
+    expect(res.statusCode).to.equal(429);
+    expect(res._getJSONData()).to.deep.equal({ message: 'Reached maximum retry' });
     expect(stubFindUser).not.to.be.called;
   });
 

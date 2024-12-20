@@ -32,7 +32,7 @@ const findUserAccount = async (req, res) => {
     return sendNotFoundResponse(res, remainingAttempts);
   } catch (err) {
     if (err instanceof FindUserAccountException) {
-      return res.status(err.statusCode).send(err.message);
+      return res.status(err.statusCode).json({ message: err.message });
     }
     console.error('registration POST findUserAccount - failed', err);
     return res.status(500).send('Internal server error');
@@ -45,7 +45,7 @@ const validateRequest = async (req) => {
   }
 
   if (await ipAddressReachedMaxAttempt(req)) {
-    throw new FindUserAccountException('Reached maximum retry', 423);
+    throw new FindUserAccountException('Reached maximum retry', 429);
   }
 };
 

@@ -54,7 +54,7 @@ export class FindUsernameService {
   }
 
   handleFindUserAccountErrors(err: HttpErrorResponse): Observable<AccountNotFound> {
-    if (err.status === 423) {
+    if (err.status === 429) {
       return of({
         accountFound: false,
         remainingAttempts: 0,
