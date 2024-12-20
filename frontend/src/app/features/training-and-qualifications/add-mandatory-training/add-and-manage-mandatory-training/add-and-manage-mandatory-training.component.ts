@@ -66,11 +66,11 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
     });
   }
 
-  public navigateToAddNewMandatoryTraining(event: Event, existingMandatoryTraining = null): void {
+  public navigateToAddNewMandatoryTraining(event: Event, mandatoryTrainingToEdit = null): void {
     event.preventDefault();
 
-    if (existingMandatoryTraining) {
-      this.trainingService.existingMandatoryTraining = existingMandatoryTraining;
+    if (mandatoryTrainingToEdit) {
+      this.trainingService.mandatoryTrainingBeingEdited = mandatoryTrainingToEdit;
     }
 
     this.router.navigate(['select-training-category'], { relativeTo: this.route });

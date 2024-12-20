@@ -313,8 +313,8 @@ describe('SelectJobRolesMandatoryComponent', () => {
     });
   });
 
-  describe('Existing mandatory training', () => {
-    const createExistingMandatoryTraining = (jobs) => {
+  describe('Existing mandatory training being edited', () => {
+    const createMandatoryTrainingBeingEdited = (jobs) => {
       return {
         category: 'Activity provision/Well-being',
         establishmentId: 4090,
@@ -323,11 +323,11 @@ describe('SelectJobRolesMandatoryComponent', () => {
       };
     };
 
-    it('should check the currently selected job roles if existingMandatoryTraining in training service (when editing existing mandatory training)', async () => {
+    it('should check the currently selected job roles if mandatoryTrainingBeingEdited in training service (when editing existing mandatory training)', async () => {
       const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
 
       const { getByLabelText } = await setup({
-        existingMandatoryTraining: createExistingMandatoryTraining(jobs),
+        mandatoryTrainingBeingEdited: createMandatoryTrainingBeingEdited(jobs),
         allJobRolesCount: 37,
       });
 
@@ -337,11 +337,11 @@ describe('SelectJobRolesMandatoryComponent', () => {
       });
     });
 
-    it('should not check the currently selected job roles if existingMandatoryTraining has all job roles (when editing existing mandatory training)', async () => {
+    it('should not check the currently selected job roles if mandatoryTrainingBeingEdited has all job roles (when editing existing mandatory training)', async () => {
       const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
 
       const { getByLabelText } = await setup({
-        existingMandatoryTraining: createExistingMandatoryTraining(jobs),
+        mandatoryTrainingBeingEdited: createMandatoryTrainingBeingEdited(jobs),
         allJobRolesCount: 2,
       });
 
@@ -354,7 +354,9 @@ describe('SelectJobRolesMandatoryComponent', () => {
     it('should expand the accordion for job groups that have job roles selected', async () => {
       const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
 
-      const { getByLabelText } = await setup({ existingMandatoryTraining: createExistingMandatoryTraining(jobs) });
+      const { getByLabelText } = await setup({
+        mandatoryTrainingBeingEdited: createMandatoryTrainingBeingEdited(jobs),
+      });
 
       jobs.forEach((jobRole) => {
         const jobRoleGroupAccordionSection = getByLabelText(jobRole.jobRoleGroup);
@@ -365,7 +367,9 @@ describe('SelectJobRolesMandatoryComponent', () => {
     it('should not expand the accordion for job groups that do not have job roles selected', async () => {
       const jobs = [mockAvailableJobs[0]];
 
-      const { getByLabelText } = await setup({ existingMandatoryTraining: createExistingMandatoryTraining(jobs) });
+      const { getByLabelText } = await setup({
+        mandatoryTrainingBeingEdited: createMandatoryTrainingBeingEdited(jobs),
+      });
 
       const jobRoleGroupAccordionSectionWithPreselected = getByLabelText(jobs[0].jobRoleGroup);
       expect(within(jobRoleGroupAccordionSectionWithPreselected).getByText('Hide')).toBeTruthy(); // is expanded
@@ -376,16 +380,16 @@ describe('SelectJobRolesMandatoryComponent', () => {
 
     it('should call createAndUpdateMandatoryTraining with training category in service and previous training ID', async () => {
       const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
-      const existingMandatoryTraining = createExistingMandatoryTraining(jobs);
+      const mandatoryTrainingBeingEdited = createMandatoryTrainingBeingEdited(jobs);
 
       const { getByText, establishment, selectedTraining, createAndUpdateMandatoryTrainingSpy } = await setup({
-        existingMandatoryTraining,
+        mandatoryTrainingBeingEdited,
       });
 
       userEvent.click(getByText('Save mandatory training'));
 
       expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
-        previousTrainingCategoryId: existingMandatoryTraining.trainingCategoryId,
+        previousTrainingCategoryId: mandatoryTrainingBeingEdited.trainingCategoryId,
         trainingCategoryId: selectedTraining.trainingCategory.id,
         allJobRoles: false,
         jobs: [{ id: jobs[0].id }, { id: jobs[1].id }],

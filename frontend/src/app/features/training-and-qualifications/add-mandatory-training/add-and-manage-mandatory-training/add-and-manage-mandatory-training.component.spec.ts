@@ -178,20 +178,20 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
       expect(autismCategory.textContent).toContain('Activities worker, coordinator');
     });
 
-    it('should navigate to select-training-category and set existing mandatory training in service when category link clicked', async () => {
+    it('should navigate to select-training-category and set mandatory training being edited in service when category link clicked', async () => {
       const { getByText, existingMandatoryTraining, routerSpy, currentRoute, injector } = await setup();
 
       const mandatoryTrainingService = injector.inject(MandatoryTrainingService) as MandatoryTrainingService;
-      const setExistingMandatoryTrainingSpy = spyOnProperty(
+      const setMandatoryTrainingBeingEditedSpy = spyOnProperty(
         mandatoryTrainingService,
-        'existingMandatoryTraining',
+        'mandatoryTrainingBeingEdited',
         'set',
       ).and.stub();
 
       existingMandatoryTraining.mandatoryTraining.forEach((trainingCategory) => {
         fireEvent.click(getByText(trainingCategory.category));
 
-        expect(setExistingMandatoryTrainingSpy).toHaveBeenCalledWith(trainingCategory);
+        expect(setMandatoryTrainingBeingEditedSpy).toHaveBeenCalledWith(trainingCategory);
         expect(routerSpy).toHaveBeenCalledWith(['select-training-category'], {
           relativeTo: currentRoute,
         });

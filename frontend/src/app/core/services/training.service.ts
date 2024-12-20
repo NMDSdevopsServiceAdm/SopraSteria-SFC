@@ -129,7 +129,7 @@ export class TrainingService {
 
 export class MandatoryTrainingService extends TrainingService {
   _onlySelectedJobRoles: boolean = null;
-  _existingMandatoryTraining: mandatoryTraining = null;
+  _mandatoryTrainingBeingEdited: mandatoryTraining = null;
   public allJobRolesCount: number;
 
   public get onlySelectedJobRoles(): boolean {
@@ -142,15 +142,15 @@ export class MandatoryTrainingService extends TrainingService {
 
   public resetState(): void {
     this.onlySelectedJobRoles = null;
-    this.existingMandatoryTraining = null;
+    this.mandatoryTrainingBeingEdited = null;
     super.resetState();
   }
 
-  public set existingMandatoryTraining(mandatoryTraining) {
-    this._existingMandatoryTraining = mandatoryTraining;
+  public set mandatoryTrainingBeingEdited(mandatoryTraining) {
+    this._mandatoryTrainingBeingEdited = mandatoryTraining;
   }
 
-  public get existingMandatoryTraining(): mandatoryTraining {
-    return this._existingMandatoryTraining;
+  public get mandatoryTrainingBeingEdited(): mandatoryTraining {
+    return this._mandatoryTrainingBeingEdited;
   }
 }

@@ -177,15 +177,15 @@ describe('AllOrSelectedJobRolesComponent', () => {
       expect(allJobRolesRadio.checked).toBeFalsy();
     });
 
-    const existingMandatoryTraining = {
+    const mandatoryTrainingBeingEdited = {
       category: 'Activity provision/Well-being',
       establishmentId: 4090,
       jobs: [{}, {}],
       trainingCategoryId: 1,
     };
 
-    it("should prefill the 'Only selected job roles' radio when existingMandatoryTraining in training service does not match allJobRolesCount", async () => {
-      const { getByLabelText } = await setup({ existingMandatoryTraining, allJobRolesCount: 37 });
+    it("should prefill the 'Only selected job roles' radio when mandatoryTrainingBeingEdited in training service does not match allJobRolesCount", async () => {
+      const { getByLabelText } = await setup({ mandatoryTrainingBeingEdited, allJobRolesCount: 37 });
 
       const onlySelectedJobRolesRadio = getByLabelText('Only selected job roles') as HTMLInputElement;
       const allJobRolesRadio = getByLabelText('All job roles') as HTMLInputElement;
@@ -194,10 +194,10 @@ describe('AllOrSelectedJobRolesComponent', () => {
       expect(allJobRolesRadio.checked).toBeFalsy();
     });
 
-    it("should prefill the 'All job roles' radio when existingMandatoryTraining in training service does match allJobRolesCount", async () => {
+    it("should prefill the 'All job roles' radio when mandatoryTrainingBeingEdited in training service does match allJobRolesCount", async () => {
       const { getByLabelText } = await setup({
-        existingMandatoryTraining,
-        allJobRolesCount: existingMandatoryTraining.jobs.length,
+        mandatoryTrainingBeingEdited,
+        allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
       });
 
       const allJobRolesRadio = getByLabelText('All job roles') as HTMLInputElement;
@@ -207,10 +207,10 @@ describe('AllOrSelectedJobRolesComponent', () => {
       expect(onlySelectedJobRolesRadio.checked).toBeFalsy();
     });
 
-    it("should prefill the 'Only selected job roles' radio when set in training service even if existingMandatoryTraining (for case when user has changed from all to selected and then gone back to this page)", async () => {
+    it("should prefill the 'Only selected job roles' radio when set in training service even if mandatoryTrainingBeingEdited (for case when user has changed from all to selected and then gone back to this page)", async () => {
       const { getByLabelText } = await setup({
-        existingMandatoryTraining,
-        allJobRolesCount: existingMandatoryTraining.jobs.length,
+        mandatoryTrainingBeingEdited,
+        allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
         onlySelectedJobRoles: true,
       });
 
@@ -355,7 +355,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
     });
 
     it('should include previousTrainingCategoryId in submit props when editing existing mandatory training and All job roles selected', async () => {
-      const existingMandatoryTraining = {
+      const mandatoryTrainingBeingEdited = {
         category: 'Activity provision/Well-being',
         establishmentId: 4090,
         jobs: [{}, {}],
@@ -363,14 +363,14 @@ describe('AllOrSelectedJobRolesComponent', () => {
       };
 
       const { getByText, createAndUpdateMandatoryTrainingSpy, establishment, selectedTraining } = await setup({
-        existingMandatoryTraining,
-        allJobRolesCount: existingMandatoryTraining.jobs.length,
+        mandatoryTrainingBeingEdited,
+        allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
       });
 
       fireEvent.click(getByText('Continue'));
 
       expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
-        previousTrainingCategoryId: existingMandatoryTraining.trainingCategoryId,
+        previousTrainingCategoryId: mandatoryTrainingBeingEdited.trainingCategoryId,
         trainingCategoryId: selectedTraining.trainingCategory.id,
         allJobRoles: true,
         jobs: [],

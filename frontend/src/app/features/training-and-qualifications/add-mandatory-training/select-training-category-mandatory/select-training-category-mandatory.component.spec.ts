@@ -11,14 +11,13 @@ import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
-import { MockMandatoryTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import {
+  MockMandatoryTrainingService,
+  MockTrainingServiceWithPreselectedStaff,
+} from '@core/test-utils/MockTrainingService';
 import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import {
-  GroupedRadioButtonAccordionComponent,
-} from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import {
-  RadioButtonAccordionComponent,
-} from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -240,7 +239,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
       const overrides = {
         trainingCategories: mockTrainingCategories,
         existingMandatoryTraining,
-        trainingService: { existingMandatoryTraining: existingMandatoryTraining.mandatoryTraining[0] },
+        trainingService: { mandatoryTrainingBeingEdited: existingMandatoryTraining.mandatoryTraining[0] },
       };
 
       const { component, queryByText } = await setup(overrides);
@@ -259,7 +258,7 @@ describe('SelectTrainingCategoryMandatoryComponent', () => {
         trainingCategories: mockTrainingCategories,
         existingMandatoryTraining,
         trainingService: {
-          existingMandatoryTraining: existingMandatoryTraining.mandatoryTraining[0],
+          mandatoryTrainingBeingEdited: existingMandatoryTraining.mandatoryTraining[0],
           _selectedTraining: selectedTraining,
         },
       };

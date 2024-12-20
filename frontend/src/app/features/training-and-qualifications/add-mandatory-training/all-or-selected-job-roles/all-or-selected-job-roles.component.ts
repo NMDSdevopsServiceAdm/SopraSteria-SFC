@@ -29,7 +29,7 @@ export class AllOrSelectedJobRolesComponent {
   public serverError: string;
   private subscriptions: Subscription = new Subscription();
   private establishment: Establishment;
-  private existingMandatoryTraining: mandatoryTraining;
+  private mandatoryTrainingBeingEdited: mandatoryTraining;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -47,15 +47,15 @@ export class AllOrSelectedJobRolesComponent {
   ngOnInit(): void {
     this.establishment = this.route.snapshot.parent?.data?.establishment;
     this.selectedTrainingCategory = this.trainingService.selectedTraining;
-    this.existingMandatoryTraining = this.trainingService.existingMandatoryTraining;
+    this.mandatoryTrainingBeingEdited = this.trainingService.mandatoryTrainingBeingEdited;
     const allJobRolesCount = this.trainingService.allJobRolesCount;
 
     if (this.trainingService.onlySelectedJobRoles) {
       this.form.setValue({ allOrSelectedJobRoles: 'selectJobRoles' });
       this.selectedRadio = 'selectJobRoles';
-    } else if (this.existingMandatoryTraining) {
+    } else if (this.mandatoryTrainingBeingEdited) {
       const selected =
-        this.existingMandatoryTraining.jobs.length == allJobRolesCount ? 'allJobRoles' : 'selectJobRoles';
+        this.mandatoryTrainingBeingEdited.jobs.length == allJobRolesCount ? 'allJobRoles' : 'selectJobRoles';
 
       this.form.setValue({
         allOrSelectedJobRoles: selected,
@@ -131,8 +131,8 @@ export class AllOrSelectedJobRolesComponent {
       jobs: [],
     };
 
-    if (this.existingMandatoryTraining?.trainingCategoryId) {
-      props.previousTrainingCategoryId = this.existingMandatoryTraining.trainingCategoryId;
+    if (this.mandatoryTrainingBeingEdited?.trainingCategoryId) {
+      props.previousTrainingCategoryId = this.mandatoryTrainingBeingEdited.trainingCategoryId;
     }
 
     return props;

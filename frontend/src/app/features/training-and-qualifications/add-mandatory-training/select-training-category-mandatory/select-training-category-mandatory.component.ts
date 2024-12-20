@@ -6,9 +6,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { MandatoryTrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 
-import {
-  SelectTrainingCategoryDirective,
-} from '../../../../shared/directives/select-training-category/select-training-category.directive';
+import { SelectTrainingCategoryDirective } from '../../../../shared/directives/select-training-category/select-training-category.directive';
 
 @Component({
   selector: 'app-select-training-category-mandatory',
@@ -29,12 +27,12 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
   public requiredErrorMessage: string = 'Select the training category that you want to make mandatory';
   public hideOtherCheckbox: boolean = true;
-  private existingMandatoryTrainingCategoryId: number;
+  private mandatoryTrainingCategoryIdBeingEdited: number;
 
   init(): void {
     this.establishmentUid = this.route.snapshot.data.establishment.uid;
-    this.existingMandatoryTrainingCategoryId =
-      this.trainingService.existingMandatoryTraining?.trainingCategoryId ?? null;
+    this.mandatoryTrainingCategoryIdBeingEdited =
+      this.trainingService.mandatoryTrainingBeingEdited?.trainingCategoryId ?? null;
     this.getPrefilledId();
   }
 
@@ -43,8 +41,8 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
     if (selectedCategory) {
       this.preFilledId = selectedCategory?.id;
-    } else if (this.existingMandatoryTrainingCategoryId) {
-      this.preFilledId = this.trainingService.existingMandatoryTraining.trainingCategoryId;
+    } else if (this.mandatoryTrainingCategoryIdBeingEdited) {
+      this.preFilledId = this.trainingService.mandatoryTrainingBeingEdited.trainingCategoryId;
     }
   }
 
@@ -70,7 +68,7 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
       this.categories = allTrainingCategories.filter(
         (category) =>
           !trainingCategoryIdsWithExistingMandatoryTraining.includes(category.id) ||
-          category.id == this.existingMandatoryTrainingCategoryId,
+          category.id == this.mandatoryTrainingCategoryIdBeingEdited,
       );
     } else {
       this.categories = allTrainingCategories;
@@ -81,8 +79,7 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
   protected prefillForm(): void {
     if (this.preFilledId) {
-      this.form.setValue({ category: this.preFilledId });
-      this.form.get('category').updateValueAndValidity();
+      this.form.patchValue({ category: this.preFilledId });
     }
   }
 

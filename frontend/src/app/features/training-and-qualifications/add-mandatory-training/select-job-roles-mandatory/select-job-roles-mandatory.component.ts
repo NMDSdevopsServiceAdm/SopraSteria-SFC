@@ -45,7 +45,7 @@ export class SelectJobRolesMandatoryComponent {
   public subscriptions: Subscription = new Subscription();
   private establishment: Establishment;
   private selectedTrainingCategory: SelectedTraining;
-  private existingMandatoryTraining: mandatoryTraining;
+  private mandatoryTrainingBeingEdited: mandatoryTraining;
   public jobGroupsToOpenAtStart: string[] = [];
 
   ngOnInit(): void {
@@ -59,9 +59,9 @@ export class SelectJobRolesMandatoryComponent {
     this.backLinkService.showBackLink();
     this.getJobs();
     this.setupForm();
-    this.existingMandatoryTraining = this.trainingService.existingMandatoryTraining;
+    this.mandatoryTrainingBeingEdited = this.trainingService.mandatoryTrainingBeingEdited;
 
-    if (this.existingMandatoryTraining) {
+    if (this.mandatoryTrainingBeingEdited) {
       this.prefillForm();
     }
   }
@@ -143,17 +143,17 @@ export class SelectJobRolesMandatoryComponent {
       }),
     };
 
-    if (this.existingMandatoryTraining?.trainingCategoryId) {
-      props.previousTrainingCategoryId = this.existingMandatoryTraining.trainingCategoryId;
+    if (this.mandatoryTrainingBeingEdited?.trainingCategoryId) {
+      props.previousTrainingCategoryId = this.mandatoryTrainingBeingEdited.trainingCategoryId;
     }
 
     return props;
   }
 
   private prefillForm(): void {
-    if (this.existingMandatoryTraining.jobs?.length == this.trainingService.allJobRolesCount) return;
+    if (this.mandatoryTrainingBeingEdited.jobs?.length == this.trainingService.allJobRolesCount) return;
 
-    this.selectedJobIds = this.existingMandatoryTraining.jobs.map((job) => Number(job.id));
+    this.selectedJobIds = this.mandatoryTrainingBeingEdited.jobs.map((job) => Number(job.id));
     this.jobGroupsToOpenAtStart = this.jobGroups
       .filter((group) => group.items.some((job) => this.selectedJobIds.includes(job.id)))
       .map((group) => group.title);
