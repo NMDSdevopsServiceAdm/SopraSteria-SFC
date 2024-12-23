@@ -15,7 +15,7 @@ import { FindAccountComponent } from './find-account/find-account.component';
 import { FindUsernameComponent } from './find-username/find-username.component';
 import { ForgotYourUsernameComponent } from './forgot-your-username.component';
 
-describe('ForgotYourUsernameComponent', () => {
+fdescribe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
@@ -189,6 +189,21 @@ describe('ForgotYourUsernameComponent', () => {
           expect(getAllByText('Enter the email address in the correct format, like name@example.com')).toHaveSize(2);
 
           expect(findUsernameService.findUserAccount).not.toHaveBeenCalled();
+        });
+
+        it('should show an error message if the said account is being locked', async () => {
+          const { fixture, getByText, findUsernameService } = await setup();
+
+          spyOn(findUsernameService, 'findUserAccount').and.returnValue(of({ status: 'AccountLocked' }));
+
+          await fillInAndSubmitForm('Test User', 'A1234567', 'test@example.com');
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+
+          expect(
+            getByText('There is a problem with your account, please contact the Support Team on 0113 241 0969'),
+          ).toBeTruthy();
         });
       });
     });

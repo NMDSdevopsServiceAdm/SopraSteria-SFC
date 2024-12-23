@@ -131,7 +131,7 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
         break;
 
       case 'AccountLocked':
-        this.serverError = 'There is a problem with your account, please contact support on 0113 241 0969';
+        this.serverError = 'There is a problem with your account, please contact the Support Team on 0113 241 0969';
         this.accountFound = null;
         this.remainingAttempts = null;
         break;
