@@ -6,7 +6,7 @@ import { render } from '@testing-library/angular';
 
 import { UserAccountNotFoundComponent } from './user-account-not-found.component';
 
-fdescribe('UserAccountNotFoundComponent', () => {
+describe('UserAccountNotFoundComponent', () => {
   const setup = async () => {
     const setupTools = await render(UserAccountNotFoundComponent, {
       imports: [SharedModule, RouterTestingModule],

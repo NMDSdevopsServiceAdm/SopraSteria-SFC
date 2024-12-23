@@ -126,11 +126,11 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       {
         name: 409,
-        message: 'There is a problem with your account, please the Support Team on 0113 241 0969',
+        message: 'There is a problem with your account, please contact the Support Team on 0113 241 0969',
       },
       {
         name: 405,
-        message: 'Your registration request is awaiting approval, please the Support Team on 0113 241 0969',
+        message: 'Your registration request is awaiting approval, please contact the Support Team on 0113 241 0969',
       },
     ];
   }

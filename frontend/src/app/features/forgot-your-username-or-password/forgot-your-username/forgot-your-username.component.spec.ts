@@ -15,7 +15,7 @@ import { FindAccountComponent } from './find-account/find-account.component';
 import { FindUsernameComponent } from './find-username/find-username.component';
 import { ForgotYourUsernameComponent } from './forgot-your-username.component';
 
-fdescribe('ForgotYourUsernameComponent', () => {
+describe('ForgotYourUsernameComponent', () => {
   const setup = async () => {
     const setupTools = await render(ForgotYourUsernameComponent, {
       imports: [HttpClientTestingModule, FormsModule, ReactiveFormsModule, RouterTestingModule, SharedModule],
@@ -119,7 +119,7 @@ fdescribe('ForgotYourUsernameComponent', () => {
         await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
 
         const expectedText = [
-          'Some or all of the information you entered does not match that which we have for your account.',
+          'Some or all of the information you entered does not match the information we have for your account.',
           "You've 4 more chances to enter the same information that we have.",
           'Make sure the details you entered are correct or call the ASC-WDS Support Team on 0113 241 0969 for help.',
         ];
@@ -231,7 +231,7 @@ fdescribe('ForgotYourUsernameComponent', () => {
         const { getByText } = await setupAndProceedToFindUsername();
 
         expect(getByText('Your security question')).toBeTruthy();
-        expect(getByText('You chose this question when you created your account.')).toBeTruthy();
+        expect(getByText('You entered this question when you created your account.')).toBeTruthy();
         expect(getByText('Question')).toBeTruthy();
         expect(getByText(mockTestUser.securityQuestion)).toBeTruthy();
       });
@@ -309,7 +309,7 @@ fdescribe('ForgotYourUsernameComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('Your answer does not match that which we have for your account.')).toBeTruthy();
+        expect(getByText('Your answer does not match the one we have for your account.')).toBeTruthy();
         expect(getByText("You've 4 more chances to get your security question right.")).toBeTruthy();
 
         expect(routerSpy).not.toHaveBeenCalled();
@@ -328,7 +328,7 @@ fdescribe('ForgotYourUsernameComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('Your answer does not match that which we have for your account.')).toBeTruthy();
+        expect(getByText('Your answer does not match the one we have for your account.')).toBeTruthy();
         expect(getByText("You've 1 more chance to get your security question right.")).toBeTruthy();
         expect(getByText("You'll need to call the Support Team if you get it wrong again.")).toBeTruthy();
       });

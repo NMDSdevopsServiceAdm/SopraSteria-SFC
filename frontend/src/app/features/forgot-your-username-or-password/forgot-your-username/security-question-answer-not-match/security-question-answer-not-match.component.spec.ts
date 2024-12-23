@@ -6,7 +6,7 @@ import { render } from '@testing-library/angular';
 
 import { SecurityQuestionAnswerNotMatchComponent } from './security-question-answer-not-match.component';
 
-fdescribe('SecurityQuestionAnswerNotMatchComponent', () => {
+describe('SecurityQuestionAnswerNotMatchComponent', () => {
   const setup = async () => {
     const setupTools = await render(SecurityQuestionAnswerNotMatchComponent, {
       imports: [SharedModule, RouterTestingModule],
