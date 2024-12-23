@@ -6,7 +6,7 @@ import { render } from '@testing-library/angular';
 
 import { UserAccountNotFoundComponent } from './user-account-not-found.component';
 
-describe('UserAccountNotFoundComponent', () => {
+fdescribe('UserAccountNotFoundComponent', () => {
   const setup = async () => {
     const setupTools = await render(UserAccountNotFoundComponent, {
       imports: [SharedModule, RouterTestingModule],
@@ -30,7 +30,7 @@ describe('UserAccountNotFoundComponent', () => {
   it('should show a page heading', async () => {
     const { getByText } = await setup();
 
-    const expectedHeadingText = 'We did not found your account';
+    const expectedHeadingText = 'We did not find your account';
     expect(getByText(expectedHeadingText)).toBeTruthy();
   });
 

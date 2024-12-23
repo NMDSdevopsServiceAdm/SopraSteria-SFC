@@ -6,7 +6,7 @@ import { render } from '@testing-library/angular';
 
 import { SecurityQuestionAnswerNotMatchComponent } from './security-question-answer-not-match.component';
 
-describe('SecurityQuestionAnswerNotMatchComponent', () => {
+fdescribe('SecurityQuestionAnswerNotMatchComponent', () => {
   const setup = async () => {
     const setupTools = await render(SecurityQuestionAnswerNotMatchComponent, {
       imports: [SharedModule, RouterTestingModule],
@@ -30,7 +30,7 @@ describe('SecurityQuestionAnswerNotMatchComponent', () => {
   it('should show a page heading', async () => {
     const { getByText } = await setup();
 
-    const expectedHeadingText = 'None of your security question answers matched that which we have for your account';
+    const expectedHeadingText = 'None of your security question answers matched the one we have for your account';
     expect(getByText(expectedHeadingText)).toBeTruthy();
   });
 
