@@ -32,6 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
   public showPassword: boolean = false;
+  public showServerErrorAsLink: boolean = true;
 
   constructor(
     private idleService: IdleService,
@@ -189,6 +190,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.showServerErrorAsLink = error.status === 401;
         },
       ),
     );
