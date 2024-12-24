@@ -60,14 +60,14 @@ describe('FindUsernameService', () => {
     it('should handle a 404 "Not found" response and convert it to AccountNotFound', async () => {
       service.findUserAccount(mockParams).subscribe(mockSubscriber);
       const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
-      req.flush({ message: 'Reached maximum retry' }, { status: 429, statusText: 'Too many request' });
+      req.flush({ remainingAttempts: 3 }, { status: 404, statusText: 'Not found' });
 
-      const expectedResult = { status: 'AccountNotFound', remainingAttempts: 0 };
+      const expectedResult = { status: 'AccountNotFound', remainingAttempts: 3 };
 
       expect(mockSubscriber).toHaveBeenCalledOnceWith(expectedResult);
     });
 
-    it('should handle a 429 "Too many request" response and convert it to remainingAttempts: 0', async () => {
+    it('should handle a 429 "Too many request" response and convert it to AccountNotFound with remainingAttempts: 0', async () => {
       service.findUserAccount(mockParams).subscribe(mockSubscriber);
       const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
       req.flush({ message: 'Reached maximum retry' }, { status: 429, statusText: 'Too many request' });
