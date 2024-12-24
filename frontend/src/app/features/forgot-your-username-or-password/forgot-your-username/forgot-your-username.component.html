@@ -1,8 +1,9 @@
 <app-error-summary
-  *ngIf="currentForm && currentForm.submitted && currentForm.form.invalid"
+  *ngIf="currentForm && currentForm.submitted && (currentForm.form.invalid || currentForm.serverError)"
   [formErrorsMap]="currentForm.formErrorsMap"
-  [serverError]="serverError"
+  [serverError]="currentForm.serverError"
   [form]="currentForm.form"
+  [showServerErrorAsLink]="false"
 >
 </app-error-summary>
 

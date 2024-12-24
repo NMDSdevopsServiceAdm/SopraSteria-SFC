@@ -12,6 +12,7 @@ import {
   ViewChild,
 } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { EMAIL_PATTERN } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -40,6 +41,7 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
   public submitted = false;
   public accountFound: boolean;
   public remainingAttempts: number;
+  public serverError: string;
 
   private subscriptions = new Subscription();
 
@@ -47,6 +49,7 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
     private FormBuilder: UntypedFormBuilder,
     private errorSummaryService: ErrorSummaryService,
     private findUsernameService: FindUsernameService,
+    private router: Router,
   ) {}
 
   ngOnInit() {
@@ -98,6 +101,7 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
 
   public onSubmit() {
     this.submitted = true;
+    this.serverError = null;
 
     if (!this.form.valid) {
       return;
@@ -109,17 +113,27 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
   }
 
   public handleResponse(response: FindUserAccountResponse): void {
-    switch (response?.accountFound) {
-      case true:
+    switch (response?.status) {
+      case 'AccountFound':
         this.accountFound = true;
         this.accountFoundEvent.emit(response);
         break;
-      case false:
+
+      case 'AccountNotFound':
         this.accountFound = false;
         this.remainingAttempts = response.remainingAttempts;
-        // TODO for #1570:  navigate to error page when remaining attempt = 0
+
+        if (this.remainingAttempts === 0) {
+          this.router.navigate(['/user-account-not-found']);
+        }
 
         this.scrollToResult();
+        break;
+
+      case 'AccountLocked':
+        this.serverError = 'There is a problem with your account, please contact the Support Team on 0113 241 0969';
+        this.accountFound = null;
+        this.remainingAttempts = null;
         break;
     }
   }

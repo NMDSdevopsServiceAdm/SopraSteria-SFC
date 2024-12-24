@@ -1,12 +1,15 @@
 const { isEmpty } = require('lodash');
 const { sanitisePostcode } = require('../../utils/postcodeSanitizer');
+const limitFindUserAccountUtils = require('../../utils/limitFindUserAccountUtils');
+const HttpError = require('../../utils/errors/httpError');
 const models = require('../../models/index');
+const { MaxFindUsernameAttempts } = require('../../data/constants');
+
+class FindUserAccountException extends HttpError {}
 
 const findUserAccount = async (req, res) => {
   try {
-    if (requestIsInvalid(req)) {
-      return res.status(400).send('Invalid request');
-    }
+    await validateRequest(req);
 
     const { name, workplaceIdOrPostcode, email } = req.body;
     let userFound = null;
@@ -19,18 +22,34 @@ const findUserAccount = async (req, res) => {
     userFound =
       userFound ?? (await models.user.findByRelevantInfo({ name, workplaceId: workplaceIdOrPostcode, email }));
 
-    if (userFound) {
-      return sendSuccessResponse(res, userFound);
+    if (!userFound) {
+      const failedAttemptsCount = await limitFindUserAccountUtils.recordFailedAttempt(req.ip);
+      const remainingAttempts = MaxFindUsernameAttempts - failedAttemptsCount;
+
+      return sendNotFoundResponse(res, remainingAttempts);
     }
 
-    return sendNotFoundResponse(res);
+    if (userFound.accountLocked) {
+      throw new FindUserAccountException('User account is locked', 423);
+    }
+
+    return sendSuccessResponse(res, userFound);
   } catch (err) {
-    console.error('registration POST findUserAccount - failed', err);
-    return res.status(500).send('Internal server error');
+    return sendErrorResponse(res, err);
   }
 };
 
-const requestIsInvalid = (req) => {
+const validateRequest = async (req) => {
+  if (requestBodyIsInvalid(req)) {
+    throw new FindUserAccountException('Invalid request', 400);
+  }
+
+  if (await ipAddressReachedMaxAttempt(req)) {
+    throw new FindUserAccountException('Reached maximum retry', 429);
+  }
+};
+
+const requestBodyIsInvalid = (req) => {
   if (!req.body) {
     return true;
   }
@@ -39,17 +58,31 @@ const requestIsInvalid = (req) => {
   return [name, workplaceIdOrPostcode, email].some((field) => isEmpty(field));
 };
 
+const ipAddressReachedMaxAttempt = async (req) => {
+  const attemptsSoFar = (await limitFindUserAccountUtils.getNumberOfFailedAttempts(req.ip)) ?? 0;
+  return attemptsSoFar >= MaxFindUsernameAttempts;
+};
+
 const sendSuccessResponse = (res, userFound) => {
   const { uid, SecurityQuestionValue } = userFound;
   return res.status(200).json({
-    accountFound: true,
     accountUid: uid,
     securityQuestion: SecurityQuestionValue,
   });
 };
 
-const sendNotFoundResponse = (res) => {
-  return res.status(200).json({ accountFound: false, remainingAttempts: 4 });
+const sendNotFoundResponse = (res, remainingAttempts = 0) => {
+  return res.status(404).json({ remainingAttempts });
 };
 
-module.exports = { findUserAccount };
+const sendErrorResponse = (res, err) => {
+  console.error('registration POST findUserAccount - failed', err);
+
+  if (err instanceof FindUserAccountException) {
+    return res.status(err.statusCode).json({ message: err.message });
+  }
+
+  return res.status(500).send('Internal server error');
+};
+
+module.exports = { findUserAccount, FindUserAccountException };

@@ -26,6 +26,7 @@ export class FindUsernameComponent implements OnInit, OnDestroy {
   public formErrorsMap: Array<ErrorDetails>;
   public requiredErrorMessage = 'Enter the answer to your security question';
   public remainingAttempts: number;
+  public serverError: string;
 
   private subscriptions = new Subscription();
 
@@ -98,7 +99,10 @@ export class FindUsernameComponent implements OnInit, OnDestroy {
       }
       case false: {
         this.remainingAttempts = response.remainingAttempts;
-        // to navigate to failure page when remainingAttempts = 0
+
+        if (this.remainingAttempts === 0) {
+          this.router.navigate(['/security-question-answer-not-match']);
+        }
         break;
       }
     }

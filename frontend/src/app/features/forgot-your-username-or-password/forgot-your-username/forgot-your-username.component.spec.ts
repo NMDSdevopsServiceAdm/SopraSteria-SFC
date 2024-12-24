@@ -119,7 +119,7 @@ describe('ForgotYourUsernameComponent', () => {
         await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
 
         const expectedText = [
-          'Some or all of the information you entered does not match that which we have for your account.',
+          'Some or all of the information you entered does not match the information we have for your account.',
           "You've 4 more chances to enter the same information that we have.",
           'Make sure the details you entered are correct or call the ASC-WDS Support Team on 0113 241 0969 for help.',
         ];
@@ -129,6 +129,33 @@ describe('ForgotYourUsernameComponent', () => {
         expectedText.forEach((text) => expect(messageDiv.innerText).toContain(text));
 
         expect(getByRole('button', { name: 'Find account' })).toBeTruthy();
+      });
+
+      it('should show a different error message when only 1 chance remain', async () => {
+        const { fixture, getByText, findUsernameService } = await setup();
+        spyOn(findUsernameService, 'findUserAccount').and.returnValue(
+          of({ status: 'AccountNotFound', remainingAttempts: 1 }),
+        );
+
+        await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
+
+        fixture.detectChanges();
+
+        const expectedText =
+          "You've 1 more chance to enter the same information that we have, otherwise you'll need to call the Support Team.";
+
+        expect(getByText(expectedText)).toBeTruthy();
+      });
+
+      it('should navigate to "user-account-not-found" page when remaining attempts = 0', async () => {
+        const { findUsernameService, routerSpy } = await setup();
+        spyOn(findUsernameService, 'findUserAccount').and.returnValue(
+          of({ status: 'AccountNotFound', remainingAttempts: 0 }),
+        );
+
+        await fillInAndSubmitForm('non-exist user', 'A1234567', 'test@example.com');
+
+        expect(routerSpy).toHaveBeenCalledWith(['/user-account-not-found']);
       });
 
       describe('errors', () => {
@@ -163,6 +190,21 @@ describe('ForgotYourUsernameComponent', () => {
 
           expect(findUsernameService.findUserAccount).not.toHaveBeenCalled();
         });
+
+        it('should show an error message if the said account is being locked', async () => {
+          const { fixture, getByText, findUsernameService } = await setup();
+
+          spyOn(findUsernameService, 'findUserAccount').and.returnValue(of({ status: 'AccountLocked' }));
+
+          await fillInAndSubmitForm('Test User', 'A1234567', 'test@example.com');
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+
+          expect(
+            getByText('There is a problem with your account, please contact the Support Team on 0113 241 0969'),
+          ).toBeTruthy();
+        });
       });
     });
   });
@@ -189,7 +231,7 @@ describe('ForgotYourUsernameComponent', () => {
         const { getByText } = await setupAndProceedToFindUsername();
 
         expect(getByText('Your security question')).toBeTruthy();
-        expect(getByText('You chose this question when you created your account.')).toBeTruthy();
+        expect(getByText('You entered this question when you created your account.')).toBeTruthy();
         expect(getByText('Question')).toBeTruthy();
         expect(getByText(mockTestUser.securityQuestion)).toBeTruthy();
       });
@@ -267,7 +309,7 @@ describe('ForgotYourUsernameComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('Your answer does not match that which we have for your account.')).toBeTruthy();
+        expect(getByText('Your answer does not match the one we have for your account.')).toBeTruthy();
         expect(getByText("You've 4 more chances to get your security question right.")).toBeTruthy();
 
         expect(routerSpy).not.toHaveBeenCalled();
@@ -286,9 +328,24 @@ describe('ForgotYourUsernameComponent', () => {
 
         fixture.detectChanges();
 
-        expect(getByText('Your answer does not match that which we have for your account.')).toBeTruthy();
+        expect(getByText('Your answer does not match the one we have for your account.')).toBeTruthy();
         expect(getByText("You've 1 more chance to get your security question right.")).toBeTruthy();
         expect(getByText("You'll need to call the Support Team if you get it wrong again.")).toBeTruthy();
+      });
+
+      it('should navigate to "security-question-answer-not-match" page when remaining attempts = 0', async () => {
+        const { fixture, getByRole, findUsernameService, routerSpy } = await setupAndProceedToFindUsername();
+        spyOn(findUsernameService, 'findUsername').and.returnValue(of({ answerCorrect: false, remainingAttempts: 0 }));
+
+        userEvent.type(
+          getByRole('textbox', { name: "What's the answer to your security question?" }),
+          'some wrong answer',
+        );
+        userEvent.click(getByRole('button', { name: 'Find username' }));
+
+        fixture.detectChanges();
+
+        expect(routerSpy).toHaveBeenCalledWith(['/security-question-answer-not-match']);
       });
 
       describe('error', () => {
