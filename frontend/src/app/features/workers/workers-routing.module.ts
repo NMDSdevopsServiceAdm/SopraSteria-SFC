@@ -59,6 +59,7 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
+import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 
 const routes: Routes = [
   {
@@ -689,6 +690,11 @@ const routes: Routes = [
         component: LongTermAbsenceComponent,
         resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
         data: { title: 'Flag long term absence' },
+      },
+      {
+        path: 'delete-staff-record',
+        component: DeleteStaffRecordComponent,
+        data: { title: 'Delete staff record' },
       },
     ],
   },

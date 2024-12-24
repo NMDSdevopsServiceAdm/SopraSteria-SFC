@@ -69,6 +69,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
+import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -125,6 +126,7 @@ import { QualificationCertificateService, TrainingCertificateService } from '@co
     EmployedFromOutsideUkComponent,
     Level2AdultSocialCareCertificateComponent,
     MainJobRoleComponent,
+    DeleteStaffRecordComponent,
   ],
   providers: [
     DialogService,

@@ -1,0 +1,52 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <span class="govuk-caption-l" data-testid="section-heading">{{ worker.nameOrId }}</span>
+    <h1 class="govuk-heading-l">Delete staff record</h1>
+
+    <h2 class="govuk-heading-m">Are you sure you want to delete this staff record?</h2>
+    <p>
+      <strong>This action cannot be undone.</strong> It will permanently delete this staff record and any related
+      training and qualification records (and certificates).
+    </p>
+
+    <form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+      <div class="govuk-form-group">
+        <fieldset class="govuk-fieldset">
+          <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">
+            <h2 class="govuk-heading-m govuk-!-margin-bottom-0">Select why you want to delete this staff record</h2>
+          </legend>
+          <div class="govuk-radios">
+            <ng-container *ngFor="let reason of reasons; index as index">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
+                  [id]="'reason-' + index"
+                  name="reason"
+                  type="radio"
+                  value="reason.id"
+                />
+                <label class="govuk-label govuk-radios__label" [for]="'reason-' + index"> {{ reason.reason }} </label>
+              </div>
+            </ng-container>
+          </div>
+        </fieldset>
+      </div>
+      <div class="govuk-form-group">
+        <div class="govuk-checkboxes__item govuk-checkboxes__item-align-middle">
+          <input
+            class="govuk-checkboxes__input"
+            id="confirmDelete"
+            name="confirmDelete"
+            type="checkbox"
+            value="confirmDelete"
+            formControlName="confirmDelete"
+          />
+          <label class="govuk-label govuk-checkboxes__label" for="confirmDelete">
+            I know that this action will permanently delete this staff record and any training and qualification records
+            (and certificates) related to it.
+          </label>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
