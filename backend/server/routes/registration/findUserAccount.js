@@ -3,8 +3,8 @@ const { sanitisePostcode } = require('../../utils/postcodeSanitizer');
 const limitFindUserAccountUtils = require('../../utils/limitFindUserAccountUtils');
 const HttpError = require('../../utils/errors/httpError');
 const models = require('../../models/index');
+const { MaxFindUsernameAttempts } = require('../../data/constants');
 
-const MaxAttempts = 5;
 class FindUserAccountException extends HttpError {}
 
 const findUserAccount = async (req, res) => {
@@ -24,7 +24,7 @@ const findUserAccount = async (req, res) => {
 
     if (!userFound) {
       const failedAttemptsCount = await limitFindUserAccountUtils.recordFailedAttempt(req.ip);
-      const remainingAttempts = MaxAttempts - failedAttemptsCount;
+      const remainingAttempts = MaxFindUsernameAttempts - failedAttemptsCount;
 
       return sendNotFoundResponse(res, remainingAttempts);
     }
@@ -60,7 +60,7 @@ const requestBodyIsInvalid = (req) => {
 
 const ipAddressReachedMaxAttempt = async (req) => {
   const attemptsSoFar = (await limitFindUserAccountUtils.getNumberOfFailedAttempts(req.ip)) ?? 0;
-  return attemptsSoFar >= MaxAttempts;
+  return attemptsSoFar >= MaxFindUsernameAttempts;
 };
 
 const sendSuccessResponse = (res, userFound) => {
