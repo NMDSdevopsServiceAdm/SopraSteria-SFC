@@ -37,36 +37,6 @@ describe('FindUsernameService', () => {
       expect(req.request.body).toEqual(mockParams);
     });
 
-    it('should handle a 200 response and convert it to AccountFound', async () => {
-      service.findUserAccount(mockParams).subscribe(mockSubscriber);
-      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
-      req.flush(
-        {
-          accountUid: 'mock-uid',
-          securityQuestion: 'What is your favourite colour?',
-        },
-        { status: 200, statusText: 'Ok' },
-      );
-
-      const expectedResult = {
-        status: 'AccountFound',
-        accountUid: 'mock-uid',
-        securityQuestion: 'What is your favourite colour?',
-      };
-
-      expect(mockSubscriber).toHaveBeenCalledOnceWith(expectedResult);
-    });
-
-    it('should handle a 404 "Not found" response and convert it to AccountNotFound', async () => {
-      service.findUserAccount(mockParams).subscribe(mockSubscriber);
-      const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);
-      req.flush({ remainingAttempts: 3 }, { status: 404, statusText: 'Not found' });
-
-      const expectedResult = { status: 'AccountNotFound', remainingAttempts: 3 };
-
-      expect(mockSubscriber).toHaveBeenCalledOnceWith(expectedResult);
-    });
-
     it('should handle a 429 "Too many request" response and convert it to AccountNotFound with remainingAttempts: 0', async () => {
       service.findUserAccount(mockParams).subscribe(mockSubscriber);
       const req = http.expectOne(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`);

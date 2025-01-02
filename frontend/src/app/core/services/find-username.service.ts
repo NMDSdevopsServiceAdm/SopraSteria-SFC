@@ -54,15 +54,11 @@ export class FindUsernameService {
   findUserAccount(params: FindAccountRequest): Observable<FindUserAccountResponse> {
     return this.http
       .post<FindUserAccountResponse>(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`, params)
-      .pipe(
-        map((res) => ({ ...res, status: 'AccountFound' } as AccountFound)),
-        catchError((res) => this.handleFindUserAccountErrors(res)),
-      );
+      .pipe(catchError((res) => this.handleFindUserAccountErrors(res)));
   }
 
   handleFindUserAccountErrors(err: HttpErrorResponse): Observable<AccountNotFound | AccountLocked> {
     switch (err?.status) {
-      case 404: // Not found
       case 429: // Too many request
         const remainingAttempts = err.error?.remainingAttempts ?? 0;
         return of({
