@@ -12,6 +12,7 @@ import { render } from '@testing-library/angular';
 import { DeleteStaffRecordComponent } from './delete-staff-record.component';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
+import userEvent from '@testing-library/user-event';
 
 fdescribe('DeleteStaffRecordComponent', () => {
   const mockWorker = workerBuilder() as Worker;
@@ -79,6 +80,20 @@ fdescribe('DeleteStaffRecordComponent', () => {
       const { getByRole } = await setup();
 
       expect(getByRole('button', { name: 'Delete this staff record' })).toBeTruthy();
+    });
+  });
+
+  describe('form submit and validations', () => {
+    it('should show an error message if confirmation checkbox is not ticked', async () => {
+      const { fixture, getByRole, getByText, getAllByText } = await setup();
+      const expectedErrorMessage =
+        'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
+
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+      fixture.detectChanges();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
     });
   });
 });

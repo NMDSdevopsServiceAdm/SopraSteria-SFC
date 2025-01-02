@@ -1,10 +1,12 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
+import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Reason, WorkerService } from '@core/services/worker.service';
@@ -16,7 +18,7 @@ import { take } from 'rxjs/operators';
   templateUrl: './delete-staff-record.component.html',
   styleUrls: ['./delete-staff-record.component.scss'],
 })
-export class DeleteStaffRecordComponent implements OnInit {
+export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
 
   public form: UntypedFormGroup;
@@ -24,6 +26,10 @@ export class DeleteStaffRecordComponent implements OnInit {
   public worker: Worker;
   public workplace: Establishment;
   public reasons: Reason[];
+  public formErrorsMap: Array<ErrorDetails>;
+  public confirmationMissingErrorMessage =
+    'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
+
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -32,6 +38,7 @@ export class DeleteStaffRecordComponent implements OnInit {
     private permissionsService: PermissionsService,
     private route: ActivatedRoute,
     private router: Router,
+    private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,
     private formBuilder: UntypedFormBuilder,
     protected backLinkService: BackLinkService,
@@ -49,15 +56,41 @@ export class DeleteStaffRecordComponent implements OnInit {
         this.reasons = reasons;
       }),
     );
+    this.setBackLink();
     this.setupForm();
+    this.setupFormErrorsMap();
+  }
+
+  ngAfterViewInit() {
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      reason: null,
-      confirmDelete: [null],
+      reason: [null, { updateOn: 'submit' }],
+      confirmDelete: [null, { validators: [Validators.requiredTrue], updateOn: 'submit' }],
     });
   }
 
-  public onSubmit(): void {}
+  private setBackLink(): void {
+    this.backLinkService.showBackLink();
+  }
+
+  private setupFormErrorsMap(): void {
+    this.formErrorsMap = [
+      {
+        item: 'confirmDelete',
+        type: [
+          {
+            name: 'required',
+            message: this.confirmationMissingErrorMessage,
+          },
+        ],
+      },
+    ];
+  }
+
+  public onSubmit(): void {
+    this.submitted = true;
+  }
 }
