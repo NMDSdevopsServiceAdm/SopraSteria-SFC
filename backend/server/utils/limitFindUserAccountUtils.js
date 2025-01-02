@@ -1,7 +1,7 @@
 const config = require('../config/config');
 const RedisClient = require('ioredis');
 
-const redisClient = new RedisClient({ ...config.get('redis'), keyPrefix: 'findUserAccountAttempts:' });
+const redisClient = new RedisClient(config.get('redis.url'), { keyPrefix: 'findUserAccountAttempts:' });
 
 const getNumberOfFailedAttempts = async (ipAddress) => {
   const rawValue = await redisClient.get(ipAddress);
