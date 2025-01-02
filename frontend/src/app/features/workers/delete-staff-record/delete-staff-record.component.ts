@@ -45,11 +45,8 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit(): void {
-    this.subscriptions.add(
-      this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
-        this.worker = worker;
-      }),
-    );
+    this.worker = this.workerService.worker;
+    this.workplace = this.establishmentService.establishment;
 
     this.subscriptions.add(
       this.workerService.getLeaveReasons().subscribe((reasons) => {
@@ -90,7 +87,40 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
     ];
   }
 
+  public get confirmDeleteCheckbox() {
+    return this.form.get('confirmDelete');
+  }
+
+  public get selectedReasonId() {
+    return this.form.get('reason').value;
+  }
+
   public onSubmit(): void {
     this.submitted = true;
+
+    if (this.form.invalid) {
+      return;
+    }
+
+    const selectedReason = this.selectedReasonId ? { reason: { id: this.selectedReasonId } } : null;
+
+    this.subscriptions.add(
+      this.workerService
+        .deleteWorker(this.workplace.uid, this.worker.uid, selectedReason)
+        .subscribe(() => this.onSuccess()),
+    );
+  }
+
+  private onSuccess(): void {
+    this.router
+      .navigate(['/dashboard'], {
+        fragment: 'staff-records',
+      })
+      .then(() =>
+        this.alertService.addAlert({
+          type: 'success',
+          message: `${this.worker.nameOrId} has been deleted`,
+        }),
+      );
   }
 }

@@ -13,6 +13,9 @@ import { DeleteStaffRecordComponent } from './delete-staff-record.component';
 import { AlertService } from '@core/services/alert.service';
 import { WindowRef } from '@core/services/window.ref';
 import userEvent from '@testing-library/user-event';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { of } from 'rxjs';
 
 fdescribe('DeleteStaffRecordComponent', () => {
   const mockWorker = workerBuilder() as Worker;
@@ -26,6 +29,10 @@ fdescribe('DeleteStaffRecordComponent', () => {
           provide: WorkerService,
           useFactory: MockWorkerServiceWithUpdateWorker.factory(mockWorker),
         },
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
         AlertService,
         WindowRef,
       ],
@@ -36,10 +43,19 @@ fdescribe('DeleteStaffRecordComponent', () => {
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const deleteWorkerSpy = spyOn(workerService, 'deleteWorker').and.returnValue(of(null));
+
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertServiceSpy = spyOn(alertService, 'addAlert');
+
     return {
       ...setupTools,
       component,
       routerSpy,
+      workerService,
+      deleteWorkerSpy,
+      alertServiceSpy,
     };
   };
 
@@ -84,8 +100,48 @@ fdescribe('DeleteStaffRecordComponent', () => {
   });
 
   describe('form submit and validations', () => {
+    it('should call workerService deleteWorker on submit', async () => {
+      const { component, getByRole, deleteWorkerSpy } = await setup();
+
+      userEvent.click(getByRole('checkbox', { name: /I know that/ }));
+      userEvent.click(getByRole('radio', { name: mockLeaveReasons[3].reason }));
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+
+      const expectedReason = {
+        reason: {
+          id: mockLeaveReasons[3].id,
+        },
+      };
+
+      expect(deleteWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, expectedReason);
+    });
+
+    it('should call deleteWorker with reason as null if user did not select a particular reason', async () => {
+      const { component, getByRole, deleteWorkerSpy } = await setup();
+
+      userEvent.click(getByRole('checkbox', { name: /I know that/ }));
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+
+      expect(deleteWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, null);
+    });
+
+    it('should navigate to staff record page and show an alert when worker is successfully deleted', async () => {
+      const { component, getByRole, routerSpy, alertServiceSpy } = await setup();
+
+      userEvent.click(getByRole('checkbox', { name: /I know that/ }));
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
+
+      await routerSpy.calls.mostRecent().returnValue;
+      expect(alertServiceSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: `${component.worker.nameOrId} has been deleted`,
+      });
+    });
+
     it('should show an error message if confirmation checkbox is not ticked', async () => {
-      const { fixture, getByRole, getByText, getAllByText } = await setup();
+      const { fixture, getByRole, getByText, getAllByText, deleteWorkerSpy } = await setup();
       const expectedErrorMessage =
         'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
 
@@ -94,6 +150,8 @@ fdescribe('DeleteStaffRecordComponent', () => {
 
       expect(getByText('There is a problem')).toBeTruthy();
       expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+
+      expect(deleteWorkerSpy).not.toHaveBeenCalled();
     });
   });
 });
