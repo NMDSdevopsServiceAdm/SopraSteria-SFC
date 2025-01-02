@@ -51,6 +51,7 @@
         </p>
       </div>
       <div class="change-data-permissions-column">
+        <p class="govuk-!-margin-bottom-1">&nbsp;</p>
         <span class="govuk-util__float-right govuk_util-float-bottom" *ngIf="canChangePermissionsForSubsidiary">
             <ng-container *ngIf="workplace.dataOwnershipRequested; else dataPermissions">
               <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
