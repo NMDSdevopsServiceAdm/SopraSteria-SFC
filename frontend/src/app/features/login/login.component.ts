@@ -32,6 +32,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   public serverErrorsMap: Array<ErrorDefinition>;
   public serverError: string;
   public showPassword: boolean = false;
+  public showServerErrorAsLink: boolean = true;
 
   constructor(
     private idleService: IdleService,
@@ -126,11 +127,11 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
       },
       {
         name: 409,
-        message: 'There is a problem with your account, please contact support on 0113 241 0969',
+        message: 'There is a problem with your account, please contact the Support Team on 0113 241 0969',
       },
       {
         name: 405,
-        message: 'Your registration request is awaiting approval, please contact support on 0113 241 0969',
+        message: 'Your registration request is awaiting approval, please contact the Support Team on 0113 241 0969',
       },
     ];
   }
@@ -189,6 +190,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
+          this.showServerErrorAsLink = error.status === 401;
         },
       ),
     );

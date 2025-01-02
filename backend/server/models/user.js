@@ -2,6 +2,7 @@
 const { Op } = require('sequelize');
 const { padEnd } = require('lodash');
 const { sanitise } = require('../utils/db');
+const { UserAccountStatus } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define(
@@ -513,29 +514,10 @@ module.exports = function (sequelize, DataTypes) {
           required: true,
           attributes: [],
         },
-      ],
-      raw: true,
-    };
-
-    return this.findOne(query);
-  };
-
-  User.getUsernameWithSecurityQuestionAnswer = async function ({ uid, securityQuestionAnswer }) {
-    if (!uid || !securityQuestionAnswer) {
-      return null;
-    }
-
-    const query = {
-      attributes: ['SecurityQuestionAnswerValue'],
-      where: {
-        Archived: false,
-        uid,
-      },
-      include: [
         {
           model: sequelize.models.login,
           required: true,
-          attributes: ['username'],
+          attributes: ['status'],
         },
       ],
       raw: true,
@@ -543,11 +525,11 @@ module.exports = function (sequelize, DataTypes) {
 
     const userFound = await this.findOne(query);
 
-    if (!userFound || userFound.SecurityQuestionAnswerValue !== securityQuestionAnswer) {
-      return null;
+    if (userFound && userFound['login.status'] === UserAccountStatus.Locked) {
+      return { accountLocked: true };
     }
 
-    return { username: userFound['login.username'] };
+    return userFound;
   };
 
   return User;

@@ -14,13 +14,13 @@ export class MockFindUsernameService extends FindUsernameService {
   findUserAccount(params: FindAccountRequest): ReturnType<FindUsernameService['findUserAccount']> {
     if (params.name === 'non-exist user') {
       return of({
-        accountFound: false,
+        status: 'AccountNotFound',
         remainingAttempts: 4,
       });
     }
 
     return of({
-      accountFound: true,
+      status: 'AccountFound',
       accountUid: 'mock-user-uid',
       securityQuestion: 'What is your favourite colour?',
     });

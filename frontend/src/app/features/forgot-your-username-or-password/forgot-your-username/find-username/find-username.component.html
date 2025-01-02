@@ -4,7 +4,7 @@
     <div class="govuk-grid-column-two-thirds-from-desktop">
       <div class="asc-security-question__container">
         <h3 class="govuk-heading-m">Your security question</h3>
-        <p>You chose this question when you created your account.</p>
+        <p>You entered this question when you created your account.</p>
         <h4 class="govuk-heading-s">Question</h4>
         <div id="securityQuestion" class="asc-security-question" #securityQuestionEl tabindex="-1">
           {{ securityQuestion }}
@@ -39,7 +39,7 @@
 
       <div *ngIf="remainingAttempts" class="asc-incorrect-answer-message" role="alert">
         <img class="govuk-!-margin-right-1" src="/assets/images/cross-icon.svg" alt="Error" />
-        <p>Your answer does not match that which we have for your account.</p>
+        <p>Your answer does not match the one we have for your account.</p>
         <ng-container [ngPlural]="remainingAttempts">
           <ng-template ngPluralCase="=1">
             <p>You've 1 more chance to get your security question right.</p>

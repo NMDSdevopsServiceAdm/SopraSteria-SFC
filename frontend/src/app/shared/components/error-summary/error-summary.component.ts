@@ -16,6 +16,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public serverError?: string;
   @Input() public customErrors?: Array<ErrorDefinition>;
   @Input() addIndexKeyToFormArrayErrors: boolean = false;
+  @Input() showServerErrorAsLink: boolean = true;
   @ViewChild('errorSummary', { static: true }) private errorSummaryElement: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;

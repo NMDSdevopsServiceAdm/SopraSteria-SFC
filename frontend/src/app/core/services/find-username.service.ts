@@ -3,7 +3,7 @@ import { environment } from 'src/environments/environment';
 
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { catchError } from 'rxjs/operators';
+import { catchError, map } from 'rxjs/operators';
 
 export interface FindAccountRequest {
   name: string;
@@ -12,16 +12,20 @@ export interface FindAccountRequest {
 }
 
 export interface AccountFound {
-  accountFound: true;
+  status: 'AccountFound';
   accountUid: string;
   securityQuestion: string;
 }
 interface AccountNotFound {
-  accountFound: false;
+  status: 'AccountNotFound';
   remainingAttempts: number;
 }
 
-export type FindUserAccountResponse = AccountFound | AccountNotFound;
+export interface AccountLocked {
+  status: 'AccountLocked';
+}
+
+export type FindUserAccountResponse = AccountFound | AccountNotFound | AccountLocked;
 
 export interface FindUsernameRequest {
   uid: string;
@@ -48,10 +52,30 @@ export class FindUsernameService {
   constructor(private http: HttpClient) {}
 
   findUserAccount(params: FindAccountRequest): Observable<FindUserAccountResponse> {
-    return this.http.post<FindUserAccountResponse>(
-      `${environment.appRunnerEndpoint}/api/registration/findUserAccount`,
-      params,
-    );
+    return this.http
+      .post<FindUserAccountResponse>(`${environment.appRunnerEndpoint}/api/registration/findUserAccount`, params)
+      .pipe(
+        map((res) => ({ ...res, status: 'AccountFound' } as AccountFound)),
+        catchError((res) => this.handleFindUserAccountErrors(res)),
+      );
+  }
+
+  handleFindUserAccountErrors(err: HttpErrorResponse): Observable<AccountNotFound | AccountLocked> {
+    switch (err?.status) {
+      case 404: // Not found
+      case 429: // Too many request
+        const remainingAttempts = err.error?.remainingAttempts ?? 0;
+        return of({
+          status: 'AccountNotFound',
+          remainingAttempts,
+        });
+      case 423: // Locked
+        return of({
+          status: 'AccountLocked',
+        });
+    }
+
+    throwError(err);
   }
 
   findUsername(params: FindUsernameRequest): Observable<any> {
