@@ -74,5 +74,11 @@ fdescribe('DeleteStaffRecordComponent', () => {
 
       expect(getByRole('checkbox', { name: checkboxText })).toBeTruthy();
     });
+
+    it('should show a red CTA button "Delete this staff record"', async () => {
+      const { getByRole } = await setup();
+
+      expect(getByRole('button', { name: 'Delete this staff record' })).toBeTruthy();
+    });
   });
 });
