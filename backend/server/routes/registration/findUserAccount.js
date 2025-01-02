@@ -66,13 +66,14 @@ const ipAddressReachedMaxAttempt = async (req) => {
 const sendSuccessResponse = (res, userFound) => {
   const { uid, SecurityQuestionValue } = userFound;
   return res.status(200).json({
+    status: 'AccountFound',
     accountUid: uid,
     securityQuestion: SecurityQuestionValue,
   });
 };
 
 const sendNotFoundResponse = (res, remainingAttempts = 0) => {
-  return res.status(404).json({ remainingAttempts });
+  return res.status(200).json({ status: 'AccountNotFound', remainingAttempts });
 };
 
 const sendErrorResponse = (res, err) => {

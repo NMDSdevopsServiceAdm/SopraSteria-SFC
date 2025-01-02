@@ -45,7 +45,7 @@ describe('backend/server/routes/registration/findUserAccount', () => {
     sinon.restore();
   });
 
-  it('should respond with 200 if user account is found', async () => {
+  it('should respond with 200 and status: AccountFound if user account is found', async () => {
     const req = buildRequest(mockRequestBody);
     const res = httpMocks.createResponse();
 
@@ -53,6 +53,7 @@ describe('backend/server/routes/registration/findUserAccount', () => {
 
     expect(res.statusCode).to.equal(200);
     expect(res._getJSONData()).to.deep.equal({
+      status: 'AccountFound',
       accountUid: 'mock-uid',
       securityQuestion: 'What is your favourite colour?',
     });
@@ -73,6 +74,7 @@ describe('backend/server/routes/registration/findUserAccount', () => {
 
     expect(res.statusCode).to.equal(200);
     expect(res._getJSONData()).to.deep.equal({
+      status: 'AccountFound',
       accountUid: 'mock-uid',
       securityQuestion: 'What is your favourite colour?',
     });
@@ -103,28 +105,30 @@ describe('backend/server/routes/registration/findUserAccount', () => {
     });
   });
 
-  it('should respond with 404 and accountFound: false if user account was not found', async () => {
+  it('should respond with 200 and status: AccountNotFound if user account was not found', async () => {
     const req = buildRequest({ ...mockRequestBody, workplaceIdOrPostcode: 'non-exist-workplace-id' });
     const res = httpMocks.createResponse();
 
     await findUserAccount(req, res);
 
-    expect(res.statusCode).to.equal(404);
+    expect(res.statusCode).to.equal(200);
     expect(res._getJSONData()).to.deep.equal({
+      status: 'AccountNotFound',
       remainingAttempts: 4,
     });
     expect(stubRecordFailedAttempt).to.have.been.calledOnce;
   });
 
-  it('should respond with 404 and a reducing number of remainingAttempts on successive failure', async () => {
+  it('should respond with status: AccountNotFound and a reducing number of remainingAttempts on successive failure', async () => {
     for (const expectedRemainingAttempts of [4, 3, 2, 1, 0]) {
       const req = buildRequest({ ...mockRequestBody, workplaceIdOrPostcode: 'non-exist-workplace-id' });
       const res = httpMocks.createResponse();
 
       await findUserAccount(req, res);
 
-      expect(res.statusCode).to.equal(404);
+      expect(res.statusCode).to.equal(200);
       expect(res._getJSONData()).to.deep.equal({
+        status: 'AccountNotFound',
         remainingAttempts: expectedRemainingAttempts,
       });
     }
