@@ -28,7 +28,7 @@ import { InternationalRecruitmentService } from '@core/services/international-re
 describe('StaffRecordComponent', () => {
   async function setup(isParent = true, ownWorkplace = true) {
     const workplace = establishmentBuilder() as Establishment;
-    const { fixture, getByText, getAllByText, queryByText, getByTestId } = await render(StaffRecordComponent, {
+    const setupTools = await render(StaffRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
       providers: [
         AlertService,
@@ -69,6 +69,7 @@ describe('StaffRecordComponent', () => {
       ],
     });
 
+    const fixture = setupTools.fixture;
     const component = fixture.componentInstance;
 
     const injector = getTestBed();
@@ -94,14 +95,11 @@ describe('StaffRecordComponent', () => {
       routerSpy,
       workerService,
       workerSpy,
-      getByText,
-      getAllByText,
-      getByTestId,
-      queryByText,
       workplaceUid,
       workerUid,
       alertSpy,
       parentSubsidiaryViewService,
+      ...setupTools,
     };
   }
 
@@ -149,7 +147,8 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the delete record link, add training link and flag long term absence link, and not correct text when worker.completed is true', async () => {
-    const { component, fixture, queryByText, getByText, getByTestId } = await setup();
+    const { component, fixture, queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid } =
+      await setup();
 
     component.canEditWorker = true;
     component.canDeleteWorker = true;
@@ -161,13 +160,16 @@ describe('StaffRecordComponent', () => {
     const button = queryByText('Confirm record details');
     const text = queryByText(`Check the record details you've added are correct.`);
     const flagLongTermAbsenceLink = getByText('Flag long-term absence');
-    const deleteRecordLink = getByText('Delete staff record');
+    const deleteRecordLink = getByRole('button', { name: 'Delete staff record' });
     const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
 
     expect(button).toBeFalsy();
     expect(text).toBeFalsy();
     expect(flagLongTermAbsenceLink).toBeTruthy();
     expect(deleteRecordLink).toBeTruthy();
+    expect(deleteRecordLink.getAttribute('href')).toEqual(
+      `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/delete-staff-record`,
+    );
     expect(trainingAndQualsLink).toBeTruthy();
   });
 

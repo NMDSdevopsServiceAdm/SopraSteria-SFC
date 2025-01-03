@@ -694,7 +694,10 @@ const routes: Routes = [
       {
         path: 'delete-staff-record',
         component: DeleteStaffRecordComponent,
-        data: { title: 'Delete staff record' },
+        data: {
+          permissions: ['canDeleteWorker'],
+          title: 'Delete staff record',
+        },
       },
     ],
   },

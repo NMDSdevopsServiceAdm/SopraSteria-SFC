@@ -17,7 +17,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { of } from 'rxjs';
 
-fdescribe('DeleteStaffRecordComponent', () => {
+describe('DeleteStaffRecordComponent', () => {
   const mockWorker = workerBuilder() as Worker;
 
   const setup = async (overrides: any = {}) => {

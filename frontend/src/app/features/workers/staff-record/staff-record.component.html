@@ -65,8 +65,13 @@
             *ngIf="canDeleteWorker"
             draggable="false"
             role="button"
-            href="#"
-            (click)="deleteWorker($event)"
+            [routerLink]="[
+              '/workplace',
+              workplace.uid,
+              'training-and-qualifications-record',
+              worker.uid,
+              'delete-staff-record'
+            ]"
           >
             <img src="/assets/images/bin.svg" alt="" />
             <span class="govuk-!-margin-left-1"> Delete staff record </span></a

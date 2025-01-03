@@ -75,16 +75,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.canEditWorker = this.permissionsService.can(this.workplace.uid, 'canEditWorker');
   }
 
-  deleteWorker(event: Event): void {
-    event.preventDefault();
-    this.dialogService.open(DeleteWorkerDialogComponent, {
-      worker: this.worker,
-      workplace: this.workplace,
-      primaryWorkplaceUid: this.route.parent.snapshot.data.primaryWorkplace
-        ? this.route.parent.snapshot.data.primaryWorkplace.uid
-        : null,
-    });
-  }
   public backLinkNavigation(): URLStructure {
     return this.worker.otherQualification === 'Yes'
       ? { url: ['/workplace', this.workplace.uid, 'staff-record', this.worker.uid, 'other-qualifications-level'] }
