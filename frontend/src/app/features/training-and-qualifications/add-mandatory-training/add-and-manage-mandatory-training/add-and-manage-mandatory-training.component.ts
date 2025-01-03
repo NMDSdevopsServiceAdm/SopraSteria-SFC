@@ -5,7 +5,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
 
 @Component({
   selector: 'app-add-and-manage-mandatory-training',
@@ -19,7 +19,7 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
   public previousAllJobsLength = [29, 31, 32];
 
   constructor(
-    public trainingService: TrainingService,
+    public trainingService: MandatoryTrainingService,
     private route: ActivatedRoute,
     public jobService: JobService,
     private breadcrumbService: BreadcrumbService,
@@ -66,7 +66,13 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
     });
   }
 
-  public navigateToAddNewMandatoryTraining() {
+  public navigateToAddNewMandatoryTraining(event: Event, mandatoryTrainingToEdit = null): void {
+    event.preventDefault();
+
+    if (mandatoryTrainingToEdit) {
+      this.trainingService.mandatoryTrainingBeingEdited = mandatoryTrainingToEdit;
+    }
+
     this.router.navigate(['select-training-category'], { relativeTo: this.route });
   }
 

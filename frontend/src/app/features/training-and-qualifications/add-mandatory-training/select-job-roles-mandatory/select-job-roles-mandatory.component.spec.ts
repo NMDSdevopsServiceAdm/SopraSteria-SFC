@@ -12,12 +12,9 @@ import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
-import {
-  GroupedRadioButtonAccordionComponent,
-} from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
-import {
-  RadioButtonAccordionComponent,
-} from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
+import { MockMandatoryTrainingService } from '@core/test-utils/MockTrainingService';
+import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -80,10 +77,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
         { provide: EstablishmentService, useClass: MockEstablishmentService },
         {
           provide: MandatoryTrainingService,
-          useValue: {
-            selectedTraining: overrides.selectedTraining !== undefined ? overrides.selectedTraining : selectedTraining,
-            resetState: () => {},
-          },
+          useFactory: MockMandatoryTrainingService.factory({ selectedTraining, ...overrides }),
         },
         {
           provide: ActivatedRoute,
@@ -316,6 +310,106 @@ describe('SelectJobRolesMandatoryComponent', () => {
       userEvent.click(cancelButton);
 
       expect(resetStateInTrainingServiceSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe('Existing mandatory training being edited', () => {
+    const createMandatoryTrainingBeingEdited = (jobs) => {
+      return {
+        category: 'Activity provision/Well-being',
+        establishmentId: 4090,
+        jobs,
+        trainingCategoryId: 1,
+      };
+    };
+
+    it('should check the currently selected job roles if mandatoryTrainingBeingEdited in training service (when editing existing mandatory training)', async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+
+      const { getByLabelText } = await setup({
+        mandatoryTrainingBeingEdited: createMandatoryTrainingBeingEdited(jobs),
+        allJobRolesCount: 37,
+      });
+
+      jobs.forEach((jobRole) => {
+        const jobRoleCheckbox = getByLabelText(jobRole.title) as HTMLInputElement;
+        expect(jobRoleCheckbox.checked).toBeTruthy();
+      });
+    });
+
+    it('should not check the currently selected job roles if mandatoryTrainingBeingEdited has all job roles (when editing existing mandatory training)', async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+
+      const { getByLabelText } = await setup({
+        mandatoryTrainingBeingEdited: createMandatoryTrainingBeingEdited(jobs),
+        allJobRolesCount: 2,
+      });
+
+      jobs.forEach((jobRole) => {
+        const jobRoleCheckbox = getByLabelText(jobRole.title) as HTMLInputElement;
+        expect(jobRoleCheckbox.checked).toBeFalsy();
+      });
+    });
+
+    it('should expand the accordion for job groups that have job roles selected', async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+
+      const { getByLabelText } = await setup({
+        mandatoryTrainingBeingEdited: createMandatoryTrainingBeingEdited(jobs),
+      });
+
+      jobs.forEach((jobRole) => {
+        const jobRoleGroupAccordionSection = getByLabelText(jobRole.jobRoleGroup);
+        expect(within(jobRoleGroupAccordionSection).getByText('Hide')).toBeTruthy(); // is expanded
+      });
+    });
+
+    it('should not expand the accordion for job groups that do not have job roles selected', async () => {
+      const jobs = [mockAvailableJobs[0]];
+
+      const { getByLabelText } = await setup({
+        mandatoryTrainingBeingEdited: createMandatoryTrainingBeingEdited(jobs),
+      });
+
+      const jobRoleGroupAccordionSectionWithPreselected = getByLabelText(jobs[0].jobRoleGroup);
+      expect(within(jobRoleGroupAccordionSectionWithPreselected).getByText('Hide')).toBeTruthy(); // is expanded
+
+      const jobRoleGroupAccordionSectionWithNoneSelected = getByLabelText(mockAvailableJobs[1].jobRoleGroup);
+      expect(within(jobRoleGroupAccordionSectionWithNoneSelected).getByText('Show')).toBeTruthy(); // not expanded
+    });
+
+    it('should call createAndUpdateMandatoryTraining with training category in service and previous training ID', async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+      const mandatoryTrainingBeingEdited = createMandatoryTrainingBeingEdited(jobs);
+
+      const { getByText, establishment, selectedTraining, createAndUpdateMandatoryTrainingSpy } = await setup({
+        mandatoryTrainingBeingEdited,
+      });
+
+      userEvent.click(getByText('Save mandatory training'));
+
+      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
+        previousTrainingCategoryId: mandatoryTrainingBeingEdited.trainingCategoryId,
+        trainingCategoryId: selectedTraining.trainingCategory.id,
+        allJobRoles: false,
+        jobs: [{ id: jobs[0].id }, { id: jobs[1].id }],
+      });
+    });
+
+    it("should display 'Mandatory training category updated' banner on submit", async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+      const mandatoryTrainingBeingEdited = createMandatoryTrainingBeingEdited(jobs);
+
+      const { getByText, alertSpy } = await setup({
+        mandatoryTrainingBeingEdited,
+      });
+
+      userEvent.click(getByText('Save mandatory training'));
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Mandatory training category updated',
+      });
     });
   });
 });

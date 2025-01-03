@@ -2,7 +2,7 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { Establishment } from '@core/model/establishment.model';
+import { Establishment, mandatoryTraining } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
 import { SelectedTraining } from '@core/model/training.model';
 import { AlertService } from '@core/services/alert.service';
@@ -45,6 +45,8 @@ export class SelectJobRolesMandatoryComponent {
   public subscriptions: Subscription = new Subscription();
   private establishment: Establishment;
   private selectedTrainingCategory: SelectedTraining;
+  private mandatoryTrainingBeingEdited: mandatoryTraining;
+  public jobGroupsToOpenAtStart: string[] = [];
 
   ngOnInit(): void {
     this.selectedTrainingCategory = this.trainingService.selectedTraining;
@@ -57,6 +59,11 @@ export class SelectJobRolesMandatoryComponent {
     this.backLinkService.showBackLink();
     this.getJobs();
     this.setupForm();
+    this.mandatoryTrainingBeingEdited = this.trainingService.mandatoryTrainingBeingEdited;
+
+    if (this.mandatoryTrainingBeingEdited) {
+      this.prefillForm();
+    }
   }
 
   private getJobs(): void {
@@ -107,13 +114,7 @@ export class SelectJobRolesMandatoryComponent {
   }
 
   private createMandatoryTraining(): void {
-    const props = {
-      trainingCategoryId: this.selectedTrainingCategory.trainingCategory.id,
-      allJobRoles: false,
-      jobs: this.selectedJobIds.map((id) => {
-        return { id };
-      }),
-    };
+    const props = this.generateUpdateProps();
 
     this.subscriptions.add(
       this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
@@ -123,7 +124,7 @@ export class SelectJobRolesMandatoryComponent {
 
           this.alertService.addAlert({
             type: 'success',
-            message: 'Mandatory training category added',
+            message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
           });
         },
         () => {
@@ -131,6 +132,35 @@ export class SelectJobRolesMandatoryComponent {
         },
       ),
     );
+  }
+
+  private generateUpdateProps(): mandatoryTraining {
+    const props: mandatoryTraining = {
+      trainingCategoryId: this.selectedTrainingCategory.trainingCategory.id,
+      allJobRoles: false,
+      jobs: this.selectedJobIds.map((id) => {
+        return { id };
+      }),
+    };
+
+    if (this.mandatoryTrainingBeingEdited?.trainingCategoryId) {
+      props.previousTrainingCategoryId = this.mandatoryTrainingBeingEdited.trainingCategoryId;
+    }
+
+    return props;
+  }
+
+  private prefillForm(): void {
+    if (this.mandatoryTrainingBeingEdited.jobs?.length == this.trainingService.allJobRolesCount) return;
+
+    this.selectedJobIds = this.mandatoryTrainingBeingEdited.jobs.map((job) => Number(job.id));
+    this.jobGroupsToOpenAtStart = this.jobGroups
+      .filter((group) => group.items.some((job) => this.selectedJobIds.includes(job.id)))
+      .map((group) => group.title);
+
+    this.form.patchValue({
+      selectedJobRoles: this.selectedJobIds,
+    });
   }
 
   public onCancel(event: Event): void {

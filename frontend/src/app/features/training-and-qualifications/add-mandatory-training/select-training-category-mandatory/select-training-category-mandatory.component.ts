@@ -27,9 +27,23 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
 
   public requiredErrorMessage: string = 'Select the training category that you want to make mandatory';
   public hideOtherCheckbox: boolean = true;
+  private mandatoryTrainingCategoryIdBeingEdited: number;
 
   init(): void {
     this.establishmentUid = this.route.snapshot.data.establishment.uid;
+    this.mandatoryTrainingCategoryIdBeingEdited =
+      this.trainingService.mandatoryTrainingBeingEdited?.trainingCategoryId ?? null;
+    this.getPrefilledId();
+  }
+
+  protected getPrefilledId(): void {
+    const selectedCategory = this.trainingService.selectedTraining?.trainingCategory;
+
+    if (selectedCategory) {
+      this.preFilledId = selectedCategory?.id;
+    } else if (this.mandatoryTrainingCategoryIdBeingEdited) {
+      this.preFilledId = this.trainingService.mandatoryTrainingBeingEdited.trainingCategoryId;
+    }
   }
 
   protected setSectionHeading(): void {
@@ -44,13 +58,17 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
     const allTrainingCategories = this.route.snapshot.data.trainingCategories;
     const existingMandatoryTraining = this.route.snapshot.data.existingMandatoryTraining;
 
+    this.trainingService.allJobRolesCount = existingMandatoryTraining.allJobRolesCount;
+
     const trainingCategoryIdsWithExistingMandatoryTraining = existingMandatoryTraining?.mandatoryTraining?.map(
       (existingMandatoryTrainings) => existingMandatoryTrainings.trainingCategoryId,
     );
 
     if (trainingCategoryIdsWithExistingMandatoryTraining?.length) {
       this.categories = allTrainingCategories.filter(
-        (category) => !trainingCategoryIdsWithExistingMandatoryTraining.includes(category.id),
+        (category) =>
+          !trainingCategoryIdsWithExistingMandatoryTraining.includes(category.id) ||
+          category.id == this.mandatoryTrainingCategoryIdBeingEdited,
       );
     } else {
       this.categories = allTrainingCategories;
@@ -59,7 +77,13 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
     this.sortCategoriesByTrainingGroup(this.categories);
   }
 
-  public onCancel(event: Event) {
+  protected prefillForm(): void {
+    if (this.preFilledId) {
+      this.form.patchValue({ category: this.preFilledId });
+    }
+  }
+
+  public onCancel(event: Event): void {
     event.preventDefault();
     this.trainingService.resetState();
     this.router.navigate(['workplace', this.establishmentUid, 'add-and-manage-mandatory-training']);

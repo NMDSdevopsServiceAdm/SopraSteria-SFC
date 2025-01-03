@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
+import { mandatoryTraining } from '@core/model/establishment.model';
 import { allMandatoryTrainingCategories, SelectedTraining, TrainingCategory } from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { BehaviorSubject, Observable } from 'rxjs';
@@ -128,6 +129,8 @@ export class TrainingService {
 
 export class MandatoryTrainingService extends TrainingService {
   _onlySelectedJobRoles: boolean = null;
+  _mandatoryTrainingBeingEdited: mandatoryTraining = null;
+  public allJobRolesCount: number;
 
   public get onlySelectedJobRoles(): boolean {
     return this._onlySelectedJobRoles;
@@ -139,6 +142,15 @@ export class MandatoryTrainingService extends TrainingService {
 
   public resetState(): void {
     this.onlySelectedJobRoles = null;
+    this.mandatoryTrainingBeingEdited = null;
     super.resetState();
+  }
+
+  public set mandatoryTrainingBeingEdited(mandatoryTraining) {
+    this._mandatoryTrainingBeingEdited = mandatoryTraining;
+  }
+
+  public get mandatoryTrainingBeingEdited(): mandatoryTraining {
+    return this._mandatoryTrainingBeingEdited;
   }
 }
