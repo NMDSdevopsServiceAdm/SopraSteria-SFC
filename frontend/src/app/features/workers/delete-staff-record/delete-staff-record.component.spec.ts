@@ -7,7 +7,7 @@ import { Worker } from '@core/model/worker.model';
 import { WorkerService } from '@core/services/worker.service';
 import { mockLeaveReasons, MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { DeleteStaffRecordComponent } from './delete-staff-record.component';
 import { AlertService } from '@core/services/alert.service';
@@ -96,6 +96,17 @@ fdescribe('DeleteStaffRecordComponent', () => {
       const { getByRole } = await setup();
 
       expect(getByRole('button', { name: 'Delete this staff record' })).toBeTruthy();
+    });
+
+    it('should show a textedit box to enter details when "For a reason not listed" is chosen', async () => {
+      const { fixture, getByRole, getByTestId } = await setup();
+
+      userEvent.click(getByRole('radio', { name: 'For a reason not listed' }));
+      fixture.detectChanges();
+
+      const detailsInput = getByTestId('other-reason-details');
+      expect(within(detailsInput).getByRole('textbox')).toBeTruthy();
+      expect(detailsInput.className).not.toContain('govuk-radios__conditional--hidden');
     });
   });
 

@@ -11,7 +11,6 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Reason, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
-import { take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-delete-staff-record',
@@ -98,6 +97,10 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
     return this.form.get('reason').value;
   }
 
+  public onSelectReason(reasonId: number) {
+    this.form.patchValue({ reason: reasonId });
+  }
+
   public onSubmit(): void {
     this.submitted = true;
 
@@ -106,6 +109,9 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
     }
 
     const selectedReason = this.selectedReasonId ? { reason: { id: this.selectedReasonId } } : null;
+    if (selectedReason && this.form.get('details').value) {
+      selectedReason.reason['other'] = this.form.get('details').value;
+    }
 
     this.subscriptions.add(
       this.workerService

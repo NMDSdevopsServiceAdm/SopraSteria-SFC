@@ -3,7 +3,7 @@
   [formErrorsMap]="formErrorsMap"
   [form]="form"
   [serverError]="serverError"
-/>
+></app-error-summary>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
@@ -31,24 +31,29 @@
                   name="reason"
                   type="radio"
                   [value]="reason.id"
-                  formControlName="reason"
+                  (click)="onSelectReason(reason.id)"
                 />
                 <label class="govuk-label govuk-radios__label" [for]="'reason-' + index"> {{ reason.reason }} </label>
               </div>
-              <div *ngIf="reason.id === otherReasonId" class="govuk-radios__conditional" id="detailForOtherReason">
+              <div
+                *ngIf="reason.id === otherReasonId"
+                class="govuk-radios__conditional"
+                [class.govuk-radios__conditional--hidden]="selectedReasonId !== otherReasonId"
+                id="detailForOtherReason"
+                data-testid="other-reason-details"
+              >
                 <div class="govuk-form-group">
-                <label class="govuk-label" for="details">
-                  Provide details
-                </label>
-                <textarea class="govuk-textarea" rows="5" id="details" name="details"></textarea>
+                  <label class="govuk-label" for="details"> Provide details </label>
+                  <textarea class="govuk-textarea" rows="5" id="details" name="details"></textarea>
                 </div>
               </div>
             </ng-container>
           </div>
         </fieldset>
       </div>
-      <div class="govuk-form-group govuk-!-margin-top-8"
-      [class.govuk-form-group--error]="submitted && confirmDeleteCheckbox.invalid"
+      <div
+        class="govuk-form-group govuk-!-margin-top-8"
+        [class.govuk-form-group--error]="submitted && confirmDeleteCheckbox.invalid"
       >
         <span *ngIf="submitted && confirmDeleteCheckbox.invalid" id="confirmDelete-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span>
