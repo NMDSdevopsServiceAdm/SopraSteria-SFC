@@ -124,7 +124,7 @@ export class SelectJobRolesMandatoryComponent {
 
           this.alertService.addAlert({
             type: 'success',
-            message: 'Mandatory training category added',
+            message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
           });
         },
         () => {

@@ -395,5 +395,21 @@ describe('SelectJobRolesMandatoryComponent', () => {
         jobs: [{ id: jobs[0].id }, { id: jobs[1].id }],
       });
     });
+
+    it("should display 'Mandatory training category updated' banner on submit", async () => {
+      const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
+      const mandatoryTrainingBeingEdited = createMandatoryTrainingBeingEdited(jobs);
+
+      const { getByText, alertSpy } = await setup({
+        mandatoryTrainingBeingEdited,
+      });
+
+      userEvent.click(getByText('Save mandatory training'));
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Mandatory training category updated',
+      });
+    });
   });
 });
