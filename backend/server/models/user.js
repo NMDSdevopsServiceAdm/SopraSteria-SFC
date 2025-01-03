@@ -523,17 +523,17 @@ module.exports = function (sequelize, DataTypes) {
       raw: true,
     };
 
-    const foundUsers = await this.findAll(query);
+    const allFoundUsers = await this.findAll(query);
 
-    if (!foundUsers || foundUsers?.length === 0) {
+    if (!allFoundUsers?.length || allFoundUsers.length === 0) {
       return null;
     }
 
-    if (foundUsers.length > 1) {
+    if (allFoundUsers.length > 1) {
       return { multipleAccountsFound: true };
     }
 
-    const userFound = foundUsers[0];
+    const userFound = allFoundUsers[0];
 
     if (userFound && userFound['login.status'] === UserAccountStatus.Locked) {
       return { accountLocked: true };
