@@ -21,11 +21,15 @@ interface AccountNotFound {
   remainingAttempts: number;
 }
 
+interface MultipleAccountsFound {
+  status: 'MultipleAccountsFound';
+}
+
 export interface AccountLocked {
   status: 'AccountLocked';
 }
 
-export type FindUserAccountResponse = AccountFound | AccountNotFound | AccountLocked;
+export type FindUserAccountResponse = AccountFound | AccountNotFound | MultipleAccountsFound | AccountLocked;
 
 export interface FindUsernameRequest {
   uid: string;

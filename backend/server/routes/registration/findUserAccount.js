@@ -29,6 +29,10 @@ const findUserAccount = async (req, res) => {
       return sendNotFoundResponse(res, remainingAttempts);
     }
 
+    if (userFound.multipleAccountsFound) {
+      return sendMultipleAccountsFoundResponse(res);
+    }
+
     if (userFound.accountLocked) {
       throw new FindUserAccountException('User account is locked', 423);
     }
@@ -74,6 +78,10 @@ const sendSuccessResponse = (res, userFound) => {
 
 const sendNotFoundResponse = (res, remainingAttempts = 0) => {
   return res.status(200).json({ status: 'AccountNotFound', remainingAttempts });
+};
+
+const sendMultipleAccountsFoundResponse = (res) => {
+  return res.status(200).json({ status: 'MultipleAccountsFound' });
 };
 
 const sendErrorResponse = (res, err) => {

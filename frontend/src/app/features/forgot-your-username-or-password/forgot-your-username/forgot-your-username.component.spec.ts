@@ -158,6 +158,23 @@ describe('ForgotYourUsernameComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/user-account-not-found']);
       });
 
+      it('should show a "Multiple accounts found" message when more than 1 account was found', async () => {
+        const { fixture, getByRole, getByText, findUsernameService } = await setup();
+        fixture.autoDetectChanges();
+
+        spyOn(findUsernameService, 'findUserAccount').and.returnValue(of({ status: 'MultipleAccountsFound' }));
+
+        await fillInAndSubmitForm('Test User', 'A1234567', 'test@example.com');
+
+        expect(getByText('Multple accounts found')).toBeTruthy();
+        expect(getByText('We found more than 1 account with the information you entered.')).toBeTruthy();
+
+        const textMessage = getByText('Call the ASC-WDS Support Team on', { exact: false });
+        expect(textMessage.textContent).toEqual('Call the ASC-WDS Support Team on 0113 241 0969 for help.');
+
+        expect(getByRole('button', { name: 'Find account' })).toBeTruthy();
+      });
+
       describe('errors', () => {
         it('should show an error message if any of the text input is blank', async () => {
           const { fixture, getByRole, getByText, getAllByText, findUsernameService } = await setup();
