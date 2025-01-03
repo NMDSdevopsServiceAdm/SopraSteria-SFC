@@ -1,7 +1,6 @@
 .first-column {
   box-sizing: border-box;
   float: left;
-  min-width: 238px;
   padding: 0 0 0 15px;
   width: 26.36%;
 }
@@ -9,7 +8,6 @@
 .data-column-container {
   box-sizing: border-box;
   float: left;
-  min-width: 707px;
   margin: 0;
   padding: 0 15px 0 0;
   width: 73.64%;
@@ -20,7 +18,6 @@
   float: left;
   min-width: 133px;
   padding: 0 15px 0 0;
-  width: 13.85%
 }
 
 .permissions-column {
@@ -28,7 +25,6 @@
   float: left;
   min-width: 353px;
   padding: 0 15px;
-  width: 36.77%
 }
 
 .change-data-permissions-column {
@@ -36,7 +32,4 @@
   float: left;
   min-width: 245px;
   padding: 0 0 0 15px;
-  width: 23.02%;
 }
-
-// Total = 960
