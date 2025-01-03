@@ -97,15 +97,24 @@ describe('mandatoryTraining/index.js', () => {
       res = httpMocks.createResponse();
     });
 
-    const mockFetchData = {
-      allJobRolesCount: 37,
-      lastUpdated: '2025-01-03T11:55:55.734Z',
-      mandatoryTraining: [{}],
-      mandatoryTrainingCount: 1,
+    const createMockFetchData = () => {
+      return {
+        allJobRolesCount: 37,
+        lastUpdated: '2025-01-03T11:55:55.734Z',
+        mandatoryTraining: [
+          {
+            category: 'Activity provision, wellbeing',
+            establishmentId: 100,
+            jobs: [{ id: 22, title: 'Registered manager' }],
+            trainingCategoryId: 1,
+          },
+        ],
+        mandatoryTrainingCount: 1,
+      };
     };
 
     it('should fetch all mandatory training for establishment passed in request', async () => {
-      const fetchSpy = sinon.stub(MandatoryTraining, 'fetch').callsFake(() => mockFetchData);
+      const fetchSpy = sinon.stub(MandatoryTraining, 'fetch').callsFake(() => createMockFetchData());
 
       await viewMandatoryTraining(req, res);
       expect(res.statusCode).to.deep.equal(200);
@@ -113,6 +122,7 @@ describe('mandatoryTraining/index.js', () => {
     });
 
     it('should return data from fetch and 200 status if fetch successful', async () => {
+      const mockFetchData = createMockFetchData();
       sinon.stub(MandatoryTraining, 'fetch').callsFake(() => mockFetchData);
 
       await viewMandatoryTraining(req, res);
@@ -125,6 +135,39 @@ describe('mandatoryTraining/index.js', () => {
 
       await viewMandatoryTraining(req, res);
       expect(res.statusCode).to.equal(500);
+    });
+
+    describe('Handling duplicate job roles', () => {
+      it('should not call load or save for mandatory training when no duplicate job roles in retrieved mandatory training', async () => {
+        const loadSpy = sinon.stub(MandatoryTraining.prototype, 'load');
+        const saveSpy = sinon.stub(MandatoryTraining.prototype, 'save');
+
+        sinon.stub(MandatoryTraining, 'fetch').callsFake(() => createMockFetchData());
+
+        await viewMandatoryTraining(req, res);
+        expect(loadSpy).not.to.have.been.called;
+        expect(saveSpy).not.to.have.been.called;
+      });
+
+      it('should call load and save for mandatory training instance when duplicate job roles in retrieved mandatory training', async () => {
+        const loadSpy = sinon.stub(MandatoryTraining.prototype, 'load');
+        const saveSpy = sinon.stub(MandatoryTraining.prototype, 'save');
+
+        const mockFetchData = createMockFetchData();
+
+        const mockJobRoles = Array.from({ length: 28 }, (_, index) => ({
+          id: index + 1,
+          title: `Job role ${index + 1}`,
+        }));
+        mockJobRoles.push({ id: 1, title: 'Job role 1' });
+        mockFetchData.mandatoryTraining[0].jobs = mockJobRoles;
+
+        sinon.stub(MandatoryTraining, 'fetch').callsFake(() => mockFetchData);
+
+        await viewMandatoryTraining(req, res);
+        expect(loadSpy).to.have.been.called;
+        expect(saveSpy).to.have.been.called;
+      });
     });
   });
 });

@@ -14,8 +14,22 @@ const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const viewMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
+
   try {
     const allMandatoryTrainingRecords = await MandatoryTraining.fetch(establishmentId);
+
+    for (mandatoryTrainingCategory of allMandatoryTrainingRecords.mandatoryTraining) {
+      if (hasDuplicateJobs(mandatoryTrainingCategory.jobs)) {
+        const thisMandatoryTrainingRecord = new MandatoryTraining(establishmentId);
+        await thisMandatoryTrainingRecord.load({
+          trainingCategoryId: mandatoryTrainingCategory.trainingCategoryId,
+          allJobRoles: true,
+          jobs: [],
+        });
+        await thisMandatoryTrainingRecord.save(req.userUid);
+      }
+    }
+
     return res.status(200).json(allMandatoryTrainingRecords);
   } catch (err) {
     console.error(err);
@@ -30,11 +44,25 @@ const viewAllMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
   try {
     const allMandatoryTrainingRecords = await MandatoryTraining.fetchAllMandatoryTrainings(establishmentId);
+
     return res.status(200).json(allMandatoryTrainingRecords);
   } catch (err) {
     console.error(err);
     return res.status(500).send();
   }
+};
+
+const hasDuplicateJobs = (jobs) => {
+  const seenJobIds = new Set();
+
+  for (const job of jobs) {
+    if (seenJobIds.has(job.id)) {
+      return true; // Duplicate found
+    }
+    seenJobIds.add(job.id);
+  }
+
+  return false; // No duplicates found
 };
 
 /**
