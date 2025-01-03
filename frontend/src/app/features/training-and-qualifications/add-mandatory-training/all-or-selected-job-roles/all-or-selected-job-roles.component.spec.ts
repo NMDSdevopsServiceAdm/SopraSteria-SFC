@@ -354,7 +354,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
       });
     });
 
-    it('should include previousTrainingCategoryId in submit props when editing existing mandatory training and All job roles selected', async () => {
+    describe('Editing existing mandatory training', () => {
       const mandatoryTrainingBeingEdited = {
         category: 'Activity provision/Well-being',
         establishmentId: 4090,
@@ -362,18 +362,34 @@ describe('AllOrSelectedJobRolesComponent', () => {
         trainingCategoryId: 1,
       };
 
-      const { getByText, createAndUpdateMandatoryTrainingSpy, establishment, selectedTraining } = await setup({
-        mandatoryTrainingBeingEdited,
-        allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
+      it('should include previousTrainingCategoryId in submit props when All job roles selected', async () => {
+        const { getByText, createAndUpdateMandatoryTrainingSpy, establishment, selectedTraining } = await setup({
+          mandatoryTrainingBeingEdited,
+          allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
+        });
+
+        fireEvent.click(getByText('Continue'));
+
+        expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
+          previousTrainingCategoryId: mandatoryTrainingBeingEdited.trainingCategoryId,
+          trainingCategoryId: selectedTraining.trainingCategory.id,
+          allJobRoles: true,
+          jobs: [],
+        });
       });
 
-      fireEvent.click(getByText('Continue'));
+      it("should display 'Mandatory training category updated' banner when All job roles selected", async () => {
+        const { getByText, alertSpy } = await setup({
+          mandatoryTrainingBeingEdited,
+          allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
+        });
 
-      expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
-        previousTrainingCategoryId: mandatoryTrainingBeingEdited.trainingCategoryId,
-        trainingCategoryId: selectedTraining.trainingCategory.id,
-        allJobRoles: true,
-        jobs: [],
+        fireEvent.click(getByText('Continue'));
+
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Mandatory training category updated',
+        });
       });
     });
   });
