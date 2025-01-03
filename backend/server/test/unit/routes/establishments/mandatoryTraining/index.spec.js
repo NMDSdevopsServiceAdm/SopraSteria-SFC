@@ -94,6 +94,7 @@ describe('mandatoryTraining/index.js', () => {
     beforeEach(() => {
       req = httpMocks.createRequest();
       req.establishmentId = 'mockId';
+      req.userUid = 'abc123';
       res = httpMocks.createResponse();
     });
 
@@ -149,24 +150,54 @@ describe('mandatoryTraining/index.js', () => {
         expect(saveSpy).not.to.have.been.called;
       });
 
-      it('should call load and save for mandatory training instance when duplicate job roles in retrieved mandatory training', async () => {
+      const previousAllJobsLengths = [29, 31, 32];
+
+      previousAllJobsLengths.forEach((allJobsLength) => {
+        it(`should call load and save for mandatory training instance when duplicate job roles in retrieved mandatory training and has length of previous all job roles (${allJobsLength})`, async () => {
+          const loadSpy = sinon.stub(MandatoryTraining.prototype, 'load');
+          const saveSpy = sinon.stub(MandatoryTraining.prototype, 'save');
+
+          const mockFetchData = createMockFetchData();
+
+          const mockJobRoles = Array.from({ length: allJobsLength - 1 }, (_, index) => ({
+            id: index + 1,
+            title: `Job role ${index + 1}`,
+          }));
+          mockJobRoles.push({ id: 1, title: 'Job role 1' });
+          mockFetchData.mandatoryTraining[0].jobs = mockJobRoles;
+
+          sinon.stub(MandatoryTraining, 'fetch').callsFake(() => mockFetchData);
+
+          await viewMandatoryTraining(req, res);
+
+          expect(loadSpy).to.have.been.calledWith({
+            trainingCategoryId: mockFetchData.mandatoryTraining[0].trainingCategoryId,
+            allJobRoles: true,
+            jobs: [],
+          });
+          expect(saveSpy).to.have.been.calledWith(req.userUid);
+        });
+      });
+
+      it('should not call load or save for mandatory training when number of jobs is previous all job roles length (29) but no duplicate job roles', async () => {
         const loadSpy = sinon.stub(MandatoryTraining.prototype, 'load');
         const saveSpy = sinon.stub(MandatoryTraining.prototype, 'save');
 
         const mockFetchData = createMockFetchData();
 
-        const mockJobRoles = Array.from({ length: 28 }, (_, index) => ({
+        const mockJobRoles = Array.from({ length: 29 }, (_, index) => ({
           id: index + 1,
           title: `Job role ${index + 1}`,
         }));
-        mockJobRoles.push({ id: 1, title: 'Job role 1' });
+
         mockFetchData.mandatoryTraining[0].jobs = mockJobRoles;
 
         sinon.stub(MandatoryTraining, 'fetch').callsFake(() => mockFetchData);
 
         await viewMandatoryTraining(req, res);
-        expect(loadSpy).to.have.been.called;
-        expect(saveSpy).to.have.been.called;
+
+        expect(loadSpy).not.to.have.been.called;
+        expect(saveSpy).not.to.have.been.called;
       });
     });
   });
