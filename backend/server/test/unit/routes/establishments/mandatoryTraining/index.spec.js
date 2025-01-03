@@ -6,6 +6,7 @@ const sinon = require('sinon');
 const {
   createAndUpdateMandatoryTraining,
   deleteMandatoryTrainingById,
+  viewMandatoryTraining,
 } = require('../../../../../routes/establishments/mandatoryTraining/index.js');
 
 const MandatoryTraining = require('../../../../../models/classes/mandatoryTraining').MandatoryTraining;
@@ -34,6 +35,7 @@ describe('mandatoryTraining/index.js', () => {
       expect(res.statusCode).to.deep.equal(500);
     });
   });
+
   describe('createAndUpdateMandatoryTraining', () => {
     it('should save the record for mandatory training if isvalid , not exists and all job role is selected', async () => {
       sinon.stub(MandatoryTraining.prototype, 'load').callsFake(() => {
@@ -82,6 +84,47 @@ describe('mandatoryTraining/index.js', () => {
 
       sinon.assert.notCalled(save);
       expect(res.statusCode).to.deep.equal(500);
+    });
+  });
+
+  describe('viewMandatoryTraining', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+      req = httpMocks.createRequest();
+      req.establishmentId = 'mockId';
+      res = httpMocks.createResponse();
+    });
+
+    const mockFetchData = {
+      allJobRolesCount: 37,
+      lastUpdated: '2025-01-03T11:55:55.734Z',
+      mandatoryTraining: [{}],
+      mandatoryTrainingCount: 1,
+    };
+
+    it('should fetch all mandatory training for establishment passed in request', async () => {
+      const fetchSpy = sinon.stub(MandatoryTraining, 'fetch').callsFake(() => mockFetchData);
+
+      await viewMandatoryTraining(req, res);
+      expect(res.statusCode).to.deep.equal(200);
+      expect(fetchSpy).to.have.been.calledWith(req.establishmentId);
+    });
+
+    it('should return data from fetch and 200 status if fetch successful', async () => {
+      sinon.stub(MandatoryTraining, 'fetch').callsFake(() => mockFetchData);
+
+      await viewMandatoryTraining(req, res);
+      expect(res.statusCode).to.equal(200);
+      expect(res._getJSONData()).to.deep.equal(mockFetchData);
+    });
+
+    it('should return 500 status if error when fetching data', async () => {
+      sinon.stub(MandatoryTraining, 'fetch').throws('Unexpected error');
+
+      await viewMandatoryTraining(req, res);
+      expect(res.statusCode).to.equal(500);
     });
   });
 });

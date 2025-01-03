@@ -93,3 +93,4 @@ router.route('/:categoryId').delete(deleteMandatoryTrainingById);
 module.exports = router;
 module.exports.createAndUpdateMandatoryTraining = createAndUpdateMandatoryTraining;
 module.exports.deleteMandatoryTrainingById = deleteMandatoryTrainingById;
+module.exports.viewMandatoryTraining = viewMandatoryTraining;
