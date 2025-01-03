@@ -166,7 +166,7 @@ describe('mandatoryTraining/index.js', () => {
           mockJobRoles.push({ id: 1, title: 'Job role 1' });
           mockFetchData.mandatoryTraining[0].jobs = mockJobRoles;
 
-          sinon.stub(MandatoryTraining, 'fetch').callsFake(() => mockFetchData);
+          const fetchSpy = sinon.stub(MandatoryTraining, 'fetch').callsFake(() => mockFetchData);
 
           await viewMandatoryTraining(req, res);
 
@@ -176,6 +176,7 @@ describe('mandatoryTraining/index.js', () => {
             jobs: [],
           });
           expect(saveSpy).to.have.been.calledWith(req.userUid);
+          expect(fetchSpy).to.have.been.calledTwice;
         });
       });
 

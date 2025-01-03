@@ -17,20 +17,29 @@ const viewMandatoryTraining = async (req, res) => {
   const previousAllJobsLengths = [29, 31, 32];
 
   try {
-    const allMandatoryTrainingRecords = await MandatoryTraining.fetch(establishmentId);
+    let allMandatoryTrainingRecords = await MandatoryTraining.fetch(establishmentId);
+    let duplicateJobRolesUpdated = false;
 
-    for (mandatoryTrainingCategory of allMandatoryTrainingRecords.mandatoryTraining) {
-      if (
-        hasDuplicateJobs(mandatoryTrainingCategory.jobs) &&
-        previousAllJobsLengths.includes(mandatoryTrainingCategory.jobs.length)
-      ) {
-        const thisMandatoryTrainingRecord = new MandatoryTraining(establishmentId);
-        await thisMandatoryTrainingRecord.load({
-          trainingCategoryId: mandatoryTrainingCategory.trainingCategoryId,
-          allJobRoles: true,
-          jobs: [],
-        });
-        await thisMandatoryTrainingRecord.save(req.userUid);
+    if (allMandatoryTrainingRecords?.mandatoryTraining?.length) {
+      for (mandatoryTrainingCategory of allMandatoryTrainingRecords.mandatoryTraining) {
+        if (
+          hasDuplicateJobs(mandatoryTrainingCategory.jobs) &&
+          previousAllJobsLengths.includes(mandatoryTrainingCategory.jobs.length)
+        ) {
+          duplicateJobRolesUpdated = true;
+
+          const thisMandatoryTrainingRecord = new MandatoryTraining(establishmentId);
+          await thisMandatoryTrainingRecord.load({
+            trainingCategoryId: mandatoryTrainingCategory.trainingCategoryId,
+            allJobRoles: true,
+            jobs: [],
+          });
+          await thisMandatoryTrainingRecord.save(req.userUid);
+        }
+      }
+
+      if (duplicateJobRolesUpdated) {
+        allMandatoryTrainingRecords = await MandatoryTraining.fetch(establishmentId);
       }
     }
 
