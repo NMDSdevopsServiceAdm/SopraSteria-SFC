@@ -24,16 +24,17 @@
       </ng-container>
 
       <div #searchResult>
-        <ng-container *ngIf="submitted">
-          <ng-container *ngIf="accountFound; else accountNotFound">
+        <ng-container *ngIf="submitted" [ngSwitch]="status">
+          <ng-container *ngSwitchCase="'AccountFound'">
             <h2 class="govuk-heading-m govuk-!-margin-bottom-0">
               <span class="govuk__flex govuk__align-items-center">
-                <img class="govuk-!-margin-right-2" src="/assets/images/tick-icon.svg" alt="" />Account found
+                <img class="govuk-!-margin-right-2" src="/assets/images/tick-icon.svg" alt="" />
+                Account found
               </span>
             </h2>
           </ng-container>
 
-          <ng-template #accountNotFound>
+          <ng-container *ngSwitchCase="'AccountNotFound'">
             <div *ngIf="remainingAttempts" role="alert" data-testid="account-not-found">
               <h2 class="govuk-heading-m">
                 <span class="govuk__flex govuk__align-items-center">
@@ -64,11 +65,26 @@
                 <strong class="govuk__nowrap">0113 241 0969</strong> for help.
               </p>
             </div>
-          </ng-template>
+          </ng-container>
+
+          <ng-container *ngSwitchCase="'MultipleAccountsFound'">
+            <h2 class="govuk-heading-m">
+              <span class="govuk__flex govuk__align-items-center">
+                <img class="govuk-!-margin-right-2" src="/assets/images/cross-icon.svg" alt="Error" />
+                Multple accounts found
+              </span>
+            </h2>
+            <p class="govuk-util__bold">We found more than 1 account with the information you entered.</p>
+            <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+            <p>Call the ASC-WDS Support Team on <strong class="govuk__nowrap">0113 241 0969</strong> for help.</p>
+          </ng-container>
         </ng-container>
       </div>
 
-      <div *ngIf="!(submitted && accountFound)" class="govuk-button-group--gap-between govuk-!-margin-top-8">
+      <div
+        *ngIf="!(submitted && status === 'AccountFound')"
+        class="govuk-button-group--gap-between govuk-!-margin-top-8"
+      >
         <button type="submit" class="govuk-button">Find account</button>
         <span class="govuk-visually-hidden">or</span>
         <a

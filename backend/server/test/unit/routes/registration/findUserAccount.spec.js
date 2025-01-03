@@ -135,6 +135,21 @@ describe('backend/server/routes/registration/findUserAccount', () => {
     expect(stubRecordFailedAttempt).to.have.been.callCount(5);
   });
 
+  it('should respond with 200 and status: MultipleAccountsFound if more than one user accounts are found', async () => {
+    const req = buildRequest(mockRequestBody);
+    const res = httpMocks.createResponse();
+    stubFindUser.resolves({ multipleAccountsFound: true });
+
+    await findUserAccount(req, res);
+
+    expect(res.statusCode).to.equal(200);
+    expect(res._getJSONData()).to.deep.equal({
+      status: 'MultipleAccountsFound',
+    });
+
+    expect(stubRecordFailedAttempt).not.to.be.called;
+  });
+
   describe('errors', () => {
     beforeEach(() => {
       sinon.stub(console, 'error'); // suppress noisy logging

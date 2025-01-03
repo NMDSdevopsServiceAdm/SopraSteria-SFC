@@ -39,7 +39,7 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
   public formFields = InputFields;
   public submitted = false;
-  public accountFound: boolean;
+  public status: FindUserAccountResponse['status'];
   public remainingAttempts: number;
   public serverError: string;
 
@@ -115,12 +115,12 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
   public handleResponse(response: FindUserAccountResponse): void {
     switch (response?.status) {
       case 'AccountFound':
-        this.accountFound = true;
+        this.status = 'AccountFound';
         this.accountFoundEvent.emit(response);
         break;
 
       case 'AccountNotFound':
-        this.accountFound = false;
+        this.status = 'AccountNotFound';
         this.remainingAttempts = response.remainingAttempts;
 
         if (this.remainingAttempts === 0) {
@@ -130,9 +130,16 @@ export class FindAccountComponent implements OnInit, OnDestroy, AfterViewInit {
         this.scrollToResult();
         break;
 
+      case 'MultipleAccountsFound':
+        this.status = 'MultipleAccountsFound';
+        this.remainingAttempts = null;
+
+        this.scrollToResult();
+        break;
+
       case 'AccountLocked':
         this.serverError = 'There is a problem with your account, please contact the Support Team on 0113 241 0969';
-        this.accountFound = null;
+        this.status = 'AccountLocked';
         this.remainingAttempts = null;
         break;
     }
