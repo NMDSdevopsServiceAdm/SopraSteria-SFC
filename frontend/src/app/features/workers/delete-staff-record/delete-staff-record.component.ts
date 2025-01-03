@@ -27,6 +27,8 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
   public workplace: Establishment;
   public reasons: Reason[];
   public formErrorsMap: Array<ErrorDetails>;
+
+  public otherReasonId = 8;
   public confirmationMissingErrorMessage =
     'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
 
@@ -65,6 +67,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
   private setupForm(): void {
     this.form = this.formBuilder.group({
       reason: [null, { updateOn: 'submit' }],
+      details: [null, { validators: [Validators.maxLength(500)], updateOn: 'submit' }],
       confirmDelete: [null, { validators: [Validators.requiredTrue], updateOn: 'submit' }],
     });
   }
