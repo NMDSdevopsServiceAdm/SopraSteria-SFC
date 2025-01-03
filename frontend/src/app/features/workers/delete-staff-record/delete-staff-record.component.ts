@@ -28,6 +28,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails>;
 
   public otherReasonId = 8;
+  public otherReasonDetailMaxLength = 500;
   public confirmationMissingErrorMessage =
     'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
 
@@ -49,24 +50,28 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
     this.worker = this.workerService.worker;
     this.workplace = this.establishmentService.establishment;
 
-    this.subscriptions.add(
-      this.workerService.getLeaveReasons().subscribe((reasons) => {
-        this.reasons = reasons;
-      }),
-    );
-    this.setBackLink();
+    this.getLeaveReasons();
     this.setupForm();
     this.setupFormErrorsMap();
+    this.setBackLink();
   }
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
+  private getLeaveReasons(): void {
+    this.subscriptions.add(
+      this.workerService.getLeaveReasons().subscribe((reasons) => {
+        this.reasons = reasons;
+      }),
+    );
+  }
+
   private setupForm(): void {
     this.form = this.formBuilder.group({
       reason: [null, { updateOn: 'submit' }],
-      details: [null, { validators: [Validators.maxLength(500)], updateOn: 'submit' }],
+      details: [null, { validators: [Validators.maxLength(this.otherReasonDetailMaxLength)], updateOn: 'submit' }],
       confirmDelete: [null, { validators: [Validators.requiredTrue], updateOn: 'submit' }],
     });
   }
@@ -86,11 +91,21 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
           },
         ],
       },
+      {
+        item: 'details',
+        type: [
+          {
+            name: 'maxlength',
+            message: `Details must be ${this.otherReasonDetailMaxLength} characters or less`,
+          },
+        ],
+      },
     ];
   }
 
-  public get confirmDeleteCheckbox() {
-    return this.form.get('confirmDelete');
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
   public get selectedReasonId() {
@@ -109,7 +124,8 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
     }
 
     const selectedReason = this.selectedReasonId ? { reason: { id: this.selectedReasonId } } : null;
-    if (selectedReason && this.form.get('details').value) {
+
+    if (this.selectedReasonId === this.otherReasonId && this.form.get('details').value) {
       selectedReason.reason['other'] = this.form.get('details').value;
     }
 
@@ -131,5 +147,9 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
           message: `${this.worker.nameOrId} has been deleted`,
         }),
       );
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

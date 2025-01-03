@@ -127,13 +127,27 @@ fdescribe('DeleteStaffRecordComponent', () => {
       expect(deleteWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, expectedReason);
     });
 
-    it('should call deleteWorker with reason as null if user did not select a particular reason', async () => {
+    it('should call deleteWorker with reason being null if user did not select any reason', async () => {
       const { component, getByRole, deleteWorkerSpy } = await setup();
 
       userEvent.click(getByRole('checkbox', { name: /I know that/ }));
       userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
 
       expect(deleteWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, null);
+    });
+
+    it('should call deleteWorker with both reason id and detail if user chose "other" and also input some text', async () => {
+      const { component, deleteWorkerSpy, fixture, getByRole } = await setup();
+
+      userEvent.click(getByRole('radio', { name: 'For a reason not listed' }));
+      userEvent.type(getByRole('textbox'), 'Some very specific reason');
+      userEvent.click(getByRole('checkbox', { name: /I know that/ }));
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+      fixture.detectChanges();
+
+      expect(deleteWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        reason: { id: 8, other: 'Some very specific reason' },
+      });
     });
 
     it('should navigate to staff record page and show an alert when worker is successfully deleted', async () => {
