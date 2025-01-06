@@ -168,7 +168,7 @@ describe('StaffRecordComponent', () => {
     expect(flagLongTermAbsenceLink).toBeTruthy();
     expect(deleteRecordLink).toBeTruthy();
     expect(deleteRecordLink.getAttribute('href')).toEqual(
-      `/workplace/${workplaceUid}/training-and-qualifications-record/${workerUid}/delete-staff-record`,
+      `/workplace/${workplaceUid}/staff-record/${workerUid}/delete-staff-record`,
     );
     expect(trainingAndQualsLink).toBeTruthy();
   });
