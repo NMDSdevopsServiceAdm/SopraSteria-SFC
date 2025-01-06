@@ -1,0 +1,51 @@
+<div class="govuk-util__light-bg govuk-!-padding-bottom-6">
+  <div *ngIf="workplace" class="govuk-width-container govuk-!-padding-top-2">
+    <table class="govuk-!-padding-left-0 govuk-!-margin-left-0">
+      <tr class="govuk-!-padding-left-0 govuk-!-margin-left-0">
+        <td>
+          {{ workplace.name }}
+          <br />
+          <span *ngIf="workplace.address1"> {{ workplace.address1 }}</span>
+          <span *ngIf="workplace.address2">, {{ workplace.address2 }}</span>
+          <span *ngIf="workplace.address3">, {{ workplace.address3 }}</span>
+          <span *ngIf="workplace.town">, {{ workplace.town }}</span>
+
+          <div>
+            <span *ngIf="workplace.county">{{ workplace.county }},</span>
+            <span *ngIf="workplace.postcode"> {{ workplace.postcode }}</span>
+          </div>
+        </td>
+        <td style="vertical-align: top; padding-left: 36px">
+          <app-summary-record-change
+            *ngIf="canEditEstablishment"
+            [explanationText]="''"
+            [link]="['/workplace', workplace.uid, 'update-workplace-details']"
+            [hasData]="workplace.name"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </td>
+      </tr>
+    </table>
+    <!-- {{ workplace.name }}
+    <span *ngIf="canEditEstablishment" style="margin-left: 36px"> -->
+    <!-- <app-summary-record-change
+        [explanationText]="''"
+        [link]="['/workplace', workplace.uid, 'update-workplace-details']"
+        [hasData]="workplace.name"
+        (setReturnClicked)="this.setReturn()"
+      ></app-summary-record-change> -->
+
+    <!-- Change -->
+    <!-- </span> -->
+    <!-- <div>
+      <span *ngIf="workplace.address1"> {{ workplace.address1 }}</span>
+      <span *ngIf="workplace.address2">, {{ workplace.address2 }}</span>
+      <span *ngIf="workplace.address3">, {{ workplace.address3 }}</span>
+      <span *ngIf="workplace.town">, {{ workplace.town }}</span>
+    </div>
+    <div>
+      <span *ngIf="workplace.county">{{ workplace.county }},</span>
+      <span *ngIf="workplace.postcode"> {{ workplace.postcode }}</span>
+    </div> -->
+  </div>
+</div>
