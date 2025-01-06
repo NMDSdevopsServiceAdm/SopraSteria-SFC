@@ -65,6 +65,7 @@ router.post('/', async (req, res) => {
               'tribalSalt',
               'agreedUpdatedTerms',
               'status',
+              'lastViewedSLVMessage',
             ],
             include: [
               {
@@ -284,6 +285,7 @@ router.post('/', async (req, res) => {
               migratedUser,
             },
             establishmentUser.user.registrationSurveyCompleted,
+            establishmentUser.lastViewedSLVMessage,
           );
 
           await models.sequelize.transaction(async (t) => {
