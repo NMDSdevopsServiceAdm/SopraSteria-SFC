@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { allMandatoryTrainingCategories, TrainingCategory } from '@core/model/training.model';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService, TrainingService } from '@core/services/training.service';
 import { Observable, of } from 'rxjs';
 
 import { AllJobs, JobsWithDuplicates } from '../../../mockdata/jobs';
@@ -74,6 +74,21 @@ export class MockTrainingServiceWithPreselectedStaff extends MockTrainingService
       if (incompleteTraining) {
         service._selectedTraining = { ...service._selectedTraining, completed: null, expires: null, notes: null };
       }
+      return service;
+    };
+  }
+}
+
+@Injectable()
+export class MockMandatoryTrainingService extends MandatoryTrainingService {
+  public static factory(overrides = {}) {
+    return (http: HttpClient) => {
+      const service = new MockMandatoryTrainingService(http);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        service[overrideName] = overrides[overrideName];
+      });
+
       return service;
     };
   }

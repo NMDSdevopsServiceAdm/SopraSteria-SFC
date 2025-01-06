@@ -8,6 +8,7 @@ import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockRouter } from '@core/test-utils/MockRouter';
+import { MockMandatoryTrainingService } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -34,14 +35,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
       providers: [
         {
           provide: MandatoryTrainingService,
-          useValue: {
-            selectedTraining: overrides.selectedTraining !== undefined ? overrides.selectedTraining : selectedTraining,
-            resetState: () => {},
-            set onlySelectedJobRoles(onlySelected) {},
-            get onlySelectedJobRoles() {
-              return overrides.onlySelectedJobRoles ?? false;
-            },
-          },
+          useFactory: MockMandatoryTrainingService.factory({ selectedTraining, ...overrides }),
         },
         { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -182,6 +176,50 @@ describe('AllOrSelectedJobRolesComponent', () => {
       expect(onlySelectedJobRolesRadio.checked).toBeTruthy();
       expect(allJobRolesRadio.checked).toBeFalsy();
     });
+
+    const mandatoryTrainingBeingEdited = {
+      category: 'Activity provision/Well-being',
+      establishmentId: 4090,
+      jobs: [{}, {}],
+      trainingCategoryId: 1,
+    };
+
+    it("should prefill the 'Only selected job roles' radio when mandatoryTrainingBeingEdited in training service does not match allJobRolesCount", async () => {
+      const { getByLabelText } = await setup({ mandatoryTrainingBeingEdited, allJobRolesCount: 37 });
+
+      const onlySelectedJobRolesRadio = getByLabelText('Only selected job roles') as HTMLInputElement;
+      const allJobRolesRadio = getByLabelText('All job roles') as HTMLInputElement;
+
+      expect(onlySelectedJobRolesRadio.checked).toBeTruthy();
+      expect(allJobRolesRadio.checked).toBeFalsy();
+    });
+
+    it("should prefill the 'All job roles' radio when mandatoryTrainingBeingEdited in training service does match allJobRolesCount", async () => {
+      const { getByLabelText } = await setup({
+        mandatoryTrainingBeingEdited,
+        allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
+      });
+
+      const allJobRolesRadio = getByLabelText('All job roles') as HTMLInputElement;
+      const onlySelectedJobRolesRadio = getByLabelText('Only selected job roles') as HTMLInputElement;
+
+      expect(allJobRolesRadio.checked).toBeTruthy();
+      expect(onlySelectedJobRolesRadio.checked).toBeFalsy();
+    });
+
+    it("should prefill the 'Only selected job roles' radio when set in training service even if mandatoryTrainingBeingEdited (for case when user has changed from all to selected and then gone back to this page)", async () => {
+      const { getByLabelText } = await setup({
+        mandatoryTrainingBeingEdited,
+        allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
+        onlySelectedJobRoles: true,
+      });
+
+      const onlySelectedJobRolesRadio = getByLabelText('Only selected job roles') as HTMLInputElement;
+      const allJobRolesRadio = getByLabelText('All job roles') as HTMLInputElement;
+
+      expect(onlySelectedJobRolesRadio.checked).toBeTruthy();
+      expect(allJobRolesRadio.checked).toBeFalsy();
+    });
   });
 
   describe('Cancel button', () => {
@@ -313,6 +351,45 @@ describe('AllOrSelectedJobRolesComponent', () => {
         fixture.detectChanges();
 
         expect(onlySelectedJobRolesSpy).toHaveBeenCalledWith(true);
+      });
+    });
+
+    describe('Editing existing mandatory training', () => {
+      const mandatoryTrainingBeingEdited = {
+        category: 'Activity provision/Well-being',
+        establishmentId: 4090,
+        jobs: [{}, {}],
+        trainingCategoryId: 1,
+      };
+
+      it('should include previousTrainingCategoryId in submit props when All job roles selected', async () => {
+        const { getByText, createAndUpdateMandatoryTrainingSpy, establishment, selectedTraining } = await setup({
+          mandatoryTrainingBeingEdited,
+          allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
+        });
+
+        fireEvent.click(getByText('Continue'));
+
+        expect(createAndUpdateMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.uid, {
+          previousTrainingCategoryId: mandatoryTrainingBeingEdited.trainingCategoryId,
+          trainingCategoryId: selectedTraining.trainingCategory.id,
+          allJobRoles: true,
+          jobs: [],
+        });
+      });
+
+      it("should display 'Mandatory training category updated' banner when All job roles selected", async () => {
+        const { getByText, alertSpy } = await setup({
+          mandatoryTrainingBeingEdited,
+          allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
+        });
+
+        fireEvent.click(getByText('Continue'));
+
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Mandatory training category updated',
+        });
       });
     });
   });

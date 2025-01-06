@@ -5,11 +5,15 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { Establishment } from '@core/model/establishment.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { mockMandatoryTraining, MockTrainingService } from '@core/test-utils/MockTrainingService';
+import {
+  mockMandatoryTraining,
+  MockMandatoryTrainingService,
+  MockTrainingService,
+} from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -40,8 +44,10 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
           useClass: WindowRef,
         },
         {
-          provide: TrainingService,
-          useFactory: MockTrainingService.factory(overrides.duplicateJobRoles ?? false),
+          provide: MandatoryTrainingService,
+          useFactory: overrides.duplicateJobRoles
+            ? MockTrainingService.factory(overrides.duplicateJobRoles)
+            : MockMandatoryTrainingService.factory(),
         },
         {
           provide: EstablishmentService,
@@ -77,6 +83,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
       existingMandatoryTraining,
       routerSpy,
       currentRoute,
+      injector,
     };
   }
 
@@ -182,6 +189,26 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
       expect(autismCategory.textContent).toContain('Activities worker, coordinator');
     });
 
+    it('should navigate to select-training-category and set mandatory training being edited in service when category link clicked', async () => {
+      const { getByText, existingMandatoryTraining, routerSpy, currentRoute, injector } = await setup();
+
+      const mandatoryTrainingService = injector.inject(MandatoryTrainingService) as MandatoryTrainingService;
+      const setMandatoryTrainingBeingEditedSpy = spyOnProperty(
+        mandatoryTrainingService,
+        'mandatoryTrainingBeingEdited',
+        'set',
+      ).and.stub();
+
+      existingMandatoryTraining.mandatoryTraining.forEach((trainingCategory) => {
+        fireEvent.click(getByText(trainingCategory.category));
+
+        expect(setMandatoryTrainingBeingEditedSpy).toHaveBeenCalledWith(trainingCategory);
+        expect(routerSpy).toHaveBeenCalledWith(['select-training-category'], {
+          relativeTo: currentRoute,
+        });
+      });
+    });
+
     it(`should have a Remove link for each training category which takes user to its remove page`, async () => {
       const { getByTestId, existingMandatoryTraining, routerSpy, currentRoute } = await setup();
 
@@ -197,16 +224,6 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     });
 
     describe('Handling duplicate job roles', () => {
-      it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
-        const { getByTestId } = await setup({ duplicateJobRoles: true });
-
-        const coshCategory = getByTestId('titleAll');
-        const autismCategory = getByTestId('titleJob');
-
-        expect(coshCategory.textContent).toContain('All');
-        expect(autismCategory.textContent).toContain('Activities worker, coordinator');
-      });
-
       it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
         const { getByTestId } = await setup({ duplicateJobRoles: true });
 
