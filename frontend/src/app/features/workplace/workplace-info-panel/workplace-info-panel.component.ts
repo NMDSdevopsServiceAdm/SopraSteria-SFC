@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
 @Component({
   selector: 'app-workplace-info-panel',
   templateUrl: './workplace-info-panel.component.html',
+  styleUrls: ['./workplace-info-panel.component.scss']
 })
 export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   @Output() public changeOwnershipAndPermissionsEvent = new EventEmitter();
