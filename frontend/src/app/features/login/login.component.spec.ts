@@ -214,7 +214,7 @@ describe('LoginComponent', () => {
 
     describe('update-your-vacancies-and-turnover-data', () => {
       it('should navigate to update-your-vacancies-and-turnover-data when edit user and lastViewedSLVMessage is null', async () => {
-        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
         const authenticateResponse = mockAuthenticateResponse();
         authenticateResponse.body.lastViewedSLVMessage = null;
 
@@ -226,7 +226,7 @@ describe('LoginComponent', () => {
       });
 
       it('should not navigate to update-your-vacancies-and-turnover-data when read only user and lastViewedSLVMessage is null', async () => {
-        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
         const authenticateResponse = mockAuthenticateResponse();
         authenticateResponse.body.lastViewedSLVMessage = null;
         authenticateResponse.body.role = Roles.Read;
@@ -236,6 +236,42 @@ describe('LoginComponent', () => {
         signIn(getByLabelText, getByRole, fixture);
 
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+      });
+
+      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is under six months ago', async () => {
+        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
+        const authenticateResponse = mockAuthenticateResponse();
+
+        const currentDate = new Date();
+        const threeMonthsAgo = new Date();
+        threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
+
+        authenticateResponse.body.lastViewedSLVMessage = threeMonthsAgo;
+        authenticateResponse.body.role = Roles.Edit;
+
+        authSpy.and.returnValue(of(authenticateResponse));
+
+        signIn(getByLabelText, getByRole, fixture);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+      });
+
+      it('should navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is over six months ago', async () => {
+        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
+        const authenticateResponse = mockAuthenticateResponse();
+
+        const currentDate = new Date();
+        const sevenMonthsAgo = new Date();
+        sevenMonthsAgo.setMonth(currentDate.getMonth() - 7);
+
+        authenticateResponse.body.lastViewedSLVMessage = sevenMonthsAgo;
+        authenticateResponse.body.role = Roles.Edit;
+
+        authSpy.and.returnValue(of(authenticateResponse));
+
+        signIn(getByLabelText, getByRole, fixture);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/update-your-vacancies-and-turnover-data']);
       });
     });
   });

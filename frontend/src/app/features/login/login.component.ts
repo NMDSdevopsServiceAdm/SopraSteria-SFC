@@ -186,7 +186,10 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             return this.router.navigate(['workplace', response.body.establishment.uid, 'type-of-employer']);
           }
 
-          if (!response.body.lastViewedSLVMessage && response.body.role === Roles.Edit) {
+          if (
+            (!response.body.lastViewedSLVMessage || this.isOverSixMonthsAgo(response.body.lastViewedSLVMessage)) &&
+            response.body.role === Roles.Edit
+          ) {
             return this.router.navigate(['/update-your-vacancies-and-turnover-data']);
           }
 
@@ -203,5 +206,13 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   public setShowPassword(event: Event): void {
     event.preventDefault();
     this.showPassword = !this.showPassword;
+  }
+
+  private isOverSixMonthsAgo(dateToCheck: Date): boolean {
+    const currentDate = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
+
+    return dateToCheck < sixMonthsAgo;
   }
 }
