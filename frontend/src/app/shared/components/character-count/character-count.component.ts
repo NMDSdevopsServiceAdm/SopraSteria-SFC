@@ -15,17 +15,16 @@ export class CharacterCountComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     this.remaining = this.max;
-    this.subscriptions.add(
-      this.control.valueChanges.subscribe((value: string) => {
-        if (value) {
-          if (this.words) {
-            this.remaining = this.max - value.match(/\S+/g).length;
-          } else {
-            this.remaining = this.max - value.length;
-          }
-        }
-      }),
-    );
+    this.subscriptions.add(this.control.valueChanges.subscribe((value) => this.updateRemainingCount(value)));
+  }
+
+  private updateRemainingCount(value: string) {
+    if (!value) {
+      this.remaining = this.max;
+    }
+
+    const inputTextCount = this.words ? value.match(/\S+/g).length : value.length;
+    this.remaining = this.max - inputTextCount;
   }
 
   ngOnDestroy() {
