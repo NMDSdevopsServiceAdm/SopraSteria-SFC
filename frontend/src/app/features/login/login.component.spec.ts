@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed, TestBed } from '@angular/core/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -8,7 +8,6 @@ import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 import { MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockUserService } from '@core/test-utils/MockUserService';
-import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -20,12 +19,10 @@ describe('LoginComponent', () => {
   async function setup(overrides = {}) {
     const isAdmin: boolean = ('isAdmin' in overrides ? overrides.isAdmin : false) as boolean;
     const employerTypeSet: boolean = ('employerTypeSet' in overrides ? overrides.employerTypeSet : true) as boolean;
-    const isAuthenticated: boolean = ('isAuthenticated' in overrides ? overrides.isAuthenticated : true) as boolean;
 
     const setupTools = await render(LoginComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
-        FeatureFlagsService,
         UntypedFormBuilder,
         {
           provide: AuthService,
@@ -45,28 +42,15 @@ describe('LoginComponent', () => {
     spy.and.returnValue(Promise.resolve(true));
 
     const authService = injector.inject(AuthService) as AuthService;
-    let authSpy: any;
-    if (isAuthenticated) {
-      authSpy = spyOn(authService, 'authenticate');
-      authSpy.and.callThrough();
-    } else {
-      const mockErrorResponse = new HttpErrorResponse({
-        status: 401,
-        statusText: 'Unauthorized',
-        error: {},
-      });
-
-      const authService = TestBed.inject(AuthService);
-      authSpy = spyOn(authService, 'authenticate').and.returnValue(throwError(mockErrorResponse));
-    }
+    const authSpy = spyOn(authService, 'authenticate').and.callThrough();
 
     const fixture = setupTools.fixture;
     const component = fixture.componentInstance;
 
     return {
+      ...setupTools,
       component,
       fixture,
-      ...setupTools,
       spy,
       authSpy,
     };
@@ -154,104 +138,88 @@ describe('LoginComponent', () => {
   });
 
   describe('Navigation on successful login', () => {
-    it('should send you to dashboard on login as user', async () => {
-      const { component, fixture, spy, authSpy } = await setup();
+    const signIn = (getByLabelText, getByRole, fixture) => {
+      userEvent.type(getByLabelText('Username'), '1');
+      userEvent.type(getByLabelText('Password'), '1');
 
-      component.form.markAsDirty();
-      component.form.get('username').setValue('1');
-      component.form.get('username').markAsDirty();
-      component.form.get('password').setValue('1');
-      component.form.get('password').markAsDirty();
-
-      component.onSubmit();
-
+      userEvent.click(getByRole('button', { name: 'Sign in' }));
       fixture.detectChanges();
+    };
 
-      expect(component.form.valid).toBeTruthy();
+    it('should send you to dashboard on login as user', async () => {
+      const { fixture, spy, authSpy, getByLabelText, getByRole } = await setup();
+
+      signIn(getByLabelText, getByRole, fixture);
+
       expect(authSpy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledWith(['/dashboard']);
     });
 
     it('should send you to sfcadmin on login as admin', async () => {
-      const { component, fixture, spy, authSpy } = await setup({ isAdmin: true });
+      const { fixture, spy, authSpy, getByLabelText, getByRole } = await setup({ isAdmin: true });
 
-      component.form.markAsDirty();
-      component.form.get('username').setValue('1');
-      component.form.get('username').markAsDirty();
-      component.form.get('password').setValue('1');
-      component.form.get('password').markAsDirty();
+      signIn(getByLabelText, getByRole, fixture);
 
-      component.onSubmit();
-
-      fixture.detectChanges();
-
-      expect(component.form.valid).toBeTruthy();
       expect(authSpy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledWith(['/sfcadmin']);
     });
 
     it('should send you to type-of-employer on login where employer type not set', async () => {
-      const { component, fixture, spy, authSpy } = await setup({ employerTypeSet: false });
+      const { fixture, spy, getByLabelText, getByRole } = await setup({ employerTypeSet: false });
 
-      component.form.markAsDirty();
-      component.form.get('username').setValue('1');
-      component.form.get('username').markAsDirty();
-      component.form.get('password').setValue('1');
-      component.form.get('password').markAsDirty();
+      signIn(getByLabelText, getByRole, fixture);
 
-      component.onSubmit();
-
-      fixture.detectChanges();
-      expect(component.form.valid).toBeTruthy();
-      expect(authSpy).toHaveBeenCalled();
       expect(spy).toHaveBeenCalledWith(['workplace', `mockuid`, 'type-of-employer']);
     });
   });
 
   describe('validation', async () => {
     it('should display enter your username message', async () => {
-      const { component, fixture, getAllByText } = await setup();
+      const { fixture, getAllByText, getByRole, getByLabelText } = await setup();
 
-      component.form.markAsDirty();
-      component.form.get('password').setValue('1');
-      component.form.get('password').markAsDirty();
+      userEvent.type(getByLabelText('Password'), '1');
 
-      component.onSubmit();
+      userEvent.click(getByRole('button', { name: 'Sign in' }));
 
       fixture.detectChanges();
       expect(getAllByText('Enter your username')).toBeTruthy();
     });
 
     it('should display enter your password message', async () => {
-      const { component, fixture, getAllByText } = await setup();
+      const { fixture, getAllByText, getByRole, getByLabelText } = await setup();
 
-      component.form.markAsDirty();
-      component.form.get('username').setValue('1');
-      component.form.get('username').markAsDirty();
+      userEvent.type(getByLabelText('Username'), '1');
 
-      component.onSubmit();
+      userEvent.click(getByRole('button', { name: 'Sign in' }));
 
       fixture.detectChanges();
       expect(getAllByText('Enter your password')).toBeTruthy();
     });
 
+    const unauthorizedError = new HttpErrorResponse({
+      status: 401,
+      statusText: 'Unauthorized',
+      error: {},
+    });
+
     it('should display invalid username/password message', async () => {
-      const { component, fixture, getAllByText } = await setup({ isAuthenticated: false });
+      const { fixture, getAllByText, authSpy, getByLabelText, getByRole } = await setup();
 
-      component.form.markAsDirty();
-      component.form.get('username').setValue('1');
-      component.form.get('username').markAsDirty();
-      component.form.get('password').setValue('1');
-      component.form.get('password').markAsDirty();
+      authSpy.and.returnValue(throwError(unauthorizedError));
 
-      component.onSubmit();
+      userEvent.type(getByLabelText('Username'), '1');
+      userEvent.type(getByLabelText('Password'), '1');
+
+      userEvent.click(getByRole('button', { name: 'Sign in' }));
 
       fixture.detectChanges();
       expect(getAllByText('Your username or your password is incorrect')).toBeTruthy();
     });
 
     it('should focus on the first input box when the invalid username/password message is clicked', async () => {
-      const { component, fixture, getAllByText, getByRole } = await setup(false, false, false);
+      const { component, fixture, getAllByText, getByRole, authSpy } = await setup();
+
+      authSpy.and.returnValue(throwError(unauthorizedError));
 
       component.form.setValue({ username: '1', password: '1' });
       component.onSubmit();
@@ -267,21 +235,14 @@ describe('LoginComponent', () => {
     });
 
     it('should not let you sign in with a username with special characters', async () => {
-      const { component, fixture, getAllByText, getByTestId } = await setup();
+      const { fixture, getAllByText, getByRole, getByLabelText } = await setup();
 
-      const signInButton = within(getByTestId('signinButton')).getByText('Sign in');
-      const form = component.form;
+      userEvent.type(getByLabelText('Username'), 'username@123.com');
+      userEvent.type(getByLabelText('Password'), '1');
 
-      component.form.markAsDirty();
-      form.controls['username'].setValue('username@123.com');
-      form.controls['username'].markAsDirty();
-      component.form.get('password').setValue('1');
-      component.form.get('password').markAsDirty();
-
-      fireEvent.click(signInButton);
+      userEvent.click(getByRole('button', { name: 'Sign in' }));
       fixture.detectChanges();
 
-      expect(form.invalid).toBeTruthy();
       expect(
         getAllByText("You've entered an @ symbol (remember, your username cannot be an email address)").length,
       ).toBe(2);

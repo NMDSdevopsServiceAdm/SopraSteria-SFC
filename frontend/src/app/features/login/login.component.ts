@@ -13,7 +13,6 @@ import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
 import { AuthService } from '@core/services/auth.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
 import { Subscription } from 'rxjs';
@@ -35,7 +34,6 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   public showServerErrorAsLink: boolean = true;
 
   constructor(
-    private idleService: IdleService,
     private authService: AuthService,
     private userService: UserService,
     private establishmentService: EstablishmentService,
