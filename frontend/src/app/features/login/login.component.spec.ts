@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
 import { mockAuthenticateResponse, MockAuthService } from '@core/test-utils/MockAuthService';
@@ -209,6 +210,33 @@ describe('LoginComponent', () => {
       signIn(getByLabelText, getByRole, fixture);
 
       expect(routerSpy).toHaveBeenCalledWith(['/registration-survey']);
+    });
+
+    describe('update-your-vacancies-and-turnover-data', () => {
+      it('should navigate to update-your-vacancies-and-turnover-data when edit user and lastViewedSLVMessage is null', async () => {
+        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+        const authenticateResponse = mockAuthenticateResponse();
+        authenticateResponse.body.lastViewedSLVMessage = null;
+
+        authSpy.and.returnValue(of(authenticateResponse));
+
+        signIn(getByLabelText, getByRole, fixture);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/update-your-vacancies-and-turnover-data']);
+      });
+
+      it('should not navigate to update-your-vacancies-and-turnover-data when read only user and lastViewedSLVMessage is null', async () => {
+        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+        const authenticateResponse = mockAuthenticateResponse();
+        authenticateResponse.body.lastViewedSLVMessage = null;
+        authenticateResponse.body.role = Roles.Read;
+
+        authSpy.and.returnValue(of(authenticateResponse));
+
+        signIn(getByLabelText, getByRole, fixture);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+      });
     });
   });
 

@@ -10,6 +10,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -183,6 +184,10 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           if (response.body.establishment.employerTypeSet === false) {
             this.establishmentService.setEmployerTypeHasValue(false);
             return this.router.navigate(['workplace', response.body.establishment.uid, 'type-of-employer']);
+          }
+
+          if (!response.body.lastViewedSLVMessage && response.body.role === Roles.Edit) {
+            return this.router.navigate(['/update-your-vacancies-and-turnover-data']);
           }
 
           this.router.navigate(['/dashboard']);
