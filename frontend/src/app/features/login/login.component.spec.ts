@@ -1,6 +1,7 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed, TestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
@@ -10,14 +11,17 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 import { throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import userEvent from '@testing-library/user-event';
 
 describe('LoginComponent', () => {
-  async function setup(isAdmin = false, employerTypeSet = true, isAuthenticated = true) {
+  async function setup(overrides = {}) {
+    const isAdmin: boolean = ('isAdmin' in overrides ? overrides.isAdmin : false) as boolean;
+    const employerTypeSet: boolean = ('employerTypeSet' in overrides ? overrides.employerTypeSet : true) as boolean;
+    const isAuthenticated: boolean = ('isAuthenticated' in overrides ? overrides.isAuthenticated : true) as boolean;
+
     const setupTools = await render(LoginComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -149,62 +153,64 @@ describe('LoginComponent', () => {
     expect(createAccountLink.getAttribute('href')).toEqual('/registration/create-account');
   });
 
-  it('should send you to dashboard on login as user', async () => {
-    const { component, fixture, spy, authSpy } = await setup();
+  describe('Navigation on successful login', () => {
+    it('should send you to dashboard on login as user', async () => {
+      const { component, fixture, spy, authSpy } = await setup();
 
-    component.form.markAsDirty();
-    component.form.get('username').setValue('1');
-    component.form.get('username').markAsDirty();
-    component.form.get('password').setValue('1');
-    component.form.get('password').markAsDirty();
+      component.form.markAsDirty();
+      component.form.get('username').setValue('1');
+      component.form.get('username').markAsDirty();
+      component.form.get('password').setValue('1');
+      component.form.get('password').markAsDirty();
 
-    component.onSubmit();
+      component.onSubmit();
 
-    fixture.detectChanges();
+      fixture.detectChanges();
 
-    expect(component.form.valid).toBeTruthy();
-    expect(authSpy).toHaveBeenCalled();
-    expect(spy).toHaveBeenCalledWith(['/dashboard']);
-  });
+      expect(component.form.valid).toBeTruthy();
+      expect(authSpy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(['/dashboard']);
+    });
 
-  it('should send you to sfcadmin on login as admin', async () => {
-    const { component, fixture, spy, authSpy } = await setup(true);
+    it('should send you to sfcadmin on login as admin', async () => {
+      const { component, fixture, spy, authSpy } = await setup({ isAdmin: true });
 
-    component.form.markAsDirty();
-    component.form.get('username').setValue('1');
-    component.form.get('username').markAsDirty();
-    component.form.get('password').setValue('1');
-    component.form.get('password').markAsDirty();
+      component.form.markAsDirty();
+      component.form.get('username').setValue('1');
+      component.form.get('username').markAsDirty();
+      component.form.get('password').setValue('1');
+      component.form.get('password').markAsDirty();
 
-    component.onSubmit();
+      component.onSubmit();
 
-    fixture.detectChanges();
+      fixture.detectChanges();
 
-    expect(component.form.valid).toBeTruthy();
-    expect(authSpy).toHaveBeenCalled();
-    expect(spy).toHaveBeenCalledWith(['/sfcadmin']);
-  });
+      expect(component.form.valid).toBeTruthy();
+      expect(authSpy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(['/sfcadmin']);
+    });
 
-  it('should send you to type-of-employer on login where employer type not set', async () => {
-    const { component, fixture, spy, authSpy } = await setup(false, false);
+    it('should send you to type-of-employer on login where employer type not set', async () => {
+      const { component, fixture, spy, authSpy } = await setup({ employerTypeSet: false });
 
-    component.form.markAsDirty();
-    component.form.get('username').setValue('1');
-    component.form.get('username').markAsDirty();
-    component.form.get('password').setValue('1');
-    component.form.get('password').markAsDirty();
+      component.form.markAsDirty();
+      component.form.get('username').setValue('1');
+      component.form.get('username').markAsDirty();
+      component.form.get('password').setValue('1');
+      component.form.get('password').markAsDirty();
 
-    component.onSubmit();
+      component.onSubmit();
 
-    fixture.detectChanges();
-    expect(component.form.valid).toBeTruthy();
-    expect(authSpy).toHaveBeenCalled();
-    expect(spy).toHaveBeenCalledWith(['workplace', `mockuid`, 'type-of-employer']);
+      fixture.detectChanges();
+      expect(component.form.valid).toBeTruthy();
+      expect(authSpy).toHaveBeenCalled();
+      expect(spy).toHaveBeenCalledWith(['workplace', `mockuid`, 'type-of-employer']);
+    });
   });
 
   describe('validation', async () => {
     it('should display enter your username message', async () => {
-      const { component, fixture, getAllByText } = await setup(false, false, false);
+      const { component, fixture, getAllByText } = await setup();
 
       component.form.markAsDirty();
       component.form.get('password').setValue('1');
@@ -217,7 +223,7 @@ describe('LoginComponent', () => {
     });
 
     it('should display enter your password message', async () => {
-      const { component, fixture, getAllByText } = await setup(false, false, false);
+      const { component, fixture, getAllByText } = await setup();
 
       component.form.markAsDirty();
       component.form.get('username').setValue('1');
@@ -230,7 +236,7 @@ describe('LoginComponent', () => {
     });
 
     it('should display invalid username/password message', async () => {
-      const { component, fixture, getAllByText } = await setup(false, false, false);
+      const { component, fixture, getAllByText } = await setup({ isAuthenticated: false });
 
       component.form.markAsDirty();
       component.form.get('username').setValue('1');
