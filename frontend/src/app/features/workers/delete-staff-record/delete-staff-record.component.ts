@@ -32,13 +32,13 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
   public confirmationMissingErrorMessage =
     'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
 
+  public detailsText: string;
+
   private subscriptions: Subscription = new Subscription();
 
   constructor(
     private alertService: AlertService,
     private establishmentService: EstablishmentService,
-    private permissionsService: PermissionsService,
-    private route: ActivatedRoute,
     private router: Router,
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,
@@ -70,7 +70,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      reason: [null, { updateOn: 'submit' }],
+      reason: [null],
       details: [null, { validators: [Validators.maxLength(this.otherReasonDetailMaxLength)], updateOn: 'submit' }],
       confirmDelete: [null, { validators: [Validators.requiredTrue], updateOn: 'submit' }],
     });
@@ -112,8 +112,9 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
     return this.form.get('reason').value;
   }
 
-  public onSelectReason(reasonId: number) {
-    this.form.patchValue({ reason: reasonId });
+  public onInputDetails(event: Event) {
+    event.preventDefault();
+    this.detailsText = (event.target as HTMLTextAreaElement).value;
   }
 
   public onSubmit(): void {
