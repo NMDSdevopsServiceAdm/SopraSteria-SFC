@@ -61,7 +61,7 @@
                     (input)="onInputDetails($event)"
                   ></textarea>
                   <app-character-count
-                    [control]="form.get('details')"
+                    [textToCount]="detailsText"
                     [max]="otherReasonDetailMaxLength"
                   ></app-character-count>
                 </div>

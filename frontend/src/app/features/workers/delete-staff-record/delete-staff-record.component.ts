@@ -8,7 +8,6 @@ import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { Reason, WorkerService } from '@core/services/worker.service';
 import { Subscription } from 'rxjs';
 
@@ -26,13 +25,12 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
   public workplace: Establishment;
   public reasons: Reason[];
   public formErrorsMap: Array<ErrorDetails>;
+  public detailsText: string;
 
   public otherReasonId = 8;
   public otherReasonDetailMaxLength = 500;
   public confirmationMissingErrorMessage =
     'Confirm that you know this action will permanently delete this staff record and any training and qualification records (and certificates) related to it';
-
-  public detailsText: string;
 
   private subscriptions: Subscription = new Subscription();
 
