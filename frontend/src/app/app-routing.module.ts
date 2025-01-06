@@ -35,6 +35,7 @@ import { UsernameFoundComponent } from '@features/forgot-your-username-or-passwo
 import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
 import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
 import { LoginComponent } from '@features/login/login.component';
+import { StartersLeaversVacanciesLoginMessageComponent } from '@features/login/starters-leavers-vacancies-login-message/starters-leavers-vacancies-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
@@ -147,6 +148,11 @@ const routes: Routes = [
         canActivate: [MigratedUserGuard],
         component: MigratedUserTermsConditionsComponent,
         data: { title: 'Migrated User Terms And Conditions' },
+      },
+      {
+        path: 'update-your-vacancies-and-turnover-data',
+        component: StartersLeaversVacanciesLoginMessageComponent,
+        data: { title: 'Update your vacancies and turnover data' },
       },
       {
         path: 'workplace',
