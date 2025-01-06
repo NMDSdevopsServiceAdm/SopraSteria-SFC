@@ -6,12 +6,12 @@ import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
-import { MockAuthService } from '@core/test-utils/MockAuthService';
+import { mockAuthenticateResponse, MockAuthService } from '@core/test-utils/MockAuthService';
 import { MockUserService } from '@core/test-utils/MockUserService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { throwError } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
 
@@ -38,8 +38,8 @@ describe('LoginComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
 
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const navigateByUrlSpy = spyOn(router, 'navigateByUrl').and.returnValue(Promise.resolve(true));
 
     const authService = injector.inject(AuthService) as AuthService;
     const authSpy = spyOn(authService, 'authenticate').and.callThrough();
@@ -51,7 +51,9 @@ describe('LoginComponent', () => {
       ...setupTools,
       component,
       fixture,
-      spy,
+      routerSpy,
+      navigateByUrlSpy,
+      authService,
       authSpy,
     };
   }
@@ -146,30 +148,67 @@ describe('LoginComponent', () => {
       fixture.detectChanges();
     };
 
-    it('should send you to dashboard on login as user', async () => {
-      const { fixture, spy, authSpy, getByLabelText, getByRole } = await setup();
+    it('should navigate to dashboard when non-admin user with no outstanding on login actions', async () => {
+      const { fixture, routerSpy, authSpy, getByLabelText, getByRole } = await setup();
 
       signIn(getByLabelText, getByRole, fixture);
 
       expect(authSpy).toHaveBeenCalled();
-      expect(spy).toHaveBeenCalledWith(['/dashboard']);
+      expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
     });
 
-    it('should send you to sfcadmin on login as admin', async () => {
-      const { fixture, spy, authSpy, getByLabelText, getByRole } = await setup({ isAdmin: true });
+    it('should navigate to redirectLocation when recently logged out user with data stored in authService', async () => {
+      const { fixture, navigateByUrlSpy, authService, getByLabelText, getByRole } = await setup();
+
+      const mockUrlToNavigateTo = '/mockUrl';
+
+      spyOn(authService, 'isPreviousUser').and.returnValue(true);
+      spyOnProperty(authService, 'redirectLocation').and.returnValue(mockUrlToNavigateTo);
+
+      signIn(getByLabelText, getByRole, fixture);
+
+      expect(navigateByUrlSpy).toHaveBeenCalledWith(mockUrlToNavigateTo);
+    });
+
+    it('should navigate to sfcadmin when user is admin', async () => {
+      const { fixture, routerSpy, authSpy, getByLabelText, getByRole } = await setup({ isAdmin: true });
 
       signIn(getByLabelText, getByRole, fixture);
 
       expect(authSpy).toHaveBeenCalled();
-      expect(spy).toHaveBeenCalledWith(['/sfcadmin']);
+      expect(routerSpy).toHaveBeenCalledWith(['/sfcadmin']);
     });
 
-    it('should send you to type-of-employer on login where employer type not set', async () => {
-      const { fixture, spy, getByLabelText, getByRole } = await setup({ employerTypeSet: false });
+    it('should navigate to type-of-employer when employer type not set for non-admin user', async () => {
+      const { fixture, routerSpy, getByLabelText, getByRole } = await setup({ employerTypeSet: false });
 
       signIn(getByLabelText, getByRole, fixture);
 
-      expect(spy).toHaveBeenCalledWith(['workplace', `mockuid`, 'type-of-employer']);
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', `mockuid`, 'type-of-employer']);
+    });
+
+    it('should navigate to migrated-user-terms-and-conditions when auth response has migratedUserFirstLogon as true', async () => {
+      const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+      const authenticateResponse = mockAuthenticateResponse();
+      authenticateResponse.body.migratedUserFirstLogon = true;
+
+      authSpy.and.returnValue(of(authenticateResponse));
+
+      signIn(getByLabelText, getByRole, fixture);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/migrated-user-terms-and-conditions']);
+    });
+
+    it('should navigate to registration-survey when auth response has registrationSurveyCompleted as false', async () => {
+      const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
+      const authenticateResponse = mockAuthenticateResponse();
+      authenticateResponse.body.registrationSurveyCompleted = false;
+
+      authSpy.and.returnValue(of(authenticateResponse));
+
+      signIn(getByLabelText, getByRole, fixture);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/registration-survey']);
     });
   });
 

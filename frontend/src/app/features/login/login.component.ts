@@ -156,35 +156,36 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.add(
       this.authService.authenticate(username, password).subscribe(
         (response) => {
-          if (response.body.establishment && response.body.establishment.uid) {
-            // update the establishment service state with the given establishment id
+          if (response.body.establishment?.uid) {
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
+
           if (isAdminRole(response.body.role)) {
             this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
-            this.router.navigate(['/sfcadmin']);
-          } else {
-            this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
-            if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
-              this.router.navigateByUrl(this.authService.redirectLocation);
-            } else {
-              if (response.body.establishment.employerTypeSet === false) {
-                this.establishmentService.setEmployerTypeHasValue(false);
-                this.router.navigate(['workplace', `${response.body.establishment.uid}`, 'type-of-employer']);
-              } else {
-                this.router.navigate(['/dashboard']);
-              }
-            }
-            this.authService.clearPreviousUser();
-
-            if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
-              this.router.navigate(['/migrated-user-terms-and-conditions']);
-            }
-
-            if (response.body.registrationSurveyCompleted === false) {
-              this.router.navigate(['/registration-survey']);
-            }
+            return this.router.navigate(['/sfcadmin']);
           }
+
+          this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
+
+          if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
+            return this.router.navigate(['/migrated-user-terms-and-conditions']);
+          }
+
+          if (response.body.registrationSurveyCompleted === false) {
+            return this.router.navigate(['/registration-survey']);
+          }
+
+          if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
+            this.authService.clearPreviousUser();
+            return this.router.navigateByUrl(this.authService.redirectLocation);
+          }
+
+          if (response.body.establishment.employerTypeSet === false) {
+            this.establishmentService.setEmployerTypeHasValue(false);
+            return this.router.navigate(['workplace', response.body.establishment.uid, 'type-of-employer']);
+          }
+
+          this.router.navigate(['/dashboard']);
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);

@@ -81,15 +81,19 @@ export class MockAuthService extends AuthService {
   }
 
   public authenticate(username: string, password: string): Observable<any> {
-    return of({
-      body: {
-        role: this._isAdmin ? 'Admin' : 'Edit',
-        agreedUpdatedTerms: true,
-        establishment: {
-          employerTypeSet: this._employerTypeSet,
-          uid: 'mockuid'
-        }
-      },
-    });
+    return of(mockAuthenticateResponse(this._isAdmin, this._employerTypeSet));
   }
 }
+
+export const mockAuthenticateResponse = (isAdmin = false, employerTypeSet = true): any => {
+  return {
+    body: {
+      role: isAdmin ? 'Admin' : 'Edit',
+      agreedUpdatedTerms: true,
+      establishment: {
+        employerTypeSet,
+        uid: 'mockuid',
+      },
+    },
+  };
+};
