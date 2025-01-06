@@ -1,23 +1,24 @@
+import { of } from 'rxjs';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
+import { AlertService } from '@core/services/alert.service';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
+import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { mockLeaveReasons, MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { DeleteStaffRecordComponent } from './delete-staff-record.component';
-import { AlertService } from '@core/services/alert.service';
-import { WindowRef } from '@core/services/window.ref';
-import userEvent from '@testing-library/user-event';
-import { EstablishmentService } from '@core/services/establishment.service';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { of } from 'rxjs';
 
-fdescribe('DeleteStaffRecordComponent', () => {
+describe('DeleteStaffRecordComponent', () => {
   const mockWorker = workerBuilder() as Worker;
 
   const setup = async (overrides: any = {}) => {

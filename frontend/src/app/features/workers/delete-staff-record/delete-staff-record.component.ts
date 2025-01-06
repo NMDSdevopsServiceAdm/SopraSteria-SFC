@@ -1,6 +1,8 @@
+import { Subscription } from 'rxjs';
+
 import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
@@ -9,7 +11,6 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Reason, WorkerService } from '@core/services/worker.service';
-import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-delete-staff-record',
@@ -122,17 +123,25 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    const selectedReason = this.selectedReasonId ? { reason: { id: this.selectedReasonId } } : null;
-
-    if (this.selectedReasonId === this.otherReasonId && this.form.get('details').value) {
-      selectedReason.reason['other'] = this.form.get('details').value;
-    }
+    const leaveReason = this.buildLeaveReasonProp();
 
     this.subscriptions.add(
       this.workerService
-        .deleteWorker(this.workplace.uid, this.worker.uid, selectedReason)
+        .deleteWorker(this.workplace.uid, this.worker.uid, leaveReason)
         .subscribe(() => this.onSuccess()),
     );
+  }
+
+  private buildLeaveReasonProp() {
+    if (!this.selectedReasonId) {
+      return null;
+    }
+    const reasonProp = { id: this.selectedReasonId };
+
+    if (this.selectedReasonId === this.otherReasonId && this.form.get('details').value) {
+      reasonProp['other'] = this.form.get('details').value;
+    }
+    return { reason: reasonProp };
   }
 
   private onSuccess(): void {

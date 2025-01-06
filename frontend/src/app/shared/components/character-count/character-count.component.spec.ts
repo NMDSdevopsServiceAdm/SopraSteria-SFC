@@ -1,10 +1,12 @@
-import { render } from '@testing-library/angular';
-import { CharacterCountComponent } from './character-count.component';
-import { SharedModule } from '@shared/shared.module';
-import { FormControl, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { repeat } from 'lodash';
 
-fdescribe('CharacterCountComponent', () => {
+import { FormControl, ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
+
+import { CharacterCountComponent } from './character-count.component';
+
+describe('CharacterCountComponent', () => {
   const setupWithFormControlAsInput = async (override: any = {}) => {
     // This is the existing usage of this component which requires a form control object passed in as input.
     // Cannot work with form controls with option {updateOn: 'submit'}
@@ -43,7 +45,7 @@ fdescribe('CharacterCountComponent', () => {
       imports: [SharedModule, ReactiveFormsModule],
       declarations: [CharacterCountComponent],
       componentProperties: {
-        textToCount: undefined,
+        textToCount: null,
         words: setupConfigs.words,
         max: setupConfigs.max,
       },
@@ -104,7 +106,7 @@ fdescribe('CharacterCountComponent', () => {
         fixture.detectChanges();
         expect(getByText('You have 191 characters remaining')).toBeTruthy();
 
-        updateTextValue('');
+        updateTextValue(null);
         fixture.detectChanges();
         expect(getByText('You have 200 characters remaining')).toBeTruthy();
       });
