@@ -10,6 +10,7 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
@@ -188,7 +189,8 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
 
           if (
             (!response.body.lastViewedSLVMessage || this.isOverSixMonthsAgo(response.body.lastViewedSLVMessage)) &&
-            response.body.role === Roles.Edit
+            response.body.role === Roles.Edit &&
+            response.body.establishment?.dataOwner === WorkplaceDataOwner.Workplace
           ) {
             return this.router.navigate(['/update-your-vacancies-and-turnover-data']);
           }

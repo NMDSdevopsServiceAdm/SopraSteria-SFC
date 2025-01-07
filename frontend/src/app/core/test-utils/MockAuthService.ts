@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -94,6 +95,7 @@ export const mockAuthenticateResponse = (isAdmin = false, employerTypeSet = true
       establishment: {
         employerTypeSet,
         uid: 'mockuid',
+        dataOwner: WorkplaceDataOwner.Workplace,
       },
     },
   };

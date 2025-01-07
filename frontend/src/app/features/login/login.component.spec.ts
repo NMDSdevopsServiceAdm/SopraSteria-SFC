@@ -4,6 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { UserService } from '@core/services/user.service';
@@ -213,7 +214,7 @@ describe('LoginComponent', () => {
     });
 
     describe('update-your-vacancies-and-turnover-data', () => {
-      it('should navigate to update-your-vacancies-and-turnover-data when edit user and lastViewedSLVMessage is null', async () => {
+      it('should navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is null and edit user where workplace is data owner', async () => {
         const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
         const authenticateResponse = mockAuthenticateResponse();
         authenticateResponse.body.lastViewedSLVMessage = null;
@@ -225,7 +226,7 @@ describe('LoginComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/update-your-vacancies-and-turnover-data']);
       });
 
-      it('should navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is over six months ago', async () => {
+      it('should navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is over six months ago and edit user where workplace is data owner', async () => {
         const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
         const authenticateResponse = mockAuthenticateResponse();
 
@@ -248,6 +249,19 @@ describe('LoginComponent', () => {
         const authenticateResponse = mockAuthenticateResponse();
         authenticateResponse.body.lastViewedSLVMessage = null;
         authenticateResponse.body.role = Roles.Read;
+
+        authSpy.and.returnValue(of(authenticateResponse));
+
+        signIn(getByLabelText, getByRole, fixture);
+
+        expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
+      });
+
+      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is null but workplace is not data owner', async () => {
+        const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
+        const authenticateResponse = mockAuthenticateResponse();
+        authenticateResponse.body.lastViewedSLVMessage = null;
+        authenticateResponse.body.establishment.dataOwner = WorkplaceDataOwner.Parent;
 
         authSpy.and.returnValue(of(authenticateResponse));
 
