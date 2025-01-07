@@ -120,6 +120,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
     this.submitted = true;
 
     if (this.form.invalid) {
+      this.errorSummaryService.scrollToErrorSummary();
       return;
     }
 
