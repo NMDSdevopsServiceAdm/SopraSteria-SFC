@@ -22,6 +22,7 @@ const { adminRoles } = require('../utils/adminUtils');
 const sendMail = require('../utils/email/notify-email').sendPasswordReset;
 
 const { authLimiter } = require('../utils/middleware/rateLimiting');
+const { MaxLoginAttempts, UserAccountStatus } = require('../data/constants');
 
 const tribalHashCompare = (password, salt, expectedHash) => {
   const hash = crypto.createHash('sha256');
@@ -197,13 +198,13 @@ router.post('/', async (req, res) => {
 
     if (establishmentUser) {
       //check weather posted user is locked or pending
-      if (!establishmentUser.isActive && establishmentUser.status === 'Locked') {
+      if (!establishmentUser.isActive && establishmentUser.status === UserAccountStatus.Locked) {
         //check for locked status, if locked then return with 409 error
         console.error('POST .../login failed: User status is locked');
         return res.status(409).send({
           message: 'Authentication failed.',
         });
-      } else if (!establishmentUser.isActive && establishmentUser.status === 'PENDING') {
+      } else if (!establishmentUser.isActive && establishmentUser.status === UserAccountStatus.Pending) {
         //check for Pending status, if Pending then return with 403 error
         console.error('POST .../login failed: User status is pending');
         return res.status(405).send({
@@ -290,6 +291,7 @@ router.post('/', async (req, res) => {
             // reset the number of failed attempts on any successful login
             const loginUpdate = {
               invalidAttempt: 0,
+              invalidFindUsernameAttempts: 0,
               lastLogin: new Date(),
             };
 
@@ -353,19 +355,17 @@ router.post('/', async (req, res) => {
             .json(response);
         } else {
           await models.sequelize.transaction(async (t) => {
-            const maxNumberOfFailedAttempts = 10;
-
             // increment the number of failed attempts by one
             const loginUpdate = {
               invalidAttempt: establishmentUser.invalidAttempt + 1,
             };
             await establishmentUser.update(loginUpdate, { transaction: t });
 
-            if (establishmentUser.invalidAttempt === maxNumberOfFailedAttempts + 1) {
+            if (establishmentUser.invalidAttempt === MaxLoginAttempts + 1) {
               // lock the account
               const loginUpdate = {
                 isActive: false,
-                status: 'Locked',
+                status: UserAccountStatus.Locked,
               };
               await establishmentUser.update(loginUpdate, { transaction: t });
 
@@ -404,8 +404,7 @@ router.post('/', async (req, res) => {
             const auditEvent = {
               userFk: establishmentUser.user.id,
               username: establishmentUser.username,
-              type:
-                establishmentUser.invalidAttempt >= maxNumberOfFailedAttempts + 1 ? 'loginWhileLocked' : 'loginFailed',
+              type: establishmentUser.invalidAttempt >= MaxLoginAttempts + 1 ? 'loginWhileLocked' : 'loginFailed',
               property: 'password',
               event: {},
             };

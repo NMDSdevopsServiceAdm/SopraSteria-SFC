@@ -28,7 +28,12 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
-import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
+import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
+import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
+import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
+import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
 import { LoginComponent } from '@features/login/login.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
@@ -90,6 +95,27 @@ const routes: Routes = [
         data: { title: 'Forgotten Password' },
       },
       {
+        path: 'forgot-your-username-or-password',
+        component: ForgotYourUsernameOrPasswordComponent,
+        data: { title: 'Forgot Your Username Or Password' },
+      },
+      {
+        path: 'forgot-your-username',
+        component: ForgotYourUsernameComponent,
+        data: { title: 'Forgot Your Username' },
+      },
+      {
+        path: 'user-account-not-found',
+        component: UserAccountNotFoundComponent,
+        data: { title: 'User Account Not found' },
+      },
+
+      {
+        path: 'security-question-answer-not-match',
+        component: SecurityQuestionAnswerNotMatchComponent,
+        data: { title: 'Security Question Answer Does Not Match' },
+      },
+      {
         path: 'reset-password',
         component: ResetPasswordComponent,
         data: { title: 'Reset Password' },
@@ -98,6 +124,11 @@ const routes: Routes = [
         path: 'satisfaction-survey',
         component: SatisfactionSurveyComponent,
         data: { title: 'Satisfaction Survey' },
+      },
+      {
+        path: 'username-found',
+        component: UsernameFoundComponent,
+        data: { title: 'Username Found' },
       },
     ],
   },
