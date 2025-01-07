@@ -15,7 +15,6 @@ import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
-import { DeleteWorkerDialogComponent } from '../delete-worker-dialog/delete-worker-dialog.component';
 import { MoveWorkerDialogComponent } from '../move-worker-dialog/move-worker-dialog.component';
 
 @Component({
