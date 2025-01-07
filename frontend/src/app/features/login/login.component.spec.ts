@@ -14,6 +14,7 @@ import { throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import userEvent from '@testing-library/user-event';
 
 describe('LoginComponent', () => {
   async function setup(isAdmin = false, employerTypeSet = true, isAuthenticated = true) {
@@ -241,6 +242,22 @@ describe('LoginComponent', () => {
 
       fixture.detectChanges();
       expect(getAllByText('Your username or your password is incorrect')).toBeTruthy();
+    });
+
+    it('should focus on the first input box when the invalid username/password message is clicked', async () => {
+      const { component, fixture, getAllByText, getByRole } = await setup(false, false, false);
+
+      component.form.setValue({ username: '1', password: '1' });
+      component.onSubmit();
+
+      fixture.detectChanges();
+      const errorMessageInSummaryBox = getAllByText('Your username or your password is incorrect')[0];
+      const usernameInputBoxEl = getByRole('textbox', { name: 'Username' });
+      const focusSpy = spyOn(usernameInputBoxEl, 'focus');
+
+      userEvent.click(errorMessageInSummaryBox);
+      await fixture.whenStable();
+      expect(focusSpy).toHaveBeenCalled();
     });
 
     it('should not let you sign in with a username with special characters', async () => {

@@ -28,6 +28,7 @@
       <li *ngIf="serverError">
         <ng-container *ngIf="showServerErrorAsLink; else serverErrorAsPlainText">
           <a
+            (click)="focusOnField('server')"
             [routerLink]="'.'"
             [fragment]="'server-error'"
             [queryParamsHandling]="'merge'"

@@ -18,7 +18,6 @@ describe('ErrorSummaryComponent', () => {
         },
       ],
       componentProperties: {
-        // form: mockForm,
         formErrorsMap: [],
         ...override,
       },
