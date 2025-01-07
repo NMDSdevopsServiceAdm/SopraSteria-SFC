@@ -162,7 +162,7 @@ describe('DeleteStaffRecordComponent', () => {
       await routerSpy.calls.mostRecent().returnValue;
       expect(alertServiceSpy).toHaveBeenCalledWith({
         type: 'success',
-        message: `${component.worker.nameOrId} has been deleted`,
+        message: `Staff record deleted (${component.worker.nameOrId})`,
       });
     });
 

@@ -152,7 +152,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
       .then(() =>
         this.alertService.addAlert({
           type: 'success',
-          message: `${this.worker.nameOrId} has been deleted`,
+          message: `Staff record deleted (${this.worker.nameOrId})`,
         }),
       );
   }
