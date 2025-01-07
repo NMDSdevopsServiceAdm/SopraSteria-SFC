@@ -7,7 +7,7 @@
 >
 </app-error-summary>
 
-<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
       <h1 class="govuk-fieldset__heading" data-cy="signin-heading">Sign in</h1>
@@ -38,6 +38,7 @@
           {{ getFormErrorMessage('username', 'atSignInUsername') }}
         </ng-container>
       </span>
+      <span id="server-error" *ngIf="serverError"></span>
       <input
         data-cy="username"
         class="govuk-input govuk-input--width-20"
