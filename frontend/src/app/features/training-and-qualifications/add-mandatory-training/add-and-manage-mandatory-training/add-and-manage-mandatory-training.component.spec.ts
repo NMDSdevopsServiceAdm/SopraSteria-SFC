@@ -9,11 +9,7 @@ import { MandatoryTrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import {
-  mockMandatoryTraining,
-  MockMandatoryTrainingService,
-  MockTrainingService,
-} from '@core/test-utils/MockTrainingService';
+import { mockMandatoryTraining, MockMandatoryTrainingService } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -45,9 +41,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
         },
         {
           provide: MandatoryTrainingService,
-          useFactory: overrides.duplicateJobRoles
-            ? MockTrainingService.factory(overrides.duplicateJobRoles)
-            : MockMandatoryTrainingService.factory(),
+          useFactory: MockMandatoryTrainingService.factory(),
         },
         {
           provide: EstablishmentService,
@@ -220,18 +214,6 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
           [trainingCategory.trainingCategoryId, 'delete-mandatory-training-category'],
           { relativeTo: currentRoute },
         );
-      });
-    });
-
-    describe('Handling duplicate job roles', () => {
-      it('should show all if there are any duplicate job roles and the job roles length is the old all job roles length', async () => {
-        const { getByTestId } = await setup({ duplicateJobRoles: true });
-
-        const coshCategory = getByTestId('titleAll');
-        const autismCategory = getByTestId('titleJob');
-
-        expect(coshCategory.textContent).toContain('All');
-        expect(autismCategory.textContent).toContain('Activities worker, coordinator');
       });
     });
   });

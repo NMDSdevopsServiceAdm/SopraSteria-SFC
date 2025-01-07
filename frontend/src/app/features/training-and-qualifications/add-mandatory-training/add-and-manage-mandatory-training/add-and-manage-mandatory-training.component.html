@@ -62,21 +62,10 @@
         </td>
 
         <td class="govuk-table__cell">
-          <ng-container
-            *ngIf="
-              records.jobs.length === allJobsLength ||
-              (mandatoryTrainingHasDuplicateJobRoles[i][records.trainingCategoryId].hasPreviousAllJobsLength &&
-                mandatoryTrainingHasDuplicateJobRoles[i][records.trainingCategoryId].hasDuplicates)
-            "
-          >
-            <span data-testid="titleAll">{{ 'All' }}</span>
+          <ng-container *ngIf="records.jobs.length === allJobsLength">
+            <span data-testid="titleAll">All</span>
           </ng-container>
-          <ng-container
-            *ngIf="
-              records.jobs.length < allJobsLength &&
-              !mandatoryTrainingHasDuplicateJobRoles[i][records.trainingCategoryId].hasPreviousAllJobsLength
-            "
-          >
+          <ng-container *ngIf="records.jobs.length < allJobsLength">
             <div data-testid="titleJob" *ngFor="let job of records.jobs">{{ job.title }}</div>
           </ng-container>
         </td>
