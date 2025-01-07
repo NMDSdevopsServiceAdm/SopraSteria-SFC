@@ -26,7 +26,18 @@
         </ng-container>
       </ng-container>
       <li *ngIf="serverError">
-        <a [routerLink]="'.'" [fragment]="'server-error'" [queryParamsHandling]="'merge'" [innerHTML]="serverError"></a>
+        <ng-container *ngIf="showServerErrorAsLink; else serverErrorAsPlainText">
+          <a
+            (click)="focusOnField('server')"
+            [routerLink]="'.'"
+            [fragment]="'server-error'"
+            [queryParamsHandling]="'merge'"
+            [innerHTML]="serverError"
+          ></a>
+        </ng-container>
+        <ng-template #serverErrorAsPlainText>
+          <p class="govuk-error-message">{{ serverError }}</p>
+        </ng-template>
       </li>
       <ng-container *ngIf="customErrors">
         <li *ngFor="let customError of customErrors">

@@ -37,20 +37,19 @@ export class ForgotYourPasswordEditComponent implements OnInit, AfterViewInit {
         type: [
           {
             name: 'required',
-            message: 'Enter the username or email address',
+            message: 'Enter your username or ASC-WDS email address',
+          },
+          {
+            name: 'maxlength',
+            message: 'Your username or ASC-WDS email address must be 120 characters or fewer',
           },
         ],
       },
     ];
   }
 
-  /**
-   * Pass in formGroup or formControl name and errorType
-   * Then return error message
-   * @param item
-   * @param errorType
-   */
-  public getFormErrorMessage(item: string, errorType: string): string {
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
