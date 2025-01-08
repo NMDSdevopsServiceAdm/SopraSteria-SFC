@@ -212,11 +212,12 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.showPassword = !this.showPassword;
   }
 
-  private isOverSixMonthsAgo(dateToCheck: Date): boolean {
+  private isOverSixMonthsAgo(lastViewedVacanciesAndTurnoverMessageDate: string): boolean {
     const currentDate = new Date();
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
 
-    return dateToCheck < sixMonthsAgo;
+    const lastViewedDate = new Date(lastViewedVacanciesAndTurnoverMessageDate);
+    return lastViewedDate < sixMonthsAgo;
   }
 }

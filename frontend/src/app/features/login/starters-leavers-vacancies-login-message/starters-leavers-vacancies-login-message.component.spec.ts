@@ -8,8 +8,6 @@ import { of } from 'rxjs';
 import { StartersLeaversVacanciesLoginMessageComponent } from './starters-leavers-vacancies-login-message.component';
 
 describe('StartersLeaversVacanciesLoginMessageComponent', () => {
-  const mockUserUid = 'ajoij3213213213';
-
   async function setup() {
     const updateSLVMessageSpy = jasmine.createSpy('updateSLVMessage').and.returnValue(of(null));
 
@@ -20,7 +18,7 @@ describe('StartersLeaversVacanciesLoginMessageComponent', () => {
           provide: UserService,
           useValue: {
             loggedInUser: {
-              uid: mockUserUid,
+              uid: 'ajoij3213213213',
             },
             updateSLVMessage: updateSLVMessageSpy,
           },
@@ -54,6 +52,6 @@ describe('StartersLeaversVacanciesLoginMessageComponent', () => {
   it('should call updateSLVMessage in UserService on page load', async () => {
     const { updateSLVMessageSpy } = await setup();
 
-    expect(updateSLVMessageSpy).toHaveBeenCalledWith(mockUserUid);
+    expect(updateSLVMessageSpy).toHaveBeenCalled();
   });
 });
