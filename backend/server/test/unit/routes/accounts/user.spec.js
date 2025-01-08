@@ -3,8 +3,15 @@ const expect = chai.expect;
 const sinon = require('sinon');
 const httpMocks = require('node-mocks-http');
 
-const { meetsMaxUserLimit, partAddUser, listAdminUsers, updateUser } = require('../../../../routes/accounts/user');
+const {
+  meetsMaxUserLimit,
+  partAddUser,
+  listAdminUsers,
+  updateUser,
+  updateLastViewedSLVMessage,
+} = require('../../../../routes/accounts/user');
 const User = require('../../../../models/classes/user').User;
+const models = require('../../../../models');
 
 describe('user.js', () => {
   let req;
@@ -343,6 +350,45 @@ describe('user.js', () => {
         expect(res.statusCode).to.equal(200);
         expect(res._getJSONData()).to.deep.equal(adminToJSON);
       });
+    });
+  });
+
+  describe('updateLastViewedSLVMessage', () => {
+    let req;
+    let res;
+
+    beforeEach(() => {
+      req = httpMocks.createRequest();
+      res = httpMocks.createResponse();
+    });
+
+    it('should return 200 response if userUid in params is valid and database call successful', async () => {
+      req.params = { userUid: '6b6885fa-340d-4d59-8720-c03d8845e603' };
+      sinon.stub(models.user, 'setDateForLastViewedSLVMessage').returns(null);
+
+      await updateLastViewedSLVMessage(req, res);
+
+      expect(res.statusCode).to.equal(200);
+    });
+
+    it('should return 400 response if userUid in params invalid', async () => {
+      req.params = { userUid: 'invalid-uid' };
+      sinon.stub(models.user, 'setDateForLastViewedSLVMessage').returns(null);
+
+      await updateLastViewedSLVMessage(req, res);
+
+      expect(res.statusCode).to.equal(400);
+      expect(res._getData()).to.deep.equal('User UID invalid');
+    });
+
+    it('should return 500 response if unexpected error', async () => {
+      req.params = { userUid: '6b6885fa-340d-4d59-8720-c03d8845e603' };
+      sinon.stub(models.user, 'setDateForLastViewedSLVMessage').throws();
+
+      await updateLastViewedSLVMessage(req, res);
+
+      expect(res.statusCode).to.equal(500);
+      expect(res._getData()).to.deep.equal('Failed to update last viewed date');
     });
   });
 });

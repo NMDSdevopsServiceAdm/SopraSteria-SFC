@@ -158,6 +158,9 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.add(
       this.authService.authenticate(username, password).subscribe(
         (response) => {
+          const isPreviousUser = this.authService.isPreviousUser(username);
+          this.authService.clearPreviousUser();
+
           if (response.body.establishment?.uid) {
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
@@ -177,8 +180,7 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
             return this.router.navigate(['/registration-survey']);
           }
 
-          if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
-            this.authService.clearPreviousUser();
+          if (isPreviousUser && this.authService.redirectLocation) {
             return this.router.navigateByUrl(this.authService.redirectLocation);
           }
 

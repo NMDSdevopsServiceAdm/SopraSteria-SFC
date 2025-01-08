@@ -3,7 +3,7 @@ import { Injectable, isDevMode } from '@angular/core';
 import { GetWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
-import { BehaviorSubject, Observable, of } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 
@@ -184,7 +184,10 @@ export class UserService {
       .pipe(map((response) => response.users));
   }
 
-  public updateSLVMessage(userUid: string) {
-    return of(null);
+  public updateSLVMessage() {
+    return this.http.post(
+      `${environment.appRunnerEndpoint}/api/user/update-last-viewed-slv-message/${this.loggedInUser.uid}`,
+      {},
+    );
   }
 }

@@ -81,11 +81,6 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: false,
         field: '"AgreedUpdatedTerms"',
       },
-      lastViewedSLVMessage: {
-        type: DataTypes.DATE,
-        allowNull: true,
-        field: 'LastViewedSLVMessage',
-      },
     },
     {
       tableName: '"Login"',

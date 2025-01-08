@@ -10,10 +10,8 @@ export class StartersLeaversVacanciesLoginMessageComponent implements OnDestroy 
   private subscriptions: Subscription = new Subscription();
 
   constructor(private userService: UserService) {
-    const userUid = this.userService.loggedInUser.uid;
-
     this.subscriptions.add(
-      this.userService.updateSLVMessage(userUid).subscribe((res) => {
+      this.userService.updateSLVMessage().subscribe((res) => {
         () => {};
       }),
     );

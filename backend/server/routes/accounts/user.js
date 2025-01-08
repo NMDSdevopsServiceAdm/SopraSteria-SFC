@@ -809,7 +809,7 @@ router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) =>
       let notificationArr = [];
 
       const establishmentNotifications = await notifications.selectNotificationByEstablishment(req.establishmentUid);
-      if(establishmentNotifications) notificationArr.push(establishmentNotifications);
+      if (establishmentNotifications) notificationArr.push(establishmentNotifications);
       return res.status(200).send(notificationArr);
     }
   } catch (e) {
@@ -911,6 +911,27 @@ const swapEstablishment = async (req, res) => {
     .json(response);
 };
 
+const updateLastViewedSLVMessage = async (req, res) => {
+  try {
+    const userUid = req.params?.userUid;
+
+    if (!isCorrectlyFormattedUid(userUid)) {
+      return res.status(400).send('User UID invalid');
+    }
+
+    await models.user.setDateForLastViewedSLVMessage(userUid);
+
+    return res.status(200);
+  } catch (error) {
+    return res.status(500).send('Failed to update last viewed date');
+  }
+};
+
+const isCorrectlyFormattedUid = (userUid) => {
+  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
+  return uuidRegex.test(userUid.toUpperCase());
+};
+
 router.route('/').get(return200);
 router.route('/admin').get(Authorization.isAdmin, listAdminUsers);
 router.route('/admin/:userId').get(Authorization.isAdmin, getUser);
@@ -945,6 +966,7 @@ router.route('/my/establishments').get(Authorization.isAuthorised, listEstablish
 router.route('/admin/:userId').get(Authorization.isAuthorised, getUser);
 router.use('/my/notifications', Authorization.isAuthorised);
 router.route('/my/notifications').get(listNotifications);
+router.route('/update-last-viewed-slv-message/:userUid').post(Authorization.isAuthorised, updateLastViewedSLVMessage);
 
 router.use('/swap/establishment/:id', authLimiter);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
@@ -955,3 +977,4 @@ module.exports.partAddUser = partAddUser;
 
 module.exports.listAdminUsers = listAdminUsers;
 module.exports.updateUser = updateUser;
+module.exports.updateLastViewedSLVMessage = updateLastViewedSLVMessage;
