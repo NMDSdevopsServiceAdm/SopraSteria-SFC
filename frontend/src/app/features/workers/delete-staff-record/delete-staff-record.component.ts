@@ -95,7 +95,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
         type: [
           {
             name: 'maxlength',
-            message: `Details must be ${this.otherReasonDetailMaxLength} characters or less`,
+            message: `Provide details must be ${this.otherReasonDetailMaxLength} characters or fewer`,
           },
         ],
       },

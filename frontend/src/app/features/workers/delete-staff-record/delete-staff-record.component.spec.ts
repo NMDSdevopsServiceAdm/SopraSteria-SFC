@@ -1,3 +1,4 @@
+import { repeat } from 'lodash';
 import { of } from 'rxjs';
 
 import { HttpClientTestingModule } from '@angular/common/http/testing';
@@ -137,7 +138,7 @@ describe('DeleteStaffRecordComponent', () => {
       expect(deleteWorkerSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, null);
     });
 
-    it('should call deleteWorker with both reason id and detail if user chose "other" and also input some text', async () => {
+    it('should call deleteWorker with both reason id and detail if user chose "For a reason not listed" and also input some text', async () => {
       const { component, deleteWorkerSpy, fixture, getByRole } = await setup();
 
       userEvent.click(getByRole('radio', { name: 'For a reason not listed' }));
@@ -176,6 +177,25 @@ describe('DeleteStaffRecordComponent', () => {
 
       expect(getByText('There is a problem')).toBeTruthy();
       expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+
+      expect(deleteWorkerSpy).not.toHaveBeenCalled();
+    });
+
+    it('should show an error message if the text in provide details textbox exceeds the max length allowed', async () => {
+      const { fixture, getByRole, getByText, getAllByText, deleteWorkerSpy } = await setup();
+
+      userEvent.click(getByRole('radio', { name: 'For a reason not listed' }));
+      fixture.detectChanges();
+
+      const provideDetailsTextbox = getByRole('textbox', { name: 'Provide details (optional)' });
+      userEvent.type(provideDetailsTextbox, repeat('a', 501));
+
+      userEvent.click(getByRole('checkbox', { name: /I know that/ }));
+      userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
+      fixture.detectChanges();
+
+      expect(getByText('There is a problem')).toBeTruthy();
+      expect(getAllByText('Provide details must be 500 characters or fewer')).toHaveSize(2);
 
       expect(deleteWorkerSpy).not.toHaveBeenCalled();
     });
