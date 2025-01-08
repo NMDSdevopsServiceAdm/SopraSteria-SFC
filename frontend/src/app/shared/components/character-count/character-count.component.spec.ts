@@ -35,7 +35,7 @@ describe('CharacterCountComponent', () => {
   };
 
   const setupWithTextAsInput = async (override: any = {}) => {
-    // This is the new usage of the component, with the input text passed in as a plain string
+    // A new option to pass in the input text as a plain string instead. This can co-exist with option {updateOn: 'submit'}.
     const setupConfigs = { words: false, max: 200, ...override };
 
     const templateString = `

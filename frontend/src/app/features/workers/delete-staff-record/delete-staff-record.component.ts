@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs';
 
-import { AfterViewInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -17,7 +17,7 @@ import { Reason, WorkerService } from '@core/services/worker.service';
   templateUrl: './delete-staff-record.component.html',
   styleUrls: ['./delete-staff-record.component.scss'],
 })
-export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
+export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDestroy {
   @ViewChild('formEl') formEl: ElementRef;
 
   public form: UntypedFormGroup;
@@ -42,7 +42,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit {
     private errorSummaryService: ErrorSummaryService,
     private workerService: WorkerService,
     private formBuilder: UntypedFormBuilder,
-    protected backLinkService: BackLinkService,
+    private backLinkService: BackLinkService,
   ) {}
 
   ngOnInit(): void {
