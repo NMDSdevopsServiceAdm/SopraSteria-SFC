@@ -79,8 +79,8 @@ export class AllOrSelectedJobRolesComponent implements OnInit, OnDestroy, AfterV
     this.router.navigate(['../', 'select-job-roles'], { relativeTo: this.route });
   }
 
-  private navigateBackToAddMandatoryTrainingPage(): void {
-    this.router.navigate(['../'], { relativeTo: this.route });
+  private navigateBackToAddMandatoryTrainingPage(): Promise<boolean> {
+    return this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   public selectRadio(selectedRadio: string): void {
@@ -109,12 +109,13 @@ export class AllOrSelectedJobRolesComponent implements OnInit, OnDestroy, AfterV
     this.subscriptions.add(
       this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
-          this.navigateBackToAddMandatoryTrainingPage();
           this.trainingService.resetState();
 
-          this.alertService.addAlert({
-            type: 'success',
-            message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
+          this.navigateBackToAddMandatoryTrainingPage().then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
+            });
           });
         },
         () => {
