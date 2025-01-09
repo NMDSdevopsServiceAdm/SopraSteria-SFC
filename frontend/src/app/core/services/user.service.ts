@@ -184,7 +184,7 @@ export class UserService {
       .pipe(map((response) => response.users));
   }
 
-  public updateSLVMessage() {
+  public updateLastViewedVacanciesAndTurnoverLoginMessage() {
     return this.http.post(
       `${environment.appRunnerEndpoint}/api/user/update-last-viewed-slv-message/${this.loggedInUser.uid}`,
       {},

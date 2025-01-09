@@ -5,13 +5,15 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { of } from 'rxjs';
 
-import { StartersLeaversVacanciesLoginMessageComponent } from './starters-leavers-vacancies-login-message.component';
+import { VacanciesAndTurnoverLoginMessage } from './vacancies-and-turnover-login-message.component';
 
-describe('StartersLeaversVacanciesLoginMessageComponent', () => {
+describe('VacanciesAndTurnoverLoginMessage', () => {
   async function setup() {
-    const updateSLVMessageSpy = jasmine.createSpy('updateSLVMessage').and.returnValue(of(null));
+    const updateLastViewedVacanciesAndTurnoverLoginMessageSpy = jasmine
+      .createSpy('updateLastViewedVacanciesAndTurnoverLoginMessage')
+      .and.returnValue(of(null));
 
-    const setupTools = await render(StartersLeaversVacanciesLoginMessageComponent, {
+    const setupTools = await render(VacanciesAndTurnoverLoginMessage, {
       imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         {
@@ -20,7 +22,7 @@ describe('StartersLeaversVacanciesLoginMessageComponent', () => {
             loggedInUser: {
               uid: 'ajoij3213213213',
             },
-            updateSLVMessage: updateSLVMessageSpy,
+            updateLastViewedVacanciesAndTurnoverLoginMessage: updateLastViewedVacanciesAndTurnoverLoginMessageSpy,
           },
         },
       ],
@@ -31,11 +33,11 @@ describe('StartersLeaversVacanciesLoginMessageComponent', () => {
     return {
       ...setupTools,
       component,
-      updateSLVMessageSpy,
+      updateLastViewedVacanciesAndTurnoverLoginMessageSpy,
     };
   }
 
-  it('should render a StartersLeaversVacanciesLoginMessageComponent', async () => {
+  it('should render a VacanciesAndTurnoverLoginMessage', async () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
@@ -49,9 +51,9 @@ describe('StartersLeaversVacanciesLoginMessageComponent', () => {
     expect(continueButton.getAttribute('href')).toEqual('/dashboard');
   });
 
-  it('should call updateSLVMessage in UserService on page load', async () => {
-    const { updateSLVMessageSpy } = await setup();
+  it('should call updateLastViewedVacanciesAndTurnoverLoginMessage in UserService on page load', async () => {
+    const { updateLastViewedVacanciesAndTurnoverLoginMessageSpy } = await setup();
 
-    expect(updateSLVMessageSpy).toHaveBeenCalled();
+    expect(updateLastViewedVacanciesAndTurnoverLoginMessageSpy).toHaveBeenCalled();
   });
 });

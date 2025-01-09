@@ -71,7 +71,7 @@ import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-u
 import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
 import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 import { LoginComponent } from '@features/login/login.component';
-import { StartersLeaversVacanciesLoginMessageComponent } from '@features/login/starters-leavers-vacancies-login-message/starters-leavers-vacancies-login-message.component';
+import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
@@ -151,7 +151,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     SelectStarterJobRolesComponent,
     SecurityQuestionAnswerNotMatchComponent,
     UserAccountNotFoundComponent,
-    StartersLeaversVacanciesLoginMessageComponent,
+    VacanciesAndTurnoverLoginMessage,
   ],
   imports: [
     Angulartics2Module.forRoot({

@@ -3,14 +3,14 @@ import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-starters-leavers-vacancies-login-message',
-  templateUrl: './starters-leavers-vacancies-login-message.component.html',
+  selector: 'app-vacancies-and-turnover-login-message',
+  templateUrl: './vacancies-and-turnover-login-message.component.html',
 })
-export class StartersLeaversVacanciesLoginMessageComponent implements OnDestroy {
+export class VacanciesAndTurnoverLoginMessage implements OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(private userService: UserService) {
-    this.subscriptions.add(this.userService.updateSLVMessage().subscribe(() => {}));
+    this.subscriptions.add(this.userService.updateLastViewedVacanciesAndTurnoverLoginMessage().subscribe(() => {}));
   }
 
   ngOnDestroy(): void {
