@@ -300,6 +300,7 @@ describe('AllOrSelectedJobRolesComponent', () => {
         const { fixture, getByText, alertSpy } = await setup();
 
         selectAllJobRolesAndSubmit(fixture, getByText);
+        await fixture.whenStable();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',
@@ -379,12 +380,13 @@ describe('AllOrSelectedJobRolesComponent', () => {
       });
 
       it("should display 'Mandatory training category updated' banner when All job roles selected", async () => {
-        const { getByText, alertSpy } = await setup({
+        const { fixture, getByText, alertSpy } = await setup({
           mandatoryTrainingBeingEdited,
           allJobRolesCount: mandatoryTrainingBeingEdited.jobs.length,
         });
 
         fireEvent.click(getByText('Continue'));
+        await fixture.whenStable();
 
         expect(alertSpy).toHaveBeenCalledWith({
           type: 'success',

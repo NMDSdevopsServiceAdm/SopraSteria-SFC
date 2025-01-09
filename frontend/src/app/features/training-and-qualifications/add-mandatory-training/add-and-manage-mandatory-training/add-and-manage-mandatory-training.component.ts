@@ -42,6 +42,7 @@ export class AddAndManageMandatoryTrainingComponent implements OnInit {
 
   public navigateToAddNewMandatoryTraining(event: Event, mandatoryTrainingToEdit = null): void {
     event.preventDefault();
+    this.trainingService.resetState();
 
     if (mandatoryTrainingToEdit) {
       this.trainingService.mandatoryTrainingBeingEdited = mandatoryTrainingToEdit;

@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-all-or-selected-job-roles',
   templateUrl: './all-or-selected-job-roles.component.html',
 })
-export class AllOrSelectedJobRolesComponent {
+export class AllOrSelectedJobRolesComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public submitted = false;
@@ -79,8 +79,8 @@ export class AllOrSelectedJobRolesComponent {
     this.router.navigate(['../', 'select-job-roles'], { relativeTo: this.route });
   }
 
-  private navigateBackToAddMandatoryTrainingPage(): void {
-    this.router.navigate(['../'], { relativeTo: this.route });
+  private navigateBackToAddMandatoryTrainingPage(): Promise<boolean> {
+    return this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   public selectRadio(selectedRadio: string): void {
@@ -109,12 +109,13 @@ export class AllOrSelectedJobRolesComponent {
     this.subscriptions.add(
       this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
-          this.navigateBackToAddMandatoryTrainingPage();
           this.trainingService.resetState();
 
-          this.alertService.addAlert({
-            type: 'success',
-            message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
+          this.navigateBackToAddMandatoryTrainingPage().then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
+            });
           });
         },
         () => {

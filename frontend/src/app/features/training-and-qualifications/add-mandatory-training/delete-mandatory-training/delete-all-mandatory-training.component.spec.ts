@@ -119,6 +119,19 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', establishment.uid, 'add-and-manage-mandatory-training']);
     });
+
+    it("should display a success banner with 'All mandatory training categories removed'", async () => {
+      const { fixture, alertSpy, getByText } = await setup();
+
+      const submitButton = getByText('Remove categories');
+      fireEvent.click(submitButton);
+      await fixture.whenStable();
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'All mandatory training categories removed',
+      });
+    });
   });
 
   it('should return to the add-and-manage-mandatory-training when Cancel is clicked', async () => {

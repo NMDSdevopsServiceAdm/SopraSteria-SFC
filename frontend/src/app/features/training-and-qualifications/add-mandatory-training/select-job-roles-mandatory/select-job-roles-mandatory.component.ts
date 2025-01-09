@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -19,7 +19,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-select-job-roles-mandatory',
   templateUrl: './select-job-roles-mandatory.component.html',
 })
-export class SelectJobRolesMandatoryComponent {
+export class SelectJobRolesMandatoryComponent implements OnInit, OnDestroy, AfterViewInit {
   constructor(
     private formBuilder: UntypedFormBuilder,
     private trainingService: MandatoryTrainingService,
@@ -119,12 +119,13 @@ export class SelectJobRolesMandatoryComponent {
     this.subscriptions.add(
       this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
-          this.navigateBackToAddMandatoryTrainingPage();
           this.trainingService.resetState();
 
-          this.alertService.addAlert({
-            type: 'success',
-            message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
+          this.navigateBackToAddMandatoryTrainingPage().then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
+            });
           });
         },
         () => {
@@ -170,8 +171,8 @@ export class SelectJobRolesMandatoryComponent {
     this.navigateBackToAddMandatoryTrainingPage();
   }
 
-  private navigateBackToAddMandatoryTrainingPage(): void {
-    this.router.navigate(['../'], { relativeTo: this.route });
+  private navigateBackToAddMandatoryTrainingPage(): Promise<boolean> {
+    return this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   ngAfterViewInit(): void {
