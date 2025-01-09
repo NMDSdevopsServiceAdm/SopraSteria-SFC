@@ -7,7 +7,7 @@ import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
-fdescribe('WorkplaceNameAddress', () => {
+describe('WorkplaceNameAddress', () => {
   const setup = async (overrides: any = {}) => {
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(WorkplaceNameAddress, {
@@ -31,11 +31,36 @@ fdescribe('WorkplaceNameAddress', () => {
     expect(component).toBeTruthy();
   });
 
+  //
+
+  it('should render the workplace name and address', async () => {
+    const { component, fixture, getByText, getByTestId, findByText } = await setup();
+    component.workplace.name = 'Care 1';
+    component.workplace.address = 'Care Home, Leeds';
+    component.workplace.address1 = 'Care Home';
+    component.workplace.address2 = 'Care Street';
+    component.workplace.address3 = 'Town';
+    component.workplace.town = 'Leeds';
+    component.workplace.county = 'Yorkshire';
+    component.workplace.postcode = 'LS1 1AB';
+    fixture.detectChanges();
+    const workplace = component.workplace;
+    const nameAndAddress = getByTestId('workplace-name-and-address');
+
+    expect(within(nameAndAddress).getByText(workplace.name)).toBeTruthy();
+    expect(getByText(workplace.address1)).toBeTruthy();
+    expect(getByText(workplace.address2, { exact: false })).toBeTruthy();
+    expect(getByText(workplace.address3, { exact: false })).toBeTruthy();
+    expect(getByText(workplace.town, { exact: false })).toBeTruthy();
+    expect(getByText(workplace.county, { exact: false })).toBeTruthy();
+    expect(getByText(workplace.postcode, { exact: false })).toBeTruthy();
+  });
+
   it('should not render a Change link if permission to edit is false', async () => {
     const overrides = {
       canEditEstablishment: false,
     };
-    const { component, fixture, getByText, queryByText } = await setup(overrides);
+    const { queryByText } = await setup(overrides);
 
     const changeLink = queryByText('Change');
 
@@ -46,11 +71,11 @@ fdescribe('WorkplaceNameAddress', () => {
     const overrides = {
       canEditEstablishment: true,
     };
-    const { component, fixture, getByText } = await setup(overrides);
+    const { component, getByText } = await setup(overrides);
 
     const changeLink = getByText('Change');
 
     expect(changeLink).toBeTruthy();
-    //expect(changeLink.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-workplace-details`);
+    expect(changeLink.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-workplace-details`);
   });
 });
