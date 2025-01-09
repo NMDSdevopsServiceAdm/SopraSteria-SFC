@@ -14,49 +14,48 @@ import { SelectTrainingCategoryMandatoryComponent } from './select-training-cate
 const routes: Routes = [
   {
     path: '',
+    component: AddAndManageMandatoryTrainingComponent,
+    data: { title: 'List Mandatory Training' },
     resolve: {
       existingMandatoryTraining: MandatoryTrainingCategoriesResolver,
     },
     runGuardsAndResolvers: 'always',
+  },
+  {
+    path: 'select-training-category',
+    component: SelectTrainingCategoryMandatoryComponent,
+    data: { title: 'Select Training Category' },
+    resolve: {
+      trainingCategories: TrainingCategoriesResolver,
+      existingMandatoryTraining: MandatoryTrainingCategoriesResolver,
+    },
+  },
+  {
+    path: 'all-or-selected-job-roles',
+    component: AllOrSelectedJobRolesComponent,
+    data: { title: 'All or Selected Job Roles?' },
+  },
+  {
+    path: 'select-job-roles',
+    component: SelectJobRolesMandatoryComponent,
+    data: { title: 'Select Job Roles' },
+    resolve: { jobs: JobsResolver },
+  },
+  {
+    path: 'remove-all-mandatory-training',
+    component: RemoveAllMandatoryTrainingComponent,
+    data: { title: 'Remove All Mandatory Training' },
+  },
+  {
+    path: ':trainingCategoryId',
     children: [
       {
-        path: '',
-        component: AddAndManageMandatoryTrainingComponent,
-        data: { title: 'List Mandatory Training' },
-      },
-      {
-        path: 'select-training-category',
-        component: SelectTrainingCategoryMandatoryComponent,
-        data: { title: 'Select Training Category' },
+        path: 'delete-mandatory-training-category',
+        component: DeleteMandatoryTrainingCategoryComponent,
+        data: { title: 'Delete Mandatory Training Category' },
         resolve: {
-          trainingCategories: TrainingCategoriesResolver,
+          existingMandatoryTraining: MandatoryTrainingCategoriesResolver,
         },
-      },
-      {
-        path: 'all-or-selected-job-roles',
-        component: AllOrSelectedJobRolesComponent,
-        data: { title: 'All or Selected Job Roles?' },
-      },
-      {
-        path: 'select-job-roles',
-        component: SelectJobRolesMandatoryComponent,
-        data: { title: 'Select Job Roles' },
-        resolve: { jobs: JobsResolver },
-      },
-      {
-        path: 'remove-all-mandatory-training',
-        component: RemoveAllMandatoryTrainingComponent,
-        data: { title: 'Remove All Mandatory Training' },
-      },
-      {
-        path: ':trainingCategoryId',
-        children: [
-          {
-            path: 'delete-mandatory-training-category',
-            component: DeleteMandatoryTrainingCategoryComponent,
-            data: { title: 'Delete Mandatory Training Category' },
-          },
-        ],
       },
     ],
   },

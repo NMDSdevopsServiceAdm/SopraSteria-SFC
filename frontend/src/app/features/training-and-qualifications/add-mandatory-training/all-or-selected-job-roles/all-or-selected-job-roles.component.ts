@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -16,7 +16,7 @@ import { Subscription } from 'rxjs';
   selector: 'app-all-or-selected-job-roles',
   templateUrl: './all-or-selected-job-roles.component.html',
 })
-export class AllOrSelectedJobRolesComponent {
+export class AllOrSelectedJobRolesComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public submitted = false;

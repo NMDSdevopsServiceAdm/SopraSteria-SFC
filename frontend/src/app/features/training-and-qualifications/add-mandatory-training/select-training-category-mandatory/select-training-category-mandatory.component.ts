@@ -13,6 +13,10 @@ import { SelectTrainingCategoryDirective } from '../../../../shared/directives/s
   templateUrl: '../../../../shared/directives/select-training-category/select-training-category.component.html',
 })
 export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCategoryDirective {
+  public requiredErrorMessage: string = 'Select the training category that you want to make mandatory';
+  public hideOtherCheckbox: boolean = true;
+  private mandatoryTrainingCategoryIdBeingEdited: number;
+
   constructor(
     protected formBuilder: FormBuilder,
     protected trainingService: MandatoryTrainingService,
@@ -24,10 +28,6 @@ export class SelectTrainingCategoryMandatoryComponent extends SelectTrainingCate
   ) {
     super(formBuilder, trainingService, router, backLinkService, workerService, route, errorSummaryService);
   }
-
-  public requiredErrorMessage: string = 'Select the training category that you want to make mandatory';
-  public hideOtherCheckbox: boolean = true;
-  private mandatoryTrainingCategoryIdBeingEdited: number;
 
   init(): void {
     this.establishmentUid = this.route.snapshot.data.establishment.uid;
