@@ -11,9 +11,7 @@ import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService'
 import { MockRouter } from '@core/test-utils/MockRouter';
 import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
 import { mockMandatoryTraining, MockTrainingService } from '@core/test-utils/MockTrainingService';
-import {
-  AddMandatoryTrainingModule,
-} from '@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module';
+import { AddMandatoryTrainingModule } from '@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -148,9 +146,11 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
     });
 
     it("should display a success banner with 'Mandatory training category removed'", async () => {
-      const { alertSpy, getByText } = await setup();
+      const { fixture, alertSpy, getByText } = await setup();
 
       fireEvent.click(getByText('Remove category'));
+      await fixture.whenStable();
+
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
         message: 'Mandatory training category removed',

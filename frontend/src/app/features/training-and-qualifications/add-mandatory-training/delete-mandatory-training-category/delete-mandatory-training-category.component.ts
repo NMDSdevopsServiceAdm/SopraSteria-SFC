@@ -50,17 +50,18 @@ export class DeleteMandatoryTrainingCategoryComponent implements OnInit, OnDestr
       this.trainingService
         .deleteCategoryById(this.establishment.id, this.selectedCategory.trainingCategoryId)
         .subscribe(() => {
-          this.navigateBackToMandatoryTrainingHomePage();
-          this.alertService.addAlert({
-            type: 'success',
-            message: 'Mandatory training category removed',
+          this.navigateBackToMandatoryTrainingHomePage().then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: 'Mandatory training category removed',
+            });
           });
         }),
     );
   }
 
-  public navigateBackToMandatoryTrainingHomePage(): void {
-    this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
+  public navigateBackToMandatoryTrainingHomePage(): Promise<boolean> {
+    return this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
   }
 
   ngOnDestroy(): void {
