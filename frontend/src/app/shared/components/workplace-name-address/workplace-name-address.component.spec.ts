@@ -1,4 +1,4 @@
-import { render, within } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import { WorkplaceNameAddress } from './workplace-name-address.component';
 import { SharedModule } from '@shared/shared.module';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
@@ -8,15 +8,15 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 describe('WorkplaceNameAddress', () => {
-  const setup = async (overrides: any = {}) => {
+  const setup = async (override: any = {}) => {
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(WorkplaceNameAddress, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [],
       componentProperties: {
-        canEditEstablishment: overrides.canEditEstablishment,
-        workplace: establishment,
+        canEditEstablishment: override.canEditEstablishment,
+        workplace: override.workplace ? override.workplace : establishment,
       },
     });
 
@@ -31,23 +31,24 @@ describe('WorkplaceNameAddress', () => {
     expect(component).toBeTruthy();
   });
 
-  //
-
   it('should render the workplace name and address', async () => {
-    const { component, fixture, getByText, getByTestId, findByText } = await setup();
-    component.workplace.name = 'Care 1';
-    component.workplace.address = 'Care Home, Leeds';
-    component.workplace.address1 = 'Care Home';
-    component.workplace.address2 = 'Care Street';
-    component.workplace.address3 = 'Town';
-    component.workplace.town = 'Leeds';
-    component.workplace.county = 'Yorkshire';
-    component.workplace.postcode = 'LS1 1AB';
-    fixture.detectChanges();
-    const workplace = component.workplace;
-    const nameAndAddress = getByTestId('workplace-name-and-address');
+    const override = {
+      workplace: {
+        name: 'Care 1',
+        address: 'Care Home, Leeds',
+        address1: 'Care Home',
+        address2: 'Care Street',
+        address3: 'Town',
+        town: 'Leeds',
+        county: 'Yorkshire',
+        postcode: 'LS1 1AB',
+      },
+    };
+    const { component, getByText } = await setup(override);
 
-    expect(within(nameAndAddress).getByText(workplace.name)).toBeTruthy();
+    const workplace = component.workplace;
+
+    expect(getByText(workplace.name)).toBeTruthy();
     expect(getByText(workplace.address1)).toBeTruthy();
     expect(getByText(workplace.address2, { exact: false })).toBeTruthy();
     expect(getByText(workplace.address3, { exact: false })).toBeTruthy();
