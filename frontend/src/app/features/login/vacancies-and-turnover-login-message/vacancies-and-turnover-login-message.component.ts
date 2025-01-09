@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { UserService } from '@core/services/user.service';
 import { Subscription } from 'rxjs';
 
@@ -6,10 +6,12 @@ import { Subscription } from 'rxjs';
   selector: 'app-vacancies-and-turnover-login-message',
   templateUrl: './vacancies-and-turnover-login-message.component.html',
 })
-export class VacanciesAndTurnoverLoginMessage implements OnDestroy {
+export class VacanciesAndTurnoverLoginMessage implements OnInit, OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService) {}
+
+  ngOnInit(): void {
     this.subscriptions.add(this.userService.updateLastViewedVacanciesAndTurnoverMessage().subscribe(() => {}));
   }
 
