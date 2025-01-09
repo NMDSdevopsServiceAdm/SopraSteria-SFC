@@ -70,6 +70,8 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
     const currentRoute = injector.inject(ActivatedRoute) as ActivatedRoute;
 
+    const mandatoryTrainingService = injector.inject(MandatoryTrainingService) as MandatoryTrainingService;
+
     return {
       ...setupTools,
       component,
@@ -78,6 +80,7 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
       routerSpy,
       currentRoute,
       injector,
+      mandatoryTrainingService,
     };
   }
 
@@ -98,12 +101,15 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     );
   });
 
-  it("should navigate to the select-training-category page when 'Add a mandatory training category' link is clicked", async () => {
-    const { getByRole, routerSpy, currentRoute } = await setup();
+  it("should navigate to the select-training-category page and clear state in training service when 'Add a mandatory training category' link is clicked", async () => {
+    const { getByRole, routerSpy, currentRoute, mandatoryTrainingService } = await setup();
+
+    const resetStateSpy = spyOn(mandatoryTrainingService, 'resetState');
 
     const addMandatoryTrainingButton = getByRole('button', { name: 'Add a mandatory training category' });
     fireEvent.click(addMandatoryTrainingButton);
 
+    expect(resetStateSpy).toHaveBeenCalled();
     expect(routerSpy).toHaveBeenCalledWith(['select-training-category'], { relativeTo: currentRoute });
   });
 
@@ -184,19 +190,20 @@ describe('AddAndManageMandatoryTrainingComponent', () => {
     });
 
     it('should navigate to select-training-category and set mandatory training being edited in service when category link clicked', async () => {
-      const { getByText, existingMandatoryTraining, routerSpy, currentRoute, injector } = await setup();
+      const { getByText, existingMandatoryTraining, routerSpy, currentRoute, mandatoryTrainingService } = await setup();
 
-      const mandatoryTrainingService = injector.inject(MandatoryTrainingService) as MandatoryTrainingService;
       const setMandatoryTrainingBeingEditedSpy = spyOnProperty(
         mandatoryTrainingService,
         'mandatoryTrainingBeingEdited',
         'set',
       ).and.stub();
+      const resetStateSpy = spyOn(mandatoryTrainingService, 'resetState');
 
       existingMandatoryTraining.mandatoryTraining.forEach((trainingCategory) => {
         fireEvent.click(getByText(trainingCategory.category));
 
         expect(setMandatoryTrainingBeingEditedSpy).toHaveBeenCalledWith(trainingCategory);
+        expect(resetStateSpy).toHaveBeenCalled();
         expect(routerSpy).toHaveBeenCalledWith(['select-training-category'], {
           relativeTo: currentRoute,
         });
