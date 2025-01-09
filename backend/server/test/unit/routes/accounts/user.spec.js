@@ -369,6 +369,7 @@ describe('user.js', () => {
       await updateLastViewedVacanciesAndTurnoverMessage(req, res);
 
       expect(res.statusCode).to.equal(200);
+      expect(res._getData()).to.deep.equal('Last viewed date updated');
     });
 
     it('should return 400 response if userUid in params invalid', async () => {
