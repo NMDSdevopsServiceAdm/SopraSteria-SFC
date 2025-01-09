@@ -184,9 +184,9 @@ export class UserService {
       .pipe(map((response) => response.users));
   }
 
-  public updateLastViewedVacanciesAndTurnoverLoginMessage() {
+  public updateLastViewedVacanciesAndTurnoverMessage() {
     return this.http.post(
-      `${environment.appRunnerEndpoint}/api/user/update-last-viewed-slv-message/${this.loggedInUser.uid}`,
+      `${environment.appRunnerEndpoint}/api/user/update-last-viewed-vacancies-and-turnover-message/${this.loggedInUser.uid}`,
       {},
     );
   }

@@ -190,7 +190,8 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
           }
 
           if (
-            (!response.body.lastViewedSLVMessage || this.isOverSixMonthsAgo(response.body.lastViewedSLVMessage)) &&
+            (!response.body.lastViewedVacanciesAndTurnoverMessage ||
+              this.isOverSixMonthsAgo(response.body.lastViewedVacanciesAndTurnoverMessage)) &&
             response.body.role === Roles.Edit &&
             response.body.establishment?.dataOwner === WorkplaceDataOwner.Workplace
           ) {

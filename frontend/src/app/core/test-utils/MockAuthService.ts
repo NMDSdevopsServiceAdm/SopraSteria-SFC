@@ -91,7 +91,7 @@ export const mockAuthenticateResponse = (isAdmin = false, employerTypeSet = true
     body: {
       role: isAdmin ? 'Admin' : 'Edit',
       agreedUpdatedTerms: true,
-      lastViewedSLVMessage: new Date(),
+      lastViewedVacanciesAndTurnoverMessage: new Date().toISOString(),
       establishment: {
         employerTypeSet,
         uid: 'mockuid',

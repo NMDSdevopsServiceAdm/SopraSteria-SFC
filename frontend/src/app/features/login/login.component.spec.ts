@@ -214,10 +214,10 @@ describe('LoginComponent', () => {
     });
 
     describe('update-your-vacancies-and-turnover-data', () => {
-      it('should navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is null and edit user where workplace is data owner', async () => {
+      it('should navigate to update-your-vacancies-and-turnover-data when lastViewedVacanciesAndTurnoverMessage is null and edit user where workplace is data owner', async () => {
         const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup({ employerTypeSet: false });
         const authenticateResponse = mockAuthenticateResponse();
-        authenticateResponse.body.lastViewedSLVMessage = null;
+        authenticateResponse.body.lastViewedVacanciesAndTurnoverMessage = null;
 
         authSpy.and.returnValue(of(authenticateResponse));
 
@@ -226,7 +226,7 @@ describe('LoginComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/update-your-vacancies-and-turnover-data']);
       });
 
-      it('should navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is over six months ago and edit user where workplace is data owner', async () => {
+      it('should navigate to update-your-vacancies-and-turnover-data when lastViewedVacanciesAndTurnoverMessage is over six months ago and edit user where workplace is data owner', async () => {
         const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
         const authenticateResponse = mockAuthenticateResponse();
 
@@ -234,7 +234,7 @@ describe('LoginComponent', () => {
         const sevenMonthsAgo = new Date();
         sevenMonthsAgo.setMonth(currentDate.getMonth() - 7);
 
-        authenticateResponse.body.lastViewedSLVMessage = sevenMonthsAgo;
+        authenticateResponse.body.lastViewedVacanciesAndTurnoverMessage = sevenMonthsAgo.toISOString();
         authenticateResponse.body.role = Roles.Edit;
 
         authSpy.and.returnValue(of(authenticateResponse));
@@ -244,10 +244,10 @@ describe('LoginComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/update-your-vacancies-and-turnover-data']);
       });
 
-      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is null but user is read only', async () => {
+      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedVacanciesAndTurnoverMessage is null but user is read only', async () => {
         const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
         const authenticateResponse = mockAuthenticateResponse();
-        authenticateResponse.body.lastViewedSLVMessage = null;
+        authenticateResponse.body.lastViewedVacanciesAndTurnoverMessage = null;
         authenticateResponse.body.role = Roles.Read;
 
         authSpy.and.returnValue(of(authenticateResponse));
@@ -257,10 +257,10 @@ describe('LoginComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
       });
 
-      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is null but workplace is not data owner', async () => {
+      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedVacanciesAndTurnoverMessage is null but workplace is not data owner', async () => {
         const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
         const authenticateResponse = mockAuthenticateResponse();
-        authenticateResponse.body.lastViewedSLVMessage = null;
+        authenticateResponse.body.lastViewedVacanciesAndTurnoverMessage = null;
         authenticateResponse.body.establishment.dataOwner = WorkplaceDataOwner.Parent;
 
         authSpy.and.returnValue(of(authenticateResponse));
@@ -270,7 +270,7 @@ describe('LoginComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
       });
 
-      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is under six months ago', async () => {
+      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedVacanciesAndTurnoverMessage is under six months ago', async () => {
         const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
         const authenticateResponse = mockAuthenticateResponse();
 
@@ -278,7 +278,7 @@ describe('LoginComponent', () => {
         const threeMonthsAgo = new Date();
         threeMonthsAgo.setMonth(currentDate.getMonth() - 3);
 
-        authenticateResponse.body.lastViewedSLVMessage = threeMonthsAgo;
+        authenticateResponse.body.lastViewedVacanciesAndTurnoverMessage = threeMonthsAgo;
         authenticateResponse.body.role = Roles.Edit;
 
         authSpy.and.returnValue(of(authenticateResponse));
@@ -288,11 +288,11 @@ describe('LoginComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard']);
       });
 
-      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedSLVMessage is null but there is login action with higher priority (registration survey)', async () => {
+      it('should not navigate to update-your-vacancies-and-turnover-data when lastViewedVacanciesAndTurnoverMessage is null but there is login action with higher priority (registration survey)', async () => {
         const { fixture, routerSpy, getByLabelText, getByRole, authSpy } = await setup();
         const authenticateResponse = mockAuthenticateResponse();
 
-        authenticateResponse.body.lastViewedSLVMessage = null;
+        authenticateResponse.body.lastViewedVacanciesAndTurnoverMessage = null;
         authenticateResponse.body.role = Roles.Edit;
         authenticateResponse.body.registrationSurveyCompleted = false;
 

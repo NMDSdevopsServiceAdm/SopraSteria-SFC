@@ -9,8 +9,8 @@ import { VacanciesAndTurnoverLoginMessage } from './vacancies-and-turnover-login
 
 describe('VacanciesAndTurnoverLoginMessage', () => {
   async function setup() {
-    const updateLastViewedVacanciesAndTurnoverLoginMessageSpy = jasmine
-      .createSpy('updateLastViewedVacanciesAndTurnoverLoginMessage')
+    const updateLastViewedVacanciesAndTurnoverMessageSpy = jasmine
+      .createSpy('updateLastViewedVacanciesAndTurnoverMessage')
       .and.returnValue(of(null));
 
     const setupTools = await render(VacanciesAndTurnoverLoginMessage, {
@@ -22,7 +22,7 @@ describe('VacanciesAndTurnoverLoginMessage', () => {
             loggedInUser: {
               uid: 'ajoij3213213213',
             },
-            updateLastViewedVacanciesAndTurnoverLoginMessage: updateLastViewedVacanciesAndTurnoverLoginMessageSpy,
+            updateLastViewedVacanciesAndTurnoverMessage: updateLastViewedVacanciesAndTurnoverMessageSpy,
           },
         },
       ],
@@ -33,7 +33,7 @@ describe('VacanciesAndTurnoverLoginMessage', () => {
     return {
       ...setupTools,
       component,
-      updateLastViewedVacanciesAndTurnoverLoginMessageSpy,
+      updateLastViewedVacanciesAndTurnoverMessageSpy,
     };
   }
 
@@ -51,9 +51,9 @@ describe('VacanciesAndTurnoverLoginMessage', () => {
     expect(continueButton.getAttribute('href')).toEqual('/dashboard');
   });
 
-  it('should call updateLastViewedVacanciesAndTurnoverLoginMessage in UserService on page load', async () => {
-    const { updateLastViewedVacanciesAndTurnoverLoginMessageSpy } = await setup();
+  it('should call updateLastViewedVacanciesAndTurnoverMessage in UserService on page load', async () => {
+    const { updateLastViewedVacanciesAndTurnoverMessageSpy } = await setup();
 
-    expect(updateLastViewedVacanciesAndTurnoverLoginMessageSpy).toHaveBeenCalled();
+    expect(updateLastViewedVacanciesAndTurnoverMessageSpy).toHaveBeenCalled();
   });
 });

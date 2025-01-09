@@ -11,7 +11,7 @@ module.exports = (
   agreedUpdatedTerms,
   migratedUser,
   registrationSurveyCompleted,
-  lastViewedSLVMessage,
+  lastViewedVacanciesAndTurnoverMessage,
 ) => {
   // note - the mainService can be null
   return {
@@ -47,6 +47,6 @@ module.exports = (
       : null,
     expiryDate: expiryDate,
     registrationSurveyCompleted: registrationSurveyCompleted,
-    lastViewedSLVMessage,
+    lastViewedVacanciesAndTurnoverMessage,
   };
 };

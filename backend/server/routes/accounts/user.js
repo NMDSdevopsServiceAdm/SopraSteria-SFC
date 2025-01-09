@@ -911,7 +911,7 @@ const swapEstablishment = async (req, res) => {
     .json(response);
 };
 
-const updateLastViewedSLVMessage = async (req, res) => {
+const updateLastViewedVacanciesAndTurnoverMessage = async (req, res) => {
   try {
     const userUid = req.params?.userUid;
 
@@ -919,7 +919,7 @@ const updateLastViewedSLVMessage = async (req, res) => {
       return res.status(400).send('User UID invalid');
     }
 
-    await models.user.setDateForLastViewedSLVMessage(userUid);
+    await models.user.setDateForLastViewedVacanciesAndTurnoverMessage(userUid);
 
     return res.status(200);
   } catch (error) {
@@ -966,7 +966,9 @@ router.route('/my/establishments').get(Authorization.isAuthorised, listEstablish
 router.route('/admin/:userId').get(Authorization.isAuthorised, getUser);
 router.use('/my/notifications', Authorization.isAuthorised);
 router.route('/my/notifications').get(listNotifications);
-router.route('/update-last-viewed-slv-message/:userUid').post(Authorization.isAuthorised, updateLastViewedSLVMessage);
+router
+  .route('/update-last-viewed-vacancies-and-turnover-message/:userUid')
+  .post(Authorization.isAuthorised, updateLastViewedVacanciesAndTurnoverMessage);
 
 router.use('/swap/establishment/:id', authLimiter);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
@@ -977,4 +979,4 @@ module.exports.partAddUser = partAddUser;
 
 module.exports.listAdminUsers = listAdminUsers;
 module.exports.updateUser = updateUser;
-module.exports.updateLastViewedSLVMessage = updateLastViewedSLVMessage;
+module.exports.updateLastViewedVacanciesAndTurnoverMessage = updateLastViewedVacanciesAndTurnoverMessage;

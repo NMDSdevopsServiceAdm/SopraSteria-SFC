@@ -10,7 +10,7 @@ export class VacanciesAndTurnoverLoginMessage implements OnDestroy {
   private subscriptions: Subscription = new Subscription();
 
   constructor(private userService: UserService) {
-    this.subscriptions.add(this.userService.updateLastViewedVacanciesAndTurnoverLoginMessage().subscribe(() => {}));
+    this.subscriptions.add(this.userService.updateLastViewedVacanciesAndTurnoverMessage().subscribe(() => {}));
   }
 
   ngOnDestroy(): void {

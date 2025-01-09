@@ -25,7 +25,7 @@ export interface UserDetails {
   updatedBy?: string;
   username?: string;
   canManageWdfClaims?: boolean;
-  lastViewedSLVMessage?: Date;
+  lastViewedVacanciesAndTurnoverMessage?: string;
 }
 
 export enum UserStatus {

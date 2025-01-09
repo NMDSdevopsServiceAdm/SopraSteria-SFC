@@ -274,10 +274,10 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CanManageWdfClaimsChangedBy"',
       },
-      lastViewedSLVMessage: {
+      lastViewedVacanciesAndTurnoverMessage: {
         type: DataTypes.DATE,
         allowNull: true,
-        field: 'LastViewedSLVMessage',
+        field: 'LastViewedVacanciesAndTurnoverMessage',
       },
     },
     {
@@ -547,9 +547,9 @@ module.exports = function (sequelize, DataTypes) {
     return userFound;
   };
 
-  User.setDateForLastViewedSLVMessage = async function (userUid) {
+  User.setDateForLastViewedVacanciesAndTurnoverMessage = async function (userUid) {
     return await this.update(
-      { lastViewedSLVMessage: new Date() },
+      { lastViewedVacanciesAndTurnoverMessage: new Date() },
       {
         where: {
           uid: userUid,
