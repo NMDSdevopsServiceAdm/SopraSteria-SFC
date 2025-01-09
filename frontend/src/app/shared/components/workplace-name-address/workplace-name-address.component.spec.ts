@@ -32,21 +32,18 @@ describe('WorkplaceNameAddress', () => {
   });
 
   it('should render the workplace name and address', async () => {
-    const override = {
-      workplace: {
-        name: 'Care 1',
-        address: 'Care Home, Leeds',
-        address1: 'Care Home',
-        address2: 'Care Street',
-        address3: 'Town',
-        town: 'Leeds',
-        county: 'Yorkshire',
-        postcode: 'LS1 1AB',
-      },
+    const workplace = {
+      name: 'Care 1',
+      address: 'Care Home, Leeds',
+      address1: 'Care Home',
+      address2: 'Care Street',
+      address3: 'Town',
+      town: 'Leeds',
+      county: 'Yorkshire',
+      postcode: 'LS1 1AB',
     };
-    const { component, getByText } = await setup(override);
 
-    const workplace = component.workplace;
+    const { getByText } = await setup({ workplace });
 
     expect(getByText(workplace.name)).toBeTruthy();
     expect(getByText(workplace.address1)).toBeTruthy();
