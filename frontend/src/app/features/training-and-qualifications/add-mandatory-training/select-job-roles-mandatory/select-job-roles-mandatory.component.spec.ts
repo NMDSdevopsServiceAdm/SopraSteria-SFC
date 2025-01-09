@@ -196,6 +196,7 @@ describe('SelectJobRolesMandatoryComponent', () => {
       const { fixture, getByText, alertSpy } = await setup();
 
       selectJobRolesAndSave(fixture, getByText);
+      await fixture.whenStable();
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
@@ -400,11 +401,12 @@ describe('SelectJobRolesMandatoryComponent', () => {
       const jobs = [mockAvailableJobs[0], mockAvailableJobs[1]];
       const mandatoryTrainingBeingEdited = createMandatoryTrainingBeingEdited(jobs);
 
-      const { getByText, alertSpy } = await setup({
+      const { fixture, getByText, alertSpy } = await setup({
         mandatoryTrainingBeingEdited,
       });
 
       userEvent.click(getByText('Save mandatory training'));
+      await fixture.whenStable();
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',

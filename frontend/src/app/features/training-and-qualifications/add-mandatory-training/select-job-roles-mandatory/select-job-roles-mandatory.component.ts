@@ -119,12 +119,13 @@ export class SelectJobRolesMandatoryComponent implements OnInit, OnDestroy, Afte
     this.subscriptions.add(
       this.establishmentService.createAndUpdateMandatoryTraining(this.establishment.uid, props).subscribe(
         () => {
-          this.navigateBackToAddMandatoryTrainingPage();
           this.trainingService.resetState();
 
-          this.alertService.addAlert({
-            type: 'success',
-            message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
+          this.navigateBackToAddMandatoryTrainingPage().then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: `Mandatory training category ${this.mandatoryTrainingBeingEdited ? 'updated' : 'added'}`,
+            });
           });
         },
         () => {
@@ -170,8 +171,8 @@ export class SelectJobRolesMandatoryComponent implements OnInit, OnDestroy, Afte
     this.navigateBackToAddMandatoryTrainingPage();
   }
 
-  private navigateBackToAddMandatoryTrainingPage(): void {
-    this.router.navigate(['../'], { relativeTo: this.route });
+  private navigateBackToAddMandatoryTrainingPage(): Promise<boolean> {
+    return this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   ngAfterViewInit(): void {
