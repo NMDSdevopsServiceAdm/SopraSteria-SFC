@@ -10,7 +10,7 @@ export class StartersLeaversVacanciesLoginMessageComponent implements OnDestroy 
   private subscriptions: Subscription = new Subscription();
 
   constructor(private userService: UserService) {
-    this.subscriptions.add(this.userService.updateSLVMessage().subscribe((res) => {}));
+    this.subscriptions.add(this.userService.updateSLVMessage().subscribe(() => {}));
   }
 
   ngOnDestroy(): void {
