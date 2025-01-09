@@ -1,7 +1,9 @@
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { URLStructure } from '@core/model/url.model';
 import { UserDetails } from '@core/model/userDetails.model';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
@@ -22,8 +24,10 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
   @Input() canEditWorker = false;
   @Input() hasWorkers = false;
   @Input() workplace: Establishment;
+  @Input() return: URLStructure = null;
 
   public canDeleteEstablishment: boolean;
+  public canEditEstablishment: boolean;
   public workplaceUid: string;
   public subsidiaryCount: number;
   public showLastUpdatedDate: boolean;
@@ -44,6 +48,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     private router: Router,
     private userService: UserService,
     private parentSubsidiaryViewService: ParentSubsidiaryViewService,
+    private establishmentService: EstablishmentService,
   ) {}
 
   ngOnInit(): void {
@@ -73,6 +78,7 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
 
   private getPermissions(): void {
     this.user = this.userService.loggedInUser;
+    this.canEditEstablishment = this.permissionsService.can(this.workplace.uid, 'canEditEstablishment');
     if (isAdminRole(this.user?.role)) {
       this.canDeleteEstablishment = this.permissionsService.can(this.workplace?.uid, 'canDeleteAllEstablishments');
     } else {
@@ -103,6 +109,10 @@ export class NewDashboardHeaderComponent implements OnInit, OnChanges {
     } else {
       this.router.navigate(['/delete-workplace']);
     }
+  }
+
+  public setReturn(): void {
+    this.establishmentService.setReturnTo(this.return);
   }
 
   ngOnDestroy(): void {
