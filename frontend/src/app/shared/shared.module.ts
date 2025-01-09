@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -210,6 +211,7 @@ import { WorkplaceNameAddress } from './components/workplace-name-address/workpl
     WdfStaffMismatchMessageComponent,
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
+    PageNoLongerAvailableComponent,
     ArticleListComponent,
     PageComponent,
     FirstErrorPipe,
@@ -338,6 +340,7 @@ import { WorkplaceNameAddress } from './components/workplace-name-address/workpl
     MoveWorkplaceDialogComponent,
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
+    PageNoLongerAvailableComponent,
     ArticleListComponent,
     PageComponent,
     FirstErrorPipe,
