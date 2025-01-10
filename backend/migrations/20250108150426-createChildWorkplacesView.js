@@ -6,7 +6,7 @@ const { sequelize } = require('../server/models');
 module.exports = {
   async up (queryInterface, Sequelize) {
     await queryInterface.sequelize.query(`
-      CREATE VIEW cqc."OtherWorkplaces" AS
+      CREATE VIEW cqc."ChildWorkplaces" AS
         SELECT DISTINCT ON(e."EstablishmentID") e."EstablishmentID", e."NameValue", e."ParentID",
         (
         	CASE
@@ -69,10 +69,11 @@ module.exports = {
         	 END
         ) AS "ShowFlag"
         FROM cqc."Establishment" e
+				WHERE e."ParentID" IS NOT NULL
       `);
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.sequelize.query(`DROP VIEW cqc."OtherWorkplaces"`);
+    await queryInterface.sequelize.query(`DROP VIEW cqc."ChildWorkplaces"`);
   }
 };

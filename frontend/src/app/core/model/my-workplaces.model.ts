@@ -10,6 +10,7 @@ export interface GetChildWorkplacesResponse {
   childWorkplaces: Workplace[];
   count: number;
   activeWorkplaceCount: number;
+  showFlag: boolean;
 }
 
 export interface Workplace {

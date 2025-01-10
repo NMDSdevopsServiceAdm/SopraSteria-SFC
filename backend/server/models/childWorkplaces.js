@@ -1,7 +1,7 @@
 /* jshint indent: 2 */
 
 module.exports = function(sequelize, DataTypes) {
-  const OtherWorkplaces =  sequelize.define('otherWorkplaces', {
+  const ChildWorkplaces =  sequelize.define('childWorkplaces', {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -20,11 +20,11 @@ module.exports = function(sequelize, DataTypes) {
       field: '"ShowFlag"'
     }
   }, {
-    tableName: 'OtherWorkplaces',
+    tableName: 'ChildWorkplaces',
     schema: 'cqc',
     createdAt: false,
     updatedAt: false
   });
 
-  return OtherWorkplaces;
+  return ChildWorkplaces;
 };
