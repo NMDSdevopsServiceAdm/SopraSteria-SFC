@@ -1,6 +1,7 @@
 // default route for user endpoint
 const express = require('express');
 const router = express.Router();
+const { validate } = require('uuid');
 
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
@@ -915,7 +916,7 @@ const updateLastViewedVacanciesAndTurnoverMessage = async (req, res) => {
   try {
     const userUid = req.params?.userUid;
 
-    if (!isCorrectlyFormattedUid(userUid)) {
+    if (!validate(userUid)) {
       return res.status(400).send('User UID invalid');
     }
 
@@ -925,11 +926,6 @@ const updateLastViewedVacanciesAndTurnoverMessage = async (req, res) => {
   } catch (error) {
     return res.status(500).send('Failed to update last viewed date');
   }
-};
-
-const isCorrectlyFormattedUid = (userUid) => {
-  const uuidRegex = /^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/;
-  return uuidRegex.test(userUid.toUpperCase());
 };
 
 router.route('/').get(return200);
