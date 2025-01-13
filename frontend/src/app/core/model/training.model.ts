@@ -97,8 +97,9 @@ export interface mandatoryJobs {
 
 export interface mandatoryTraining {
   trainingCategoryId: number;
-  allJobRoles: boolean;
+  allJobRoles?: boolean;
   selectedJobRoles?: boolean;
+  category?: string;
   jobs: mandatoryJobs[];
 }
 export interface allMandatoryTrainingCategories {
