@@ -132,6 +132,7 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -265,6 +266,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
+    WorkplaceNameAddress,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -393,6 +395,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
+    WorkplaceNameAddress,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
