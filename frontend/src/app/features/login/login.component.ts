@@ -10,10 +10,11 @@ import {
 } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ErrorDefinition, ErrorDetails } from '@core/model/errorSummary.model';
+import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
+import { Roles } from '@core/model/roles.enum';
 import { AuthService } from '@core/services/auth.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { IdleService } from '@core/services/idle.service';
 import { UserService } from '@core/services/user.service';
 import { isAdminRole } from '@core/utils/check-role-util';
 import { Subscription } from 'rxjs';
@@ -35,7 +36,6 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   public showServerErrorAsLink: boolean = true;
 
   constructor(
-    private idleService: IdleService,
     private authService: AuthService,
     private userService: UserService,
     private establishmentService: EstablishmentService,
@@ -158,35 +158,47 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
     this.subscriptions.add(
       this.authService.authenticate(username, password).subscribe(
         (response) => {
-          if (response.body.establishment && response.body.establishment.uid) {
-            // update the establishment service state with the given establishment id
+          const isPreviousUser = this.authService.isPreviousUser(username);
+          this.authService.clearPreviousUser();
+
+          if (response.body.establishment?.uid) {
             this.establishmentService.establishmentId = response.body.establishment.uid;
           }
+
           if (isAdminRole(response.body.role)) {
             this.userService.agreedUpdatedTerms = true; // skip term & condition check for admin user
-            this.router.navigate(['/sfcadmin']);
-          } else {
-            this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
-            if (this.authService.isPreviousUser(username) && this.authService.redirectLocation) {
-              this.router.navigateByUrl(this.authService.redirectLocation);
-            } else {
-              if (response.body.establishment.employerTypeSet === false) {
-                this.establishmentService.setEmployerTypeHasValue(false);
-                this.router.navigate(['workplace', `${response.body.establishment.uid}`, 'type-of-employer']);
-              } else {
-                this.router.navigate(['/dashboard']);
-              }
-            }
-            this.authService.clearPreviousUser();
-
-            if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
-              this.router.navigate(['/migrated-user-terms-and-conditions']);
-            }
-
-            if (response.body.registrationSurveyCompleted === false) {
-              this.router.navigate(['/registration-survey']);
-            }
+            return this.router.navigate(['/sfcadmin']);
           }
+
+          this.userService.agreedUpdatedTerms = response.body.agreedUpdatedTerms;
+
+          if (response.body.migratedUserFirstLogon || !this.userService.agreedUpdatedTerms) {
+            return this.router.navigate(['/migrated-user-terms-and-conditions']);
+          }
+
+          if (response.body.registrationSurveyCompleted === false) {
+            return this.router.navigate(['/registration-survey']);
+          }
+
+          if (isPreviousUser && this.authService.redirectLocation) {
+            return this.router.navigateByUrl(this.authService.redirectLocation);
+          }
+
+          if (response.body.establishment.employerTypeSet === false) {
+            this.establishmentService.setEmployerTypeHasValue(false);
+            return this.router.navigate(['workplace', response.body.establishment.uid, 'type-of-employer']);
+          }
+
+          if (
+            (!response.body.lastViewedVacanciesAndTurnoverMessage ||
+              this.isOverSixMonthsAgo(response.body.lastViewedVacanciesAndTurnoverMessage)) &&
+            response.body.role === Roles.Edit &&
+            response.body.establishment?.dataOwner === WorkplaceDataOwner.Workplace
+          ) {
+            return this.router.navigate(['/update-your-vacancies-and-turnover-data']);
+          }
+
+          this.router.navigate(['/dashboard']);
         },
         (error: HttpErrorResponse) => {
           this.serverError = this.errorSummaryService.getServerErrorMessage(error.status, this.serverErrorsMap);
@@ -199,5 +211,14 @@ export class LoginComponent implements OnInit, OnDestroy, AfterViewInit {
   public setShowPassword(event: Event): void {
     event.preventDefault();
     this.showPassword = !this.showPassword;
+  }
+
+  private isOverSixMonthsAgo(lastViewedVacanciesAndTurnoverMessageDate: string): boolean {
+    const currentDate = new Date();
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(currentDate.getMonth() - 6);
+
+    const lastViewedDate = new Date(lastViewedVacanciesAndTurnoverMessageDate);
+    return lastViewedDate < sixMonthsAgo;
   }
 }
