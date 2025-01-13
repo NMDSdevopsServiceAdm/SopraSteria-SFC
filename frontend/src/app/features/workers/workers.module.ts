@@ -37,7 +37,6 @@ import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
 import { DeleteTrainingDialogComponent } from './delete-training-dialog/delete-training-dialog.component';
-import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worker-dialog.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
@@ -69,6 +68,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
+import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -87,7 +87,6 @@ import { QualificationCertificateService, TrainingCertificateService } from '@co
     DaysOfSicknessComponent,
     DeleteQualificationDialogComponent,
     DeleteTrainingDialogComponent,
-    DeleteWorkerDialogComponent,
     DeleteRecordComponent,
     DisabilityComponent,
     EditWorkerComponent,
@@ -125,6 +124,7 @@ import { QualificationCertificateService, TrainingCertificateService } from '@co
     EmployedFromOutsideUkComponent,
     Level2AdultSocialCareCertificateComponent,
     MainJobRoleComponent,
+    DeleteStaffRecordComponent,
   ],
   providers: [
     DialogService,
