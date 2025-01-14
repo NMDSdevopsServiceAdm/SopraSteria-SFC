@@ -21,7 +21,7 @@ describe('Sub home page as read only user', () => {
   });
 
   it('should show funding data link', () => {
-    cy.get('[data-cy="cards-and-links"]').should('not.contain', 'Does your data meet funding requirements?');
+    cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
   });
 
   it('should not show bulk upload link', () => {
