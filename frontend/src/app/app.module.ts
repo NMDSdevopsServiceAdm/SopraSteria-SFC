@@ -50,7 +50,7 @@ import { PreviousRouteService } from '@core/services/previous-route.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { RecruitmentService } from '@core/services/recruitment.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService, TrainingService } from '@core/services/training.service';
 import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
@@ -192,6 +192,7 @@ import { UsernameFoundComponent } from '@features/forgot-your-username-or-passwo
     RegistrationService,
     { provide: ErrorHandler, useClass: SentryErrorHandler },
     TrainingService,
+    MandatoryTrainingService,
     WindowRef,
     WorkerService,
     InternationalRecruitmentService,
