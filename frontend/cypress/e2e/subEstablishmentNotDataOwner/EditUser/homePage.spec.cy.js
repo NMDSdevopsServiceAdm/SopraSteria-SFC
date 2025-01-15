@@ -20,16 +20,16 @@ describe('Sub home page as edit user where parent owns the data', () => {
     onHomePage.allTabs();
   });
 
-  it('should show check your WDF data link', () => {
-    cy.get('[data-cy="main-home-links"]').should('contain', 'Check your WDF data');
+  it('should show funding link', () => {
+    cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
   });
 
   it('should not show bulk upload link', () => {
-    cy.get('[data-cy="main-home-links"]').should('not.contain', 'Bulk upload your data');
+    cy.get('[data-cy="home-other-links"]').should('not.contain', 'Bulk upload your data');
   });
 
   it('should show remove link to parent organisation', () => {
-    cy.get('[data-cy="home-other-links"]').should('contain', 'Remove link to my parent organisation');
+    cy.get('[data-cy="home-other-links"]').should('contain', 'Remove the link to your parent workplace');
   });
 
   it('should not show set data permissions', () => {

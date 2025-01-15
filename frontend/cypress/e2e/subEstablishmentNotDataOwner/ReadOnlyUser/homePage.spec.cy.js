@@ -22,17 +22,17 @@ describe('Sub home page as read only user', () => {
     onHomePage.allTabs('read');
   });
 
-  it('should show check your WDF data link', () => {
-    cy.get('[data-cy="main-home-links"]').should('contain', 'Check your WDF data');
+  it('should show funding link', () => {
+    cy.get('[data-cy="cards-and-links"]').should('contain', 'Does your data meet funding requirements?');
   });
 
   it('should not show bulk upload link', () => {
-    cy.get('[data-cy="main-home-links"]').should('not.contain', 'Bulk upload your data');
+    cy.get('[data-cy="home-other-links"]').should('not.contain', 'Bulk upload your data');
   });
 
   // waiting for permission fix to be available on test branch
   // it('should not show remove link to parent organisation', () => {
-  //   cy.get('[data-cy="home-other-links"]').should('not.contain', 'Remove link to my parent organisation');
+  //   cy.get('[data-cy="home-other-links"]').should('not.contain', 'Remove the link to your parent workplace');
   // });
 
   it('should not show set data permissions', () => {
