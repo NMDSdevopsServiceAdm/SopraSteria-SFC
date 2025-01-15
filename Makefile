@@ -34,3 +34,8 @@ run-e2e-server: db-migrate-e2e
 
 test-e2e:
 	cd frontend && npx cypress run
+
+stop-containers:
+	docker stop frontend_backend
+	docker stop sfc-test
+	docker stop soprasteria-sfc-sfc-redis-1
