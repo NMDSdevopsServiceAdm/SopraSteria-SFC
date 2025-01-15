@@ -26,5 +26,13 @@ module.exports = function(sequelize, DataTypes) {
     updatedAt: false
   });
 
+  ChildWorkplaces.associate = (models) => {
+    ChildWorkplaces.belongsTo(models.establishment, {
+      as: 'establishment',
+      foreignKey: 'id',
+      targetKey: 'id',
+    });
+  };
+
   return ChildWorkplaces;
 };
