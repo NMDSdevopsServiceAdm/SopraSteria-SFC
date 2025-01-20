@@ -221,4 +221,28 @@ describe('MissingWorkplaceReferencesComponent', () => {
 
     expect(filledReferenceRow.className.includes('govuk-visually-hidden')).toBeFalsy();
   });
+
+  it('should not show workplaces that are pending or in progress', async () => {
+    const childWorkplace1 = {
+      ...establishmentBuilder(),
+      ustatus: null,
+    };
+
+    const childWorkplace2 = {
+      ...establishmentBuilder(),
+      ustatus: 'PENDING',
+    };
+
+    const childWorkplace3 = {
+      ...establishmentBuilder(),
+      ustatus: 'IN PROGRESS',
+    };
+
+    const workplaces = [childWorkplace1, childWorkplace2, childWorkplace3] as Workplace[];
+    const { component } = await setup(workplaces);
+
+    expect(component.getByTestId('reference-0')).toBeTruthy();
+    expect(component.queryByTestId('reference-1')).toBeFalsy();
+    expect(component.queryByTestId('reference-2')).toBeFalsy();
+  });
 });
