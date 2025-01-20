@@ -1,8 +1,6 @@
-import { Subscription } from 'rxjs';
-
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 import { Worker } from '@core/model/worker.model';
@@ -11,6 +9,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Reason, WorkerService } from '@core/services/worker.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-delete-staff-record',
@@ -43,13 +42,14 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
     private workerService: WorkerService,
     private formBuilder: UntypedFormBuilder,
     private backLinkService: BackLinkService,
+    private route: ActivatedRoute,
   ) {}
 
   ngOnInit(): void {
     this.worker = this.workerService.worker;
     this.workplace = this.establishmentService.establishment;
+    this.reasons = this.route.snapshot.data?.reasonsForLeaving;
 
-    this.getLeaveReasons();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setBackLink();
@@ -57,14 +57,6 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
 
   ngAfterViewInit() {
     this.errorSummaryService.formEl$.next(this.formEl);
-  }
-
-  private getLeaveReasons(): void {
-    this.subscriptions.add(
-      this.workerService.getLeaveReasons().subscribe((reasons) => {
-        this.reasons = reasons;
-      }),
-    );
   }
 
   private setupForm(): void {
