@@ -16,30 +16,37 @@ import { Establishment } from '../../../../mockdata/establishment';
 
 describe('UserAccountsSummaryComponent', () => {
   const setup = async (showBanner = undefined, overLimit = false, isParentUsers = false) => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(UserAccountsSummaryComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [],
-      componentProperties: { workplace: Establishment, showSecondUserBanner: showBanner, isParentUsers: isParentUsers },
-      providers: [
-        {
-          provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(['canAddUser', 'canViewUser']),
-          deps: [HttpClient, Router, UserService],
+    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
+      UserAccountsSummaryComponent,
+      {
+        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+        declarations: [],
+        componentProperties: {
+          workplace: Establishment,
+          showSecondUserBanner: showBanner,
+          isParentUsers: isParentUsers,
         },
-        {
-          provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              data: {
-                users: overLimit
-                  ? ([ReadUser(), ReadUser(), ReadUser(), EditUser(), EditUser(), EditUser()] as UserDetails[])
-                  : ([EditUser()] as UserDetails[]),
+        providers: [
+          {
+            provide: PermissionsService,
+            useFactory: MockPermissionsService.factory(['canAddUser', 'canViewUser']),
+            deps: [HttpClient, Router, UserService],
+          },
+          {
+            provide: ActivatedRoute,
+            useValue: {
+              snapshot: {
+                data: {
+                  users: overLimit
+                    ? ([ReadUser(), ReadUser(), ReadUser(), EditUser(), EditUser(), EditUser()] as UserDetails[])
+                    : ([EditUser()] as UserDetails[]),
+                },
               },
             },
           },
-        },
-      ],
-    });
+        ],
+      },
+    );
     const component = fixture.componentInstance;
 
     return { component, fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId };
@@ -178,7 +185,6 @@ describe('UserAccountsSummaryComponent', () => {
     expect(queryByTestId('username-link')).toBeFalsy();
     expect(getByText(fullname)).toBeTruthy();
   });
-
 
   describe('Permissions column', () => {
     it('should have permission as Primary edit and WDF when user isPrimary and canManageWdfClaims are true and role is Edit', async () => {

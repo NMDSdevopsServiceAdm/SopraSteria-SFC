@@ -3,10 +3,10 @@
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
       <span class="govuk-caption-xl">
         <ng-container *ngIf="viewingSub; else primaryWorkplacePreHeader">
-          {{ primaryWorkplaceName }} (Workplace ID: {{ primaryWorkplaceNmdsId }})
+          {{ primaryWorkplaceName }} (Workplace ID: {{ primaryWorkplaceNmdsId | removeTrailingWhitespace }})
         </ng-container>
         <ng-template #primaryWorkplacePreHeader>
-          {{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId }})
+          {{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId | removeTrailingWhitespace }})
         </ng-template>
       </span>
       <ng-container *ngIf="viewingSub; else mainWorkplace"> {{ workplace?.name }}: data </ng-container>

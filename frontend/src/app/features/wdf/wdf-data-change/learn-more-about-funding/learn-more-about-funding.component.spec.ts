@@ -1,23 +1,25 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { EstablishmentService } from '@core/services/establishment.service';
 import { PagesService } from '@core/services/pages.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
-import { MockPagesService } from '@core/test-utils/MockPagesService';
-import { fireEvent, render } from '@testing-library/angular';
-import { LearnMoreAboutFundingComponent } from './learn-more-about-funding.component';
-import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { getTestBed } from '@angular/core/testing';
+import { MockPagesService } from '@core/test-utils/MockPagesService';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render } from '@testing-library/angular';
+
+import { LearnMoreAboutFundingComponent } from './learn-more-about-funding.component';
 
 describe('LearnMoreAboutFundingComponent', () => {
   const pages = MockPagesService.pagesFactory();
 
   async function setup() {
     const { fixture, getByText, queryByText } = await render(LearnMoreAboutFundingComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule, SharedModule],
       declarations: [],
       providers: [
         { provide: PagesService, useClass: MockPagesService },
