@@ -43,7 +43,7 @@ const restoreExistingEntities = async (
       Array.isArray(myEstablishments.subsidaries.establishments)
     ) {
       myEstablishments.subsidaries.establishments = myEstablishments.subsidaries.establishments.filter(
-        (est) => est.ustatus !== 'PENDING',
+        (est) => est.ustatus !== 'PENDING' && est.ustatus !== 'IN PROGRESS',
       );
       myEstablishments.subsidaries.establishments.forEach((thisSubsidairy) => {
         if (!onlyMine || (onlyMine && thisSubsidairy.dataOwner === 'Parent')) {
