@@ -1,10 +1,7 @@
-import { repeat } from 'lodash';
-import { of } from 'rxjs';
-
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
@@ -16,6 +13,8 @@ import { mockLeaveReasons, MockWorkerServiceWithUpdateWorker, workerBuilder } fr
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+import { repeat } from 'lodash';
+import { of } from 'rxjs';
 
 import { DeleteStaffRecordComponent } from './delete-staff-record.component';
 
@@ -34,6 +33,14 @@ describe('DeleteStaffRecordComponent', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { reasonsForLeaving: mockLeaveReasons },
+            },
+          },
         },
         AlertService,
         WindowRef,
