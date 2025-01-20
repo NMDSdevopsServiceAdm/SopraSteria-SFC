@@ -244,5 +244,9 @@ describe('MissingWorkplaceReferencesComponent', () => {
     expect(component.getByTestId('reference-0')).toBeTruthy();
     expect(component.queryByTestId('reference-1')).toBeFalsy();
     expect(component.queryByTestId('reference-2')).toBeFalsy();
+
+    expect(component.getByText(workplaces[0].name)).toBeTruthy();
+    expect(component.queryByText(workplaces[1].name)).toBeFalsy();
+    expect(component.queryByText(workplaces[2].name)).toBeFalsy();
   });
 });
