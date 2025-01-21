@@ -15,6 +15,7 @@ jwt:
   ttl:
     login: 60
 db:
+  host: e2etest
   pool:
     min: 15
     max: 15
@@ -23,6 +24,9 @@ db:
 
 log:
   sequelize: false
+
+redis:
+  url: redis://localhost:6379
 
 bulkupload:
   region: eu-west-2

@@ -98,6 +98,7 @@
                   role="button"
                   draggable="false"
                   class="govuk-button govuk-!-margin-bottom-5"
+                  data-cy="add-staff-record-button"
                   [routerLink]="['/workplace', this.workplace.uid, 'staff-record', 'create-staff-record']"
                 >
                   Add a staff record
@@ -111,6 +112,7 @@
                   role="button"
                   href="#"
                   class="govuk-button govuk-!-margin-bottom-5"
+                  data-cy="add-multiple-training-records-button"
                   [routerLink]="['/workplace', workplace.uid, 'add-multiple-training', 'select-staff']"
                 >
                   Add multiple training records
