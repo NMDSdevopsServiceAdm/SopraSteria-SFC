@@ -1,4 +1,4 @@
-import { Component, Input, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, OnDestroy, OnInit, SimpleChanges } from '@angular/core';
 import { UntypedFormControl } from '@angular/forms';
 import { Subscription } from 'rxjs';
 
@@ -6,26 +6,35 @@ import { Subscription } from 'rxjs';
   selector: 'app-character-count',
   templateUrl: './character-count.component.html',
 })
-export class CharacterCountComponent implements OnInit, OnDestroy {
+export class CharacterCountComponent implements OnInit, OnDestroy, OnChanges {
   public remaining: number;
   private subscriptions: Subscription = new Subscription();
   @Input() control: UntypedFormControl;
   @Input() max: number;
   @Input() words = false;
+  @Input() textToCount: string;
 
   ngOnInit() {
     this.remaining = this.max;
-    this.subscriptions.add(
-      this.control.valueChanges.subscribe((value: string) => {
-        if (value) {
-          if (this.words) {
-            this.remaining = this.max - value.match(/\S+/g).length;
-          } else {
-            this.remaining = this.max - value.length;
-          }
-        }
-      }),
-    );
+    if (this.control) {
+      this.subscriptions.add(this.control.valueChanges.subscribe((value) => this.updateRemainingCount(value)));
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('textToCount' in changes) {
+      this.updateRemainingCount(changes.textToCount.currentValue);
+    }
+  }
+
+  private updateRemainingCount(value: string) {
+    if (!value) {
+      this.remaining = this.max;
+      return;
+    }
+
+    const countInputSize = this.words ? value.match(/\S+/g).length : value.length;
+    this.remaining = this.max - countInputSize;
   }
 
   ngOnDestroy() {

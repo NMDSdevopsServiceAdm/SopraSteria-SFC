@@ -79,6 +79,7 @@ router.post('/', async (req, res) => {
                   'UserRoleValue',
                   'registrationSurveyCompleted',
                   'tribalId',
+                  'lastViewedVacanciesAndTurnoverMessage',
                 ],
                 include: [
                   {
@@ -95,6 +96,7 @@ router.post('/', async (req, res) => {
                       'lastBulkUploaded',
                       'eightWeeksFromFirstLogin',
                       'EmployerTypeValue',
+                      'dataOwner',
                     ],
                     include: [
                       {
@@ -284,6 +286,7 @@ router.post('/', async (req, res) => {
               migratedUser,
             },
             establishmentUser.user.registrationSurveyCompleted,
+            establishmentUser.user.lastViewedVacanciesAndTurnoverMessage,
           );
 
           await models.sequelize.transaction(async (t) => {

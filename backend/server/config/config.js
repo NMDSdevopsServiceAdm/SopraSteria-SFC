@@ -131,6 +131,7 @@ const config = convict({
       doc: 'Database host name/IP',
       format: String,
       default: '127.0.0.1',
+      env: 'DB_TEST_HOSTNAME',
     },
     database: {
       doc: 'Database name',
@@ -154,6 +155,7 @@ const config = convict({
       doc: 'Database port',
       format: 'port',
       default: 90,
+      env: 'DB_TEST_PORT',
     },
     dialect: {
       doc: 'Database dialect (sequelize)',
