@@ -12,7 +12,9 @@ import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
+import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-for-leaving.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
+import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { DialogService } from '@core/services/dialog.service';
 import { DownloadPdfTrainingAndQualificationComponent } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
 import { HealthAndCareVisaComponent } from '@features/workers/health-and-care-visa/health-and-care-visa.component';
@@ -36,8 +38,8 @@ import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.com
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
+import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 import { DeleteTrainingDialogComponent } from './delete-training-dialog/delete-training-dialog.component';
-import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worker-dialog.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
@@ -68,7 +70,6 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -87,7 +88,6 @@ import { QualificationCertificateService, TrainingCertificateService } from '@co
     DaysOfSicknessComponent,
     DeleteQualificationDialogComponent,
     DeleteTrainingDialogComponent,
-    DeleteWorkerDialogComponent,
     DeleteRecordComponent,
     DisabilityComponent,
     EditWorkerComponent,
@@ -125,6 +125,7 @@ import { QualificationCertificateService, TrainingCertificateService } from '@co
     EmployedFromOutsideUkComponent,
     Level2AdultSocialCareCertificateComponent,
     MainJobRoleComponent,
+    DeleteStaffRecordComponent,
   ],
   providers: [
     DialogService,
@@ -141,6 +142,7 @@ import { QualificationCertificateService, TrainingCertificateService } from '@co
     AvailableQualificationsResolver,
     TrainingCertificateService,
     QualificationCertificateService,
+    WorkerReasonsForLeavingResolver,
   ],
 })
 export class WorkersModule {}

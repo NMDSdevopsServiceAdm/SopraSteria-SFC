@@ -1,7 +1,10 @@
 <div class="asc-dashboard-header" [class.asc-dashboard-header__full-height]="tab === 'home'">
   <div>
     <div class="govuk-width-container">
-      <div class="govuk-grid-row govuk-!-padding-bottom-6 govuk__flex govuk__align-items-flex-end">
+      <div
+        class="govuk-grid-row govuk__flex govuk__align-items-flex-end"
+        [ngClass]="tab === 'workplace' ? 'govuk-!-padding-bottom-2' : 'govuk-!-padding-bottom-6'"
+      >
         <div
           [ngClass]="tab === 'home' ? 'govuk-grid-column-one-half' : 'govuk-grid-column-two-thirds'"
           data-testid="column-one"
@@ -27,7 +30,7 @@
             </h1>
           </ng-container>
           <ng-template #otherTab>
-            <h1 class="govuk-heading-l govuk-!-margin-bottom-0">
+            <h1 data-testid="workplaceName" class="govuk-heading-l govuk-!-margin-bottom-0">
               <span class="govuk-caption-xl govuk-!-margin-bottom-0">{{ workplace?.name }}</span>
               {{ header }}
             </h1>
@@ -77,6 +80,18 @@
               </div>
             </ng-container>
 
+            <ng-container *ngSwitchCase="'workplace'">
+              <div class="do-as-parent-link">
+                <span
+                  *ngIf="isParent"
+                  class="govuk-width-container govuk-body govuk-!-font-size-19 govuk-util__align-right"
+                  data-testid="do-as-parent"
+                >
+                  <a [routerLink]="['/workplace/about-parents']">What you can do as a parent</a>
+                </span>
+              </div>
+            </ng-container>
+
             <ng-container *ngSwitchCase="'staff-records'">
               <div *ngIf="canAddWorker" class="govuk-util__align-right">
                 <a
@@ -108,3 +123,11 @@
     </div>
   </div>
 </div>
+<ng-container *ngIf="tab === 'workplace'">
+  <app-workplace-name-address
+    [workplace]="workplace"
+    [canEditEstablishment]="canEditEstablishment"
+    [return]="return"
+    data-testid="workplace-address"
+  ></app-workplace-name-address>
+</ng-container>

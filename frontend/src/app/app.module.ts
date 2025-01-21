@@ -1,6 +1,3 @@
-import { Angulartics2Module } from 'angulartics2';
-import { HighchartsChartModule } from 'highcharts-angular';
-
 import { CommonModule } from '@angular/common';
 import { HTTP_INTERCEPTORS, HttpClient, HttpClientModule } from '@angular/common/http';
 import { ErrorHandler, NgModule } from '@angular/core';
@@ -72,7 +69,9 @@ import { FindUsernameComponent } from '@features/forgot-your-username-or-passwor
 import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
 import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
 import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
+import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 import { LoginComponent } from '@features/login/login.component';
+import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
@@ -94,6 +93,8 @@ import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.m
 import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
+import { Angulartics2Module } from 'angulartics2';
+import { HighchartsChartModule } from 'highcharts-angular';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -101,7 +102,6 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 
 @NgModule({
   declarations: [
@@ -151,6 +151,7 @@ import { UsernameFoundComponent } from '@features/forgot-your-username-or-passwo
     SelectStarterJobRolesComponent,
     SecurityQuestionAnswerNotMatchComponent,
     UserAccountNotFoundComponent,
+    VacanciesAndTurnoverLoginMessage,
   ],
   imports: [
     Angulartics2Module.forRoot({

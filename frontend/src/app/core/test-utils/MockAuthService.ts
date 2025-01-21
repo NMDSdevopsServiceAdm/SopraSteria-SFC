@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
+import { WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { AuthService } from '@core/services/auth.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -81,15 +82,21 @@ export class MockAuthService extends AuthService {
   }
 
   public authenticate(username: string, password: string): Observable<any> {
-    return of({
-      body: {
-        role: this._isAdmin ? 'Admin' : 'Edit',
-        agreedUpdatedTerms: true,
-        establishment: {
-          employerTypeSet: this._employerTypeSet,
-          uid: 'mockuid'
-        }
-      },
-    });
+    return of(mockAuthenticateResponse(this._isAdmin, this._employerTypeSet));
   }
 }
+
+export const mockAuthenticateResponse = (isAdmin = false, employerTypeSet = true): any => {
+  return {
+    body: {
+      role: isAdmin ? 'Admin' : 'Edit',
+      agreedUpdatedTerms: true,
+      lastViewedVacanciesAndTurnoverMessage: new Date().toISOString(),
+      establishment: {
+        employerTypeSet,
+        uid: 'mockuid',
+        dataOwner: WorkplaceDataOwner.Workplace,
+      },
+    },
+  };
+};
