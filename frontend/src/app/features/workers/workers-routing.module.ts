@@ -11,7 +11,9 @@ import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/trainin
 import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
+import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-for-leaving.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
+import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
 import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
 import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 
@@ -29,6 +31,7 @@ import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contr
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
+import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
 import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
@@ -58,7 +61,6 @@ import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
 
 const routes: Routes = [
   {
@@ -689,6 +691,17 @@ const routes: Routes = [
         component: LongTermAbsenceComponent,
         resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
         data: { title: 'Flag long term absence' },
+      },
+      {
+        path: 'delete-staff-record',
+        component: DeleteStaffRecordComponent,
+        resolve: {
+          reasonsForLeaving: WorkerReasonsForLeavingResolver,
+        },
+        data: {
+          permissions: ['canDeleteWorker'],
+          title: 'Delete staff record',
+        },
       },
     ],
   },
