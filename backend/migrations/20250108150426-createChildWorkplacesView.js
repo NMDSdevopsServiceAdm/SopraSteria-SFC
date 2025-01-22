@@ -22,23 +22,25 @@ module.exports = {
         		WHERE w."EstablishmentFK" = e."EstablishmentID"
 				AND w."Archived" = false
         	) THEN true
-			-- Workers not completed
+
         	WHEN (
         		SELECT w."ID"
         		FROM cqc."Worker" w
         		WHERE w."EstablishmentFK" = e."EstablishmentID"
-        		AND w."CompletedValue" = false
-        		AND ('now'::timestamp - '1 month'::interval) > w."created"
-        		LIMIT 1
-        	) IS NOT NULL THEN true
-        	-- International recruitment data required
-        	WHEN (
-        		SELECT w."ID"
-        		FROM cqc."Worker" w
-        		WHERE w."HealthAndCareVisaValue" IS NULL
-				AND w."EstablishmentFK" = e."EstablishmentID"
-        		AND ((w."NationalityValue" = 'Other' AND w."BritishCitizenshipValue" IN ('No', 'Don''t know', NULL))
-        		OR (w."NationalityValue" = 'Don''t know' AND w."BritishCitizenshipValue" = 'No'))
+				AND w."Archived" = false
+        		AND (
+				-- Workers not completed
+					(
+						w."CompletedValue" = false
+        				AND ('now'::timestamp - '1 month'::interval) > w."created"
+					)
+				-- International recruitment data required
+					OR (
+						w."HealthAndCareVisaValue" IS NULL
+				   		AND ((w."NationalityValue" = 'Other' AND w."BritishCitizenshipValue" IN ('No', 'Don''t know', NULL))
+        				OR (w."NationalityValue" = 'Don''t know' AND w."BritishCitizenshipValue" = 'No'))
+					)
+				)
         		LIMIT 1
         	) IS NOT NULL THEN true
 			-- No training has been added
@@ -46,13 +48,13 @@ module.exports = {
 				SELECT w."ID"
 				FROM cqc."WorkerTraining" wt
         		JOIN cqc."Worker" w ON wt."WorkerFK" = w."ID"
-				WHERE w."EstablishmentFK" = 997
+				WHERE w."EstablishmentFK" = e."EstablishmentID"
 				AND w."Archived" = false
 				LIMIT 1
 			) IS NULL THEN true
         	-- Training is expired or expires soon
         	WHEN (
-        		SELECT wt."Expires"
+        		SELECT w."ID"
         		FROM cqc."WorkerTraining" wt
         		JOIN cqc."Worker" w ON wt."WorkerFK" = w."ID"
         		WHERE wt."Expires" <= ('now'::timestamp + '90 days'::interval) -- wt."Expires" < CURRENT_DATE

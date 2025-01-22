@@ -4,6 +4,7 @@ const sinon = require('sinon');
 const models = require('../../../../models');
 
 const { getChildWorkplaces, formatChildWorkplaces } = require('../../../../routes/establishments/childWorkplaces');
+const { decodePDFRawStream } = require('pdf-lib');
 
 describe('server/routes/establishments/childWorkplaces', () => {
   let modelData;
@@ -154,6 +155,30 @@ describe('server/routes/establishments/childWorkplaces', () => {
       expect(modelStub.args[0][4]).to.equal(true);
     });
   });
+
+  describe('getChildWorkplacesSummary', () => {
+    const establishmentId = 'a131313dasd123325453bac';
+    let req;
+    let res;
+
+    beforeEach(() => {
+      const request = {
+        method: 'GET',
+        url: `/api/establishment/${establishmentId}/childWorkplaces/`,
+        establishmentId,
+        params: {
+          id: 'testId',
+        },
+      };
+      req = httpMocks.createRequest(request);
+      res = httpMocks.createResponse();
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+  })
 
   describe('formatChildWorkplaces', () => {
     it('Should rename NameValue to name', () => {

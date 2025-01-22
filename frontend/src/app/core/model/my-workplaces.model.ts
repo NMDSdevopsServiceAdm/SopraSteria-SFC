@@ -29,6 +29,7 @@ export interface Workplace {
   ustatus?: string;
   linkToParentRequested?: string;
   postCode?: string;
+  showFlag?: boolean;
   nameAndPostCode?: string;
   id?: number;
   wdf?: {

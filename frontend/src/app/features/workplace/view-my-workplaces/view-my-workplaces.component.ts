@@ -51,7 +51,6 @@ export class ViewMyWorkplacesComponent implements OnInit, OnDestroy {
 
     this.establishmentService.setCheckForChildWorkplaceChanges(true);
     const childWorkplaces = this.route.snapshot.data.childWorkplaces;
-    console.log(childWorkplaces);
     this.totalWorkplaceCount = childWorkplaces.count;
     this.activeWorkplaceCount = childWorkplaces.activeWorkplaceCount;
     this.setWorkplaceVariables(childWorkplaces);

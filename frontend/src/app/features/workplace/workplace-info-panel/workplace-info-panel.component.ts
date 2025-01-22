@@ -35,6 +35,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public ownershipChangeRequestCreatedByLoggegInUser: boolean;
   public ownershipChangeRequester: any;
   public newHomeDesignParentFlag: boolean;
+  public moveWorkplace: boolean = false;s
 
   constructor(
     private dialogService: DialogService,
@@ -62,6 +63,7 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
       }),
     );
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
+    console.log(this.workplace);
   }
 
   private changeOwnershipAndPermissions(): void {
