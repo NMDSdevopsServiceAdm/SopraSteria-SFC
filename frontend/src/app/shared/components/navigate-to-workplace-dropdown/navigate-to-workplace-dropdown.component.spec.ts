@@ -12,7 +12,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { NavigateToWorkplaceDropdownComponent } from './navigate-to-workplace-dropdown.component';
 
-describe('NavigateToWorkplaceDropdownComponent', () => {
+fdescribe('NavigateToWorkplaceDropdownComponent', () => {
   const setup = async (overrides: any = {}) => {
     const maxChildWorkplacesForDropdown = (
       'maxChildWorkplacesForDropdown' in overrides ? overrides.maxChildWorkplacesForDropdown : 5
@@ -96,7 +96,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       expect(getByText(component.parentWorkplace.name));
     });
 
-    xit('should go to route of main dashboard when selecting primary workplace', async () => {
+    it('should go to route of main dashboard when selecting primary workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
       const selectObject = getByText(component.parentWorkplace.name);
@@ -107,7 +107,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       });
     });
 
-    xit('should go to route of selected sub (first) when selecting sub workplace', async () => {
+    it('should go to route of selected sub (first) when selecting sub workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
       const selectObject = getByText(component.parentWorkplace.name);
@@ -118,7 +118,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       });
     });
 
-    xit('should go to route of selected sub (second) when selecting sub workplace', async () => {
+    it('should go to route of selected sub (second) when selecting sub workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
       const selectObject = getByText(component.parentWorkplace.name);
@@ -220,7 +220,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       expect(getByText(expectedMessage)).toBeTruthy();
     });
 
-    xit('should navigate to dashboard with home fragment on click of back link', async () => {
+    it('should navigate to dashboard with home fragment on click of back link', async () => {
       const { fixture, getByText, parentWorkplaceName, routerSpy } = await setup({ maxChildWorkplacesForDropdown: 3 });
       fixture.detectChanges();
 
