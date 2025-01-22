@@ -13,7 +13,7 @@ import { fireEvent, render } from '@testing-library/angular';
 
 import { NavigateToWorkplaceDropdownComponent } from './navigate-to-workplace-dropdown.component';
 
-fdescribe('NavigateToWorkplaceDropdownComponent', () => {
+describe('NavigateToWorkplaceDropdownComponent', () => {
   const setup = async (overrides: any = {}) => {
     const establishment = establishmentBuilder();
 
