@@ -3,8 +3,10 @@ import { getTestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { workplaceBuilder } from '@core/test-utils/MockUserService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -124,6 +126,49 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
 
       fixture.whenStable().then(() => {
         expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.childWorkplaces[1].uid, 'home']);
+      });
+    });
+
+    describe('Displaying workplaces with different permissions/data owners', () => {
+      it('should not include sub workplace in dropdown if workplace is data owner and parent has no permissions (parent cannot view workplaces which are linked only)', async () => {
+        const childWorkplace1 = workplaceBuilder();
+        childWorkplace1.name = 'Child workplace which should not be in dropdown';
+        childWorkplace1.dataOwner = WorkplaceDataOwner.Workplace;
+        childWorkplace1.dataPermissions = DataPermissions.None;
+
+        const childWorkplace2 = workplaceBuilder();
+
+        const { queryAllByRole } = await setup({
+          childWorkplaces: [childWorkplace1, childWorkplace2],
+        });
+
+        const selectOptions = queryAllByRole('option');
+        const hasWorkplaceNameInSelectOptions = selectOptions.some(
+          (option) => option.textContent?.trim() === childWorkplace1.name,
+        );
+        expect(hasWorkplaceNameInSelectOptions).toBeFalsy();
+      });
+
+      [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff].forEach((permissionType) => {
+        it(`should include sub workplace in dropdown if workplace is data owner but parent has ${permissionType} permission`, async () => {
+          const childWorkplace1 = workplaceBuilder();
+          childWorkplace1.name = 'Child workplace which should be in dropdown';
+          childWorkplace1.dataOwner = WorkplaceDataOwner.Workplace;
+          childWorkplace1.dataPermissions = permissionType;
+
+          const childWorkplace2 = workplaceBuilder();
+
+          const { queryAllByRole } = await setup({
+            childWorkplaces: [childWorkplace1, childWorkplace2],
+          });
+
+          const selectOptions = queryAllByRole('option');
+          const hasWorkplaceNameInSelectOptions = selectOptions.some(
+            (option) => option.textContent?.trim() === childWorkplace1.name,
+          );
+
+          expect(hasWorkplaceNameInSelectOptions).toBeTruthy();
+        });
       });
     });
 
