@@ -16,40 +16,39 @@ import { Establishment } from '../../../../mockdata/establishment';
 
 describe('UserAccountsSummaryComponent', () => {
   const setup = async (showBanner = undefined, overLimit = false, isParentUsers = false) => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
-      UserAccountsSummaryComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-        declarations: [],
-        componentProperties: {
-          workplace: Establishment,
-          showSecondUserBanner: showBanner,
-          isParentUsers: isParentUsers,
+    const workplace = Establishment;
+
+    const setupTools = await render(UserAccountsSummaryComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+      declarations: [],
+      componentProperties: {
+        workplace,
+        showSecondUserBanner: showBanner,
+        isParentUsers: isParentUsers,
+      },
+      providers: [
+        {
+          provide: PermissionsService,
+          useFactory: MockPermissionsService.factory(['canAddUser', 'canViewUser']),
+          deps: [HttpClient, Router, UserService],
         },
-        providers: [
-          {
-            provide: PermissionsService,
-            useFactory: MockPermissionsService.factory(['canAddUser', 'canViewUser']),
-            deps: [HttpClient, Router, UserService],
-          },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                data: {
-                  users: overLimit
-                    ? ([ReadUser(), ReadUser(), ReadUser(), EditUser(), EditUser(), EditUser()] as UserDetails[])
-                    : ([EditUser()] as UserDetails[]),
-                },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: {
+                users: overLimit
+                  ? ([ReadUser(), ReadUser(), ReadUser(), EditUser(), EditUser(), EditUser()] as UserDetails[])
+                  : ([EditUser()] as UserDetails[]),
               },
             },
           },
-        ],
-      },
-    );
-    const component = fixture.componentInstance;
+        },
+      ],
+    });
+    const component = setupTools.fixture.componentInstance;
 
-    return { component, fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId };
+    return { ...setupTools, component, workplace };
   };
 
   it('should render a User Account Summary Workplace Component', async () => {
@@ -57,23 +56,29 @@ describe('UserAccountsSummaryComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show the workplace name and id, and the number of users', async () => {
-    const { getByTestId, getByText } = await setup(false, false, true);
+  it('should show the workplace name and id when in parent view', async () => {
+    const { getByText, workplace } = await setup(false, false, true);
 
-    const workplaceInfo = getByTestId('workplace-name');
-    const numberOfUsers = getByText('Users (1)');
+    const workplaceIdCaption = `(Workplace ID: ${workplace.nmdsId})`;
 
-    expect(workplaceInfo).toBeTruthy();
-    expect(numberOfUsers).toBeTruthy();
+    expect(getByText(workplace.name)).toBeTruthy();
+    expect(getByText(workplaceIdCaption)).toBeTruthy();
   });
 
-  it('should not show the workplace name and id, instead it should only show the number of users', async () => {
-    const { queryByText, getByText } = await setup();
+  it('should not show the workplace name and id when not in parent view', async () => {
+    const { queryByText, workplace } = await setup();
 
-    const workplaceInfo = queryByText('workplace-name');
+    const workplaceIdCaption = `(Workplace ID: ${workplace.nmdsId})`;
+
+    expect(queryByText(workplace.name)).toBeFalsy();
+    expect(queryByText(workplaceIdCaption)).toBeFalsy();
+  });
+
+  it('should show the number of users', async () => {
+    const { getByText } = await setup(false, false, true);
+
     const numberOfUsers = getByText('Users (1)');
 
-    expect(workplaceInfo).toBeFalsy();
     expect(numberOfUsers).toBeTruthy();
   });
 

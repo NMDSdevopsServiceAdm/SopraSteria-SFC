@@ -69,9 +69,10 @@ describe('LearnMoreAboutFundingComponent', () => {
 
     const workplaceName = component.workplace.name;
     const nmdsId = component.workplace.nmdsId;
-    const expectedTitleCaption = `${workplaceName} (Workplace ID: ${nmdsId})`;
+    const workplaceIdCaption = `(Workplace ID: ${nmdsId})`;
 
-    expect(getByText(expectedTitleCaption)).toBeTruthy();
+    expect(getByText(workplaceName)).toBeTruthy();
+    expect(getByText(workplaceIdCaption)).toBeTruthy();
   });
 
   it("should navigate to wdf main page when 'Does your data meet funding requirements?' is clicked", async () => {

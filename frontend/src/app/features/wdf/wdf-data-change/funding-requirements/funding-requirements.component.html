@@ -1,8 +1,7 @@
 <div class="govuk-grid">
   <div class="govuk-grid-column-two-thirds">
-    <span class="govuk-caption-xl"
-      >{{ workplace.name }} (Workplace ID: {{ workplace.nmdsId | removeTrailingWhitespace }})</span
-    >
+    <span class="govuk-caption-xl">{{ workplace.name }}</span>
+    <span class="govuk-caption-xl">(Workplace ID: {{ workplace.nmdsId | removeTrailingWhitespace }})</span>
     <h1 class="govuk-heading-l govuk-!-margin-bottom-6">
       ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}
     </h1>

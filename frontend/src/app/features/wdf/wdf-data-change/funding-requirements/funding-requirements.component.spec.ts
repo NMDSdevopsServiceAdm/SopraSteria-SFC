@@ -79,9 +79,10 @@ describe('FundingRequirementsComponent', () => {
 
     const workplaceName = component.workplace.name;
     const nmdsId = component.workplace.nmdsId;
-    const expectedTitleCaption = `${workplaceName} (Workplace ID: ${nmdsId})`;
+    const workplaceIdCaption = `(Workplace ID: ${nmdsId})`;
 
-    expect(getByText(expectedTitleCaption)).toBeTruthy();
+    expect(getByText(workplaceName)).toBeTruthy();
+    expect(getByText(workplaceIdCaption)).toBeTruthy();
   });
 
   it('should show the funding requirements inset text when requirements are not met', async () => {

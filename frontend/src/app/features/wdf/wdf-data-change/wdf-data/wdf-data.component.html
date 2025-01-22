@@ -1,14 +1,14 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <h1 class="govuk-heading-l govuk-!-margin-bottom-8">
-      <span class="govuk-caption-xl">
-        <ng-container *ngIf="viewingSub; else primaryWorkplacePreHeader">
-          {{ primaryWorkplaceName }} (Workplace ID: {{ primaryWorkplaceNmdsId | removeTrailingWhitespace }})
-        </ng-container>
-        <ng-template #primaryWorkplacePreHeader>
-          {{ workplace?.name }} (Workplace ID: {{ workplace?.nmdsId | removeTrailingWhitespace }})
-        </ng-template>
-      </span>
+      <ng-container *ngIf="viewingSub; else primaryWorkplacePreHeader">
+        <span class="govuk-caption-xl">{{ primaryWorkplaceName }}</span>
+        <span class="govuk-caption-xl">(Workplace ID: {{ primaryWorkplaceNmdsId | removeTrailingWhitespace }})</span>
+      </ng-container>
+      <ng-template #primaryWorkplacePreHeader>
+        <span class="govuk-caption-xl">{{ workplace?.name }}</span>
+        <span class="govuk-caption-xl">(Workplace ID: {{ workplace?.nmdsId | removeTrailingWhitespace }})</span>
+      </ng-template>
       <ng-container *ngIf="viewingSub; else mainWorkplace"> {{ workplace?.name }}: data </ng-container>
       <ng-template #mainWorkplace> Your data </ng-template>
     </h1>
