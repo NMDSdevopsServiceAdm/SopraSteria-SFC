@@ -1,11 +1,12 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
 import { workplaceBuilder } from '@core/test-utils/MockUserService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { fireEvent, render } from '@testing-library/angular';
@@ -14,6 +15,8 @@ import { NavigateToWorkplaceDropdownComponent } from './navigate-to-workplace-dr
 
 fdescribe('NavigateToWorkplaceDropdownComponent', () => {
   const setup = async (overrides: any = {}) => {
+    const establishment = establishmentBuilder();
+
     const maxChildWorkplacesForDropdown = (
       'maxChildWorkplacesForDropdown' in overrides ? overrides.maxChildWorkplacesForDropdown : 5
     ) as number;
@@ -21,11 +24,17 @@ fdescribe('NavigateToWorkplaceDropdownComponent', () => {
     const childWorkplaces = 'childWorkplaces' in overrides ? overrides.childWorkplaces : null;
 
     const setupTools = await render(NavigateToWorkplaceDropdownComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory(null, true, null, childWorkplaces),
+          useFactory: MockEstablishmentServiceWithOverrides.factory({
+            primaryWorkplace: establishment,
+            establishmentObj: establishment,
+            ...(childWorkplaces
+              ? { childWorkplaces: { childWorkplaces, count: childWorkplaces?.length, activeWorkplaceCount: 1 } }
+              : {}),
+          }),
         },
       ],
       componentProperties: {
@@ -182,12 +191,10 @@ fdescribe('NavigateToWorkplaceDropdownComponent', () => {
       });
 
       it('should set the selected workplace as value of select after clicking option', async () => {
-        const { fixture, component, getByText } = await setup();
-
-        const selectObject = getByText(component.parentWorkplace.name);
-        fireEvent.change(selectObject, { target: { value: component.childWorkplaces[2].uid } });
+        const { fixture, component } = await setup();
 
         const select = fixture.debugElement.query(By.css('select')).nativeElement;
+        fireEvent.change(select, { target: { value: component.childWorkplaces[2].uid } });
 
         expect(select.value).toEqual(component.childWorkplaces[2].uid);
       });
