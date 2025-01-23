@@ -63,7 +63,6 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
       }),
     );
     this.newHomeDesignParentFlag = this.featureFlagsService.newHomeDesignParentFlag;
-    console.log(this.workplace);
   }
 
   private changeOwnershipAndPermissions(): void {
