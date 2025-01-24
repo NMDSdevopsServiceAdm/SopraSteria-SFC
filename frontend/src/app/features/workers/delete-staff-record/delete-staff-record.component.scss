@@ -1,0 +1,32 @@
+@import 'govuk-frontend/govuk/base';
+
+.govuk-checkboxes__item-align-middle {
+  display: flex;
+  align-items: center;
+  padding-left: 0;
+  margin-right: -50px;
+
+  .govuk-checkboxes__input {
+    display: block;
+    position: unset;
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .govuk-checkboxes__label {
+    padding: 0;
+    padding-left: 10px;
+    display: block;
+    position: unset;
+  }
+
+  .govuk-checkboxes__label::before {
+    top: 5px;
+    left: 0px;
+  }
+
+  .govuk-checkboxes__label::after {
+    top: 5 + 11px;
+    left: 0 + 9px;
+  }
+}

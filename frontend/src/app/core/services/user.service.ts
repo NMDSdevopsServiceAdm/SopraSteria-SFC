@@ -49,7 +49,9 @@ export class UserService {
   }
 
   public getLoggedInUser(): Observable<UserDetails> {
-    return this.http.get<UserDetails>(`${environment.appRunnerEndpoint}/api/user/me`).pipe(tap((user) => (this.loggedInUser = user)));
+    return this.http
+      .get<UserDetails>(`${environment.appRunnerEndpoint}/api/user/me`)
+      .pipe(tap((user) => (this.loggedInUser = user)));
   }
 
   public get returnUrl() {
@@ -137,7 +139,10 @@ export class UserService {
    * PUT /api/user/establishment/:establishmentUID/:userUID
    */
   public updateUserDetails(workplaceUid: string, userUid: string, userDetails: UserDetails): Observable<UserDetails> {
-    return this.http.put<UserDetails>(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}/${userUid}`, userDetails);
+    return this.http.put<UserDetails>(
+      `${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}/${userUid}`,
+      userDetails,
+    );
   }
 
   public updateAdminUserDetails(userUid: string, userDetails: UserDetails): Observable<UserDetails> {
@@ -165,7 +170,9 @@ export class UserService {
    */
   public getEstablishments(wdf: boolean = false): Observable<GetWorkplacesResponse> {
     const params = wdf ? new HttpParams().set('wdf', `${wdf}`) : null;
-    return this.http.get<GetWorkplacesResponse>(`${environment.appRunnerEndpoint}/api/user/my/establishments`, { params });
+    return this.http.get<GetWorkplacesResponse>(`${environment.appRunnerEndpoint}/api/user/my/establishments`, {
+      params,
+    });
   }
 
   /*
@@ -175,5 +182,12 @@ export class UserService {
     return this.http
       .get<GetAllUsersResponse>(`${environment.appRunnerEndpoint}/api/user/establishment/${workplaceUid}`)
       .pipe(map((response) => response.users));
+  }
+
+  public updateLastViewedVacanciesAndTurnoverMessage() {
+    return this.http.post(
+      `${environment.appRunnerEndpoint}/api/user/update-last-viewed-vacancies-and-turnover-message/${this.loggedInUser.uid}`,
+      {},
+    );
   }
 }

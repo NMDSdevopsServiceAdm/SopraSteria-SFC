@@ -19,7 +19,7 @@
           [errorMessage]="formErrorsMap[0].type[0].message"
         ></app-grouped-radio-button-accordion>
 
-        <div class="govuk-checkboxes govuk-!-padding-bottom-6">
+        <div *ngIf="!hideOtherCheckbox" class="govuk-checkboxes govuk-!-padding-bottom-6">
           <div [class.govuk-form-group--error]="submitted && error">
             <div class="govuk-checkboxes__item">
               <input
@@ -40,7 +40,7 @@
     </div>
   </div>
 
-  <div class="govuk-button-group">
+  <div class="govuk-button-group govuk-!-padding-top-1">
     <button type="submit" class="govuk-button govuk-!-margin-right-9" data-module="govuk-button">
       {{ submitButtonText }}
     </button>

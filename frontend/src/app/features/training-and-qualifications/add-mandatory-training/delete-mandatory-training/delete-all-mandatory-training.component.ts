@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
@@ -11,9 +11,10 @@ import { Subscription } from 'rxjs';
   selector: 'app-remove-all-selections-dialog',
   templateUrl: './delete-all-mandatory-training.component.html',
 })
-export class RemoveAllMandatoryTrainingComponent implements OnInit {
+export class RemoveAllMandatoryTrainingComponent implements OnInit, OnDestroy {
   public establishment: Establishment;
   private subscriptions: Subscription = new Subscription();
+
   constructor(
     protected backLinkService: BackLinkService,
     private trainingService: TrainingService,
@@ -25,26 +26,27 @@ export class RemoveAllMandatoryTrainingComponent implements OnInit {
 
   ngOnInit(): void {
     this.establishment = this.route.parent.snapshot.data.establishment;
-    this.setBackLink();
-  }
-
-  public setBackLink(): void {
     this.backLinkService.showBackLink();
   }
 
   public deleteMandatoryTraining(): void {
     this.subscriptions.add(
       this.trainingService.deleteAllMandatoryTraining(this.establishment.id).subscribe(() => {
-        this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
-        this.alertService.addAlert({
-          type: 'success',
-          message: 'All mandatory training categories removed',
+        this.navigateToPreviousPage().then(() => {
+          this.alertService.addAlert({
+            type: 'success',
+            message: 'All mandatory training categories removed',
+          });
         });
       }),
     );
   }
 
-  public navigateToPreviousPage(): void {
-    this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
+  public navigateToPreviousPage(): Promise<boolean> {
+    return this.router.navigate(['/workplace', this.establishment.uid, 'add-and-manage-mandatory-training']);
+  }
+
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 }

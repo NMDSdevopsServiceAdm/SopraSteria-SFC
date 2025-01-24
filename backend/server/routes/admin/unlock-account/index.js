@@ -25,11 +25,7 @@ const unlockAccount = async (req, res) => {
       // Make sure we have the matching user
       if (login && login.id && username === login.username) {
         try {
-          const updateduser = await login.update({
-            isActive: true,
-            invalidAttempt: 9,
-            status: null,
-          });
+          const updateduser = await login.unlockAccount();
           if (updateduser) {
             res.status(200);
             return res.json({ status: '0', message: 'User has been set as active' });

@@ -9,7 +9,7 @@ import {
 } from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
-import { NewWorkerMandatoryInfo, WorkerService } from '@core/services/worker.service';
+import { NewWorkerMandatoryInfo, Reason, WorkerService } from '@core/services/worker.service';
 import { build, fake, oneOf, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
 
@@ -371,6 +371,18 @@ export const mockAvailableQualifications: AvailableQualificationsResponse[] = [
   },
 ];
 
+export const mockLeaveReasons: Reason[] = [
+  { id: 1, reason: 'The worker moved to another adult social care employer' },
+  { id: 2, reason: 'The worker moved to a role in the health sector' },
+  { id: 3, reason: 'The worker moved to a different sector (for example, retail)' },
+  { id: 4, reason: 'The worker moved to a different role in this organisation' },
+  { id: 5, reason: 'The worker chose to leave (destination unknown)' },
+  { id: 6, reason: 'The worker retired' },
+  { id: 7, reason: 'The worker had their employment terminated' },
+  { id: 8, reason: 'For a reason not listed' },
+  { id: 9, reason: 'Reason not known' },
+];
+
 export const trainingRecord = {
   id: 10,
   uid: 'someTrainingUid',
@@ -486,6 +498,10 @@ export class MockWorkerService extends WorkerService {
     workerUid: string,
   ): Observable<AvailableQualificationsResponse[]> {
     return of(mockAvailableQualifications);
+  }
+
+  getLeaveReasons(): Observable<Reason[]> {
+    return of(mockLeaveReasons);
   }
 }
 

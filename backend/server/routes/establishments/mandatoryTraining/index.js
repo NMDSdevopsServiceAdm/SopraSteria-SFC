@@ -14,13 +14,53 @@ const { hasPermission } = require('../../../utils/security/hasPermission');
 
 const viewMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
+  const previousAllJobsLengths = [29, 31, 32];
+
   try {
-    const allMandatoryTrainingRecords = await MandatoryTraining.fetch(establishmentId);
+    let allMandatoryTrainingRecords = await MandatoryTraining.fetch(establishmentId);
+    let duplicateJobRolesUpdated = false;
+
+    if (allMandatoryTrainingRecords?.mandatoryTraining?.length) {
+      for (mandatoryTrainingCategory of allMandatoryTrainingRecords.mandatoryTraining) {
+        if (
+          hasDuplicateJobs(mandatoryTrainingCategory.jobs) &&
+          previousAllJobsLengths.includes(mandatoryTrainingCategory.jobs.length)
+        ) {
+          duplicateJobRolesUpdated = true;
+
+          const thisMandatoryTrainingRecord = new MandatoryTraining(establishmentId);
+          await thisMandatoryTrainingRecord.load({
+            trainingCategoryId: mandatoryTrainingCategory.trainingCategoryId,
+            allJobRoles: true,
+            jobs: [],
+          });
+          await thisMandatoryTrainingRecord.save(req.userUid);
+        }
+      }
+
+      if (duplicateJobRolesUpdated) {
+        allMandatoryTrainingRecords = await MandatoryTraining.fetch(establishmentId);
+      }
+    }
+
     return res.status(200).json(allMandatoryTrainingRecords);
   } catch (err) {
     console.error(err);
     return res.status(500).send();
   }
+};
+
+const hasDuplicateJobs = (jobRoles) => {
+  const seenJobIds = new Set();
+
+  for (const jobRole of jobRoles) {
+    if (seenJobIds.has(jobRole.id)) {
+      return true; // Duplicate found
+    }
+    seenJobIds.add(jobRole.id);
+  }
+
+  return false; // No duplicates found
 };
 
 /**
@@ -30,6 +70,7 @@ const viewAllMandatoryTraining = async (req, res) => {
   const establishmentId = req.establishmentId;
   try {
     const allMandatoryTrainingRecords = await MandatoryTraining.fetchAllMandatoryTrainings(establishmentId);
+
     return res.status(200).json(allMandatoryTrainingRecords);
   } catch (err) {
     console.error(err);
@@ -93,3 +134,4 @@ router.route('/:categoryId').delete(deleteMandatoryTrainingById);
 module.exports = router;
 module.exports.createAndUpdateMandatoryTraining = createAndUpdateMandatoryTraining;
 module.exports.deleteMandatoryTrainingById = deleteMandatoryTrainingById;
+module.exports.viewMandatoryTraining = viewMandatoryTraining;
