@@ -23,18 +23,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { bool, build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { workplaceTabJourney } from '../../../core/breadcrumb/journey.workplaces';
 import { HttpClient } from '@angular/common/http';
-
-const workplaceBuilder = build('Workplace', {
-  fields: {
-    id: sequence(),
-    uid: fake((f) => f.datatype.uuid()),
-    name: fake((f) => f.lorem.sentence()),
-    dataOwner: 'Workplace',
-    dataPermissions: '',
-    dataOwnerPermissions: '',
-    isParent: bool(),
-  },
-});
+import { workplaceBuilder } from '../../../core/test-utils/MockUserService'
 
 describe('workplace-info-panel', () => {
 
