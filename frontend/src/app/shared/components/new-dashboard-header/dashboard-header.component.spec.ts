@@ -20,7 +20,6 @@ import { MockUserService } from '@core/test-utils/MockUserService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
-import { of } from 'rxjs';
 
 import { NewDashboardHeaderComponent } from './dashboard-header.component';
 
@@ -35,20 +34,21 @@ const MockWindow = {
 describe('NewDashboardHeaderComponent', () => {
   const establishment = establishmentBuilder() as Establishment;
   const setup = async (
-    tab = 'home',
-    updateDate = false,
-    canAddWorker = true,
-    canEditWorker = false,
-    hasWorkers = true,
-    isAdmin = true,
-    subsidiaries = 0,
-    viewingSubAsParent = false,
-    canDeleteEstablishment = true,
-    workplace = establishment,
+    override: any = {
+      tab: 'home',
+      updateDate: false,
+      canAddWorker: true,
+      canEditWorker: false,
+      hasWorkers: true,
+      isAdmin: true,
+      subsidiaries: 0,
+      viewingSubAsParent: false,
+      canDeleteEstablishment: true,
+    },
   ) => {
-    const role = isAdmin ? Roles.Admin : Roles.Edit;
-    const updatedDate = updateDate ? '01/02/2023' : null;
-    const { fixture, getByTestId, queryByTestId, getByText, queryByText } = await render(NewDashboardHeaderComponent, {
+    const role = override.isAdmin ? Roles.Admin : Roles.Edit;
+    const updatedDate = override.updateDate ? '01/02/2023' : null;
+    const setupTools = await render(NewDashboardHeaderComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
@@ -61,38 +61,41 @@ describe('NewDashboardHeaderComponent', () => {
         },
         {
           provide: PermissionsService,
-          useFactory: MockPermissionsService.factory(canDeleteEstablishment ? ['canDeleteEstablishment'] : [], isAdmin),
+          useFactory: MockPermissionsService.factory(
+            override.canDeleteEstablishment ? ['canDeleteEstablishment'] : [],
+            override.isAdmin,
+          ),
           deps: [HttpClient, Router, UserService],
         },
         {
           provide: UserService,
-          useFactory: MockUserService.factory(subsidiaries, role),
+          useFactory: MockUserService.factory(override.subsidiaries, role),
           deps: [HttpClient],
         },
         {
           provide: AuthService,
-          useFactory: MockAuthService.factory(true, isAdmin),
+          useFactory: MockAuthService.factory(true, override.isAdmin),
           deps: [HttpClient, Router, EstablishmentService, UserService, PermissionsService],
         },
         { provide: WindowToken, useValue: MockWindow },
         {
           provide: ParentSubsidiaryViewService,
-          useFactory: MockParentSubsidiaryViewService.factory(viewingSubAsParent),
+          useFactory: MockParentSubsidiaryViewService.factory(override.viewingSubAsParent),
         },
       ],
       componentProperties: {
-        tab,
-        canAddWorker,
+        tab: override.tab,
+        canAddWorker: override.canAddWorker,
         updatedDate,
         tAndQCount: 5,
-        canEditWorker,
-        hasWorkers,
+        canEditWorker: override.canEditWorker,
+        hasWorkers: override.hasWorkers,
         isParent: false,
-        workplace,
+        workplace: establishment,
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
 
@@ -101,13 +104,9 @@ describe('NewDashboardHeaderComponent', () => {
 
     return {
       component,
-      getByTestId,
-      queryByTestId,
-      getByText,
-      queryByText,
+      ...setupTools,
       establishmentService,
       router,
-      fixture,
       routerSpy,
     };
   };
@@ -131,8 +130,6 @@ describe('NewDashboardHeaderComponent', () => {
 
     it('should not show parent above workplace name if it is not a parent', async () => {
       const { component, queryByTestId } = await setup();
-
-      component.isParent = false;
 
       expect(queryByTestId('parentLabel')).toBeFalsy();
     });
@@ -188,15 +185,26 @@ describe('NewDashboardHeaderComponent', () => {
       expect(selectedWorkplaceLabel).toBeTruthy();
       expect(parentName).toBeFalsy();
     });
+
+    it('should not show the workplace address', async () => {
+      const override = { tab: 'home' };
+      const { queryByTestId } = await setup(override);
+
+      expect(queryByTestId('workplace-address')).toBeFalsy();
+    });
   });
 
   describe('Workplace tab', () => {
     it('should display the workplace name, the tab name, the nmdsId number and the last updated date', async () => {
-      const { component, getByText, getByTestId } = await setup('workplace', true);
+      const override = {
+        tab: 'workplace',
+        updateDate: true,
+      };
+      const { component, getByText, getByTestId } = await setup(override);
 
       const workplace = component.workplace;
 
-      expect(getByText(workplace.name)).toBeTruthy();
+      expect(within(getByTestId('workplaceName')).getByText(workplace.name)).toBeTruthy();
       expect(getByText('Workplace')).toBeTruthy();
       expect(getByText(`Workplace ID: ${workplace.nmdsId}`)).toBeTruthy();
       expect(getByTestId('separator')).toBeTruthy();
@@ -204,13 +212,15 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not display the contact info', async () => {
-      const { queryByTestId } = await setup('workplace');
+      const override = { tab: 'workplace' };
+      const { queryByTestId } = await setup(override);
 
       expect(queryByTestId('contact-info')).toBeFalsy();
     });
 
     it('should render conditional column width classes', async () => {
-      const { getByTestId } = await setup('workplace');
+      const override = { tab: 'workplace' };
+      const { getByTestId } = await setup(override);
 
       const column1 = getByTestId('column-one');
       const column2 = getByTestId('column-two');
@@ -218,11 +228,49 @@ describe('NewDashboardHeaderComponent', () => {
       expect(column1.getAttribute('class')).toContain('govuk-grid-column-two-thirds');
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
     });
+
+    it('should show the workplace address', async () => {
+      const override = { tab: 'workplace' };
+      const { getByTestId } = await setup(override);
+
+      expect(getByTestId('workplace-address')).toBeTruthy();
+    });
+
+    describe('what you can do as a parent link', async () => {
+      it('should show if it is parent', async () => {
+        const override = { tab: 'workplace' };
+        const { component, fixture, getByTestId, getByText } = await setup(override);
+
+        component.isParent = true;
+        fixture.detectChanges();
+
+        const doAsParentLink = getByTestId('do-as-parent');
+        const doAsParentText = 'What you can do as a parent';
+
+        expect(doAsParentLink).toBeTruthy();
+        expect(within(doAsParentLink).getByText(doAsParentText)).toBeTruthy();
+        expect(getByText(doAsParentText).getAttribute('href')).toEqual('/workplace/about-parents');
+      });
+
+      it('should not show if it is not parent', async () => {
+        const override = { tab: 'workplace' };
+        const { component, fixture, queryByTestId } = await setup(override);
+
+        component.isParent = false;
+        fixture.detectChanges();
+
+        expect(queryByTestId('do-as-parent')).toBeFalsy();
+      });
+    });
   });
 
   describe('staff records tab', () => {
     it('should display the workplace name, the tab name, the nmdsId number and the last updated date', async () => {
-      const { component, getByText, getByTestId } = await setup('staff-records', true);
+      const override = {
+        tab: 'staff-records',
+        updateDate: true,
+      };
+      const { component, getByText, getByTestId } = await setup(override);
 
       const workplace = component.workplace;
 
@@ -234,20 +282,31 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not display date if an updated date is not given', async () => {
-      const { queryByTestId } = await setup('staff-records', false);
+      const override = {
+        tab: 'staff-records',
+        updateDate: false,
+      };
+      const { queryByTestId } = await setup(override);
 
       expect(queryByTestId('separator')).toBeFalsy();
       expect(queryByTestId('lastUpdatedDate')).toBeFalsy();
     });
 
     it('should not display the contact info', async () => {
-      const { queryByTestId } = await setup('staff-records');
+      const override = {
+        tab: 'staff-records',
+      };
+      const { queryByTestId } = await setup(override);
 
       expect(queryByTestId('contact-info')).toBeFalsy();
     });
 
     it('should display the add a staff record button if canAddWorker is true with correct href', async () => {
-      const { component, getByText } = await setup('staff-records');
+      const override = {
+        tab: 'staff-records',
+        canAddWorker: true,
+      };
+      const { component, getByText } = await setup(override);
 
       const workplaceUid = component.workplace.uid;
       const button = getByText('Add a staff record');
@@ -257,13 +316,21 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not display the add a staff record button if canAddWorker is not true', async () => {
-      const { queryByText } = await setup('staff-records', true, false);
+      const override = {
+        tab: 'staff-records',
+        updateDate: true,
+        canAddWorker: false,
+      };
+      const { queryByText } = await setup(override);
 
       expect(queryByText('Add a staff record')).toBeFalsy();
     });
 
     it('should render conditional column width classes', async () => {
-      const { getByTestId } = await setup('staff-records');
+      const override = {
+        tab: 'staff-records',
+      };
+      const { getByTestId } = await setup(override);
 
       const column1 = getByTestId('column-one');
       const column2 = getByTestId('column-two');
@@ -271,11 +338,25 @@ describe('NewDashboardHeaderComponent', () => {
       expect(column1.getAttribute('class')).toContain('govuk-grid-column-two-thirds');
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
     });
+
+    it('should not show the workplace address', async () => {
+      const override = {
+        tab: 'staff-records',
+      };
+      const { queryByTestId } = await setup(override);
+
+      expect(queryByTestId('workplace-address')).toBeFalsy();
+    });
   });
 
   describe('training and qualifications tab', () => {
     it('should display the workplace name, the tab name the number of t and qs, the nmdsId number and the last updated date', async () => {
-      const { component, getByText, getByTestId } = await setup('training-and-qualifications', true);
+      const override = {
+        tab: 'training-and-qualifications',
+        updateDate: true,
+      };
+
+      const { component, getByText, getByTestId } = await setup(override);
 
       const workplace = component.workplace;
 
@@ -287,20 +368,34 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not display date if an updated date is not given', async () => {
-      const { queryByTestId } = await setup('training-and-qualifications', false);
+      const override = {
+        tab: 'training-and-qualifications',
+        updateDate: false,
+      };
+      const { queryByTestId } = await setup(override);
 
       expect(queryByTestId('separator')).toBeFalsy();
       expect(queryByTestId('lastUpdatedDate')).toBeFalsy();
     });
 
     it('should not display the contact info', async () => {
-      const { queryByTestId } = await setup('training-and-qualifications');
+      const override = {
+        tab: 'training-and-qualifications',
+      };
+      const { queryByTestId } = await setup(override);
 
       expect(queryByTestId('contact-info')).toBeFalsy();
     });
 
     it('should display the add multiple staff records button if canEditWorker is true with correct href', async () => {
-      const { component, getByText } = await setup('training-and-qualifications', false, false, true);
+      const override = {
+        tab: 'training-and-qualifications',
+        updateDate: false,
+        canAddWorker: false,
+        canEditWorker: true,
+        hasWorkers: true,
+      };
+      const { component, getByText } = await setup(override);
 
       const workplaceUid = component.workplace.uid;
       const button = getByText('Add multiple training records');
@@ -310,19 +405,32 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should not display the add multiple staff records button if canEditWorker is not true', async () => {
-      const { queryByText } = await setup('training-and-qualifications');
+      const override = {
+        tab: 'training-and-qualifications',
+      };
+      const { queryByText } = await setup(override);
 
       expect(queryByText('Add multiple training records')).toBeFalsy();
     });
 
     it('should not display the add multiple staff records button if there are no workers', async () => {
-      const { queryByText } = await setup('training-and-qualifications', false, false, true, false);
+      const override = {
+        tab: 'training-and-qualifications',
+        updateDate: false,
+        canAddWorker: false,
+        canEditWorker: true,
+        hasWorkers: false,
+      };
+      const { queryByText } = await setup(override);
 
       expect(queryByText('Add multiple training records')).toBeFalsy();
     });
 
     it('should render conditional column width classes', async () => {
-      const { getByTestId } = await setup('staff-records');
+      const override = {
+        tab: 'training-and-qualifications',
+      };
+      const { getByTestId } = await setup(override);
 
       const column1 = getByTestId('column-one');
       const column2 = getByTestId('column-two');
@@ -330,40 +438,64 @@ describe('NewDashboardHeaderComponent', () => {
       expect(column1.getAttribute('class')).toContain('govuk-grid-column-two-thirds');
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
     });
+
+    it('should not show the workplace address', async () => {
+      const override = {
+        tab: 'training-and-qualifications',
+      };
+      const { queryByTestId } = await setup(override);
+
+      expect(queryByTestId('workplace-address')).toBeFalsy();
+    });
   });
 
   describe('Benchmarks tab', () => {
     it('should display the workplace name, the tab name and the nmdsId number', async () => {
-      const { component, getByText } = await setup('benchmarks');
-
+      const override = {
+        tab: 'benchmarks',
+      };
+      const { component, getByText } = await setup(override);
       const workplace = component.workplace;
-
       expect(getByText(workplace.name)).toBeTruthy();
       expect(getByText('Benchmarks')).toBeTruthy();
       expect(getByText(`Workplace ID: ${workplace.nmdsId}`)).toBeTruthy();
     });
 
     it('should not display date if an updated date is not given', async () => {
-      const { queryByTestId } = await setup('benchmarks', false);
-
+      const override = {
+        tab: 'benchmarks',
+        updateDate: false,
+      };
+      const { queryByTestId } = await setup(override);
       expect(queryByTestId('separator')).toBeFalsy();
       expect(queryByTestId('lastUpdatedDate')).toBeFalsy();
     });
 
     it('should not display the contact info', async () => {
-      const { queryByTestId } = await setup('benchmarks');
-
+      const override = {
+        tab: 'benchmarks',
+      };
+      const { queryByTestId } = await setup(override);
       expect(queryByTestId('contact-info')).toBeFalsy();
     });
 
     it('should render conditional column width classes', async () => {
-      const { getByTestId } = await setup('benchmarks');
-
+      const override = {
+        tab: 'benchmarks',
+      };
+      const { getByTestId } = await setup(override);
       const column1 = getByTestId('column-one');
       const column2 = getByTestId('column-two');
-
       expect(column1.getAttribute('class')).toContain('govuk-grid-column-two-thirds');
       expect(column2.getAttribute('class')).toContain('govuk-grid-column-one-third');
+    });
+
+    it('should not show the workplace address', async () => {
+      const override = {
+        tab: 'benchmarks',
+      };
+      const { queryByTestId } = await setup(override);
+      expect(queryByTestId('workplace-address')).toBeFalsy();
     });
   });
 
@@ -375,25 +507,70 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should display a Delete workplace link if parent is viewing a subsidiary', async () => {
-      const { getByText } = await setup('home', false, true, false, false, false, 1, true);
+      const override = {
+        tab: 'home',
+        updateDate: false,
+        canAddWorker: true,
+        canEditWorker: false,
+        hasWorkers: false,
+        isAdmin: false,
+        subsidiaries: 1,
+        viewingSubAsParent: true,
+        canDeleteEstablishment: true,
+      };
+      const { getByText } = await setup(override);
 
       expect(getByText('Delete workplace')).toBeTruthy();
     });
 
     it('should not display a Delete workplace link if the workplace has subsidiaries', async () => {
-      const { queryByText } = await setup('home', false, true, false, true, false, 2);
+      const override = {
+        tab: 'home',
+        updateDate: false,
+        canAddWorker: true,
+        canEditWorker: false,
+        hasWorkers: true,
+        isAdmin: false,
+        subsidiaries: 2,
+        viewingSubAsParent: false,
+        canDeleteEstablishment: true,
+      };
+
+      const { queryByText } = await setup(override);
 
       expect(queryByText('Delete workplace')).toBeNull();
     });
 
     it('should not display a Delete workplace link if user not an admin and does not have canDeleteEstablishment permission', async () => {
-      const { queryByText } = await setup('home', false, true, false, true, false, 0, true, false);
+      const override = {
+        tab: 'home',
+        updateDate: false,
+        canAddWorker: true,
+        canEditWorker: false,
+        hasWorkers: true,
+        isAdmin: false,
+        subsidiaries: 0,
+        viewingSubAsParent: true,
+        canDeleteEstablishment: false,
+      };
+      const { queryByText } = await setup(override);
 
       expect(queryByText('Delete workplace')).toBeNull();
     });
 
     it('should navigate to the subsidiary delete-workplace page when parent is viewing a subsidiary', async () => {
-      const { getByText, routerSpy, component } = await setup('home', false, true, false, false, false, 1, true);
+      const override = {
+        tab: 'home',
+        updateDate: false,
+        canAddWorker: true,
+        canEditWorker: false,
+        hasWorkers: false,
+        isAdmin: false,
+        subsidiaries: 1,
+        viewingSubAsParent: true,
+        canDeleteEstablishment: true,
+      };
+      const { getByText, routerSpy, component } = await setup(override);
 
       const deletWorplaceLink = getByText('Delete workplace');
       deletWorplaceLink.click();
@@ -402,7 +579,18 @@ describe('NewDashboardHeaderComponent', () => {
     });
 
     it('should navigate to the standalone delete-workplace page when logged in as admin', async () => {
-      const { getByText, routerSpy } = await setup('home', false, true, false, false, true, 0, false);
+      const override = {
+        tab: 'home',
+        updateDate: false,
+        canAddWorker: true,
+        canEditWorker: false,
+        hasWorkers: false,
+        isAdmin: true,
+        subsidiaries: 0,
+        viewingSubAsParent: false,
+        canDeleteEstablishment: true,
+      };
+      const { getByText, routerSpy } = await setup(override);
 
       const deletWorplaceLink = getByText('Delete workplace');
       deletWorplaceLink.click();

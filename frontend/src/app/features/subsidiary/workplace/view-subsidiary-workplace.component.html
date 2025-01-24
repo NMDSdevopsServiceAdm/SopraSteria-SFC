@@ -1,4 +1,10 @@
-<app-new-dashboard-header [workplace]="workplace" tab="workplace" [updatedDate]="workplace.updated">
+<app-new-dashboard-header
+  [workplace]="workplace"
+  tab="workplace"
+  [updatedDate]="workplace.updated"
+  [return]="summaryReturnUrl"
+  data-testid="dashboard-header"
+>
 </app-new-dashboard-header>
 
 <div class="govuk-width-container govuk-!-padding-top-2" *ngIf="workplace">

@@ -3,10 +3,11 @@
   [formErrorsMap]="formErrorsMap"
   [serverError]="serverError"
   [form]="form"
+  [showServerErrorAsLink]="showServerErrorAsLink"
 >
 </app-error-summary>
 
-<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form" id="server-error">
+<form #formEl novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
   <fieldset class="govuk-fieldset">
     <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
       <h1 class="govuk-fieldset__heading" data-cy="signin-heading">Sign in</h1>
@@ -17,15 +18,27 @@
       [class.govuk-form-group--error]="(form.get('username').errors || serverError) && submitted"
     >
       <label class="govuk-label" for="username"> Username </label>
+      <div id="username-hint" class="govuk-hint asc-colour-black" data-testid="username-hint">
+        You cannot use an email address to sign in
+      </div>
+
       <span
         id="username-error"
         class="govuk-error-message"
         *ngIf="form.get('username').errors && submitted"
         data-cy="username-error"
       >
-        <span class="govuk-visually-hidden">Error:</span>
-        {{ getFormErrorMessage('username', 'required') }}
+        <ng-container *ngIf="form.get('username').hasError('required')">
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFormErrorMessage('username', 'required') }}
+        </ng-container>
+
+        <ng-container *ngIf="form.get('username').hasError('atSignInUsername')">
+          <span class="govuk-visually-hidden">Error:</span>
+          {{ getFormErrorMessage('username', 'atSignInUsername') }}
+        </ng-container>
       </span>
+      <span id="server-error" *ngIf="serverError"></span>
       <input
         data-cy="username"
         class="govuk-input govuk-input--width-20"
@@ -50,22 +63,39 @@
       >
         <span class="govuk-visually-hidden">Error:</span> {{ getFormErrorMessage('password', 'required') }}
       </span>
+
       <input
         data-cy="password"
         class="govuk-input govuk-input--width-20"
         [class.govuk-input--error]="(form.get('password').errors || serverError) && submitted"
         id="password"
         name="password"
-        type="password"
+        [type]="showPassword ? 'text' : 'password'"
         [formControlName]="'password'"
+        data-testid="password"
       />
+      <a
+        class="govuk-body-m govuk-link govuk-link--no-visited-state govuk-!-margin-left-3"
+        href="#"
+        data-testid="password-toggle"
+        (click)="setShowPassword($event)"
+        >{{ showPassword ? 'Hide' : 'Show' }} password</a
+      >
     </div>
   </fieldset>
 
-  <button type="submit" class="govuk-button" data-testid="signinButton">Sign in</button>
+  <button type="submit" class="govuk-button govuk-!-margin-top-3" data-testid="signinButton">Sign in</button>
 </form>
 
 <ul class="govuk-list">
-  <li><a [routerLink]="['/forgot-your-password']">Forgot your password?</a></li>
-  <li><a [routerLink]="['/registration', 'create-account']" data-cy="create-account">Create an account</a></li>
+  <li>
+    <a [routerLink]="['/forgot-your-username-or-password']" data-testid="forgot-username-password"
+      >Forgot your username or password?</a
+    >
+  </li>
+  <li>
+    <a [routerLink]="['/registration', 'create-account']" data-cy="create-account" data-testid="create-account"
+      >Create an account</a
+    >
+  </li>
 </ul>

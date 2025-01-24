@@ -25,6 +25,7 @@ export interface UserDetails {
   updatedBy?: string;
   username?: string;
   canManageWdfClaims?: boolean;
+  lastViewedVacanciesAndTurnoverMessage?: string;
 }
 
 export enum UserStatus {

@@ -447,10 +447,14 @@ describe('Worker Class', () => {
       mockWorker = new Worker();
       mockWorker._id = 12345;
       stubs = {
-        getWorkerCertificateServiceInstance: sinon.stub(WorkerCertificateService, 'initialiseTraining').returns(new WorkerCertificateService()),
+        getWorkerCertificateServiceInstance: sinon
+          .stub(WorkerCertificateService, 'initialiseTraining')
+          .returns(new WorkerCertificateService()),
         deleteAllCertificates: sinon.stub(WorkerCertificateService.prototype, 'deleteAllCertificates'),
-        getTrainingCertificates: sinon.stub(models.trainingCertificates, 'getAllCertificateRecordsForWorker').resolves(trainingCertificatesReturnedFromDb),
-      }
+        getTrainingCertificates: sinon
+          .stub(models.trainingCertificates, 'getAllCertificateRecordsForWorker')
+          .resolves(trainingCertificatesReturnedFromDb),
+      };
     });
 
     afterEach(() => {
@@ -458,15 +462,15 @@ describe('Worker Class', () => {
     });
 
     it('should call deleteAllCertificates on WorkerCertificateService', async () => {
-      const transaction = models.sequelize.transaction();
+      const transaction = {};
       await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker(transaction);
 
       expect(stubs.getWorkerCertificateServiceInstance).to.have.been.called;
       expect(stubs.deleteAllCertificates).to.be.calledWith(12345);
-    })
+    });
   });
 
-    describe('deleteAllQualificationsCertificatesAssociatedWithWorker()', async () => {
+  describe('deleteAllQualificationsCertificatesAssociatedWithWorker()', async () => {
     let mockWorker;
     let stubs;
     const qualificationCertificatesReturnedFromDb = () => {
@@ -481,10 +485,14 @@ describe('Worker Class', () => {
       mockWorker = new Worker();
       mockWorker._id = 12345;
       stubs = {
-        getWorkerCertificateServiceInstance: sinon.stub(WorkerCertificateService, 'initialiseQualifications').returns(new WorkerCertificateService()),
+        getWorkerCertificateServiceInstance: sinon
+          .stub(WorkerCertificateService, 'initialiseQualifications')
+          .returns(new WorkerCertificateService()),
         deleteAllCertificates: sinon.stub(WorkerCertificateService.prototype, 'deleteAllCertificates'),
-        getQualificationCertificates: sinon.stub(models.qualificationCertificates, 'getAllCertificateRecordsForWorker').resolves(qualificationCertificatesReturnedFromDb),
-      }
+        getQualificationCertificates: sinon
+          .stub(models.qualificationCertificates, 'getAllCertificateRecordsForWorker')
+          .resolves(qualificationCertificatesReturnedFromDb),
+      };
     });
 
     afterEach(() => {
@@ -492,12 +500,12 @@ describe('Worker Class', () => {
     });
 
     it('should call deleteAllCertificates on WorkerCertificateService', async () => {
-      const transaction = models.sequelize.transaction();
+      const transaction = {};
       await mockWorker.deleteAllQualificationCertificatesAssociatedWithWorker(transaction);
 
       expect(stubs.getWorkerCertificateServiceInstance).to.have.been.called;
       expect(stubs.deleteAllCertificates).to.be.calledWith(12345);
-    })
+    });
   });
 
   describe('saveAssociatedEntities', async () => {
@@ -512,7 +520,7 @@ describe('Worker Class', () => {
     it('should delete certificates, destroy all training records in database and save new records when training records in trainingEntities', async () => {
       const savedBy = 'mockUser';
       const bulkUploaded = false;
-      const transaction = await models.sequelize.transaction();
+      const transaction = {};
 
       const deleteCertificatesSpy = sinon.stub(mockWorker, 'deleteAllTrainingCertificatesAssociatedWithWorker');
       const trainingDestroySpy = sinon.stub(models.workerTraining, 'destroy').resolves(true);
@@ -536,7 +544,7 @@ describe('Worker Class', () => {
       const deleteCertificatesSpy = sinon.stub(mockWorker, 'deleteAllTrainingCertificatesAssociatedWithWorker');
       const trainingDestroySpy = sinon.stub(models.workerTraining, 'destroy').resolves(true);
 
-      const transaction = await models.sequelize.transaction();
+      const transaction = {};
 
       await mockWorker.saveAssociatedEntities('mockUser', false, transaction);
 

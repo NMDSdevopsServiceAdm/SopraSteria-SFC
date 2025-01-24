@@ -1,6 +1,7 @@
 // default route for user endpoint
 const express = require('express');
 const router = express.Router();
+const { validate } = require('uuid');
 
 const models = require('../../models');
 const Authorization = require('../../utils/security/isAuthenticated');
@@ -809,7 +810,7 @@ router.route('/swap/establishment/notification/:nmsdId').get(async (req, res) =>
       let notificationArr = [];
 
       const establishmentNotifications = await notifications.selectNotificationByEstablishment(req.establishmentUid);
-      if(establishmentNotifications) notificationArr.push(establishmentNotifications);
+      if (establishmentNotifications) notificationArr.push(establishmentNotifications);
       return res.status(200).send(notificationArr);
     }
   } catch (e) {
@@ -911,6 +912,22 @@ const swapEstablishment = async (req, res) => {
     .json(response);
 };
 
+const updateLastViewedVacanciesAndTurnoverMessage = async (req, res) => {
+  try {
+    const userUid = req.params?.userUid;
+
+    if (!validate(userUid)) {
+      return res.status(400).send('User UID invalid');
+    }
+
+    await models.user.setDateForLastViewedVacanciesAndTurnoverMessage(userUid);
+
+    return res.status(200).send('Last viewed date updated');
+  } catch (error) {
+    return res.status(500).send('Failed to update last viewed date');
+  }
+};
+
 router.route('/').get(return200);
 router.route('/admin').get(Authorization.isAdmin, listAdminUsers);
 router.route('/admin/:userId').get(Authorization.isAdmin, getUser);
@@ -945,6 +962,9 @@ router.route('/my/establishments').get(Authorization.isAuthorised, listEstablish
 router.route('/admin/:userId').get(Authorization.isAuthorised, getUser);
 router.use('/my/notifications', Authorization.isAuthorised);
 router.route('/my/notifications').get(listNotifications);
+router
+  .route('/update-last-viewed-vacancies-and-turnover-message/:userUid')
+  .post(Authorization.isAuthorised, updateLastViewedVacanciesAndTurnoverMessage);
 
 router.use('/swap/establishment/:id', authLimiter);
 router.route('/swap/establishment/:id').post(Authorization.isAdmin, swapEstablishment);
@@ -955,3 +975,4 @@ module.exports.partAddUser = partAddUser;
 
 module.exports.listAdminUsers = listAdminUsers;
 module.exports.updateUser = updateUser;
+module.exports.updateLastViewedVacanciesAndTurnoverMessage = updateLastViewedVacanciesAndTurnoverMessage;

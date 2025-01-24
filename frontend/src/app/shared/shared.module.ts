@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
+import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -21,6 +22,8 @@ import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplac
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
 import { SanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
 
+import { AccordionGroupComponent } from './components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import { AccordionSectionComponent } from './components/accordions/generic-accordion/accordion-section/accordion-section.component';
 import { GroupedRadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { AddNoteComponent } from './components/add-note/add-note.component';
@@ -116,6 +119,7 @@ import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
 import { DontKnowPipe } from './pipes/dont-know.pipe';
 import { FirstErrorPipe } from './pipes/first-error.pipe';
 import { FormatAmpersandPipe } from './pipes/format-ampersand.pipe';
+import { FormatStartersLeaversVacanciesPipe } from './pipes/format-starters-leavers-vacancies.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NewDataViewPermissionsPipe } from './pipes/new-data-view-permissions.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
@@ -128,6 +132,7 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -206,6 +211,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfStaffMismatchMessageComponent,
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
+    PageNoLongerAvailableComponent,
     ArticleListComponent,
     PageComponent,
     FirstErrorPipe,
@@ -252,11 +258,15 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewTrainingLinkPanelComponent,
     CertificationsTableComponent,
     SelectUploadFileComponent,
+    AccordionGroupComponent,
+    AccordionSectionComponent,
+    FormatStartersLeaversVacanciesPipe,
     SelectUploadCertificateComponent,
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
+    WorkplaceNameAddress,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -330,6 +340,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     MoveWorkplaceDialogComponent,
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
+    PageNoLongerAvailableComponent,
     ArticleListComponent,
     PageComponent,
     FirstErrorPipe,
@@ -377,11 +388,14 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NewTrainingLinkPanelComponent,
     CertificationsTableComponent,
     SelectUploadFileComponent,
+    AccordionGroupComponent,
+    AccordionSectionComponent,
     SelectUploadCertificateComponent,
     WdfWarningMessageComponent,
     WdfSummaryPanel,
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
+    WorkplaceNameAddress,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
