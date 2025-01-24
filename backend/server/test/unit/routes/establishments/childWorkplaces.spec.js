@@ -79,6 +79,7 @@ describe('server/routes/establishments/childWorkplaces', () => {
           uid: 'ca720581-5319-4ae8-b941-a5a4071ab828',
           updated: '2022-01-31T16:40:27.780Z',
           ustatus: null,
+          showFlag: true,
         },
       ]);
     });
