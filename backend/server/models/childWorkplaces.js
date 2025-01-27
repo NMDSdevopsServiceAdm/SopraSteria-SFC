@@ -34,5 +34,17 @@ module.exports = function(sequelize, DataTypes) {
     });
   };
 
+  ChildWorkplaces.findOneWithNeedsAttentionFlag = async function (establishmentId) {
+    return await ChildWorkplaces.findOne({
+          attributes: [
+            'showFlag'
+          ],
+          where: {
+            parentId: establishmentId,
+            showFlag: 'true'
+          }
+        });
+  }
+
   return ChildWorkplaces;
 };
