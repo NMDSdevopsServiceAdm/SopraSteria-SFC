@@ -155,6 +155,11 @@ const routes: Routes = [
         data: { title: 'Update your vacancies and turnover data' },
       },
       {
+        path: 'help',
+        loadChildren: () => import('@features/help/help.module').then((m) => m.HelpModule),
+        data: { title: 'Update your vacancies and turnover data' },
+      },
+      {
         path: 'workplace',
         loadChildren: () => import('@features/workplace/workplace.module').then((m) => m.WorkplaceModule),
         data: { title: 'Workplace' },

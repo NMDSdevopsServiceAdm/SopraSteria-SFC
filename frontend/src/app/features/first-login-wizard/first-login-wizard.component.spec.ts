@@ -112,15 +112,16 @@ describe('FirstLoginWizardComponent', () => {
       expect(component.isLast).toBeFalse();
     });
 
-    it('should update variables when clicking the next button twice to load final wizard', async () => {
+    it('should update variables when clicking the next button thrice to load final wizard', async () => {
       const { component, fixture, getByText } = await setup();
 
       const nextButton = getByText('Next');
       fireEvent.click(nextButton);
       fireEvent.click(nextButton);
+      fireEvent.click(nextButton);
       fixture.detectChanges();
 
-      expect(component.currentIndex).toBe(2);
+      expect(component.currentIndex).toBe(3);
       expect(component.isFirst).toBeFalse();
       expect(component.isLast).toBeTrue();
     });
@@ -139,7 +140,7 @@ describe('FirstLoginWizardComponent', () => {
     it('should not render the next button when on the last wizard', async () => {
       const { component, fixture, getByText, queryByText } = await setup();
 
-      component.currentIndex = 2;
+      component.currentIndex = wizard.data.length - 1;
       component.updateVariables();
       fixture.detectChanges();
 
