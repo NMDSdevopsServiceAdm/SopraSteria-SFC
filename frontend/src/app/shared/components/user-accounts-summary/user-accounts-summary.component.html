@@ -1,13 +1,13 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
     <legend *ngIf="isParentUsers" class="fobuk-fieldset__legend govuk-fieldset__legend--l">
-      <span class="govuk-caption-l" data-testid="workplace-name"
-        >{{ workplace.name }} (Workplace ID: {{ workplace.nmdsId }})</span
-      >
+      <span class="govuk-caption-l">{{ workplace.name }}</span>
+      <span class="govuk-caption-l">(Workplace ID: {{ workplace.nmdsId | removeTrailingWhitespace }})</span>
+
       <h1 class="govuk-fieldset__heading">Users ({{ users.length }})</h1>
     </legend>
-  <h2 *ngIf="!isParentUsers" class="govuk-heading-m">Users ({{ users.length }})</h2>
-    <div *ngIf="showSecondUserBanner" [ngClass]="{ 'govuk-grid-column-full govuk-!-padding-left-0': isParentUsers }" >
+    <h2 *ngIf="!isParentUsers" class="govuk-heading-m">Users ({{ users.length }})</h2>
+    <div *ngIf="showSecondUserBanner" [ngClass]="{ 'govuk-grid-column-full govuk-!-padding-left-0': isParentUsers }">
       <app-inset-text [color]="'todo'">
         <h3 class="govuk-heading-s">You should add a second user</h3>
         <p>
