@@ -35,7 +35,6 @@ export class WorkplaceInfoPanelComponent implements OnInit, OnDestroy {
   public ownershipChangeRequestCreatedByLoggegInUser: boolean;
   public ownershipChangeRequester: any;
   public newHomeDesignParentFlag: boolean;
-  public moveWorkplace: boolean = false;
 
   constructor(
     private dialogService: DialogService,

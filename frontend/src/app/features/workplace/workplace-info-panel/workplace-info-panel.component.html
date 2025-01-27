@@ -33,10 +33,12 @@
             </ng-template>
           </span>
         </ng-container>
-        <ng-template *ngIf="isAdminUser() && isLoggedIn()" #moveWorkplace>
-          <span class="govuk-util__float-right">
-            <a (click)="moveWorkplaceAdmin($event)" href="#">Move workplace</a>
-          </span>
+        <ng-template #moveWorkplace>
+          <ng-container *ngIf="isAdminUser() && isLoggedIn()">
+            <span class="govuk-util__float-right">
+              <a (click)="moveWorkplaceAdmin($event)" href="#">Move workplace</a>
+            </span>
+          </ng-container>
         </ng-template>
       </div>
     </div>
