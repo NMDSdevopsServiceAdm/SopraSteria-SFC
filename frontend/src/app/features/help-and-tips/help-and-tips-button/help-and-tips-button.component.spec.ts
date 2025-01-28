@@ -1,20 +1,26 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { HelpAndTipsButtonComponent } from './help-and-tips-button.component';
-import { render } from '@testing-library/angular';
+import { render, fireEvent } from '@testing-library/angular';
 import { Component } from '@angular/core';
-import exp from 'constants';
+import { getTestBed } from '@angular/core/testing';
+import { Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 
 fdescribe('HelpAndTipsButtonComponent', () => {
   async function setup() {
     const setupTools = await render(HelpAndTipsButtonComponent, {
-      imports: [],
+      imports: [RouterModule, RouterTestingModule],
       providers: []
     });
 
+
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
       ...setupTools,
-      component: setupTools.fixture.componentInstance
+      component: setupTools.fixture.componentInstance,
+      routerSpy
     }
   }
 
@@ -24,10 +30,19 @@ fdescribe('HelpAndTipsButtonComponent', () => {
   });
 
   it('should render a button with the text "Get help and tips"', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
     const buttonText = 'Get help and tips';
     expect(getByText(buttonText)).toBeTruthy();
     expect(getByText(buttonText).nodeName).toBe('BUTTON');
-  })
+  });
+
+  it('should navigate to help section when clicked', async () => {
+    const { getByText, routerSpy } = await setup();
+
+    const button = getByText('Get help and tips');
+    fireEvent.click(button);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/help']);
+  });
 
 });
