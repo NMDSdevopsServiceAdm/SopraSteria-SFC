@@ -4,8 +4,8 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
-import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
+import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
@@ -110,6 +110,7 @@ import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatc
 import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
 import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
+import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
@@ -127,12 +128,12 @@ import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe'
 import { NursingSpecialismsTextPipe } from './pipes/nursing-specialisms-text.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
+import { RemoveTrailingWhitespacePipe } from './pipes/remove-trailing-whitespace.pipe';
 import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -267,6 +268,7 @@ import { WorkplaceNameAddress } from './components/workplace-name-address/workpl
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
     WorkplaceNameAddress,
+    RemoveTrailingWhitespacePipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -396,6 +398,7 @@ import { WorkplaceNameAddress } from './components/workplace-name-address/workpl
     FundingRequirementsStateComponent,
     SelectViewPanelComponent,
     WorkplaceNameAddress,
+    RemoveTrailingWhitespacePipe,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

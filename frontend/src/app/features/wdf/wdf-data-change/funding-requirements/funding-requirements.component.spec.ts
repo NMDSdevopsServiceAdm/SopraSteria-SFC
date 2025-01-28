@@ -10,6 +10,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockPagesService } from '@core/test-utils/MockPagesService';
 import { createMockWdfReport } from '@core/test-utils/MockReportService';
+import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { FundingRequirementsComponent } from './funding-requirements.component';
@@ -20,7 +21,7 @@ describe('FundingRequirementsComponent', () => {
 
   async function setup() {
     const { fixture, getByText, queryByText, getByTestId } = await render(FundingRequirementsComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
+      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule, SharedModule],
       providers: [
         { provide: PagesService, useClass: MockPagesService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -78,9 +79,10 @@ describe('FundingRequirementsComponent', () => {
 
     const workplaceName = component.workplace.name;
     const nmdsId = component.workplace.nmdsId;
-    const expectedTitleCaption = `${workplaceName} (Workplace ID: ${nmdsId})`;
+    const workplaceIdCaption = `(Workplace ID: ${nmdsId})`;
 
-    expect(getByText(expectedTitleCaption)).toBeTruthy();
+    expect(getByText(workplaceName)).toBeTruthy();
+    expect(getByText(workplaceIdCaption)).toBeTruthy();
   });
 
   it('should show the funding requirements inset text when requirements are not met', async () => {
