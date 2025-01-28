@@ -18,6 +18,10 @@ const missingCqcProviderLocations = async (req, res) => {
 
   try {
     const childWorkplaces = await models.establishment.getChildWorkplaces(establishmentUid);
+    const childWorkplaceFlags = await models.childWorkplaces.findOneWithNeedsAttentionFlag(establishmentId);
+
+    result.showFlag = childWorkplaceFlags.showFlag || false;
+
     result.childWorkplacesCount = childWorkplaces.count;
 
     if (establishmentId) {
@@ -48,6 +52,7 @@ const missingCqcProviderLocations = async (req, res) => {
       result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
     }
   } catch (error) {
+    console.log(error);
     result.showMissingCqcMessage = false;
     result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
   }

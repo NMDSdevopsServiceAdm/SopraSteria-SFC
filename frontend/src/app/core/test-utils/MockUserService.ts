@@ -40,7 +40,7 @@ nonPrimaryEditUser.isPrimary = false;
 
 export { primaryEditUser, nonPrimaryEditUser, readUser };
 
-const workplaceBuilder = build('Workplace', {
+export const workplaceBuilder = build('Workplace', {
   fields: {
     id: sequence(),
     uid: fake((f) => f.datatype.uuid()),
