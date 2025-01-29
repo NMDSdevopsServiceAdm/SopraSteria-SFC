@@ -5,7 +5,7 @@ import { getTestBed } from '@angular/core/testing';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 
-fdescribe('HelpAndTipsButtonComponent', () => {
+describe('HelpAndTipsButtonComponent', () => {
   async function setup() {
     const setupTools = await render(HelpAndTipsButtonComponent, {
       imports: [RouterModule, RouterTestingModule],
@@ -42,7 +42,7 @@ fdescribe('HelpAndTipsButtonComponent', () => {
     const button = getByText('Get help and tips');
     fireEvent.click(button);
 
-    expect(routerSpy).toHaveBeenCalledWith(['/help']);
+    expect(routerSpy).toHaveBeenCalledWith(['/help', 'get-started']);
   });
 
 });

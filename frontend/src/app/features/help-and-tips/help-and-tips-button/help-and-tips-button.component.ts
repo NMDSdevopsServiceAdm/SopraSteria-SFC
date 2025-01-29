@@ -11,7 +11,7 @@ export class HelpAndTipsButtonComponent {
   constructor(private router: Router) { }
 
   public onClick = () => {
-    this.router.navigate(['/help']);
+    this.router.navigate(['/help', 'get-started']);
   }
 
 }
