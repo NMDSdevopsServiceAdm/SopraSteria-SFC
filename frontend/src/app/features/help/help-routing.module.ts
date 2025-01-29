@@ -3,15 +3,22 @@ import { RouterModule, Routes } from '@angular/router';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 
 import { GetStartedComponent } from './get-started/get-started.component';
+import { HelpAreaComponent } from './help-area/help-area.component';
 
 const routes: Routes = [
   {
-    path: 'get-started',
-    component: GetStartedComponent,
-    resolve: {
-      wizard: WizardResolver,
-    },
-    data: { title: 'Get started' },
+    path: '',
+    component: HelpAreaComponent,
+    children: [
+      {
+        path: 'get-started',
+        component: GetStartedComponent,
+        resolve: {
+          wizard: WizardResolver,
+        },
+        data: { title: 'Get started' },
+      },
+    ],
   },
 ];
 
