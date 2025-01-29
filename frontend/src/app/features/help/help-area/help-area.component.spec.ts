@@ -1,18 +1,28 @@
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { HelpAreaComponent } from './help-area.component';
 
 describe('HelpAreaComponent', () => {
   async function setup() {
+    const workplace = establishmentBuilder();
+
     const setupTools = await render(HelpAreaComponent, {
       imports: [RouterTestingModule],
       providers: [
         {
           provide: ActivatedRoute,
           useValue: {},
+        },
+        {
+          provide: EstablishmentService,
+          useValue: {
+            establishment: workplace,
+          },
         },
       ],
     });
@@ -27,6 +37,7 @@ describe('HelpAreaComponent', () => {
       component: setupTools.fixture.componentInstance,
       router,
       routerSpy,
+      workplace,
     };
   }
 
@@ -35,7 +46,16 @@ describe('HelpAreaComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render all tabs', async () => {
+  it('should display the workplace name and heading', async () => {
+    const { workplace, getByText } = await setup();
+
+    const workplaceName = workplace.name as string;
+
+    expect(getByText(workplaceName)).toBeTruthy();
+    expect(getByText('Get help and tips')).toBeTruthy();
+  });
+
+  it('should render all tab links', async () => {
     const { getByText } = await setup();
 
     expect(getByText('Get started')).toBeTruthy();
