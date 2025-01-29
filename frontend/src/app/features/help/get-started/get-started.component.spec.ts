@@ -1,10 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { WizardService } from '@core/services/wizard.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockWizardService } from '@core/test-utils/MockWizardService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -28,10 +26,6 @@ describe('GetStartedComponent', () => {
               },
             },
           }),
-        },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
         },
       ],
     });

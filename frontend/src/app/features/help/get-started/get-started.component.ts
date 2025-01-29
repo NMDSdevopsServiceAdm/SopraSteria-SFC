@@ -1,8 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Wizard } from '@core/model/wizard.model';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -18,10 +16,9 @@ export class GetStartedComponent {
   public imageUrl: string;
   public rawVideoUrl: string;
 
-  constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService) {}
+  constructor(private route: ActivatedRoute) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.PUBLIC);
     this.wizards = this.route.snapshot.data.wizard.data;
 
     this.currentIndex = 1;

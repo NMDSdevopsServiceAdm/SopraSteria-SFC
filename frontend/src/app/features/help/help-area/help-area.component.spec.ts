@@ -1,7 +1,9 @@
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -23,6 +25,10 @@ describe('HelpAreaComponent', () => {
           useValue: {
             establishment: workplace,
           },
+        },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
         },
       ],
     });
