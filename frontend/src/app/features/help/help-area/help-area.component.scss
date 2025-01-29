@@ -1,3 +1,5 @@
+@import 'govuk-frontend/govuk/base';
+
 ul {
   list-style-type: none;
   padding: 0;
@@ -13,8 +15,6 @@ ul {
       color: inherit;
       display: block;
       padding: 0.5rem 1rem;
-      text-align: center;
-      background-color: transparent;
       width: 100%;
       box-sizing: border-box;
 
@@ -23,19 +23,10 @@ ul {
       }
 
       &.active {
-        background-color: #d6d6d6;
+        background-color: govuk-colour('light-grey');
         font-weight: bold;
         pointer-events: none;
         cursor: default;
-      }
-
-      &:focus,
-      &:active {
-        outline: none;
-        border: none;
-        background-color: #d6d6d6;
-        font-weight: bold;
-        color: #000;
       }
     }
   }
