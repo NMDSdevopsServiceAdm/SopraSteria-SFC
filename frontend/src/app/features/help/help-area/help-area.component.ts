@@ -12,12 +12,13 @@ import { EstablishmentService } from '@core/services/establishment.service';
 export class HelpAreaComponent implements OnInit {
   public workplaceName: string;
   public tabs = [
-    { route: 'get-started', linkText: 'Get started', active: true },
-    { route: 'questions-and-answers', linkText: 'Questions and answers', active: false },
-    { route: 'whats-new', linkText: "What's new", active: false },
-    { route: 'helpful-downloads', linkText: 'Helpful downloads', active: false },
-    { route: 'contact-us', linkText: 'Contact us', active: false },
+    { route: 'get-started', linkText: 'Get started' },
+    { route: 'questions-and-answers', linkText: 'Questions and answers' },
+    { route: 'whats-new', linkText: "What's new" },
+    { route: 'helpful-downloads', linkText: 'Helpful downloads' },
+    { route: 'contact-us', linkText: 'Contact us' },
   ];
+  public currentTabIndex: number = 0;
 
   constructor(
     private router: Router,
@@ -34,9 +35,7 @@ export class HelpAreaComponent implements OnInit {
   public onTabClick(event: Event, tabIndex: number): void {
     event.preventDefault();
 
-    this.tabs.forEach((tab) => (tab.active = false));
-    this.tabs[tabIndex].active = true;
-
+    this.currentTabIndex = tabIndex;
     this.router.navigate([this.tabs[tabIndex].route], { relativeTo: this.route });
   }
 }
