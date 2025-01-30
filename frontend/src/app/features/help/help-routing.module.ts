@@ -4,6 +4,7 @@ import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 
 import { GetStartedComponent } from './get-started/get-started.component';
 import { HelpAreaComponent } from './help-area/help-area.component';
+import { WhatsNewComponent } from './whats-new/whats-new.component';
 
 const routes: Routes = [
   {
@@ -17,6 +18,11 @@ const routes: Routes = [
           wizard: WizardResolver,
         },
         data: { title: 'Get started' },
+      },
+      {
+        path: 'whats-new',
+        component: WhatsNewComponent,
+        data: { title: "What's new" },
       },
     ],
   },
