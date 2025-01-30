@@ -102,7 +102,7 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
-import { HelpAndTipsButtonComponent } from './features/help-and-tips/help-and-tips-button/help-and-tips-button.component';
+import { HelpAndTipsButtonComponent } from './features/help-and-tips-button/help-and-tips-button.component';
 
 @NgModule({
   declarations: [
