@@ -209,15 +209,6 @@ describe('NewHomeTabComponent', () => {
       });
     });
 
-    describe('Help to get you started link', () => {
-      it('should render the link with the correct href', async () => {
-        const { getByText } = await setup();
-        const link = getByText('Help to get you started');
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual('/first-login-wizard');
-      });
-    });
-
     describe('Link to my parent organisation', () => {
       describe('without parent home tab feature flag', () => {
         it('should show Link to my parent organisation pending when trying to link to a parent', async () => {
@@ -763,13 +754,6 @@ describe('NewHomeTabComponent', () => {
           expect(removeLinkToParentlink.getAttribute('href')).toBe('/remove-link-to-parent');
         });
       });
-    });
-
-    it('should link to the first login wizard page when clicking "Help to get you started"', async () => {
-      const { getByText } = await setup();
-
-      const firstLoginWizardLink = getByText('Help to get you started');
-      expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
     });
   });
 
