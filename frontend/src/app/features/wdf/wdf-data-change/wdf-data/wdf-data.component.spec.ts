@@ -86,13 +86,17 @@ describe('WdfDataComponent', () => {
   describe('Header', () => {
     describe('Parent or standalone', () => {
       it('should display the workplace name and the nmds ID in brackets in caption above title', async () => {
+        const workplaceName = 'Mock Workplace Name';
         const workplace = establishmentBuilder();
-        workplace.name = 'Test Workplace';
+        workplace.name = workplaceName;
         workplace.nmdsId = 'AB123456';
 
         const { getByText } = await setup({ workplace });
 
-        expect(getByText(`${workplace.name} (Workplace ID: ${workplace.nmdsId})`)).toBeTruthy();
+        const workplaceIdCaption = `(Workplace ID: ${workplace.nmdsId})`;
+
+        expect(getByText(workplaceName, { selector: '.govuk-caption-xl' })).toBeTruthy();
+        expect(getByText(workplaceIdCaption)).toBeTruthy();
       });
 
       it('should display header text', async () => {
@@ -109,7 +113,8 @@ describe('WdfDataComponent', () => {
         const parentName = establishmentService.primaryWorkplace.name;
         const parentNmdsId = establishmentService.primaryWorkplace.nmdsId;
 
-        expect(getByText(`${parentName} (Workplace ID: ${parentNmdsId})`)).toBeTruthy();
+        expect(getByText(parentName)).toBeTruthy();
+        expect(getByText(`(Workplace ID: ${parentNmdsId})`)).toBeTruthy();
       });
 
       it('should display the sub workplace name and data in title', async () => {
