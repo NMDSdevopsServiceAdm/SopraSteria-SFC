@@ -28,6 +28,7 @@ export class AppComponent implements OnInit {
   public parentAccount: boolean;
   public subsAccount: boolean;
   public viewingSubsidiaryWorkplace: boolean;
+  public showHelpButton: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -81,6 +82,8 @@ export class AppComponent implements OnInit {
         (document.activeElement as HTMLElement).blur();
       }
       this.top.nativeElement.focus();
+
+      this.renderHelpButton(nav.url);
     });
 
     this.authService.isAutheticated$.subscribe((authenticated) => {
@@ -117,5 +120,14 @@ export class AppComponent implements OnInit {
   public skip(event: Event) {
     event.preventDefault();
     this.content.nativeElement.focus();
+  }
+
+  private renderHelpButton = (url) => {
+    const urlSegment = url.split('/');
+    if (!this.authService.isAuthenticated() || urlSegment[1] == 'help' ) {
+      this.showHelpButton = false;
+    } else {
+      this.showHelpButton = true;
+    }
   }
 }
