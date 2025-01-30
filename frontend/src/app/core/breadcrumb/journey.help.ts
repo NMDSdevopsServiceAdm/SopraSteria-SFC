@@ -7,7 +7,7 @@ enum Path {
 export const helpJourney: JourneyRoute = {
   children: [
     {
-      title: 'Get help and tips: Get started',
+      title: 'Get help and tips: get started',
       path: Path.GET_STARTED,
     },
   ],

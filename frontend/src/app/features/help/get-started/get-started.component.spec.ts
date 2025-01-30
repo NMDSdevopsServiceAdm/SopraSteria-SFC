@@ -67,8 +67,9 @@ describe('GetStartedComponent', () => {
     const { getByText, queryByTestId } = await setup();
 
     const imageElement = queryByTestId('image');
+    const expectedTitle = `A closer look at ASC-WDS: ${wizard.data[1].title.toLowerCase()}`;
 
-    expect(getByText(wizard.data[1].title)).toBeTruthy();
+    expect(getByText(expectedTitle)).toBeTruthy();
     expect(getByText(wizard.data[1].content)).toBeTruthy();
     expect(imageElement.getAttribute('src')).toContain(wizard.data[1].image);
   });
@@ -91,8 +92,9 @@ describe('GetStartedComponent', () => {
       fixture.detectChanges();
 
       const imageElement = queryByTestId('image');
+      const expectedTitle = `A closer look at ASC-WDS: ${wizard.data[2].title.toLowerCase()}`;
 
-      expect(getByText(wizard.data[2].title)).toBeTruthy();
+      expect(getByText(expectedTitle)).toBeTruthy();
       expect(getByText(wizard.data[2].content)).toBeTruthy();
       expect(imageElement.getAttribute('src')).toContain(wizard.data[2].image);
     });
@@ -139,14 +141,17 @@ describe('GetStartedComponent', () => {
       fireEvent.click(nextButton);
       fixture.detectChanges();
 
-      expect(getByText(wizard.data[2].title)).toBeTruthy();
+      const nextTitle = `A closer look at ASC-WDS: ${wizard.data[2].title.toLowerCase()}`;
+      const previousTitle = `A closer look at ASC-WDS: ${wizard.data[1].title.toLowerCase()}`;
+
+      expect(getByText(nextTitle)).toBeTruthy();
       expect(getByText(wizard.data[2].content)).toBeTruthy();
 
       const previousButton = getByText('Previous');
       fireEvent.click(previousButton);
       fixture.detectChanges();
 
-      expect(getByText(wizard.data[1].title)).toBeTruthy();
+      expect(getByText(previousTitle)).toBeTruthy();
       expect(getByText(wizard.data[1].content)).toBeTruthy();
     });
 
