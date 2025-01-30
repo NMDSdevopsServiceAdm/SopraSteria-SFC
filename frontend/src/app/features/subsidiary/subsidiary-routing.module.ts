@@ -21,7 +21,6 @@ import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
-import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { AcceptPreviousCareCertificateComponent } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
@@ -102,14 +101,6 @@ const routes: Routes = [
     path: 'asc-wds-certificate',
     component: AscWdsCertificateComponent,
     data: { title: 'Certificate' },
-  },
-  {
-    path: 'first-login-wizard',
-    component: FirstLoginPageComponent,
-    resolve: {
-      wizard: WizardResolver,
-    },
-    data: { title: 'First Login Wizard' },
   },
   {
     path: 'benefits-bundle',
