@@ -115,32 +115,63 @@ describe('workplace-info-panel', () => {
       expect(queryByText('Move workplace')).toBeFalsy();
     });
 
-    it('should have a clickable link when parent is not "linked only"', async () => {
-      const { component, queryByTestId, getByText, queryByText } = await setup({
-        workplace: {
-          showFlag: true,
-          dataPermissions: 'Workplace and Staff',
-          dataOwner: 'Parent'
-        }
+    describe('Check this workplace', async () => {
+      it('should have a clickable link when data owner is "Parent" and permissions are not "linked only"', async () => {
+        const { component, queryByTestId, getByText, queryByText } = await setup({
+          workplace: {
+            showFlag: true,
+            dataPermissions: 'Workplace and Staff',
+            dataOwner: 'Parent'
+          }
+        });
+
+        const checkWorkplaceLink = getByText('Check this workplace');
+
+        expect(checkWorkplaceLink.nodeName).toBe('A');
       });
 
-      const checkWorkplaceLink = getByText('Check this workplace');
+      it('should have a clickable link when data owner is "Parent" and permissions are "linked only"', async () => {
+        const { component, queryByTestId, getByText, queryByText } = await setup({
+          workplace: {
+            showFlag: true,
+            dataPermissions: 'None',
+            dataOwner: 'Parent'
+          }
+        });
 
-      expect(checkWorkplaceLink.nodeName).toBe('A');
-    });
+        const checkWorkplaceLink = getByText('Check this workplace');
 
-    it('should not have a clickable link when parent is "linked only"', async () => {
-      const { getByText } = await setup({
-        workplace: {
-          showFlag: true,
-          dataPermissions: 'None',
-          dataOwner: 'Parent'
-        }
+        expect(checkWorkplaceLink.nodeName).toBe('A');
       });
 
-      const checkWorkplaceLink = getByText('Check this workplace');
-      expect(checkWorkplaceLink.nodeName).not.toBe('A');
-    });
-  })
+      it('should not have a clickable link when data owner is "Workplace" and permissions are "linked only"', async () => {
+        const { component, queryByTestId, getByText, queryByText } = await setup({
+          workplace: {
+            showFlag: true,
+            dataPermissions: 'None',
+            dataOwner: 'Workplace'
+          }
+        });
 
-})
+        const checkWorkplaceLink = getByText('Check this workplace');
+
+        expect(checkWorkplaceLink.nodeName).not.toBe('A');
+      });
+
+      it('should have a clickable link when data owner is "Workplace" and permissions are not "linked only"', async () => {
+        const { component, queryByTestId, getByText, queryByText } = await setup({
+          workplace: {
+            showFlag: true,
+            dataPermissions: 'Workplace and Staff',
+            dataOwner: 'Workplace'
+          }
+        });
+
+        const checkWorkplaceLink = getByText('Check this workplace');
+
+        expect(checkWorkplaceLink.nodeName).toBe('A');
+      });
+    });
+  });
+
+});
