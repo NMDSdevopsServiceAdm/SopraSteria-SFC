@@ -25,10 +25,10 @@ export class GetStartedComponent {
     this.imageUrl = `${environment.cmsUri}/assets/`;
 
     this.rawVideoUrl = this.route.snapshot.data.wizard.data[0].video;
-    this.updateVariables();
+    this.updatePreviousAndNextLinks();
   }
 
-  public updateVariables(): void {
+  public updatePreviousAndNextLinks(): void {
     this.isFirst = this.currentIndex === 1;
     this.isLast = this.currentIndex === this.wizards.length - 1;
   }
@@ -37,6 +37,6 @@ export class GetStartedComponent {
     event.preventDefault();
     const nextIndex = isNext ? 1 : -1;
     this.currentIndex += nextIndex;
-    this.updateVariables();
+    this.updatePreviousAndNextLinks();
   }
 }

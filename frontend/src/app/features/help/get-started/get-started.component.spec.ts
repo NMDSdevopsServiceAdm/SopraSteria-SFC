@@ -123,7 +123,7 @@ describe('GetStartedComponent', () => {
       const { component, fixture, queryByText } = await setup();
 
       component.currentIndex = wizard.data.length - 1;
-      component.updateVariables();
+      component.updatePreviousAndNextLinks();
       fixture.detectChanges();
 
       expect(queryByText('Previous')).toBeTruthy();
