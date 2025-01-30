@@ -27,7 +27,7 @@
               class="govuk-!-margin-right-2"
               data-testid="red-flag"
             />
-            <a *ngIf="workplace.dataPermissions != 'None'; else linkedOnly" href="#" (click)="setEmployerType($event)" class="govuk-util__float-right">Check this workplace</a>
+            <a *ngIf="!(workplace.dataPermissions === 'None' && workplace.dataOwner == 'Workplace'); else linkedOnly" href="#" (click)="setEmployerType($event)" class="govuk-util__float-right">Check this workplace</a>
             <ng-template #linkedOnly>
               <p class="govuk-util__float-right">Check this workplace</p>
             </ng-template>
