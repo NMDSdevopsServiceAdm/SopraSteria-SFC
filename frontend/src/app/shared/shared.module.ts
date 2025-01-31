@@ -134,6 +134,7 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { HelpContentComponent } from './components/help-content/help-content.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -269,6 +270,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectViewPanelComponent,
     WorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
+    HelpContentComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -399,6 +401,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectViewPanelComponent,
     WorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
+    HelpContentComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })
