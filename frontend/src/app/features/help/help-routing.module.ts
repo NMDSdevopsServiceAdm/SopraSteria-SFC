@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
+import { QuestionsAndAnswersResolver } from '@core/resolvers/help/questions-and-answers/questions-and-answers.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 
 import { GetStartedComponent } from './get-started/get-started.component';
@@ -24,6 +25,9 @@ const routes: Routes = [
       {
         path: 'questions-and-answers',
         component: QuestionsAndAnswersComponent,
+        resolve: {
+          questionsAndAnswers: QuestionsAndAnswersResolver,
+        },
         data: { title: 'Questions and answers' },
       },
       {
