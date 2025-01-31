@@ -1,11 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 
 import { GetStartedComponent } from './get-started/get-started.component';
 import { HelpAreaComponent } from './help-area/help-area.component';
+import { QuestionsAndAnswersComponent } from './questions-and-answers/questions-and-answers.component';
 import { WhatsNewComponent } from './whats-new/whats-new.component';
-import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
 
 const routes: Routes = [
   {
@@ -19,6 +20,11 @@ const routes: Routes = [
           wizard: WizardResolver,
         },
         data: { title: 'Get started' },
+      },
+      {
+        path: 'questions-and-answers',
+        component: QuestionsAndAnswersComponent,
+        data: { title: 'Questions and answers' },
       },
       {
         path: 'whats-new',
