@@ -103,6 +103,7 @@ import { MigratedUserTermsConditionsComponent } from './features/migrated-user-t
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
 import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
+import { HelpAndTipsButtonComponent } from './features/help-and-tips-button/help-and-tips-button.component';
 
 @NgModule({
   declarations: [
@@ -153,6 +154,7 @@ import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
     SecurityQuestionAnswerNotMatchComponent,
     UserAccountNotFoundComponent,
     VacanciesAndTurnoverLoginMessage,
+    HelpAndTipsButtonComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({

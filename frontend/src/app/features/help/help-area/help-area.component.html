@@ -1,9 +1,24 @@
 <div class="govuk-grid-row">
+  <div class="govuk-grid-column-three-quarters govuk-!-margin-bottom-3">
+    <h1 class="govuk-heading-l">
+      <span class="govuk-caption-xl govuk-!-margin-bottom-0">{{ workplaceName }}</span>
+      Get help and tips
+    </h1>
+  </div>
+</div>
+<div class="govuk-grid-row">
   <div class="govuk-grid-column-one-quarter">
     <nav>
       <ul *ngFor="let tab of tabs; index as i">
         <li>
-          <a href="#" (click)="onTabClick($event, i)" [class.active]="tab.active">{{ tab.linkText }}</a>
+          <a
+            href="#"
+            (click)="onTabClick($event, i)"
+            [class.active]="i == currentTabIndex"
+            role="tab"
+            aria-selected="i == currentTabIndex"
+            >{{ tab.linkText }}</a
+          >
         </li>
       </ul>
     </nav>

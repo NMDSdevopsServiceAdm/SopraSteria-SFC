@@ -1,10 +1,8 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { WizardService } from '@core/services/wizard.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
-import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { MockWizardService } from '@core/test-utils/MockWizardService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -28,10 +26,6 @@ describe('GetStartedComponent', () => {
               },
             },
           }),
-        },
-        {
-          provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
         },
       ],
     });
@@ -73,8 +67,9 @@ describe('GetStartedComponent', () => {
     const { getByText, queryByTestId } = await setup();
 
     const imageElement = queryByTestId('image');
+    const expectedTitle = `A closer look at ASC-WDS: ${wizard.data[1].title.toLowerCase()}`;
 
-    expect(getByText(wizard.data[1].title)).toBeTruthy();
+    expect(getByText(expectedTitle)).toBeTruthy();
     expect(getByText(wizard.data[1].content)).toBeTruthy();
     expect(imageElement.getAttribute('src')).toContain(wizard.data[1].image);
   });
@@ -97,8 +92,9 @@ describe('GetStartedComponent', () => {
       fixture.detectChanges();
 
       const imageElement = queryByTestId('image');
+      const expectedTitle = `A closer look at ASC-WDS: ${wizard.data[2].title.toLowerCase()}`;
 
-      expect(getByText(wizard.data[2].title)).toBeTruthy();
+      expect(getByText(expectedTitle)).toBeTruthy();
       expect(getByText(wizard.data[2].content)).toBeTruthy();
       expect(imageElement.getAttribute('src')).toContain(wizard.data[2].image);
     });
@@ -129,7 +125,7 @@ describe('GetStartedComponent', () => {
       const { component, fixture, queryByText } = await setup();
 
       component.currentIndex = wizard.data.length - 1;
-      component.updateVariables();
+      component.updatePreviousAndNextLinks();
       fixture.detectChanges();
 
       expect(queryByText('Previous')).toBeTruthy();
@@ -145,14 +141,17 @@ describe('GetStartedComponent', () => {
       fireEvent.click(nextButton);
       fixture.detectChanges();
 
-      expect(getByText(wizard.data[2].title)).toBeTruthy();
+      const nextTitle = `A closer look at ASC-WDS: ${wizard.data[2].title.toLowerCase()}`;
+      const previousTitle = `A closer look at ASC-WDS: ${wizard.data[1].title.toLowerCase()}`;
+
+      expect(getByText(nextTitle)).toBeTruthy();
       expect(getByText(wizard.data[2].content)).toBeTruthy();
 
       const previousButton = getByText('Previous');
       fireEvent.click(previousButton);
       fixture.detectChanges();
 
-      expect(getByText(wizard.data[1].title)).toBeTruthy();
+      expect(getByText(previousTitle)).toBeTruthy();
       expect(getByText(wizard.data[1].content)).toBeTruthy();
     });
 

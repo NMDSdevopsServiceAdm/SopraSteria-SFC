@@ -1,7 +1,12 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { GetChildWorkplacesResponse, Workplace } from '@core/model/my-workplaces.model';
+import {
+  DataPermissions,
+  GetChildWorkplacesResponse,
+  Workplace,
+  WorkplaceDataOwner,
+} from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
@@ -73,7 +78,11 @@ export class NavigateToWorkplaceDropdownComponent implements OnInit {
       this.establishmentService
         .getChildWorkplaces(this.parentWorkplace.uid, { getPendingWorkplaces: false })
         .subscribe((data: GetChildWorkplacesResponse) => {
-          this.childWorkplaces = data.childWorkplaces;
+          this.childWorkplaces = data.childWorkplaces?.filter((workplace) => {
+            return !(
+              workplace.dataOwner === WorkplaceDataOwner.Workplace && workplace.dataPermissions === DataPermissions.None
+            );
+          });
         }),
     );
   }
