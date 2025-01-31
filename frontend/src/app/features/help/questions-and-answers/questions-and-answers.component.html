@@ -1,6 +1,9 @@
 <h1 class="govuk-heading-m govuk-!-margin-bottom-5">Questions and answers</h1>
 <div *ngFor="let section of sections">
   <h2 class="govuk-heading-s">{{ section.section_heading }}</h2>
+  <div *ngFor="let page of section.q_and_a_pages">
+    <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
+  </div>
   <div *ngFor="let subSection of section.sub_sections">
     <p class="govuk-!-font-weight-bold">{{ subSection.sub_section_heading }}</p>
   </div>
