@@ -900,6 +900,11 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'MandatoryTraining',
     });
+    Establishment.hasOne(models.childWorkplaces, {
+      as: 'childWorkplace',
+      foreignKey: 'id',
+      targetKey: 'id',
+    });
   };
 
   Establishment.turnoverAndVacanciesData = function (establishmentId) {
@@ -2130,6 +2135,7 @@ module.exports = function (sequelize, DataTypes) {
     pageIndex = 0,
     searchTerm = '',
     getPendingWorkplaces = false,
+    getAttentionFlags = false,
   ) {
     const offset = pageIndex * limit;
     let ustatus;
@@ -2147,6 +2153,22 @@ module.exports = function (sequelize, DataTypes) {
       };
     }
 
+    includedModels = [
+      {
+        model: sequelize.models.services,
+        as: 'mainService',
+        attributes: ['name'],
+      },
+    ];
+
+    if (getAttentionFlags) {
+      includedModels.push({
+        model: sequelize.models.childWorkplaces,
+        as: 'childWorkplace',
+        attributes: ['showFlag'],
+      });
+    }
+
     const data = await this.findAndCountAll({
       attributes: [
         'uid',
@@ -2159,13 +2181,7 @@ module.exports = function (sequelize, DataTypes) {
         'postcode',
         'locationId',
       ],
-      include: [
-        {
-          model: sequelize.models.services,
-          as: 'mainService',
-          attributes: ['name'],
-        },
-      ],
+      include: includedModels,
       where: {
         ParentUID: establishmentUid,
         ustatus,
