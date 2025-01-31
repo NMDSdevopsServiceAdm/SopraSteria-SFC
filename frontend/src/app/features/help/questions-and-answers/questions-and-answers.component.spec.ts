@@ -7,8 +7,15 @@ import { QuestionsAndAnswersComponent } from './questions-and-answers.component'
 describe('QuestionsAndAnswersComponent', () => {
   async function setup() {
     const questionsAndAnswersData = [
-      { section_heading: 'Get more from ASC-WDS' },
-      { section_heading: 'Helping you and the sector' },
+      { section_heading: 'Get more from ASC-WDS', sub_sections: [] },
+      {
+        section_heading: 'Helping you and the sector',
+        sub_sections: [
+          { sub_section_heading: 'Workplace' },
+          { sub_section_heading: 'Staff records' },
+          { sub_section_heading: 'Benchmarks' },
+        ],
+      },
     ];
 
     const setupTools = await render(QuestionsAndAnswersComponent, {
@@ -46,6 +53,16 @@ describe('QuestionsAndAnswersComponent', () => {
 
     questionsAndAnswersData.forEach((section) => {
       expect(getByText(section.section_heading)).toBeTruthy();
+    });
+  });
+
+  it('should display each of the sub section titles', async () => {
+    const { getByText, questionsAndAnswersData } = await setup();
+
+    questionsAndAnswersData.forEach((section) => {
+      section.sub_sections?.forEach((sub_section) => {
+        expect(getByText(sub_section.sub_section_heading)).toBeTruthy();
+      });
     });
   });
 });
