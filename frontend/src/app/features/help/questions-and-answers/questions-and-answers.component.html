@@ -6,5 +6,9 @@
   </div>
   <div *ngFor="let subSection of section.sub_sections">
     <p class="govuk-!-font-weight-bold">{{ subSection.sub_section_heading }}</p>
+
+    <div *ngFor="let subSectionPage of subSection.q_and_a_pages">
+      <a [routerLink]="[subSectionPage.slug]" class="govuk-link">{{ subSectionPage.title }}</a>
+    </div>
   </div>
 </div>

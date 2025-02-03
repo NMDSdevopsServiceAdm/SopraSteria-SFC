@@ -18,9 +18,21 @@ describe('QuestionsAndAnswersComponent', () => {
       {
         section_heading: 'Helping you and the sector',
         sub_sections: [
-          { sub_section_heading: 'Workplace' },
-          { sub_section_heading: 'Staff records' },
-          { sub_section_heading: 'Benchmarks' },
+          {
+            sub_section_heading: 'Workplace',
+            q_and_a_pages: [
+              { title: 'What workplace data is needed?', slug: 'needed-workplace-data' },
+              { title: 'What can you do as a parent workplace?', slug: 'what-can-parents-do' },
+            ],
+          },
+          {
+            sub_section_heading: 'Staff records',
+            q_and_a_pages: [{ title: 'How do you add a staff record?', slug: 'how-to-add-staff-records' }],
+          },
+          {
+            sub_section_heading: 'Benchmarks',
+            q_and_a_pages: [{ title: 'What are benchmarks?', slug: 'what-are-benchmarks' }],
+          },
         ],
       },
     ];
@@ -80,6 +92,19 @@ describe('QuestionsAndAnswersComponent', () => {
       section.q_and_a_pages?.forEach((page) => {
         const link = getByText(page.title, { selector: 'a' }) as HTMLAnchorElement;
         expect(link.getAttribute('ng-reflect-router-link')).toEqual(page.slug);
+      });
+    });
+  });
+
+  it('should display a link for each of the question and answer pages which are in sub sections', async () => {
+    const { getByText, questionsAndAnswersData } = await setup();
+
+    questionsAndAnswersData.forEach((section) => {
+      section.sub_sections?.forEach((sub_section) => {
+        sub_section.q_and_a_pages?.forEach((page) => {
+          const link = getByText(page.title, { selector: 'a' }) as HTMLAnchorElement;
+          expect(link.getAttribute('ng-reflect-router-link')).toEqual(page.slug);
+        });
       });
     });
   });
