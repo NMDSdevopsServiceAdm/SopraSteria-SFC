@@ -1,7 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HelpService } from '@core/services/help.service';
+import { HelpPagesService } from '@core/services/help-pages.service';
 import { of } from 'rxjs';
 
 import { QuestionsAndAnswersResolver } from './questions-and-answers.resolver';
@@ -13,7 +13,7 @@ describe('QuestionsAndAnswersResolver', () => {
       providers: [
         QuestionsAndAnswersResolver,
         {
-          provide: HelpService,
+          provide: HelpPagesService,
           useValue: {
             getAllQuestionsAndAnswers: () => {
               return of(null);
@@ -25,8 +25,8 @@ describe('QuestionsAndAnswersResolver', () => {
 
     const resolver = TestBed.inject(QuestionsAndAnswersResolver);
 
-    const helpService = TestBed.inject(HelpService);
-    const getAllQuestionsAndAnswersSpy = spyOn(helpService, 'getAllQuestionsAndAnswers').and.callThrough();
+    const helpPagesService = TestBed.inject(HelpPagesService);
+    const getAllQuestionsAndAnswersSpy = spyOn(helpPagesService, 'getAllQuestionsAndAnswers').and.callThrough();
 
     return {
       resolver,
@@ -39,7 +39,7 @@ describe('QuestionsAndAnswersResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it('should call getAllQuestionsAndAnswers in help service', async () => {
+  it('should call getAllQuestionsAndAnswers in help pages service', async () => {
     const { resolver, getAllQuestionsAndAnswersSpy } = await setup();
 
     resolver.resolve();

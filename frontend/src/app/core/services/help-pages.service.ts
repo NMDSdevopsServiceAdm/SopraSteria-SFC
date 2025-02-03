@@ -26,4 +26,26 @@ export class HelpPagesService {
 
     return this.http.get<HelpPages>(`${environment.cmsUri}/items/${this.path}`, { params });
   }
+
+  public getAllQuestionsAndAnswers() {
+    let params = new HttpParams();
+    const filter = {
+      q_and_a_pages: {
+        _filter: {
+          status: { _eq: 'published' },
+        },
+      },
+      sub_sections: {
+        q_and_a_pages: {
+          _filter: {
+            status: { _eq: 'published' },
+          },
+        },
+      },
+    };
+    params = params.set('deep', JSON.stringify(filter));
+    params = params.set('fields', 'section_heading,q_and_a_pages.*,sub_sections.*,sub_sections.q_and_a_pages.*');
+
+    return this.http.get(`${environment.cmsUri}/items/q_and_a_sections`, { params });
+  }
 }
