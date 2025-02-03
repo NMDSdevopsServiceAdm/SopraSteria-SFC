@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Wizard } from '@core/model/wizard.model';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
@@ -16,7 +18,7 @@ export class GetStartedComponent {
   public imageUrl: string;
   public rawVideoUrl: string;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit(): void {
     this.wizards = this.route.snapshot.data.wizard.data;
@@ -26,6 +28,7 @@ export class GetStartedComponent {
 
     this.rawVideoUrl = this.route.snapshot.data.wizard.data[0].video;
     this.updatePreviousAndNextLinks();
+    this.breadcrumbService.show(JourneyType.HELP);
   }
 
   public updatePreviousAndNextLinks(): void {

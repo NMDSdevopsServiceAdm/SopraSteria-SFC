@@ -4,6 +4,8 @@ import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 
 import { GetStartedComponent } from './get-started/get-started.component';
 import { HelpAreaComponent } from './help-area/help-area.component';
+import { WhatsNewComponent } from './whats-new/whats-new.component';
+import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
 
 const routes: Routes = [
   {
@@ -17,6 +19,14 @@ const routes: Routes = [
           wizard: WizardResolver,
         },
         data: { title: 'Get started' },
+      },
+      {
+        path: 'whats-new',
+        component: WhatsNewComponent,
+        resolve: {
+          helpPage: HelpPageResolver,
+        },
+        data: { title: "What's new" },
       },
     ],
   },
