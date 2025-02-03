@@ -1,5 +1,7 @@
 import { ActivatedRoute } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { render } from '@testing-library/angular';
 
 import { QuestionsAndAnswersComponent } from './questions-and-answers.component';
@@ -51,6 +53,10 @@ describe('QuestionsAndAnswersComponent', () => {
               },
             },
           },
+        },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
         },
       ],
     });
