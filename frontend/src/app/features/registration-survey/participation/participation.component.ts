@@ -31,7 +31,7 @@ export class ParticipationComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.nextPage = this.registrationSurveyService?.participationFormData
       ? { url: ['/registration-survey', 'why-create-account'] }
-      : { url: ['/first-login-wizard'] };
+      : { url: ['/dashboard'] };
     this.workplace = this.establishmentService.primaryWorkplace;
 
     this.updateUserMarkSurveyAsComplete();
@@ -80,7 +80,7 @@ export class ParticipationComponent implements OnInit, OnDestroy {
     this.nextPage =
       this.participation.value === 'Yes'
         ? { url: ['/registration-survey', 'why-create-account'] }
-        : { url: ['/first-login-wizard'] };
+        : { url: ['/dashboard'] };
   }
 
   ngOnDestroy(): void {
