@@ -39,7 +39,7 @@ describe('HelpPagesService', () => {
   });
 
   describe('getAllQuestionsAndAnswers', () => {
-    it('should call the cms endpoint for help pages', async () => {
+    it('should call the cms endpoint for all Q and A sections with all nested fields', async () => {
       const filter = {
         q_and_a_pages: {
           _filter: {
@@ -61,6 +61,23 @@ describe('HelpPagesService', () => {
         `${environment.cmsUri}/items/q_and_a_sections?deep=${encodeURI(
           JSON.stringify(filter),
         )}&fields=section_heading,q_and_a_pages.*,sub_sections.*,sub_sections.q_and_a_pages.*`,
+      );
+      expect(req.request.method).toBe('GET');
+    });
+  });
+
+  describe('getQuestionAndAnswerPage', () => {
+    it('should call the cms endpoint for single Q and A page', async () => {
+      const slug = 'test-question-and-answer-page';
+      const filter = {
+        slug: { _eq: slug },
+        status: { _eq: 'published' },
+      };
+
+      service.getQuestionAndAnswerPage(slug).subscribe();
+
+      const req = http.expectOne(
+        `${environment.cmsUri}/items/Q_and_A_pages?filter=${encodeURI(JSON.stringify(filter))}`,
       );
       expect(req.request.method).toBe('GET');
     });

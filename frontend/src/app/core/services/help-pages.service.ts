@@ -48,4 +48,17 @@ export class HelpPagesService {
 
     return this.http.get(`${environment.cmsUri}/items/q_and_a_sections`, { params });
   }
+
+  public getQuestionAndAnswerPage(slug: string) {
+    let params = new HttpParams();
+
+    const filter = {
+      slug: { _eq: slug },
+      status: { _eq: 'published' },
+    };
+
+    params = params.set('filter', JSON.stringify(filter));
+
+    return this.http.get(`${environment.cmsUri}/items/Q_and_A_pages`, { params });
+  }
 }
