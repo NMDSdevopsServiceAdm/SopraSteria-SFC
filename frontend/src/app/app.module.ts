@@ -58,8 +58,6 @@ import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certific
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
-import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
-import { FirstLoginWizardComponent } from '@features/first-login-wizard/first-login-wizard.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-username-or-password/forgot-your-password/confirmation/confirmation.component';
 import { ForgotYourPasswordEditComponent } from '@features/forgot-your-username-or-password/forgot-your-password/edit/edit.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
@@ -110,8 +108,6 @@ import { HelpAndTipsButtonComponent } from './features/help-and-tips-button/help
     AscWdsCertificateComponent,
     DashboardComponent,
     DashboardHeaderComponent,
-    FirstLoginPageComponent,
-    FirstLoginWizardComponent,
     FooterComponent,
     ForgotYourPasswordComponent,
     ForgotYourPasswordConfirmationComponent,

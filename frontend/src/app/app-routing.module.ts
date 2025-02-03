@@ -31,7 +31,6 @@ import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
-import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import {
   ForgotYourPasswordComponent,
 } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
@@ -215,14 +214,6 @@ const routes: Routes = [
             GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
-      },
-      {
-        path: 'first-login-wizard',
-        component: FirstLoginPageComponent,
-        resolve: {
-          wizard: WizardResolver,
-        },
-        data: { title: 'First Login Wizard' },
       },
       {
         path: 'asc-wds-certificate',
