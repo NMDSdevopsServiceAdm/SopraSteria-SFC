@@ -3,6 +3,7 @@ import { JourneyRoute } from './breadcrumb.model';
 enum Path {
   GET_STARTED = '/help/get-started',
   WHATS_NEW = '/help/whats-new',
+  CONTACT_US = '/help/contact-us',
 }
 
 export const helpJourney: JourneyRoute = {
@@ -14,6 +15,10 @@ export const helpJourney: JourneyRoute = {
     {
       title: "Get help and tips: what's new",
       path: Path.WHATS_NEW,
+    },
+    {
+      title: 'Get help and tips: contact us',
+      path: Path.CONTACT_US,
     },
   ],
 };
