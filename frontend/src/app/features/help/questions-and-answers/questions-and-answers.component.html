@@ -1,14 +1,18 @@
 <h1 class="govuk-heading-m govuk-!-margin-bottom-5">Questions and answers</h1>
-<div *ngFor="let section of sections">
+<div *ngFor="let section of sections" class="govuk-!-margin-bottom-8">
   <h2 class="govuk-heading-s">{{ section.section_heading }}</h2>
-  <div *ngFor="let page of section.q_and_a_pages">
-    <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
-  </div>
+  <ul *ngFor="let page of section.q_and_a_pages" class="govuk-list">
+    <li class="govuk-!-margin-bottom-2">
+      <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
+    </li>
+  </ul>
   <div *ngFor="let subSection of section.sub_sections">
     <p class="govuk-!-font-weight-bold">{{ subSection.sub_section_heading }}</p>
 
-    <div *ngFor="let subSectionPage of subSection.q_and_a_pages">
-      <a [routerLink]="[subSectionPage.slug]" class="govuk-link">{{ subSectionPage.title }}</a>
-    </div>
+    <ul *ngFor="let subSectionPage of subSection.q_and_a_pages" class="govuk-list">
+      <li class="govuk-!-margin-bottom-2">
+        <a [routerLink]="[subSectionPage.slug]" class="govuk-link">{{ subSectionPage.title }}</a>
+      </li>
+    </ul>
   </div>
 </div>
