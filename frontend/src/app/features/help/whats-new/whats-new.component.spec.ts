@@ -5,19 +5,27 @@ import { SharedModule } from '@shared/shared.module';
 import { ActivatedRoute } from '@angular/router';
 import { MockHelpPagesService } from '@core/test-utils/MockHelpPagesService';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 
 describe('WhatsNewComponent', () => {
-  const helpPages = MockHelpPagesService.helpPagesFactory();
-
-  async function setup() {
+  async function setup(overrides: any = {}) {
     const setupTools = await render(WhatsNewComponent, {
       imports: [SharedModule],
       providers: [
         {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
+        },
+        {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({
             snapshot: {
-              data: { helpPages },
+              data: {
+                helpPage: overrides
+                  ? MockHelpPagesService.helpPagesFactory(overrides)
+                  : MockHelpPagesService.helpPagesFactory(),
+              },
             },
           }),
         },
@@ -38,7 +46,25 @@ describe('WhatsNewComponent', () => {
   });
 
   it('should show the content for whats new', async () => {
-    const { component, getByTestId } = await setup();
+    const { getByTestId } = await setup();
     expect(getByTestId('whats-new-content')).toBeTruthy();
+  });
+
+  it('should add the style class to a hr tag that is empty', async () => {
+    const override = {
+      content: '<hr>',
+    };
+    const { component } = await setup(override);
+
+    expect(component.helpPage.content).toBe('<hr class="asc__hr_under_heading">');
+  });
+
+  it('should not add the style class to a hr tag that is not empty', async () => {
+    const override = {
+      content: '<hr class="hr_size">',
+    };
+    const { component } = await setup(override);
+
+    expect(component.helpPage.content).toBe('<hr class="hr_size">');
   });
 });

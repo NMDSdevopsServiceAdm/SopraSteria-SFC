@@ -8,6 +8,8 @@ import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
 
 import { GetStartedComponent } from './get-started.component';
+import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 
 describe('GetStartedComponent', () => {
   const wizard = MockWizardService.wizardFactory();
@@ -17,6 +19,10 @@ describe('GetStartedComponent', () => {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
         { provide: WizardService, useClass: MockWizardService },
+        {
+          provide: BreadcrumbService,
+          useClass: MockBreadcrumbService,
+        },
         {
           provide: ActivatedRoute,
           useValue: new MockActivatedRoute({

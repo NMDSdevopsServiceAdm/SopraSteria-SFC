@@ -4,7 +4,7 @@ import { HelpPagesService } from '@core/services/help-pages.service';
 
 @Injectable()
 export class MockHelpPagesService extends HelpPagesService {
-  public static helpPagesFactory(): HelpPages {
+  public static helpPagesFactory(overrides?: any): HelpPages {
     return {
       data: [
         {
@@ -19,6 +19,7 @@ export class MockHelpPagesService extends HelpPagesService {
           publish_date: new Date(),
           status: 'Published',
           link_title: 'link',
+          ...overrides,
         },
       ],
     };
