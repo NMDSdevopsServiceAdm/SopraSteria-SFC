@@ -31,15 +31,18 @@ export class HelpPagesService {
     let params = new HttpParams();
     const filter = {
       q_and_a_pages: {
+        _sort: ['sort'],
         _filter: {
           status: { _eq: 'published' },
         },
       },
       sub_sections: {
+        _sort: ['sort'],
         q_and_a_pages: {
           _filter: {
             status: { _eq: 'published' },
           },
+          _sort: ['sort'],
         },
       },
     };

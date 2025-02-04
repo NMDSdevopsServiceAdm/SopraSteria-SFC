@@ -42,15 +42,18 @@ describe('HelpPagesService', () => {
     it('should call the cms endpoint for all Q and A sections with all nested fields', async () => {
       const filter = {
         q_and_a_pages: {
+          _sort: ['sort'],
           _filter: {
             status: { _eq: 'published' },
           },
         },
         sub_sections: {
+          _sort: ['sort'],
           q_and_a_pages: {
             _filter: {
               status: { _eq: 'published' },
             },
+            _sort: ['sort'],
           },
         },
       };
