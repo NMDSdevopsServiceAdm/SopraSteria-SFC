@@ -3,6 +3,7 @@ import { JourneyRoute } from './breadcrumb.model';
 enum Path {
   GET_STARTED = '/help/get-started',
   WHATS_NEW = '/help/whats-new',
+  HELPFUL_DOWNLOADS = '/help/useful-downloads',
 }
 
 export const helpJourney: JourneyRoute = {
@@ -15,5 +16,9 @@ export const helpJourney: JourneyRoute = {
       title: "Get help and tips: what's new",
       path: Path.WHATS_NEW,
     },
+    {
+      title: 'Get help and tips: useful downloads',
+      path: Path.HELPFUL_DOWNLOADS,
+    }
   ],
 };

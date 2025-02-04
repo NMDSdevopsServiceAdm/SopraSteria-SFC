@@ -6,6 +6,7 @@ import { GetStartedComponent } from './get-started/get-started.component';
 import { HelpAreaComponent } from './help-area/help-area.component';
 import { WhatsNewComponent } from './whats-new/whats-new.component';
 import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
+import { HelpfulDownloadsComponent } from './helpful-downloads/helpful-downloads.component';
 
 const routes: Routes = [
   {
@@ -28,6 +29,11 @@ const routes: Routes = [
         },
         data: { title: "What's new" },
       },
+      {
+        path: 'helpful-downloads',
+        component: HelpfulDownloadsComponent,
+        data: { title: "Helpful Downloads"},
+      }
     ],
   },
 ];

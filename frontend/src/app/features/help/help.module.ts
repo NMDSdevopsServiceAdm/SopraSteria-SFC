@@ -8,10 +8,11 @@ import { GetStartedComponent } from './get-started/get-started.component';
 import { HelpAreaComponent } from './help-area/help-area.component';
 import { HelpRoutingModule } from './help-routing.module';
 import { WhatsNewComponent } from './whats-new/whats-new.component';
+import { HelpfulDownloadsComponent } from './helpful-downloads/helpful-downloads.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, HelpRoutingModule],
-  declarations: [HelpAreaComponent, GetStartedComponent, WhatsNewComponent],
+  declarations: [HelpAreaComponent, GetStartedComponent, HelpfulDownloadsComponent, WhatsNewComponent],
   providers: [],
 })
 export class HelpModule {}
