@@ -9,11 +9,10 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { HelpfulDownloadsComponent } from './helpful-downloads.component';
+import { MockPagesService } from '@core/test-utils/MockPagesService';
 
 fdescribe('HelpfulDownloadsComponent', () => {
-  const wizard = MockWizardService.wizardFactory();
-
-  async function setup() {
+  async function setup(overrides: any = {}) {
     const setupTools = await render(HelpfulDownloadsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       providers: [
@@ -27,7 +26,7 @@ fdescribe('HelpfulDownloadsComponent', () => {
           useValue: new MockActivatedRoute({
             snapshot: {
               data: {
-                wizard,
+                page: overrides.hasContent ? MockPagesService.pagesFactory() : null,
               },
             },
           }),
@@ -47,8 +46,21 @@ fdescribe('HelpfulDownloadsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  // it('should render useful downloads content from the cms', async () => {
-  //   const { getByText, queryByTestId } = await setup();
+  it('should render helpful downloads content from the cms', async () => {
+    const override = {
+      hasContent: true,
+    };
+    const { getByTestId} = await setup(override);
 
-  // });
+    expect(getByTestId('helpful-downloads-content')).toBeTruthy();
+  });
+
+    it('should not render helpful downloads content from the cms', async () => {
+    const override = {
+      hasContent: false,
+    };
+    const { queryByTestId} = await setup(override);
+
+    expect(queryByTestId('helpful-downloads-content')).toBeFalsy();
+  });
 });

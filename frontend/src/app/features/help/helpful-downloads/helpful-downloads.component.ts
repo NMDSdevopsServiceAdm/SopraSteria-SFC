@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
+import { Page } from '@core/model/page.model';
 import { Wizard } from '@core/model/wizard.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { environment } from 'src/environments/environment';
@@ -11,16 +12,12 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./helpful-downloads.component.scss'],
 })
 export class HelpfulDownloadsComponent {
-  public wizards: Wizard[];
-  public isFirst: boolean;
-  public isLast: boolean;
-  public currentIndex: number;
-  public imageUrl: string;
-  public rawVideoUrl: string;
+  public helpfulDownloadsPage: Page;
 
-  constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService) {}
+  constructor(public route: ActivatedRoute, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.HELP);
+    this.helpfulDownloadsPage = this.route.snapshot.data.page?.data[0];
   }
 }
