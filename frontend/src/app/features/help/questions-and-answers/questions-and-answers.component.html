@@ -1,18 +1,18 @@
-<div class="govuk-grid-row asc__vertical-line">
+<div class="govuk-grid-row asc__vertical-line govuk-!-margin-top-8">
   <div class="govuk-grid-row govuk-!-margin-left-9 govuk-!-margin-right-2">
     <h1 class="govuk-heading-m govuk-!-font-size-27 govuk-!-margin-bottom-5">Questions and answers</h1>
-    <div *ngFor="let section of sections" class="govuk-!-margin-bottom-8">
+    <div *ngFor="let section of sections" class="govuk-!-margin-bottom-7">
       <h2 class="govuk-heading-m">{{ section.section_heading }}</h2>
-      <ul *ngFor="let page of section.q_and_a_pages" class="govuk-list">
-        <li class="govuk-!-margin-bottom-2">
+      <ul class="govuk-list">
+        <li *ngFor="let page of section.q_and_a_pages" class="govuk-!-margin-bottom-3">
           <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
         </li>
       </ul>
-      <div *ngFor="let subSection of section.sub_sections">
-        <p class="govuk-heading-s">{{ subSection.sub_section_heading }}</p>
+      <div *ngFor="let subSection of section.sub_sections" class="govuk-!-margin-bottom-7">
+        <p class="govuk-heading-s govuk-!-margin-bottom-3">{{ subSection.sub_section_heading }}</p>
 
-        <ul *ngFor="let subSectionPage of subSection.q_and_a_pages" class="govuk-list">
-          <li class="govuk-!-margin-bottom-2">
+        <ul class="govuk-list">
+          <li *ngFor="let subSectionPage of subSection.q_and_a_pages" class="govuk-!-margin-bottom-3">
             <a [routerLink]="[subSectionPage.slug]" class="govuk-link">{{ subSectionPage.title }}</a>
           </li>
         </ul>

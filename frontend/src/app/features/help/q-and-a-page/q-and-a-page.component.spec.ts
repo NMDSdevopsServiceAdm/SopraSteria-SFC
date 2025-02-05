@@ -1,5 +1,5 @@
 import { getTestBed } from '@angular/core/testing';
-import { ActivatedRoute, Router, RouterModule, Routes } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
@@ -9,18 +9,17 @@ import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { QuestionsAndAnswersComponent } from '../questions-and-answers/questions-and-answers.component';
 import { QAndAPageComponent } from './q-and-a-page.component';
 
 describe('QAndAPageComponent', () => {
-  async function setup(overrides: any = {}) {
-    const routes: Routes = [
-      { path: 'questions-and-answers', component: QuestionsAndAnswersComponent },
-      { path: 'questions-and-answers/:slug', component: QAndAPageComponent },
-    ];
+  async function setup() {
+    const qAndAPageData = {
+      title: 'An example Q and A page',
+      content: 'Some example content',
+    };
 
     const setupTools = await render(QAndAPageComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule.withRoutes(routes)],
+      imports: [SharedModule, RouterModule, RouterTestingModule],
       providers: [
         {
           provide: BreadcrumbService,
@@ -32,7 +31,7 @@ describe('QAndAPageComponent', () => {
             snapshot: {
               data: {
                 questionAndAnswerPage: {
-                  data: {},
+                  data: [qAndAPageData],
                 },
               },
             },
@@ -49,17 +48,20 @@ describe('QAndAPageComponent', () => {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
       routerSpy,
+      qAndAPageData,
     };
   }
 
-  it('should render WhatsNewComponent', async () => {
+  it('should render QAndAPageComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
 
-  it('should show the content', async () => {
-    const { getByTestId } = await setup();
-    expect(getByTestId('content')).toBeTruthy();
+  it('should display the title and content', async () => {
+    const { qAndAPageData, getByText } = await setup();
+
+    expect(getByText(qAndAPageData.title)).toBeTruthy();
+    expect(getByText(qAndAPageData.content)).toBeTruthy();
   });
 
   it('should show a back link with a link back to the previous page (questions and answers)', async () => {
