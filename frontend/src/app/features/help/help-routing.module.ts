@@ -1,12 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
-import {
-  QuestionAndAnswerPageResolver,
-} from '@core/resolvers/help/question-and-answer-page/question-and-answer-page.resolver';
+import { QuestionAndAnswerPageResolver } from '@core/resolvers/help/question-and-answer-page/question-and-answer-page.resolver';
 import { QuestionsAndAnswersResolver } from '@core/resolvers/help/questions-and-answers/questions-and-answers.resolver';
+import { PageResolver } from '@core/resolvers/page.resolver';
 import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 
+import { ContactUsComponent } from './contact-us/contact-us.component';
 import { GetStartedComponent } from './get-started/get-started.component';
 import { HelpAreaComponent } from './help-area/help-area.component';
 import { QAndAPageComponent } from './q-and-a-page/q-and-a-page.component';
@@ -49,6 +49,13 @@ const routes: Routes = [
           helpPage: HelpPageResolver,
         },
         data: { title: "What's new" },
+      },
+      {
+        path: 'contact-us',
+        component: ContactUsComponent,
+        resolve: {
+          page: PageResolver,
+        },
       },
     ],
   },
