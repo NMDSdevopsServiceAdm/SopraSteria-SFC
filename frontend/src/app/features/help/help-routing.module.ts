@@ -35,7 +35,7 @@ const routes: Routes = [
         path: 'helpful-downloads',
         component: HelpfulDownloadsComponent,
         resolve: {
-          page: PageResolver,
+          page: HelpPageResolver,
         },
         data: { title: "Helpful Downloads"},
       },
