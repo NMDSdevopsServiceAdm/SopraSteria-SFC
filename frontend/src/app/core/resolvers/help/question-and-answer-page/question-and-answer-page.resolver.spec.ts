@@ -40,7 +40,7 @@ describe('QuestionAndAnswerPageResolver', () => {
     expect(resolver).toBeTruthy();
   });
 
-  it('should resolve', () => {
+  it('should call getQuestionAndAnswerPage in the help pages service and pass in the slug (the last path in the url)', () => {
     const { resolver, helpPagesService, route } = setup();
 
     const getQuestionAndAnswerPageSpy = spyOn(helpPagesService, 'getQuestionAndAnswerPage').and.returnValue(of(null));
