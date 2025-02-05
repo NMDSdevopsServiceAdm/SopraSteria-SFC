@@ -15,3 +15,18 @@ export interface HelpPage {
 export interface HelpPages {
   data: HelpPage[];
 }
+
+export interface QuestionAndAnswerPage extends HelpPage {}
+
+interface SubSection {
+  sub_section_heading: string;
+  q_and_a_pages: QuestionAndAnswerPage[];
+}
+
+interface Section {
+  section_heading: string;
+  sub_sections: SubSection[];
+  q_and_a_pages: QuestionAndAnswerPage[];
+}
+
+export type QuestionsAndAnswersResponse = Section[];
