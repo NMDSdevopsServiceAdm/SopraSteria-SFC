@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router, UrlTree } from '@angular/router';
+import { Router, UrlTree } from '@angular/router';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { AdminSkipService } from '@features/bulk-upload/admin-skip.service';
@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
-export class BulkUploadMissingGuard implements CanActivate {
+export class BulkUploadMissingGuard  {
   constructor(
     private bulkUploadService: BulkUploadService,
     private establishmentService: EstablishmentService,
