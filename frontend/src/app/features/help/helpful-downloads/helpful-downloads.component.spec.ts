@@ -11,7 +11,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { HelpfulDownloadsComponent } from './helpful-downloads.component';
 import { MockPagesService } from '@core/test-utils/MockPagesService';
 
-fdescribe('HelpfulDownloadsComponent', () => {
+describe('HelpfulDownloadsComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(HelpfulDownloadsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
