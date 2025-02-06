@@ -9,7 +9,6 @@ import { environment } from 'src/environments/environment';
 @Component({
   selector: 'app-helpful-downloads',
   templateUrl: './helpful-downloads.component.html',
-  styleUrls: ['./helpful-downloads.component.scss'],
 })
 export class HelpfulDownloadsComponent {
   public helpfulDownloadsPage: Page;
