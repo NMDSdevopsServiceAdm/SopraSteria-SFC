@@ -19,5 +19,16 @@ export class HelpfulDownloadsComponent {
   ngOnInit(): void {
     this.breadcrumbService.show(JourneyType.HELP);
     this.helpfulDownloadsPage = this.route.snapshot.data.page?.data[0];
+    this.applyClass();
+  }
+
+  public applyClass(): void {
+    let regex = /<a/g;
+
+    console.log('content before: ', this.helpfulDownloadsPage.content)
+
+    let content = this.helpfulDownloadsPage?.content.replace(regex, '<a style="display: flex;"');
+    console.log('content after: ', content)
+    this.helpfulDownloadsPage.content = content;
   }
 }

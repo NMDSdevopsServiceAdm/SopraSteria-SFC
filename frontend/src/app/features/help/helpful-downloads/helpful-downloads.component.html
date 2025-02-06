@@ -1,5 +1,8 @@
-<div>
-  <ng-container *ngIf="helpfulDownloadsPage">
-    <app-help-content data-testid="helpful-downloads-content" [helpPage]="helpfulDownloadsPage"></app-help-content>
-  </ng-container>
+<div class="asc__vertical-line vertical_line govuk-!-margin-top-0">
+  <div class="govuk-!-margin-left-9 govuk-!-margin-right-2 govuk-!-margin-top-0">
+    <ng-container *ngIf="helpfulDownloadsPage?.title && helpfulDownloadsPage?.content">
+      <h1 class="govuk-heading-m" data-testid="content-title">{{ helpfulDownloadsPage?.title }}</h1>
+      <div class="asc-cms-downloads-content" [innerHTML]="helpfulDownloadsPage?.content" data-testid="content"></div>
+    </ng-container>
+  </div>
 </div>

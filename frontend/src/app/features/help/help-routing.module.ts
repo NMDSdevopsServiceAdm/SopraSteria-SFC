@@ -6,9 +6,9 @@ import { GetStartedComponent } from './get-started/get-started.component';
 import { HelpAreaComponent } from './help-area/help-area.component';
 import { WhatsNewComponent } from './whats-new/whats-new.component';
 import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
-import { HelpfulDownloadsComponent } from './helpful-downloads/helpful-downloads.component';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { ContactUsComponent } from './contact-us/contact-us.component';
+import { HelpfulDownloadsComponent } from './helpful-downloads/helpful-downloads.component';
 
 const routes: Routes = [
   {
