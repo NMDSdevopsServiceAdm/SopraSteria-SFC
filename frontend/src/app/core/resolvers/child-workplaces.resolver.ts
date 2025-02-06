@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { Resolve, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { GetChildWorkplacesResponse } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class ChildWorkplacesResolver implements Resolve<any> {
+export class ChildWorkplacesResolver  {
   constructor(private router: Router, private establishmentService: EstablishmentService) {}
 
   resolve(): Observable<GetChildWorkplacesResponse | null> {

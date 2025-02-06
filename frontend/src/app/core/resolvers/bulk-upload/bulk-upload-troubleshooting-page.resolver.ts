@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { BulkUploadTroubleshootingPage } from '@core/model/bulk-upload-troubleshooting-page.model';
 import { BulkUploadTroubleshootingPagesService } from '@core/services/bulk-upload/bulkUploadTroubleshootingPages.service';
 import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class BulkUploadTroubleshootingPageResolver implements Resolve<any> {
+export class BulkUploadTroubleshootingPageResolver  {
   constructor(
     private router: Router,
     private bulkUploadTroubleshootingPagesService: BulkUploadTroubleshootingPagesService,

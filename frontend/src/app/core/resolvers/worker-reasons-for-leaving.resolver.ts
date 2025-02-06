@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Resolve, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class WorkerReasonsForLeavingResolver implements Resolve<any> {
+export class WorkerReasonsForLeavingResolver  {
   constructor(private router: Router, private workerService: WorkerService) {}
 
   resolve() {

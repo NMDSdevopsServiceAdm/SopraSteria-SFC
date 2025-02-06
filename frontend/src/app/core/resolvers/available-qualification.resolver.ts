@@ -2,13 +2,13 @@ import { of, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { AvailableQualificationsResponse } from '@core/model/qualification.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { WorkerService } from '@core/services/worker.service';
 
 @Injectable()
-export class AvailableQualificationsResolver implements Resolve<AvailableQualificationsResponse[]> {
+export class AvailableQualificationsResolver  {
   constructor(
     private router: Router,
     private workerService: WorkerService,
