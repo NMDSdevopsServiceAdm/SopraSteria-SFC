@@ -5,7 +5,9 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { TabsService } from '@core/services/tabs.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
+import { MockRouter } from '@core/test-utils/MockRouter';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -14,28 +16,22 @@ import userEvent from '@testing-library/user-event';
 import { NewTabsComponent } from './new-tabs.component';
 
 describe('NewTabsComponent', () => {
-  const setup = async (dashboardView = true, urlSegments = [], viewingSubAsParent = false) => {
+  const setup = async (overrides: any = {}) => {
     const { fixture, getByTestId } = await render(NewTabsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         TabsService,
         {
           provide: ParentSubsidiaryViewService,
-          useFactory: MockParentSubsidiaryViewService.factory(viewingSubAsParent),
+          useFactory: MockParentSubsidiaryViewService.factory(overrides.viewingSubAsParent ?? false),
+        },
+        {
+          provide: Router,
+          useFactory: MockRouter.factory({ routerState: { snapshot: { url: overrides.url ?? '/dashboard' } } }),
         },
         {
           provide: ActivatedRoute,
-          useValue: {
-            snapshot: {
-              _urlSegment: {
-                children: {
-                  primary: {
-                    segments: urlSegments,
-                  },
-                },
-              },
-            },
-          },
+          useValue: new MockActivatedRoute({}),
         },
       ],
       declarations: [],
@@ -47,7 +43,7 @@ describe('NewTabsComponent', () => {
           { title: 'Training and qualifications', slug: 'training-and-qualifications', active: false },
           { title: 'Benchmarks', slug: 'benchmarks', active: false },
         ],
-        dashboardView,
+        dashboardView: overrides.dashboardView ?? true,
       },
     });
 
@@ -146,7 +142,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should navigate to the correct tab when a tab is clicked from a different page', async () => {
-      const { fixture, getByTestId, locationSpy, routerSpy } = await setup(false);
+      const { fixture, getByTestId, locationSpy, routerSpy } = await setup({ dashboardView: false });
 
       const tAndQTab = getByTestId('tab_training-and-qualifications');
 
@@ -158,7 +154,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should navigate to the sub tab url when tab clicked in sub view', async () => {
-      const { getByTestId, parentSubsidiaryViewService, routerSpy } = await setup(true, [], true);
+      const { getByTestId, parentSubsidiaryViewService, routerSpy } = await setup({ viewingSubAsParent: true });
       const subUid = 'abcde123';
 
       spyOn(parentSubsidiaryViewService, 'getSubsidiaryUid').and.returnValue(subUid);
@@ -224,38 +220,31 @@ describe('NewTabsComponent', () => {
 
   describe('getTabSlugInSubView', () => {
     it('should return null when fewer than 3 segments in url path', async () => {
-      const urlSegments = [{ path: 'dashboard' }];
-
-      const { component } = await setup(true, urlSegments);
+      const { component } = await setup({ url: '/dashboard' });
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual(null);
     });
 
     it('should return null when more than 3 segments in url path', async () => {
-      const urlSegments = [
-        { path: 'subsidiary' },
-        { path: 'workplace' },
-        { path: 'testuid' },
-        { path: 'staff-record' },
-      ];
+      const url = '/subsidiary/workplace/testuid/staff-record';
 
-      const { component } = await setup(true, urlSegments);
+      const { component } = await setup({ url });
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual(null);
     });
 
     it('should return null when 3 segments but second segment does not match tab slug name', async () => {
-      const urlSegments = [{ path: 'subsidiary' }, { path: 'articles' }, { path: 'news-article' }];
+      const url = '/subsidiary/articles/news-article';
 
-      const { component } = await setup(true, urlSegments);
+      const { component } = await setup({ url });
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual(null);
     });
 
     it('should return tab slug when 3 segments and second segment matches tab slug', async () => {
-      const urlSegments = [{ path: 'subsidiary' }, { path: 'testuid' }, { path: 'training-and-qualifications' }];
+      const url = '/subsidiary/testuid/training-and-qualifications';
 
-      const { component } = await setup(true, urlSegments);
+      const { component } = await setup({ url });
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual('training-and-qualifications');
     });
@@ -263,7 +252,7 @@ describe('NewTabsComponent', () => {
 
   describe('getTabSlugFromSubsidiaryUrl', async () => {
     it(`should return correct tab when third section of url is the tab slug`, async () => {
-      const { component } = await setup(true, []);
+      const { component } = await setup();
       component.tabs.forEach((tab) => {
         const url = `/subsidiary/test-uid/${tab.slug}`;
         const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, url, url));
@@ -273,7 +262,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should return nothing when no tab slug in the navigation event url', async () => {
-      const { component } = await setup(true, []);
+      const { component } = await setup();
 
       const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, 'test-url.com', 'test-url.com'));
 
@@ -281,7 +270,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should return nothing when workplace in url but in wrong section', async () => {
-      const { component } = await setup(true, []);
+      const { component } = await setup();
       const url = '/subsidiary/workplace/test-uid/main-service-cqc';
       const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, url, url));
 
@@ -289,7 +278,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should return nothing when url has fewer than 3 sections', async () => {
-      const { component } = await setup(true, []);
+      const { component } = await setup();
       const url = '/subsidiary/benefits-bundle';
       const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, url, url));
 
@@ -299,7 +288,7 @@ describe('NewTabsComponent', () => {
 
   describe('getTabSlugFromMainDashboardUrl', async () => {
     it(`should return tab slug when slug is in list of tabs`, async () => {
-      const { component } = await setup(true, []);
+      const { component } = await setup();
       component.tabs.forEach((tab) => {
         const url = `/dashboard#${tab.slug}`;
         const result = component.getTabSlugFromMainDashboardUrl(new NavigationEnd(0, url, url));
@@ -309,7 +298,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should return nothing when unexpected tab slug in the navigation event url', async () => {
-      const { component } = await setup(true, []);
+      const { component } = await setup();
 
       const url = `/dashboard#invalidSlug`;
       const result = component.getTabSlugFromMainDashboardUrl(new NavigationEnd(0, url, url));
@@ -318,7 +307,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should return nothing when main url is not dashboard', async () => {
-      const { component } = await setup(true, []);
+      const { component } = await setup();
 
       const url = `/invalidUrl#home`;
       const result = component.getTabSlugFromMainDashboardUrl(new NavigationEnd(0, url, url));
@@ -329,7 +318,7 @@ describe('NewTabsComponent', () => {
 
   describe('selectTab', () => {
     it('should navigate when in sub view and isOnPageLoad is passed in as false', async () => {
-      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, [], true);
+      const { component, routerSpy, parentSubsidiaryViewService } = await setup({ viewingSubAsParent: true });
 
       const index = 1;
       const subUid = 'abcde123';
@@ -341,7 +330,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should not navigate when isOnPageLoad is passed in as true in sub view', async () => {
-      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, [], true);
+      const { component, routerSpy, parentSubsidiaryViewService } = await setup({ viewingSubAsParent: true });
 
       const index = 1;
       const subUid = 'abcde123';
@@ -353,7 +342,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should not navigate when isOnPageLoad is passed in as false but not in sub view', async () => {
-      const { component, routerSpy, parentSubsidiaryViewService } = await setup(true, []);
+      const { component, routerSpy, parentSubsidiaryViewService } = await setup();
 
       const index = 1;
       const subUid = 'abcde123';
@@ -377,7 +366,7 @@ describe('NewTabsComponent', () => {
     });
 
     it('should only add govuk-subsidiary-tabs__list-item class to tabs when in sub view', async () => {
-      const { fixture } = await setup(true, [], true);
+      const { fixture } = await setup({ viewingSubAsParent: true });
 
       const listElementsWithStandaloneClass = fixture.nativeElement.querySelector('.govuk-standalone-tabs__list-item');
       expect(listElementsWithStandaloneClass).toBeFalsy();
