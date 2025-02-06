@@ -18,7 +18,6 @@ import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { render } from '@testing-library/angular';
-import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
@@ -51,14 +50,6 @@ describe('AppComponent', () => {
         {
           provide: ParentSubsidiaryViewService,
           useClass: MockParentSubsidiaryViewService,
-        },
-        {
-          provide: Angulartics2GoogleTagManager,
-          useValue: {
-            startTracking() {
-              return null;
-            },
-          },
         },
         IdleService,
         Title,
