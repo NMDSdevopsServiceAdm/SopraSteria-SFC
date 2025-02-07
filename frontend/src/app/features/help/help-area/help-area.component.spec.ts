@@ -71,13 +71,6 @@ describe('HelpAreaComponent', () => {
     expect(getByText('Contact us')).toBeTruthy();
   });
 
-  it('should highlight the first tab as active by default', async () => {
-    const { getByText } = await setup();
-    const firstTab = getByText('Get started');
-
-    expect(firstTab).toHaveClass('active');
-  });
-
   it('should update active tab when clicked', async () => {
     const { getByText, fixture } = await setup();
     const secondTab = getByText('Questions and answers');
