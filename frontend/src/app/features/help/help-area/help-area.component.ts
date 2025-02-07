@@ -45,6 +45,9 @@ export class HelpAreaComponent implements OnInit {
     event.preventDefault();
 
     this.currentTabIndex = tabIndex;
-    this.router.navigate([this.tabs[tabIndex].route], { relativeTo: this.route });
+    this.router.navigate([this.tabs[tabIndex].route], { relativeTo: this.route }).then(() => {
+      const link = event.target as HTMLElement;
+      link.focus();
+    });
   }
 }

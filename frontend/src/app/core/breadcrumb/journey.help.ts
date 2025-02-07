@@ -4,6 +4,7 @@ enum Path {
   GET_STARTED = '/help/get-started',
   WHATS_NEW = '/help/whats-new',
   HELPFUL_DOWNLOADS = '/help/useful-downloads',
+  QUESTIONS_AND_ANSWERS = '/help/questions-and-answers',
   CONTACT_US = '/help/contact-us',
 }
 
@@ -20,6 +21,10 @@ export const helpJourney: JourneyRoute = {
     {
       title: 'Get help and tips: useful downloads',
       path: Path.HELPFUL_DOWNLOADS,
+    },
+    {
+      title: 'Get help and tips: questions and answers',
+      path: Path.QUESTIONS_AND_ANSWERS,
     },
     {
       title: 'Get help and tips: contact us',

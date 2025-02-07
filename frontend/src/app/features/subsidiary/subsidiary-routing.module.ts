@@ -17,7 +17,6 @@ import { SubsidiaryResolver } from '@core/resolvers/subsidiary.resolver';
 import { UsefulLinkPayResolver } from '@core/resolvers/useful-link-pay.resolver';
 import { UsefulLinkRecruitmentResolver } from '@core/resolvers/useful-link-recruitment.resolver';
 import { UserAccountResolver } from '@core/resolvers/user-account.resolver';
-import { WizardResolver } from '@core/resolvers/wizard/wizard.resolver';
 import { WorkersResolver } from '@core/resolvers/workers.resolver';
 import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
@@ -86,6 +85,10 @@ const routes: Routes = [
   {
     path: 'articles',
     loadChildren: () => import('@features/articles/articles.module').then((m) => m.ArticlesModule),
+  },
+  {
+    path: 'help',
+    loadChildren: () => import('@features/help/help.module').then((m) => m.HelpModule),
   },
   {
     path: '',

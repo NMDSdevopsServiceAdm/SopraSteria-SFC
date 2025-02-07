@@ -91,4 +91,16 @@ describe('HelpAreaComponent', () => {
 
     expect(routerSpy).toHaveBeenCalledWith(['whats-new'], { relativeTo: jasmine.any(Object) });
   });
+
+  it('should set the focus on the tab after clicking it', async () => {
+    const { getByText, routerSpy, fixture } = await setup();
+    const tabToClick = getByText("What's new");
+
+    const focusSpy = spyOn(tabToClick, 'focus');
+
+    fireEvent.click(tabToClick);
+    await fixture.whenStable();
+
+    expect(focusSpy).toHaveBeenCalled();
+  });
 });
