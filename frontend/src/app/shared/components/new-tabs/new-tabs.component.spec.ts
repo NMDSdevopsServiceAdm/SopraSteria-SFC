@@ -7,7 +7,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { TabsService } from '@core/services/tabs.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
-import { MockRouter } from '@core/test-utils/MockRouter';
+import { MockRouter, setUpRouterState } from '@core/test-utils/MockRouter';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -27,7 +27,7 @@ describe('NewTabsComponent', () => {
         },
         {
           provide: Router,
-          useFactory: MockRouter.factory({ routerState: { snapshot: { url: overrides.url ?? '/dashboard' } } }),
+          useClass: MockRouter,
         },
         {
           provide: ActivatedRoute,
@@ -58,6 +58,9 @@ describe('NewTabsComponent', () => {
     const router = injector.inject(Router);
     const routerSpy = spyOn(router, 'navigate');
 
+    const url = overrides.url ?? '/dashboard';
+    setUpRouterState(url, router);
+
     const location = injector.inject(Location);
     const locationSpy = spyOn(location, 'replaceState');
 
@@ -74,6 +77,7 @@ describe('NewTabsComponent', () => {
       routerSpy,
       locationSpy,
       parentSubsidiaryViewService,
+      router,
     };
   };
 
@@ -245,6 +249,7 @@ describe('NewTabsComponent', () => {
       const url = '/subsidiary/testuid/training-and-qualifications';
 
       const { component } = await setup({ url });
+
       const returned = component.getTabSlugInSubView();
       expect(returned).toEqual('training-and-qualifications');
     });
