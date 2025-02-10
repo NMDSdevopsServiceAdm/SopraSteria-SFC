@@ -123,8 +123,12 @@ export class AppComponent implements OnInit {
   }
 
   private renderHelpButton = (url) => {
+    const disallowedRoutes = [
+      'help',
+      'sfcadmin'
+    ]
     const urlSegment = url.split('/');
-    if (!this.authService.isAuthenticated() || urlSegment[1] == 'help' ) {
+    if (!this.authService.isAuthenticated() || disallowedRoutes.includes(urlSegment[1]) ) {
       this.showHelpButton = false;
     } else {
       this.showHelpButton = true;
