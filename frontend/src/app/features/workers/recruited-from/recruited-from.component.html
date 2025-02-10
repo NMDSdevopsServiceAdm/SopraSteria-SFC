@@ -3,69 +3,29 @@
 <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds-from-desktop">
-      <div
-        class="govuk-form-group govuk-!-margin-bottom-4"
-        [class.govuk-form-group--error]="submitted && form.get('recruitedFromId').invalid"
-      >
+      <div class="govuk-form-group govuk-!-margin-bottom-4">
         <fieldset class="govuk-fieldset">
           <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
             <span class="govuk-caption-l">Employment details</span>
-            <h1 class="govuk-fieldset__heading">Do you know where they were recruited from?</h1>
+            <h1 class="govuk-fieldset__heading">Select where they were recruited from</h1>
           </legend>
-          <div class="govuk-radios govuk-radios--conditional">
-            <div class="govuk-radios__item">
-              <input
-                class="govuk-radios__input"
-                [formControlName]="'recruitmentKnown'"
-                id="recruitmentKnown-conditional-1"
-                name="recruitmentKnown"
-                type="radio"
-                value="Yes"
-                aria-controls="conditional-recruitmentKnown-conditional-1"
-              />
-              <label class="govuk-label govuk-radios__label" for="recruitmentKnown-conditional-1"> Yes </label>
-            </div>
-            <div
-              class="govuk-radios__conditional"
-              [class.govuk-radios__conditional--hidden]="form.get('recruitmentKnown').value !== 'Yes'"
-              id="conditional-recruitmentKnown-conditional-1"
-            >
-              <div class="govuk-form-group">
-                <label class="govuk-label" for="recruitedFromId"> Recruited from </label>
-                <span
-                  *ngIf="submitted && form.get('recruitedFromId').errors"
-                  id="recruitedFromId-error"
-                  class="govuk-error-message"
-                >
-                  <span class="govuk-visually-hidden">Error:</span>
-                  {{ getFormErrorMessage('recruitedFromId', 'required') }}
-                </span>
-                <select
-                  class="govuk-select"
-                  [class.govuk-select--error]="submitted && form.get('recruitedFromId').invalid"
+          <div class="govuk-radios" data-module="govuk-radios">
+            <ng-container *ngFor="let recruitment of availableRecruitments; let idx = index">
+              <div class="govuk-radios__item">
+                <input
+                  class="govuk-radios__input"
                   [formControlName]="'recruitedFromId'"
-                  id="recruitedFromId"
+                  id="recruitedFromId-{{ idx }}"
                   name="recruitedFromId"
-                >
-                  <option [ngValue]="null">Select where from</option>
-                  <option *ngFor="let recruitment of availableRecruitments" [value]="recruitment.id">
-                    {{ recruitment.from }}
-                  </option>
-                </select>
+                  type="radio"
+                  [value]="recruitment.id"
+                  aria-controls="recruitedFromId-{{ idx }}"
+                />
+                <label class="govuk-label govuk-radios__label" for="recruitedFromId-{{ idx }}">
+                  {{ recruitment.from }}
+                </label>
               </div>
-            </div>
-
-            <div class="govuk-radios__item">
-              <input
-                class="govuk-radios__input"
-                [formControlName]="'recruitmentKnown'"
-                id="recruitmentKnown-2"
-                name="recruitmentKnown"
-                type="radio"
-                value="No"
-              />
-              <label class="govuk-label govuk-radios__label" for="recruitmentKnown-2"> No </label>
-            </div>
+            </ng-container>
           </div>
         </fieldset>
       </div>

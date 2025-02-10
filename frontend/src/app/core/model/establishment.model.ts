@@ -51,18 +51,21 @@ export interface Vacancy {
   jobId: number;
   title?: string;
   total: number;
+  other?: string;
 }
 
 export interface Starter {
   jobId: number;
   title?: string;
   total: number;
+  other?: string;
 }
 
 export interface Leaver {
   jobId: number;
   title?: string;
   total: number;
+  other?: string;
 }
 
 export interface Category {
@@ -160,6 +163,7 @@ export interface Establishment {
   careWorkersCashLoyaltyForFirstTwoYears?: string;
   sickPay?: string;
   isParentApprovedBannerViewed?: boolean;
+  provId?: string;
 }
 
 export interface UpdateJobsRequest {
@@ -170,6 +174,7 @@ export interface UpdateJobsRequest {
 }
 
 export enum jobOptionsEnum {
+  YES = 'With Jobs',
   DONT_KNOW = "Don't know",
   NONE = 'None',
 }
@@ -262,13 +267,13 @@ export enum WdfSortStaffOptions {
   '0_dsc' = 'Staff name (Z to A)',
   '1_asc' = 'Job role (A to Z)',
   '1_dsc' = 'Job role (Z to A)',
-  '2_meeting' = 'WDF requirements (meeting)',
-  '2_not_meeting' = 'WDF requirements (not meeting)',
+  '2_meeting' = 'Funding requirements (meeting)',
+  '2_not_meeting' = 'Funding requirements (not meeting)',
 }
 
-export enum WdfParentSortWorkplacesOptions {
-  '1_not_meeting' = 'WDF requirements (not meeting)',
-  '2_meeting' = 'WDF requirements (meeting)',
+export enum FundingParentSortWorkplacesOptions {
+  '1_not_meeting' = 'Funding requirements (not meeting)',
+  '2_meeting' = 'Funding requirements (meeting)',
   '3_asc' = 'Workplace name (A to Z)',
   '4_dsc' = 'Workplace name (Z to A)',
 }

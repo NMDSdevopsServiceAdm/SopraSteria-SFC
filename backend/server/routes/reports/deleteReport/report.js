@@ -93,7 +93,7 @@ const fillData = (reportData, laData, WS1) => {
       la = laData[establishment.id].cssrRecord.localAuthority;
     }
     const address = concatenateAddress(
-      establishment.address,
+      establishment.address1,
       establishment.address2,
       establishment.address3,
       establishment.town,
@@ -161,4 +161,5 @@ const generateDeleteReport = async (req, res) => {
 
 module.exports = router;
 module.exports.generateDeleteReport = generateDeleteReport;
+module.exports.fillData = fillData;
 module.exports.monthsWithoutUpdate = monthsWithoutUpdate;

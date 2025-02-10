@@ -12,6 +12,7 @@ const {
   toCSV,
   _maptoCSVregisteredNurse,
 } = require('../../../../../../routes/establishments/bulkUpload/download/workerCSV');
+const { getWorkerColumnIndex } = require('../../../../../../routes/establishments/bulkUpload/data/workerHeaders');
 
 const establishment = {
   id: 123,
@@ -40,23 +41,23 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[0]).to.equal(establishment.LocalIdentifierValue);
-          expect(csvAsArray[1]).to.equal(worker.LocalIdentifierValue);
-          expect(csvAsArray[2]).to.equal('UNCHECKED');
-          expect(csvAsArray[3]).to.equal(worker.NameOrIdValue);
+          expect(csvAsArray[getWorkerColumnIndex('LOCALESTID')]).to.equal(establishment.LocalIdentifierValue);
+          expect(csvAsArray[getWorkerColumnIndex('UNIQUEWORKERID')]).to.equal(worker.LocalIdentifierValue);
+          expect(csvAsArray[getWorkerColumnIndex('STATUS')]).to.equal('UNCHECKED');
+          expect(csvAsArray[getWorkerColumnIndex('DISPLAYID')]).to.equal(worker.NameOrIdValue);
         });
 
         it('should return national insurance number', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[4]).to.equal(worker.NationalInsuranceNumberValue);
+          expect(csvAsArray[getWorkerColumnIndex('NINUMBER')]).to.equal(worker.NationalInsuranceNumberValue);
         });
         it('should return sanitised national insurance number if download-type is workers-sanitise', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[4]).to.equal('Admin');
+          expect(csvAsArray[getWorkerColumnIndex('NINUMBER')]).to.equal('Admin');
         });
         it('should return blank if no national insurance number', async () => {
           worker.NationalInsuranceNumberValue = null;
@@ -64,32 +65,33 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[4]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('NINUMBER')]).to.equal('');
         });
         it('should return blank if no national insurance number and if download-type is workers-sanitise', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[4]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('NINUMBER')]).to.equal('');
         });
         it('should return postcode', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[5]).to.equal(worker.PostcodeValue);
+          expect(csvAsArray[getWorkerColumnIndex('POSTCODE')]).to.equal(worker.PostcodeValue);
         });
+
         it('should return dob', async () => {
           const dobParts = worker.DateOfBirthValue.split('-');
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[6]).to.equal(`${dobParts[2]}/${dobParts[1]}/${dobParts[0]}`);
+          expect(csvAsArray[getWorkerColumnIndex('DOB')]).to.equal(`${dobParts[2]}/${dobParts[1]}/${dobParts[0]}`);
         });
         it('should return sanitised dob if download-type is workers-sanitise', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[6]).to.equal('Admin');
+          expect(csvAsArray[getWorkerColumnIndex('DOB')]).to.equal('Admin');
         });
         it('should return blank if no dob', async () => {
           worker.DateOfBirthValue = null;
@@ -97,7 +99,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[6]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('DOB')]).to.equal('');
         });
         it('return blank if no dob and if download-type is workers-sanitise', async () => {
           worker.DateOfBirthValue = null;
@@ -105,8 +107,9 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3, 'workersSanitise');
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[6]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('DOB')]).to.equal('');
         });
+
         [
           {
             name: 'Female',
@@ -131,7 +134,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[7]).to.equal(value.code);
+            expect(csvAsArray[getWorkerColumnIndex('GENDER')]).to.equal(value.code);
           });
         });
         it('should return the correct ethnicity code', async () => {
@@ -142,7 +145,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[8]).to.equal(worker.ethnicity.id);
+          expect(csvAsArray[getWorkerColumnIndex('ETHNICITY')]).to.equal(worker.ethnicity.id);
         });
         it('should be blank if no ethnicity', async () => {
           worker.ethnicity = null;
@@ -150,8 +153,9 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[8]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('ETHNICITY')]).to.equal('');
         });
+
         [
           {
             name: 'British',
@@ -173,7 +177,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[9]).to.equal(nationality.code);
+            expect(csvAsArray[getWorkerColumnIndex('NATIONALITY')]).to.equal(nationality.code);
           });
         });
         it('should return the correct code for nationality with other value', async () => {
@@ -185,33 +189,20 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[9]).to.equal(worker.nationality.id);
+          expect(csvAsArray[getWorkerColumnIndex('NATIONALITY')]).to.equal(worker.nationality.id);
         });
+
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code for british citizenship ' + value.value, async () => {
             worker.BritishCitizenshipValue = value.value;
 
-            let britishCitizenship = '';
-            switch (worker.BritishCitizenshipValue) {
-              case 'Yes':
-                britishCitizenship = '1';
-                break;
-
-              case 'No':
-                britishCitizenship = '2';
-                break;
-
-              case "Don't know":
-                britishCitizenship = '999';
-                break;
-            }
-
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[10]).to.equal(britishCitizenship);
+            expect(csvAsArray[getWorkerColumnIndex('BRITISHCITIZENSHIP')]).to.equal(value.code);
           });
         });
+
         [
           {
             name: 'United Kingdom',
@@ -233,7 +224,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[11]).to.equal(country.code);
+            expect(csvAsArray[getWorkerColumnIndex('COUNTRYOFBIRTH')]).to.equal(country.code);
           });
         });
         it('should return the correct code for country of birth with other value', async () => {
@@ -245,8 +236,9 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[11]).to.equal(worker.countryOfBirth.id);
+          expect(csvAsArray[getWorkerColumnIndex('COUNTRYOFBIRTH')]).to.equal(worker.countryOfBirth.id);
         });
+
         it('should return the correct code for year arrived year', async () => {
           worker.YearArrivedValue = 'Yes';
           worker.YearArrivedYear = '1998';
@@ -254,7 +246,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[12]).to.equal(worker.YearArrivedYear);
+          expect(csvAsArray[getWorkerColumnIndex('YEAROFENTRY')]).to.equal(worker.YearArrivedYear);
         });
         it('should not return year if the year arrived is no', async () => {
           worker.YearArrivedValue = 'No';
@@ -262,8 +254,9 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[12]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('YEAROFENTRY')]).to.equal('');
         });
+
         [
           {
             name: 'Yes',
@@ -288,9 +281,10 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[13]).to.equal(disability.code);
+            expect(csvAsArray[getWorkerColumnIndex('DISABLED')]).to.equal(disability.code);
           });
         });
+
         [
           {
             name: 'Yes, completed',
@@ -311,9 +305,34 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[14]).to.equal(careCert.code);
+            expect(csvAsArray[getWorkerColumnIndex('CARECERT')]).to.equal(careCert.code);
           });
         });
+
+        [
+          { name: 'Yes, completed', code: '1;' },
+          { name: 'Yes, completed', year: 2024, code: '1;2024' },
+          { name: 'Yes, started', code: '2' },
+          { name: 'No', code: '3' },
+        ].forEach((level2CareCert) => {
+          let testName = 'should return the correct code for level 2 care certificate ' + level2CareCert.name;
+          if (level2CareCert.year) {
+            testName += ` with year: ${level2CareCert.year}`;
+          }
+
+          it(testName, async () => {
+            worker.Level2CareCertificateValue = level2CareCert.name;
+            if (level2CareCert.year) {
+              worker.Level2CareCertificateYear = level2CareCert.year;
+            }
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('L2CARECERT')]).to.equal(level2CareCert.code);
+          });
+        });
+
         it('should return the correct code for no in recruitment source', async () => {
           worker.RecruitedFromValue = 'No';
           worker.recruitedFrom = null;
@@ -321,7 +340,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[15]).to.equal('16');
+          expect(csvAsArray[getWorkerColumnIndex('RECSOURCE')]).to.equal('16');
         });
         it('should return the correct code for recruitment source', async () => {
           worker.RecruitedFromValue = 'Yes';
@@ -332,14 +351,37 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[15]).to.equal('1789');
+          expect(csvAsArray[getWorkerColumnIndex('RECSOURCE')]).to.equal('1789');
         });
+
+        yesNoDontKnow.forEach((value) => {
+          it('should return the correct code for health and care visa ' + value.value, async () => {
+            worker.HealthAndCareVisaValue = value.value;
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('HANDCVISA')]).to.equal(value.code);
+          });
+
+          it('should return the correct code for inside or outside of UK ' + value.value, async () => {
+            worker.EmployedFromOutsideUkValue = value.value;
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('INOUTUK')]).to.equal(value.code);
+          });
+        });
+
         it('should return start date', async () => {
           const startDateParts = worker.MainJobStartDateValue.split('-');
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[16]).to.equal(`${startDateParts[2]}/${startDateParts[1]}/${startDateParts[0]}`);
+          expect(csvAsArray[getWorkerColumnIndex('STARTDATE')]).to.equal(
+            `${startDateParts[2]}/${startDateParts[1]}/${startDateParts[0]}`,
+          );
         });
         it('should return blank if no start date', async () => {
           worker.MainJobStartDateValue = null;
@@ -347,50 +389,50 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[16]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('STARTDATE')]).to.equal('');
         });
-        it('should return the correct code for social care start date', async () => {
-          worker.SocialCareStartDateValue = 'Yes';
-          worker.SocialCareStartDateYear = '1998';
 
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[17]).to.equal(worker.YearArrivedYear);
-        });
-        it('should not return year if the social care start date is no', async () => {
-          worker.SocialCareStartDateValue = 'No';
-
-          const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
-          const csvAsArray = csv.split(',');
-
-          expect(csvAsArray[17]).to.equal('');
-        });
-        yesNoDontKnow.forEach((value) => {
-          it('should return the correct code for apprenticeship ' + value.value, async () => {
-            worker.ApprenticeshipTrainingValue = value.value;
-
-            let apprenticeship = '';
-            switch (worker.ApprenticeshipTrainingValue) {
-              case 'Yes':
-                apprenticeship = '1';
-                break;
-
-              case 'No':
-                apprenticeship = '2';
-                break;
-
-              case "Don't know":
-                apprenticeship = '999';
-                break;
-            }
+        describe('Social care start date', () => {
+          it('should return the correct code for social care start date', async () => {
+            worker.SocialCareStartDateValue = 'Yes';
+            worker.SocialCareStartDateYear = '1998';
 
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[18]).to.equal(apprenticeship);
+            expect(csvAsArray[getWorkerColumnIndex('STARTINSECT')]).to.equal(worker.YearArrivedYear);
+          });
+
+          it('should return 999 if the social care start date value is No', async () => {
+            worker.SocialCareStartDateValue = 'No';
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('STARTINSECT')]).to.equal('999');
+          });
+
+          it('should return empty string if the social care start date value is null (question not answered)', async () => {
+            worker.SocialCareStartDateValue = null;
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('STARTINSECT')]).to.equal('');
           });
         });
+
+        yesNoDontKnow.forEach((value) => {
+          it('should return the correct code for apprenticeship ' + value.value, async () => {
+            worker.ApprenticeshipTrainingValue = value.value;
+
+            const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
+            const csvAsArray = csv.split(',');
+
+            expect(csvAsArray[getWorkerColumnIndex('APPRENTICE')]).to.equal(value.code);
+          });
+        });
+
         [
           {
             name: 'Permanent',
@@ -419,34 +461,21 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[19]).to.equal(empStatus.code);
+            expect(csvAsArray[getWorkerColumnIndex('EMPLSTATUS')]).to.equal(empStatus.code);
           });
         });
+
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code for zero hours ' + value.value, async () => {
             worker.ZeroHoursContractValue = value.value;
 
-            let zeroHours = '';
-            switch (worker.ZeroHoursContractValue) {
-              case 'Yes':
-                zeroHours = '1';
-                break;
-
-              case 'No':
-                zeroHours = '2';
-                break;
-
-              case "Don't know":
-                zeroHours = '999';
-                break;
-            }
-
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[20]).to.equal(zeroHours);
+            expect(csvAsArray[getWorkerColumnIndex('ZEROHRCONT')]).to.equal(value.code);
           });
         });
+
         it('should return the correct number of sick days if Yes', async () => {
           worker.DaysSickValue = 'Yes';
           worker.DaysSickDays = '4';
@@ -454,7 +483,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[21]).to.equal(worker.DaysSickDays);
+          expect(csvAsArray[getWorkerColumnIndex('DAYSSICK')]).to.equal(worker.DaysSickDays);
         });
         it('should not return days if the sick value is no', async () => {
           worker.SocialCareStartDateValue = 'No';
@@ -463,27 +492,29 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[21]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('DAYSSICK')]).to.equal('');
         });
+
         it('should return hourly value and rate', async () => {
           worker.AnnualHourlyPayValue = 'Hourly';
 
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[22]).to.equal('3');
-          expect(csvAsArray[23]).to.equal('');
-          expect(csvAsArray[24]).to.equal(String(worker.AnnualHourlyPayRate));
+          expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('3');
+          expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal(String(worker.AnnualHourlyPayRate));
         });
+
         it('should return annual value and rate', async () => {
           worker.AnnualHourlyPayValue = 'Annually';
 
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[22]).to.equal('1');
-          expect(csvAsArray[23]).to.equal(String(worker.AnnualHourlyPayRate));
-          expect(csvAsArray[24]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('1');
+          expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal(String(worker.AnnualHourlyPayRate));
+          expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal('');
         });
         it('should not return annual/hourly value or rate', async () => {
           worker.AnnualHourlyPayValue = null;
@@ -491,10 +522,11 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[22]).to.equal('');
-          expect(csvAsArray[23]).to.equal('');
-          expect(csvAsArray[24]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('SALARYINT')]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('SALARY')]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('HOURLYRATE')]).to.equal('');
         });
+
         it('should return main job id', async () => {
           worker.mainJob = {
             id: '987',
@@ -503,7 +535,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[25]).to.equal(worker.mainJob.id);
+          expect(csvAsArray[getWorkerColumnIndex('MAINJOBROLE')]).to.equal(worker.mainJob.id);
         });
         it('should not return main job id', async () => {
           worker.mainJob = null;
@@ -511,8 +543,9 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[25]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('MAINJOBROLE')]).to.equal('');
         });
+
         it('should return main job other value', async () => {
           worker.mainJob = {
             other: true,
@@ -521,7 +554,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[26]).to.equal(worker.MainJobFkOther);
+          expect(csvAsArray[getWorkerColumnIndex('MAINJRDESC')]).to.equal(worker.MainJobFkOther);
         });
         it('should not return main job other value', async () => {
           worker.mainJob = {
@@ -531,7 +564,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[26]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('MAINJRDESC')]).to.equal('');
         });
         it('should not return main job other value', async () => {
           worker.mainJob = null;
@@ -539,8 +572,9 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[26]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('MAINJRDESC')]).to.equal('');
         });
+
         ['Permanent', 'Temporary'].forEach((contract) => {
           it('should return contracted hours if the contract is ' + contract, async () => {
             worker.ContractValue = contract;
@@ -550,7 +584,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[27]).to.equal(String(worker.WeeklyHoursContractedHours));
+            expect(csvAsArray[getWorkerColumnIndex('CONTHOURS')]).to.equal(String(worker.WeeklyHoursContractedHours));
           });
         });
         it('should not return contracted hours if the contract is Agency', async () => {
@@ -561,7 +595,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[27]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('CONTHOURS')]).to.equal('');
         });
         ['Pool/Bank', 'Agency', 'Other'].forEach((contract) => {
           it('should return average hours if the contract is ' + contract, async () => {
@@ -572,7 +606,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[28]).to.equal(String(worker.WeeklyHoursAverageHours));
+            expect(csvAsArray[getWorkerColumnIndex('AVGHOURS')]).to.equal(String(worker.WeeklyHoursAverageHours));
           });
         });
         it('should not return average hours if the contract is Temporary', async () => {
@@ -583,8 +617,9 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[28]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('AVGHOURS')]).to.equal('');
         });
+
         [
           {
             name: 'Adult Nurse',
@@ -619,7 +654,7 @@ describe('workerCSV', () => {
               const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
               const csvAsArray = csv.split(',');
 
-              expect(csvAsArray[29]).to.equal(regNurse.code);
+              expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal(regNurse.code);
             },
           );
         });
@@ -632,9 +667,9 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[29]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal('');
         });
-        it("should return reistered nurse value if main job is nurse and they don't have reg value", async () => {
+        it("should return registered nurse value if main job is nurse and they don't have reg value", async () => {
           worker.RegisteredNurseValue = 'Adult Nurse';
           worker.mainJob = {
             id: 24,
@@ -643,8 +678,9 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[29]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('NMCREG')]).to.equal('');
         });
+
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code nurse specialism ' + value.value, async () => {
             worker.mainJob = {
@@ -677,7 +713,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[30]).to.equal(nurseSpec);
+            expect(csvAsArray[getWorkerColumnIndex('NURSESPEC')]).to.equal(nurseSpec);
           });
         });
         it('should not return a code for nurse specialism if not a nurse', async () => {
@@ -689,7 +725,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[30]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('NURSESPEC')]).to.equal('');
         });
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code for approved mental health worker ' + value.value, async () => {
@@ -713,7 +749,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[31]).to.equal(amhp);
+            expect(csvAsArray[getWorkerColumnIndex('AMHP')]).to.equal(amhp);
           });
         });
         yesNoDontKnow.forEach((value) => {
@@ -741,7 +777,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[32]).to.equal(scqual);
+            expect(csvAsArray[getWorkerColumnIndex('SCQUAL')]).to.equal(scqual);
           });
           it('should not return the correct code sc qual ' + value.value, async () => {
             worker.QualificationInSocialCareValue = value.value;
@@ -763,7 +799,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[32]).to.equal(scqual);
+            expect(csvAsArray[getWorkerColumnIndex('SCQUAL')]).to.equal(scqual);
           });
         });
         it('should not return the correct code sc qual', async () => {
@@ -772,7 +808,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[32]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('SCQUAL')]).to.equal('');
         });
         yesNoDontKnow.forEach((value) => {
           it('should return the correct code non sc qual ' + value.value, async () => {
@@ -799,7 +835,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[33]).to.equal(nonscqual);
+            expect(csvAsArray[getWorkerColumnIndex('NONSCQUAL')]).to.equal(nonscqual);
           });
           it('should not return the correct code non sc qual ' + value.value, async () => {
             worker.OtherQualificationsValue = value.value;
@@ -821,7 +857,7 @@ describe('workerCSV', () => {
             const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
             const csvAsArray = csv.split(',');
 
-            expect(csvAsArray[33]).to.equal(nonscqual);
+            expect(csvAsArray[getWorkerColumnIndex('NONSCQUAL')]).to.equal(nonscqual);
           });
         });
         it('should not return the correct code non sc qual', async () => {
@@ -830,13 +866,14 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[33]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('NONSCQUAL')]).to.equal('');
         });
+
         it('should return the correct code and year for qual 01', async () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[34]).to.equal(
+          expect(csvAsArray[getWorkerColumnIndex('QUALACH01')]).to.equal(
             `${worker.qualifications[0].qualification.id};${worker.qualifications[0].year}`,
           );
         });
@@ -844,14 +881,14 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[35]).to.equal(worker.qualifications[0].notes);
+          expect(csvAsArray[getWorkerColumnIndex('QUALACH01NOTES')]).to.equal(worker.qualifications[0].notes);
         });
         it('should return the unescaped notes for qual 01 notes', async () => {
           worker.qualifications[0].notes = '%EA%E9';
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[35]).to.equal('êé');
+          expect(csvAsArray[getWorkerColumnIndex('QUALACH01NOTES')]).to.equal('êé');
         });
         it('should return the correct code and year for qual 01', async () => {
           worker.qualifications = [];
@@ -859,7 +896,7 @@ describe('workerCSV', () => {
           const csv = toCSV(establishment.LocalIdentifierValue, worker, 3);
           const csvAsArray = csv.split(',');
 
-          expect(csvAsArray[33]).to.equal('');
+          expect(csvAsArray[getWorkerColumnIndex('QUALACH01')]).to.equal('');
         });
       });
     });

@@ -1,0 +1,79 @@
+<app-error-summary *ngIf="submitted && serverError" [serverError]="serverError" [form]="form"> </app-error-summary>
+
+<form #formEl (ngSubmit)="onSubmit()" [formGroup]="form" *ngIf="workersWithHealthAndCareVisas?.length">
+  <fieldset class="govuk-fieldset" formArrayName="workers">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds-from-desktop">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
+          <span class="govuk-caption-xl">Employment details</span>
+          <h1 class="govuk-fieldset__heading">
+            Did your organisation employ
+            {{ workersWithHealthAndCareVisas.length > 1 ? 'these workers' : 'this worker' }} from outside the UK or from
+            inside the UK?
+          </h1>
+        </legend>
+        <details class="govuk-details">
+          <summary class="govuk-details__summary">
+            <span class="govuk-details__summary-text">Why we ask for this information</span>
+          </summary>
+          <div class="govuk-details__text">
+            <p>
+              DHSC use the anonymised data to help them identify which roles workers with Health and Care Worker visas
+              have. The data is also used to look at employment trends and inform recruitment policies.
+            </p>
+          </div>
+        </details>
+      </div>
+    </div>
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        <div class="govuk-form-group">
+          <table class="govuk-table">
+            <tbody class="govuk-table__body">
+              <tr class="govuk-table__row">
+                <th scope="row" class="govuk-table__header govuk-!-width-one-third" style="vertical-align: middle">
+                  Name or ID number
+                </th>
+                <td class="govuk-table__cell"></td>
+              </tr>
+              <tr class="govuk-table__row" *ngFor="let worker of workers.controls; let i = index" [formGroupName]="i">
+                <th
+                  scope="row"
+                  class="govuk-table__header govuk-!-font-weight-regular govuk-!-width-one-quarter"
+                  style="vertical-align: middle"
+                >
+                  <a href="#" (click)="navigateToStaffRecord($event, workersWithHealthAndCareVisas[i])">
+                    {{ workersWithHealthAndCareVisas[i].name }}
+                  </a>
+                </th>
+                <td class="govuk-table__cell">
+                  <div class="govuk-radios govuk-radios--inline asc-inline-radio-buttons">
+                    <div
+                      *ngFor="let answer of answers; let j = index"
+                      id="workers-insideOrOutsideUk-{{ i }}"
+                      class="govuk-radios__item govuk-!-margin-left-4 govuk-!-margin-bottom-0"
+                    >
+                      <input
+                        id="workers-insideOutsideUk-{{ i }}-{{ j }}"
+                        class="govuk-radios__input"
+                        type="radio"
+                        [checked]="worker.value == answer"
+                        [value]="answer.value"
+                        (change)="radioChange(i, j)"
+                        formControlName="insideOrOutsideUk"
+                      />
+                      <label class="govuk-label govuk-radios__label" for="workers-insideOutsideUk-{{ i }}-{{ j }}">
+                        {{ answer.tag }}
+                      </label>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  <app-submit-exit-buttons [cta]="'Save information'" [exit]="'Cancel'" [return]="return"></app-submit-exit-buttons>
+</form>

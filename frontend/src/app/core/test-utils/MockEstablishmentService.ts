@@ -209,40 +209,47 @@ export class MockEstablishmentService extends EstablishmentService {
     return '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
   }
 
+  public _primaryWorkplace: Establishment = {
+    address: '',
+    capacities: [],
+    created: undefined,
+    dataOwner: undefined,
+    dataOwnershipRequested: '',
+    dataPermissions: undefined,
+    employerType: { value: 'Private Sector' },
+    id: 0,
+    isRegulated: false,
+    isParent: false,
+    leavers: undefined,
+    localAuthorities: [],
+    mainService: { name: 'Care', id: 123, isCQC: true },
+    name: 'Test Workplace',
+    nmdsId: 'AB12345',
+    numberOfStaff: 0,
+    otherServices: { value: null, services: [] },
+    postcode: 'AB1 2CD',
+    primaryAuthority: undefined,
+    serviceUsers: [],
+    shareWith: this.shareWith,
+    starters: undefined,
+    totalLeavers: 0,
+    totalStarters: 0,
+    totalVacancies: 0,
+    totalWorkers: 0,
+    uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
+    updated: undefined,
+    updatedBy: '',
+    vacancies: undefined,
+    locationId: '1-11111111',
+    provId: '1-21232433',
+  };
+
   get primaryWorkplace(): Establishment {
-    return {
-      address: '',
-      capacities: [],
-      created: undefined,
-      dataOwner: undefined,
-      dataOwnershipRequested: '',
-      dataPermissions: undefined,
-      employerType: { value: 'Private Sector' },
-      id: 0,
-      isRegulated: false,
-      isParent: false,
-      leavers: undefined,
-      localAuthorities: [],
-      mainService: { name: 'Care', id: 123, isCQC: true },
-      name: 'Test Workplace',
-      nmdsId: 'AB12345',
-      numberOfStaff: 0,
-      otherServices: { value: null, services: [] },
-      postcode: 'AB1 2CD',
-      primaryAuthority: undefined,
-      serviceUsers: [],
-      shareWith: this.shareWith,
-      starters: undefined,
-      totalLeavers: 0,
-      totalStarters: 0,
-      totalVacancies: 0,
-      totalWorkers: 0,
-      uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
-      updated: undefined,
-      updatedBy: '',
-      vacancies: undefined,
-      locationId: '1-11111111',
-    };
+    return this._primaryWorkplace;
+  }
+
+  set primaryWorkplace(value: Establishment) {
+    this._primaryWorkplace = value;
   }
 
   public updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest): Observable<any> {
@@ -322,6 +329,10 @@ export class MockEstablishmentService extends EstablishmentService {
       mainService: { id: 100, name: 'Some kind of service' },
     });
   }
+
+  public getEstablishment(workplaceUid: string, wdf: boolean = false): Observable<any> {
+    return of(this.establishmentObj as Establishment);
+  }
 }
 
 @Injectable()
@@ -387,6 +398,11 @@ export class MockEstablishmentServiceWithNoEmployerType extends MockEstablishmen
   public getEstablishment(workplaceUid: string, wdf: boolean = false): Observable<any> {
     return of(this.establishmentObj as Establishment);
   }
+
+  public workplaceOrSubHasTrainingCertificates(workplaceUid: string) {
+    return of(null);
+  }
+
   public get returnTo(): URLStructure {
     return;
   }
@@ -406,5 +422,36 @@ export class MockEstablishmentServiceCheckCQCDetails extends MockEstablishmentSe
 
   public get checkCQCDetailsBanner(): boolean {
     return this.cqcDetailsBanner;
+  }
+}
+
+@Injectable()
+export class MockEstablishmentServiceWithNoCapacities extends MockEstablishmentService {
+  public static factory() {
+    return (httpClient: HttpClient) => {
+      const service = new MockEstablishmentServiceWithNoCapacities(httpClient);
+      return service;
+    };
+  }
+
+  public getCapacity(establishmentId: any, all: boolean): Observable<any> {
+    return of({
+      allServiceCapacities: [],
+    });
+  }
+}
+
+@Injectable()
+export class MockEstablishmentServiceWithOverrides extends MockEstablishmentService {
+  public static factory(overrides: any = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockEstablishmentService(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        service[overrideName] = overrides[overrideName];
+      });
+
+      return service;
+    };
   }
 }

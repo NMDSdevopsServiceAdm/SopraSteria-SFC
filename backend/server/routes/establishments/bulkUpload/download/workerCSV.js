@@ -19,10 +19,20 @@ const _maptoCSVregisteredNurse = (registeredNurse) => {
   return '';
 };
 
+const _convertYesNoDontKnow = (value) => {
+  const mappings = {
+    Yes: 1,
+    No: 2,
+    "Don't know": 999,
+  };
+
+  return mappings[value] || '';
+};
+
 // takes the given Worker entity and writes it out to CSV string (one line)
 const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   // ["LOCALESTID","UNIQUEWORKERID","STATUS","DISPLAYID","NINUMBER","POSTCODE","DOB","GENDER","ETHNICITY","NATIONALITY","BRITISHCITIZENSHIP","COUNTRYOFBIRTH","YEAROFENTRY","DISABLED",
-  //     "CARECERT","RECSOURCE","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
+  //     "CARECERT","L2CARECERT","RECSOURCE","HANDCVISA","INOUTUK","STARTDATE","STARTINSECT","APPRENTICE","EMPLSTATUS","ZEROHRCONT","DAYSSICK","SALARYINT","SALARY","HOURLYRATE","MAINJOBROLE","MAINJRDESC","CONTHOURS","AVGHOURS",
   //     "NMCREG","NURSESPEC","AMHP","SCQUAL","NONSCQUAL","QUALACH01","QUALACH01NOTES","QUALACH02","QUALACH02NOTES","QUALACH03","QUALACH03NOTES"];
   const columns = [];
 
@@ -165,6 +175,25 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   }
   columns.push(careCert);
 
+  // "L2CARECERT"
+  let l2CareCert = '';
+  switch (entity.Level2CareCertificateValue) {
+    case 'Yes, completed':
+      if (entity.Level2CareCertificateYear) {
+        l2CareCert = `1;${entity.Level2CareCertificateYear}`;
+      } else {
+        l2CareCert = '1;';
+      }
+      break;
+    case 'Yes, started':
+      l2CareCert = '2';
+      break;
+    case 'No':
+      l2CareCert = '3';
+      break;
+  }
+  columns.push(l2CareCert);
+
   // "RECSOURCE"
   let recruitmentSource = '';
   switch (entity.RecruitedFromValue) {
@@ -179,6 +208,12 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   }
   columns.push(recruitmentSource);
 
+  // "HANDCVISA"
+  columns.push(_convertYesNoDontKnow(entity.HealthAndCareVisaValue));
+
+  // "INOUTUK"
+  columns.push(_convertYesNoDontKnow(entity.EmployedFromOutsideUkValue));
+
   // "STARTDATE"
   const mainJobStartDateParts = entity.MainJobStartDateValue ? entity.MainJobStartDateValue.split('-') : null;
 
@@ -187,7 +222,12 @@ const toCSV = (establishmentId, entity, MAX_QUALIFICATIONS, downloadType) => {
   ); // in UK date format dd/mm/yyyy (Worker stores as YYYY-MM-DD)
 
   // "STARTINSECT"
-  columns.push(entity.SocialCareStartDateValue === 'Yes' ? entity.SocialCareStartDateYear : '');
+  const socialCareStartDateMappings = {
+    Yes: entity.SocialCareStartDateYear,
+    No: '999',
+  };
+
+  columns.push(socialCareStartDateMappings[entity.SocialCareStartDateValue] || '');
 
   // "APPRENTICE"
   let apprenticeship = '';

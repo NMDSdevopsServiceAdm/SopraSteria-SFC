@@ -1,14 +1,20 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { CheckPermissionsGuard } from '@core/guards/permissions/check-permissions/check-permissions.guard';
+import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
 import { ExpiresSoonAlertDatesResolver } from '@core/resolvers/expiresSoonAlertDates.resolver';
+import { JobsResolver } from '@core/resolvers/jobs.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
+import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-for-leaving.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
+import { SelectQualificationTypeComponent } from '@features/training-and-qualifications/add-edit-qualification/select-qualification-type/select-qualification-type.component';
+import { SelectTrainingCategoryComponent } from '@features/training-and-qualifications/add-edit-training/select-training-category/select-training-category.component';
 import { ViewTrainingComponent } from '@shared/components/training-and-qualifications-categories/view-trainings/view-trainings.component';
 
 import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
@@ -25,12 +31,17 @@ import { ContractWithZeroHoursComponent } from './contract-with-zero-hours/contr
 import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.component';
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
+import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
+import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
+import { HealthAndCareVisaComponent } from './health-and-care-visa/health-and-care-visa.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
+import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
@@ -63,12 +74,31 @@ const routes: Routes = [
   },
   {
     path: 'create-staff-record',
+    resolve: { jobs: JobsResolver },
     canActivate: [CheckPermissionsGuard],
-    component: StaffDetailsComponent,
-    data: {
-      permissions: ['canAddWorker'],
-      title: 'Add a Staff Record',
-    },
+    children: [
+      {
+        path: '',
+        redirectTo: 'staff-details',
+        pathMatch: 'full',
+      },
+      {
+        path: 'staff-details',
+        component: StaffDetailsComponent,
+        data: {
+          permissions: ['canAddWorker'],
+          title: 'Add a Staff Record',
+        },
+      },
+      {
+        path: 'main-job-role',
+        component: MainJobRoleComponent,
+        data: {
+          permissions: ['canAddWorker'],
+          title: 'Main Job Role',
+        },
+      },
+    ],
   },
   {
     path: 'basic-records-save-success',
@@ -90,7 +120,7 @@ const routes: Routes = [
     path: ':id',
     canActivate: [CheckPermissionsGuard],
     component: EditWorkerComponent,
-    resolve: { worker: WorkerResolver },
+    resolve: { worker: WorkerResolver, jobs: JobsResolver },
     data: {
       permissions: ['canViewWorker'],
     },
@@ -107,6 +137,11 @@ const routes: Routes = [
             path: 'staff-details',
             component: StaffDetailsComponent,
             data: { title: 'Staff Details' },
+          },
+          {
+            path: 'main-job-role',
+            component: MainJobRoleComponent,
+            data: { title: 'Main Job Role' },
           },
           {
             path: 'main-job-start-date',
@@ -193,6 +228,16 @@ const routes: Routes = [
             data: { title: 'Recruited From' },
           },
           {
+            path: 'health-and-care-visa',
+            component: HealthAndCareVisaComponent,
+            data: { title: 'Health and Care Visa' },
+          },
+          {
+            path: 'inside-or-outside-of-uk',
+            component: EmployedFromOutsideUkComponent,
+            data: { title: 'Inside or Outside UK' },
+          },
+          {
             path: 'adult-social-care-started',
             component: AdultSocialCareStartedComponent,
             data: { title: 'Adult Social Care Started' },
@@ -228,6 +273,11 @@ const routes: Routes = [
             data: { title: 'Care Certificate' },
           },
           {
+            path: 'level-2-care-certificate',
+            component: Level2AdultSocialCareCertificateComponent,
+            data: { title: 'Level 2 Adult Social Care Certificate' },
+          },
+          {
             path: 'apprenticeship-training',
             component: ApprenticeshipTrainingComponent,
             data: { title: 'Apprenticeship Training' },
@@ -254,8 +304,21 @@ const routes: Routes = [
           },
           {
             path: 'add-qualification',
-            component: AddEditQualificationComponent,
-            data: { title: 'Add Qualification' },
+            resolve: {
+              availableQualifications: AvailableQualificationsResolver,
+            },
+            children: [
+              {
+                path: '',
+                component: SelectQualificationTypeComponent,
+                data: { title: 'Add Qualification' },
+              },
+              {
+                path: 'qualification-details',
+                component: AddEditQualificationComponent,
+                data: { title: 'Add Qualification' },
+              },
+            ],
           },
           {
             path: 'qualification/:qualificationId',
@@ -264,6 +327,14 @@ const routes: Routes = [
                 path: '',
                 component: AddEditQualificationComponent,
                 data: { title: 'Qualification' },
+              },
+              {
+                path: 'select-qualification-type',
+                component: SelectQualificationTypeComponent,
+                data: { title: 'Select Qualification Type' },
+                resolve: {
+                  availableQualifications: AvailableQualificationsResolver,
+                },
               },
               {
                 path: 'delete',
@@ -277,8 +348,21 @@ const routes: Routes = [
           },
           {
             path: 'add-training',
-            component: AddEditTrainingComponent,
-            data: { title: 'Add Training' },
+            children: [
+              {
+                path: '',
+                component: SelectTrainingCategoryComponent,
+                data: { title: 'Add Training' },
+                resolve: {
+                  trainingCategories: TrainingCategoriesResolver,
+                },
+              },
+              {
+                path: 'details',
+                component: AddEditTrainingComponent,
+                data: { title: 'Add Training' },
+              },
+            ],
           },
           {
             path: 'training/:trainingRecordId',
@@ -328,6 +412,11 @@ const routes: Routes = [
         data: { title: 'Staff Details' },
       },
       {
+        path: 'main-job-role',
+        component: MainJobRoleComponent,
+        data: { title: 'Main Job Role' },
+      },
+      {
         path: 'mandatory-details',
         children: [
           {
@@ -339,6 +428,11 @@ const routes: Routes = [
             path: 'staff-details',
             component: StaffDetailsComponent,
             data: { title: 'Staff Details' },
+          },
+          {
+            path: 'main-job-role',
+            component: MainJobRoleComponent,
+            data: { title: 'Main Job Role' },
           },
         ],
       },
@@ -427,6 +521,16 @@ const routes: Routes = [
         data: { title: 'Recruited From' },
       },
       {
+        path: 'health-and-care-visa',
+        component: HealthAndCareVisaComponent,
+        data: { title: 'Health and Care Visa' },
+      },
+      {
+        path: 'inside-or-outside-of-uk',
+        component: EmployedFromOutsideUkComponent,
+        data: { title: 'Inside or Outside UK' },
+      },
+      {
         path: 'adult-social-care-started',
         component: AdultSocialCareStartedComponent,
         data: { title: 'Adult Social Care Started' },
@@ -462,6 +566,11 @@ const routes: Routes = [
         data: { title: 'Care Certificate' },
       },
       {
+        path: 'level-2-care-certificate',
+        component: Level2AdultSocialCareCertificateComponent,
+        data: { title: 'Level 2 Adult Social Care Certificate' },
+      },
+      {
         path: 'apprenticeship-training',
         component: ApprenticeshipTrainingComponent,
         data: { title: 'Apprenticeship Training' },
@@ -488,8 +597,21 @@ const routes: Routes = [
       },
       {
         path: 'add-qualification',
-        component: AddEditQualificationComponent,
-        data: { title: 'Add Qualification' },
+        resolve: {
+          availableQualifications: AvailableQualificationsResolver,
+        },
+        children: [
+          {
+            path: '',
+            component: SelectQualificationTypeComponent,
+            data: { title: 'Add Qualification' },
+          },
+          {
+            path: 'qualification-details',
+            component: AddEditQualificationComponent,
+            data: { title: 'Add Qualification' },
+          },
+        ],
       },
       {
         path: 'qualification/:qualificationId',
@@ -498,6 +620,14 @@ const routes: Routes = [
             path: '',
             component: AddEditQualificationComponent,
             data: { title: 'Qualification' },
+          },
+          {
+            path: 'select-qualification-type',
+            component: SelectQualificationTypeComponent,
+            data: { title: 'Select Qualification Type' },
+            resolve: {
+              availableQualifications: AvailableQualificationsResolver,
+            },
           },
           {
             path: 'delete',
@@ -511,8 +641,21 @@ const routes: Routes = [
       },
       {
         path: 'add-training',
-        component: AddEditTrainingComponent,
-        data: { title: 'Add Training' },
+        children: [
+          {
+            path: '',
+            component: SelectTrainingCategoryComponent,
+            data: { title: 'Add Training' },
+            resolve: {
+              trainingCategories: TrainingCategoriesResolver,
+            },
+          },
+          {
+            path: 'details',
+            component: AddEditTrainingComponent,
+            data: { title: 'Add Training' },
+          },
+        ],
       },
       {
         path: 'training/:trainingRecordId',
@@ -548,6 +691,17 @@ const routes: Routes = [
         component: LongTermAbsenceComponent,
         resolve: { longTermAbsenceReasons: LongTermAbsenceResolver, worker: WorkerResolver },
         data: { title: 'Flag long term absence' },
+      },
+      {
+        path: 'delete-staff-record',
+        component: DeleteStaffRecordComponent,
+        resolve: {
+          reasonsForLeaving: WorkerReasonsForLeavingResolver,
+        },
+        data: {
+          permissions: ['canDeleteWorker'],
+          title: 'Delete staff record',
+        },
       },
     ],
   },

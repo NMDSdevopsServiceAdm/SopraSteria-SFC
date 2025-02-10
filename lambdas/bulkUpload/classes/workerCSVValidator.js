@@ -20,6 +20,7 @@ class WorkerCsvValidator {
     this._status = null;
     this._key = null;
     this._establishmentKey = null;
+    this._transferStaffRecord = null;
 
     this._NINumber = null;
     this._postCode = null;
@@ -29,9 +30,12 @@ class WorkerCsvValidator {
     this._ethnicity = null;
     this._britishNationality = null;
     this._yearOfEntry = null;
+    this._healthAndCareVisa = null;
+    this._employedFromOutsideUk = null;
 
     this._disabled = null;
     this._careCert = null;
+    this._level2CareCert = null;
 
     this._recSource = null;
     this._startDate = null;
@@ -193,6 +197,11 @@ class WorkerCsvValidator {
     return 1380;
   }
 
+  static get TRANSFERSTAFFRECORD_ERROR() {
+    return 1400;
+    // NOTE: Reserve error code 1400 - 1409 for TRANSFERSTAFFRECORD errors
+  }
+
   static get UNIQUE_WORKER_ID_WARNING() {
     return 3020;
   }
@@ -348,6 +357,38 @@ class WorkerCsvValidator {
     return 5560;
   }
 
+  static get HANDCVISA_WARNING() {
+    return 5570;
+  }
+
+  static get INOUTUK_WARNING() {
+    return 5580;
+  }
+
+  static get L2CARECERT_WARNING() {
+    return 5590;
+  }
+
+  static get L2CARECERT_WARNING_IGNORE_YEAR_FOR_OPTION_2() {
+    return 5600;
+  }
+
+  static get L2CARECERT_WARNING_IGNORE_YEAR_FOR_OPTION_3() {
+    return 5610;
+  }
+
+  static get L2CARECERT_WARNING_YEAR_BEFORE_2024() {
+    return 5620;
+  }
+
+  static get L2CARECERT_WARNING_YEAR_IN_FUTURE() {
+    return 5630;
+  }
+
+  static get L2CARECERT_WARNING_YEAR_INVALID() {
+    return 5640;
+  }
+
   get lineNumber() {
     return this._lineNumber;
   }
@@ -366,6 +407,10 @@ class WorkerCsvValidator {
 
   get changeUniqueWorker() {
     return this._changeUniqueWorkerId;
+  }
+
+  get transferStaffRecord() {
+    return this._transferStaffRecord;
   }
 
   get contractType() {
@@ -428,6 +473,10 @@ class WorkerCsvValidator {
     return this._careCert;
   }
 
+  get level2CareCert() {
+    return this._level2CareCert;
+  }
+
   get recSource() {
     return this._recSource;
   }
@@ -482,6 +531,40 @@ class WorkerCsvValidator {
 
   get amhp() {
     return this._amhp;
+  }
+
+  get healthAndCareVisa() {
+    return this._healthAndCareVisa;
+  }
+
+  get employedFromOutsideUk() {
+    return this._employedFromOutsideUk;
+  }
+
+  _convertYesNoDontKnow(value) {
+    const mappings = {
+      1: 'Yes',
+      2: 'No',
+      999: "Don't know",
+    };
+
+    return mappings[value] || '';
+  }
+
+  _generateWarning(warning, columnName, warnType = null) {
+    if (!warnType) {
+      warnType = `${columnName}_WARNING`;
+    }
+    return {
+      worker: this._currentLine.UNIQUEWORKERID,
+      name: this._currentLine.LOCALESTID,
+      lineNumber: this._lineNumber,
+      warnCode: WorkerCsvValidator[warnType],
+      warnType: warnType,
+      warning,
+      source: this._currentLine[columnName],
+      column: columnName,
+    };
   }
 
   _validateContractType() {
@@ -608,7 +691,7 @@ class WorkerCsvValidator {
   }
 
   _validateStatus() {
-    const statusValues = ['DELETE', 'UPDATE', 'UNCHECKED', 'NOCHANGE', 'NEW', 'CHGSUB'];
+    const statusValues = ['DELETE', 'UPDATE', 'UNCHECKED', 'NOCHANGE', 'NEW'];
     const myStatus = this._currentLine.STATUS ? this._currentLine.STATUS.toUpperCase() : this._currentLine.STATUS;
 
     if (!statusValues.includes(myStatus)) {
@@ -676,26 +759,33 @@ class WorkerCsvValidator {
             });
           }
           break;
-        case 'CHGSUB':
-          // note - the LOCALESTID here is that of the target sub - not the current sub
-          if (thisWorkerExists()) {
-            this._validationErrors.push({
-              name: this._currentLine.LOCALESTID,
-              worker: this._currentLine.UNIQUEWORKERID,
-              lineNumber: this._lineNumber,
-              errCode: WorkerCsvValidator.STATUS_ERROR,
-              errType: 'STATUS_ERROR',
-              error: 'STATUS is CHGSUB but staff already exists in the new workplace',
-              source: myStatus,
-              column: 'STATUS',
-            });
-          }
-          break;
       }
 
       this._status = myStatus;
       return true;
     }
+  }
+
+  _validateTransferStaffRecord() {
+    const newWorkplaceLocalId = this._currentLine.TRANSFERSTAFFRECORD;
+
+    const workerExists = !!this._currentWorker;
+    if (newWorkplaceLocalId && !workerExists) {
+      this._validationErrors.push({
+        name: this._currentLine.LOCALESTID,
+        worker: this._currentLine.UNIQUEWORKERID,
+        lineNumber: this._lineNumber,
+        errCode: WorkerCsvValidator.TRANSFERSTAFFRECORD_ERROR,
+        errType: 'TRANSFERSTAFFRECORD_ERROR',
+        error: 'Staff record has TRANSFERSTAFFRECORD given but does not exist',
+        source: this._currentLine.LOCALESTID,
+        column: 'LOCALESTID',
+      });
+      return false;
+    }
+
+    this._transferStaffRecord = newWorkplaceLocalId;
+    return true;
   }
 
   _validateDisplayId() {
@@ -1032,6 +1122,77 @@ class WorkerCsvValidator {
     }
   }
 
+  _shouldNotAnswerHealthAndCareVisaQuestion() {
+    const dontKnow = 998;
+    const british = 826;
+    const yes = 1;
+    const no = 2;
+
+    const nationality = parseInt(this._currentLine.NATIONALITY, 10);
+    const britishCitizenship = parseInt(this._currentLine.BRITISHCITIZENSHIP, 10);
+
+    const isWorkerFromOtherNationWithUnknownCitizenship =
+      nationality && nationality !== british && nationality !== dontKnow && britishCitizenship !== yes;
+    const isWorkerWithoutBritishCitizenshipAndUnknownNationality =
+      nationality === dontKnow && britishCitizenship === no;
+
+    return !isWorkerFromOtherNationWithUnknownCitizenship && !isWorkerWithoutBritishCitizenshipAndUnknownNationality;
+  }
+
+  _validateHealthAndCareVisa() {
+    const healthAndCareVisaValues = [1, 2, 999];
+    const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
+
+    if (this._currentLine.HANDCVISA && this._currentLine.HANDCVISA.length > 0) {
+      if (this._shouldNotAnswerHealthAndCareVisaQuestion()) {
+        this._validationErrors.push(
+          this._generateWarning(
+            'HANDCVISA not required when worker is British or has British citizenship',
+            'HANDCVISA',
+          ),
+        );
+        return false;
+      } else if (isNaN(healthAndCareVisa) || !healthAndCareVisaValues.includes(parseInt(healthAndCareVisa, 10))) {
+        this._validationErrors.push(
+          this._generateWarning('HANDCVISA is incorrectly formatted and will be ignored', 'HANDCVISA'),
+        );
+        return false;
+      } else {
+        this._healthAndCareVisa = this._convertYesNoDontKnow(healthAndCareVisa);
+        return true;
+      }
+    }
+    return true;
+  }
+
+  _validateEmployedFromOutsideUk() {
+    const employedFromOutsideUkValues = [1, 2, 999];
+
+    const employedFromOutsideUk = parseInt(this._currentLine.INOUTUK, 10);
+    const healthAndCareVisa = parseInt(this._currentLine.HANDCVISA, 10);
+
+    if (this._currentLine.INOUTUK && this._currentLine.INOUTUK.length > 0) {
+      if (healthAndCareVisa != 1 || this._shouldNotAnswerHealthAndCareVisaQuestion()) {
+        this._validationErrors.push(
+          this._generateWarning('INOUTUK not required when worker does not have a Health and Care visa', 'INOUTUK'),
+        );
+        return false;
+      } else if (
+        isNaN(employedFromOutsideUk) ||
+        !employedFromOutsideUkValues.includes(parseInt(employedFromOutsideUk, 10))
+      ) {
+        this._validationErrors.push(
+          this._generateWarning('INOUTUK is incorrectly formatted and will be ignored', 'INOUTUK'),
+        );
+        return false;
+      } else {
+        this._employedFromOutsideUk = this._convertYesNoDontKnow(employedFromOutsideUk);
+        return true;
+      }
+    }
+    return true;
+  }
+
   _validateDisabled() {
     const disabledValues = [0, 1, 2, 3];
     const myDisabled = parseInt(this._currentLine.DISABLED, 10);
@@ -1077,7 +1238,7 @@ class WorkerCsvValidator {
     const myCareCert = parseInt(this._currentLine.CARECERT, 10);
 
     if (this._currentLine.CARECERT && this._currentLine.CARECERT.length > 0) {
-      if (isNaN(myCareCert) || !careCertValues.includes(parseInt(myCareCert, 10))) {
+      if (isNaN(myCareCert) || !careCertValues.includes(myCareCert)) {
         this._validationErrors.push({
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
@@ -1104,6 +1265,81 @@ class WorkerCsvValidator {
         return true;
       }
     } else {
+      return true;
+    }
+  }
+
+  _validateLevel2CareCert() {
+    const allowedLevel2CareCertValues = [1, 2, 3];
+
+    const inputIsEmpty = !(this._currentLine.L2CARECERT && this._currentLine.L2CARECERT.length > 0);
+
+    if (inputIsEmpty) {
+      return true;
+    }
+
+    const [valueString, yearString] = this._currentLine.L2CARECERT.split(';');
+    const myLevel2CareCertValue = parseInt(valueString, 10);
+
+    if (!allowedLevel2CareCertValues.includes(myLevel2CareCertValue)) {
+      const warning = this._generateWarning(
+        'The code you have entered for L2CARECERT is incorrect and will be ignored',
+        'L2CARECERT',
+      );
+      this._validationErrors.push(warning);
+      return false;
+    }
+
+    if (myLevel2CareCertValue === 1) {
+      if (yearString === '' || !yearString) {
+        this._level2CareCert = { value: 'Yes, completed', year: null };
+        return true;
+      }
+
+      return this._handleLevel2CareCertCompleteWithAchievedYear(yearString);
+    }
+
+    if ([2, 3].includes(myLevel2CareCertValue)) {
+      if (yearString) {
+        const warning = this._generateWarning(
+          `Option ${myLevel2CareCertValue} for L2CARECERT cannot have year achieved and will be ignored`,
+          'L2CARECERT',
+          `L2CARECERT_WARNING_IGNORE_YEAR_FOR_OPTION_${myLevel2CareCertValue}`,
+        );
+        this._validationErrors.push(warning);
+        return false;
+      }
+
+      this._level2CareCert = { value: myLevel2CareCertValue === 2 ? 'Yes, started' : 'No', year: null };
+      return true;
+    }
+  }
+
+  _handleLevel2CareCertCompleteWithAchievedYear(yearString) {
+    const yearLevel2CareCertificateIntroduced = 2024;
+    const thisYear = new Date().getFullYear();
+    const parsedYear = parseInt(yearString, 10);
+    let warningMessage;
+    let warnType;
+
+    if (isNaN(parsedYear)) {
+      warningMessage = 'The year achieved for L2CARECERT is invalid. The year value will be ignored';
+      warnType = 'L2CARECERT_WARNING_YEAR_INVALID';
+    } else if (parsedYear < yearLevel2CareCertificateIntroduced) {
+      warningMessage = 'The year achieved for L2CARECERT cannot be before 2024. The year value will be ignored';
+      warnType = 'L2CARECERT_WARNING_YEAR_BEFORE_2024';
+    } else if (parsedYear > thisYear) {
+      warningMessage = 'The year achieved for L2CARECERT cannot be in the future. The year value will be ignored';
+      warnType = 'L2CARECERT_WARNING_YEAR_IN_FUTURE';
+    }
+
+    if (warningMessage) {
+      this._level2CareCert = { value: 'Yes, completed', year: null };
+      const warning = this._generateWarning(warningMessage, 'L2CARECERT', warnType);
+      this._validationErrors.push(warning);
+      return false;
+    } else {
+      this._level2CareCert = { value: 'Yes, completed', year: parsedYear };
       return true;
     }
   }
@@ -2642,6 +2878,7 @@ class WorkerCsvValidator {
     status = !this._validateLocalId() ? false : status;
     status = !this._validateUniqueWorkerId() ? false : status;
     status = !this._validateChangeUniqueWorkerId() ? false : status;
+    status = !this._validateTransferStaffRecord() ? false : status;
     status = !this._validateDisplayId() ? false : status;
     status = !this._validateStatus() ? false : status;
     status = !this._validateDaysSickChanged() ? false : status;
@@ -2658,8 +2895,11 @@ class WorkerCsvValidator {
       status = !this._validateCitizenShip() ? false : status;
       status = !this._validateCountryOfBirth() ? false : status;
       status = !this._validateYearOfEntry() ? false : status;
+      status = !this._validateHealthAndCareVisa() ? false : status;
+      status = !this._validateEmployedFromOutsideUk() ? false : status;
       status = !this._validateDisabled() ? false : status;
       status = !this._validateCareCert() ? false : status;
+      status = !this._validateLevel2CareCert() ? false : status;
       status = !this._validateRecSource() ? false : status;
       status = !this._validateStartDate() ? false : status;
       status = !this._validateStartInsect() ? false : status;
@@ -2724,6 +2964,7 @@ class WorkerCsvValidator {
       status: this._status,
       uniqueWorkerId: this._uniqueWorkerId,
       changeUniqueWorker: this._changeUniqueWorkerId ? this._changeUniqueWorkerId : undefined,
+      transferStaffRecord: this._transferStaffRecord ? this._transferStaffRecord : undefined,
       displayId: this._displayId,
       niNumber: this._NINumber ? this._NINumber : undefined,
       postcode: this._postCode ? this._postCode : undefined,
@@ -2735,12 +2976,15 @@ class WorkerCsvValidator {
       britishCitizenship: this._britishNationality ? this._britishNationality : undefined,
       countryofBirth: this._countryOfBirth ? this._countryOfBirth : undefined,
       yearOfEntry: this._yearOfEntry ? this._yearOfEntry : undefined,
+      healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
+      employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
       disabled: this._disabled !== null ? this._disabled : undefined,
       careCertificate: this._careCert
         ? {
             value: this._careCert,
           }
         : undefined,
+      level2CareCertificate: this._level2CareCert?.value ? this._level2CareCert : undefined,
       recruitmentSource: this._recSource ? this._recSource : undefined,
       startDate: this._startDate ? this._startDate.format('DD/MM/YYYY') : undefined,
       startedInSector: this._startInsect ? this._startInsect : undefined,
@@ -2796,6 +3040,7 @@ class WorkerCsvValidator {
       // the minimum to create a new worker
       localIdentifier: this._uniqueWorkerId,
       status: this._status,
+      transferStaffRecord: this._transferStaffRecord ? this._transferStaffRecord : undefined,
       nameOrId: this._displayId,
       contract: this._contractType,
       mainJob: {
@@ -2819,8 +3064,11 @@ class WorkerCsvValidator {
             year: this._yearOfEntry,
           }
         : undefined,
+      healthAndCareVisa: this._healthAndCareVisa ? this._healthAndCareVisa : undefined,
+      employedFromOutsideUk: this._employedFromOutsideUk ? this._employedFromOutsideUk : undefined,
       disability: this._disabled ? this._disabled : undefined,
       careCertificate: this._careCert ? this._careCert : undefined,
+      level2CareCertificate: this._level2CareCert?.value ? this._level2CareCert : undefined,
       apprenticeshipTraining: this._apprentice ? this._apprentice : undefined,
       zeroHoursContract: this._zeroHourContract ? this._zeroHourContract : undefined,
       registeredNurse: this._registeredNurse ? this._registeredNurse : undefined,

@@ -43,7 +43,7 @@ export class BulkUploadReferencesDirective implements AfterViewInit {
     withLocalIdNull: boolean,
   ) {
     const filteredRef = filter(references, (reference: Workplace) => {
-      if (reference.ustatus === 'PENDING') return false;
+      if (reference.ustatus === 'PENDING' || reference.ustatus === 'IN PROGRESS') return false;
       if (primaryWorkplace.isParent)
         return reference.dataOwner === WorkplaceDataOwner.Parent || reference.uid === primaryWorkplace.uid;
       return reference.dataOwner === WorkplaceDataOwner.Workplace;

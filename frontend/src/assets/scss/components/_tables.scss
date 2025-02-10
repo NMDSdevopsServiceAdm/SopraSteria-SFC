@@ -1,6 +1,5 @@
 @use 'sass:math';
 
-$error_border_size: $govuk-border-width-form-element-error;
 $error_row_indent: 8px;
 $error_row_padding: $govuk-gutter-half;
 
@@ -39,7 +38,7 @@ $error_row_padding: $govuk-gutter-half;
 }
 
 .govuk-error-table__row {
-  border: $error_border_size solid $govuk-error-colour;
+  border: solid $govuk-error-colour;
 
   &--no-border {
     border: none;
@@ -62,7 +61,6 @@ $error_row_padding: $govuk-gutter-half;
     position: absolute;
     height: 100%;
     padding-bottom: $error_row_indent;
-    top: $error_border_size * -1;
   }
 
   &:first-of-type {
@@ -72,7 +70,6 @@ $error_row_padding: $govuk-gutter-half;
       left: 0;
     }
     &:after {
-      width: $error_border_size;
       background: $govuk-error-colour;
       left: $error_row_indent;
     }
@@ -92,12 +89,17 @@ $error_row_padding: $govuk-gutter-half;
   &:before {
     content: '';
     position: absolute;
-    left: ($error_border_size - 1) * -1;
-    width: $error_border_size;
     background: $govuk-error-colour;
     height: 100%;
   }
 }
 .govuk-table-custom-width {
   width: 20% !important;
+}
+
+.asc-training-and-quals-table {
+  td.govuk-table__cell:has(button) {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
 }

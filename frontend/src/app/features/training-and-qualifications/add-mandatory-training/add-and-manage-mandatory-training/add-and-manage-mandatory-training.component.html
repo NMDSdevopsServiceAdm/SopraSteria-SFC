@@ -1,68 +1,83 @@
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds" data-testid="heading">
+    <span class="govuk-caption-l">Add a mandatory training category</span>
     <h1 class="govuk-heading-l">
       Add and manage mandatory<br />
       training categories
     </h1>
   </div>
 </div>
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-half govuk-!-margin-top-2" data-testid="mandatoryTrainingInfo">
-    <p>
-      Add the training categories you want to make mandatory for your staff. It will help you identify<br />
-      who is missing training and let you know when<br />
-      training expires.
+<div class="govuk-grid-row govuk-!-margin-bottom-4">
+  <div class="govuk-grid-column-two-thirds" style="width: 63%" data-testid="mandatoryTrainingInfo">
+    <p style="padding-top: 7px">
+      Add the training categories you want to make mandatory for your staff. It will help you to identify who is missing
+      training and let you know when training expires.
     </p>
   </div>
-  <div class="govuk-grid-column-one-half govuk-util__align-right" data-testid="mandatoryTrainingButton">
-    <button (click)="navigateToAddNewMandatoryTraining()" class="govuk-button">
+
+  <div
+    class="govuk-grid-column-one-third govuk-util__align-right"
+    style="width: 37%"
+    data-testid="mandatoryTrainingButton"
+  >
+    <button (click)="navigateToAddNewMandatoryTraining($event)" class="govuk-button">
       Add a mandatory training category
     </button>
-  </div>
-</div>
-<div class="govuk-grid-row">
-  <div
-    class="govuk-grid-column-one-thirds govuk-!-margin-bottom-6 govuk-!-margin-right-4 govuk-util__align-right govuk-list govuk-list--inline"
-    *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0"
-  >
-    <a
-      data-testid="removeMandatoryTrainingLink"
-      draggable="false"
-      role="button"
-      [routerLink]="[
-        '/workplace',
-        establishment.uid,
-        'add-and-manage-mandatory-training',
-        'remove-all-mandatory-training'
-      ]"
-      >Remove all mandatory training categories</a
-    >
   </div>
 </div>
 
 <table class="govuk-table" data-testid="training-table" *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 0">
   <thead class="govuk-table__head">
     <tr class="govuk-table__row" data-testid="training-table-heading">
-      <th class="govuk-table__header" scope="col">Mandatory training categories</th>
-      <th class="govuk-table__header" scope="col">Job roles</th>
+      <th class="govuk-table__header" scope="col">Mandatory training category</th>
+      <th class="govuk-table__header" scope="col">Job role</th>
+      <th class="govuk-table__header govuk-util__align-right" scope="col">
+        <a
+          *ngIf="existingMandatoryTrainings?.mandatoryTrainingCount > 1"
+          class="govuk-link govuk-link--no-visited-state govuk-util__normal"
+          data-testid="removeMandatoryTrainingLink"
+          draggable="false"
+          role="button"
+          [routerLink]="[
+            '/workplace',
+            establishment.uid,
+            'add-and-manage-mandatory-training',
+            'remove-all-mandatory-training'
+          ]"
+          >Remove all</a
+        >
+      </th>
     </tr>
   </thead>
   <ng-container>
-    <tbody class="govuk-table__body" *ngFor="let records of existingMandatoryTrainings.mandatoryTraining">
+    <tbody
+      class="govuk-table__body"
+      *ngFor="let records of existingMandatoryTrainings.mandatoryTraining; let i = index"
+    >
       <tr class="govuk-table__row govuk-util__vertical-align-top">
         <td class="govuk-table__cell" [attr.data-testid]="'category-' + records.category">
-          <a [routerLink]="[records.trainingCategoryId, 'edit-mandatory-training']">
+          <a href="#" (click)="navigateToAddNewMandatoryTraining($event, records)">
             {{ records.category }}
           </a>
         </td>
 
         <td class="govuk-table__cell">
-          <ng-container *ngIf="records.jobs.length > 28">
-            <span data-testid="titleAll">{{ 'All' }}</span>
+          <ng-container *ngIf="records.jobs.length === allJobsLength">
+            <span data-testid="titleAll">All</span>
           </ng-container>
-          <ng-container *ngIf="records.jobs.length < 29">
+          <ng-container *ngIf="records.jobs.length < allJobsLength">
             <div data-testid="titleJob" *ngFor="let job of records.jobs">{{ job.title }}</div>
           </ng-container>
+        </td>
+        <td class="govuk-table__cell govuk-!-padding-right-0 govuk-util__align-right">
+          <a
+            href="#"
+            (click)="navigateToDeletePage($event, records.trainingCategoryId)"
+            class="govuk-link govuk-link--no-visited-state"
+            [attr.data-testid]="'remove-link-' + records.category"
+          >
+            Remove
+          </a>
         </td>
       </tr>
     </tbody>

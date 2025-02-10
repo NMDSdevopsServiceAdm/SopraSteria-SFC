@@ -1,33 +1,36 @@
-import { render } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
-import { RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SelectMainServiceCqcComponent } from '@features/workplace/select-main-service/select-main-service-cqc.component';
-import { ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from '@shared/shared.module';
+import { fireEvent, render } from '@testing-library/angular';
 
 describe('SelectMainServiceCQCComponent', () => {
   async function setup() {
-    const component =  await render(SelectMainServiceCqcComponent, {
-      imports: [
-        SharedModule,
-        RouterModule,
-        RouterTestingModule,
-        HttpClientTestingModule,
-        ReactiveFormsModule
-      ],
+    const { fixture, getByText } = await render(SelectMainServiceCqcComponent, {
+      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService
+          useClass: MockEstablishmentService,
         },
-      ]
+      ],
     });
 
+    const component = fixture.componentInstance;
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
     return {
-      component
+      component,
+      routerSpy,
+      getByText,
     };
   }
 
@@ -35,5 +38,18 @@ describe('SelectMainServiceCQCComponent', () => {
     const { component } = await setup();
 
     expect(component).toBeTruthy();
+  });
+
+  it('should navigate to main service question when answer selected', async () => {
+    const { component, getByText, routerSpy } = await setup();
+
+    expect(component).toBeTruthy();
+    const yesRadio = getByText('Yes');
+    fireEvent.click(yesRadio);
+
+    const continueButton = getByText('Continue');
+    fireEvent.click(continueButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', component.establishment.uid, 'main-service']);
   });
 });

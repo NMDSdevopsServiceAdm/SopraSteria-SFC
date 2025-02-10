@@ -68,6 +68,10 @@ export interface Worker {
   };
   annualHourlyPay: WorkerPay;
   careCertificate: string;
+  level2CareCertificate?: {
+    value: string;
+    year?: number;
+  };
   apprenticeshipTraining: string;
   qualificationInSocialCare: string;
   socialCareQualification: {
@@ -101,6 +105,8 @@ export interface Worker {
   missingMandatoryTrainingCount: number;
   qualificationCount: number;
   longTermAbsence: string;
+  healthAndCareVisa?: string;
+  employedFromOutsideUk?: string;
 }
 
 export interface WorkerPay {

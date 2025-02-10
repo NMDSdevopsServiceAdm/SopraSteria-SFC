@@ -4,54 +4,55 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { BackService } from '@core/services/back.service';
-import { EstablishmentService } from '@core/services/establishment.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockArticlesService } from '@core/test-utils/MockArticlesService';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { MockPagesService } from '@core/test-utils/MockPagesService';
-import { MockTrainingService } from '@core/test-utils/MockTrainingService';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { MockRouter } from '@core/test-utils/MockRouter';
+import { MockTrainingCategoryService } from '@core/test-utils/MockTrainingCategoriesService';
+import { mockMandatoryTraining, MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { AddMandatoryTrainingModule } from '@features/training-and-qualifications/add-mandatory-training/add-mandatory-training.module';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, getByText, render } from '@testing-library/angular';
+import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { DeleteMandatoryTrainingCategoryComponent } from './delete-mandatory-training-category.component';
 
 describe('DeleteMandatoryTrainingCategoryComponent', () => {
-  const pages = MockPagesService.pagesFactory();
-  const articleList = MockArticlesService.articleListFactory();
+  async function setup(overrides: any = {}) {
+    const establishment = establishmentBuilder();
+    const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
 
-  async function setup(trainingCategoryId = '1') {
-    const { fixture, getByText, getAllByText } = await render(DeleteMandatoryTrainingCategoryComponent, {
+    const existingMandatoryTraining = mockMandatoryTraining();
+    const selectedTraining = existingMandatoryTraining.mandatoryTraining[0];
+    const trainingIdInParams = selectedTraining.trainingCategoryId;
+
+    const setupTools = await render(DeleteMandatoryTrainingCategoryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, AddMandatoryTrainingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
         AlertService,
         BackService,
-        {
-          provide: WindowRef,
-          useClass: WindowRef,
-        },
-        {
-          provide: EstablishmentService,
-          useClass: MockEstablishmentService,
-        },
+        WindowRef,
         {
           provide: TrainingService,
           useClass: MockTrainingService,
+        },
+        { provide: Router, useFactory: MockRouter.factory({ navigate: routerSpy }) },
+        {
+          provide: TrainingCategoryService,
+          useClass: MockTrainingCategoryService,
         },
         {
           provide: ActivatedRoute,
           useValue: {
             snapshot: {
-              parent: {
-                url: [{ path: trainingCategoryId }],
-                data: {
-                  establishment: {
-                    uid: '9',
-                  },
-                },
+              params: {
+                trainingCategoryId: overrides.trainingCategoryId ?? trainingIdInParams,
+              },
+              data: {
+                establishment,
+                existingMandatoryTraining: overrides.mandatoryTraining ?? existingMandatoryTraining,
               },
               url: [{ path: 'delete-mandatory-training-category' }],
             },
@@ -61,21 +62,23 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
     });
 
     const injector = getTestBed();
-    const router = injector.inject(Router) as Router;
+
     const alertService = injector.inject(AlertService) as AlertService;
-    const trainingService = injector.inject(TrainingService) as TrainingService;
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
-    const deleteMandatoryTrainingCategorySpy = spyOn(trainingService, 'deleteCategoryById').and.callThrough();
     const alertSpy = spyOn(alertService, 'addAlert').and.callThrough();
-    const component = fixture.componentInstance;
+
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+    const deleteMandatoryTrainingCategorySpy = spyOn(trainingService, 'deleteCategoryById').and.callThrough();
+
+    const component = setupTools.fixture.componentInstance;
+
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getAllByText,
       routerSpy,
       deleteMandatoryTrainingCategorySpy,
       alertSpy,
+      establishment,
+      selectedTraining,
     };
   }
 
@@ -86,49 +89,90 @@ describe('DeleteMandatoryTrainingCategoryComponent', () => {
 
   it('should display the heading', async () => {
     const { getByText } = await setup();
-    expect(getByText(`You're about to remove this mandatory training category`));
+    expect(getByText("You're about to remove this mandatory training category")).toBeTruthy();
   });
 
-  it('should display the correct training name when navigating to the page with a category ID', async () => {
-    const { getAllByText } = await setup();
-    expect(getAllByText('Activity provision/Well-being', { exact: false }).length).toEqual(2);
+  it('should display a warning message with training category name', async () => {
+    const { getByText, selectedTraining } = await setup();
+
+    const expectedMessage = `If you do this, '${selectedTraining?.category}' will no longer be mandatory for any of your staff.`;
+    expect(getByText(expectedMessage)).toBeTruthy();
   });
 
-  it('Should render Remove categories button and cancel link', async () => {
+  it('should render Remove categories button and cancel link', async () => {
     const { getByText } = await setup();
+
     expect(getByText('Remove category')).toBeTruthy();
     expect(getByText('Cancel')).toBeTruthy();
   });
 
-  describe('Cancel link', () => {
-    it('should navigate back to the mandatory details summary page when clicked', async () => {
-      const { component, getByText, routerSpy } = await setup();
-      userEvent.click(getByText('Cancel'));
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        component.establishment.uid,
-        'add-and-manage-mandatory-training',
-      ]);
+  it('should navigate back to add-and-manage-mandatory-training page if training category not found in existing mandatory training', async () => {
+    const unexpectedTrainingCategoryId = '301';
+
+    const { routerSpy, establishment } = await setup({ trainingCategoryId: unexpectedTrainingCategoryId });
+
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', establishment.uid, 'add-and-manage-mandatory-training']);
+  });
+
+  describe('Displaying job roles', () => {
+    it('should display selected job roles for selected mandatory training when it is not for all job roles', async () => {
+      const { getByText, selectedTraining } = await setup();
+
+      selectedTraining.jobs.forEach((job) => {
+        expect(getByText(job.title)).toBeTruthy();
+      });
+    });
+
+    it('should display All when number of job roles for selected training matches allJobRolesCount', async () => {
+      const mandatoryTraining = mockMandatoryTraining();
+      const selectedTraining = mandatoryTraining.mandatoryTraining[1];
+      const trainingIdInParams = selectedTraining.trainingCategoryId;
+
+      const { getByText } = await setup({ mandatoryTraining, trainingCategoryId: trainingIdInParams });
+
+      expect(getByText('All')).toBeTruthy();
     });
   });
 
-  describe('Remove category button', () => {
-    it('should call the deleteCategoryById function in the training service when clicked', async () => {
-      const { getByText, deleteMandatoryTrainingCategorySpy } = await setup();
+  describe('On submit', () => {
+    it('should call deleteCategoryById in the training service', async () => {
+      const { getByText, deleteMandatoryTrainingCategorySpy, establishment, selectedTraining } = await setup();
+
       userEvent.click(getByText('Remove category'));
-      expect(deleteMandatoryTrainingCategorySpy).toHaveBeenCalled();
+      expect(deleteMandatoryTrainingCategorySpy).toHaveBeenCalledWith(
+        establishment.id,
+        selectedTraining.trainingCategoryId,
+      );
     });
-  });
 
-  describe('success alert', async () => {
-    it('should display a success banner when a category is removed', async () => {
-      const { alertSpy, getByText } = await setup();
+    it("should display a success banner with 'Mandatory training category removed'", async () => {
+      const { fixture, alertSpy, getByText } = await setup();
 
       fireEvent.click(getByText('Remove category'));
+      await fixture.whenStable();
+
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
         message: 'Mandatory training category removed',
       });
+    });
+
+    it('should navigate back to add-and-manage-mandatory-training page', async () => {
+      const { getByText, routerSpy, establishment } = await setup();
+
+      userEvent.click(getByText('Remove category'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', establishment.uid, 'add-and-manage-mandatory-training']);
+    });
+  });
+
+  describe('Cancel link', () => {
+    it('should navigate back to the mandatory details summary page when clicked', async () => {
+      const { getByText, routerSpy, establishment } = await setup();
+
+      userEvent.click(getByText('Cancel'));
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', establishment.uid, 'add-and-manage-mandatory-training']);
     });
   });
 });

@@ -54,6 +54,11 @@ $button-shadow-size: $govuk-border-width-form-element;
   }
 }
 
+.govuk-button-group--gap-between {
+  @extend .govuk-button-group;
+  column-gap: govuk-spacing(8) * 2;
+}
+
 .govuk-button {
   &.govuk-button--link {
     background: none;

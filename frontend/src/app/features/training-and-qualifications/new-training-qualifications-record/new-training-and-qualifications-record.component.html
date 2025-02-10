@@ -85,13 +85,23 @@
   *ngIf="mandatoryTraining.length + nonMandatoryTraining.length + qualificationsByGroup.count"
   class="govuk-!-margin-bottom-8"
 >
-  <app-download-pdf-traininf-and-qualification
+  <app-download-pdf-training-and-qualification
     [linkUrl]="'/trainingAndQualification.pdf'"
     (downloadPDF)="downloadAsPDF()"
-    [pdfCount]="pdfCount"
-  ></app-download-pdf-traininf-and-qualification>
+  ></app-download-pdf-training-and-qualification>
+  <a
+    class="govuk-list govuk-list--inline govuk__flex govuk__width-fit-content govuk__align-items-flex-start govuk-!-margin-bottom-0"
+    role="button"
+    draggable="false"
+    (click)="downloadAllCertificates($event)"
+    href="./all-certificates.zip"
+    *ngIf="workerHasCertificate"
+  >
+    <img alt="" src="/assets/images/icon-download.svg" />
+    <span class="govuk-!-margin-left-1"> Download all their training and qualification certificates </span>
+  </a>
 </div>
-<div *ngIf="actionsListData.length > 0" class="govuk-grid-row govuk-!-margin-top-6">
+<div data-testid="actions-list-table" *ngIf="actionsListData.length > 0" class="govuk-grid-row govuk-!-margin-top-6">
   <div class="govuk-grid-column-full">
     <table class="govuk-table">
       <caption class="govuk-table__caption govuk-table__caption--m">
@@ -206,48 +216,38 @@
     </li>
   </ul>
 </div>
-
-<div *ngIf="currentFragment === fragmentsObject.allRecords">
-  <div class="govuk-grid-column-full">
-    <app-new-training
-      [trainingCategories]="mandatoryTraining"
-      [trainingType]="'Mandatory training'"
-      [isMandatoryTraining]="true"
-      [canEditWorker]="canEditWorker"
-      [setReturnRoute]="setReturnRoute"
-    >
-    </app-new-training>
-    <app-new-training
-      [trainingCategories]="nonMandatoryTraining"
-      [trainingType]="'Non-mandatory training'"
-      [canEditWorker]="canEditWorker"
-      [setReturnRoute]="setReturnRoute"
-    >
-    </app-new-training>
-    <app-new-qualifications [canEditWorker]="canEditWorker" [qualificationsByGroup]="qualificationsByGroup">
-    </app-new-qualifications>
-  </div>
-</div>
-<div class="govuk-grid-column-full" *ngIf="currentFragment === fragmentsObject.mandatoryTraining">
+<div class="govuk-grid-column-full">
   <app-new-training
+    *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.mandatoryTraining"
     [trainingCategories]="mandatoryTraining"
-    [trainingType]="'Mandatory Training'"
+    [trainingType]="'Mandatory training'"
     [isMandatoryTraining]="true"
     [canEditWorker]="canEditWorker"
     [setReturnRoute]="setReturnRoute"
+    [missingMandatoryTraining]="missingMandatoryTraining.length > 0"
+    (downloadFile)="downloadCertificate($event)"
+    (uploadFile)="uploadCertificate($event)"
+    [certificateErrors]="certificateErrors"
   >
   </app-new-training>
-</div>
-<div class="govuk-grid-column-full" *ngIf="currentFragment === fragmentsObject.nonMandatoryTraining">
   <app-new-training
+    *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.nonMandatoryTraining"
     [trainingCategories]="nonMandatoryTraining"
     [trainingType]="'Non-mandatory training'"
     [canEditWorker]="canEditWorker"
     [setReturnRoute]="setReturnRoute"
+    (downloadFile)="downloadCertificate($event)"
+    (uploadFile)="uploadCertificate($event)"
+    [certificateErrors]="certificateErrors"
   >
   </app-new-training>
-</div>
-<div class="govuk-grid-column-full" *ngIf="currentFragment === fragmentsObject.qualifications">
-  <app-new-qualifications [canEditWorker]="canEditWorker" [qualificationsByGroup]="qualificationsByGroup">
+  <app-new-qualifications
+    *ngIf="currentFragment === fragmentsObject.allRecords || currentFragment === fragmentsObject.qualifications"
+    [canEditWorker]="canEditWorker"
+    [qualificationsByGroup]="qualificationsByGroup"
+    (downloadFile)="downloadCertificate($event)"
+    (uploadFile)="uploadCertificate($event)"
+    [certificateErrors]="certificateErrors"
+  >
   </app-new-qualifications>
 </div>

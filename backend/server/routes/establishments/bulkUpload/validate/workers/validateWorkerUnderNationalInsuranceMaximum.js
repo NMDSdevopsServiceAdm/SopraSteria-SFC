@@ -3,10 +3,14 @@ const get = require('lodash/get');
 const NI_WORKER_DUPLICATE_ERROR = () => 5570;
 
 const worksOverNationalInsuranceMaximum = (thisWorker, workers) => {
+  let workerWithSameNiNumber = 0;
+
   const workerTotalHours = workers.reduce((sum, thatWorker) => {
     if (thisWorker.niNumber !== undefined && thisWorker.niNumber === thatWorker.niNumber) {
       const thatWorkersCntHours = get(thatWorker, 'hours.contractedHours');
       const thatWorkersAvgHours = get(thatWorker, 'hours.averageHours');
+
+      workerWithSameNiNumber++;
 
       if (thatWorkersCntHours) {
         return sum + thatWorkersCntHours;
@@ -18,7 +22,7 @@ const worksOverNationalInsuranceMaximum = (thisWorker, workers) => {
     return sum;
   }, 0);
 
-  return workerTotalHours > 65;
+  return workerTotalHours > 75 && workerWithSameNiNumber > 1;
 };
 
 const validateWorkerUnderNationalInsuranceMaximum = (thisWorker, myWorkers, csvWorkerSchemaErrors) => {
@@ -40,7 +44,7 @@ const exceedsNationalInsuranceMaximum = (thisWorker) => {
     source: thisWorker.localId,
     column: 'NINUMBER',
     worker: thisWorker.uniqueWorkerId,
-    name: thisWorker.niNumber,
+    name: thisWorker.localId,
   };
 };
 

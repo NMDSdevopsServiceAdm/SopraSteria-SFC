@@ -30,6 +30,8 @@ describe('SelectRecordTypeComponent', () => {
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const trainingService = injector.inject(TrainingService) as TrainingService;
+    const clearSelectedTrainingCategorySpy = spyOn(trainingService, 'clearSelectedTrainingCategory').and.callThrough();
 
     return {
       component,
@@ -37,6 +39,7 @@ describe('SelectRecordTypeComponent', () => {
       routerSpy,
       getByText,
       getAllByText,
+      clearSelectedTrainingCategorySpy,
     };
   }
 
@@ -62,7 +65,7 @@ describe('SelectRecordTypeComponent', () => {
       fixture.detectChanges();
       const form = component.form;
       expect(form.valid).toBeTruthy();
-      // expect(form.value).toEqual({ selectRecordType: 'Training course' });
+      expect(form.value).toEqual({ selectRecordType: 'Training course' });
     });
 
     it('should not prefill the radio button when navigating from training page', async () => {
@@ -73,5 +76,13 @@ describe('SelectRecordTypeComponent', () => {
       expect(form.invalid).toBeTruthy();
       expect(form.value).toEqual({ selectRecordType: null });
     });
+  });
+
+  it('should call trainingService if there is no trainingOrQualificationPreviouslySelected when landing on the page', async () => {
+    const { component, clearSelectedTrainingCategorySpy } = await setup();
+
+    component.ngOnInit();
+
+    expect(clearSelectedTrainingCategorySpy).toHaveBeenCalled();
   });
 });

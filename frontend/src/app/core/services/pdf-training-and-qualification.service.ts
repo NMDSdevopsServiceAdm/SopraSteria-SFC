@@ -133,7 +133,7 @@ export class PdfTrainingAndQualificationService {
       html.append(this.createSpacer(this.width, this.spacing));
     }
   }
-  private async saveHtmlToPdf(filename, doc: jsPDF, html, scale, width, save): Promise<void> {
+  private async saveHtmlToPdf(filename, doc: jsPDF, html: HTMLElement, scale, width, save): Promise<void> {
     const widthHtml = width * scale;
     const x = (doc.internal.pageSize.getWidth() - widthHtml) / 2;
     let y = 0;
@@ -142,6 +142,10 @@ export class PdfTrainingAndQualificationService {
       scale,
       width,
       windowWidth: width,
+      ignoreElements: (element: HTMLElement) => {
+        // ignore svg as jspdf does not support svg in html and will cause other contents to render incorrectly
+        return element.tagName.toLowerCase() === 'img' && element.getAttribute('src')?.endsWith('.svg');
+      },
     };
 
     await doc.html(html, {

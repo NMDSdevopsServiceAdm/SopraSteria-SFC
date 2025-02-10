@@ -130,6 +130,9 @@ describe('NationalityComponent', () => {
       expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'British' },
+        britishCitizenship: null,
+        healthAndCareVisa: null,
+        employedFromOutsideUk: null,
       });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -239,6 +242,9 @@ describe('NationalityComponent', () => {
       expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'British' },
+        britishCitizenship: null,
+        healthAndCareVisa: null,
+        employedFromOutsideUk: null,
       });
       expect(routerSpy).toHaveBeenCalledWith([
         '/workplace',
@@ -310,6 +316,9 @@ describe('NationalityComponent', () => {
       expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
       expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
         nationality: { value: 'British' },
+        britishCitizenship: null,
+        healthAndCareVisa: null,
+        employedFromOutsideUk: null,
       });
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
     });
@@ -350,6 +359,28 @@ describe('NationalityComponent', () => {
       expect(submitSpy).toHaveBeenCalledWith({ action: 'return', save: false });
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', component.worker.uid]);
       expect(workerServiceSpy).not.toHaveBeenCalled();
+    });
+
+    it('should update the worker with healthAndCare set to null when "British" is selected', async () => {
+      const { component, getByLabelText, getByText, fixture, submitSpy, workerServiceSpy } = await setup(false);
+
+      fireEvent.click(getByLabelText('British'));
+      fixture.detectChanges();
+      fireEvent.click(getByText('Save'));
+      fixture.detectChanges();
+
+      const updatedFormData = component.form.value;
+      expect(updatedFormData).toEqual({ nationalityKnown: 'British', nationalityName: null });
+      expect(submitSpy).toHaveBeenCalledWith({ action: 'continue', save: true });
+
+      expect(workerServiceSpy).toHaveBeenCalledWith(component.workplace.uid, component.worker.uid, {
+        nationality: {
+          value: 'British',
+        },
+        britishCitizenship: null,
+        healthAndCareVisa: null,
+        employedFromOutsideUk: null,
+      });
     });
   });
 

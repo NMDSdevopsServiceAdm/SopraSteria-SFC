@@ -31,6 +31,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
   public wdfEndDate: string;
   public workerList: string[];
   public isStandalone: boolean;
+  public workerUpdatedDate: string;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -68,8 +69,7 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
       this.establishmentService.getEstablishment(this.workplaceUid, true).subscribe((workplace) => {
         this.workplace = workplace;
         this.isStandalone = this.checkIfStandalone();
-        this.setBreadcrumbs();
-        this.establishmentService.setState(workplace);
+        this.breadcrumbService.show(JourneyType.WDF);
       }),
     );
   }
@@ -80,27 +80,26 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
         this.workerService.setState(worker);
         this.worker = worker;
         this.updatedWorker = worker;
+        this.workerUpdatedDate = dayjs(worker.updated).format('D MMMM YYYY');
       }),
     );
   }
 
   public getOverallWdfEligibility(): void {
-    this.subscriptions.add(
-      this.reportService.getWDFReport(this.workplaceUid).subscribe((report) => {
-        this.overallWdfEligibility = report.wdf.overall;
-        this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
-        this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
-      }),
-    );
+    const report = this.route.snapshot.data.report;
+
+    this.overallWdfEligibility = report.wdf.overall;
+    this.wdfStartDate = dayjs(report.effectiveFrom).format('D MMMM YYYY');
+    this.wdfEndDate = dayjs(report.effectiveFrom).add(1, 'years').format('D MMMM YYYY');
   }
 
   private setExitUrl(): void {
     if (this.route.snapshot.params.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
-      this.exitUrl = { url: ['/wdf', 'workplaces', this.workplaceUid], fragment: 'staff-records' };
+      this.exitUrl = { url: ['/wdf', 'workplaces', this.workplaceUid], fragment: 'staff' };
     } else {
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
-      this.exitUrl = { url: ['/wdf', 'data'], fragment: 'staff-records' };
+      this.exitUrl = { url: ['/wdf', 'data'], fragment: 'staff' };
     }
   }
 
@@ -112,12 +111,6 @@ export class WdfStaffRecordComponent implements OnInit, OnDestroy {
       return !this.workplace.isParent;
     }
     return true;
-  }
-
-  private setBreadcrumbs(): void {
-    this.isStandalone
-      ? this.breadcrumbService.show(JourneyType.WDF)
-      : this.breadcrumbService.show(JourneyType.WDF_PARENT);
   }
 
   private setNewWdfReturn(): void {

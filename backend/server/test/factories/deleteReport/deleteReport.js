@@ -9,7 +9,7 @@ const rawDataBuilder = build('rawData', {
     isRegulated: false,
     address1: fake((f) => f.address.streetAddress()),
     address2: fake((f) => f.address.secondaryAddress()),
-    address3: null,
+    address3: 'Third Address Line',
     town: fake((f) => f.address.city()),
     county: fake((f) => f.address.county()),
     postcode: fake((f) => f.address.zipCode('??# #??')),

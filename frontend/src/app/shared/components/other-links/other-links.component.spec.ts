@@ -92,7 +92,7 @@ describe('OtherLinksComponent', () => {
     });
   });
 
-  describe('wdf', () => {
+  describe('funding', () => {
     it('should show link if canViewReports is true and isParentSubsidiaryView is false', async () => {
       const { component, getByText, fixture } = await setup();
 
@@ -100,7 +100,7 @@ describe('OtherLinksComponent', () => {
       component.isParentSubsidiaryView = false;
       fixture.detectChanges();
 
-      const otherLinkText = getByText('Does your data meet WDF requirements?');
+      const otherLinkText = getByText('Does your data meet funding requirements?');
 
       expect(otherLinkText).toBeTruthy();
       expect(otherLinkText.getAttribute('href')).toEqual('/wdf');
@@ -113,7 +113,7 @@ describe('OtherLinksComponent', () => {
       component.isParentSubsidiaryView = true;
       fixture.detectChanges();
 
-      const otherLinkText = queryByText('Does your data meet WDF requirements?');
+      const otherLinkText = queryByText('Does your data meet funding requirements?');
 
       expect(otherLinkText).toBeFalsy();
     });
@@ -125,7 +125,7 @@ describe('OtherLinksComponent', () => {
       component.isParentSubsidiaryView = true;
       fixture.detectChanges();
 
-      const otherLinkText = queryByText('Does your data meet WDF requirements?');
+      const otherLinkText = queryByText('Does your data meet funding requirements?');
 
       expect(otherLinkText).toBeFalsy();
     });
@@ -137,7 +137,7 @@ describe('OtherLinksComponent', () => {
       component.isParentSubsidiaryView = false;
       fixture.detectChanges();
 
-      const otherLinkText = queryByText('Does your data meet WDF requirements?');
+      const otherLinkText = queryByText('Does your data meet funding requirements?');
 
       expect(otherLinkText).toBeFalsy();
     });

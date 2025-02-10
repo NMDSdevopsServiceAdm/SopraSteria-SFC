@@ -359,6 +359,32 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"EthnicityFKChangedBy"',
       },
+      EmployedFromOutsideUkValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"EmployedFromOutsideUkValue"',
+      },
+      EmployedFromOutsideUkSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"EmployedFromOutsideUkSavedAt"',
+      },
+      EmployedFromOutsideUkChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"EmployedFromOutsideUkChangedAt"',
+      },
+      EmployedFromOutsideUkSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"EmployedFromOutsideUkSavedBy"',
+      },
+      EmployedFromOutsideUkChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"EmployedFromOutsideUkChangedBy"',
+      },
       NationalityValue: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -742,6 +768,63 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CareCertificateChangedBy"',
       },
+      Level2CareCertificateValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes, completed', 'Yes, started', 'No'],
+        field: '"Level2CareCertificateValue"',
+      },
+      Level2CareCertificateYear: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        field: '"Level2CareCertificateYear"',
+      },
+      Level2CareCertificateSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"Level2CareCertificateSavedAt"',
+      },
+      Level2CareCertificateChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"Level2CareCertificateChangedAt"',
+      },
+      Level2CareCertificateSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"Level2CareCertificateSavedBy"',
+      },
+      Level2CareCertificateChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"Level2CareCertificateChangedBy"',
+      },
+      HealthAndCareVisaValue: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: ['Yes', 'No', "Don't know"],
+        field: '"HealthAndCareVisaValue"',
+      },
+      HealthAndCareVisaSavedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"HealthAndCareVisaSavedAt"',
+      },
+      HealthAndCareVisaChangedAt: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: '"HealthAndCareVisaChangedAt"',
+      },
+      HealthAndCareVisaSavedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"HealthAndCareVisaSavedBy"',
+      },
+      HealthAndCareVisaChangedBy: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+        field: '"HealthAndCareVisaChangedBy"',
+      },
       ApprenticeshipTrainingValue: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -1124,6 +1207,12 @@ module.exports = function (sequelize, DataTypes) {
       otherKey: 'ID',
       as: 'qualifications',
     });
+    Worker.hasMany(models.trainingCertificates, {
+      foreignKey: 'workerFk',
+      sourceKey: 'id',
+      as: 'trainingCertificates',
+      onDelete: 'CASCADE',
+    });
   };
   Worker.permAndTempCountForEstablishment = function (establishmentId) {
     return this.count({
@@ -1289,6 +1378,45 @@ module.exports = function (sequelize, DataTypes) {
           ],
         },
       ],
+    });
+  };
+
+  Worker.getAllWorkersNationalityAndBritishCitizenship = async function (establishmentId) {
+    return await this.findAll({
+      attributes: [
+        'id',
+        'uid',
+        'NameOrIdValue',
+        'NationalityValue',
+        'BritishCitizenshipValue',
+        'HealthAndCareVisaValue',
+        'EmployedFromOutsideUkValue',
+      ],
+      where: {
+        establishmentFk: establishmentId,
+        archived: false,
+        HealthAndCareVisaValue: null,
+      },
+      order: [['NameOrIdValue', 'ASC']],
+    });
+  };
+
+  Worker.findOneWithConflictingLocalRef = async function (establishmentIds, localIdentifierValue) {
+    /** Check if there is a worker having the same localIdentifierValue when whitespaces are not considered.
+     *
+     * As the legacy code does a /\s/g replacement in several different places,
+     * this helps to ensure uniqueness and prevent unexpected reference collision.
+     */
+    return await this.findOne({
+      attributes: ['id', 'NameOrIdValue', 'LocalIdentifierValue'],
+      where: {
+        [Op.and]: [
+          { establishmentFk: establishmentIds },
+          sequelize.where(sequelize.fn('REPLACE', sequelize.col('LocalIdentifierValue'), ' ', ''), {
+            [Op.eq]: localIdentifierValue.replace(/\s/g, ''),
+          }),
+        ],
+      },
     });
   };
 

@@ -1,6 +1,8 @@
 /* jshint indent: 2 */
 const { Op } = require('sequelize');
+const { padEnd } = require('lodash');
 const { sanitise } = require('../utils/db');
+const { UserAccountStatus } = require('../data/constants');
 
 module.exports = function (sequelize, DataTypes) {
   const User = sequelize.define(
@@ -272,6 +274,11 @@ module.exports = function (sequelize, DataTypes) {
         allowNull: true,
         field: '"CanManageWdfClaimsChangedBy"',
       },
+      lastViewedVacanciesAndTurnoverMessage: {
+        type: DataTypes.DATE,
+        allowNull: true,
+        field: 'LastViewedVacanciesAndTurnoverMessage',
+      },
     },
     {
       tableName: '"User"',
@@ -484,6 +491,71 @@ module.exports = function (sequelize, DataTypes) {
       ],
       order: [['updated', 'DESC']],
     });
+  };
+
+  User.findByRelevantInfo = async function ({ name, workplaceId, postcode, email }) {
+    if (!workplaceId && !postcode) {
+      return null;
+    }
+
+    const workplaceIdWithTrailingSpace = padEnd(workplaceId ?? '', 8, ' ');
+    const establishmentWhereClause = workplaceId
+      ? { NmdsID: [workplaceId, workplaceIdWithTrailingSpace] }
+      : { postcode: postcode };
+
+    const query = {
+      attributes: ['uid', 'SecurityQuestionValue'],
+      where: {
+        Archived: false,
+        FullNameValue: name,
+        EmailValue: email,
+        SecurityQuestionValue: { [Op.ne]: null },
+        SecurityQuestionAnswerValue: { [Op.ne]: null },
+      },
+      include: [
+        {
+          model: sequelize.models.establishment,
+          where: establishmentWhereClause,
+          required: true,
+          attributes: [],
+        },
+        {
+          model: sequelize.models.login,
+          required: true,
+          attributes: ['status'],
+        },
+      ],
+      raw: true,
+    };
+
+    const allFoundUsers = await this.findAll(query);
+
+    if (!allFoundUsers?.length || allFoundUsers.length === 0) {
+      return null;
+    }
+
+    if (allFoundUsers.length > 1) {
+      return { multipleAccountsFound: true };
+    }
+
+    const userFound = allFoundUsers[0];
+
+    if (userFound && userFound['login.status'] === UserAccountStatus.Locked) {
+      return { accountLocked: true };
+    }
+
+    return userFound;
+  };
+
+  User.setDateForLastViewedVacanciesAndTurnoverMessage = async function (userUid) {
+    return await this.update(
+      { lastViewedVacanciesAndTurnoverMessage: new Date() },
+      {
+        where: {
+          uid: userUid,
+        },
+      },
+    );
   };
 
   return User;

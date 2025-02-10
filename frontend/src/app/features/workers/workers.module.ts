@@ -2,20 +2,25 @@ import { OverlayModule } from '@angular/cdk/overlay';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { AvailableQualificationsResolver } from '@core/resolvers/available-qualification.resolver';
 import { LongTermAbsenceResolver } from '@core/resolvers/long-term-absence.resolver';
 import { MandatoryTrainingCategoriesResolver } from '@core/resolvers/mandatory-training-categories.resolver';
 import { QualificationResolver } from '@core/resolvers/qualification.resolver';
 import { QualificationsResolver } from '@core/resolvers/qualifications.resolver';
 import { TrainingAndQualificationRecordsResolver } from '@core/resolvers/training-and-qualification-records.resolver';
+import { TrainingCategoriesResolver } from '@core/resolvers/training-categories.resolver';
 import { TrainingRecordResolver } from '@core/resolvers/training-record.resolver';
 import { TrainingRecordsForCategoryResolver } from '@core/resolvers/training-records-for-category.resolver';
 import { TrainingRecordsResolver } from '@core/resolvers/training-records.resolver';
+import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-for-leaving.resolver';
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
+import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { DialogService } from '@core/services/dialog.service';
+import { DownloadPdfTrainingAndQualificationComponent } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
+import { HealthAndCareVisaComponent } from '@features/workers/health-and-care-visa/health-and-care-visa.component';
 import { SharedModule } from '@shared/shared.module';
 
 import { AddEditQualificationComponent } from '../training-and-qualifications/add-edit-qualification/add-edit-qualification.component';
-import { QualificationFormComponent } from '../training-and-qualifications/add-edit-qualification/qualification-form/qualification-form.component';
 import { AddEditTrainingComponent } from '../training-and-qualifications/add-edit-training/add-edit-training.component';
 import { DeleteRecordComponent } from '../training-and-qualifications/new-training-qualifications-record/delete-record/delete-record.component';
 import { NewQualificationsComponent } from '../training-and-qualifications/new-training-qualifications-record/new-qualifications/new-qualifications.component';
@@ -33,14 +38,17 @@ import { CountryOfBirthComponent } from './country-of-birth/country-of-birth.com
 import { DateOfBirthComponent } from './date-of-birth/date-of-birth.component';
 import { DaysOfSicknessComponent } from './days-of-sickness/days-of-sickness.component';
 import { DeleteQualificationDialogComponent } from './delete-qualification-dialog/delete-qualification-dialog.component';
+import { DeleteStaffRecordComponent } from './delete-staff-record/delete-staff-record.component';
 import { DeleteTrainingDialogComponent } from './delete-training-dialog/delete-training-dialog.component';
-import { DeleteWorkerDialogComponent } from './delete-worker-dialog/delete-worker-dialog.component';
 import { DisabilityComponent } from './disability/disability.component';
 import { EditWorkerComponent } from './edit-worker/edit-worker.component';
+import { EmployedFromOutsideUkComponent } from './employed-from-outside-uk/employed-from-outside-uk.component';
 import { EthnicityComponent } from './ethnicity/ethnicity.component';
 import { GenderComponent } from './gender/gender.component';
 import { HomePostcodeComponent } from './home-postcode/home-postcode.component';
+import { Level2AdultSocialCareCertificateComponent } from './level-2-adult-social-care-certificate/level-2-adult-social-care-certificate.component';
 import { LongTermAbsenceComponent } from './long-term-absence/long-term-absence.component';
+import { MainJobRoleComponent } from './main-job-role/main-job-role.component';
 import { MainJobStartDateComponent } from './main-job-start-date/main-job-start-date.component';
 import { MandatoryDetailsComponent } from './mandatory-details/mandatory-details.component';
 import { MentalHealthProfessionalComponent } from './mental-health-professional/mental-health-professional.component';
@@ -62,7 +70,6 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { DownloadPdfTrainingAndQualificationComponent } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -81,13 +88,13 @@ import { DownloadPdfTrainingAndQualificationComponent } from '@features/training
     DaysOfSicknessComponent,
     DeleteQualificationDialogComponent,
     DeleteTrainingDialogComponent,
-    DeleteWorkerDialogComponent,
     DeleteRecordComponent,
     DisabilityComponent,
     EditWorkerComponent,
     EthnicityComponent,
     GenderComponent,
     HomePostcodeComponent,
+    MainJobRoleComponent,
     MainJobStartDateComponent,
     MentalHealthProfessionalComponent,
     NationalInsuranceNumberComponent,
@@ -96,7 +103,6 @@ import { DownloadPdfTrainingAndQualificationComponent } from '@features/training
     NursingSpecialismComponent,
     OtherQualificationsComponent,
     OtherQualificationsLevelComponent,
-    QualificationFormComponent,
     RecruitedFromComponent,
     SalaryComponent,
     SocialCareQualificationComponent,
@@ -115,6 +121,11 @@ import { DownloadPdfTrainingAndQualificationComponent } from '@features/training
     NewQualificationsComponent,
     NewTrainingAndQualificationsRecordSummaryComponent,
     DownloadPdfTrainingAndQualificationComponent,
+    HealthAndCareVisaComponent,
+    EmployedFromOutsideUkComponent,
+    Level2AdultSocialCareCertificateComponent,
+    MainJobRoleComponent,
+    DeleteStaffRecordComponent,
   ],
   providers: [
     DialogService,
@@ -122,11 +133,16 @@ import { DownloadPdfTrainingAndQualificationComponent } from '@features/training
     LongTermAbsenceResolver,
     QualificationResolver,
     QualificationsResolver,
+    TrainingCategoriesResolver,
     TrainingRecordResolver,
     TrainingRecordsResolver,
     TrainingAndQualificationRecordsResolver,
     TrainingRecordsForCategoryResolver,
     MandatoryTrainingCategoriesResolver,
+    AvailableQualificationsResolver,
+    TrainingCertificateService,
+    QualificationCertificateService,
+    WorkerReasonsForLeavingResolver,
   ],
 })
 export class WorkersModule {}

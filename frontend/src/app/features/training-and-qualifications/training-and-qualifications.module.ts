@@ -12,6 +12,8 @@ import { MissingMandatoryTrainingStatusComponent } from './missing-mandatory-tra
 import { TrainingAndQualificationsRoutingModule } from './training-and-qualifications-routing.module';
 import { PdfTraininAndQualificationActionList } from '@features/pdf/training-and-qualification-action-list/training-and-qualification-action-list.component';
 import { PdfTraininAndQualificationTitle } from '@features/pdf/training-and-qualification-title/training-and-qualification-title.component';
+import { SelectTrainingCategoryComponent } from './add-edit-training/select-training-category/select-training-category.component';
+import { SelectQualificationTypeComponent } from './add-edit-qualification/select-qualification-type/select-qualification-type.component';
 
 @NgModule({
   imports: [
@@ -28,6 +30,8 @@ import { PdfTraininAndQualificationTitle } from '@features/pdf/training-and-qual
     MissingMandatoryTrainingStatusComponent,
     PdfTraininAndQualificationActionList,
     PdfTraininAndQualificationTitle,
+    SelectTrainingCategoryComponent,
+    SelectQualificationTypeComponent,
   ],
   providers: [GetTrainingByStatusResolver, MissingMandatoryTrainingResolver],
 })

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="23px" height="23px" viewBox="0 0 23 23" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Cross icon</title>
+    <defs>
+        <polygon id="path-1" points="0 -8.14163551e-16 8.40748333 -8.14163551e-16 8.40748333 14.199075 0 14.199075"></polygon>
+    </defs>
+    <g id="Standalone" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Workplace-data" transform="translate(-603, -1292)">
+            <g id="Group-2" transform="translate(585.75, 1273)">
+                <g id="Group-2" transform="translate(18, 19.5)">
+                    <circle id="Oval" fill="#D4351C" fill-rule="nonzero" cx="11" cy="11" r="11"></circle>
+                    <g id="Group-3" transform="translate(6.8752, 4.5833)">
+                        <mask id="mask-2" fill="white">
+                            <use xlink:href="#path-1"></use>
+                        </mask>
+                        <g id="Clip-2"></g>
+                        <path d="M1.89841667,-9.16666664e-05 L1.26591667,-9.16666664e-05 C0.5665,-9.16666664e-05 0,0.568241667 0,1.274075 L0,13.2457417 C0,13.7774083 0.425333333,14.199075 0.949666667,14.199075 C1.47308333,14.199075 1.89841667,13.7774083 1.89841667,13.2457417 L1.89841667,7.36990833 C1.89841667,6.84740833 2.32375,6.42574167 2.84808333,6.42574167 L7.14175,6.42574167 C7.84025,6.42574167 8.40766667,5.85740833 8.40766667,5.16074167 L8.40766667,1.274075 C8.40766667,0.568241667 7.84025,-9.16666664e-05 7.14175,-9.16666664e-05 L1.89841667,-9.16666664e-05 Z" id="Fill-1" fill="#FFFFFF" mask="url(#mask-2)"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

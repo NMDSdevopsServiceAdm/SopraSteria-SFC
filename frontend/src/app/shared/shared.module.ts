@@ -4,6 +4,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { CannotCreateAccountComponent } from '@core/components/error/cannot-create-account/cannot-create-account.component';
+import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
@@ -21,6 +22,10 @@ import { WorkplaceTabComponent } from '@shared/components/workplace-tab/workplac
 import { BulkUploadFileTypePipePipe } from '@shared/pipes/bulk-upload-file-type.pipe';
 import { SanitizeVideoUrlPipe } from '@shared/pipes/sanitize-video-url.pipe';
 
+import { AccordionGroupComponent } from './components/accordions/generic-accordion/accordion-group/accordion-group.component';
+import { AccordionSectionComponent } from './components/accordions/generic-accordion/accordion-section/accordion-section.component';
+import { GroupedRadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
+import { RadioButtonAccordionComponent } from './components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { AddNoteComponent } from './components/add-note/add-note.component';
 import { AutoSuggestComponent } from './components/auto-suggest/auto-suggest.component';
 import { BackLinkComponent } from './components/back-link/back-link.component';
@@ -28,6 +33,7 @@ import { BecomeAParentDialogComponent } from './components/become-a-parent/becom
 import { BreadcrumbsComponent } from './components/breadcrumbs/breadcrumbs.component';
 import { CancelDataOwnerDialogComponent } from './components/cancel-data-owner-dialog/cancel-data-owner-dialog.component';
 import { CardComponent } from './components/card/card.component';
+import { CertificationsTableComponent } from './components/certifications-table/certifications-table.component';
 import { ChangeDataOwnerDialogComponent } from './components/change-data-owner-dialog/change-data-owner-dialog.component';
 import { CharacterCountComponent } from './components/character-count/character-count.component';
 import { AboutTheDataLinkComponent } from './components/data-area-tab/about-the-data-link/about-the-data-link.component';
@@ -36,6 +42,7 @@ import { DetailsComponent } from './components/details/details.component';
 import { ValidationErrorMessageComponent } from './components/drag-and-drop/validation-error-message/validation-error-message.component';
 import { EligibilityIconComponent } from './components/eligibility-icon/eligibility-icon.component';
 import { ErrorSummaryComponent } from './components/error-summary/error-summary.component';
+import { FundingRequirementsStateComponent } from './components/funding-requirements-state/funding-requirements-state.component';
 import { InsetTextComponent } from './components/inset-text/inset-text.component';
 import { LinkToParentCancelDialogComponent } from './components/link-to-parent-cancel/link-to-parent-cancel-dialog.component';
 import { LinkToParentRemoveDialogComponent } from './components/link-to-parent-remove/link-to-parent-remove-dialog.component';
@@ -62,6 +69,9 @@ import { RejectRequestDialogComponent } from './components/reject-request-dialog
 import { RemoveParentConfirmationComponent } from './components/remove-parent-confirmation/remove-parent-confirmation.component';
 import { ReviewCheckboxComponent } from './components/review-checkbox/review-checkbox.component';
 import { SearchInputComponent } from './components/search-input/search-input.component';
+import { SelectUploadCertificateComponent } from './components/select-upload-certificate/select-upload-certificate.component';
+import { SelectUploadFileComponent } from './components/select-upload-file/select-upload-file.component';
+import { SelectViewPanelComponent } from './components/select-view-panel/select-view-panel.component';
 import { SelectWorkplaceDropdownFormComponent } from './components/select-workplace-dropdown-form/select-workplace-dropdown-form.component';
 import { SelectWorkplaceRadioButtonFormComponent } from './components/select-workplace-radio-button-form/select-workplace-radio-button-form.component';
 import { SetDataPermissionDialogComponent } from './components/set-data-permission/set-data-permission-dialog.component';
@@ -70,6 +80,7 @@ import { EmploymentComponent } from './components/staff-record-summary/employmen
 import { PersonalDetailsComponent } from './components/staff-record-summary/personal-details/personal-details.component';
 import { QualificationsAndTrainingComponent } from './components/staff-record-summary/qualifications-and-training/qualifications-and-training.component';
 import { StaffRecordSummaryComponent } from './components/staff-record-summary/staff-record-summary.component';
+import { WdfWarningMessageComponent } from './components/staff-record-summary/wdf-warning-message/wdf-warning-message.component';
 import { StaffRecordsTabComponent } from './components/staff-records-tab/staff-records-tab.component';
 import { StaffSummaryComponent } from './components/staff-summary/staff-summary.component';
 import { StatusComponent } from './components/status/status.component';
@@ -96,8 +107,10 @@ import { UserTableComponent } from './components/users-table/user.table.componen
 import { WdfConfirmationPanelComponent } from './components/wdf-confirmation-panel/wdf-confirmation-panel.component';
 import { WdfFieldConfirmationComponent } from './components/wdf-field-confirmation/wdf-field-confirmation.component';
 import { WdfStaffMismatchMessageComponent } from './components/wdf-staff-mismatch-message/wdf-staff-mismatch-message.component';
+import { WdfSummaryPanel } from './components/wdf-summary-panel/wdf-summary-panel.component';
 import { WdfTabComponent } from './components/wdf-tab/wdf-tab.component';
 import { WorkplaceContinueCancelButtonComponent } from './components/workplace-continue-cancel-button.component/workplace-continue-cancel-button.component';
+import { WorkplaceNameAddress } from './components/workplace-name-address/workplace-name-address.component';
 import { WorkplaceSubmitButtonComponent } from './components/workplace-submit-button/workplace-submit-button.component';
 import { WorkplaceSummaryComponent } from './components/workplace-summary/workplace-summary.component';
 import { FileValueAccessorDirective } from './form-controls/file-control-value-accessor';
@@ -107,6 +120,7 @@ import { DataViewPermissionsPipe } from './pipes/data-view-permissions.pipe';
 import { DontKnowPipe } from './pipes/dont-know.pipe';
 import { FirstErrorPipe } from './pipes/first-error.pipe';
 import { FormatAmpersandPipe } from './pipes/format-ampersand.pipe';
+import { FormatStartersLeaversVacanciesPipe } from './pipes/format-starters-leavers-vacancies.pipe';
 import { LongDatePipe } from './pipes/long-date.pipe';
 import { NewDataViewPermissionsPipe } from './pipes/new-data-view-permissions.pipe';
 import { NumericAnswerPipe } from './pipes/numeric-answer.pipe';
@@ -114,6 +128,7 @@ import { NursingCategoriesTextPipe } from './pipes/nursing-categories-text.pipe'
 import { NursingSpecialismsTextPipe } from './pipes/nursing-specialisms-text.pipe';
 import { OpenEndedAnswerPipe } from './pipes/open-ended-answer.pipe';
 import { OrderOtherPipe } from './pipes/order-other.pipe';
+import { RemoveTrailingWhitespacePipe } from './pipes/remove-trailing-whitespace.pipe';
 import { SelectRecordTypePipe } from './pipes/select-record-type.pipe';
 import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
@@ -197,10 +212,13 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     WdfStaffMismatchMessageComponent,
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
+    PageNoLongerAvailableComponent,
     ArticleListComponent,
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    RadioButtonAccordionComponent,
+    GroupedRadioButtonAccordionComponent,
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,
@@ -239,6 +257,18 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NavigateToWorkplaceDropdownComponent,
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
+    CertificationsTableComponent,
+    SelectUploadFileComponent,
+    AccordionGroupComponent,
+    AccordionSectionComponent,
+    FormatStartersLeaversVacanciesPipe,
+    SelectUploadCertificateComponent,
+    WdfWarningMessageComponent,
+    WdfSummaryPanel,
+    FundingRequirementsStateComponent,
+    SelectViewPanelComponent,
+    WorkplaceNameAddress,
+    RemoveTrailingWhitespacePipe,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -312,10 +342,13 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     MoveWorkplaceDialogComponent,
     CheckCQCDetailsComponent,
     PageNotFoundComponent,
+    PageNoLongerAvailableComponent,
     ArticleListComponent,
     PageComponent,
     FirstErrorPipe,
     ReviewCheckboxComponent,
+    RadioButtonAccordionComponent,
+    GroupedRadioButtonAccordionComponent,
     AddNoteComponent,
     PageComponent,
     RemoveParentConfirmationComponent,
@@ -355,6 +388,17 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     NavigateToWorkplaceDropdownComponent,
     OtherLinksComponent,
     NewTrainingLinkPanelComponent,
+    CertificationsTableComponent,
+    SelectUploadFileComponent,
+    AccordionGroupComponent,
+    AccordionSectionComponent,
+    SelectUploadCertificateComponent,
+    WdfWarningMessageComponent,
+    WdfSummaryPanel,
+    FundingRequirementsStateComponent,
+    SelectViewPanelComponent,
+    WorkplaceNameAddress,
+    RemoveTrailingWhitespacePipe,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
 })

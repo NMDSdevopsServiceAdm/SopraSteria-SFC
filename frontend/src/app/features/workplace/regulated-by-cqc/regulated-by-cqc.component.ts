@@ -30,7 +30,7 @@ export class RegulatedByCqcComponent extends RegulatedByCQCDirective {
   }
 
   protected init() {
-    this.flow = `workplace/${this.establishmentService.establishmentId}`;
+    this.flow = `workplace/${this.establishmentService.establishment.uid}`;
     this.isCQCLocationUpdate = true;
     this.setBackLink();
     this.validateLocationChange();

@@ -16,13 +16,14 @@
     [(navigateToTab)]="navigateToTab"
     [canViewEstablishment]="canViewEstablishment"
     [isParentSubsidiaryView]="true"
+    [noOfWorkersWhoRequireInternationalRecruitment]="noOfWorkersWhoRequireInternationalRecruitment"
   ></app-summary-section>
 </div>
 <div class="govuk-width-container govuk-!-margin-top-7">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       <div class="govuk-grid-row">
-        <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-column-one-half govuk-!-padding-right-1">
           <app-card [image]="'/assets/images/benchmarks.svg'">
             <a
               (click)="navigateToTab($event, 'benchmarks')"
@@ -40,7 +41,7 @@
           </app-card>
         </div>
 
-        <div class="govuk-grid-column-one-half">
+        <div class="govuk-grid-column-one-half govuk-!-padding-left-1">
           <app-card [image]="'/assets/images/benefits-bundle.svg'">
             <a
               class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"

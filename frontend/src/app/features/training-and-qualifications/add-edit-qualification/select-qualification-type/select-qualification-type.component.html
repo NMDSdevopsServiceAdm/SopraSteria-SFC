@@ -1,0 +1,35 @@
+<app-error-summary *ngIf="submitted && form.invalid" [formErrorsMap]="formErrorsMap" [form]="form"></app-error-summary>
+<form #formEl (ngSubmit)="onSubmit($event)" [formGroup]="form" novalidate>
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds-from-desktop">
+      <fieldset class="govuk-fieldset">
+        <legend class="govuk-fieldset__legend govuk-fieldset__legend--l govuk-!-margin-bottom-8">
+          <span class="govuk-caption-l" data-testid="section-heading">{{ this.worker.nameOrId }}</span>
+          <h1 class="govuk-fieldset__heading">Select the type of qualification you want to add</h1>
+        </legend>
+        <app-grouped-radio-button-accordion
+          *ngIf="qualificationGroups?.length > 0"
+          formControlName="selectedQualification"
+          [accordions]="qualificationGroups"
+          textShowHideAll="categories"
+          [preFilledId]="preFilledId"
+          data-testid="groupedAccordion"
+          [hasError]="submitted && error"
+          [errorMessage]="formErrorsMap[0].type[0].message"
+        ></app-grouped-radio-button-accordion>
+      </fieldset>
+    </div>
+  </div>
+
+  <div class="govuk-button-group">
+    <button type="submit" class="govuk-button govuk-!-margin-right-9" data-module="govuk-button">Continue</button>
+    <a
+      role="button"
+      href="#"
+      class="govuk-button govuk-button--link govuk-!-margin-left-9"
+      draggable="false"
+      (click)="onCancel($event)"
+      >Cancel</a
+    >
+  </div>
+</form>

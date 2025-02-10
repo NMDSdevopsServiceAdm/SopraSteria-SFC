@@ -15,6 +15,7 @@ import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatus
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
 import { NotificationsListResolver } from '@core/resolvers/notifications-list.resolver';
 import { PrimaryWorkplaceResolver } from '@core/resolvers/primary-workplace.resolver';
@@ -27,18 +28,24 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AdminComponent } from '@features/admin/admin.component';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
-import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
+import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
+import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
+import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
+import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 import { LoginComponent } from '@features/login/login.component';
+import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { MigratedUserTermsConditionsComponent } from '@features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
+import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { LinkToParentComponent } from '@features/new-dashboard/link-to-parent/link-to-parent.component';
 import { RemoveLinkToParentComponent } from '@features/new-dashboard/remove-link-to-parent/remove-link-to-parent.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
 import { SatisfactionSurveyComponent } from '@features/satisfaction-survey/satisfaction-survey.component';
-import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { SubsidiaryRouterService } from '@shared/services/subsidiary-router-service';
 
 const routes: Routes = [
@@ -89,6 +96,27 @@ const routes: Routes = [
         data: { title: 'Forgotten Password' },
       },
       {
+        path: 'forgot-your-username-or-password',
+        component: ForgotYourUsernameOrPasswordComponent,
+        data: { title: 'Forgot Your Username Or Password' },
+      },
+      {
+        path: 'forgot-your-username',
+        component: ForgotYourUsernameComponent,
+        data: { title: 'Forgot Your Username' },
+      },
+      {
+        path: 'user-account-not-found',
+        component: UserAccountNotFoundComponent,
+        data: { title: 'User Account Not found' },
+      },
+
+      {
+        path: 'security-question-answer-not-match',
+        component: SecurityQuestionAnswerNotMatchComponent,
+        data: { title: 'Security Question Answer Does Not Match' },
+      },
+      {
         path: 'reset-password',
         component: ResetPasswordComponent,
         data: { title: 'Reset Password' },
@@ -97,6 +125,11 @@ const routes: Routes = [
         path: 'satisfaction-survey',
         component: SatisfactionSurveyComponent,
         data: { title: 'Satisfaction Survey' },
+      },
+      {
+        path: 'username-found',
+        component: UsernameFoundComponent,
+        data: { title: 'Username Found' },
       },
     ],
   },
@@ -115,6 +148,11 @@ const routes: Routes = [
         canActivate: [MigratedUserGuard],
         component: MigratedUserTermsConditionsComponent,
         data: { title: 'Migrated User Terms And Conditions' },
+      },
+      {
+        path: 'update-your-vacancies-and-turnover-data',
+        component: VacanciesAndTurnoverLoginMessage,
+        data: { title: 'Update your vacancies and turnover data' },
       },
       {
         path: 'workplace',
@@ -151,6 +189,8 @@ const routes: Routes = [
           rankings: RankingsResolver,
           usefulLinksPay: UsefulLinkPayResolver,
           usefulLinkRecruitment: UsefulLinkRecruitmentResolver,
+          noOfWorkersWhoRequireInternationalRecruitment:
+            GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
         },
         data: { title: 'Dashboard', workerPagination: true },
       },

@@ -1,5 +1,9 @@
-import { QualificationsByGroup } from './qualification.model';
-import { TrainingRecords } from './training.model';
+import {
+  QualificationsByGroup,
+  QualificationCertificateDownloadEvent,
+  QualificationCertificateUploadEvent,
+} from './qualification.model';
+import { TrainingRecords, TrainingCertificateDownloadEvent, TrainingCertificateUploadEvent } from './training.model';
 
 export interface TrainingAndQualificationRecords {
   qualifications: QualificationsByGroup;
@@ -13,4 +17,45 @@ export interface TrainingCounts {
   totalExpiringTraining?: number;
   missingMandatoryTraining?: number;
   staffMissingMandatoryTraining?: number;
+}
+
+export interface Certificate {
+  uid: string;
+  filename: string;
+  uploadDate: string;
+}
+
+export interface CertificateDownload {
+  uid: string;
+  filename: string;
+}
+
+export type CertificateDownloadEvent = TrainingCertificateDownloadEvent | QualificationCertificateDownloadEvent;
+
+export type CertificateUploadEvent = TrainingCertificateUploadEvent | QualificationCertificateUploadEvent;
+
+export interface UploadCertificateSignedUrlRequest {
+  files: { filename: string }[];
+}
+
+export interface UploadCertificateSignedUrlResponse {
+  files: { filename: string; fileId: string; signedUrl: string; key: string }[];
+}
+
+export interface DownloadCertificateSignedUrlResponse {
+  files: { filename: string; signedUrl: string }[];
+}
+
+export interface S3UploadResponse {
+  headers: { etag: string };
+}
+export interface FileInfoWithETag {
+  filename: string;
+  fileId: string;
+  etag: string;
+  key: string;
+}
+
+export interface ConfirmUploadRequest {
+  files: { filename: string; fileId: string; etag: string }[];
 }

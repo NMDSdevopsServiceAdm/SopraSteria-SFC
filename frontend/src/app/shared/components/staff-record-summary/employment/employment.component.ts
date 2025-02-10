@@ -3,6 +3,7 @@ import { Component, Input } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Contracts } from '@core/model/contracts.enum';
 import { EthnicityService } from '@core/services/ethnicity.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WdfConfirmFieldsService } from '@core/services/wdf/wdf-confirm-fields.service';
 import { WorkerService } from '@core/services/worker.service';
@@ -27,8 +28,16 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
     wdfConfirmFieldsService: WdfConfirmFieldsService,
     route: ActivatedRoute,
     ethnicityService: EthnicityService,
+    internationalRecruitmentService: InternationalRecruitmentService,
   ) {
-    super(permissionsService, workerService, wdfConfirmFieldsService, route, ethnicityService);
+    super(
+      permissionsService,
+      workerService,
+      wdfConfirmFieldsService,
+      route,
+      ethnicityService,
+      internationalRecruitmentService,
+    );
   }
 
   isNumber(number: number) {
@@ -60,5 +69,38 @@ export class EmploymentComponent extends StaffRecordSummaryComponent {
 
   get mainStartDate() {
     return dayjs(this.worker.mainJobStartDate).format('D MMMM YYYY');
+  }
+
+  get displayHealthAndCareVisa() {
+    return this.internationalRecruitmentService.shouldSeeInternationalRecruitmentQuestions(this.worker);
+  }
+
+  get displayEmployedFromOutsideOrInsideUk() {
+    return this.worker.healthAndCareVisa === 'Yes';
+  }
+
+  get displayEmployedFromOutsideOrInsideUkValue() {
+    return this.internationalRecruitmentService.getEmployedFromOutsideUkStaffRecordValue(
+      this.worker.employedFromOutsideUk,
+    );
+  }
+
+  public showWdfConfirmations: any = {
+    mainJobStartDate: null,
+    daysSick: null,
+    zeroHoursContract: null,
+    weeklyHoursAverage: null,
+    weeklyHoursContracted: null,
+    annualHourlyPay: null,
+  };
+
+  protected setShowWdfConfirmations(): void {
+    Object.keys(this.showWdfConfirmations).forEach((field) => {
+      this.showWdfConfirmations[field] = this.showWdfConfirmation(field);
+    });
+  }
+
+  ngOnChanges(): void {
+    this.setShowWdfConfirmations();
   }
 }

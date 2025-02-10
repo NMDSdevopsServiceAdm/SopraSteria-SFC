@@ -10,22 +10,34 @@ const {
   getWeeksSinceParentApproval,
   getChildWorkplacesLocationIds,
   findMissingCqcLocationIds,
-  checkMissingWorkplacesAndParentApprovalRule,
+  hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval,
 } = require('../../../../routes/missingCqcProviderLocations');
 
 describe('server/routes/establishments/missingCqcProviderLocations', async () => {
   describe('get missingCqcProviderLocations', async () => {
-    const locationId = '1-2003';
-
+    const provId = '1-2003';
     const cqcLocationIds = ['1-12427547986', '1-2043158439', '1-5310224737'];
+
+    let request;
 
     beforeEach(() => {
       sinon.stub(CQCDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
         return {
-          providerId: locationId,
+          providerId: provId,
           locationIds: cqcLocationIds,
         };
       });
+
+      request = {
+        method: 'GET',
+        url: `/api/missingCqcProviderLocations`,
+        params: {},
+        query: {
+          provId: provId,
+          establishmentUid: 'some-uuid',
+          establishmentId: 2,
+        },
+      };
     });
 
     afterEach(async () => {
@@ -33,7 +45,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
     });
 
     const childWorkplaces = {
-      count: 2,
+      count: 3,
       rows: [
         {
           uid: '23a455',
@@ -51,17 +63,6 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           locationId: '1-53',
         },
       ],
-    };
-
-    const request = {
-      method: 'GET',
-      url: `/api/missingCqcProviderLocations`,
-      params: {},
-      query: {
-        locationId: locationId,
-        establishmentUid: 'some-uuid',
-        establishmentId: 2,
-      },
     };
 
     it('should return a 200 status when call is successful', async () => {
@@ -103,9 +104,37 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       expect(res.statusCode).to.deep.equal(200);
     });
 
+    it('should return childWorkplaceCount and parent approval info with empty fields for CQC when no provId in query', async () => {
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
+        updatedAt: moment(moment().subtract(21, 'days')),
+      });
+
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
+
+      const expectedResult = {
+        showMissingCqcMessage: false,
+        weeksSinceParentApproval: 3,
+        missingCqcLocations: {
+          count: 0,
+          missingCqcLocationIds: [],
+        },
+        childWorkplacesCount: 3,
+      };
+
+      request.query.provId = null;
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await missingCqcProviderLocations(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
     it('should return false for showMissingCqcMessage and missingCqcLocations with an empty array if CQCDataAPI has an error', async () => {
       sinon.restore();
-
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });
@@ -115,6 +144,33 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       const expectedResult = {
         showMissingCqcMessage: false,
         weeksSinceParentApproval: 3,
+        missingCqcLocations: {
+          count: 0,
+          missingCqcLocationIds: [],
+        },
+        childWorkplacesCount: 3,
+      };
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await missingCqcProviderLocations(req, res);
+
+      expect(res._getData()).to.deep.equal(expectedResult);
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return weeksSinceParentApproval as null and all fields set to empty values when is not parent', async () => {
+      sinon.restore();
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns({ rows: [], count: 0 });
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns(null);
+      sinon.stub(CQCDataAPI, 'getCQCProviderData').returns(null);
+
+      request.locationId = null;
+
+      const expectedResult = {
+        showMissingCqcMessage: false,
+        weeksSinceParentApproval: null,
         missingCqcLocations: {
           count: 0,
           missingCqcLocationIds: [],
@@ -136,13 +192,14 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
         method: 'GET',
         url: `/api/missingCqcProviderLocations`,
         query: {
-          locationId: '1-locationId',
+          provId: '1-provId',
           establishmentUid: 'some-uuid',
           establishmentId: 2,
         },
       };
 
       sinon.restore();
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });
@@ -157,7 +214,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           count: 0,
           missingCqcLocationIds: [],
         },
-        childWorkplacesCount: 0,
+        childWorkplacesCount: 3,
       };
 
       const req = httpMocks.createRequest(request);
@@ -167,20 +224,6 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
 
       expect(res._getData()).to.deep.equal(expectedResult);
       expect(res.statusCode).to.deep.equal(200);
-    });
-
-    it('should return the difference in weeks', async () => {
-      const parentApproval = {
-        ID: 1,
-        UUID: 'some-uuid',
-        EstablishmentID: 105,
-        Status: 'Approved',
-        updatedAt: moment(moment().subtract(21, 'days')),
-      };
-
-      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
-
-      expect(weeksSinceParentApproval).to.equal(3);
     });
 
     it('should return an array of child workplaces location ids', async () => {
@@ -200,28 +243,82 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
 
       expect(missingCqcLocationIds).to.deep.equal(expectedResult);
     });
+  });
 
-    describe('checkMissingWorkplacesAndParentApprovalRule', () => {
-      it('should return true', async () => {
-        const weeksSinceParentApproval = 8;
-        const missingCqcLocationsCount = 6;
-        const showMissingCqcMessage = await checkMissingWorkplacesAndParentApprovalRule(
-          weeksSinceParentApproval,
-          missingCqcLocationsCount,
-        );
+  describe('getWeeksSinceParentApproval', () => {
+    let parentApproval;
+    beforeEach(() => {
+      parentApproval = {
+        ID: 1,
+        UUID: 'some-uuid',
+        EstablishmentID: 105,
+        Status: 'Approved',
+        updatedAt: moment(moment().subtract(21, 'days')),
+      };
+    });
+    it('should return 3 when 21 days between updatedAt date and current date', async () => {
+      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
 
-        expect(showMissingCqcMessage).to.equal(true);
-      });
-      it('should return false', async () => {
-        const weeksSinceParentApproval = 3;
-        const missingCqcLocationsCount = 4;
-        const showMissingCqcMessage = await checkMissingWorkplacesAndParentApprovalRule(
-          weeksSinceParentApproval,
-          missingCqcLocationsCount,
-        );
+      expect(weeksSinceParentApproval).to.equal(3);
+    });
 
-        expect(showMissingCqcMessage).to.equal(false);
-      });
+    it('should return 0 when 6 days between updatedAt date and current date', async () => {
+      parentApproval.updatedAt = moment(moment().subtract(6, 'days'));
+
+      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+
+      expect(weeksSinceParentApproval).to.equal(0);
+    });
+
+    it('should return 1 when 13 days between updatedAt date and current date', async () => {
+      parentApproval.updatedAt = moment(moment().subtract(13, 'days'));
+
+      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+
+      expect(weeksSinceParentApproval).to.equal(1);
+    });
+
+    it('should return null when parentApproval is null', async () => {
+      parentApproval = null;
+
+      const weeksSinceParentApproval = await getWeeksSinceParentApproval(parentApproval);
+
+      expect(weeksSinceParentApproval).to.equal(null);
+    });
+  });
+
+  describe('hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval', () => {
+    it('should return true if 8 weeks or more since parent approval and more than 5 missing CQC locations', async () => {
+      const weeksSinceParentApproval = 8;
+      const missingCqcLocationsCount = 6;
+      const showMissingCqcMessage = await hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
+        weeksSinceParentApproval,
+        missingCqcLocationsCount,
+      );
+
+      expect(showMissingCqcMessage).to.equal(true);
+    });
+
+    it('should return false if under 8 weeks since parent approval', async () => {
+      const weeksSinceParentApproval = 7;
+      const missingCqcLocationsCount = 6;
+      const showMissingCqcMessage = await hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
+        weeksSinceParentApproval,
+        missingCqcLocationsCount,
+      );
+
+      expect(showMissingCqcMessage).to.equal(false);
+    });
+
+    it('should return false if fewer than 6 missing CQC locations', async () => {
+      const weeksSinceParentApproval = 12;
+      const missingCqcLocationsCount = 5;
+      const showMissingCqcMessage = await hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
+        weeksSinceParentApproval,
+        missingCqcLocationsCount,
+      );
+
+      expect(showMissingCqcMessage).to.equal(false);
     });
   });
 });

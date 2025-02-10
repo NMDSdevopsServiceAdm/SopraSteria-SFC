@@ -15,6 +15,8 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public formErrorsMap: Array<ErrorDetails>;
   @Input() public serverError?: string;
   @Input() public customErrors?: Array<ErrorDefinition>;
+  @Input() addIndexKeyToFormArrayErrors: boolean = false;
+  @Input() showServerErrorAsLink: boolean = true;
   @ViewChild('errorSummary', { static: true }) private errorSummaryElement: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;
@@ -85,7 +87,8 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
 
         formArray.controls.forEach((formGroup, index) => {
           if (formGroup.errors) {
-            Object.keys(formGroup.errors).forEach(() => this.collectError(formGroup, key));
+            const errorElementKey = this.addIndexKeyToFormArrayErrors ? `${key}.${index}` : key;
+            Object.keys(formGroup.errors).forEach(() => this.collectError(formGroup, errorElementKey));
           }
 
           const formGroupControls: AbstractControl = formGroup[`controls`];

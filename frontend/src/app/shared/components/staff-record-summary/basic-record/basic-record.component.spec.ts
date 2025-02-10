@@ -10,16 +10,18 @@ import { MockPermissionsService } from '@core/test-utils/MockPermissionsService'
 import { workerWithWdf } from '@core/test-utils/MockWorkerService';
 import { SummaryRecordChangeComponent } from '@shared/components/summary-record-change/summary-record-change.component';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 
 import { BasicRecordComponent } from './basic-record.component';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('BasicRecordComponent', () => {
   async function setup(mandatoryDetailsPage = false) {
-    const { fixture, getByText } = await render(BasicRecordComponent, {
+    const { fixture, getByText, getByTestId } = await render(BasicRecordComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [SummaryRecordChangeComponent],
       providers: [
+        InternationalRecruitmentService,
         {
           provide: PermissionsService,
           useFactory: MockPermissionsService.factory(['canEditWorker']),
@@ -40,6 +42,7 @@ describe('BasicRecordComponent', () => {
       component,
       fixture,
       getByText,
+      getByTestId,
     };
   }
 
@@ -49,18 +52,46 @@ describe('BasicRecordComponent', () => {
   });
 
   it('should render the change link with the staff-record-summary/staff-details url when not on the mandatory details page', async () => {
-    const { component, getByText } = await setup();
+    const { component, getByText, getByTestId } = await setup();
 
-    expect(getByText('Change').getAttribute('href')).toBe(
+    const nameSection = within(getByTestId('name-and-contract-section'));
+    const changeLink = nameSection.getByText('Change');
+
+    expect(changeLink.getAttribute('href')).toBe(
       `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/staff-details`,
     );
   });
 
-  it('should render the change link with the mandatory-details/staff-details url when on the mandatory details page', async () => {
-    const { component, getByText } = await setup(true);
+  it('should render the change link with the staff-record-summary/main-job-role url when not on the mandatory details page', async () => {
+    const { component, getByText, getByTestId } = await setup();
 
-    expect(getByText('Change').getAttribute('href')).toBe(
+    const mainJobRoleSection = within(getByTestId('main-job-role-section'));
+    const changeLink = mainJobRoleSection.getByText('Change');
+
+    expect(changeLink.getAttribute('href')).toBe(
+      `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/staff-record-summary/main-job-role`,
+    );
+  });
+
+  it('should render the change link with the mandatory-details/staff-details url when on the mandatory details page', async () => {
+    const { component, getByText, getByTestId } = await setup(true);
+
+    const nameSection = within(getByTestId('name-and-contract-section'));
+    const changeLink = nameSection.getByText('Change');
+
+    expect(changeLink.getAttribute('href')).toBe(
       `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/mandatory-details/staff-details`,
+    );
+  });
+
+  it('should render the change link with the mandatory-details/main-job-role url when on the mandatory details page', async () => {
+    const { component, getByText, getByTestId } = await setup(true);
+
+    const mainJobRoleSection = within(getByTestId('main-job-role-section'));
+    const changeLink = mainJobRoleSection.getByText('Change');
+
+    expect(changeLink.getAttribute('href')).toBe(
+      `/workplace/${component.workplace.uid}/staff-record/${component.worker.uid}/mandatory-details/main-job-role`,
     );
   });
 });

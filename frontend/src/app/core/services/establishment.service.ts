@@ -245,6 +245,12 @@ export class EstablishmentService {
     return this.http.post<any>(`${environment.appRunnerEndpoint}/api/establishment/${establishmentId}/capacity`, data);
   }
 
+  workplaceOrSubHasTrainingCertificates(workplaceUid: string) {
+    return this.http.get<any>(
+      `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/hasTrainingCertificates`,
+    );
+  }
+
   getJobs() {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/establishment/${this.establishmentId}/jobs`);
   }
@@ -470,7 +476,7 @@ export class EstablishmentService {
   public getMissingCqcLocations(requestParams): Observable<any> {
     let params = new HttpParams();
 
-    params = params.set('locationId', `${requestParams.locationId}`);
+    params = params.set('provId', `${requestParams.provId}`);
     params = params.set('establishmentUid', `${requestParams.uid}`);
     params = params.set('establishmentId', `${requestParams.id}`);
 

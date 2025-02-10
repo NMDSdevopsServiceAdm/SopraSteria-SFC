@@ -2,12 +2,13 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { WindowRef } from '@core/services/window.ref';
-import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -17,7 +18,9 @@ import { RemoveAllMandatoryTrainingComponent } from './delete-all-mandatory-trai
 
 describe('RemoveAllMandatoryTrainingComponent', () => {
   async function setup() {
-    const { getByText, fixture } = await render(RemoveAllMandatoryTrainingComponent, {
+    const establishment = establishmentBuilder() as Establishment;
+
+    const setupTools = await render(RemoveAllMandatoryTrainingComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
       declarations: [],
       providers: [
@@ -42,9 +45,7 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
             parent: {
               snapshot: {
                 data: {
-                  establishment: {
-                    uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
-                  },
+                  establishment,
                 },
               },
             },
@@ -52,7 +53,7 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
         },
       ],
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const trainingService = injector.inject(TrainingService);
@@ -66,12 +67,12 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
+      ...setupTools,
       component,
-      fixture,
       deleteAllMandatoryTrainingSpy,
       alertSpy,
       routerSpy,
-      getByText,
+      establishment,
     };
   }
 
@@ -89,36 +90,54 @@ describe('RemoveAllMandatoryTrainingComponent', () => {
     const { getByText } = await setup();
     expect(
       getByText(
-        'If you do this, your workplace will not have any training set up as being mandatory for your staff at the moment.',
+        'If you do this, your workplace will no longer have any training set up as being mandatory for your staff.',
       ),
     ).toBeTruthy();
   });
 
-  describe('remove mandatory training button', async () => {
-    it('Should render Remove categories button and cancel link', async () => {
-      const { getByText } = await setup();
-      expect(getByText('Remove categories')).toBeTruthy();
-      expect(getByText('Cancel')).toBeTruthy();
-    });
+  it('Should render Remove categories button and cancel link', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Remove categories')).toBeTruthy();
+    expect(getByText('Cancel')).toBeTruthy();
+  });
 
+  describe('On submit', async () => {
     it('should delete the mandatory trainings when the button is clicked', async () => {
-      const { getByText, deleteAllMandatoryTrainingSpy } = await setup();
+      const { getByText, deleteAllMandatoryTrainingSpy, establishment } = await setup();
 
       const submitButton = getByText('Remove categories');
       fireEvent.click(submitButton);
 
-      expect(deleteAllMandatoryTrainingSpy).toHaveBeenCalled();
+      expect(deleteAllMandatoryTrainingSpy).toHaveBeenCalledWith(establishment.id);
     });
 
-    it('return to the add-and-manage-mandatory-training when cancel is clicked', async () => {
-      const { component, getByText, routerSpy } = await setup();
+    it('return to the add-and-manage-mandatory-training page', async () => {
+      const { getByText, routerSpy, establishment } = await setup();
 
-      userEvent.click(getByText('Cancel'));
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        component.establishment.uid,
-        'add-and-manage-mandatory-training',
-      ]);
+      const submitButton = getByText('Remove categories');
+      fireEvent.click(submitButton);
+
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', establishment.uid, 'add-and-manage-mandatory-training']);
     });
+
+    it("should display a success banner with 'All mandatory training categories removed'", async () => {
+      const { fixture, alertSpy, getByText } = await setup();
+
+      const submitButton = getByText('Remove categories');
+      fireEvent.click(submitButton);
+      await fixture.whenStable();
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'All mandatory training categories removed',
+      });
+    });
+  });
+
+  it('should return to the add-and-manage-mandatory-training when Cancel is clicked', async () => {
+    const { getByText, routerSpy, establishment } = await setup();
+
+    userEvent.click(getByText('Cancel'));
+    expect(routerSpy).toHaveBeenCalledWith(['/workplace', establishment.uid, 'add-and-manage-mandatory-training']);
   });
 });

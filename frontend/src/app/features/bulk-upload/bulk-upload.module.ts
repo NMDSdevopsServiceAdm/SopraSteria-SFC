@@ -12,6 +12,7 @@ import { DataChangeLastUpdatedResolver } from '@core/resolvers/data-changes-last
 import { LastBulkUploadResolver } from '@core/resolvers/last-bulk-upload.resolver';
 import { MissingWorkplacesReferencesResolver } from '@core/resolvers/missing-workplace-references.resolver';
 import { StaffReferencesResolver } from '@core/resolvers/staff-references.resolver';
+import { HasTrainingCertificatesResolver } from '@core/resolvers/training/has-training-certificates.resolver';
 import { WorkplacesReferencesResolver } from '@core/resolvers/workplace-references.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { MissingStaffReferencesComponent } from '@features/bulk-upload/bulk-upload-references/missing-staff-references/missing-staff-references-page.component';
@@ -104,6 +105,7 @@ import { UploadWarningDialogComponent } from './upload-warning-dialog/upload-war
     BulkUploadTopTipResolver,
     BulkUploadTroubleshootingPageResolver,
     BulkUploadGetLockStatusResolver,
+    HasTrainingCertificatesResolver,
   ],
 })
 export class BulkUploadModule {}

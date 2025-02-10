@@ -1481,6 +1481,8 @@ module.exports = function (sequelize, DataTypes) {
             'DisabilityValue',
             'CareCertificateValue',
             'RecruitedFromValue',
+            'HealthAndCareVisaValue',
+            'EmployedFromOutsideUkValue',
             'MainJobStartDateValue',
             'SocialCareStartDateValue',
             'SocialCareStartDateYear',
@@ -1501,6 +1503,8 @@ module.exports = function (sequelize, DataTypes) {
             'ApprovedMentalHealthWorkerValue',
             'QualificationInSocialCareValue',
             'OtherQualificationsValue',
+            'Level2CareCertificateValue',
+            'Level2CareCertificateYear',
           ],
           as: 'workers',
           where: {
@@ -2125,7 +2129,7 @@ module.exports = function (sequelize, DataTypes) {
     limit = 0,
     pageIndex = 0,
     searchTerm = '',
-    getPendingWorkplaces,
+    getPendingWorkplaces = false,
   ) {
     const offset = pageIndex * limit;
     let ustatus;
@@ -2352,25 +2356,9 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
-  const nhsBsaAttributes = [
-    'id',
-    'nmdsId',
-    'NameValue',
-    'address1',
-    'locationId',
-    'town',
-    'postcode',
-    'isParent',
-    'dataOwner',
-    'NumberOfStaffValue',
-    'parentId',
-  ];
-
-  Establishment.getNhsBsaApiDataByWorkplaceId = async function (where) {
-    return await this.findOne({
-      nhsBsaAttributes,
+  const nhsBsaApiQuery = (where) => {
+    return {
       as: 'establishment',
-
       where: {
         archived: false,
         ...where,
@@ -2382,29 +2370,48 @@ module.exports = function (sequelize, DataTypes) {
           attributes: ['name', 'category'],
           required: true,
         },
-      ],
-    });
-  };
-
-  Establishment.getNhsBsaApiDataForSubs = async function (establishmentId) {
-    return await this.findAll({
-      nhsBsaAttributes,
-      as: 'establishment',
-
-      where: {
-        archived: false,
-        parentId: establishmentId,
-      },
-
-      include: [
         {
-          model: sequelize.models.services,
-          as: 'mainService',
-          attributes: ['name', 'category'],
-          required: true,
+          model: sequelize.models.worker,
+          as: 'workers',
+          attributes: ['WdfEligible'],
+          where: {
+            archived: false,
+          },
+          required: false,
         },
       ],
-    });
+    };
+  };
+
+  Establishment.getNhsBsaApiDataByWorkplaceId = async function (workplaceId) {
+    return await this.findOne(nhsBsaApiQuery({ nmdsId: workplaceId }));
+  };
+
+  Establishment.getNhsBsaApiDataForParent = async function (workplaceId) {
+    return await this.findOne(nhsBsaApiQuery({ id: workplaceId }));
+  };
+
+  Establishment.getNhsBsaApiDataForSubs = async function (parentId) {
+    return await this.findAll(nhsBsaApiQuery({ parentId }));
+  };
+
+  Establishment.workplaceOrSubHasAtLeastOneTrainingCertificate = async function (workplaceId) {
+    const [result] = await sequelize.query(
+      `
+      SELECT 1 FROM cqc."Establishment" establishment
+        INNER JOIN cqc."Worker" worker ON establishment."EstablishmentID" = worker."EstablishmentFK"
+        INNER JOIN cqc."TrainingCertificates" trainingCertificate ON worker."ID" = trainingCertificate."WorkerFK"
+        WHERE establishment."Archived" = false AND worker."Archived" = false
+          AND (establishment."EstablishmentID" = :workplaceId OR establishment."ParentID" = :workplaceId)
+        LIMIT 1;
+      `,
+      {
+        replacements: { workplaceId },
+        type: sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return !!result;
   };
 
   return Establishment;

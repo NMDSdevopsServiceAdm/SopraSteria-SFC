@@ -5,11 +5,17 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { DATE_PARSE_FORMAT } from '@core/constants/constants';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { TrainingCategory, TrainingRecord, TrainingRecordRequest } from '@core/model/training.model';
+import {
+  TrainingCategory,
+  TrainingCertificate,
+  TrainingRecord,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingCategoryService } from '@core/services/training-category.service';
 import { TrainingService } from '@core/services/training.service';
 import { WorkerService } from '@core/services/worker.service';
 import { DateValidator } from '@shared/validators/date.validator';
@@ -29,6 +35,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public workplace: Establishment;
   public formErrorsMap: Array<ErrorDetails>;
   public notesMaxLength = 1000;
+  public notesOpen = false;
   private titleMaxLength = 120;
   private titleMinLength = 3;
   public subscriptions: Subscription = new Subscription();
@@ -37,8 +44,13 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
   public section: string;
   public buttonText: string;
   public showWorkerCount = false;
+  public showCategory: boolean;
   public remainingCharacterCount: number = this.notesMaxLength;
   public notesValue = '';
+  public showChangeLink: boolean = false;
+  public multipleTrainingDetails: boolean;
+  public trainingCertificates: TrainingCertificate[] = [];
+  public submitButtonDisabled: boolean = false;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -47,15 +59,14 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     protected backLinkService: BackLinkService,
     protected errorSummaryService: ErrorSummaryService,
     protected trainingService: TrainingService,
+    protected trainingCategoryService: TrainingCategoryService,
     protected workerService: WorkerService,
     protected alertService: AlertService,
   ) {}
 
   ngOnInit(): void {
     this.workplace = this.route.parent.snapshot.data.establishment;
-    if (this.route.snapshot.queryParamMap.get('trainingCategory')) {
-      this.trainingCategory = JSON.parse(this.route.snapshot.queryParamMap.get('trainingCategory'));
-    }
+    this.checkForCategoryId();
     this.previousUrl = [localStorage.getItem('previousUrl')];
     this.setupForm();
     this.init();
@@ -70,6 +81,14 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
+  }
+
+  public checkForCategoryId(): void {
+    const selectedCategory = this.trainingService.selectedTraining?.trainingCategory;
+    if (selectedCategory) {
+      this.trainingCategory = { id: selectedCategory.id, category: selectedCategory.category };
+      this.showChangeLink = true;
+    }
   }
 
   public handleOnInput(event: Event) {
@@ -93,7 +112,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.form = this.formBuilder.group(
       {
         title: [null, [Validators.minLength(this.titleMinLength), Validators.maxLength(this.titleMaxLength)]],
-        category: [null, Validators.required],
         accredited: null,
         completed: this.formBuilder.group({
           day: null,
@@ -126,7 +144,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   private getCategories(): void {
     this.subscriptions.add(
-      this.trainingService.getCategories().subscribe(
+      this.trainingCategoryService.getCategories().subscribe(
         (categories) => {
           if (categories) {
             this.categories = categories;
@@ -141,15 +159,6 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   private setupFormErrorsMap(): void {
     this.formErrorsMap = [
-      {
-        item: 'category',
-        type: [
-          {
-            name: 'required',
-            message: 'Select the training category',
-          },
-        ],
-      },
       {
         item: 'title',
         type: [
@@ -222,17 +231,22 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (!this.form.valid) {
+      if (this.form.controls.notes?.errors?.maxlength) {
+        this.notesOpen = true;
+      }
       this.errorSummaryService.scrollToErrorSummary();
       return;
     }
 
-    const { title, category, accredited, completed, expires, notes } = this.form.controls;
+    const trainingCategorySelected = this.trainingCategory;
+
+    const { title, accredited, completed, expires, notes } = this.form.controls;
     const completedDate = this.dateGroupToDayjs(completed as UntypedFormGroup);
     const expiresDate = this.dateGroupToDayjs(expires as UntypedFormGroup);
 
     const record: TrainingRecordRequest = {
       trainingCategory: {
-        id: parseInt(category.value),
+        id: trainingCategorySelected.id,
       },
       title: title.value,
       accredited: accredited.value,
@@ -281,6 +295,7 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
 
   public onCancel(event: Event): void {
     event.preventDefault();
+    this.trainingService.clearSelectedTrainingCategory();
     if (this.previousUrl?.length) {
       this.router.navigate(this.previousUrl);
     } else {
@@ -311,5 +326,9 @@ export class AddEditTrainingDirective implements OnInit, AfterViewInit {
         'delete',
       ]);
     }
+  }
+
+  public toggleNotesOpen(): void {
+    this.notesOpen = !this.notesOpen;
   }
 }

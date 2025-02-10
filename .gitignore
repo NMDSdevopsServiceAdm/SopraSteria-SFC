@@ -79,9 +79,14 @@ TESTS.xml
 cypress/screenshots
 cypress/videos
 cypress/fixtures
-
+frontend/cypress/screenshots
+frontend/cypress/videos
+frontend/cypress/fixtures
 docker/*.sql
 
 # Gource
 lib/
 *.ppm
+
+# puppeteer cache
+frontend/.cache
