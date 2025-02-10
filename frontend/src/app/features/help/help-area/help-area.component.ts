@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterStateSnapshot } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -30,6 +30,15 @@ export class HelpAreaComponent implements OnInit {
   ngOnInit(): void {
     this.workplaceName = this.establishmentService.establishment?.name;
     this.breadcrumbService.show(JourneyType.HELP);
+
+    this.setActiveTab();
+  }
+
+  private setActiveTab() {
+    const urlSegments = this.router.url.split('/');
+    const helpIndex = urlSegments.findIndex(x => x === 'help');
+    const tabIndex = this.tabs.findIndex((x) => x.route === urlSegments[helpIndex + 1]);
+    this.currentTabIndex = tabIndex;
   }
 
   public onTabClick(event: Event, tabIndex: number): void {

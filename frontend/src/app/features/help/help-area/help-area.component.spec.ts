@@ -8,10 +8,12 @@ import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService'
 import { fireEvent, render } from '@testing-library/angular';
 
 import { HelpAreaComponent } from './help-area.component';
+import { MockRouter } from '@core/test-utils/MockRouter';
 
 describe('HelpAreaComponent', () => {
-  async function setup() {
+  async function setup(overrides: any = {}) {
     const workplace = establishmentBuilder();
+    const routerSpy = jasmine.createSpy('navigate').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(HelpAreaComponent, {
       imports: [RouterTestingModule],
@@ -28,15 +30,14 @@ describe('HelpAreaComponent', () => {
         },
         {
           provide: BreadcrumbService,
-          useClass: MockBreadcrumbService,
+          useValue: { show: () => {} },
         },
+        { provide: Router, useValue: { navigate: routerSpy, url: overrides.url ?? 'help/get-started' } },
       ],
     });
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-
-    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       ...setupTools,
@@ -71,11 +72,20 @@ describe('HelpAreaComponent', () => {
     expect(getByText('Contact us')).toBeTruthy();
   });
 
-  it('should highlight the first tab as active by default', async () => {
-    const { getByText } = await setup();
-    const firstTab = getByText('Get started');
+  [
+    { route: 'get-started', linkText: 'Get started' },
+    { route: 'questions-and-answers', linkText: 'Questions and answers' },
+    { route: 'whats-new', linkText: "What's new" },
+    { route: 'helpful-downloads', linkText: 'Helpful downloads' },
+    { route: 'contact-us', linkText: 'Contact us' },
+  ].forEach((tab) => {
+    it(`should set ${tab.linkText} tab as active when on ${tab.route} route`, async () => {
+      const { getByText } = await setup({ url: `help/${tab.route}` });
 
-    expect(firstTab).toHaveClass('active');
+      const tabLink = getByText(tab.linkText);
+
+      expect(tabLink).toHaveClass('active');
+    });
   });
 
   it('should update active tab when clicked', async () => {
