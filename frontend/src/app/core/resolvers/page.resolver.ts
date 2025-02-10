@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
 import { Page } from '@core/model/page.model';
 import { PagesService } from '@core/services/pages.service';
-import { slice } from 'lodash';
 import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
