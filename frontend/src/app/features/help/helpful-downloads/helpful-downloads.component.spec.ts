@@ -55,7 +55,7 @@ describe('HelpfulDownloadsComponent', () => {
     expect(getByTestId('helpful-downloads-content')).toBeTruthy();
   });
 
-    it('should not render helpful downloads content from the cms', async () => {
+  it('should not render helpful downloads content from the cms', async () => {
     const override = {
       hasContent: false,
     };
