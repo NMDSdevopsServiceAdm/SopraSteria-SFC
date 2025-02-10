@@ -99,21 +99,25 @@ describe('DoYouHaveStartersComponent', () => {
   });
 
   describe('prefill form', () => {
-    const starterAnswers: any = [[{ jobRole: 1, total: 1 }], jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW, null];
+    const starterAnswers: any = [
+      { selectedRadio: 'Yes', startersInDb: [{ jobRole: 1, total: 1 }] },
+      { selectedRadio: 'No', startersInDb: jobOptionsEnum.NONE },
+      { selectedRadio: 'I do not know', startersInDb: jobOptionsEnum.DONT_KNOW },
+    ];
 
-    starterAnswers.forEach((answer: any) => {
-      it(`should not preselect answer from database (${answer}) even if there is a value saved`, async () => {
+    starterAnswers.forEach((option: any) => {
+      it(`should preselect answer (${option.selectedRadio}) if workplace has value saved`, async () => {
         const overrides = {
-          workplace: { starters: answer },
+          workplace: { starters: option.startersInDb },
         };
-        const { component } = await setup(overrides);
+        const { getByLabelText } = await setup(overrides);
 
-        const form = component.form;
-        expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
+        const selectedRadio = getByLabelText(option.selectedRadio) as HTMLInputElement;
+        expect(selectedRadio.checked).toBeTruthy();
       });
     });
 
-    it("should preselect 'Yes' if hasStarters is true in local storage", async () => {
+    it("should preselect 'Yes' if hasStarters is true in local storage (user has clicked yes and gone back)", async () => {
       const overrides = { returnUrl: false };
       localStorage.setItem('hasStarters', 'true');
 

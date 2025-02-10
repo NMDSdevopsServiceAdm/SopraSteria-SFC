@@ -98,15 +98,21 @@ describe('DoYouHaveLeaversComponent', () => {
   });
 
   describe('Prefilling form', () => {
-    [[{ jobRole: 1, total: 1 }], jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW, null].forEach((answer) => {
-      it(`should not preselect answer from database (${answer}) even if there is a value saved`, async () => {
-        const overrides = {
-          workplace: { leavers: answer },
-        };
-        const { component } = await setup(overrides);
+    const leaverAnswers: any = [
+      { selectedRadio: 'Yes', leaversInDb: [{ jobRole: 1, total: 1 }] },
+      { selectedRadio: 'No', leaversInDb: jobOptionsEnum.NONE },
+      { selectedRadio: 'I do not know', leaversInDb: jobOptionsEnum.DONT_KNOW },
+    ];
 
-        const form = component.form;
-        expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
+    leaverAnswers.forEach((option: any) => {
+      it(`should preselect answer (${option.selectedRadio}) if workplace has value saved`, async () => {
+        const overrides = {
+          workplace: { leavers: option.leaversInDb },
+        };
+        const { getByLabelText } = await setup(overrides);
+
+        const selectedRadio = getByLabelText(option.selectedRadio) as HTMLInputElement;
+        expect(selectedRadio.checked).toBeTruthy();
       });
     });
 
