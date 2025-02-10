@@ -125,9 +125,16 @@ describe('AppComponent', () => {
   });
 
   it(`should not render help and tips button on route '/help'`, async () => {
-    const { fixture, queryByTestId } = await setup({navigationUrl: '/help'});
+    const { fixture, queryByTestId } = await setup({ navigationUrl: '/help' });
     fixture.detectChanges();
 
     expect(queryByTestId('help-and-tips-button')).toBeFalsy();
-  })
+  });
+
+  it(`should not render help and tips button on route '/sfcadmin'`, async () => {
+    const { fixture, queryByTestId } = await setup({ navigationUrl: '/sfcadmin' });
+    fixture.detectChanges();
+
+    expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+  });
 });
