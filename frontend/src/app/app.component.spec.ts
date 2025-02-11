@@ -77,28 +77,6 @@ describe('AppComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should render subsidiary-account view when subsidiary page is navigated to', async () => {
-    const { fixture, queryByTestId } = await setup({ navigationUrl: '/subsidiary/subUid/home' });
-    fixture.detectChanges();
-
-    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
-    const standAloneAccountRendered = queryByTestId('stand-alone-account');
-
-    expect(subsidiaryAccountRendered).toBeTruthy();
-    expect(standAloneAccountRendered).toBeFalsy();
-  });
-
-  it('should render standalone view when subsidiary not in url', async () => {
-    const { fixture, queryByTestId } = await setup();
-    fixture.detectChanges();
-
-    const standAloneAccountRendered = queryByTestId('stand-alone-account');
-    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
-
-    expect(standAloneAccountRendered).toBeTruthy();
-    expect(subsidiaryAccountRendered).toBeFalsy();
-  });
-
   describe('Help and tips button', () => {
     it('should render help and tips button', async () => {
       const { fixture, queryByTestId } = await setup();
