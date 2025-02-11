@@ -78,9 +78,15 @@ export class DoYouHaveStartersLeaversVacanciesDirective extends Question impleme
 
   protected prefillForm(): void {
     this.hasSelectedYesWithoutSavingJobRoles = this.getFromLocalStorage();
-    if (this.hasSelectedYesWithoutSavingJobRoles) {
+    const currentValueOfField = this.establishment?.[this.valueToUpdate];
+
+    if (this.hasSelectedYesWithoutSavingJobRoles || Array.isArray(currentValueOfField)) {
       this.form.setValue({
         startersLeaversVacanciesKnown: jobOptionsEnum.YES,
+      });
+    } else if (!!currentValueOfField) {
+      this.form.setValue({
+        startersLeaversVacanciesKnown: currentValueOfField,
       });
     }
   }
