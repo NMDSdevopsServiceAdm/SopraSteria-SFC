@@ -42,9 +42,6 @@ export class AutoSuggestComponent implements ControlValueAccessor {
       }
       this.clickItemEvent.emit(value);
     }
-    // else if (value && this.showSearchIcon) {
-    //   this.clickItemEvent.emit(value);
-    // }
   }
 
   writeValue(value: any): void {
