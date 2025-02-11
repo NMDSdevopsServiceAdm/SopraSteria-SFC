@@ -147,6 +147,16 @@ describe('DoYouHaveVacanciesComponent', () => {
 
       expect(form.value).toEqual({ startersLeaversVacanciesKnown: 'With Jobs' });
     });
+
+    it('should not preselect if no value in database and user has not gone back to this page', async () => {
+      const overrides = { workplace: { vacancies: null } };
+
+      const { component } = await setup(overrides);
+
+      const form = component.form;
+
+      expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
+    });
   });
 
   describe('submit buttons and submitting form', () => {
