@@ -1,6 +1,7 @@
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { AutoSuggestComponent } from './auto-suggest.component';
+import userEvent from '@testing-library/user-event';
 
 describe('AutoSuggestComponent', () => {
   const formBuilder = new UntypedFormBuilder();
@@ -70,7 +71,43 @@ describe('AutoSuggestComponent', () => {
     const override = {
       dataList: ['staff record', 'cqc'],
     };
-    const { component, getByTestId } = await setup(override);
+    const { getByTestId } = await setup(override);
     expect(getByTestId('tray-list')).toBeTruthy;
+  });
+
+  it('should not show the clicked value in the input if showClickedSuggestionInInput is false', async () => {
+    const override = {
+      dataList: ['staff record'],
+      showSearchIcon: true,
+      showClickedSuggestionInInput: false,
+    };
+
+    const { component, getAllByRole, getByRole, getByLabelText, fixture } = await setup(override);
+
+    const input = getByRole('textbox');
+
+    userEvent.type(input, 'staff record');
+    userEvent.click(within(getAllByRole('listitem')[0]).getByText('staff record'));
+    fixture.detectChanges();
+
+    expect(component.formGroup.value).toEqual({ search: '' });
+  });
+
+  it('should show the clicked value in the input if showClickedSuggestionInInput is true', async () => {
+    const override = {
+      dataList: ['staff record'],
+      showSearchIcon: true,
+      showClickedSuggestionInInput: true,
+    };
+
+    const { component, getAllByRole, getByRole, getByLabelText, fixture } = await setup(override);
+
+    const input = getByRole('textbox');
+
+    userEvent.type(input, 'staff record');
+    userEvent.click(within(getAllByRole('listitem')[0]).getByText('staff record'));
+    fixture.detectChanges();
+
+    expect(component.formGroup.value).toEqual({ search: 'staff record' });
   });
 });

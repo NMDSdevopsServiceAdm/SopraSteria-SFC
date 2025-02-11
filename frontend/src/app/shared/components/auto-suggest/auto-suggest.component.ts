@@ -23,6 +23,7 @@ export class AutoSuggestComponent implements ControlValueAccessor {
   @Input() error = false;
   @Input() showSearchIcon: boolean = false;
   @Input() showBackground: boolean = false;
+  @Input() showClickedSuggestionInInput: boolean = true;
   @Output() searchButtonEvent: EventEmitter<Event> = new EventEmitter();
   @Output() clickItemEvent: EventEmitter<string> = new EventEmitter();
 
@@ -30,11 +31,20 @@ export class AutoSuggestComponent implements ControlValueAccessor {
 
   onClick(value: string) {
     if (value) {
-      this.formGroup.patchValue({
-        [this.formControlName]: value,
-      });
+      if (this.showClickedSuggestionInInput) {
+        this.formGroup.patchValue({
+          [this.formControlName]: value,
+        });
+      } else {
+        this.formGroup.patchValue({
+          [this.formControlName]: '',
+        });
+      }
       this.clickItemEvent.emit(value);
     }
+    // else if (value && this.showSearchIcon) {
+    //   this.clickItemEvent.emit(value);
+    // }
   }
 
   writeValue(value: any): void {
