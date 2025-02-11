@@ -12,6 +12,7 @@ import { HelpAreaComponent } from './help-area/help-area.component';
 import { QAndAPageComponent } from './q-and-a-page/q-and-a-page.component';
 import { QuestionsAndAnswersComponent } from './questions-and-answers/questions-and-answers.component';
 import { WhatsNewComponent } from './whats-new/whats-new.component';
+import { HelpfulDownloadsComponent } from './helpful-downloads/helpful-downloads.component';
 
 const routes: Routes = [
   {
@@ -49,6 +50,14 @@ const routes: Routes = [
           helpPage: HelpPageResolver,
         },
         data: { title: "What's new" },
+      },
+      {
+        path: 'helpful-downloads',
+        component: HelpfulDownloadsComponent,
+        resolve: {
+          page: HelpPageResolver,
+        },
+        data: { title: "Helpful Downloads"},
       },
       {
         path: 'contact-us',

@@ -12,12 +12,14 @@ import { HelpRoutingModule } from './help-routing.module';
 import { QAndAPageComponent } from './q-and-a-page/q-and-a-page.component';
 import { QuestionsAndAnswersComponent } from './questions-and-answers/questions-and-answers.component';
 import { WhatsNewComponent } from './whats-new/whats-new.component';
+import { HelpfulDownloadsComponent } from './helpful-downloads/helpful-downloads.component';
 
 @NgModule({
   imports: [CommonModule, ReactiveFormsModule, SharedModule, OverlayModule, HelpRoutingModule],
   declarations: [
     HelpAreaComponent,
     GetStartedComponent,
+    HelpfulDownloadsComponent,
     QuestionsAndAnswersComponent,
     WhatsNewComponent,
     QAndAPageComponent,
