@@ -69,13 +69,14 @@ export class QuestionsAndAnswersComponent implements OnInit {
   }
 
   public filterTitleAndContent(searchTerm): any[] {
-    const searchTernLowerCase = searchTerm.toLowerCase();
+    const searchTermLowerCase = searchTerm.toLowerCase();
+
     return this.qAndASlugContentAndTitles.filter(
       (qAndASlugContentAndTitle) =>
-        qAndASlugContentAndTitle.title.toLowerCase().startsWith(searchTernLowerCase) ||
-        qAndASlugContentAndTitle.title.includes(searchTernLowerCase) ||
-        qAndASlugContentAndTitle.content.toLowerCase().startsWith(searchTernLowerCase) ||
-        qAndASlugContentAndTitle.content.includes(searchTernLowerCase),
+        qAndASlugContentAndTitle.title.toLowerCase().startsWith(searchTermLowerCase) ||
+        qAndASlugContentAndTitle.title.includes(searchTermLowerCase) ||
+        qAndASlugContentAndTitle.content.toLowerCase().startsWith(searchTermLowerCase) ||
+        qAndASlugContentAndTitle.content.includes(searchTermLowerCase),
     );
   }
 
@@ -121,7 +122,7 @@ export class QuestionsAndAnswersComponent implements OnInit {
 
       this.hasMatchingResults = this.searchResults.length > 0;
       if (this.searchResults.length === 0) {
-        this.noResultsMessage = 'Make sure your spelling is correct';
+        this.noResultsMessage = 'Make sure that your spelling is correct';
       }
     }
   }
@@ -139,6 +140,9 @@ export class QuestionsAndAnswersComponent implements OnInit {
     this.searchValueOnSubmit = this.form.value.qAndASearch;
     this.isSuggestedTrayShowing = false;
     this.qAndATitleAndContentFilter();
+    // this.form.patchValue({
+    //   qAndASearch: null,
+    // });
   }
 
   public navigateToClickedSuggestedPage(event: Event): void {

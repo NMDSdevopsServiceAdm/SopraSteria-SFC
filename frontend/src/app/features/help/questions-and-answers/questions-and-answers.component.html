@@ -35,7 +35,7 @@
       </div>
       <ng-container *ngIf="hasMatchingResults; else noMatchingResults">
         <div data-testid="matching-results">
-          <hr class="govuk-!-margin-bottom-4" />
+          <hr class="govuk-!-margin-bottom-6" />
           <ul class="govuk-list">
             <li *ngFor="let page of searchResults" class="govuk-!-margin-bottom-3">
               <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>

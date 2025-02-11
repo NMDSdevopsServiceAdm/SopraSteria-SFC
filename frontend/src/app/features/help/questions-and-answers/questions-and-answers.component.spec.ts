@@ -174,7 +174,7 @@ describe('QuestionsAndAnswersComponent', () => {
 
         expect(getByTestId('no-matching-results')).toBeTruthy();
         expect(getByRole('heading', { level: 3, name: 'There are no matching results' })).toBeTruthy();
-        expect(getByText('Make sure your spelling is correct')).toBeTruthy();
+        expect(getByText('Make sure that your spelling is correct')).toBeTruthy();
       });
     });
 

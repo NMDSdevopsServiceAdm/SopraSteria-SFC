@@ -5,8 +5,7 @@ import { ControlValueAccessor, UntypedFormGroup, NG_VALUE_ACCESSOR } from '@angu
 @Component({
   selector: 'app-auto-suggest',
   templateUrl: './auto-suggest.component.html',
-  styleUrls: ['../search-input/search-input.component.scss', './auto-suggest.component.scss'],
-  //styleUrls: ['./auto-suggest.component.scss'],
+  styleUrls: ['./auto-suggest.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
