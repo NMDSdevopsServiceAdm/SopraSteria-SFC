@@ -75,26 +75,4 @@ describe('AppComponent', () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
   });
-
-  xit('should render subsidiary-account view when subsidiary page is navigated to', async () => {
-    const { fixture, queryByTestId } = await setup('/subsidiary/subUid/home');
-    fixture.detectChanges();
-
-    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
-    const standAloneAccountRendered = queryByTestId('stand-alone-account');
-
-    expect(subsidiaryAccountRendered).toBeTruthy();
-    expect(standAloneAccountRendered).toBeFalsy();
-  });
-
-  xit('should render standalone view when subsidiary not in url', async () => {
-    const { fixture, queryByTestId } = await setup('/');
-    fixture.detectChanges();
-
-    const standAloneAccountRendered = queryByTestId('stand-alone-account');
-    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
-
-    expect(standAloneAccountRendered).toBeTruthy();
-    expect(subsidiaryAccountRendered).toBeFalsy();
-  });
 });
