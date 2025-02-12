@@ -47,16 +47,20 @@ export class QuestionsAndAnswersComponent implements OnInit {
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      qAndASearch: null,
+      qAndASearch: '',
     });
   }
 
   public getPreviousSearchQuery(): void {
-    if (this.previousUrl && this.previousUrl.includes('/questions-and-answers/')) {
+    let qAndASearchValue = localStorage.getItem('qAndASearchValue');
+
+    if (this.previousUrl && qAndASearchValue !== 'null' && this.previousUrl.includes('/questions-and-answers/')) {
       this.form.patchValue({
-        qAndASearch: localStorage.getItem('qAndASearchValue'),
+        qAndASearch: qAndASearchValue,
       });
       this.onSubmit();
+    } else {
+      this.clearSearch();
     }
   }
 
@@ -140,7 +144,7 @@ export class QuestionsAndAnswersComponent implements OnInit {
 
   private clearSearch(): void {
     this.form.patchValue({
-      qAndASearch: null,
+      qAndASearch: '',
     });
   }
 
