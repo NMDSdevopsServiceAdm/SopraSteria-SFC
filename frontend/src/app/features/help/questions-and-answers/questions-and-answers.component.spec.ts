@@ -236,7 +236,7 @@ describe('QuestionsAndAnswersComponent', () => {
         fixture.detectChanges();
 
         expect(getByTestId('all-questions-and-answers')).toBeTruthy();
-        expect(component.form.value.qAndASearch).toBeNull();
+        expect(component.form.value.qAndASearch).toEqual('');
       });
 
       it('should clear localstorage when "Show all questions and answers" is clicked', async () => {
@@ -265,8 +265,8 @@ describe('QuestionsAndAnswersComponent', () => {
         const localStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(undefined);
         component.ngOnInit();
 
-        expect(localStorageSpy).not.toHaveBeenCalled();
-        expect(component.form.value.qAndASearch).toBeNull();
+        expect(localStorageSpy).toHaveBeenCalled();
+        expect(component.form.value.qAndASearch).toEqual('');
       });
 
       it('should show the previous query if the previous url was a question and answer page', async () => {

@@ -156,7 +156,7 @@ export class QuestionsAndAnswersComponent implements OnInit {
   }
 
   private saveSearchValue(): void {
-    this.searchValueOnSubmit = this.form.value.qAndASearch;
+    this.searchValueOnSubmit = this.form.value.qAndASearch !== 'null' ? this.form.value.qAndASearch : null;
     localStorage.setItem('qAndASearchValue', this.searchValueOnSubmit);
   }
 
