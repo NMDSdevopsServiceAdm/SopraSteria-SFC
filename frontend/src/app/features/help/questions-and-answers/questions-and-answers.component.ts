@@ -3,6 +3,7 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
+import { PreviousRouteService } from '@core/services/previous-route.service';
 
 @Component({
   selector: 'app-questions-and-answers',
@@ -18,16 +19,18 @@ export class QuestionsAndAnswersComponent implements OnInit {
   public isSearchIconClicked: boolean = false;
   public hasMatchingResults: boolean = false;
   public noResultsMessage: string;
-  public isSuggestedTrayShowing: boolean = true;
+  public showSuggestedTray: boolean = true;
   public searchValueOnSubmit: string = '';
+  public previousUrl: string;
 
   constructor(
     public route: ActivatedRoute,
     private breadcrumbService: BreadcrumbService,
     private formBuilder: UntypedFormBuilder,
     private router: Router,
+    private previousRouteService: PreviousRouteService,
   ) {
-    this.qAndATitleFilter = this.qAndATitleFilter.bind(this);
+    this.getSuggestedList = this.getSuggestedList.bind(this);
     this.setupForm();
   }
 
@@ -35,7 +38,11 @@ export class QuestionsAndAnswersComponent implements OnInit {
     this.sections = this.route.snapshot.data?.questionsAndAnswers?.data;
     this.breadcrumbService.show(JourneyType.HELP);
 
-    this.getQandAPages();
+    this.getQandAsForSearch();
+
+    this.previousUrl = this.previousRouteService.getPreviousUrl();
+
+    this.getPreviousSearchQuery();
   }
 
   private setupForm(): void {
@@ -44,7 +51,16 @@ export class QuestionsAndAnswersComponent implements OnInit {
     });
   }
 
-  public getQandAPages(): void {
+  public getPreviousSearchQuery(): void {
+    if (this.previousUrl && this.previousUrl.includes('/questions-and-answers/')) {
+      this.form.patchValue({
+        qAndASearch: localStorage.getItem('qAndASearchValue'),
+      });
+      this.onSubmit();
+    }
+  }
+
+  public getQandAsForSearch(): void {
     for (let section of this.sections) {
       if (section.q_and_a_pages?.length > 0) {
         for (let q_and_a_page of section.q_and_a_pages) {
@@ -86,15 +102,15 @@ export class QuestionsAndAnswersComponent implements OnInit {
    * @return {array}  array of string
    */
 
-  public qAndATitleFilter(): string[] {
+  public getSuggestedList(): string[] {
     const { qAndASearch } = this.form.value;
 
     if (qAndASearch?.length > 1 && this.qAndASlugContentAndTitles?.length > 0) {
       if (this.searchValueOnSubmit !== qAndASearch) {
-        this.isSuggestedTrayShowing = true;
+        this.showSuggestedTray = true;
       }
 
-      if (!this.isSuggestedTrayShowing) {
+      if (!this.showSuggestedTray) {
         return [];
       }
 
@@ -102,54 +118,51 @@ export class QuestionsAndAnswersComponent implements OnInit {
 
       return filteredQAndASlugContentAndTitles.map((qAndASlugContentAndTitle) => qAndASlugContentAndTitle.title);
     }
-
     return [];
   }
 
-  public qAndATitleAndContentFilter(): void {
+  public getSearchResults(): void {
     const { qAndASearch } = this.form.value;
 
     if (!qAndASearch) {
-      this.hasMatchingResults = false;
-      this.searchResults = [];
       this.noResultsMessage = 'You need to search with at least 2 letters or numbers, or both';
     } else if (qAndASearch?.length < 2) {
-      this.hasMatchingResults = false;
-      this.searchResults = [];
       this.noResultsMessage = 'You need to search with more than 1 letter or number';
     } else {
       this.searchResults = this.filterTitleAndContent(qAndASearch);
 
-      this.hasMatchingResults = this.searchResults.length > 0;
       if (this.searchResults.length === 0) {
         this.noResultsMessage = 'Make sure that your spelling is correct';
       }
     }
+    this.hasMatchingResults = this.searchResults?.length > 0;
   }
 
-  public showAllQuestionsAndAnswers(event: Event): void {
-    event.preventDefault();
-    this.isSearchIconClicked = false;
+  private clearSearch(): void {
     this.form.patchValue({
       qAndASearch: null,
     });
   }
 
+  public showAllQuestionsAndAnswers(event: Event): void {
+    event.preventDefault();
+    this.isSearchIconClicked = false;
+    localStorage.removeItem('qAndASearchValue');
+    this.clearSearch();
+  }
+
   public onSubmit(): void {
     this.isSearchIconClicked = true;
     this.searchValueOnSubmit = this.form.value.qAndASearch;
-    this.isSuggestedTrayShowing = false;
-    this.qAndATitleAndContentFilter();
-    // this.form.patchValue({
-    //   qAndASearch: null,
-    // });
+    this.showSuggestedTray = false;
+    this.getSearchResults();
+    localStorage.setItem('qAndASearchValue', this.searchValueOnSubmit);
   }
 
   public navigateToClickedSuggestedPage(event: Event): void {
     const clickedItem = this.qAndASlugContentAndTitles.find(
       (qAndASlugContentAndTitle) => qAndASlugContentAndTitle.title === event,
     );
-
     this.router.navigate([`./${clickedItem.slug}`], { relativeTo: this.route });
   }
 }

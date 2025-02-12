@@ -8,12 +8,13 @@
         <div class="">
           <app-auto-suggest
             [formGroup]="form"
-            [dataProvider]="qAndATitleFilter"
+            [dataProvider]="getSuggestedList"
             [formControlName]="'qAndASearch'"
             [showSearchIcon]="true"
             (searchButtonEvent)="onSubmit()"
             (clickItemEvent)="navigateToClickedSuggestedPage($event)"
             [showBackground]="true"
+            [showClickedSuggestionInInput]="false"
           >
           </app-auto-suggest>
         </div>

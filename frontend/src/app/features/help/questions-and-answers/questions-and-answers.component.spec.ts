@@ -9,9 +9,11 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { SharedModule } from '@shared/shared.module';
 import userEvent from '@testing-library/user-event';
 import { getTestBed } from '@angular/core/testing';
+import { PreviousRouteService } from '@core/services/previous-route.service';
+import { MockPreviousRouteService } from '@core/test-utils/MockPreviousRouteService';
 
 describe('QuestionsAndAnswersComponent', () => {
-  async function setup() {
+  async function setup(override: any = {}) {
     const questionsAndAnswersData = [
       {
         section_heading: 'Get more from ASC-WDS',
@@ -64,6 +66,11 @@ describe('QuestionsAndAnswersComponent', () => {
         {
           provide: BreadcrumbService,
           useClass: MockBreadcrumbService,
+        },
+        {
+          provide: PreviousRouteService,
+          useFactory: MockPreviousRouteService.factory(override?.previousUrl),
+          deps: [Router],
         },
       ],
       declarations: [AutoSuggestComponent],
@@ -203,7 +210,20 @@ describe('QuestionsAndAnswersComponent', () => {
         expect(link.getAttribute('ng-reflect-router-link')).toEqual('how-to-add-staff-records');
       });
 
-      it('should show all the questions and answers and clear the input when "Show all questions and answers" is ticked', async () => {
+      it('should call localstorage', async () => {
+        const { getByRole, getByLabelText, fixture } = await setup();
+
+        const localStorageSpy = spyOn(localStorage, 'setItem');
+        const button = getByRole('button');
+        userEvent.type(getByLabelText('Search'), 'staff');
+        userEvent.click(button);
+        fixture.detectChanges();
+
+        expect(localStorageSpy).toHaveBeenCalledTimes(1);
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['qAndASearchValue', 'staff']);
+      });
+
+      it('should show all the questions and answers and clear the input when "Show all questions and answers" is clicked', async () => {
         const { component, getByRole, getByText, getByLabelText, getByTestId, fixture } = await setup();
 
         const button = getByRole('button');
@@ -217,6 +237,51 @@ describe('QuestionsAndAnswersComponent', () => {
 
         expect(getByTestId('all-questions-and-answers')).toBeTruthy();
         expect(component.form.value.qAndASearch).toBeNull();
+      });
+
+      it('should clear localstorage when "Show all questions and answers" is clicked', async () => {
+        const { getByText, getByRole, getByLabelText, fixture } = await setup();
+
+        const localStorageSpy = spyOn(localStorage, 'removeItem');
+        const button = getByRole('button');
+        userEvent.type(getByLabelText('Search'), 'staff');
+        userEvent.click(button);
+        fixture.detectChanges();
+
+        const showAllLinkQandAs = getByText('Show all questions and answers');
+        userEvent.click(showAllLinkQandAs);
+        fixture.detectChanges();
+
+        expect(localStorageSpy).toHaveBeenCalledTimes(1);
+        expect(localStorageSpy.calls.all()[0].args).toEqual(['qAndASearchValue']);
+      });
+
+      it('should not show the previous query if the previous url was not a question and answer page', async () => {
+        const override = {
+          previousUrl: '/help/get-started',
+        };
+        const { component } = await setup(override);
+
+        const localStorageSpy = spyOn(localStorage, 'getItem').and.returnValue(undefined);
+        component.ngOnInit();
+
+        expect(localStorageSpy).not.toHaveBeenCalled();
+        expect(component.form.value.qAndASearch).toBeNull();
+      });
+
+      it('should show the previous query if the previous url was a question and answer page', async () => {
+        const override = {
+          previousUrl: '/help/questions-and-answers/make-the-most-of',
+        };
+        const { component, fixture } = await setup(override);
+        localStorage.setItem('qAndASearchValue', 'staff');
+        fixture.detectChanges();
+
+        const localStorageSpy = spyOn(localStorage, 'getItem').and.returnValue('staff');
+        component.ngOnInit();
+
+        expect(localStorageSpy).toHaveBeenCalled();
+        expect(component.form.value.qAndASearch).toBe('staff');
       });
     });
 
