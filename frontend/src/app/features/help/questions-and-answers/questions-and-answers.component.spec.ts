@@ -159,10 +159,10 @@ describe('QuestionsAndAnswersComponent', () => {
       });
 
       it('should show when the search icon has been clicked with 1 letter inputted', async () => {
-        const { fixture, getByRole, getByLabelText, getByTestId, getByText } = await setup();
+        const { fixture, getByRole, getByTestId, getByText } = await setup();
 
         const button = getByRole('button');
-        userEvent.type(getByLabelText('Search'), 'w');
+        userEvent.type(getByRole('textbox'), 'w');
         userEvent.click(button);
         fixture.detectChanges();
 
@@ -172,10 +172,10 @@ describe('QuestionsAndAnswersComponent', () => {
       });
 
       it('should show when the has no matching pages', async () => {
-        const { getByRole, getByLabelText, fixture, getByText, getByTestId } = await setup();
+        const { getByRole, fixture, getByText, getByTestId } = await setup();
 
         const button = getByRole('button');
-        userEvent.type(getByLabelText('Search'), 'asdasfd');
+        userEvent.type(getByRole('textbox'), 'asdasfd');
         userEvent.click(button);
         fixture.detectChanges();
 
@@ -187,10 +187,10 @@ describe('QuestionsAndAnswersComponent', () => {
 
     describe('results found', () => {
       it('should show when search has matching results', async () => {
-        const { fixture, getByRole, getByLabelText, getByTestId } = await setup();
+        const { fixture, getByRole, getByTestId } = await setup();
 
         const button = getByRole('button');
-        userEvent.type(getByLabelText('Search'), 'staff');
+        userEvent.type(getByRole('textbox'), 'staff');
         userEvent.click(button);
         fixture.detectChanges();
 
@@ -199,10 +199,10 @@ describe('QuestionsAndAnswersComponent', () => {
       });
 
       it('should display a link for each of the question and answer pages which have been found in the search', async () => {
-        const { getByText, getByRole, getByLabelText, fixture } = await setup();
+        const { getByText, getByRole, fixture } = await setup();
 
         const button = getByRole('button');
-        userEvent.type(getByLabelText('Search'), 'staff');
+        userEvent.type(getByRole('textbox'), 'staff');
         userEvent.click(button);
         fixture.detectChanges();
 
@@ -211,11 +211,11 @@ describe('QuestionsAndAnswersComponent', () => {
       });
 
       it('should call localstorage', async () => {
-        const { getByRole, getByLabelText, fixture } = await setup();
+        const { getByRole, fixture } = await setup();
 
         const localStorageSpy = spyOn(localStorage, 'setItem');
         const button = getByRole('button');
-        userEvent.type(getByLabelText('Search'), 'staff');
+        userEvent.type(getByRole('textbox'), 'staff');
         userEvent.click(button);
         fixture.detectChanges();
 
@@ -224,10 +224,10 @@ describe('QuestionsAndAnswersComponent', () => {
       });
 
       it('should show all the questions and answers and clear the input when "Show all questions and answers" is clicked', async () => {
-        const { component, getByRole, getByText, getByLabelText, getByTestId, fixture } = await setup();
+        const { component, getByRole, getByText, getByTestId, fixture } = await setup();
 
         const button = getByRole('button');
-        userEvent.type(getByLabelText('Search'), 'staff');
+        userEvent.type(getByRole('textbox'), 'staff');
         userEvent.click(button);
         fixture.detectChanges();
 
@@ -240,11 +240,11 @@ describe('QuestionsAndAnswersComponent', () => {
       });
 
       it('should clear localstorage when "Show all questions and answers" is clicked', async () => {
-        const { getByText, getByRole, getByLabelText, fixture } = await setup();
+        const { getByText, getByRole, fixture } = await setup();
 
         const localStorageSpy = spyOn(localStorage, 'removeItem');
         const button = getByRole('button');
-        userEvent.type(getByLabelText('Search'), 'staff');
+        userEvent.type(getByRole('textbox'), 'staff');
         userEvent.click(button);
         fixture.detectChanges();
 
@@ -286,9 +286,9 @@ describe('QuestionsAndAnswersComponent', () => {
     });
 
     it('should go to the page of the clicked suggested question', async () => {
-      const { component, getByLabelText, getByTestId, fixture, routerSpy } = await setup();
+      const { component, getByRole, getByTestId, fixture, routerSpy } = await setup();
 
-      userEvent.type(getByLabelText('Search'), 'staff');
+      userEvent.type(getByRole('textbox'), 'staff');
       fixture.detectChanges();
       const trayList = getByTestId('tray-list');
       const listItem = within(trayList).getByText('How do you add a staff record?');
@@ -299,10 +299,10 @@ describe('QuestionsAndAnswersComponent', () => {
     });
 
     it('should remove the suggested tray on click of the search button', async () => {
-      const { getByRole, getByLabelText, queryByTestId, getByTestId, fixture } = await setup();
+      const { getByRole, queryByTestId, getByTestId, fixture } = await setup();
 
       const button = getByRole('button');
-      userEvent.type(getByLabelText('Search'), 'staff');
+      userEvent.type(getByRole('textbox'), 'staff');
       fixture.detectChanges();
 
       const getTrayList = getByTestId('tray-list');
@@ -316,10 +316,10 @@ describe('QuestionsAndAnswersComponent', () => {
     });
 
     it('should match the amount of suggested with the amount of results after clicking search button', async () => {
-      const { getByRole, getByLabelText, getByTestId, fixture } = await setup();
+      const { getByRole, getByTestId, fixture } = await setup();
 
       const button = getByRole('button');
-      userEvent.type(getByLabelText('Search'), 'workplace');
+      userEvent.type(getByRole('textbox'), 'workplace');
       fixture.detectChanges();
 
       const trayList = getByTestId('tray-list');

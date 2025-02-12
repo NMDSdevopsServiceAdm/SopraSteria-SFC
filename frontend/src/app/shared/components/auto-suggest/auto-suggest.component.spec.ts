@@ -61,6 +61,26 @@ describe('AutoSuggestComponent', () => {
     expect(getByTestId('search-icon')).toBeTruthy();
   });
 
+  it('shows an accessibleLabel for screen readers if there is an accessibleLabel', async () => {
+    const override = {
+      label: 'Search',
+      accessibleLabel: 'for something',
+    };
+    const component = await setup(override);
+
+    expect(component.queryByLabelText('Search')).toBeNull();
+    expect(component.getByLabelText('Search for something')).toBeTruthy();
+  });
+
+  it('does not show an accessibleLabel for screen readers if there is no accessibleLabel', async () => {
+    const override = {
+      label: 'Search',
+    };
+    const component = await setup(override);
+
+    expect(component.queryByLabelText('Search')).toBeTruthy();
+  });
+
   it('should not show the background', async () => {
     const override = {
       showSearchIcon: true,
