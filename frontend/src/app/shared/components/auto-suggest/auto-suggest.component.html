@@ -1,7 +1,12 @@
 <div class="govuk-grid-row govuk-!-margin-0 input--search">
-  <label *ngIf="label" class="govuk-label govuk-!-margin-bottom-2" for="{{ formControlName }}" data-testid="label">{{
-    label
-  }}</label>
+  <label
+    *ngIf="label"
+    aria-label="{{ label }}"
+    class="govuk-label govuk-!-margin-bottom-2"
+    for="{{ formControlName }}"
+    data-testid="label"
+    >{{ label }}</label
+  >
   <div
     data-testid="container"
     [ngClass]="{
@@ -38,6 +43,7 @@
           (click)="emitSearch()"
           data-testid="search-icon"
           data-module="govuk-button"
+          aria-label="search"
         >
           <img src="/assets/images/search-icon.svg" alt="" aria-hidden="true" />
         </button>
