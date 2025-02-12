@@ -1,4 +1,7 @@
 <div class="govuk-grid-row govuk-!-margin-0 input--search">
+  <label *ngIf="label" class="govuk-label govuk-!-margin-bottom-2" for="{{ formControlName }}" data-testid="label">{{
+    label
+  }}</label>
   <div
     data-testid="container"
     [ngClass]="{

@@ -32,6 +32,22 @@ describe('AutoSuggestComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should not show the label', async () => {
+    const { queryByTestId } = await setup();
+
+    expect(queryByTestId('label')).toBeFalsy();
+  });
+
+  it('should show the label', async () => {
+    const override = {
+      label: 'Search',
+    };
+    const { getByTestId, getByLabelText } = await setup(override);
+
+    expect(getByTestId('label')).toBeTruthy();
+    expect(getByLabelText(override.label)).toBeTruthy();
+  });
+
   it('should not show the search icon', async () => {
     const { queryByTestId } = await setup();
     expect(queryByTestId('search-icon')).toBeFalsy();
@@ -82,7 +98,7 @@ describe('AutoSuggestComponent', () => {
       showClickedSuggestionInInput: false,
     };
 
-    const { component, getAllByRole, getByRole, getByLabelText, fixture } = await setup(override);
+    const { component, getAllByRole, getByRole, fixture } = await setup(override);
 
     const input = getByRole('textbox');
 

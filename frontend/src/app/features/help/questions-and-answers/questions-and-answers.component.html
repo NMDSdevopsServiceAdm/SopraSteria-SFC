@@ -4,7 +4,6 @@
 
     <div class="govuk-!-padding-bottom-6 govuk-!-margin-top-6">
       <form #formEl novalidate [formGroup]="form" autocomplete="off" aria-label="form">
-        <label class="govuk-label govuk-!-margin-bottom-2" for="qAndASearch">Search</label>
         <div class="">
           <app-auto-suggest
             [formGroup]="form"
@@ -15,6 +14,7 @@
             (clickItemEvent)="navigateToClickedSuggestedPage($event)"
             [showBackground]="true"
             [showClickedSuggestionInInput]="false"
+            [label]="'Search'"
           >
           </app-auto-suggest>
         </div>
