@@ -42,9 +42,7 @@ describe('AppComponent', () => {
         },
         {
           provide: AuthService,
-          useFactory: MockAuthService.factory(
-            overrides.loggedIn ?? true
-          ),
+          useFactory: MockAuthService.factory(overrides.loggedIn ?? true),
         },
         {
           provide: TabsService,
@@ -110,31 +108,40 @@ describe('AppComponent', () => {
     expect(subsidiaryAccountRendered).toBeFalsy();
   });
 
-  it('should render help and tips button', async () => {
-    const { fixture, queryByTestId } = await setup();
-    fixture.detectChanges();
+  describe('Help and tips button', () => {
+    it('should render help and tips button', async () => {
+      const { fixture, queryByTestId } = await setup();
+      fixture.detectChanges();
 
-    expect(queryByTestId('help-and-tips-button')).toBeTruthy();
-  });
+      expect(queryByTestId('help-and-tips-button')).toBeTruthy();
+    });
 
-  it('should not render help and tips button when logged out', async () => {
-    const { fixture, queryByTestId } = await setup({loggedIn: false});
-    fixture.detectChanges();
+    it('should not render help and tips button when logged out', async () => {
+      const { fixture, queryByTestId } = await setup({ loggedIn: false });
+      fixture.detectChanges();
 
-    expect(queryByTestId('help-and-tips-button')).toBeFalsy();
-  });
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
 
-  it(`should not render help and tips button on route '/help'`, async () => {
-    const { fixture, queryByTestId } = await setup({ navigationUrl: '/help' });
-    fixture.detectChanges();
+    it("should not render help and tips button on route '/help'", async () => {
+      const { fixture, queryByTestId } = await setup({ navigationUrl: '/help' });
+      fixture.detectChanges();
 
-    expect(queryByTestId('help-and-tips-button')).toBeFalsy();
-  });
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
 
-  it(`should not render help and tips button on route '/sfcadmin'`, async () => {
-    const { fixture, queryByTestId } = await setup({ navigationUrl: '/sfcadmin' });
-    fixture.detectChanges();
+    it('should not render help and tips button when in help section in subsidiary view', async () => {
+      const { fixture, queryByTestId } = await setup({ navigationUrl: '/subsidiary/help/get-started' });
+      fixture.detectChanges();
 
-    expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
+
+    it("should not render help and tips button on route '/sfcadmin'", async () => {
+      const { fixture, queryByTestId } = await setup({ navigationUrl: '/sfcadmin' });
+      fixture.detectChanges();
+
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
   });
 });

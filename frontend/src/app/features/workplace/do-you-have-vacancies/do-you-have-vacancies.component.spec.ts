@@ -22,9 +22,11 @@ describe('DoYouHaveVacanciesComponent', () => {
         UntypedFormBuilder,
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory({ cqc: null, localAuthorities: null }, overrides?.returnUrl, {
-            vacancies: overrides?.vacancies,
-          }),
+          useFactory: MockEstablishmentService.factory(
+            { cqc: null, localAuthorities: null },
+            overrides?.returnUrl,
+            overrides?.workplace,
+          ),
           deps: [HttpClient],
         },
       ],
@@ -105,17 +107,22 @@ describe('DoYouHaveVacanciesComponent', () => {
   });
 
   describe('prefill form', () => {
-    const vacancyAnswers: any = [[{ jobRole: 1, total: 1 }], jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW, null];
+    const vacancyAnswers: any = [
+      { selectedRadio: 'Yes', vacanciesInDb: [{ jobRole: 1, total: 1 }] },
+      { selectedRadio: 'No', vacanciesInDb: jobOptionsEnum.NONE },
+      { selectedRadio: 'I do not know', vacanciesInDb: jobOptionsEnum.DONT_KNOW },
+    ];
 
-    vacancyAnswers.forEach((answer: any) => {
-      it(`should not preselect answer from database (${answer}) even if there is a value saved`, async () => {
+    vacancyAnswers.forEach((option: any) => {
+      it(`should preselect answer (${option.selectedRadio}) if workplace has value saved`, async () => {
+        console.log('option.vacanciesInDb: ', option.vacanciesInDb);
         const overrides = {
-          vacancies: answer,
+          workplace: { vacancies: option.vacanciesInDb },
         };
-        const { component } = await setup(overrides);
+        const { getByLabelText } = await setup(overrides);
 
-        const form = component.form;
-        expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
+        const selectedRadio = getByLabelText(option.selectedRadio) as HTMLInputElement;
+        expect(selectedRadio.checked).toBeTruthy();
       });
     });
 
@@ -139,6 +146,16 @@ describe('DoYouHaveVacanciesComponent', () => {
       const form = component.form;
 
       expect(form.value).toEqual({ startersLeaversVacanciesKnown: 'With Jobs' });
+    });
+
+    it('should not preselect if no value in database and user has not gone back to this page', async () => {
+      const overrides = { workplace: { vacancies: null } };
+
+      const { component } = await setup(overrides);
+
+      const form = component.form;
+
+      expect(form.value).toEqual({ startersLeaversVacanciesKnown: null });
     });
   });
 
