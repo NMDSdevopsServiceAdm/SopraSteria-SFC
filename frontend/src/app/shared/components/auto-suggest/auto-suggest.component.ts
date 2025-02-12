@@ -5,7 +5,7 @@ import { ControlValueAccessor, UntypedFormGroup, NG_VALUE_ACCESSOR } from '@angu
 @Component({
   selector: 'app-auto-suggest',
   templateUrl: './auto-suggest.component.html',
-  styleUrls: ['./auto-suggest.component.scss'],
+  styleUrls: ['./../search-input/search-input.component.scss', './auto-suggest.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -36,10 +36,6 @@ export class AutoSuggestComponent implements ControlValueAccessor {
       if (this.showClickedSuggestionInInput) {
         this.formGroup.patchValue({
           [this.formControlName]: value,
-        });
-      } else {
-        this.formGroup.patchValue({
-          [this.formControlName]: '',
         });
       }
       this.clickItemEvent.emit(value);

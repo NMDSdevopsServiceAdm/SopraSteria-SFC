@@ -151,15 +151,20 @@ export class QuestionsAndAnswersComponent implements OnInit {
     this.clearSearch();
   }
 
-  public onSubmit(): void {
-    this.isSearchIconClicked = true;
+  private saveSearchValue(): void {
     this.searchValueOnSubmit = this.form.value.qAndASearch;
-    this.showSuggestedTray = false;
-    this.getSearchResults();
     localStorage.setItem('qAndASearchValue', this.searchValueOnSubmit);
   }
 
+  public onSubmit(): void {
+    this.isSearchIconClicked = true;
+    this.saveSearchValue();
+    this.showSuggestedTray = false;
+    this.getSearchResults();
+  }
+
   public navigateToClickedSuggestedPage(event: Event): void {
+    this.saveSearchValue();
     const clickedItem = this.qAndASlugContentAndTitles.find(
       (qAndASlugContentAndTitle) => qAndASlugContentAndTitle.title === event,
     );

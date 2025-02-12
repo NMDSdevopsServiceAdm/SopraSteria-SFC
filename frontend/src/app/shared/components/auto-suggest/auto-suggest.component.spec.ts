@@ -111,7 +111,7 @@ describe('AutoSuggestComponent', () => {
     expect(getByTestId('tray-list')).toBeTruthy;
   });
 
-  it('should not show the clicked value in the input if showClickedSuggestionInInput is false', async () => {
+  it('should show the typed value and not show the clicked value in the input if showClickedSuggestionInInput is false', async () => {
     const override = {
       dataList: ['staff record'],
       showSearchIcon: true,
@@ -122,11 +122,11 @@ describe('AutoSuggestComponent', () => {
 
     const input = getByRole('textbox');
 
-    userEvent.type(input, 'staff record');
+    userEvent.type(input, 'staff');
     userEvent.click(within(getAllByRole('listitem')[0]).getByText('staff record'));
     fixture.detectChanges();
 
-    expect(component.formGroup.value).toEqual({ search: '' });
+    expect(component.formGroup.value).toEqual({ search: 'staff' });
   });
 
   it('should show the clicked value in the input if showClickedSuggestionInInput is true', async () => {
