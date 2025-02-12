@@ -65,7 +65,7 @@ export class AppComponent implements OnInit {
     await this.featureFlagsService.start();
 
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
-      this.isAdminSection = nav.url.includes('sfcadmin');
+      this.isAdminSection = this.isInAdminSection(nav.url);
       this.dashboardView =
         nav.url.includes('dashboard') ||
         nav.url === '/' ||
@@ -122,16 +122,20 @@ export class AppComponent implements OnInit {
     this.content.nativeElement.focus();
   }
 
-  private renderHelpButton = (url) => {
-    const disallowedRoutes = [
-      'help',
-      'sfcadmin'
-    ]
-    const urlSegment = url.split('/');
-    if (!this.authService.isAuthenticated() || disallowedRoutes.includes(urlSegment[1]) ) {
+  private renderHelpButton(url: string): void {
+    if (!this.authService.isAuthenticated() || this.isInAdminSection(url) || this.isInHelpSection(url)) {
       this.showHelpButton = false;
     } else {
       this.showHelpButton = true;
     }
+  }
+
+  private isInHelpSection(url: string): boolean {
+    const urlSegments = url.split('/');
+    return urlSegments?.[1] === 'help' || (urlSegments?.[1] === 'subsidiary' && urlSegments?.[2] === 'help');
+  }
+
+  private isInAdminSection(url: string): boolean {
+    return url.includes('sfcadmin');
   }
 }
