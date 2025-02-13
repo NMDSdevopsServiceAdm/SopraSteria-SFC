@@ -94,9 +94,9 @@ export class QuestionsAndAnswersComponent implements OnInit {
     return this.qAndASlugContentAndTitles.filter(
       (qAndASlugContentAndTitle) =>
         qAndASlugContentAndTitle.title.toLowerCase().startsWith(searchTermLowerCase) ||
-        qAndASlugContentAndTitle.title.includes(searchTermLowerCase) ||
+        qAndASlugContentAndTitle.title.toLowerCase().includes(searchTermLowerCase) ||
         qAndASlugContentAndTitle.content.toLowerCase().startsWith(searchTermLowerCase) ||
-        qAndASlugContentAndTitle.content.includes(searchTermLowerCase),
+        qAndASlugContentAndTitle.content.toLowerCase().includes(searchTermLowerCase),
     );
   }
 
