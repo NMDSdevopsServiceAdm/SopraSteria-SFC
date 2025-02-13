@@ -30,6 +30,11 @@ describe('QuestionsAndAnswersComponent', () => {
             sub_section_heading: 'Workplace',
             q_and_a_pages: [
               { title: 'What workplace data is needed?', slug: 'needed-workplace-data', content: 'workplace' },
+              {
+                title: 'Why should we share our data?',
+                slug: 'share-workplace-data',
+                content: 'share workplace data with CQC and local authorities',
+              },
               { title: 'What can you do as a parent workplace?', slug: 'what-can-parents-do', content: 'parents' },
             ],
           },
@@ -333,5 +338,41 @@ describe('QuestionsAndAnswersComponent', () => {
 
       expect(suggestedLength).toEqual(searchLength);
     });
+  });
+
+  it('should find title that contains capital letters', async () => {
+    const { getByRole, fixture, getByTestId } = await setup();
+
+    const button = getByRole('button');
+    userEvent.type(getByRole('textbox'), 'ASC');
+    fixture.detectChanges();
+
+    const trayList = getByTestId('tray-list');
+    expect(within(trayList).getByText('How to make the most of ASC-WDS'));
+
+    userEvent.click(button);
+    fixture.detectChanges();
+
+    const matchingResults = getByTestId('matching-results');
+
+    expect(within(matchingResults).getByText('How to make the most of ASC-WDS')).toBeTruthy();
+  });
+
+  it('should find content that contains capital letters', async () => {
+    const { getByRole, fixture, getByTestId } = await setup();
+
+    const button = getByRole('button');
+    userEvent.type(getByRole('textbox'), 'CQC');
+    fixture.detectChanges();
+
+    const trayList = getByTestId('tray-list');
+    expect(within(trayList).getByText('Why should we share our data?'));
+
+    userEvent.click(button);
+    fixture.detectChanges();
+
+    const matchingResults = getByTestId('matching-results');
+
+    expect(within(matchingResults).getByText('Why should we share our data?')).toBeTruthy();
   });
 });
