@@ -340,7 +340,7 @@ describe('QuestionsAndAnswersComponent', () => {
     });
   });
 
-  it('should find title that contains captial letters', async () => {
+  it('should find title that contains capital letters', async () => {
     const { getByRole, fixture, getByTestId } = await setup();
 
     const button = getByRole('button');
@@ -358,7 +358,7 @@ describe('QuestionsAndAnswersComponent', () => {
     expect(within(matchingResults).getByText('How to make the most of ASC-WDS')).toBeTruthy();
   });
 
-  it('should find content that contains captial letters', async () => {
+  it('should find content that contains capital letters', async () => {
     const { getByRole, fixture, getByTestId } = await setup();
 
     const button = getByRole('button');
