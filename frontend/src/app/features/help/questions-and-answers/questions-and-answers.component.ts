@@ -91,11 +91,20 @@ export class QuestionsAndAnswersComponent implements OnInit {
   public filterTitleAndContent(searchTerm): any[] {
     const searchTermLowerCase = searchTerm.toLowerCase();
 
-    return this.qAndASlugContentAndTitles.filter(
-      (qAndASlugContentAndTitle) =>
-        qAndASlugContentAndTitle.title.toLowerCase().includes(searchTermLowerCase) ||
-        qAndASlugContentAndTitle.content.toLowerCase().includes(searchTermLowerCase),
+    let filteredTitles = [];
+    let filteredContent = [];
+
+    filteredTitles = this.qAndASlugContentAndTitles.filter((qAndASlugContentAndTitle) =>
+      qAndASlugContentAndTitle.title.toLowerCase().includes(searchTermLowerCase),
     );
+
+    filteredContent = this.qAndASlugContentAndTitles.filter(
+      (qAndASlugContentAndTitle) =>
+        qAndASlugContentAndTitle.content.toLowerCase().includes(searchTermLowerCase) &&
+        !qAndASlugContentAndTitle.title.toLowerCase().includes(searchTermLowerCase),
+    );
+
+    return filteredTitles.concat(filteredContent);
   }
 
   /**
