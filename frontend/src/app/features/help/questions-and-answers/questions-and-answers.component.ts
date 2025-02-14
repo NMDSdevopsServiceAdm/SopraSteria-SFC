@@ -91,14 +91,11 @@ export class QuestionsAndAnswersComponent implements OnInit {
   public filterTitleAndContent(searchTerm): any[] {
     const searchTermLowerCase = searchTerm.toLowerCase();
 
-    let filteredTitles = [];
-    let filteredContent = [];
-
-    filteredTitles = this.qAndASlugContentAndTitles.filter((qAndASlugContentAndTitle) =>
+    const filteredTitles = this.qAndASlugContentAndTitles.filter((qAndASlugContentAndTitle) =>
       qAndASlugContentAndTitle.title.toLowerCase().includes(searchTermLowerCase),
     );
 
-    filteredContent = this.qAndASlugContentAndTitles.filter(
+    const filteredContent = this.qAndASlugContentAndTitles.filter(
       (qAndASlugContentAndTitle) =>
         qAndASlugContentAndTitle.content.toLowerCase().includes(searchTermLowerCase) &&
         !qAndASlugContentAndTitle.title.toLowerCase().includes(searchTermLowerCase),
