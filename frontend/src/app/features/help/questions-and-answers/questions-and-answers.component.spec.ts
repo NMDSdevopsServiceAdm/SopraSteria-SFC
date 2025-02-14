@@ -375,4 +375,27 @@ describe('QuestionsAndAnswersComponent', () => {
 
     expect(within(matchingResults).getByText('Why should we share our data?')).toBeTruthy();
   });
+
+  it('should show the matching titles first then content', async () => {
+    const { getByRole, fixture, getByTestId } = await setup();
+
+    const expectedResult = [
+      'What workplace data is needed?',
+      'What can you do as a parent workplace?',
+      'Why should we share our data?',
+    ];
+
+    const button = getByRole('button');
+    userEvent.type(getByRole('textbox'), 'workplace');
+    fixture.detectChanges();
+
+    userEvent.click(button);
+    fixture.detectChanges();
+
+    const matchingResultsList = within(getByTestId('matching-results')).queryAllByRole('listitem');
+
+    expect(matchingResultsList[0].textContent).toEqual(expectedResult[0]);
+    expect(matchingResultsList[1].textContent).toEqual(expectedResult[1]);
+    expect(matchingResultsList[2].textContent).toEqual(expectedResult[2]);
+  });
 });
