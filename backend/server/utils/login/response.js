@@ -11,6 +11,7 @@ module.exports = (
   agreedUpdatedTerms,
   migratedUser,
   registrationSurveyCompleted,
+  lastViewedVacanciesAndTurnoverMessage,
 ) => {
   // note - the mainService can be null
   return {
@@ -35,6 +36,7 @@ module.exports = (
           parentName: establishment.parentName ? establishment.parentName : undefined,
           isFirstBulkUpload: establishment.lastBulkUploaded ? false : true,
           employerTypeSet: establishment.EmployerTypeValue ? true : false,
+          dataOwner: establishment.dataOwner,
         }
       : null,
     mainService: establishment
@@ -45,5 +47,6 @@ module.exports = (
       : null,
     expiryDate: expiryDate,
     registrationSurveyCompleted: registrationSurveyCompleted,
+    lastViewedVacanciesAndTurnoverMessage,
   };
 };

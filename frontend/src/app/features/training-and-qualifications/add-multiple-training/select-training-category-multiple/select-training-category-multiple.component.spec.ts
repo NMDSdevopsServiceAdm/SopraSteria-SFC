@@ -1,30 +1,31 @@
-import { fireEvent, render } from '@testing-library/angular';
-import { SelectTrainingCategoryMultipleComponent } from './select-training-category-multiple.component';
-import { getTestBed } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TrainingService } from '@core/services/training.service';
-import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import { getTestBed } from '@angular/core/testing';
+import { FormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
+import { RouterTestingModule } from '@angular/router/testing';
+import { Establishment } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
+import { TrainingService } from '@core/services/training.service';
+import { WindowRef } from '@core/services/window.ref';
+import { WorkerService } from '@core/services/worker.service';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { MockTrainingService, MockTrainingServiceWithPreselectedStaff } from '@core/test-utils/MockTrainingService';
+import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { GroupedRadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/grouped-radio-button-accordion/grouped-radio-button-accordion.component';
 import { RadioButtonAccordionComponent } from '@shared/components/accordions/radio-button-accordion/radio-button-accordion.component';
 import { SharedModule } from '@shared/shared.module';
-import { RouterTestingModule } from '@angular/router/testing';
-import { WindowRef } from '@core/services/window.ref';
-import { FormBuilder } from '@angular/forms';
-import { WorkerService } from '@core/services/worker.service';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
-import { AddMultipleTrainingModule } from '../add-multiple-training.module';
-import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { Establishment } from '@core/model/establishment.model';
-import { trainingCategories } from '@core/test-utils/MockTrainingCategoriesService';
+import { fireEvent, render } from '@testing-library/angular';
 import sinon from 'sinon';
+
+import { AddMultipleTrainingModule } from '../add-multiple-training.module';
+import { SelectTrainingCategoryMultipleComponent } from './select-training-category-multiple.component';
 
 describe('SelectTrainingCategoryMultipleComponent', () => {
   async function setup(prefill = false, accessedFromSummary = false, qsParamGetMock = sinon.stub()) {
     const establishment = establishmentBuilder() as Establishment;
-    const { fixture, getByText, getAllByText, getByTestId } = await render(SelectTrainingCategoryMultipleComponent, {
+    const setupTools = await render(SelectTrainingCategoryMultipleComponent, {
       imports: [HttpClientTestingModule, SharedModule, RouterModule, RouterTestingModule, AddMultipleTrainingModule],
       declarations: [GroupedRadioButtonAccordionComponent, RadioButtonAccordionComponent],
       providers: [
@@ -59,7 +60,7 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
         },
       ],
     });
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
 
     const router = injector.inject(Router) as Router;
@@ -70,11 +71,8 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
     const trainingServiceSpy = spyOn(trainingService, 'resetSelectedStaff').and.callThrough();
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByTestId,
       routerSpy,
       trainingService,
       trainingServiceSpy,
@@ -137,14 +135,21 @@ describe('SelectTrainingCategoryMultipleComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'training-and-qualifications' });
   });
 
-  it('should show an accordian with the correct categories in', async () => {
+  it('should show an accordion with the correct categories in', async () => {
     const { component, getByTestId } = await setup(true);
     expect(component.categories).toEqual([
       { id: 1, seq: 10, category: 'Activity provision/Well-being', trainingCategoryGroup: 'Care skills and knowledge' },
       { id: 2, seq: 20, category: 'Autism', trainingCategoryGroup: 'Specific conditions and disabilities' },
       { id: 37, seq: 1, category: 'Other', trainingCategoryGroup: null },
     ]);
-    expect(getByTestId('accordian')).toBeTruthy();
+    expect(getByTestId('groupedAccordion')).toBeTruthy();
+  });
+
+  it("should display 'The training is not in any of these categories' checkbox", async () => {
+    const { fixture, getByText } = await setup();
+
+    expect(getByText('The training is not in any of these categories')).toBeTruthy();
+    expect(fixture.nativeElement.querySelector('#otherCheckbox')).toBeTruthy();
   });
 
   it('should return to the select staff page if there is no selected staff', async () => {

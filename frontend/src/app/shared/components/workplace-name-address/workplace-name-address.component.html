@@ -1,0 +1,32 @@
+<div class="govuk-util__light-bg govuk-!-padding-bottom-4">
+  <div *ngIf="workplace" class="govuk-width-container">
+    <hr class="govuk-!-margin-top-0 divider" />
+    <table class="govuk-!-padding-left-0 govuk-!-margin-left-0 govuk-!-margin-top-3">
+      <tr class="govuk-body-s govuk-!-padding-left-0 govuk-!-margin-left-0">
+        <td>
+          {{ workplace.name }}
+
+          <div>
+            <span *ngIf="workplace.address1"> {{ workplace.address1 }}</span>
+            <span *ngIf="workplace.address2">, {{ workplace.address2 }}</span>
+            <span *ngIf="workplace.address3">, {{ workplace.address3 }}</span>
+            <span *ngIf="workplace.town">, {{ workplace.town }}</span>
+          </div>
+          <div>
+            <span *ngIf="workplace.county">{{ workplace.county }},</span>
+            <span *ngIf="workplace.postcode"> {{ workplace.postcode }}</span>
+          </div>
+        </td>
+        <td class="change-link govuk-!-font-size-19 govuk-!-margin-top-0 govuk-!-padding-top-0">
+          <app-summary-record-change
+            *ngIf="canEditEstablishment"
+            [explanationText]="''"
+            [link]="['/workplace', workplace.uid, 'update-workplace-details']"
+            [hasData]="workplace.name"
+            (setReturnClicked)="this.setReturn()"
+          ></app-summary-record-change>
+        </td>
+      </tr>
+    </table>
+  </div>
+</div>

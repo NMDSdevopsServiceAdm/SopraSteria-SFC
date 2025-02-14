@@ -1,23 +1,40 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { DataPermissions, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder, MockEstablishmentServiceWithOverrides } from '@core/test-utils/MockEstablishmentService';
+import { workplaceBuilder } from '@core/test-utils/MockUserService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { fireEvent, render } from '@testing-library/angular';
 
 import { NavigateToWorkplaceDropdownComponent } from './navigate-to-workplace-dropdown.component';
 
 describe('NavigateToWorkplaceDropdownComponent', () => {
-  const setup = async (maxChildWorkplacesForDropdown = 5, inSubView = true, childWorkplaces = null) => {
-    const { fixture, getByText, getByLabelText } = await render(NavigateToWorkplaceDropdownComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule],
+  const setup = async (overrides: any = {}) => {
+    const establishment = establishmentBuilder();
+
+    const maxChildWorkplacesForDropdown = (
+      'maxChildWorkplacesForDropdown' in overrides ? overrides.maxChildWorkplacesForDropdown : 5
+    ) as number;
+    const inSubView = ('inSubView' in overrides ? overrides.inSubView : true) as boolean;
+    const childWorkplaces = 'childWorkplaces' in overrides ? overrides.childWorkplaces : null;
+
+    const setupTools = await render(NavigateToWorkplaceDropdownComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, FormsModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
-          useFactory: MockEstablishmentService.factory(null, true, null, childWorkplaces),
+          useFactory: MockEstablishmentServiceWithOverrides.factory({
+            primaryWorkplace: establishment,
+            establishmentObj: establishment,
+            ...(childWorkplaces
+              ? { childWorkplaces: { childWorkplaces, count: childWorkplaces?.length, activeWorkplaceCount: 1 } }
+              : {}),
+          }),
         },
       ],
       componentProperties: {
@@ -25,7 +42,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       },
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const parentWorkplaceName = component.parentWorkplace.name;
 
     const injector = getTestBed();
@@ -37,11 +54,9 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     spyOn(parentSubService, 'getViewingSubAsParent').and.returnValue(inSubView);
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
       routerSpy,
-      getByLabelText,
       parentWorkplaceName,
       clearViewingSubSpy,
     };
@@ -53,7 +68,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
   });
 
   it('should not display anything when more child workplaces than maxChildWorkplacesForDropdown but not in sub view', async () => {
-    const { fixture } = await setup(3, false);
+    const { fixture } = await setup({ maxChildWorkplacesForDropdown: 3, inSubView: false });
     fixture.detectChanges();
     const navigateToWorkplaceContainer = fixture.nativeElement.querySelector('#navigateToWorkplaceContainer');
 
@@ -61,7 +76,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
   });
 
   it('should not display anything when no child workplaces', async () => {
-    const { fixture } = await setup(31, false, []);
+    const { fixture } = await setup({ maxChildWorkplacesForDropdown: 31, inSubView: false, childWorkplaces: [] });
     fixture.detectChanges();
     const navigateToWorkplaceContainer = fixture.nativeElement.querySelector('#navigateToWorkplaceContainer');
 
@@ -78,7 +93,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     });
 
     it('should display dropdown when fewer child workplaces than maxChildWorkplacesForDropdown and not in sub view', async () => {
-      const { fixture } = await setup(5, false);
+      const { fixture } = await setup({ inSubView: false });
       fixture.detectChanges();
       const dropdown = fixture.nativeElement.querySelector('.asc-navigate-to-workplace-dropdown');
 
@@ -90,7 +105,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       expect(getByText(component.parentWorkplace.name));
     });
 
-    xit('should go to route of main dashboard when selecting primary workplace', async () => {
+    it('should go to route of main dashboard when selecting primary workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
       const selectObject = getByText(component.parentWorkplace.name);
@@ -101,7 +116,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       });
     });
 
-    xit('should go to route of selected sub (first) when selecting sub workplace', async () => {
+    it('should go to route of selected sub (first) when selecting sub workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
       const selectObject = getByText(component.parentWorkplace.name);
@@ -112,7 +127,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       });
     });
 
-    xit('should go to route of selected sub (second) when selecting sub workplace', async () => {
+    it('should go to route of selected sub (second) when selecting sub workplace', async () => {
       const { fixture, component, getByText, routerSpy } = await setup();
 
       const selectObject = getByText(component.parentWorkplace.name);
@@ -120,6 +135,49 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
 
       fixture.whenStable().then(() => {
         expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.childWorkplaces[1].uid, 'home']);
+      });
+    });
+
+    describe('Displaying workplaces with different permissions/data owners', () => {
+      it('should not include sub workplace in dropdown if workplace is data owner and parent has no permissions (parent cannot view workplaces which are linked only)', async () => {
+        const childWorkplace1 = workplaceBuilder();
+        childWorkplace1.name = 'Child workplace which should not be in dropdown';
+        childWorkplace1.dataOwner = WorkplaceDataOwner.Workplace;
+        childWorkplace1.dataPermissions = DataPermissions.None;
+
+        const childWorkplace2 = workplaceBuilder();
+
+        const { queryAllByRole } = await setup({
+          childWorkplaces: [childWorkplace1, childWorkplace2],
+        });
+
+        const selectOptions = queryAllByRole('option');
+        const hasWorkplaceNameInSelectOptions = selectOptions.some(
+          (option) => option.textContent?.trim() === childWorkplace1.name,
+        );
+        expect(hasWorkplaceNameInSelectOptions).toBeFalsy();
+      });
+
+      [DataPermissions.Workplace, DataPermissions.WorkplaceAndStaff].forEach((permissionType) => {
+        it(`should include sub workplace in dropdown if workplace is data owner but parent has ${permissionType} permission`, async () => {
+          const childWorkplace1 = workplaceBuilder();
+          childWorkplace1.name = 'Child workplace which should be in dropdown';
+          childWorkplace1.dataOwner = WorkplaceDataOwner.Workplace;
+          childWorkplace1.dataPermissions = permissionType;
+
+          const childWorkplace2 = workplaceBuilder();
+
+          const { queryAllByRole } = await setup({
+            childWorkplaces: [childWorkplace1, childWorkplace2],
+          });
+
+          const selectOptions = queryAllByRole('option');
+          const hasWorkplaceNameInSelectOptions = selectOptions.some(
+            (option) => option.textContent?.trim() === childWorkplace1.name,
+          );
+
+          expect(hasWorkplaceNameInSelectOptions).toBeTruthy();
+        });
       });
     });
 
@@ -133,12 +191,10 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       });
 
       it('should set the selected workplace as value of select after clicking option', async () => {
-        const { fixture, component, getByText } = await setup();
-
-        const selectObject = getByText(component.parentWorkplace.name);
-        fireEvent.change(selectObject, { target: { value: component.childWorkplaces[2].uid } });
+        const { fixture, component } = await setup();
 
         const select = fixture.debugElement.query(By.css('select')).nativeElement;
+        fireEvent.change(select, { target: { value: component.childWorkplaces[2].uid } });
 
         expect(select.value).toEqual(component.childWorkplaces[2].uid);
       });
@@ -147,7 +203,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
 
   describe('Back to parent link', () => {
     it('should display when more child workplaces than maxChildWorkplacesForDropdown and in sub view', async () => {
-      const { fixture } = await setup(3);
+      const { fixture } = await setup({ maxChildWorkplacesForDropdown: 3 });
       fixture.detectChanges();
       const backToParentLink = fixture.nativeElement.querySelector('#backToParentLink');
 
@@ -155,7 +211,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     });
 
     it('should display Return to {parent name passed in}', async () => {
-      const { fixture, getByText, parentWorkplaceName } = await setup(3);
+      const { fixture, getByText, parentWorkplaceName } = await setup({ maxChildWorkplacesForDropdown: 3 });
       fixture.detectChanges();
 
       const expectedMessage = `Back to ${parentWorkplaceName}`;
@@ -163,7 +219,7 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     });
 
     it('should display "Return to parent" when cannot retrieve parent workplace', async () => {
-      const { component, fixture, getByText } = await setup(3);
+      const { component, fixture, getByText } = await setup({ maxChildWorkplacesForDropdown: 3 });
       component.parentWorkplace = null;
       fixture.detectChanges();
 
@@ -171,8 +227,8 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
       expect(getByText(expectedMessage)).toBeTruthy();
     });
 
-    xit('should navigate to dashboard with home fragment on click of back link', async () => {
-      const { fixture, getByText, parentWorkplaceName, routerSpy } = await setup(3);
+    it('should navigate to dashboard with home fragment on click of back link', async () => {
+      const { fixture, getByText, parentWorkplaceName, routerSpy } = await setup({ maxChildWorkplacesForDropdown: 3 });
       fixture.detectChanges();
 
       const backToParentLink = getByText(`Back to ${parentWorkplaceName}`);
@@ -184,7 +240,9 @@ describe('NavigateToWorkplaceDropdownComponent', () => {
     });
 
     it('should clear viewing sub view on click of back link', async () => {
-      const { fixture, getByText, parentWorkplaceName, clearViewingSubSpy } = await setup(3);
+      const { fixture, getByText, parentWorkplaceName, clearViewingSubSpy } = await setup({
+        maxChildWorkplacesForDropdown: 3,
+      });
       fixture.detectChanges();
 
       const backToParentLink = getByText(`Back to ${parentWorkplaceName}`);

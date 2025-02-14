@@ -105,11 +105,22 @@
 .govuk__nowrap {
   white-space: nowrap;
 }
+.govuk__nowrap-responsive {
+  @media screen and (min-width: 641px) {
+    white-space: nowrap;
+  }
+}
+
 .govuk-util__vertical-align-top {
   vertical-align: top;
 }
-.govuk-util__vertical-align-center {
-  vertical-align: center;
+
+.govuk-util__vertical-align-middle {
+  vertical-align: middle;
+}
+
+.govuk-util__vertical-align-bottom {
+  vertical-align: bottom;
 }
 
 .govuk-line-height__normal {
@@ -118,6 +129,10 @@
 .govuk-max-width {
   max-width: calc(100vh - 274px);
 }
+.govuk__width-fit-content {
+  width: fit-content;
+}
+
 .asc-font-19 {
   @include govuk-font($size: 19);
 }
@@ -129,4 +144,8 @@
 
 .asc__preline {
   white-space: pre-line;
+}
+
+.asc__negative-margin-right-4 {
+  margin-right: -1 * govuk-spacing(4);
 }

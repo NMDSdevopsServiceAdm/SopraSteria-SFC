@@ -2,8 +2,11 @@ const expect = require('chai').expect;
 const { build, fake, oneOf } = require('@jackfranklin/test-data-bot');
 const sinon = require('sinon');
 
+const models = require('../../../../models');
 const Worker = require('../../../../models/classes/worker').Worker;
-const WdfCalculator = require('../../../../models/classes/wdfCalculator');
+const TrainingCertificateRoute = require('../../../../routes/establishments/workerCertificate/trainingCertificate');
+const { Training } = require('../../../../models/classes/training');
+const WorkerCertificateService = require('../../../../routes/establishments/workerCertificate/workerCertificateService');
 
 const worker = new Worker();
 
@@ -426,6 +429,127 @@ describe('Worker Class', () => {
         username: 'test',
         type: 'wdfEligible',
       });
+    });
+  });
+
+  describe('deleteAllTrainingCertificatesAssociatedWithWorker()', async () => {
+    let mockWorker;
+    let stubs;
+    const trainingCertificatesReturnedFromDb = () => {
+      return [
+        { uid: 'abc123', key: 'abc123/trainingCertificate/dasdsa12312' },
+        { uid: 'def456', key: 'def456/trainingCertificate/deass12092' },
+        { uid: 'ghi789', key: 'ghi789/trainingCertificate/da1412342' },
+      ];
+    };
+
+    beforeEach(() => {
+      mockWorker = new Worker();
+      mockWorker._id = 12345;
+      stubs = {
+        getWorkerCertificateServiceInstance: sinon
+          .stub(WorkerCertificateService, 'initialiseTraining')
+          .returns(new WorkerCertificateService()),
+        deleteAllCertificates: sinon.stub(WorkerCertificateService.prototype, 'deleteAllCertificates'),
+        getTrainingCertificates: sinon
+          .stub(models.trainingCertificates, 'getAllCertificateRecordsForWorker')
+          .resolves(trainingCertificatesReturnedFromDb),
+      };
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should call deleteAllCertificates on WorkerCertificateService', async () => {
+      const transaction = {};
+      await mockWorker.deleteAllTrainingCertificatesAssociatedWithWorker(transaction);
+
+      expect(stubs.getWorkerCertificateServiceInstance).to.have.been.called;
+      expect(stubs.deleteAllCertificates).to.be.calledWith(12345);
+    });
+  });
+
+  describe('deleteAllQualificationsCertificatesAssociatedWithWorker()', async () => {
+    let mockWorker;
+    let stubs;
+    const qualificationCertificatesReturnedFromDb = () => {
+      return [
+        { uid: 'abc123', key: 'abc123/qualificationCertificate/dasdsa12312' },
+        { uid: 'def456', key: 'def456/qualificationCertificate/deass12092' },
+        { uid: 'ghi789', key: 'ghi789/qualificationCertificate/da1412342' },
+      ];
+    };
+
+    beforeEach(() => {
+      mockWorker = new Worker();
+      mockWorker._id = 12345;
+      stubs = {
+        getWorkerCertificateServiceInstance: sinon
+          .stub(WorkerCertificateService, 'initialiseQualifications')
+          .returns(new WorkerCertificateService()),
+        deleteAllCertificates: sinon.stub(WorkerCertificateService.prototype, 'deleteAllCertificates'),
+        getQualificationCertificates: sinon
+          .stub(models.qualificationCertificates, 'getAllCertificateRecordsForWorker')
+          .resolves(qualificationCertificatesReturnedFromDb),
+      };
+    });
+
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should call deleteAllCertificates on WorkerCertificateService', async () => {
+      const transaction = {};
+      await mockWorker.deleteAllQualificationCertificatesAssociatedWithWorker(transaction);
+
+      expect(stubs.getWorkerCertificateServiceInstance).to.have.been.called;
+      expect(stubs.deleteAllCertificates).to.be.calledWith(12345);
+    });
+  });
+
+  describe('saveAssociatedEntities', async () => {
+    let mockWorker;
+
+    beforeEach(() => {
+      mockWorker = new Worker();
+      mockWorker._id = 12345;
+      mockWorker._uid = 'ba1260d8-1791-484c-ac92-c1da2a96dabb';
+    });
+
+    it('should delete certificates, destroy all training records in database and save new records when training records in trainingEntities', async () => {
+      const savedBy = 'mockUser';
+      const bulkUploaded = false;
+      const transaction = {};
+
+      const deleteCertificatesSpy = sinon.stub(mockWorker, 'deleteAllTrainingCertificatesAssociatedWithWorker');
+      const trainingDestroySpy = sinon.stub(models.workerTraining, 'destroy').resolves(true);
+      const training = new Training(123, mockWorker._uid);
+
+      const trainingSaveSpy = sinon.stub(training, 'save').resolves(true);
+
+      mockWorker.associateTraining(training);
+
+      await mockWorker.saveAssociatedEntities(savedBy, bulkUploaded, transaction);
+
+      expect(deleteCertificatesSpy).to.have.been.calledWith(transaction);
+      expect(trainingDestroySpy).to.have.been.calledWith({
+        where: { workerFk: mockWorker._id },
+        transaction: transaction,
+      });
+      expect(trainingSaveSpy).to.have.been.calledWith(savedBy, bulkUploaded, transaction);
+    });
+
+    it('should not make calls to delete certificates or destroy training records when no training records in trainingEntities', async () => {
+      const deleteCertificatesSpy = sinon.stub(mockWorker, 'deleteAllTrainingCertificatesAssociatedWithWorker');
+      const trainingDestroySpy = sinon.stub(models.workerTraining, 'destroy').resolves(true);
+
+      const transaction = {};
+
+      await mockWorker.saveAssociatedEntities('mockUser', false, transaction);
+
+      expect(deleteCertificatesSpy).not.to.have.been.called;
+      expect(trainingDestroySpy).to.not.have.been.called;
     });
   });
 });

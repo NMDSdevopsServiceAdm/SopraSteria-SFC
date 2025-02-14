@@ -11,6 +11,7 @@ const { v4: uuidv4 } = require('uuid');
 uuidv4();
 
 // database models
+const { Op } = require('sequelize');
 const models = require('../index');
 
 const EntityValidator = require('./validations/entityValidator').EntityValidator;
@@ -27,8 +28,13 @@ const WorkerProperties = require('./worker/workerProperties').WorkerPropertyMana
 const JSON_DOCUMENT_TYPE = require('./worker/workerProperties').JSON_DOCUMENT;
 const SEQUELIZE_DOCUMENT_TYPE = require('./worker/workerProperties').SEQUELIZE_DOCUMENT;
 
+const TrainingCertificateRoute = require('../../routes/establishments/workerCertificate/trainingCertificate');
+const WorkerCertificateService = require('../../routes/establishments/workerCertificate/workerCertificateService');
+
 // WDF Calculator
 const WdfCalculator = require('./wdfCalculator').WdfCalculator;
+
+const BulkUploadQualificationHelper = require('./helpers/bulkUploadQualificationHelper');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'DELETED', 'NOCHANGE'];
 
@@ -70,6 +76,8 @@ class Worker extends EntityValidator {
 
     // bulk upload status - this is never stored in database
     this._status = bulkUploadStatus;
+
+    this._transferStaffRecord = null;
   }
 
   // returns true if valid establishment id
@@ -186,6 +194,14 @@ class Worker extends EntityValidator {
 
   get status() {
     return this._status;
+  }
+
+  get transferStaffRecord() {
+    return this._transferStaffRecord;
+  }
+
+  get newWorkplaceId() {
+    return this._newWorkplaceId;
   }
 
   get contract() {
@@ -350,6 +366,14 @@ class Worker extends EntityValidator {
         this._status = document.status;
       }
 
+      if (document.transferStaffRecord) {
+        this._transferStaffRecord = document.transferStaffRecord;
+      }
+
+      if (document.newWorkplaceId) {
+        this._newWorkplaceId = document.newWorkplaceId;
+      }
+
       // Consequential updates when one value means another should be empty or null
 
       // If their job isn't a registered nurse, remove their specialism and category
@@ -471,7 +495,6 @@ class Worker extends EntityValidator {
           // and qualifications records
           this._qualificationsEntities = [];
           if (document.qualifications && Array.isArray(document.qualifications)) {
-            // console.log("WA DEBUG - document.qualifications: ", document.qualifications)
             document.qualifications.forEach((thisQualificationRecord) => {
               const newQualificationRecord = new Qualification(null, null);
 
@@ -526,13 +549,14 @@ class Worker extends EntityValidator {
   }
 
   async saveAssociatedEntities(savedBy, bulkUploaded = false, externalTransaction) {
-    const newQualificationsPromises = [];
+    const qualificationChangePromises = [];
     const newTrainingPromises = [];
 
     try {
-      // there is no change audit on training; simply delete all that is there and recreate
       if (this._trainingEntities && this._trainingEntities.length > 0) {
-        // delete all existing training records for this worker
+        // delete all existing training records for this worker and create new records
+
+        await this.deleteAllTrainingCertificatesAssociatedWithWorker(externalTransaction);
         await models.workerTraining.destroy({
           where: {
             workerFk: this._id,
@@ -540,38 +564,30 @@ class Worker extends EntityValidator {
           transaction: externalTransaction,
         });
 
-        // now create new training records
         this._trainingEntities.forEach((currentTrainingRecord) => {
           currentTrainingRecord.workerId = this._id;
           currentTrainingRecord.workerUid = this._uid;
           currentTrainingRecord.establishmentId = this._establishmentId;
-          newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, 0, externalTransaction));
+          newTrainingPromises.push(currentTrainingRecord.save(savedBy, bulkUploaded, externalTransaction));
         });
       }
 
-      // there is no change audit on qualifications; simply delete all that is there and recreate
-      if (this._qualificationsEntities && this._qualificationsEntities.length > 0) {
-        // delete all existing training records for this worker
-        await models.workerQualifications.destroy({
-          where: {
-            workerFk: this._id,
-          },
-          transaction: externalTransaction,
+      if (bulkUploaded && ['NEW', 'UPDATE'].includes(this.status)) {
+        const qualificationHelper = new BulkUploadQualificationHelper({
+          workerId: this._id,
+          workerUid: this._uid,
+          establishmentId: this._establishmentId,
+          savedBy,
+          bulkUploaded,
+          externalTransaction,
         });
-
-        // now create new training records
-        this._qualificationsEntities.forEach((currentQualificationRecord) => {
-          currentQualificationRecord.workerId = this._id;
-          currentQualificationRecord.workerUid = this._uid;
-          currentQualificationRecord.establishmentId = this._establishmentId;
-          newQualificationsPromises.push(
-            currentQualificationRecord.save(savedBy, bulkUploaded, 0, externalTransaction),
-          );
-        });
+        const qualificationEntities = this._qualificationsEntities ? this._qualificationsEntities : [];
+        const promisesToPush = await qualificationHelper.processQualificationsEntities(qualificationEntities);
+        qualificationChangePromises.push(...promisesToPush);
       }
 
       await Promise.all(newTrainingPromises);
-      await Promise.all(newQualificationsPromises);
+      await Promise.all(qualificationChangePromises);
     } catch (err) {
       console.error('Worker::saveAssociatedEntities error: ', err);
       // rethrow error to ensure the transaction is rolled back
@@ -673,7 +689,6 @@ class Worker extends EntityValidator {
           if (associatedEntities) {
             await this.saveAssociatedEntities(savedBy, bulkUploaded, thisTransaction);
           }
-
           if (this.nurseSpecialisms && this.nurseSpecialisms.value === 'Yes') {
             await models.workerNurseSpecialisms.bulkCreate(
               this.nurseSpecialisms.specialisms.map((thisSpecialism) => ({
@@ -749,6 +764,10 @@ class Worker extends EntityValidator {
             updated: updatedTimestamp,
             updatedBy: savedBy.toLowerCase(),
           };
+
+          if (bulkUploaded && this._status === 'UPDATE' && this.transferStaffRecord && this.newWorkplaceId) {
+            updateDocument.establishmentFk = this.newWorkplaceId;
+          }
 
           if (this._changeLocalIdentifer) {
             // during bulk upload only, if the change local identifier value is set, then when saving this worker, update it's local identifier;
@@ -1150,6 +1169,9 @@ class Worker extends EntityValidator {
           // TODO - to be confirmed
         }
 
+        await this.deleteAllTrainingCertificatesAssociatedWithWorker(thisTransaction);
+        await this.deleteAllQualificationCertificatesAssociatedWithWorker(thisTransaction);
+
         // always recalculate WDF - if not bulk upload (this._status)
         if (this._status === null) {
           await WdfCalculator.calculate(
@@ -1350,6 +1372,14 @@ class Worker extends EntityValidator {
       // bulk upload status
       if (this._status !== null) {
         myDefaultJSON.status = this._status;
+      }
+
+      if (this._transferStaffRecord !== null) {
+        myDefaultJSON.transferStaffRecord = this._transferStaffRecord;
+      }
+
+      if (this._newWorkplaceId !== null) {
+        myDefaultJSON.newWorkplaceId = this._newWorkplaceId;
       }
 
       // TODO: JSON schema validation
@@ -1893,6 +1923,16 @@ class Worker extends EntityValidator {
       console.error('Worker::bulkUpdateLocalIdentifiers error: ', err);
       throw err;
     }
+  }
+
+  async deleteAllTrainingCertificatesAssociatedWithWorker(transaction) {
+    const workerTrainingCertificateService = WorkerCertificateService.initialiseTraining();
+    await workerTrainingCertificateService.deleteAllCertificates(this._id, transaction);
+  }
+
+  async deleteAllQualificationCertificatesAssociatedWithWorker(transaction) {
+    const workerQualificationCertificateService = WorkerCertificateService.initialiseQualifications();
+    await workerQualificationCertificateService.deleteAllCertificates(this._id, transaction);
   }
 }
 

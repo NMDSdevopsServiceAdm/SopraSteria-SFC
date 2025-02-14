@@ -6,18 +6,25 @@
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-three-quarters govuk-!-margin-top-2">
-    <p class="govuk-!-margin-bottom-7">
-      If you do this, '{{ selectedCategory?.category | lowercase }}' will not be mandatory for any of your staff at the
-      moment.
+    <p class="govuk-!-margin-bottom-7 govuk-!-margin-right-7">
+      If you do this, '{{ selectedCategory?.category }}' will no longer be mandatory for any of your staff.
     </p>
     <dl class="govuk-summary-list asc-summarylist-border-top">
       <div class="govuk-summary-list__row" scope="row">
         <dt class="govuk-summary-list__key govuk-!-width-one-half">Training category</dt>
-        <dd class="govuk-summary-list__value" data-testid="trainingCategory">{{ selectedCategory?.category }}</dd>
+        <dd class="govuk-summary-list__value">{{ selectedCategory?.category }}</dd>
       </div>
       <div class="govuk-summary-list__row" scope="row">
         <dt class="govuk-summary-list__key">Job roles</dt>
-        <dd class="govuk-summary-list__value">All</dd>
+        <dd class="govuk-summary-list__value">
+          <ul
+            *ngIf="selectedCategory?.jobs?.length != allJobRolesCount; else allJobRoles"
+            class="govuk-list govuk-!-margin-bottom-0"
+          >
+            <li *ngFor="let job of selectedCategory?.jobs">{{ job.title }}</li>
+          </ul>
+          <ng-template #allJobRoles> All </ng-template>
+        </dd>
       </div>
     </dl>
 
@@ -31,7 +38,9 @@
       </button>
 
       <span class="govuk-visually-hidden">or</span>
-      <a class="govuk-button govuk-button--link govuk-!-margin-left-9 govuk-!-margin-top-5" (click)="onCancel()"
+      <a
+        class="govuk-button govuk-button--link govuk-!-margin-left-9 govuk-!-margin-top-5"
+        (click)="navigateBackToMandatoryTrainingHomePage()"
         >Cancel</a
       >
     </ng-container>

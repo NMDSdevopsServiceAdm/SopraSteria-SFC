@@ -24,8 +24,9 @@
   [showMissingCqcMessage]="showMissingCqcMessage"
   [workplacesCount]="workplacesCount"
   [noOfWorkersWhoRequireInternationalRecruitment]="noOfWorkersWhoRequireInternationalRecruitment"
+  data-cy="summary-section"
 ></app-summary-section>
-<div class="govuk-width-container govuk-!-margin-top-7">
+<div class="govuk-width-container govuk-!-margin-top-7" data-cy="cards-and-links">
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full govuk-!-padding-left-2 govuk-!-padding-right-2">
       <div class="govuk-grid-column-one-third asc-card-padding">
@@ -48,16 +49,16 @@
         >
       </div>
 
-      <div class="govuk-grid-column-one-third asc-card-padding">
+      <div *ngIf="canViewReports" class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/wdf.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"
             routerLink="/wdf"
             href="#"
-            >Does your data meet WDF requirements?</a
+            >Does your data meet funding requirements?</a
           >
           <p class="govuk-!-margin-top-5">
-            Check to see whether your data meets the {{ certificateYears }} Workforce Development Fund requirements.
+            Update your data so that you can claim money back against the costs of training your staff.
           </p></app-card
         >
       </div>
@@ -111,7 +112,7 @@
           </p></app-card
         >
       </div>
-      <div class="govuk-grid-column-one-third asc-card-padding">
+      <div *ngIf="article" class="govuk-grid-column-one-third asc-card-padding">
         <app-card [image]="'/assets/images/news.svg'">
           <a
             class="govuk-link--no-visited-state govuk-!-font-size-19 govuk-!-font-weight-bold"

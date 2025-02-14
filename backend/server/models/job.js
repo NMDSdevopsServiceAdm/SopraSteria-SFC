@@ -1,6 +1,6 @@
 /* jshint indent: 2 */
 
-const { timeStamp } = require("console");
+const { timeStamp } = require('console');
 
 module.exports = function (sequelize, DataTypes) {
   const Job = sequelize.define(
@@ -26,7 +26,19 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.DATE,
         allowNull: true,
         field: '"DeletedAt"',
-      }
+      },
+      jobRoleGroup: {
+        type: DataTypes.ENUM,
+        allowNull: true,
+        values: [
+          'Care providing roles',
+          'Professional and related roles',
+          'Managerial and supervisory roles',
+          'IT, digital and data roles',
+          'Other roles',
+        ],
+        field: 'JobRoleGroup',
+      },
     },
     {
       tableName: '"Job"',

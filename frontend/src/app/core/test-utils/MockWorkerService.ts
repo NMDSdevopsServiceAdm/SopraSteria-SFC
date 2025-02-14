@@ -1,13 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Params } from '@angular/router';
-import { QualificationsByGroup } from '@core/model/qualification.model';
-import { MultipleTrainingResponse, TrainingRecordRequest } from '@core/model/training.model';
+import { QualificationsByGroup, QualificationType } from '@core/model/qualification.model';
+import {
+  CreateTrainingRecordResponse,
+  MultipleTrainingResponse,
+  TrainingRecordRequest,
+} from '@core/model/training.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
-import { WorkerService } from '@core/services/worker.service';
+import { NewWorkerMandatoryInfo, Reason, WorkerService } from '@core/services/worker.service';
 import { build, fake, oneOf, perBuild, sequence } from '@jackfranklin/test-data-bot';
 import { Observable, of } from 'rxjs';
+
+import { AvailableQualificationsResponse } from '../model/qualification.model';
 
 export const workerBuilder = build('Worker', {
   fields: {
@@ -159,6 +165,10 @@ export const workerWithWdf = () => {
         careCertificate: { isEligible: true, updatedSinceEffectiveDate: true },
         otherQualification: { isEligible: true, updatedSinceEffectiveDate: true },
         highestQualification: { isEligible: true, updatedSinceEffectiveDate: true },
+        gender: { isEligible: true, updatedSinceEffectiveDate: true },
+        nationality: { isEligible: true, updatedSinceEffectiveDate: true },
+        dateOfBirth: { isEligible: true, updatedSinceEffectiveDate: true },
+        recruitedFrom: { isEligible: true, updatedSinceEffectiveDate: true },
       },
     },
   });
@@ -199,40 +209,179 @@ export const AllWorkers = [
 
 export const getAllWorkersResponse = { workers: AllWorkers, workerCount: AllWorkers.length };
 
-export const qualificationsByGroup = {
+export const qualificationsByGroup = Object.freeze({
   count: 3,
   lastUpdated: new Date('2020-01-02'),
   groups: [
     {
-      group: 'Health',
+      group: QualificationType.Award,
       records: [
         {
           year: 2020,
-          notes: 'This is a test note for the first row in the Health group',
-          title: 'Health qualification',
-          uid: 'firstHealthQualUid',
+          notes: 'This is a test note for the first row in the Award group',
+          title: 'Award qualification',
+          uid: 'firstAwardQualUid',
+          qualificationCertificates: [],
         },
       ],
     },
     {
-      group: 'Certificate',
+      group: QualificationType.Certificate,
       records: [
         {
           year: 2021,
           notes: 'Test notes needed',
           title: 'Cert qualification',
           uid: 'firstCertificateUid',
+          qualificationCertificates: [],
         },
         {
           year: 2012,
           notes: 'These are some more notes in the second row of the cert table',
           title: 'Another name for qual',
           uid: 'secondCertificateUid',
+          qualificationCertificates: [],
         },
       ],
     },
   ],
-} as QualificationsByGroup;
+}) as QualificationsByGroup;
+
+export const mockAvailableQualifications: AvailableQualificationsResponse[] = [
+  {
+    type: QualificationType.NVQ,
+    count: 2,
+    qualifications: [
+      {
+        id: 93,
+        title: 'Care NVQ (level 2)',
+        level: '2',
+        code: 4,
+      },
+      {
+        id: 94,
+        title: 'Care NVQ (level 3)',
+        level: '3',
+        code: 5,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Certificate,
+    count: 2,
+    qualifications: [
+      {
+        id: 30,
+        title: 'Activity provision in social care (level 3)',
+        level: '3',
+        code: 42,
+      },
+      {
+        id: 31,
+        title: 'Adult care (level 4)',
+        level: '4',
+        code: 110,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Degree,
+    count: 2,
+    qualifications: [
+      {
+        id: 71,
+        title: 'Combined nursing and social work degree (level 6)',
+        level: '6',
+        code: 18,
+      },
+      {
+        id: 136,
+        title: 'Health and social care degree (level 6)',
+        level: '6',
+        code: 144,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Award,
+    count: 2,
+    qualifications: [
+      {
+        id: 1,
+        title: 'Advanced Award in Social Work (AASW, level 7)',
+        level: '7',
+        code: 20,
+      },
+      {
+        id: 5,
+        title: 'Awareness of dementia (level 3)',
+        level: '3',
+        code: 49,
+        from: '2010-09-01',
+      },
+    ],
+  },
+  {
+    type: QualificationType.Diploma,
+    count: 1,
+    qualifications: [
+      {
+        id: 74,
+        title: 'Adult care (level 4)',
+        level: '4',
+        code: 109,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Apprenticeship,
+    count: 3,
+    qualifications: [
+      {
+        id: 121,
+        title: 'Adult care worker (standard, level 2)',
+        level: '2',
+        code: 302,
+      },
+      {
+        id: 124,
+        title: 'Degree registered nurse (standard, level 6)',
+        level: '6',
+        code: 310,
+      },
+    ],
+  },
+  {
+    type: QualificationType.Other,
+    count: 2,
+    qualifications: [
+      {
+        id: 113,
+        title: 'Other relevant professional qualification',
+        level: null,
+        code: 33,
+      },
+      {
+        id: 119,
+        title: 'Other qualification',
+        level: null,
+        code: 39,
+      },
+    ],
+  },
+];
+
+export const mockLeaveReasons: Reason[] = [
+  { id: 1, reason: 'The worker moved to another adult social care employer' },
+  { id: 2, reason: 'The worker moved to a role in the health sector' },
+  { id: 3, reason: 'The worker moved to a different sector (for example, retail)' },
+  { id: 4, reason: 'The worker moved to a different role in this organisation' },
+  { id: 5, reason: 'The worker chose to leave (destination unknown)' },
+  { id: 6, reason: 'The worker retired' },
+  { id: 7, reason: 'The worker had their employment terminated' },
+  { id: 8, reason: 'For a reason not listed' },
+  { id: 9, reason: 'Reason not known' },
+];
 
 export const trainingRecord = {
   id: 10,
@@ -280,6 +429,10 @@ export class MockWorkerService extends WorkerService {
 
   public get worker() {
     return this._worker;
+  }
+
+  public getWorker() {
+    return of(this._worker);
   }
 
   public set worker(val) {
@@ -336,14 +489,25 @@ export class MockWorkerService extends WorkerService {
     workplaceUid: string,
     workerId: string,
     record: TrainingRecordRequest,
-  ): Observable<TrainingRecordRequest> {
+  ): Observable<CreateTrainingRecordResponse> {
     return of(trainingRecord);
+  }
+
+  getAllAvailableQualifications(
+    workplaceUid: string,
+    workerUid: string,
+  ): Observable<AvailableQualificationsResponse[]> {
+    return of(mockAvailableQualifications);
+  }
+
+  getLeaveReasons(): Observable<Reason[]> {
+    return of(mockLeaveReasons);
   }
 }
 
 @Injectable()
 export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
-  public static factory(worker: Worker) {
+  public static factory(worker: Worker = null) {
     return (httpClient: HttpClient) => {
       const service = new MockWorkerServiceWithUpdateWorker(httpClient);
       if (worker) {
@@ -361,6 +525,24 @@ export class MockWorkerServiceWithUpdateWorker extends MockWorkerService {
   updateWorker(workplaceUid: string, workerId: string, props): Observable<WorkerEditResponse> {
     return of({ uid: '1' } as WorkerEditResponse);
   }
+}
+
+@Injectable()
+export class MockWorkerServiceWithNoWorker extends MockWorkerService {
+  public static factory(workerMandatoryInfo: NewWorkerMandatoryInfo = null) {
+    return (httpClient: HttpClient) => {
+      const service = new MockWorkerServiceWithNoWorker(httpClient);
+      if (workerMandatoryInfo) {
+        service.setNewWorkerMandatoryInfo(workerMandatoryInfo.nameOrId, workerMandatoryInfo.contract);
+      }
+      return service;
+    };
+  }
+  public get worker() {
+    return null;
+  }
+
+  public worker$ = of(null);
 }
 
 @Injectable()

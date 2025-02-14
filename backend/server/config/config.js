@@ -131,6 +131,7 @@ const config = convict({
       doc: 'Database host name/IP',
       format: String,
       default: '127.0.0.1',
+      env: 'DB_TEST_HOSTNAME',
     },
     database: {
       doc: 'Database name',
@@ -154,6 +155,7 @@ const config = convict({
       doc: 'Database port',
       format: 'port',
       default: 90,
+      env: 'DB_TEST_PORT',
     },
     dialect: {
       doc: 'Database dialect (sequelize)',
@@ -395,6 +397,30 @@ const config = convict({
       doc: 'Bucket used to upload all client certificates',
       format: '*',
       default: 'sfc-public-staging',
+    },
+  },
+  workerCertificate: {
+    region: {
+      doc: 'AWS region override for worker certificate s3 bucket',
+      format: String,
+      default: 'eu-west-2',
+      env: 'TRAIN_AND_QUALS_CERTS_S3_BUCKET_REGION',
+    },
+    bucketname: {
+      doc: 'Bucket used to upload worker certificate',
+      format: String,
+      default: 'sfc-dev-worker-certificates',
+      env: 'TRAIN_AND_QUALS_CERTS_S3_BUCKET_NAME',
+    },
+    uploadSignedUrlExpire: {
+      doc: 'The duration in seconds for the upload signed URL to expire',
+      format: 'int',
+      default: 300,
+    },
+    downloadSignedUrlExpire: {
+      doc: 'The duration in seconds for the download signed URL to expire',
+      format: 'int',
+      default: 300,
     },
   },
   disbursement: {

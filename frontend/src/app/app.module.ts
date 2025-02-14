@@ -16,6 +16,7 @@ import { BenchmarksResolver } from '@core/resolvers/benchmarks.resolver';
 import { CqcStatusCheckResolver } from '@core/resolvers/cqcStatusCheck/cqcStatusCheck.resolver';
 import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-users-for-establishment.resolver';
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
+import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
 import { GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
 import { LoggedInUserResolver } from '@core/resolvers/logged-in-user.resolver';
@@ -46,7 +47,7 @@ import { PreviousRouteService } from '@core/services/previous-route.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { RecruitmentService } from '@core/services/recruitment.service';
 import { RegistrationService } from '@core/services/registration.service';
-import { TrainingService } from '@core/services/training.service';
+import { MandatoryTrainingService, TrainingService } from '@core/services/training.service';
 import { windowProvider, WindowToken } from '@core/services/window';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
@@ -59,10 +60,18 @@ import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
 import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
 import { FirstLoginWizardComponent } from '@features/first-login-wizard/first-login-wizard.component';
-import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-password/confirmation/confirmation.component';
-import { ForgotYourPasswordEditComponent } from '@features/forgot-your-password/edit/edit.component';
-import { ForgotYourPasswordComponent } from '@features/forgot-your-password/forgot-your-password.component';
+import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-username-or-password/forgot-your-password/confirmation/confirmation.component';
+import { ForgotYourPasswordEditComponent } from '@features/forgot-your-username-or-password/forgot-your-password/edit/edit.component';
+import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
+import { ForgotYourUsernameOrPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-username-or-password.component';
+import { FindAccountComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-account/find-account.component';
+import { FindUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/find-username/find-username.component';
+import { ForgotYourUsernameComponent } from '@features/forgot-your-username-or-password/forgot-your-username/forgot-your-username.component';
+import { SecurityQuestionAnswerNotMatchComponent } from '@features/forgot-your-username-or-password/forgot-your-username/security-question-answer-not-match/security-question-answer-not-match.component';
+import { UserAccountNotFoundComponent } from '@features/forgot-your-username-or-password/forgot-your-username/user-account-not-found/user-account-not-found.component';
+import { UsernameFoundComponent } from '@features/forgot-your-username-or-password/username-found/username-found.component';
 import { LoginComponent } from '@features/login/login.component';
+import { VacanciesAndTurnoverLoginMessage } from '@features/login/vacancies-and-turnover-login-message/vacancies-and-turnover-login-message.component';
 import { LogoutComponent } from '@features/logout/logout.component';
 import { BecomeAParentComponent } from '@features/new-dashboard/become-a-parent/become-a-parent.component';
 import { DashboardWrapperComponent } from '@features/new-dashboard/dashboard-wrapper.component';
@@ -79,6 +88,7 @@ import { NewWorkplaceTabComponent } from '@features/new-dashboard/workplace-tab/
 import { ResetPasswordConfirmationComponent } from '@features/reset-password/confirmation/confirmation.component';
 import { ResetPasswordEditComponent } from '@features/reset-password/edit/edit.component';
 import { ResetPasswordComponent } from '@features/reset-password/reset-password.component';
+import { SelectStarterJobRolesComponent } from '@features/workplace/select-starter-job-roles/select-starter-job-roles.component';
 import { BenchmarksModule } from '@shared/components/benchmarks-tab/benchmarks.module';
 import { DataAreaTabModule } from '@shared/components/data-area-tab/data-area-tab.module';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
@@ -133,6 +143,15 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     LinkToParentComponent,
     ParentWorkplaceAccounts,
     DeleteWorkplaceComponent,
+    ForgotYourUsernameOrPasswordComponent,
+    UsernameFoundComponent,
+    ForgotYourUsernameComponent,
+    FindAccountComponent,
+    FindUsernameComponent,
+    SelectStarterJobRolesComponent,
+    SecurityQuestionAnswerNotMatchComponent,
+    UserAccountNotFoundComponent,
+    VacanciesAndTurnoverLoginMessage,
   ],
   imports: [
     Angulartics2Module.forRoot({
@@ -174,6 +193,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     RegistrationService,
     { provide: ErrorHandler, useClass: SentryErrorHandler },
     TrainingService,
+    MandatoryTrainingService,
     WindowRef,
     WorkerService,
     InternationalRecruitmentService,
@@ -206,6 +226,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     GetMissingCqcLocationsResolver,
     WorkplaceResolver,
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
+    FundingReportResolver,
   ],
   bootstrap: [AppComponent],
 })

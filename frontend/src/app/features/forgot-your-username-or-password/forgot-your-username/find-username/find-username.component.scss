@@ -1,0 +1,43 @@
+@import 'govuk-frontend/govuk/base';
+
+.asc-security-question__container {
+  > * {
+    margin-top: 0;
+    margin-bottom: 5px;
+  }
+
+  margin-bottom: govuk-spacing(6);
+}
+
+.asc-security-question {
+  min-height: 2.5rem;
+  max-width: 20.5em;
+  padding: 5px 5px 5px 10px;
+  font-size: 19px;
+  box-sizing: border-box;
+  outline: none;
+  display: flex;
+  align-items: center;
+
+  background-color: govuk-colour('light-grey');
+}
+
+.asc-incorrect-answer-message {
+  display: grid;
+  grid-template-columns: min-content 1fr;
+  row-gap: 5px;
+  margin-top: 30px;
+  margin-bottom: 30px;
+
+  > img {
+    grid-column: 1;
+  }
+
+  > p {
+    line-height: 22px;
+    grid-column: 2;
+    font-weight: bold;
+    margin-bottom: 0;
+    margin-right: -10px;
+  }
+}

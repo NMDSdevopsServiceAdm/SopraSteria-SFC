@@ -2,6 +2,13 @@ export interface Job {
   id: number;
   title?: string;
   other?: boolean;
+  jobRoleGroup?: string;
+}
+
+export interface JobGroup {
+  title: string;
+  descriptionText: string;
+  items: { label: string; id: number }[];
 }
 
 export interface GetJobsResponse {

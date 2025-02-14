@@ -1,3 +1,5 @@
+import { Certificate, CertificateDownload } from './trainingAndQualifications.model';
+
 export interface TrainingCategory {
   id: number;
   seq: number;
@@ -24,11 +26,33 @@ export interface TrainingRecordRequest {
   notes?: string;
 }
 
+export interface CreateTrainingRecordResponse extends TrainingRecordRequest {
+  uid: string;
+  workerUid: string;
+  created: string;
+}
+
 export interface TrainingResponse {
   count: number;
   lastUpdated?: string;
   training: TrainingRecord[];
 }
+
+export interface TrainingCertificateDownloadEvent {
+  recordType: 'training';
+  recordUid: string;
+  categoryName: string;
+  filesToDownload: CertificateDownload[];
+}
+
+export interface TrainingCertificateUploadEvent {
+  recordType: 'training';
+  recordUid: string;
+  categoryName: string;
+  files: File[];
+}
+
+export interface TrainingCertificate extends Certificate {}
 
 export interface TrainingRecord {
   accredited?: boolean;
@@ -36,6 +60,7 @@ export interface TrainingRecord {
     id: number;
     category: string;
   };
+  trainingCertificates: TrainingCertificate[];
   completed?: Date;
   created: Date;
   expires?: Date;
@@ -72,8 +97,9 @@ export interface mandatoryJobs {
 
 export interface mandatoryTraining {
   trainingCategoryId: number;
-  allJobRoles: boolean;
+  allJobRoles?: boolean;
   selectedJobRoles?: boolean;
+  category?: string;
   jobs: mandatoryJobs[];
 }
 export interface allMandatoryTrainingCategories {

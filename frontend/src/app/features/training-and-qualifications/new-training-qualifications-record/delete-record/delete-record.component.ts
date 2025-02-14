@@ -20,10 +20,10 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   public qualificationRecord: QualificationResponse;
   public trainingOrQualification: string;
   public trainingView: boolean;
-  private trainingPageUrl: string;
+  private workerTrainingAndQualsSummaryUrl: string;
+  public previousUrl: string;
   private recordUid: string;
   private subscriptions: Subscription = new Subscription();
-  public previousUrl: string[];
 
   constructor(
     private route: ActivatedRoute,
@@ -36,15 +36,16 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.setTrainingView();
     this.setVariables();
-    this.previousUrl = [localStorage.getItem('previousUrl')];
 
-    this.trainingPageUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
+    this.workerTrainingAndQualsSummaryUrl = `workplace/${this.workplace.uid}/training-and-qualifications-record/${this.worker.uid}`;
+    this.previousUrl = localStorage.getItem('previousUrl');
     this.setBackLink();
   }
 
   private setTrainingView(): void {
     this.trainingView = this.route.snapshot.data.trainingRecord ? true : false;
     this.trainingOrQualification = this.trainingView ? 'training' : 'qualification';
+
     if (this.trainingView) {
       this.trainingRecord = this.route.snapshot.data.trainingRecord;
       this.recordUid = this.trainingRecord.uid;
@@ -65,19 +66,21 @@ export class DeleteRecordComponent implements OnInit, OnDestroy {
 
   public returnToEditPage(event: Event): void {
     event.preventDefault();
-    this.router.navigate([this.trainingPageUrl, this.trainingOrQualification, this.recordUid]);
+    this.router.navigate([this.workerTrainingAndQualsSummaryUrl, this.trainingOrQualification, this.recordUid]);
   }
 
   public deleteRecord(): void {
     const message = `${this.capitalizeFirstLetter(this.trainingOrQualification)} record deleted`;
     this.subscriptions.add(
       this.deleteTrainingOrQualificationRecord().subscribe(() => {
-        this.router.navigate(this.previousUrl).then(()=>{
-          this.alertService.addAlert({
-            type: 'success',
-            message: message,
+        this.router
+          .navigate(this.previousUrl ? [this.previousUrl] : [this.workerTrainingAndQualsSummaryUrl, 'training'])
+          .then(() => {
+            this.alertService.addAlert({
+              type: 'success',
+              message: message,
+            });
           });
-        });
       }),
     );
   }

@@ -336,3 +336,46 @@ exports.mockExpiredTrainingRecords = [
     ],
   },
 ];
+
+exports.mockTrainingRecordWithCertificates = {
+  id: 10,
+  uid: '50382236-2468-4a78-9d23-932d0ab90966',
+  workerUid: '32fa83f9-dc21-4685-82d4-021024c0d5fe',
+  created: '01/02/2020',
+  updated: '01/02/2020',
+  updatedBy: 'admin',
+  categoryFk: 1,
+  category: { category: 'Communication' },
+  title: 'Communication Training 1',
+  accredited: true,
+  completed: '01/02/2020',
+  expires: '01/02/2021',
+  trainingCertificates: [
+    {
+      uid: 'uid-1',
+      filename: 'communication_v1.pdf',
+      uploadDate: '2024-04-12T14:44:29.151Z',
+    },
+    {
+      uid: 'uid-2',
+      filename: 'communication_v2.pdf',
+      uploadDate: '2024-04-12T14:44:29.151Z',
+    },
+  ],
+};
+
+exports.mockTrainingRecordWithoutCertificates = {
+  id: 10,
+  uid: '50382236-2468-4a78-9d23-932d0ab90966',
+  workerUid: '32fa83f9-dc21-4685-82d4-021024c0d5fe',
+  created: '01/02/2020',
+  updated: '01/02/2020',
+  updatedBy: 'admin',
+  categoryFk: 1,
+  category: { category: 'Communication' },
+  title: 'Communication Training 1',
+  accredited: true,
+  completed: '01/02/2020',
+  expires: '01/02/2021',
+  trainingCertificates: [],
+};

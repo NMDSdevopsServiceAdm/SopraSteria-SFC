@@ -15,6 +15,7 @@
           [totalStaff]="this.workplace.numberOfStaff"
           [totalWorkers]="workerCount"
           [returnToDash]="true"
+          data-cy="total-staff-panel"
         ></app-total-staff-panel>
 
         <app-staff-summary
@@ -22,6 +23,7 @@
           [workplace]="workplace"
           [workers]="workers"
           [workerCount]="workerCount"
+          data-cy="staff-summary"
         ></app-staff-summary>
       </div>
     </ng-container>

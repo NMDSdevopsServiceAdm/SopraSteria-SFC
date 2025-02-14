@@ -15,7 +15,7 @@ const WorkplaceCsvValidator = require('../../../../models/BulkImport/csv/workpla
 const { validateWorkers } = require('./workers/validateWorkers');
 const { validateWorkplace } = require('./workplace/validateWorkplace');
 const { validateTraining } = require('./training/validateTraining');
-const { crossValidate } = require('../../../../models/BulkImport/csv/crossValidate');
+const { crossValidate, crossValidateTransferStaffRecord } = require('../../../../models/BulkImport/csv/crossValidate');
 
 // if commit is false, then the results of validation are not uploaded to S3
 const validateBulkUploadFiles = async (req, files) => {
@@ -130,6 +130,8 @@ const validateBulkUploadFiles = async (req, files) => {
       await crossValidate(csvWorkerSchemaErrors, myEstablishments, worker);
     }),
   );
+
+  await crossValidateTransferStaffRecord(csvWorkerSchemaErrors, myAPIEstablishments, myEstablishments, myJSONWorkers);
 
   // Prepare validation results
 

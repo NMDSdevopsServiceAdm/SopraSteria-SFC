@@ -1,0 +1,41 @@
+<div class="govuk-accordion__section" [class]="{ 'govuk-accordion__section--expanded': expanded }">
+  <div class="govuk-accordion__section-header">
+    <h2 class="govuk-accordion__section-heading">
+      <button
+        type="button"
+        aria-controls="accordion-default-content"
+        class="govuk-accordion__section-button"
+        [attr.aria-expanded]="expanded"
+        data-testid="showHideButton"
+        [attr.aria-label]="title"
+        (click)="handleClick()"
+      >
+        <span class="govuk-accordion__section-heading-text"
+          ><span class="govuk-accordion__section-heading-text-focus">
+            {{ title }}
+          </span></span
+        >
+
+        <span *ngIf="description?.length > 0" class="govuk-accordion__section-summary govuk-body">
+          <span class="govuk-accordion__section-summary-focus"> {{ description }} </span>
+        </span>
+
+        <span class="govuk-accordion__section-toggle" data-nosnippet="">
+          <span class="govuk-accordion__section-toggle-focus">
+            <span
+              class="govuk-accordion-nav__chevron"
+              [class]="{
+                'govuk-accordion-nav__chevron--up': expanded,
+                'govuk-accordion-nav__chevron--down': !expanded
+              }"
+            ></span>
+            <span class="govuk-accordion__section-toggle-text">{{ expanded ? 'Hide' : 'Show' }}</span>
+          </span>
+        </span>
+      </button>
+    </h2>
+  </div>
+  <div class="govuk-accordion__section-content govuk-!-padding-top-0 govuk-!-padding-bottom-7">
+    <ng-content></ng-content>
+  </div>
+</div>

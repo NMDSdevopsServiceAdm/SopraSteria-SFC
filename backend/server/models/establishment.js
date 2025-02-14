@@ -2395,5 +2395,24 @@ module.exports = function (sequelize, DataTypes) {
     return await this.findAll(nhsBsaApiQuery({ parentId }));
   };
 
+  Establishment.workplaceOrSubHasAtLeastOneTrainingCertificate = async function (workplaceId) {
+    const [result] = await sequelize.query(
+      `
+      SELECT 1 FROM cqc."Establishment" establishment
+        INNER JOIN cqc."Worker" worker ON establishment."EstablishmentID" = worker."EstablishmentFK"
+        INNER JOIN cqc."TrainingCertificates" trainingCertificate ON worker."ID" = trainingCertificate."WorkerFK"
+        WHERE establishment."Archived" = false AND worker."Archived" = false
+          AND (establishment."EstablishmentID" = :workplaceId OR establishment."ParentID" = :workplaceId)
+        LIMIT 1;
+      `,
+      {
+        replacements: { workplaceId },
+        type: sequelize.QueryTypes.SELECT,
+      },
+    );
+
+    return !!result;
+  };
+
   return Establishment;
 };

@@ -18,7 +18,7 @@ import { BasicRecordComponent } from '@shared/components/staff-record-summary/ba
 import { SummaryRecordChangeComponent } from '@shared/components/summary-record-change/summary-record-change.component';
 import { SummaryRecordValueComponent } from '@shared/components/summary-record-value/summary-record-value.component';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { MandatoryDetailsComponent } from './mandatory-details.component';
@@ -111,21 +111,48 @@ describe('MandatoryDetailsComponent', () => {
     expect(getByText(expectedWorker.contract));
   });
 
-  it('should take you to the staff-details page when change link is clicked', async () => {
-    const { component, getByText } = await setup();
+  describe('edit name/id and contract', () => {
+    it('should take you to the staff-details page when change link is clicked', async () => {
+      const { component, getByText, getByTestId } = await setup();
 
-    const worker = component.worker;
-    const changeLink = getByText('Change');
+      const worker = component.worker;
 
-    expect(changeLink.getAttribute('href')).toBe(
-      `/workplace/${123}/staff-record/${worker.uid}/mandatory-details/staff-details`,
-    );
+      const nameSection = within(getByTestId('name-and-contract-section'));
+      const changeLink = nameSection.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe(
+        `/workplace/${123}/staff-record/${worker.uid}/mandatory-details/staff-details`,
+      );
+    });
+
+    it('should not show the change link if the user does not have edit permissions', async () => {
+      const { queryByText, getByTestId } = await setup(false);
+
+      const nameSection = within(getByTestId('name-and-contract-section'));
+      expect(nameSection.queryByText('Change')).toBeFalsy();
+    });
   });
 
-  it('should not show the change link if the user does not have edit permissions', async () => {
-    const { queryByText } = await setup(false);
+  describe('main job role', () => {
+    it('should take you to the main-job-role page when change link is clicked', async () => {
+      const { component, getByText, getByTestId } = await setup();
 
-    expect(queryByText('Change')).toBeFalsy();
+      const worker = component.worker;
+
+      const mainJobRoleSection = within(getByTestId('main-job-role-section'));
+      const changeLink = mainJobRoleSection.getByText('Change');
+
+      expect(changeLink.getAttribute('href')).toBe(
+        `/workplace/${123}/staff-record/${worker.uid}/mandatory-details/main-job-role`,
+      );
+    });
+
+    it('should not show the change link if the user does not have edit permissions', async () => {
+      const { queryByText, getByTestId } = await setup(false);
+
+      const mainJobRoleSection = within(getByTestId('main-job-role-section'));
+      expect(mainJobRoleSection.queryByText('Change')).toBeFalsy();
+    });
   });
 
   it('should submit and navigate to date of birth page when add details button clicked', async () => {

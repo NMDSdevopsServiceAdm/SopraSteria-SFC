@@ -12,6 +12,16 @@ const workerHeadersWithCHGUNIQUEWRKID =
   'NMCREG,NURSESPEC,AMHP,SCQUAL,NONSCQUAL,QUALACH01,QUALACH01NOTES,' +
   'QUALACH02,QUALACH02NOTES,QUALACH03,QUALACH03NOTES';
 
+const workerHeadersWithTRANSFERSTAFFRECORD = workerHeadersWithCHGUNIQUEWRKID.replace(
+  'CHGUNIQUEWRKID',
+  'TRANSFERSTAFFRECORD',
+);
+
+const workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD = workerHeadersWithCHGUNIQUEWRKID.replace(
+  'CHGUNIQUEWRKID',
+  'CHGUNIQUEWRKID,TRANSFERSTAFFRECORD',
+);
+
 const workerHeadersWithoutCHGUNIQUEWRKID =
   'LOCALESTID,UNIQUEWORKERID,STATUS,DISPLAYID,NINUMBER,' +
   'POSTCODE,DOB,GENDER,ETHNICITY,NATIONALITY,BRITISHCITIZENSHIP,COUNTRYOFBIRTH,YEAROFENTRY,' +
@@ -23,48 +33,59 @@ const workerHeadersWithoutCHGUNIQUEWRKID =
 describe('server/routes/establishments/bulkUpload/validate/headers/worker', () => {
   describe('validateWorkerHeaders()', () => {
     it('should return true when headings match with CHGUNIQUEWRKID', async () => {
-      expect(await validateWorkerHeaders(workerHeadersWithCHGUNIQUEWRKID)).to.deep.equal(true);
+      expect(validateWorkerHeaders(workerHeadersWithCHGUNIQUEWRKID)).to.deep.equal(true);
     });
 
-    it('should return true when headings match without CHGUNIQUEWRKID', async () => {
-      expect(await validateWorkerHeaders(workerHeadersWithoutCHGUNIQUEWRKID)).to.deep.equal(true);
+    it('should return true when headings match with TRANSFERSTAFFRECORD', async () => {
+      expect(validateWorkerHeaders(workerHeadersWithTRANSFERSTAFFRECORD)).to.deep.equal(true);
+    });
+
+    it('should return true when headings match without CHGUNIQUEWRKID OR TRANSFERSTAFFRECORD', async () => {
+      expect(validateWorkerHeaders(workerHeadersWithoutCHGUNIQUEWRKID)).to.deep.equal(true);
+    });
+
+    it('should return true when headings match with CHGUNIQUEWRKID and TRANSFERSTAFFRECORD', async () => {
+      expect(validateWorkerHeaders(workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD)).to.equal(true);
     });
 
     it('should return false when header (NATIONALITY) missing', async () => {
       const invalidHeaders = workerHeadersWithoutCHGUNIQUEWRKID.replace('NATIONALITY,', '');
 
-      expect(await validateWorkerHeaders(invalidHeaders)).to.deep.equal(false);
+      expect(validateWorkerHeaders(invalidHeaders)).to.deep.equal(false);
     });
 
     describe('Extra qualifications', () => {
-      it('should return true when headings match with headers for one extra QUAL', async () => {
-        const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(',QUALACH04,QUALACH04NOTES');
+      const testCases = [
+        workerHeadersWithCHGUNIQUEWRKID,
+        workerHeadersWithoutCHGUNIQUEWRKID,
+        workerHeadersWithTRANSFERSTAFFRECORD,
+        workerHeadersWithCHGUNIQUEWRKIDAndTRANSFERSTAFFRECORD,
+      ];
 
-        expect(await validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(true);
-      });
+      testCases.forEach((workerHeaders) => {
+        it('should return true when headings match with headers for one extra QUAL', async () => {
+          const headersWithExtraQuals = workerHeaders.concat(',QUALACH04,QUALACH04NOTES');
 
-      it('should return true when headings match with headers for two extra QUALs', async () => {
-        const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(
-          ',QUALACH04,QUALACH04NOTES,QUALACH05,QUALACH05NOTES',
-        );
+          expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(true);
+        });
 
-        expect(await validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(true);
-      });
+        it('should return true when headings match with headers for two extra QUALs', async () => {
+          const headersWithExtraQuals = workerHeaders.concat(',QUALACH04,QUALACH04NOTES,QUALACH05,QUALACH05NOTES');
 
-      it('should return false when invalid extra QUALs headers (wrong qual number)', async () => {
-        const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(
-          ',QUALACH04,QUALACH04NOTES,QUALACH04,QUALACH05NOTES',
-        );
+          expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(true);
+        });
 
-        expect(await validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(false);
-      });
+        it('should return false when invalid extra QUALs headers (wrong qual number)', async () => {
+          const headersWithExtraQuals = workerHeaders.concat(',QUALACH04,QUALACH04NOTES,QUALACH04,QUALACH05NOTES');
 
-      it('should return false when invalid extra QUALs headers (wrong qualNotes number)', async () => {
-        const headersWithExtraQuals = workerHeadersWithoutCHGUNIQUEWRKID.concat(
-          ',QUALACH04,QUALACH04NOTES,QUALACH05,QUALACH03NOTES',
-        );
+          expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(false);
+        });
 
-        expect(await validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(false);
+        it('should return false when invalid extra QUALs headers (wrong qualNotes number)', async () => {
+          const headersWithExtraQuals = workerHeaders.concat(',QUALACH04,QUALACH04NOTES,QUALACH05,QUALACH03NOTES');
+
+          expect(validateWorkerHeaders(headersWithExtraQuals)).to.deep.equal(false);
+        });
       });
     });
   });

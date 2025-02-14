@@ -10,7 +10,11 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
-import { establishmentWithShareWith, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import {
+  establishmentWithShareWith,
+  MockEstablishmentService,
+  MockEstablishmentServiceWithNoCapacities,
+} from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render, within } from '@testing-library/angular';
@@ -18,7 +22,11 @@ import { fireEvent, render, within } from '@testing-library/angular';
 import { NewWorkplaceSummaryComponent } from './workplace-summary.component';
 
 describe('NewWorkplaceSummaryComponent', () => {
-  const setup = async (shareWith = null, permissions = ['canEditEstablishment'] as PermissionType[]) => {
+  const setup = async (
+    shareWith = null,
+    permissions = ['canEditEstablishment'] as PermissionType[],
+    hasQuestions = true,
+  ) => {
     const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(NewWorkplaceSummaryComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
@@ -29,7 +37,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         },
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useClass: hasQuestions ? MockEstablishmentService : MockEstablishmentServiceWithNoCapacities,
         },
         {
           provide: CqcStatusChangeService,
@@ -79,104 +87,6 @@ describe('NewWorkplaceSummaryComponent', () => {
   });
 
   describe('workplace-section', () => {
-    describe('Workplace name', () => {
-      it('should render the workplace name and address', async () => {
-        const { component, fixture, getByText } = await setup();
-
-        component.workplace.name = 'Care 1';
-        component.workplace.address = 'Care Home, Leeds';
-        component.workplace.address1 = 'Care Home';
-        component.workplace.address2 = 'Care Street';
-        component.workplace.address3 = 'Town';
-        component.workplace.town = 'Leeds';
-        component.workplace.county = 'Yorkshire';
-        component.workplace.postcode = 'LS1 1AB';
-
-        fixture.detectChanges();
-
-        const workplace = component.workplace;
-
-        expect(getByText('Name')).toBeTruthy();
-        expect(getByText('Address')).toBeTruthy();
-        expect(getByText(workplace.name)).toBeTruthy();
-        expect(getByText(workplace.address1)).toBeTruthy();
-        expect(getByText(workplace.address2)).toBeTruthy();
-        expect(getByText(workplace.address3)).toBeTruthy();
-        expect(getByText(workplace.town)).toBeTruthy();
-        expect(getByText(workplace.county)).toBeTruthy();
-        expect(getByText(workplace.postcode)).toBeTruthy();
-      });
-
-      it('should render a Change link', async () => {
-        const { component, fixture, getByTestId } = await setup();
-
-        component.workplace.name = 'Care Home';
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const workplaceRow = getByTestId('workplace-name-and-address');
-        const link = within(workplaceRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/update-workplace-details`);
-      });
-
-      it('should render a conditional class if the workplace is not regulated and there is a number of staff error', async () => {
-        const { component, fixture, getByTestId } = await setup();
-
-        component.canEditEstablishment = true;
-        component.workplace.isRegulated = false;
-        component.numberOfStaffError = true;
-
-        fixture.detectChanges();
-
-        const workplaceRow = getByTestId('workplace-name-and-address');
-
-        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
-      });
-
-      it('should render a conditional class if the workplace is not regulated and there is a number of staff warning', async () => {
-        const { component, fixture, getByTestId } = await setup();
-
-        component.canEditEstablishment = true;
-        component.workplace.isRegulated = false;
-        component.numberOfStaffWarning = true;
-        fixture.detectChanges();
-
-        const workplaceRow = getByTestId('workplace-name-and-address');
-
-        expect(workplaceRow.getAttribute('class')).toContain('govuk-summary-list__row--no-bottom-border');
-      });
-
-      it('should not render a conditional class if the workplace is regulated and there is a number of staff error', async () => {
-        const { component, fixture, getByTestId } = await setup();
-
-        component.canEditEstablishment = true;
-        component.workplace.isRegulated = true;
-        component.numberOfStaffError = true;
-
-        fixture.detectChanges();
-
-        const workplaceRow = getByTestId('workplace-name-and-address');
-
-        expect(workplaceRow.getAttribute('class')).not.toContain('govuk-summary-list__row--no-bottom-border');
-      });
-
-      it('should not render a conditional class if the workplace is regulated and there is a number of staff warning', async () => {
-        const { component, fixture, getByTestId } = await setup();
-
-        component.canEditEstablishment = true;
-        component.workplace.isRegulated = true;
-        component.numberOfStaffWarning = true;
-
-        fixture.detectChanges();
-
-        const workplaceRow = getByTestId('workplace-name-and-address');
-
-        expect(workplaceRow.getAttribute('class')).not.toContain('govuk-summary-list__row--no-bottom-border');
-      });
-    });
-
     describe('CQC Location ID', () => {
       it('should render the locationID and a Change link if the workplace is regulated', async () => {
         const { component, fixture, getByTestId } = await setup();
@@ -616,11 +526,35 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
 
     describe('Service capacity', () => {
-      it('should show dash and have Add information button on when capacities is an empty array', async () => {
+      it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is false', async () => {
+        const { component, fixture, queryByTestId } = await setup(null, ['canEditEstablishment'], false);
+
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+
+        fixture.detectChanges();
+
+        const serviceCapacityRow = queryByTestId('serviceCapacity');
+
+        expect(serviceCapacityRow).toBeFalsy();
+      });
+
+      it('should not show if there are no allServiceCapacities and showAddWorkplaceDetailsBanner is true', async () => {
+        const { component, fixture, queryByTestId } = await setup(null, ['canEditEstablishment'], false);
+
+        component.workplace.showAddWorkplaceDetailsBanner = true;
+
+        fixture.detectChanges();
+
+        const serviceCapacityRow = queryByTestId('serviceCapacity');
+
+        expect(serviceCapacityRow).toBeFalsy();
+      });
+
+      it('should show dash and have Add information button if there are allServiceCapacities and showAddWorkplaceDetailsBanner is false', async () => {
         const { component, fixture } = await setup();
 
-        component.workplace.capacities = [];
-        component.canEditEstablishment = true;
+        component.workplace.showAddWorkplaceDetailsBanner = false;
+
         fixture.detectChanges();
 
         const serviceCapacityRow = within(document.body).queryByTestId('serviceCapacity');
@@ -629,6 +563,18 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/capacity-of-services`);
         expect(within(serviceCapacityRow).queryByText('-')).toBeTruthy();
+      });
+
+      it('should not show if there are allServiceCapacities and showAddWorkplaceDetailsBanner is true', async () => {
+        const { component, fixture, queryByTestId } = await setup();
+
+        component.workplace.showAddWorkplaceDetailsBanner = true;
+
+        fixture.detectChanges();
+
+        const serviceCapacityRow = queryByTestId('serviceCapacity');
+
+        expect(serviceCapacityRow).toBeFalsy();
       });
 
       it('should show service capacity and have Change link when capacity array is not emtpy', async () => {
@@ -846,7 +792,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
         expect(within(vacanciesRow).queryByText('-')).toBeTruthy();
       });
 
@@ -861,7 +807,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
         expect(within(vacanciesRow).queryByText(`Don't know`)).toBeTruthy();
       });
 
@@ -876,7 +822,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
         expect(within(vacanciesRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -891,7 +837,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(vacanciesRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/vacancies`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
         expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
       });
 
@@ -901,6 +847,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         component.workplace.vacancies = [
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
+          { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
         ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -910,6 +857,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(vacanciesRow).queryByText('Change')).toBeTruthy();
         expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
       });
 
       it('should show warning message if there is no vacancy value but there is a starters value', async () => {
@@ -952,6 +900,14 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
 
     describe('New starters', () => {
+      it('should show the correct wording', async () => {
+        const { getByTestId } = await setup();
+
+        const startersRow = getByTestId('starters');
+
+        expect(within(startersRow).getByText('New starters in the last 12 months')).toBeTruthy();
+      });
+
       it('should show dash and have Add information button on when starters is null', async () => {
         const { component, fixture, getByTestId } = await setup();
 
@@ -963,7 +919,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
         expect(within(startersRow).queryByText('-')).toBeTruthy();
       });
 
@@ -978,7 +934,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
         expect(within(startersRow).queryByText(`Don't know`)).toBeTruthy();
       });
 
@@ -993,7 +949,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
         expect(within(startersRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -1008,7 +964,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(startersRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/starters`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
         expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
       });
 
@@ -1018,6 +974,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         component.workplace.starters = [
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
+          { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
         ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1027,10 +984,19 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(startersRow).queryByText('Change')).toBeTruthy();
         expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(startersRow).queryByText('2 Nursing')).toBeTruthy();
+        expect(within(startersRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
       });
     });
 
     describe('Staff leavers', () => {
+      it('should show the correct wording', async () => {
+        const { getByTestId } = await setup();
+
+        const leaversRow = getByTestId('leavers');
+
+        expect(within(leaversRow).getByText('Staff leavers in the last 12 months')).toBeTruthy();
+      });
+
       it('should show dash and have Add information button on when leavers is null', async () => {
         const { component, fixture, getByTestId } = await setup();
 
@@ -1042,7 +1008,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Add');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
         expect(within(leaversRow).queryByText('-')).toBeTruthy();
       });
 
@@ -1057,7 +1023,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
         expect(within(leaversRow).queryByText(`Don't know`)).toBeTruthy();
       });
 
@@ -1072,7 +1038,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
         expect(within(leaversRow).queryByText(`None`)).toBeTruthy();
       });
 
@@ -1087,7 +1053,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         const link = within(leaversRow).queryByText('Change');
 
         expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/leavers`);
+        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
         expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
       });
 
@@ -1097,6 +1063,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         component.workplace.leavers = [
           { jobId: 1, title: 'Administrative', total: 3 },
           { jobId: 2, title: 'Nursing', total: 2 },
+          { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
         ];
         component.canEditEstablishment = true;
         fixture.detectChanges();
@@ -1106,6 +1073,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         expect(within(leaversRow).queryByText('Change')).toBeTruthy();
         expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
         expect(within(leaversRow).queryByText('2 Nursing')).toBeTruthy();
+        expect(within(leaversRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
       });
     });
   });

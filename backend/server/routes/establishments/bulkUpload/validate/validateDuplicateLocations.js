@@ -31,7 +31,7 @@ const validateDuplicateLocations = async (myEstablishments, csvEstablishmentSche
 
   myEstablishments
     .filter((thisEstablishment) => thisEstablishment._currentLine.LOCATIONID)
-    .filter((thisEstablishment) => filterByStatus(thisEstablishment, ['NEW', 'UPDATE', 'CHGSUB']))
+    .filter((thisEstablishment) => filterByStatus(thisEstablishment, ['NEW', 'UPDATE']))
     .forEach((thisEstablishment) => {
       return checkDuplicate(thisEstablishment, thisEstablishment._currentLine.LOCATIONID);
     });

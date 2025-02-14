@@ -2780,7 +2780,7 @@ class WorkplaceCSVValidator {
 
     let registeredManagers = 0;
 
-    const dataInCSV = ['NEW', 'UPDATE', 'CHGSUB']; //For theses statuses trust the data in the CSV
+    const dataInCSV = ['NEW', 'UPDATE']; //For theses statuses trust the data in the CSV
 
     myJSONWorkers.forEach((worker) => {
       if (this.key === worker.establishmentKey && dataInCSV.includes(worker.status)) {

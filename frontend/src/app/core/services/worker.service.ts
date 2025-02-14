@@ -10,13 +10,19 @@ import {
   QualificationsResponse,
   QualificationType,
 } from '@core/model/qualification.model';
-import { MultipleTrainingResponse, TrainingRecordRequest, TrainingResponse } from '@core/model/training.model';
+import {
+  CreateTrainingRecordResponse,
+  MultipleTrainingResponse,
+  TrainingRecordRequest,
+  TrainingResponse,
+} from '@core/model/training.model';
 import { TrainingAndQualificationRecords } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker, WorkerEditResponse, WorkersResponse } from '@core/model/worker.model';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject, forkJoin, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
+import { Contracts } from '@core/model/contracts.enum';
 
 export interface Reason {
   id: number;
@@ -29,6 +35,11 @@ interface LeaveReasonsResponse {
 
 interface TotalStaffRecordsResponse {
   total: number;
+}
+
+export interface NewWorkerMandatoryInfo {
+  nameOrId: string;
+  contract: Contracts;
 }
 
 @Injectable({
@@ -44,6 +55,7 @@ export class WorkerService {
   public worker$ = this._worker$.asObservable();
   public getRoute$: BehaviorSubject<any> = new BehaviorSubject<any>(null);
   public createStaffResponse = null;
+  private _newWorkerMandatoryInfo: NewWorkerMandatoryInfo = null;
 
   private _workers$: BehaviorSubject<Worker[]> = new BehaviorSubject<Worker[]>(null);
   public workers$: Observable<Worker[]> = this._workers$.asObservable();
@@ -166,7 +178,7 @@ export class WorkerService {
     );
   }
 
-  getAvailableQualifcations(workplaceUid: string, workerId: string, type: QualificationType) {
+  getAvailableQualifications(workplaceUid: string, workerId: string, type: QualificationType) {
     const params = new HttpParams().append('type', type);
 
     return this.http
@@ -179,8 +191,26 @@ export class WorkerService {
       .pipe(map((res) => res.qualifications));
   }
 
+  getAllAvailableQualifications(
+    workplaceUid: string,
+    workerUid: string,
+  ): Observable<AvailableQualificationsResponse[]> {
+    const allQualificationTypes: QualificationType[] = Object.values(QualificationType);
+    const allResponses$ = allQualificationTypes.map((type) => {
+      const params = new HttpParams().append('type', type);
+      return this.http.get<AvailableQualificationsResponse>(
+        `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerUid}/qualification/available`,
+        {
+          params,
+        },
+      );
+    });
+
+    return forkJoin(allResponses$);
+  }
+
   createQualification(workplaceUid: string, workerId: string, record: QualificationRequest) {
-    return this.http.post<QualificationRequest>(
+    return this.http.post<QualificationResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/qualification`,
       record,
     );
@@ -222,7 +252,7 @@ export class WorkerService {
   }
 
   createTrainingRecord(workplaceUid: string, workerId: string, record: TrainingRecordRequest) {
-    return this.http.post<TrainingRecordRequest>(
+    return this.http.post<CreateTrainingRecordResponse>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training`,
       record,
     );
@@ -234,7 +264,7 @@ export class WorkerService {
     trainingRecordId: string,
     record: TrainingRecordRequest,
   ) {
-    return this.http.put<TrainingRecordRequest>(
+    return this.http.put<any>(
       `${environment.appRunnerEndpoint}/api/establishment/${workplaceUid}/worker/${workerId}/training/${trainingRecordId}`,
       record,
     );
@@ -289,5 +319,17 @@ export class WorkerService {
 
   public getLongTermAbsenceReasons(): Observable<Array<string>> {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/longTermAbsence`).pipe(map((res) => res.reasons));
+  }
+
+  public setNewWorkerMandatoryInfo(nameOrId: string, contract: Contracts): void {
+    this._newWorkerMandatoryInfo = { nameOrId, contract };
+  }
+
+  public get newWorkerMandatoryInfo(): NewWorkerMandatoryInfo {
+    return this._newWorkerMandatoryInfo;
+  }
+
+  public clearNewWorkerMandatoryInfo(): void {
+    this._newWorkerMandatoryInfo = null;
   }
 }

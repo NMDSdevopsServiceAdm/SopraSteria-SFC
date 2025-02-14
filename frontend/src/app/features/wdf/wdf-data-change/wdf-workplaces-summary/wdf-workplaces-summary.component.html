@@ -1,27 +1,63 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-three-quarters">
-    <h1 class="govuk-heading-l govuk-!-margin-bottom-3">
-      <span class="govuk-caption-xl">Workforce Development Fund (WDF)</span>
-      Workplaces
-    </h1>
+  <div class="govuk-grid-column-one-half">
+    <ul *ngIf="canDownloadReport" class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-top-7">
+      <li>
+        <a
+          href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-funding-parent-report.xls"
+          (click)="downloadWdfParentReport($event)"
+          >Download your funding report (Excel)</a
+        >
+      </li>
+    </ul>
+  </div>
 
-    <app-wdf-parent-status-message
-      [wdfStartDate]="wdfStartDate"
-      [wdfEndDate]="wdfEndDate"
-      [overallEligibilityStatus]="parentOverallEligibilityStatus"
-      [currentEligibilityStatus]="parentCurrentEligibilityStatus"
-    ></app-wdf-parent-status-message>
+  <div class="govuk-grid-column-one-half">
+    <div class="govuk-form-group govuk-util__float-right">
+      <label class="govuk-label" for="sortByStaff"> Sort by </label>
+      <select class="govuk-select" id="sortByStaff" name="sortByStaff" (change)="sortByColumn($event.target.value)">
+        <option
+          *ngFor="let sortWorkplaceOption of sortWorkplacesOptions | keyvalue"
+          value="{{ sortWorkplaceOption.key }}"
+        >
+          {{ sortWorkplaceOption.value }}
+        </option>
+      </select>
+    </div>
   </div>
 </div>
 
-<ul *ngIf="canDownloadReport" class="govuk-list govuk-list--inline govuk-list--download govuk-!-margin-bottom-5">
-  <li>
-    <a
-      href="/download/{{ now | date: 'yyyy-MM-dd' }}-sfc-wdf-parent-report.xls"
-      (click)="downloadWdfParentReport($event)"
-      >Download your WDF report (Excel)</a
-    >
-  </li>
-</ul>
-
-<app-wdf-workplaces-summary-table [workplaces]="workplaces"></app-wdf-workplaces-summary-table>
+<table *ngIf="workplaces.length" class="govuk-table">
+  <thead class="govuk-table__head">
+    <tr class="govuk-table__row">
+      <th scope="col" class="govuk-table__header" style="width: 30%">Workplace name</th>
+      <th scope="col" class="govuk-table__header" style="width: 35%">Funding requirements (workplace)</th>
+      <th scope="col" class="govuk-table__header" style="width: 35%">Funding requirements (staff records)</th>
+    </tr>
+  </thead>
+  <tbody class="govuk-table__body">
+    <tr *ngFor="let workplace of workplaces" class="govuk-table__row">
+      <td class="govuk-table__cell">
+        <ng-container *ngIf="canViewWorkplace(workplace); else noLink">
+          <a [routerLink]="['../', 'workplaces', workplace.uid]"> {{ workplace.name }}</a>
+        </ng-container>
+        <ng-template #noLink>
+          <p>{{ workplace.name }}</p>
+        </ng-template>
+      </td>
+      <td class="govuk-table__cell">
+        <app-funding-requirements-state
+          [overallWdfEligibility]="workplace.wdf.overall"
+          [currentWdfEligibility]="workplace.wdf.workplace"
+          orangeFlagMessage="Check your workplace data"
+        ></app-funding-requirements-state>
+      </td>
+      <td class="govuk-table__cell">
+        <app-funding-requirements-state
+          [overallWdfEligibility]="workplace.wdf.overall"
+          [currentWdfEligibility]="workplace.wdf.staff"
+          orangeFlagMessage="New staff records"
+        ></app-funding-requirements-state>
+      </td>
+    </tr>
+  </tbody>
+</table>

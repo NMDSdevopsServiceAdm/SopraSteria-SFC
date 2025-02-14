@@ -169,11 +169,11 @@ describe('ViewSubsidiaryHomeComponent', () => {
       });
     });
 
-    describe('Does your data meet WDF requirements link', () => {
-      it('should not render the link as WDF not shown in sub pages', async () => {
+    describe('Does your data meet funding requirements link', () => {
+      it('should not render the link in sub pages', async () => {
         const { queryByText, component, fixture } = await setup();
 
-        expect(queryByText('Does your data meet WDF requirements?')).toBeFalsy();
+        expect(queryByText('Does your data meet funding requirements?')).toBeFalsy();
       });
 
       it('should still not render the link when view reports is true', async () => {

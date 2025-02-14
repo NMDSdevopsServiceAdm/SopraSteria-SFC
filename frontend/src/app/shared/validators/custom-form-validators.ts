@@ -129,4 +129,31 @@ export class CustomValidators extends Validators {
 
     return null;
   }
+
+  static validateUploadCertificates(files: File[]): string[] | null {
+    let errors = [];
+    const maxFileSize = 5 * 1024 * 1024;
+
+    if (files.some((file) => !file.name.toLowerCase().endsWith('.pdf'))) {
+      errors.push('The certificate must be a PDF file');
+    }
+
+    if (files.some((file) => file.size > maxFileSize)) {
+      errors.push('The certificate must be no larger than 5MB');
+    }
+
+    return errors.length ? errors : null;
+  }
+
+  static validateArrayNotEmpty(): ValidatorFn {
+    const validatorFunction = (formControl: AbstractControl) => {
+      if (formControl.value?.length > 0) {
+        return null;
+      } else {
+        return { selectedNone: true };
+      }
+    };
+
+    return validatorFunction;
+  }
 }

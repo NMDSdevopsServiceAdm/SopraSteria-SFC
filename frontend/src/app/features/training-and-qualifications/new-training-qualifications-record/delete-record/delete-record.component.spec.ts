@@ -155,15 +155,39 @@ describe('DeleteRecordComponent', () => {
         );
       });
 
-      it('should navigate to the view training page when pressing the delete button and set an alert message in thw history state', async () => {
+      it("should navigate to previousUrl and set training deleted alert after clicking 'Delete record' when previousUrl exists", async () => {
         const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup();
-        component.previousUrl = ['/goToPreviousUrl'];
-        fixture.detectChanges();
+
+        const previousUrl = '/goToPreviousUrl';
+        spyOn(localStorage, 'getItem').and.returnValue(previousUrl);
+        component.ngOnInit();
 
         const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+        expect(routerSpy).toHaveBeenCalledWith([previousUrl]);
+
+        fixture.whenStable().then(() => {
+          expect(alertServiceSpy).toHaveBeenCalledWith({
+            type: 'success',
+            message: 'Training record deleted',
+          });
+        });
+      });
+
+      it("should navigate to worker training and quals summary page and set training deleted alert after clicking 'Delete record' when previousUrl doesn't exist", async () => {
+        const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup();
+
+        spyOn(localStorage, 'getItem').and.returnValue(null);
+        component.ngOnInit();
+
+        const deleteButton = getByText('Delete record');
+        fireEvent.click(deleteButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
+          'training',
+        ]);
 
         fixture.whenStable().then(() => {
           expect(alertServiceSpy).toHaveBeenCalledWith({
@@ -239,25 +263,47 @@ describe('DeleteRecordComponent', () => {
         );
       });
 
-      it('should navigate to the qualification page when pressing the delete button and set a alert message in the history state', async () => {
+      it("should navigate to previousUrl and set qualification deleted alert after clicking 'Delete record' when previousUrl exists", async () => {
         const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup(false);
-        component.previousUrl = ['/goToPreviousUrl'];
-        fixture.detectChanges();
+
+        const previousUrl = '/goToPreviousUrl';
+        spyOn(localStorage, 'getItem').and.returnValue(previousUrl);
+        component.ngOnInit();
 
         const deleteButton = getByText('Delete record');
         fireEvent.click(deleteButton);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/goToPreviousUrl']);
+        expect(routerSpy).toHaveBeenCalledWith([previousUrl]);
 
         fixture.whenStable().then(() => {
           expect(alertServiceSpy).toHaveBeenCalledWith({
             type: 'success',
-            message:  'Qualification record deleted',
+            message: 'Qualification record deleted',
+          });
+        });
+      });
+
+      it("should navigate to worker training and quals summary page and set qualification deleted alert after clicking 'Delete record' when previousUrl doesn't exist", async () => {
+        const { component, fixture, getByText, routerSpy, alertServiceSpy } = await setup(false);
+
+        spyOn(localStorage, 'getItem').and.returnValue(null);
+        component.ngOnInit();
+
+        const deleteButton = getByText('Delete record');
+        fireEvent.click(deleteButton);
+
+        expect(routerSpy).toHaveBeenCalledWith([
+          `workplace/${component.workplace.uid}/training-and-qualifications-record/${component.worker.uid}`,
+          'training',
+        ]);
+
+        fixture.whenStable().then(() => {
+          expect(alertServiceSpy).toHaveBeenCalledWith({
+            type: 'success',
+            message: 'Qualification record deleted',
           });
         });
       });
     });
   });
 });
-
-
