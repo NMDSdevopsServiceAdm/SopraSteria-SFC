@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo Installing lambda package...
+      - cd lambdas/bulkUpload
+      - npm ci
+  build:
+    commands:
+      - echo "Assuming IAM Role for deployment..."
+      - CREDENTIALS=$(aws sts assume-role --role-arn arn:aws:iam::101248264786:role/CodebuildApprunnerCrossAccountAccessRole --role-session-name MySessionName --query "Credentials" --output json)
+      - export AWS_ACCESS_KEY_ID=$(echo $CREDENTIALS | jq -r '.AccessKeyId')
+      - export AWS_SECRET_ACCESS_KEY=$(echo $CREDENTIALS | jq -r '.SecretAccessKey')
+      - export AWS_SESSION_TOKEN=$(echo $CREDENTIALS | jq -r '.SessionToken')
+      - echo "Deploying with Serverless..."
+      - npx serverless deploy --stage staging
