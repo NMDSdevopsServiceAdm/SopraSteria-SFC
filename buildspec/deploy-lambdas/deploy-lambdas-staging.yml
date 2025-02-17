@@ -9,7 +9,7 @@ phases:
   build:
     commands:
       - echo "Assuming IAM Role for deployment..."
-      - CREDENTIALS=$(aws sts assume-role --role-arn arn:aws:iam::101248264786:role/CodebuildApprunnerCrossAccountAccessRole --role-session-name MySessionName --query "Credentials" --output json)
+      - CREDENTIALS=$(aws sts assume-role --role-arn arn:aws:iam::101248264786:role/CodebuildApprunnerCrossAccountAccessServiceRole --role-session-name MySessionName --query "Credentials" --output json)
       - export AWS_ACCESS_KEY_ID=$(echo $CREDENTIALS | jq -r '.AccessKeyId')
       - export AWS_SECRET_ACCESS_KEY=$(echo $CREDENTIALS | jq -r '.SecretAccessKey')
       - export AWS_SESSION_TOKEN=$(echo $CREDENTIALS | jq -r '.SessionToken')
