@@ -14,6 +14,7 @@ describe('reports/inactive-workplaces/index.js', () => {
 
   afterEach(() => {
     sinon.restore();
+    workbook = null
   });
 
   it('should not call refreshEstablishmentLastActivityView when there is a request to stop refreshing the view', async () => {

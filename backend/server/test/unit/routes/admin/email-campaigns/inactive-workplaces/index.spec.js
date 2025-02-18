@@ -141,9 +141,9 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     });
 
     it('should get the inactive workplaces', async () => {
+      sinon.stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView').returns();
       sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
       sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
-      sinon.stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView').returns();
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -151,7 +151,6 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       });
 
       req.role = 'Admin';
-
 
 
       const res = httpMocks.createResponse();

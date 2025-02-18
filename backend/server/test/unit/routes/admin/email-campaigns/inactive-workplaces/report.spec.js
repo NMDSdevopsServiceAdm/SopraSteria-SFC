@@ -53,7 +53,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
     const req = httpMocks.createRequest({
       method: 'GET',
       url: '/api/admin/email-campaigns/inactive-workplaces/report',
-      query: {stopViewRefresh: false}
+      query: { stopViewRefresh: false }
     });
 
     req.role = 'Admin';
