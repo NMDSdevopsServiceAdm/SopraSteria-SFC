@@ -8,7 +8,6 @@ const { generateSubsidaryWorkplaceTab } = require('./subsidiaries');
 const { generateInactiveWorkplacesForDeletionTab } = require('./deleteInactiveWorkplace');
 
 const generateInactiveWorkplacesReport = async (workbook, stopViewRefresh) => {
-  console.log('generateInactiveWorkplacesReport called');
   if (stopViewRefresh !== 'true') {
     await inactiveWorkplacesUtils.refreshEstablishmentLastActivityView();
   }

@@ -27,7 +27,7 @@ describe('EmailCampaignService', () => {
     service.getInactiveWorkplaces().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces`);
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces?stopViewRefresh=false`);
 
     expect(req.request.method).toBe('GET');
   });
@@ -54,7 +54,7 @@ describe('EmailCampaignService', () => {
     service.getInactiveWorkplacesReport().subscribe();
 
     const http = TestBed.inject(HttpTestingController);
-    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/report`);
+    const req = http.expectOne(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/report?stopViewRefresh=false`);
 
     expect(req.request.method).toBe('GET');
   });

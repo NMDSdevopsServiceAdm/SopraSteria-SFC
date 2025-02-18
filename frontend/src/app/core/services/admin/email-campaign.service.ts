@@ -8,16 +8,28 @@ import { environment } from 'src/environments/environment';
 export class EmailCampaignService {
   constructor(private http: HttpClient) {}
 
-  getInactiveWorkplaces(): Observable<any> {
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces`);
+  getInactiveWorkplaces(stopViewRefresh: boolean = false): Observable<any> {
+    let params = new HttpParams();
+    params = params.set('stopViewRefresh', stopViewRefresh);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces`, {
+      params,
+    });
   }
 
-  getInactiveWorkplcesForDeletion(): Observable<any> {
-    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion`);
+  getInactiveWorkplcesForDeletion(stopViewRefresh: boolean = false): Observable<any> {
+    let params = new HttpParams();
+    params = params.set('stopViewRefresh', stopViewRefresh);
+    return this.http.get<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesForDeletion`, {
+      params,
+    });
   }
 
-  inactiveWorkplcesForDeletion(): Observable<any> {
-    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions`, {});
+  inactiveWorkplcesForDeletion(stopViewRefresh: boolean = false): Observable<any> {
+    let params = new HttpParams();
+    params = params.set('stopViewRefresh', stopViewRefresh);
+    return this.http.post<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/inactiveWorkplacesIdsForDeletions`, {
+      params,
+    });
   }
 
   createInactiveWorkplacesCampaign(): Observable<any> {
@@ -28,10 +40,13 @@ export class EmailCampaignService {
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/history`);
   }
 
-  getInactiveWorkplacesReport(): Observable<any> {
+  getInactiveWorkplacesReport(stopViewRefresh: boolean = false): Observable<any> {
+    let params = new HttpParams();
+    params = params.set('stopViewRefresh', stopViewRefresh);
     return this.http.get<any>(`${environment.appRunnerEndpoint}/api/admin/email-campaigns/inactive-workplaces/report`, {
       observe: 'response',
       responseType: 'blob' as 'json',
+      params,
     });
   }
 
