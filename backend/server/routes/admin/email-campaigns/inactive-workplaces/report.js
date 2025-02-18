@@ -6,10 +6,12 @@ const inactiveWorkplacesReport = require('../../../../reports/inactive-workplace
 const generateReport = async (_req, res) => {
   const workbook = new excelJS.Workbook();
 
+  const stopViewRefresh = _req.query?.stopViewRefresh;
+
   workbook.creator = 'Skills-For-Care';
   workbook.properties.date1904 = true;
 
-  await inactiveWorkplacesReport.generateInactiveWorkplacesReport(workbook);
+  await inactiveWorkplacesReport.generateInactiveWorkplacesReport(workbook, stopViewRefresh);
 
   res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
   res.setHeader(
