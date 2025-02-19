@@ -153,7 +153,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
     it('should get the inactive workplaces', async () => {
       sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
       sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns(dummyParentWorkplaces);
-      sinon.stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView').returns();
+      sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').returns({})
+      sinon.stub(inactiveWorkplacesUtils, 'refreshEstablishmentLastActivityView').returns({});
 
       const req = httpMocks.createRequest({
         method: 'GET',
@@ -165,6 +166,7 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces', () => {
       const res = httpMocks.createResponse();
       await inactiveWorkplaceRoutes.getInactiveWorkplaces(req, res);
       const response = res._getJSONData();
+      console.log(response)
 
       expect(response.inactiveWorkplaces).to.deep.equal(3);
     });
