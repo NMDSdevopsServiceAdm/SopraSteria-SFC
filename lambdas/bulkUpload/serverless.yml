@@ -25,7 +25,7 @@ provider:
   runtime: nodejs18.x
   lambdaHashingVersion: 20201221
   stage: dev
-  region: eu-west-2
+  region: eu-west-1
   iam:
     role: arn:aws:iam::101248264786:role/lambda-execution-role
 # you can add statements to the Lambda function's IAM Role here
