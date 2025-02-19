@@ -131,6 +131,7 @@ export class QuestionsAndAnswersComponent implements OnInit {
 
   public getSearchResults(): void {
     const { qAndASearch } = this.form.value;
+    this.searchResults = []
 
     if (!qAndASearch) {
       this.noResultsMessage = 'You need to search with at least 2 letters or numbers, or both';

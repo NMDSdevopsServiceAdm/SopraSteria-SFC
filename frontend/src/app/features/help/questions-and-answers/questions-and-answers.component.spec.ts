@@ -188,6 +188,21 @@ describe('QuestionsAndAnswersComponent', () => {
         expect(getByRole('heading', { level: 3, name: 'There are no matching results' })).toBeTruthy();
         expect(getByText('Make sure that your spelling is correct')).toBeTruthy();
       });
+
+      it('should show a no matching results message when an unsuccessful search has been done after a matching search', async () => {
+        const { getByRole, fixture, getByTestId } = await setup();
+
+        const button = getByRole('button');
+        userEvent.type(getByRole('textbox'), 'staff');
+        userEvent.click(button);
+        fixture.detectChanges();
+        expect(getByTestId('matching-results')).toBeTruthy();
+
+        userEvent.clear(getByRole('textbox'));
+        userEvent.click(button);
+        fixture.detectChanges();
+        expect(getByTestId('no-matching-results')).toBeTruthy();
+      })
     });
 
     describe('results found', () => {
