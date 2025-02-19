@@ -47,8 +47,8 @@ describe('server/routes/admin/email-campaigns/inactive-workplaces/report', () =>
 
   it('should generate a report', async () => {
     sinon.stub(setInactiveWorkplaces, 'findInactiveWorkplaces').returns(dummyInactiveWorkplaces);
-    sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').returns([]);
     sinon.stub(setParentWorkplaces, 'findParentWorkplaces').returns([]);
+    sinon.stub(setInactiveWorkplacesForDeletion, 'findInactiveWorkplacesForDeletion').returns([]);
 
     const req = httpMocks.createRequest({
       method: 'GET',

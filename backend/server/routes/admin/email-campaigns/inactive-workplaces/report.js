@@ -3,10 +3,10 @@ const moment = require('moment');
 const excelJS = require('exceljs');
 const inactiveWorkplacesReport = require('../../../../reports/inactive-workplaces');
 
-const generateReport = async (_req, res) => {
+const generateReport = async (req, res) => {
   const workbook = new excelJS.Workbook();
 
-  const stopViewRefresh = _req.query?.stopViewRefresh;
+  const stopViewRefresh = req.query?.stopViewRefresh;
 
   workbook.creator = 'Skills-For-Care';
   workbook.properties.date1904 = true;
