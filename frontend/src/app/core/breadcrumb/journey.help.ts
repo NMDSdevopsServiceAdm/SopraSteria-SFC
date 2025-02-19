@@ -3,7 +3,7 @@ import { JourneyRoute } from './breadcrumb.model';
 enum Path {
   GET_STARTED = '/help/get-started',
   WHATS_NEW = '/help/whats-new',
-  HELPFUL_DOWNLOADS = '/help/useful-downloads',
+  HELPFUL_DOWNLOADS = '/help/helpful-downloads',
   QUESTIONS_AND_ANSWERS = '/help/questions-and-answers',
   CONTACT_US = '/help/contact-us',
 }
@@ -19,7 +19,7 @@ export const helpJourney: JourneyRoute = {
       path: Path.WHATS_NEW,
     },
     {
-      title: 'Get help and tips: useful downloads',
+      title: 'Get help and tips: helpful downloads',
       path: Path.HELPFUL_DOWNLOADS,
     },
     {
@@ -29,6 +29,6 @@ export const helpJourney: JourneyRoute = {
     {
       title: 'Get help and tips: contact us',
       path: Path.CONTACT_US,
-    }
+    },
   ],
 };
