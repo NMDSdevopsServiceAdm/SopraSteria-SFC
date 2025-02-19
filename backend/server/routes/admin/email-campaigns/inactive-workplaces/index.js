@@ -9,8 +9,8 @@ const setParentWorkplaces = require('../../../../services/email-campaigns/inacti
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
 const inactiveWorkplacesUtils = require('../../../../utils/db/inactiveWorkplacesUtils');
 
-const getInactiveWorkplaces = async (req, res) => {
-  const stopViewRefresh = req.query?.stopViewRefresh;
+const getInactiveWorkplaces = async (_req, res) => {
+  const stopViewRefresh = _req.query?.stopViewRefresh;
   try {
     if (stopViewRefresh !== 'true' || !stopViewRefresh) {
       await inactiveWorkplacesUtils.refreshEstablishmentLastActivityView();
