@@ -26,7 +26,8 @@ provider:
   lambdaHashingVersion: 20201221
   stage: dev
   region: eu-west-2
-
+  iam:
+    role: lambda_role
 # you can add statements to the Lambda function's IAM Role here
 #  iam:
 #    role:
