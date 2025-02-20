@@ -53,8 +53,7 @@ export class QuestionsAndAnswersComponent implements OnInit {
 
   public getPreviousSearchQuery(): void {
     let qAndASearchValue = localStorage.getItem('qAndASearchValue');
-
-    if (this.previousUrl && qAndASearchValue !== 'null' && this.previousUrl.includes('/questions-and-answers/')) {
+    if (qAndASearchValue && qAndASearchValue !== 'null' && this.previousUrl?.includes('/questions-and-answers/')) {
       this.form.patchValue({
         qAndASearch: qAndASearchValue,
       });
