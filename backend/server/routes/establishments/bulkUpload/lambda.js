@@ -1,7 +1,7 @@
 const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
 const { mappings } = require('../../../../reference/BUDIMappings');
 const config = require('../../../config/config');
-const region = String(config.get('workerCertificate.region'));
+const region = String(config.get('bulkupload.lambdaRegion'));
 const env = String(config.get('env'));
 
 const getLambdaClient = () => {
@@ -16,7 +16,7 @@ const getLambdaClient = () => {
       timeout: 1000,
       maxRetries: 0,
     }),
-    region: 'eu-west-2',
+    region,
   });
 };
 
