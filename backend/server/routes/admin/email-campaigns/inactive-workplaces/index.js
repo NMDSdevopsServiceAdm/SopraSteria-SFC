@@ -7,14 +7,11 @@ const setInactiveWorkplaces = require('../../../../services/email-campaigns/inac
 const setInactiveWorkplacesForDeletion = require('../../../../services/email-campaigns/inactive-workplaces/setInactiveWorkplacesForDeletion');
 const setParentWorkplaces = require('../../../../services/email-campaigns/inactive-workplaces/setParentWorkplaces');
 const sendEmail = require('../../../../services/email-campaigns/inactive-workplaces/sendEmail');
-const inactiveWorkplacesUtils = require('../../../../utils/db/inactiveWorkplacesUtils');
+const { checkIfViewShouldRefresh } = require('../../../../utils/reportsUtils');
 
-const getInactiveWorkplaces = async (_req, res) => {
-  const stopViewRefresh = _req.query?.stopViewRefresh;
+const getInactiveWorkplaces = async (req, res) => {
   try {
-    if (stopViewRefresh !== 'true' || !stopViewRefresh) {
-      await inactiveWorkplacesUtils.refreshEstablishmentLastActivityView();
-    }
+    await checkIfViewShouldRefresh(req.query?.stopViewRefresh);
     const inactiveWorkplaces = await setInactiveWorkplaces.findInactiveWorkplaces();
     const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
     const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
@@ -31,11 +28,8 @@ const getInactiveWorkplaces = async (_req, res) => {
 };
 
 const getInactiveWorkplcesForDeletion = async (req, res) => {
-  const stopViewRefresh = req.query?.stopViewRefresh;
   try {
-    if (stopViewRefresh !== 'true' || !stopViewRefresh) {
-      await inactiveWorkplacesUtils.refreshEstablishmentLastActivityView();
-    }
+    await checkIfViewShouldRefresh(req.query?.stopViewRefresh);
     const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
 
     return res.json({ numberOfInactiveWorkplacesForDeletion: inactiveWorkplacesForDeletion.length });
@@ -46,11 +40,8 @@ const getInactiveWorkplcesForDeletion = async (req, res) => {
 };
 
 const inactiveWorkplacesIdsForDeletions = async (req, res) => {
-  const stopViewRefresh = req.query?.stopViewRefresh;
   try {
-    if (stopViewRefresh !== 'true' || !stopViewRefresh) {
-      await inactiveWorkplacesUtils.refreshEstablishmentLastActivityView();
-    }
+    await checkIfViewShouldRefresh(req.query?.stopViewRefresh);
     const inactiveWorkplacesForDeletion = await setInactiveWorkplacesForDeletion.findInactiveWorkplacesForDeletion();
     const establishmentIds = inactiveWorkplacesForDeletion.map((id) => id.establishmentID);
     await models.establishment.archiveInactiveWorkplaces(establishmentIds);

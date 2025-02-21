@@ -6,11 +6,10 @@ const { generateInactiveWorkplacesTab } = require('./workplaces');
 const { generateParentWorkplaceTab } = require('./parents');
 const { generateSubsidaryWorkplaceTab } = require('./subsidiaries');
 const { generateInactiveWorkplacesForDeletionTab } = require('./deleteInactiveWorkplace');
+const { checkIfViewShouldRefresh } = require('../../utils/reportsUtils');
 
 const generateInactiveWorkplacesReport = async (workbook, stopViewRefresh) => {
-  if (stopViewRefresh !== 'true') {
-    await inactiveWorkplacesUtils.refreshEstablishmentLastActivityView();
-  }
+  await checkIfViewShouldRefresh(stopViewRefresh);
 
   const parentWorkplaces = await setParentWorkplaces.findParentWorkplaces();
 
