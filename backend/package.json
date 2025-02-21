@@ -37,6 +37,7 @@
   },
   "private": true,
   "dependencies": {
+    "@aws-sdk/client-lambda": "^3.750.0",
     "@aws-sdk/client-s3": "^3.650.0",
     "@aws-sdk/credential-providers": "^3.664.0",
     "@aws-sdk/s3-request-presigner": "^3.650.0",
