@@ -24,6 +24,7 @@ provider:
   name: aws
   runtime: nodejs18.x
   lambdaHashingVersion: 20201221
+  stage: dev
   region: eu-west-1
   iam:
     role: ${env:LAMBDA_ROLE_ARN}
