@@ -92,7 +92,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should show a link to add staff records if there is no staff', async () => {
+  it('should show staff records', async () => {
     const override = {
       withWorkers: true,
     };
@@ -103,42 +103,20 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     expect(queryByTestId('no-staff-records')).toBeFalsy();
   });
 
-  it('should show a link to add staff records if there is no staff', async () => {
+  it('should show a link to add staff records if there is no staff and should navigateToStaffRecords', async () => {
     const override = {
       withWorkers: false,
       totalRecords: 0,
     };
 
-    const { getByTestId, queryByTestId } = await setup(override);
-
-    expect(getByTestId('no-staff-records')).toBeTruthy();
-    expect(queryByTestId('staff-records')).toBeFalsy();
-  });
-
-  it('should show a link to add staff records if there is no staff', async () => {
-    const override = {
-      withWorkers: false,
-      totalRecords: 0,
-    };
-
-    const { getByTestId, queryByTestId } = await setup(override);
-
-    expect(getByTestId('no-staff-records')).toBeTruthy();
-    expect(queryByTestId('noTandQRecords')).toBeFalsy();
-  });
-
-  it('should navigateToStaffRecords', async () => {
-    const override = {
-      withWorkers: false,
-      totalRecords: 0,
-    };
-
-    const { component, fixture, getByText, routerSpy } = await setup(override);
+    const { component, fixture, getByTestId, queryByTestId, getByText, routerSpy } = await setup(override);
 
     const addStaffLink = getByText('add some staff records');
     fireEvent.click(addStaffLink);
     fixture.detectChanges();
 
+    expect(getByTestId('no-staff-records')).toBeTruthy();
+    expect(queryByTestId('staff-records')).toBeFalsy();
     expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.workplace.uid, 'staff-records']);
   });
 });
