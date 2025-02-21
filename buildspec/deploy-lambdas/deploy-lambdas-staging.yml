@@ -10,6 +10,6 @@ phases:
     commands:
       - echo "Assuming IAM Role for deployment..."
       - export $(printf "AWS_ACCESS_KEY_ID=%s AWS_SECRET_ACCESS_KEY=%s AWS_SESSION_TOKEN=%s" $(aws sts assume-role --role-arn arn:aws:iam::101248264786:role/CodebuildCrossAccountAccessServiceRole --role-session-name MySessionName --query "Credentials.[AccessKeyId,SecretAccessKey,SessionToken]" --output text))
-      - export $(printf "LAMDA_ROLE_ARN=%s" $(aws lambda get-function --function-name bulkupload-staging-validateTraining --query "Configuration.Role"  --output text)))
+      - export $(printf "LAMBDA_ROLE_ARN=%s" $(aws lambda get-function --function-name bulkupload-staging-validateTraining --query "Configuration.Role"  --output text))
       - echo "Deploying with Serverless..."
       - npx serverless deploy --stage staging
