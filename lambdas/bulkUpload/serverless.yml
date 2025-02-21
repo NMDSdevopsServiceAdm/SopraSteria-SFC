@@ -27,7 +27,7 @@ provider:
   stage: dev
   region: eu-west-1
   iam:
-    role: lambda-execution-role
+    role: ${env:LAMBDA_ROLE_ARN}
 # you can add statements to the Lambda function's IAM Role here
 #  iam:
 #    role:
