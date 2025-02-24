@@ -21,14 +21,26 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { TrainingService } from '@core/services/training.service';
 import { MockTrainingService } from '@core/test-utils/MockTrainingService';
 import { getTestBed } from '@angular/core/testing';
+import { NewTrainingLinkPanelComponent } from '@features/new-dashboard/training-tab/training-link-panel/training-link-panel.component';
+import { TrainingInfoPanelComponent } from '@shared/components/training-info-panel/training-info-panel.component';
+import { TrainingSelectViewPanelComponent } from '@shared/components/training-select-view-panel/training-select-view-panel.component';
+import { TrainingAndQualificationsSummaryComponent } from '@shared/components/training-and-qualifications-summary/training-and-qualifications-summary.component';
+import { TrainingAndQualificationsCategoriesComponent } from '@shared/components/training-and-qualifications-categories/training-and-qualifications-categories.component';
 
 describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
   const setup = async (override: any = {}) => {
-    const workers = override.withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
+    const workers = override?.withWorkers && ([workerBuilder(), workerBuilder()] as Worker[]);
     const establishment = establishmentBuilder() as Establishment;
     const setupTools = await render(ViewSubsidiaryTrainingAndQualificationsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      declarations: [NewDashboardHeaderComponent],
+      declarations: [
+        NewDashboardHeaderComponent,
+        NewTrainingLinkPanelComponent,
+        TrainingInfoPanelComponent,
+        TrainingSelectViewPanelComponent,
+        TrainingAndQualificationsSummaryComponent,
+        TrainingAndQualificationsCategoriesComponent,
+      ],
       providers: [
         WindowRef,
         {
@@ -61,7 +73,7 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
                   workers: workers,
                   workerCount: workers.length,
                   trainingCounts: {
-                    totalRecords: override?.totalRecords ? override.totalRecords : 4,
+                    totalRecords: override?.totalRecords,
                   } as TrainingCounts,
                 },
               },
@@ -87,20 +99,41 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
   it('should create', async () => {
     const override = {
       withWorkers: true,
+      totalRecords: 4,
     };
     const { component } = await setup(override);
     expect(component).toBeTruthy();
   });
 
-  it('should show staff records', async () => {
+  it('should show number of training and qualifications records and staff', async () => {
     const override = {
       withWorkers: true,
+      totalRecords: 4,
     };
 
-    const { getByTestId, queryByTestId } = await setup(override);
+    const { component, getByText } = await setup(override);
 
-    expect(getByTestId('staff-records')).toBeTruthy();
-    expect(queryByTestId('no-staff-records')).toBeFalsy();
+    expect(getByText('Training and qualifications (4)')).toBeTruthy();
+
+    component.workers.forEach((worker) => {
+      expect(getByText(worker.nameOrId)).toBeTruthy();
+    });
+  });
+
+  it('should show a message if there are workers with no records', async () => {
+    const override = {
+      withWorkers: true,
+      totalRecords: 0,
+    };
+
+    const { getByTestId, getByText } = await setup(override);
+    const noTandQRecords = getByTestId('noTandQRecords');
+    const noTandQRecordsMessage = getByText(
+      "You've not added any training or qualification records yet. Many care providers store their staff training and qualification records in ASC-WDS and get alerts when training is about to expire.",
+    );
+
+    expect(noTandQRecords).toBeTruthy();
+    expect(noTandQRecordsMessage).toBeTruthy();
   });
 
   it('should show a link to add staff records if there is no staff and should navigateToStaffRecords', async () => {
@@ -109,14 +142,13 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
       totalRecords: 0,
     };
 
-    const { component, fixture, getByTestId, queryByTestId, getByText, routerSpy } = await setup(override);
+    const { component, fixture, getByTestId, getByText, routerSpy } = await setup(override);
 
     const addStaffLink = getByText('add some staff records');
     fireEvent.click(addStaffLink);
     fixture.detectChanges();
 
     expect(getByTestId('no-staff-records')).toBeTruthy();
-    expect(queryByTestId('staff-records')).toBeFalsy();
     expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.workplace.uid, 'staff-records']);
   });
 });

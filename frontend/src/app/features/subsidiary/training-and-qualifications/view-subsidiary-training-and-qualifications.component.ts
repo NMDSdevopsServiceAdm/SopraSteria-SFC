@@ -87,10 +87,6 @@ export class ViewSubsidiaryTrainingAndQualificationsComponent implements OnInit 
     }
   }
 
-  public navigateToMultipleTraining(): void {
-    this.router.navigate(['/workplace', this.workplace.uid, 'add-multiple-training', 'select-staff']);
-  }
-
   private getAllTrainingByCategory(): void {
     this.subscriptions.add(
       this.trainingCategoryService

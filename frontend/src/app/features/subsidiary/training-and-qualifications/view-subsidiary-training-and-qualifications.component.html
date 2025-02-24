@@ -6,63 +6,60 @@
   [tAndQCount]="totalRecords"
   [hasWorkers]="workers?.length > 0"
 ></app-new-dashboard-header>
-
 <div class="govuk-width-container govuk-!-padding-top-2">
   <app-alert></app-alert>
   <div class="govuk-!-margin-top-6">
     <ng-container *ngIf="workers?.length > 0; else noStaffRecords">
-      <div data-testid="staff-records">
-        <app-new-training-link-panel
-          data-testid="trainingLinkPanel"
-          [workplace]="workplace"
-          [workers]="workers"
-          [totalRecords]="totalRecords"
-          [canEditWorker]="canEditWorker"
-          [canEditEstablishment]="canEditEstablishment"
-        ></app-new-training-link-panel>
-        <div class="govuk-grid-row" *ngIf="totalRecords === 0" data-testid="noTandQRecords">
-          <div class="govuk-grid-column-two-thirds">
-            <p>
-              You've not added any training or qualification records yet. Many care providers store their staff training
-              and qualification records in ASC-WDS and get alerts when training is about to expire.
-            </p>
-          </div>
+      <app-new-training-link-panel
+        data-testid="trainingLinkPanel"
+        [workplace]="workplace"
+        [workers]="workers"
+        [totalRecords]="totalRecords"
+        [canEditWorker]="canEditWorker"
+        [canEditEstablishment]="canEditEstablishment"
+      ></app-new-training-link-panel>
+      <div class="govuk-grid-row" *ngIf="totalRecords === 0" data-testid="noTandQRecords">
+        <div class="govuk-grid-column-two-thirds">
+          <p>
+            You've not added any training or qualification records yet. Many care providers store their staff training
+            and qualification records in ASC-WDS and get alerts when training is about to expire.
+          </p>
         </div>
-        <app-training-info-panel
-          *ngIf="workers"
-          data-testid="trainingInfoPanel"
-          [workplaceUid]="workplace.uid"
-          [totalExpiredTraining]="totalExpiredTraining"
-          [totalExpiringTraining]="totalExpiringTraining"
-          [totalStaffMissingMandatoryTraining]="staffMissingMandatoryTraining"
-        ></app-training-info-panel>
-
-        <app-training-select-view-panel
-          [viewTrainingByCategory]="viewTrainingByCategory"
-          (handleViewToggle)="handleViewTrainingByCategory($event)"
-        >
-        </app-training-select-view-panel>
-        <app-training-and-qualifications-summary
-          *ngIf="!viewTrainingByCategory"
-          data-testid="trainingAndQualsSummary"
-          [workplace]="workplace"
-          [workers]="workers"
-          [workerCount]="workerCount"
-          [totalRecords]="totalRecords"
-          [sortByValue]="staffSortByValue"
-          (changeStaffSortBy)="updateSortByValue($event)"
-        ></app-training-and-qualifications-summary>
-
-        <app-training-and-qualifications-categories
-          *ngIf="viewTrainingByCategory"
-          data-testid="trainingAndQualsCategories"
-          [workplace]="workplace"
-          [trainingCategories]="trainingCategories"
-          [totalTraining]="totalTraining"
-          [sortByValue]="trainingSortByValue"
-          (changeTrainingSortBy)="updateSortByValue($event)"
-        ></app-training-and-qualifications-categories>
       </div>
+      <app-training-info-panel
+        *ngIf="workers"
+        data-testid="trainingInfoPanel"
+        [workplaceUid]="workplace.uid"
+        [totalExpiredTraining]="totalExpiredTraining"
+        [totalExpiringTraining]="totalExpiringTraining"
+        [totalStaffMissingMandatoryTraining]="staffMissingMandatoryTraining"
+      ></app-training-info-panel>
+
+      <app-training-select-view-panel
+        [viewTrainingByCategory]="viewTrainingByCategory"
+        (handleViewToggle)="handleViewTrainingByCategory($event)"
+      >
+      </app-training-select-view-panel>
+      <app-training-and-qualifications-summary
+        *ngIf="!viewTrainingByCategory"
+        data-testid="trainingAndQualsSummary"
+        [workplace]="workplace"
+        [workers]="workers"
+        [workerCount]="workerCount"
+        [totalRecords]="totalRecords"
+        [sortByValue]="staffSortByValue"
+        (changeStaffSortBy)="updateSortByValue($event)"
+      ></app-training-and-qualifications-summary>
+
+      <app-training-and-qualifications-categories
+        *ngIf="viewTrainingByCategory"
+        data-testid="trainingAndQualsCategories"
+        [workplace]="workplace"
+        [trainingCategories]="trainingCategories"
+        [totalTraining]="totalTraining"
+        [sortByValue]="trainingSortByValue"
+        (changeTrainingSortBy)="updateSortByValue($event)"
+      ></app-training-and-qualifications-categories>
     </ng-container>
     <ng-template #noStaffRecords>
       <div data-testid="no-staff-records">
