@@ -31,7 +31,7 @@ bulkupload:
     completion:
         timeout: 180
     lambda:
-        stage: benchmarks
+        stage: benchmark
 
 disbursement:
     region: eu-west-2
