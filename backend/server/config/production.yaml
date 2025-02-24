@@ -33,13 +33,14 @@ notify:
 
 bulkupload:
   region: eu-west-2
+  lambdaRegion: eu-west-1
   bucketname: sfc-bulkupload-prod
   validation:
     timeout: 300
   completion:
     timeout: 120
   lambda:
-    stage: sfcprod
+    stage: prod
 
 disbursement:
   region: eu-west-2
