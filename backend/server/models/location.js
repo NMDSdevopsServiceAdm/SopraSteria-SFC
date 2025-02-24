@@ -1,4 +1,5 @@
 /* jshint indent: 2 */
+const { Op } = require('sequelize');
 
 module.exports = function (sequelize, DataTypes) {
   const Location = sequelize.define(

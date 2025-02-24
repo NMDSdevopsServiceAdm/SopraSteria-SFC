@@ -43,6 +43,7 @@ const missingCqcProviderLocations = async (req, res) => {
       result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
     }
   } catch (error) {
+    console.log(error);
     result.showMissingCqcMessage = false;
     result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
   }
@@ -66,10 +67,11 @@ const getChildWorkplacesLocationIds = async (childWorkplaces) => {
 };
 
 const getActiveCQCLocationsForProvider = async (providerId) => {
-  const CQCProviderLocations = await CQCDataAPI.getCQCProviderData(providerId).locationIds;
-  const activeProviderLocations = await models.location.findMultipleByLocationID(CQCProviderLocations?.locationIds).map(x => x.locationid);
+  const CQCProviderLocations = await CQCDataAPI.getCQCProviderData(providerId);
 
-  return CQCProviderLocations.filter(locationId => activeProviderLocations.includes(locationId));
+  const activeProviderLocations = (await models.location.findMultipleByLocationID(CQCProviderLocations?.locationIds)).map(x => x.locationid);
+
+  return CQCProviderLocations.locationIds.filter(locationId => activeProviderLocations.includes(locationId));
 }
 
 const findMissingCqcLocationIds = async (provId, childWorkplacesLocationIds) => {
