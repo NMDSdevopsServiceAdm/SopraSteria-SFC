@@ -29,6 +29,14 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
         };
       });
 
+      sinon.stub(models.location, 'findMultipleByLocationID').callsFake(async (locationIds) => {
+        return [
+          { locationid: '1-12427547986' },
+          { locationid: '1-2043158439' },
+          { locationid: '1-5310224737' },
+        ];
+      });
+
       request = {
         method: 'GET',
         url: `/api/missingCqcProviderLocations`,
@@ -226,7 +234,6 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       expect(res._getData()).to.deep.equal(expectedResult);
       expect(res.statusCode).to.deep.equal(200);
     });
-  });
 
     it('should return an array of child workplaces location ids', async () => {
       const expectedResult = ['1-123', '1-53'];
@@ -234,6 +241,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
 
       expect(childWorkplacesLocationIds).to.deep.equal(expectedResult);
     });
+  });
 
   describe('findMissingCqcLocationsIds', async () => {
     setup = (overrides = {}) => {
@@ -243,14 +251,14 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       sinon.restore();
       sinon.stub(CQCDataAPI, 'getCQCProviderData').returns({ locationIds: overrides?.cqcLocationIds ??  ['1-123', '1-53', '1-324'] });
 
-      sinon.stub(models.location, 'findMultipleByLocationID').returns(
-        overrides?.locationTableIds ??
-        [
-          { locationid: '1-123' },
-          { locationid: '1-53' },
-          { locationid: '1-324' },
-        ]
-      );
+      sinon.stub(models.location, 'findMultipleByLocationID').callsFake(async(locationIds) => {
+        return overrides?.locationTableIds ??
+          [
+            { locationid: '1-123' },
+            { locationid: '1-53' },
+            { locationid: '1-324' },
+          ]
+      });
 
       return {
         provId,
