@@ -8,7 +8,7 @@ const env = String(config.get('env'));
 const getLambdaClient = () => {
   if (env === 'localhost') {
     return new LambdaClient({
-      region: 'eu-west-2',
+      region,
     });
   }
 
