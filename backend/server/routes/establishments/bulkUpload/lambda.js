@@ -1,4 +1,5 @@
 const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
+const { fromContainerMetadata } = require('@aws-sdk/credential-providers');
 const { mappings } = require('../../../../reference/BUDIMappings');
 const config = require('../../../config/config');
 const region = String(config.get('bulkupload.lambdaRegion'));
