@@ -6,11 +6,11 @@ import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { environment } from 'src/environments/environment';
 
 @Component({
-  selector: 'app-first-login-wizard',
-  templateUrl: './first-login-wizard.component.html',
-  styleUrls: ['./first-login-wizard.component.scss'],
+  selector: 'app-get-started',
+  templateUrl: './get-started.component.html',
+  styleUrls: ['./get-started.component.scss'],
 })
-export class FirstLoginWizardComponent {
+export class GetStartedComponent {
   public wizards: Wizard[];
   public isFirst: boolean;
   public isLast: boolean;
@@ -18,19 +18,21 @@ export class FirstLoginWizardComponent {
   public imageUrl: string;
   public rawVideoUrl: string;
 
-  constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService,) {}
+  constructor(private route: ActivatedRoute, private breadcrumbService: BreadcrumbService) {}
 
   ngOnInit(): void {
-    this.breadcrumbService.show(JourneyType.PUBLIC);
     this.wizards = this.route.snapshot.data.wizard.data;
+
+    this.currentIndex = 1;
     this.imageUrl = `${environment.cmsUri}/assets/`;
-    this.currentIndex = 0;
-    this.rawVideoUrl = this.route.snapshot.data.wizard.data[this.currentIndex].video;
-    this.updateVariables();
+
+    this.rawVideoUrl = this.route.snapshot.data.wizard.data[0].video;
+    this.updatePreviousAndNextLinks();
+    this.breadcrumbService.show(JourneyType.HELP);
   }
 
-  public updateVariables(): void {
-    this.isFirst = this.currentIndex === 0;
+  public updatePreviousAndNextLinks(): void {
+    this.isFirst = this.currentIndex === 1;
     this.isLast = this.currentIndex === this.wizards.length - 1;
   }
 
@@ -38,6 +40,6 @@ export class FirstLoginWizardComponent {
     event.preventDefault();
     const nextIndex = isNext ? 1 : -1;
     this.currentIndex += nextIndex;
-    this.updateVariables();
+    this.updatePreviousAndNextLinks();
   }
 }

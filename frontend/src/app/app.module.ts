@@ -58,8 +58,6 @@ import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certific
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
-import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
-import { FirstLoginWizardComponent } from '@features/first-login-wizard/first-login-wizard.component';
 import { ForgotYourPasswordConfirmationComponent } from '@features/forgot-your-username-or-password/forgot-your-password/confirmation/confirmation.component';
 import { ForgotYourPasswordEditComponent } from '@features/forgot-your-username-or-password/forgot-your-password/edit/edit.component';
 import { ForgotYourPasswordComponent } from '@features/forgot-your-username-or-password/forgot-your-password/forgot-your-password.component';
@@ -102,6 +100,8 @@ import { StaffMismatchBannerComponent } from './features/dashboard/home-tab/staf
 import { MigratedUserTermsConditionsComponent } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
 import { SatisfactionSurveyComponent } from './features/satisfaction-survey/satisfaction-survey.component';
 import { SentryErrorHandler } from './SentryErrorHandler.component';
+import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
+import { HelpAndTipsButtonComponent } from './features/help-and-tips-button/help-and-tips-button.component';
 
 @NgModule({
   declarations: [
@@ -109,8 +109,6 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     AscWdsCertificateComponent,
     DashboardComponent,
     DashboardHeaderComponent,
-    FirstLoginPageComponent,
-    FirstLoginWizardComponent,
     FooterComponent,
     ForgotYourPasswordComponent,
     ForgotYourPasswordConfirmationComponent,
@@ -152,6 +150,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     SecurityQuestionAnswerNotMatchComponent,
     UserAccountNotFoundComponent,
     VacanciesAndTurnoverLoginMessage,
+    HelpAndTipsButtonComponent,
   ],
   imports: [
     Angulartics2Module.forRoot({
@@ -227,6 +226,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     WorkplaceResolver,
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     FundingReportResolver,
+    HelpPageResolver,
   ],
   bootstrap: [AppComponent],
 })
