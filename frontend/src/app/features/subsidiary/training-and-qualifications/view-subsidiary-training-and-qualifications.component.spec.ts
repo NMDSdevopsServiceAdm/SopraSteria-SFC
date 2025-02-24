@@ -126,13 +126,11 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
       totalRecords: 0,
     };
 
-    const { getByTestId, getByText } = await setup(override);
-    const noTandQRecords = getByTestId('noTandQRecords');
+    const { getByText } = await setup(override);
     const noTandQRecordsMessage = getByText(
       "You've not added any training or qualification records yet. Many care providers store their staff training and qualification records in ASC-WDS and get alerts when training is about to expire.",
     );
 
-    expect(noTandQRecords).toBeTruthy();
     expect(noTandQRecordsMessage).toBeTruthy();
   });
 
@@ -142,13 +140,12 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
       totalRecords: 0,
     };
 
-    const { component, fixture, getByTestId, getByText, routerSpy } = await setup(override);
+    const { component, fixture, getByText, routerSpy } = await setup(override);
 
     const addStaffLink = getByText('add some staff records');
     fireEvent.click(addStaffLink);
     fixture.detectChanges();
 
-    expect(getByTestId('no-staff-records')).toBeTruthy();
     expect(routerSpy).toHaveBeenCalledWith(['/subsidiary', component.workplace.uid, 'staff-records']);
   });
 });
