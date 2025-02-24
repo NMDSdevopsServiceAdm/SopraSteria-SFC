@@ -26,6 +26,8 @@ import { TrainingInfoPanelComponent } from '@shared/components/training-info-pan
 import { TrainingSelectViewPanelComponent } from '@shared/components/training-select-view-panel/training-select-view-panel.component';
 import { TrainingAndQualificationsSummaryComponent } from '@shared/components/training-and-qualifications-summary/training-and-qualifications-summary.component';
 import { TrainingAndQualificationsCategoriesComponent } from '@shared/components/training-and-qualifications-categories/training-and-qualifications-categories.component';
+import { HttpClient } from '@angular/common/http';
+import { UserService } from '@core/services/user.service';
 
 describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
   const setup = async (override: any = {}) => {
@@ -61,7 +63,8 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
         },
         {
           provide: PermissionsService,
-          useClass: MockPermissionsService,
+          useFactory: MockPermissionsService.factory(override.permissions),
+          deps: [HttpClient, Router, UserService],
         },
         {
           provide: ActivatedRoute,
@@ -83,6 +86,9 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
           },
         },
       ],
+      componentProperties: {
+        canEditEstablishment: override.canEditEstablishment,
+      },
     });
 
     const injector = getTestBed();
@@ -118,6 +124,32 @@ describe('ViewSubsidiaryTrainingAndQualificationsComponent', () => {
     component.workers.forEach((worker) => {
       expect(getByText(worker.nameOrId)).toBeTruthy();
     });
+  });
+
+  it('should show the manage links', async () => {
+    const override = {
+      withWorkers: true,
+      totalRecords: 4,
+      permissions: ['canEditEstablishment'],
+    };
+
+    const { getByText } = await setup(override);
+
+    expect(getByText('Add and manage mandatory training categories')).toBeTruthy();
+    expect(getByText('Manage expiry alerts')).toBeTruthy();
+  });
+
+  it('should not show the manage links', async () => {
+    const override = {
+      withWorkers: true,
+      totalRecords: 4,
+      canEditEstablishment: false,
+    };
+
+    const { queryByText } = await setup(override);
+
+    expect(queryByText('Add and manage mandatory training categories')).toBeFalsy();
+    expect(queryByText('Manage expiry alerts')).toBeFalsy();
   });
 
   it('should show a message if there are workers with no records', async () => {
