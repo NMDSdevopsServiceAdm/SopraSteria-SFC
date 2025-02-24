@@ -17,8 +17,6 @@ const runValidator = async (thisLine, currentLineNumber, mappings) => {
   const JSONTrainingRecord = lineValidator.toJSON();
   const validationErrors = lineValidator.validationErrors;
 
-  console.log('test amend code trigger serverless upload again or not');
-
   return {
     APITrainingRecord,
     JSONTrainingRecord,
