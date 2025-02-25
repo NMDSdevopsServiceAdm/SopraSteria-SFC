@@ -80,7 +80,7 @@ module.exports = function (config) {
       useBrowserName: false,
     },
     parallelOptions: {
-      executors: 1,
+      executors: 2,
       shardStrategy: 'none',
     },
   });
