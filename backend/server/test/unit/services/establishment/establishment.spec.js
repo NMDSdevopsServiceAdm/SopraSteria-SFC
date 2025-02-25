@@ -6,7 +6,7 @@ const httpMocks = require('node-mocks-http');
 const { addEstablishment } = require('../../../../services/establishment/establishment');
 const models = require('../../../../models');
 const { Establishment } = require('../../../../models/classes/establishment');
-const cqcGetProviderId = require('../../../../utils/cqcGetProviderId');
+const cqcLocationUtils = require('../../../../utils/cqcLocationUtils');
 
 describe('backend/server/services/establishment/establishment', () => {
   const mockEstablishmentId = 'mockEstablishmentId';
@@ -35,7 +35,7 @@ describe('backend/server/services/establishment/establishment', () => {
     sinon.stub(Establishment.prototype, 'hasMandatoryProperties').value(true);
     sinon.stub(Establishment.prototype, 'isValid').returns(true);
 
-    sinon.stub(cqcGetProviderId, 'getProviderId').callsFake((locationId) => {
+    sinon.stub(cqcLocationUtils, 'getProviderId').callsFake((locationId) => {
       return locationId ? mockProviderId : null;
     });
   });

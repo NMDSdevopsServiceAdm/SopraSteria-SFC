@@ -1,10 +1,10 @@
 const expect = require('chai').expect;
 const sinon = require('sinon');
 
-const { getProviderId } = require('../../../../server/utils/cqcGetProviderId');
-const cqcDataApi = require('../../../../server/utils/CQCDataAPI');
+const { getProviderId } = require('../../../utils/cqcLocationUtils');
+const cqcDataApi = require('../../../utils/CQCDataAPI');
 
-describe('backend/server/utils/cqcGetProviderId.js', () => {
+describe('backend/server/utils/cqcLocationUtils.js', () => {
   afterEach(() => {
     sinon.restore();
   });

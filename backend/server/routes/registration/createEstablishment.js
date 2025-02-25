@@ -1,7 +1,7 @@
 const { registrationErrors, RegistrationException } = require('./registrationErrors');
 const Establishment = require('../../models/classes/establishment').Establishment;
 const models = require('../../models');
-const cqcGetProviderId = require('../../utils/cqcGetProviderId');
+const cqcLocationUtils = require('../../utils/cqcLocationUtils');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -36,7 +36,7 @@ const saveEstablishmentToDatabase = async (username, establishmentData, newEstab
 };
 
 const initialiseEstablishment = async (newEstablishment, establishmentData) => {
-  const providerId = await cqcGetProviderId.getProviderId(establishmentData.locationId);
+  const providerId = await cqcLocationUtils.getProviderId(establishmentData.locationId);
 
   newEstablishment.initialise(
     establishmentData.addressLine1,

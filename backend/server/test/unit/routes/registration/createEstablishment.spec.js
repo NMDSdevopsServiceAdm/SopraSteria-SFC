@@ -10,7 +10,7 @@ const {
 } = require('../../../../routes/registration/createEstablishment');
 const models = require('../../../../models');
 const { Establishment } = require('../../../../models/classes/establishment');
-const cqcGetProviderId = require('../../../../utils/cqcGetProviderId');
+const cqcLocationUtils = require('../../../../utils/cqcLocationUtils');
 
 describe('createEstablishment', () => {
   let newEstablishment;
@@ -32,7 +32,7 @@ describe('createEstablishment', () => {
       return [{ id: 1, other: true }];
     });
 
-    sinon.stub(cqcGetProviderId, 'getProviderId').callsFake((locationId) => {
+    sinon.stub(cqcLocationUtils, 'getProviderId').callsFake((locationId) => {
       return locationId ? 'mockProviderId' : null;
     });
   });

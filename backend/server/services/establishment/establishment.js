@@ -6,7 +6,7 @@ const { Op } = require('sequelize');
 // all user functionality is encapsulated
 const Establishment = require('../../models/classes/establishment');
 const models = require('../../models');
-const cqcGetProviderId = require('../../utils/cqcGetProviderId');
+const cqcLocationUtils = require('../../utils/cqcLocationUtils');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -100,7 +100,7 @@ const addEstablishment = async (req, res) => {
         );
       }
 
-      const providerId = await cqcGetProviderId.getProviderId(establishmentData.LocationID);
+      const providerId = await cqcLocationUtils.getProviderId(establishmentData.LocationID);
 
       const newEstablishment = new Establishment.Establishment();
       newEstablishment.initialise(
