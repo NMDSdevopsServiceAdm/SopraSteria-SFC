@@ -22,7 +22,7 @@ import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
 
-xdescribe('AppComponent', () => {
+describe('AppComponent', () => {
   async function setup(overrides: any = {}) {
     const setupTools = await render(AppComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
