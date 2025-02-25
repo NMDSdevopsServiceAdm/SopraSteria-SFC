@@ -4,7 +4,7 @@ const sinon = require('sinon');
 const { getProviderId } = require('../../../../server/utils/cqcGetProviderId');
 const cqcDataApi = require('../../../../server/utils/CQCDataAPI');
 
-describe.only('backend/server/utils/cqcGetProviderId.js', () => {
+describe('backend/server/utils/cqcGetProviderId.js', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -41,9 +41,10 @@ describe.only('backend/server/utils/cqcGetProviderId.js', () => {
     });
 
     it('should return null if the API call failed', async () => {
-      sinon.stub(cqcDataApi, 'getWorkplaceCQCData').throws('401 unauthorised');
+      sinon.stub(cqcDataApi, 'getWorkplaceCQCData').rejects(new Error('404 not found'));
+      sinon.stub(console, 'error'); // suppress noisy error msg
 
-      const result = await getProviderId(null);
+      const result = await getProviderId('invalid-location-id');
       expect(result).to.equal(null);
     });
   });

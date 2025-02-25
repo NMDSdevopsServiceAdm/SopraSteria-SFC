@@ -5,8 +5,13 @@ const getProviderId = async (locationId) => {
     return null;
   }
 
-  const data = await CQCDataApi.getWorkplaceCQCData(locationId);
-  return data?.providerId ?? null;
+  try {
+    const data = await CQCDataApi.getWorkplaceCQCData(locationId);
+    return data?.providerId ?? null;
+  } catch (error) {
+    console.error('CQC API Error: ', error);
+    return null;
+  }
 };
 
 module.exports = {
