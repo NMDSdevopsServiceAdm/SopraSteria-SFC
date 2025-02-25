@@ -113,3 +113,4 @@ router.route('/').get(hasPermission('canViewEstablishment'), getLocationDetails)
 router.route('/').post(hasPermission('canEditEstablishment'), updateLocationDetails);
 
 module.exports = router;
+router.updateLocationDetails = updateLocationDetails;
