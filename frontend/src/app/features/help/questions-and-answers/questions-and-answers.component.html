@@ -1,0 +1,76 @@
+<div class="govuk-grid-row asc__vertical-line govuk-!-margin-top-8">
+  <div class="govuk-grid-row govuk-!-margin-left-9 govuk-!-margin-right-2">
+    <h1 class="govuk-heading-m govuk-!-font-size-27 govuk-!-margin-bottom-5">Questions and answers</h1>
+
+    <div class="govuk-!-padding-bottom-6 govuk-!-margin-top-6">
+      <form #formEl novalidate [formGroup]="form" autocomplete="off" aria-label="form">
+        <div class="">
+          <app-auto-suggest
+            [formGroup]="form"
+            [dataProvider]="getSuggestedList"
+            [formControlName]="'qAndASearch'"
+            [showSearchIcon]="true"
+            (searchButtonEvent)="onSubmit()"
+            (clickItemEvent)="navigateToClickedSuggestedPage($event)"
+            [showBackground]="true"
+            [showClickedSuggestionInInput]="false"
+            [label]="'Search'"
+            [accessibleLabel]="'search for questions and answers'"
+          >
+          </app-auto-suggest>
+        </div>
+      </form>
+    </div>
+
+    <ng-container *ngIf="isSearchIconClicked; else default">
+      <div class="govuk-!-padding-bottom-7">
+        <div class="govuk-util__float-left">
+          <h3 *ngIf="hasMatchingResults" class="govuk-heading-s">Showing search results</h3>
+          <h3 *ngIf="!hasMatchingResults" class="govuk-heading-s">There are no matching results</h3>
+        </div>
+        <a
+          href="#"
+          (click)="showAllQuestionsAndAnswers($event)"
+          class="govuk-link govuk-link--no-visited-state govuk-!-font-size-19 govuk-util__float-right"
+          >Show all questions and answers</a
+        >
+      </div>
+      <ng-container *ngIf="hasMatchingResults; else noMatchingResults">
+        <div data-testid="matching-results">
+          <hr class="govuk-!-margin-bottom-6" />
+          <ul class="govuk-list">
+            <li *ngFor="let page of searchResults" class="govuk-!-margin-bottom-3">
+              <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
+            </li>
+          </ul>
+        </div>
+      </ng-container>
+      <ng-template #noMatchingResults>
+        <div class="govuk-!-margin-top-1 govuk-!-font-size-19" data-testid="no-matching-results">
+          {{ noResultsMessage }}
+        </div>
+      </ng-template>
+    </ng-container>
+    <ng-template #default>
+      <div data-testid="all-questions-and-answers">
+        <div *ngFor="let section of sections" class="govuk-!-margin-bottom-7">
+          <h2 class="govuk-heading-m">{{ section.section_heading }}</h2>
+          <ul class="govuk-list">
+            <li *ngFor="let page of section.q_and_a_pages" class="govuk-!-margin-bottom-3">
+              <a [routerLink]="[page.slug]" class="govuk-link">{{ page.title }}</a>
+            </li>
+          </ul>
+          <div *ngFor="let subSection of section.sub_sections" class="govuk-!-margin-bottom-7">
+            <p class="govuk-heading-s govuk-!-margin-bottom-3">{{ subSection.sub_section_heading }}</p>
+
+            <ul class="govuk-list">
+              <li *ngFor="let subSectionPage of subSection.q_and_a_pages" class="govuk-!-margin-bottom-3">
+                <a [routerLink]="[subSectionPage.slug]" class="govuk-link">{{ subSectionPage.title }}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </ng-template>
+  </div>
+</div>

@@ -6,7 +6,7 @@ import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class ArticleResolver  {
+export class ArticleResolver {
   constructor(private router: Router, private articlesService: ArticlesService) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<null | Article[]> {

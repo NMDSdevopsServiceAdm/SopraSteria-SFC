@@ -192,22 +192,6 @@ describe('ViewSubsidiaryHomeComponent', () => {
         expect(link.getAttribute('href')).toEqual('/about-ascwds');
       });
     });
-
-    describe('Help to get you started link', () => {
-      it('should render the link with the correct href', async () => {
-        const { getByText } = await setup();
-        const link = getByText('Help to get you started');
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual('/first-login-wizard');
-      });
-    });
-
-    it('should link to the first login wizard page when clicking "Help to get you started"', async () => {
-      const { getByText } = await setup();
-
-      const firstLoginWizardLink = getByText('Help to get you started');
-      expect(firstLoginWizardLink.getAttribute('href')).toBe('/first-login-wizard');
-    });
   });
 
   describe('cards', () => {

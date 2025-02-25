@@ -1,6 +1,7 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BackLinkService } from '@core/services/backLink.service';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 
@@ -8,17 +9,22 @@ import { BulkUploadFlowchartComponent } from './bulk-upload-flowchart.component'
 
 describe('BulkUploadFlowchartComponent', () => {
   async function setup() {
-    const { fixture, getByTestId, getByText } = await render(BulkUploadFlowchartComponent, {
+    const backLinkServiceSpy = jasmine.createSpyObj('BacklinkService', ['showBackLink']);
+
+    const setupTools = await render(BulkUploadFlowchartComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
-      providers: [],
+      providers: [
+        {
+          provide: BackLinkService,
+          useValue: backLinkServiceSpy,
+        },
+      ],
     });
 
-    const component = fixture.componentInstance;
     return {
-      component,
-      getByTestId,
-      getByText,
-      fixture,
+      ...setupTools,
+      component: setupTools.fixture.componentInstance,
+      backLinkServiceSpy,
     };
   }
   it('should render a BulkUploadPageComponent', async () => {
@@ -41,12 +47,8 @@ describe('BulkUploadFlowchartComponent', () => {
   });
 
   it('should set the back link', async () => {
-    const { component, fixture } = await setup();
-    const backLinkSpy = spyOn(component.backService, 'setBackLink');
+    const { backLinkServiceSpy } = await setup();
 
-    component.setBackLink();
-    fixture.detectChanges();
-
-    expect(backLinkSpy).toHaveBeenCalledWith({ url: ['/bulk-upload', 'get-help'] });
+    expect(backLinkServiceSpy.showBackLink).toHaveBeenCalled();
   });
 });

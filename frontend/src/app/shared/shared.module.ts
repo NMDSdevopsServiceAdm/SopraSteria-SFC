@@ -7,6 +7,7 @@ import { CannotCreateAccountComponent } from '@core/components/error/cannot-crea
 import { PageNoLongerAvailableComponent } from '@core/components/error/page-no-longer-available/page-no-longer-available.component';
 import { PageNotFoundComponent } from '@core/components/error/page-not-found/page-not-found.component';
 import { ArticleListResolver } from '@core/resolvers/article-list.resolver';
+import { QuestionsAndAnswersResolver } from '@core/resolvers/help/questions-and-answers/questions-and-answers.resolver';
 import { PageResolver } from '@core/resolvers/page.resolver';
 import { DialogService } from '@core/services/dialog.service';
 import { ArticleListComponent } from '@features/articles/article-list/article-list.component';
@@ -134,6 +135,7 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
+import { HelpContentComponent } from './components/help-content/help-content.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -269,6 +271,7 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectViewPanelComponent,
     WorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
+    HelpContentComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -399,7 +402,8 @@ import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-be
     SelectViewPanelComponent,
     WorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
+    HelpContentComponent,
   ],
-  providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver],
+  providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver, QuestionsAndAnswersResolver],
 })
 export class SharedModule {}

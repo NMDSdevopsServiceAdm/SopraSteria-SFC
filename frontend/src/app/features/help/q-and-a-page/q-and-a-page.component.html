@@ -1,0 +1,13 @@
+<div>
+  <div class="govuk-grid-row">
+    <a href="#" (click)="goBackToQandAsPage($event)" class="govuk-back-link govuk-!-margin-left-9">Back</a>
+  </div>
+  <div class="govuk-grid-row asc__vertical-line govuk-!-margin-top-0">
+    <div class="govuk-!-margin-left-9 govuk-!-margin-right-2 govuk-!-margin-top-0">
+      <ng-container *ngIf="helpPage?.title && helpPage?.content">
+        <h1 class="govuk-heading-m govuk-!-font-size-27" data-testid="content-title">{{ helpPage?.title }}</h1>
+        <div class="asc-cms-content" [innerHTML]="helpPage?.content" data-testid="content"></div>
+      </ng-container>
+    </div>
+  </div>
+</div>

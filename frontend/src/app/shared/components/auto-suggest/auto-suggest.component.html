@@ -1,15 +1,48 @@
-<div [formGroup]="formGroup" class="govuk-auto-suggest">
-  <input
-    class="govuk-input"
-    [class.govuk-input--error]="error"
-    [formControlName]="formControlName"
-    [attr.id]="formControlName"
-    [attr.name]="formControlName"
-    type="text"
-  />
-  <ul *ngIf="dataProvider().length > 0">
-    <li *ngFor="let item of dataProvider()" (click)="onClick(item)">
-      {{ item }}
-    </li>
-  </ul>
+<div class="govuk-grid-row govuk-!-margin-0 input--search">
+  <label *ngIf="label" class="govuk-label govuk-!-margin-bottom-2" for="{{ formControlName }}" data-testid="label"
+    >{{ label }} <span *ngIf="accessibleLabel" class="govuk-visually-hidden"> {{ accessibleLabel }}</span></label
+  >
+  <div
+    data-testid="container"
+    [ngClass]="{
+      'govuk-grid-column-three-quarters govuk-util__light-bg govuk-!-padding-2 ': showBackground
+    }"
+  >
+    <div
+      data-testid="search"
+      [formGroup]="formGroup"
+      class="govuk-auto-suggest"
+      [ngClass]="{
+        govuk__flex: showBackground
+      }"
+    >
+      <input
+        class="govuk-input"
+        [class.govuk-input--error]="error"
+        [formControlName]="formControlName"
+        [attr.id]="formControlName"
+        [attr.name]="formControlName"
+        type="text"
+      />
+      <ul *ngIf="dataProvider().length > 0" data-testid="tray-list" [ngClass]="{ 'tray-list': showBackground }">
+        <li *ngFor="let item of dataProvider()" (click)="onClick(item)">
+          {{ item }}
+        </li>
+      </ul>
+
+      <div *ngIf="showSearchIcon">
+        <button
+          class="govuk-button button-override--search govuk-!-margin-bottom-0"
+          name="search"
+          type="button"
+          (click)="emitSearch()"
+          data-testid="search-icon"
+          data-module="govuk-button"
+          aria-label="search button"
+        >
+          <img src="/assets/images/search-icon.svg" alt="" aria-hidden="true" />
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

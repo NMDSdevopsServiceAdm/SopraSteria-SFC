@@ -20,6 +20,7 @@ import { AllUsersForEstablishmentResolver } from '@core/resolvers/dashboard/all-
 import { TotalStaffRecordsResolver } from '@core/resolvers/dashboard/total-staff-records.resolver';
 import { FundingReportResolver } from '@core/resolvers/funding-report.resolver';
 import { GetMissingCqcLocationsResolver } from '@core/resolvers/getMissingCqcLocations/getMissingCqcLocations.resolver';
+import { HelpPageResolver } from '@core/resolvers/help-pages.resolver';
 import {
   GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
 } from '@core/resolvers/international-recruitment/no-of-workers-who-require-international-recruitment-answers.resolver';
@@ -66,8 +67,6 @@ import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certific
 import { DashboardHeaderComponent } from '@features/dashboard/dashboard-header/dashboard-header.component';
 import { DashboardComponent } from '@features/dashboard/dashboard.component';
 import { HomeTabComponent } from '@features/dashboard/home-tab/home-tab.component';
-import { FirstLoginPageComponent } from '@features/first-login-page/first-login-page.component';
-import { FirstLoginWizardComponent } from '@features/first-login-wizard/first-login-wizard.component';
 import {
   ForgotYourPasswordConfirmationComponent,
 } from '@features/forgot-your-username-or-password/forgot-your-password/confirmation/confirmation.component';
@@ -130,6 +129,7 @@ import { AppComponent } from './app.component';
 import {
   StaffMismatchBannerComponent,
 } from './features/dashboard/home-tab/staff-mismatch-banner/staff-mismatch-banner.component';
+import { HelpAndTipsButtonComponent } from './features/help-and-tips-button/help-and-tips-button.component';
 import {
   MigratedUserTermsConditionsComponent,
 } from './features/migrated-user-terms-conditions/migrated-user-terms-conditions.component';
@@ -142,8 +142,6 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     AscWdsCertificateComponent,
     DashboardComponent,
     DashboardHeaderComponent,
-    FirstLoginPageComponent,
-    FirstLoginWizardComponent,
     FooterComponent,
     ForgotYourPasswordComponent,
     ForgotYourPasswordConfirmationComponent,
@@ -185,6 +183,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     SecurityQuestionAnswerNotMatchComponent,
     UserAccountNotFoundComponent,
     VacanciesAndTurnoverLoginMessage,
+    HelpAndTipsButtonComponent,
   ],
   imports: [
     AppRoutingModule,
@@ -255,6 +254,7 @@ import { SentryErrorHandler } from './SentryErrorHandler.component';
     WorkplaceResolver,
     GetNoOfWorkersWhoRequireInternationalRecruitmentAnswersResolver,
     FundingReportResolver,
+    HelpPageResolver,
   ],
   bootstrap: [AppComponent],
 })
