@@ -17,9 +17,11 @@ module.exports = {
   functions: {
     validateWorker: {
       handler: 'handler.validateWorker',
+      existing: true,
     },
     validateTraining: {
       handler: 'handler.validateTraining',
+      existing: true,
     },
   },
 };
