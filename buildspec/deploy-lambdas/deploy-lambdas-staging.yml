@@ -13,5 +13,5 @@ phases:
       - export $(printf "LAMBDA_ROLE_ARN=%s" $(aws iam get-role --role-name lambda-execution-role --query "Role.Arn"  --output text))
       - export BULK_UPLOAD_LAMBDA_REGION="eu-west-1"
       - echo "Deploying with Serverless..."
-      - npx serverless deploy function --function bulkupload-staging-validateWorker
-      - npx serverless deploy function --function bulkupload-staging-validateTraining
+      - npx serverless deploy function --function bulkupload-staging-validateWorker --stage staging
+      - npx serverless deploy function --function bulkupload-staging-validateTraining --stage staging
