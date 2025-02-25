@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { QuestionAndAnswerPage } from '@core/model/help-pages.model';
 import { HelpPagesService } from '@core/services/help-pages.service';
 import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class QuestionAndAnswerPageResolver implements Resolve<any> {
+export class QuestionAndAnswerPageResolver {
   constructor(private helpPagesService: HelpPagesService) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<null | QuestionAndAnswerPage[]> {

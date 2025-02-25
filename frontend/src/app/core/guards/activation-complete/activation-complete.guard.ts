@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivateChild, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { CreateAccountService } from '@core/services/create-account/create-account.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ActivationCompleteGuard implements CanActivateChild {
+export class ActivationCompleteGuard  {
   constructor(private createAccountService: CreateAccountService, private router: Router) {}
 
   async canActivateChild(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean> {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { UserDetails } from '@core/model/userDetails.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -8,7 +8,7 @@ import { Observable, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class AllUsersForEstablishmentResolver implements Resolve<any> {
+export class AllUsersForEstablishmentResolver  {
   constructor(
     private userService: UserService,
     private establishmentService: EstablishmentService,

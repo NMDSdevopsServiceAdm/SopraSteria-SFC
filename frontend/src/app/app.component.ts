@@ -10,7 +10,6 @@ import { NestedRoutesService } from '@core/services/nested-routes.service';
 import { TabsService } from '@core/services/tabs.service';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
-import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { filter, take, takeWhile } from 'rxjs/operators';
 
 @Component({
@@ -38,7 +37,6 @@ export class AppComponent implements OnInit {
     private nestedRoutesService: NestedRoutesService,
     private authService: AuthService,
     private idleService: IdleService,
-    private angulartics2GoogleTagManager: Angulartics2GoogleTagManager,
     private featureFlagsService: FeatureFlagsService,
     private establishmentService: EstablishmentService,
     private tabsService: TabsService,
@@ -57,8 +55,6 @@ export class AppComponent implements OnInit {
         this.title.setTitle(titles.join(' - '));
       }
     });
-
-    this.angulartics2GoogleTagManager.startTracking();
   }
 
   async ngOnInit(): Promise<void> {
