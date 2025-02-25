@@ -1,6 +1,7 @@
 const { registrationErrors, RegistrationException } = require('./registrationErrors');
 const Establishment = require('../../models/classes/establishment').Establishment;
 const models = require('../../models');
+const cqcGetProviderId = require('../../utils/cqcGetProviderId');
 
 const OTHER_MAX_LENGTH = 120;
 
@@ -34,7 +35,9 @@ const saveEstablishmentToDatabase = async (username, establishmentData, newEstab
   return await saveEstablishment(username, newEstablishment, transaction);
 };
 
-const initialiseEstablishment = (newEstablishment, establishmentData) => {
+const initialiseEstablishment = async (newEstablishment, establishmentData) => {
+  const providerId = await cqcGetProviderId.getProviderId(establishmentData.locationId);
+
   newEstablishment.initialise(
     establishmentData.addressLine1,
     establishmentData.addressLine2,
@@ -42,7 +45,7 @@ const initialiseEstablishment = (newEstablishment, establishmentData) => {
     establishmentData.townCity,
     establishmentData.county,
     establishmentData.locationId,
-    null, // PROV ID is not captured yet on registration
+    providerId,
     establishmentData.postalCode,
     establishmentData.isRegulated,
   );
