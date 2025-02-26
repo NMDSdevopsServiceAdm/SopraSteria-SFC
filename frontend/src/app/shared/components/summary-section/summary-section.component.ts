@@ -25,6 +25,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
   @Input() workplacesCount: number;
   @Input() isParentSubsidiaryView: boolean;
   @Input() noOfWorkersWhoRequireInternationalRecruitment: number;
+  @Input() showCheckCqcDetails: boolean;
 
   public sections = [
     { linkText: 'Workplace', fragment: 'workplace', message: '', route: undefined, redFlag: false, link: true },
@@ -87,7 +88,7 @@ export class SummarySectionComponent implements OnInit, OnChanges {
     this.sections[0].redFlag = false;
     if (showAddWorkplaceDetailsBanner) {
       this.sections[0].message = 'Add more details to your workplace';
-    } else if (this.establishmentService.checkCQCDetailsBanner) {
+    } else if (this.showCheckCqcDetails) {
       this.sections[0].message = 'You need to check your CQC details';
     } else if (!numberOfStaff) {
       this.sections[0].message = `You've not added your total number of staff`;

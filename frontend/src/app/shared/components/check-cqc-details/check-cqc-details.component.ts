@@ -11,6 +11,6 @@ export class CheckCQCDetailsComponent implements OnInit {
   constructor(private establishmentService: EstablishmentService) {}
 
   ngOnInit(): void {
-    this.locationId = this.establishmentService.primaryWorkplace.locationId;
+    this.locationId = this.establishmentService.establishment.locationId;
   }
 }

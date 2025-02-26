@@ -5,8 +5,8 @@ import { Establishment } from '@core/model/establishment.model';
 import { TrainingCounts } from '@core/model/trainingAndQualifications.model';
 import { URLStructure } from '@core/model/url.model';
 import { Worker } from '@core/model/worker.model';
-import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { AlertService } from '@core/services/alert.service';
+import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -32,7 +32,7 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   public totalStaffRecords: number;
   private subscriptions: Subscription = new Subscription();
   public trainingAlert: number;
-  public showCQCDetailsBanner: boolean = this.establishmentService.checkCQCDetailsBanner;
+  public showCQCDetailsBanner: boolean;
   public workers: Worker[];
   public trainingCounts: TrainingCounts;
   public workerCount: number;
@@ -58,7 +58,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.showBanner = history.state?.showBanner;
 
-    this.establishmentService.setCheckCQCDetailsBanner(false);
     this.breadcrumbService.show(JourneyType.ALL_WORKPLACES);
     this.primaryEstablishment = this.establishmentService.primaryWorkplace;
     this.workplace = this.establishmentService.establishment;
@@ -68,21 +67,8 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
     this.canDeleteEstablishment = this.permissionsService.can(this.workplace.uid, 'canDeleteEstablishment');
     this.newDataAreaFlag = this.featureFlagsService.newBenchmarksDataArea;
     this.canSeeNewDataArea = [1, 2, 8].includes(this.workplace.mainService.reportingID);
+    this.showCQCDetailsBanner = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
 
-    if (this.workplace && this.workplace.locationId) {
-      this.subscriptions.add(
-        this.establishmentService
-          .getCQCRegistrationStatus(this.workplace.locationId, {
-            postcode: this.workplace.postcode,
-            mainService: this.workplace.mainService.name,
-          })
-          .subscribe((response) => {
-            this.establishmentService.setCheckCQCDetailsBanner(response.cqcStatusMatch === false);
-          }),
-      );
-    }
-
-    this.getShowCQCDetailsBanner();
     this.showSharingPermissionsBanner = this.workplace.showSharingPermissionsBanner;
 
     if (this.canViewListOfWorkers) {
@@ -146,14 +132,6 @@ export class ViewWorkplaceComponent implements OnInit, OnDestroy {
           });
         },
       ),
-    );
-  }
-
-  private getShowCQCDetailsBanner(): void {
-    this.subscriptions.add(
-      this.establishmentService.checkCQCDetailsBanner$.subscribe((showBanner) => {
-        this.showCQCDetailsBanner = showBanner;
-      }),
     );
   }
 

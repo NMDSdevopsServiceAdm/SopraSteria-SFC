@@ -65,6 +65,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
   public workplacesCount: number;
   public tilesData: BenchmarksResponse;
   public noOfWorkersWhoRequireInternationalRecruitment: number;
+  public showCheckCqcDetails: boolean;
 
   constructor(
     private userService: UserService,
@@ -86,6 +87,7 @@ export class ViewSubsidiaryHomeComponent implements OnInit {
     this.noOfWorkersWhoRequireInternationalRecruitment =
       this.route.snapshot.data.noOfWorkersWhoRequireInternationalRecruitment?.noOfWorkersWhoRequireAnswers;
 
+    this.showCheckCqcDetails = this.route.snapshot.data?.cqcStatusCheck?.cqcStatusMatch === false;
     this.user = this.userService.loggedInUser;
     this.addWorkplaceDetailsBanner = this.subsidiaryWorkplace.showAddWorkplaceDetailsBanner;
     this.setPermissionLinks();
