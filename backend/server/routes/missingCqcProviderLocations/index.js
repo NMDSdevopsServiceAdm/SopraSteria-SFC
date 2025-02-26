@@ -30,7 +30,7 @@ const missingCqcProviderLocations = async (req, res) => {
     if (provId && provId != 'null' && weeksSinceParentApproval) {
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
 
-      const missingCqcLocations = await findMissingCqcLocationIds(this.provId, childWorkplacesLocationIds);
+      const missingCqcLocations = await findMissingCqcLocationIds(provId, childWorkplacesLocationIds);
 
       result.showMissingCqcMessage = hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
         weeksSinceParentApproval,
