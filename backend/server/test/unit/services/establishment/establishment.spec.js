@@ -48,7 +48,7 @@ describe('backend/server/services/establishment/establishment', () => {
     it('should get the provider ID and set to new establishment if location ID is provided', async () => {
       const request = {
         method: 'POST',
-        url: `api/v2/establishment/${mockEstablishmentId}`,
+        url: `/api/establishment/${mockEstablishmentId}`,
         body: mockEstablishmentData,
       };
       const newEstablishmentInitialiseStub = sinon.stub(Establishment.prototype, 'initialise');
@@ -82,7 +82,7 @@ describe('backend/server/services/establishment/establishment', () => {
 
       const request = {
         method: 'POST',
-        url: `api/v2/establishment/${mockEstablishmentId}`,
+        url: `/api/establishment/${mockEstablishmentId}`,
         body: mockEstablishmentDataWithoutLocationId,
       };
       const newEstablishmentInitialiseStub = sinon.stub(Establishment.prototype, 'initialise');
