@@ -691,7 +691,7 @@ const addUser = async (req, res) => {
     });
 
     if (trackingResponse?.completed) {
-      console.error('api/user/add error - add user tracking record is already completed');
+      console.error('POST /api/user/add error - add user tracking record is already completed');
       return res.status(400).send();
     }
 
