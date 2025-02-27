@@ -26,21 +26,24 @@ const routes: Routes = [
         path: 'change-your-details',
         component: ChangeYourDetailsComponent,
         data: { title: 'Change Your Details' },
+        canActivate: [CreateUserGuard],
       },
       {
         path: 'create-username',
         component: CreateUsernameComponent,
         data: { title: 'Create Username' },
+        canActivate: [CreateUserGuard],
       },
       {
         path: 'security-question',
         component: SecurityQuestionComponent,
-        canActivate: [ActivationCompleteWithOutChildGuard],
+        canActivate: [CreateUserGuard, ActivationCompleteWithOutChildGuard],
         data: { title: 'Security Question' },
       },
 
       {
         path: 'confirm-account-details',
+        canActivate: [CreateUserGuard],
         canActivateChild: [ActivationCompleteGuard],
         children: [
           {
