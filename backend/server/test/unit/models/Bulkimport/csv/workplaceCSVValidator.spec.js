@@ -974,6 +974,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
         sandbox.restore();
         sandbox.stub(models.pcodedata, 'findAll').returns([]);
+        sandbox.stub(models.establishment, 'findAll').returns([]);
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
@@ -1005,6 +1006,7 @@ describe('Bulk Upload - Establishment CSV', () => {
 
         sandbox.restore();
         sandbox.stub(models.pcodedata, 'findAll').returns([]);
+        sandbox.stub(models.establishment, 'findAll').returns([]);
 
         const establishment = await generateEstablishmentFromCsv(
           establishmentRow,
