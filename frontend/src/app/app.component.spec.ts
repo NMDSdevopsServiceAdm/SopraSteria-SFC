@@ -24,7 +24,7 @@ import { of, Subject } from 'rxjs';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
-  async function setup(navigationUrl = '/') {
+  async function setup(overrides: any = {}) {
     const { fixture, getByText, queryByTestId } = await render(AppComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
@@ -42,7 +42,7 @@ describe('AppComponent', () => {
         },
         {
           provide: AuthService,
-          useClass: MockAuthService,
+          useFactory: MockAuthService.factory(overrides.loggedIn ?? true),
         },
         {
           provide: TabsService,
@@ -69,6 +69,7 @@ describe('AppComponent', () => {
     });
 
     const injector = getTestBed();
+    const navigationUrl = overrides.navigationUrl ?? '/';
     const event = new NavigationEnd(42, navigationUrl, navigationUrl);
     (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
     const component = fixture.componentInstance;
@@ -86,7 +87,7 @@ describe('AppComponent', () => {
   });
 
   it('should render subsidiary-account view when subsidiary page is navigated to', async () => {
-    const { fixture, queryByTestId } = await setup('/subsidiary/subUid/home');
+    const { fixture, queryByTestId } = await setup({ navigationUrl: '/subsidiary/subUid/home' });
     fixture.detectChanges();
 
     const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
@@ -97,7 +98,7 @@ describe('AppComponent', () => {
   });
 
   it('should render standalone view when subsidiary not in url', async () => {
-    const { fixture, queryByTestId } = await setup('/');
+    const { fixture, queryByTestId } = await setup();
     fixture.detectChanges();
 
     const standAloneAccountRendered = queryByTestId('stand-alone-account');
@@ -105,5 +106,42 @@ describe('AppComponent', () => {
 
     expect(standAloneAccountRendered).toBeTruthy();
     expect(subsidiaryAccountRendered).toBeFalsy();
+  });
+
+  describe('Help and tips button', () => {
+    it('should render help and tips button', async () => {
+      const { fixture, queryByTestId } = await setup();
+      fixture.detectChanges();
+
+      expect(queryByTestId('help-and-tips-button')).toBeTruthy();
+    });
+
+    it('should not render help and tips button when logged out', async () => {
+      const { fixture, queryByTestId } = await setup({ loggedIn: false });
+      fixture.detectChanges();
+
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
+
+    it("should not render help and tips button on route '/help'", async () => {
+      const { fixture, queryByTestId } = await setup({ navigationUrl: '/help' });
+      fixture.detectChanges();
+
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
+
+    it('should not render help and tips button when in help section in subsidiary view', async () => {
+      const { fixture, queryByTestId } = await setup({ navigationUrl: '/subsidiary/help/get-started' });
+      fixture.detectChanges();
+
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
+
+    it("should not render help and tips button on route '/sfcadmin'", async () => {
+      const { fixture, queryByTestId } = await setup({ navigationUrl: '/sfcadmin' });
+      fixture.detectChanges();
+
+      expect(queryByTestId('help-and-tips-button')).toBeFalsy();
+    });
   });
 });

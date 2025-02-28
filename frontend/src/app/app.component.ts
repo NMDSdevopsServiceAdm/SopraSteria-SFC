@@ -28,6 +28,7 @@ export class AppComponent implements OnInit {
   public parentAccount: boolean;
   public subsAccount: boolean;
   public viewingSubsidiaryWorkplace: boolean;
+  public showHelpButton: boolean;
   @ViewChild('top') top: ElementRef;
   @ViewChild('content') content: ElementRef;
 
@@ -64,7 +65,7 @@ export class AppComponent implements OnInit {
     await this.featureFlagsService.start();
 
     this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((nav: NavigationEnd) => {
-      this.isAdminSection = nav.url.includes('sfcadmin');
+      this.isAdminSection = this.isInAdminSection(nav.url);
       this.dashboardView =
         nav.url.includes('dashboard') ||
         nav.url === '/' ||
@@ -81,6 +82,8 @@ export class AppComponent implements OnInit {
         (document.activeElement as HTMLElement).blur();
       }
       this.top.nativeElement.focus();
+
+      this.renderHelpButton(nav.url);
     });
 
     this.authService.isAutheticated$.subscribe((authenticated) => {
@@ -117,5 +120,22 @@ export class AppComponent implements OnInit {
   public skip(event: Event) {
     event.preventDefault();
     this.content.nativeElement.focus();
+  }
+
+  private renderHelpButton(url: string): void {
+    if (!this.authService.isAuthenticated() || this.isInAdminSection(url) || this.isInHelpSection(url)) {
+      this.showHelpButton = false;
+    } else {
+      this.showHelpButton = true;
+    }
+  }
+
+  private isInHelpSection(url: string): boolean {
+    const urlSegments = url.split('/');
+    return urlSegments?.[1] === 'help' || (urlSegments?.[1] === 'subsidiary' && urlSegments?.[2] === 'help');
+  }
+
+  private isInAdminSection(url: string): boolean {
+    return url.includes('sfcadmin');
   }
 }
