@@ -11,6 +11,7 @@ describe('backend/server/utils/cqcLocationUtils.js', () => {
   let stubCQCApi;
   beforeEach(() => {
     stubFindByLocationID = sinon.stub(models.location, 'findByLocationID');
+    stubUpdateProviderID = sinon.stub(models.location, 'updateProviderID');
     stubCQCApi = sinon.stub(cqcDataApi, 'getWorkplaceCQCData');
   });
 
@@ -48,6 +49,16 @@ describe('backend/server/utils/cqcLocationUtils.js', () => {
 
       expect(stubCQCApi).to.have.been.calledOnceWith(locationId);
       expect(result).to.equal('provider-id-from-cqc-api');
+    });
+
+    it('should update the location table if it fetched an updated provider ID from CQC API', async () => {
+      stubFindByLocationID.resolves(null);
+      stubCQCApi.resolves({ providerId: 'provider-id-from-cqc-api' });
+
+      const locationId = '1-109009203';
+      await getProviderId(locationId);
+
+      expect(stubUpdateProviderID).to.have.been.calledOnceWith(locationId, 'provider-id-from-cqc-api');
     });
 
     it('should not call the CQC API if no location ID was given', async () => {

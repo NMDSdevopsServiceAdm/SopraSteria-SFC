@@ -75,5 +75,16 @@ module.exports = function (sequelize, DataTypes) {
     });
   };
 
+  Location.updateProviderID = async function (locationID, providerID) {
+    return this.update(
+      { providerid: providerID, updatedat: new Date() },
+      {
+        where: {
+          locationid: locationID,
+        },
+      },
+    );
+  };
+
   return Location;
 };

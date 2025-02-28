@@ -13,7 +13,14 @@ const getProviderId = async (locationId) => {
     }
 
     const cqcData = await CQCDataApi.getWorkplaceCQCData(locationId);
-    return cqcData?.providerId ?? null;
+    const providerIdFound = cqcData?.providerId;
+    if (!providerIdFound) {
+      return null;
+    }
+
+    await models.location.updateProviderID(locationId, providerIdFound);
+
+    return providerIdFound;
   } catch (error) {
     console.error('Error when looking up the provider ID: ', error);
     return null;
