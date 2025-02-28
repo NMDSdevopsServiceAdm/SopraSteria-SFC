@@ -18,12 +18,13 @@ import { SendEmailsConfirmationDialogComponent } from '../dialogs/send-emails-co
   styleUrls: ['./inactive-emails.component.scss'],
 })
 export class InactiveEmailsComponent {
-  public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces.inactiveWorkplaces;
+  public inactiveWorkplaces = this.route.snapshot.data.inactiveWorkplaces?.inactiveWorkplaces;
   public numberOfInactiveWorkplacesForDeletion =
-    this.route.snapshot.data.inactiveWorkplaceForDeletion.numberOfInactiveWorkplacesForDeletion;
+    this.route.snapshot.data.inactiveWorkplaces?.numberOfInactiveWorkplacesForDeletion;
   public templates = this.route.snapshot.data.emailTemplates.templates;
   public history = this.route.snapshot.data.emailCampaignHistory;
   private subscriptions: Subscription = new Subscription();
+  public stopViewRefresh = true;
 
   constructor(
     public alertService: AlertService,
@@ -68,8 +69,8 @@ export class InactiveEmailsComponent {
   public inactiveWorkplaceForDeletion() {
     this.subscriptions.add(
       this.emailCampaignService
-        .inactiveWorkplcesForDeletion()
-        .pipe(concatMap(() => this.emailCampaignService.getInactiveWorkplcesForDeletion()))
+        .inactiveWorkplcesForDeletion(this.stopViewRefresh)
+        .pipe(concatMap(() => this.emailCampaignService.getInactiveWorkplaces(this.stopViewRefresh)))
         .subscribe((res) => {
           this.numberOfInactiveWorkplacesForDeletion = res.numberOfInactiveWorkplacesForDeletion;
         }),
@@ -82,7 +83,7 @@ export class InactiveEmailsComponent {
         .createInactiveWorkplacesCampaign()
         .pipe(
           switchMap((latestCampaign) => {
-            return this.emailCampaignService.getInactiveWorkplaces().pipe(
+            return this.emailCampaignService.getInactiveWorkplaces(this.stopViewRefresh).pipe(
               map(({ inactiveWorkplaces }) => ({
                 latestCampaign,
                 inactiveWorkplaces,
@@ -109,7 +110,7 @@ export class InactiveEmailsComponent {
     event.preventDefault();
 
     this.subscriptions.add(
-      this.emailCampaignService.getInactiveWorkplacesReport().subscribe((response) => {
+      this.emailCampaignService.getInactiveWorkplacesReport(this.stopViewRefresh).subscribe((response) => {
         this.saveFile(response);
       }),
     );

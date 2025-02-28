@@ -19,6 +19,8 @@ describe('reports/inactive-workplaces/parents.js', () => {
       Town: 'Westminster',
       County: 'London',
       PostCode: 'W2 1HB',
+      LocationID: '1-10000902',
+      ParentNmdsID: 'J1003212',
     };
 
     const transformedWorkplace = transformInactiveWorkplacesForDeletion(workplace);
@@ -32,6 +34,8 @@ describe('reports/inactive-workplaces/parents.js', () => {
         lastUpdated: '2019-10-10',
         dataOwner: 'Workplace',
         address: '1 paddington Avenue Westminster London W2 1HB',
+        parentNmdsId: 'J1003212',
+        cqcRegulated: 'Yes',
       },
     ]);
   });

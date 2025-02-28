@@ -2,10 +2,6 @@ const moment = require('moment');
 
 const models = require('../../index');
 
-const refreshInactiveWorkplaces = async () => {
-  return models.sequelize.query('REFRESH MATERIALIZED VIEW cqc."EstablishmentLastActivity"');
-};
-
 const getInactiveWorkplaces = async () => {
   const lastMonth = moment().subtract(1, 'months');
 
@@ -66,5 +62,4 @@ const getInactiveWorkplaces = async () => {
 
 module.exports = {
   getInactiveWorkplaces,
-  refreshInactiveWorkplaces,
 };
