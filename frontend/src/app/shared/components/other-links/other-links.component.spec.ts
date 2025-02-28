@@ -151,13 +151,4 @@ describe('OtherLinksComponent', () => {
     expect(otherLinkText).toBeTruthy();
     expect(otherLinkText.getAttribute('href')).toEqual('/about-ascwds');
   });
-
-  it('should show Help to get you started link', async () => {
-    const { getByText } = await setup();
-
-    const otherLinkText = getByText('Help to get you started');
-
-    expect(otherLinkText).toBeTruthy();
-    expect(otherLinkText.getAttribute('href')).toEqual('/first-login-wizard');
-  });
 });

@@ -12,6 +12,7 @@ export class PageResolver implements Resolve<any> {
   resolve(route: ActivatedRouteSnapshot): Observable<null | Page[]> {
     const lastUrlSegmentIndex = route.url.length - 1;
     const slug = route.url[lastUrlSegmentIndex].path;
+
     if (slug) {
       return this.pagesService.getPage(slug).pipe(
         take(1),
