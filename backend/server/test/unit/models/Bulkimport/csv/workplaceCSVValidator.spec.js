@@ -12,6 +12,7 @@ const mappings = require('../../../../../models/BulkImport/BUDI').mappings;
 const models = require('../../../../../models');
 const sandbox = require('sinon').createSandbox();
 const { apiEstablishmentBuilder } = require('../../../../integration/utils/establishment');
+const pCodeCheck = require('../../../../../utils/postcodeSanitizer');
 
 const validateAPIObject = (establishmentRow) => {
   return {
@@ -794,6 +795,242 @@ describe('Bulk Upload - Establishment CSV', () => {
       const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       expect(establishment.validationErrors).to.deep.equal([]);
+    });
+
+    describe('address', () => {
+      let establishmentRow;
+      beforeEach(() => {
+        establishmentRow = buildEstablishmentCSV();
+      });
+
+      const MAX_LENGTH = 40;
+      const overFortyCharactersText = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry';
+
+      it('should return an error if ADDRESS1 is blank', async () => {
+        establishmentRow.ADDRESS1 = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1040,
+            errType: 'ADDRESS_ERROR',
+            error: 'ADDRESS1 is blank',
+            column: 'ADDRESS1',
+            name: establishmentRow.LOCALESTID,
+          },
+        ]);
+      });
+
+      it('should return an error if ADDRESS1 has more than the max length of characters', async () => {
+        establishmentRow.ADDRESS1 = overFortyCharactersText;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1040,
+            errType: 'ADDRESS_ERROR',
+            error: `ADDRESS1 is longer than ${MAX_LENGTH} characters`,
+            column: 'ADDRESS1',
+            name: establishmentRow.LOCALESTID,
+            source: overFortyCharactersText,
+          },
+        ]);
+      });
+
+      it('should return an error if ADDRESS2 has more than the max length of characters', async () => {
+        establishmentRow.ADDRESS2 = overFortyCharactersText;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1045,
+            errType: 'ADDRESS_ERROR',
+            error: `ADDRESS2 is longer than ${MAX_LENGTH} characters`,
+            column: 'ADDRESS2',
+            name: establishmentRow.LOCALESTID,
+            source: overFortyCharactersText,
+          },
+        ]);
+      });
+
+      it('should return an error if ADDRESS3 has more than the max length of characters', async () => {
+        establishmentRow.ADDRESS3 = overFortyCharactersText;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1050,
+            errType: 'ADDRESS_ERROR',
+            error: `ADDRESS3 is longer than ${MAX_LENGTH} characters`,
+            column: 'ADDRESS3',
+            name: establishmentRow.LOCALESTID,
+            source: overFortyCharactersText,
+          },
+        ]);
+      });
+
+      it('should return an error if POSTTOWN has more than the max length of characters', async () => {
+        establishmentRow.POSTTOWN = overFortyCharactersText;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1055,
+            errType: 'ADDRESS_ERROR',
+            error: `POSTTOWN is longer than ${MAX_LENGTH} characters`,
+            column: 'POSTTOWN',
+            name: establishmentRow.LOCALESTID,
+            source: overFortyCharactersText,
+          },
+        ]);
+      });
+
+      it('should return an error if POSTCODE is blank', async () => {
+        establishmentRow.POSTCODE = '';
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1060,
+            errType: 'ADDRESS_ERROR',
+            error: 'POSTCODE has not been supplied',
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: '',
+          },
+        ]);
+      });
+
+      it('should return an error if POSTCODE has more than the max length of characters', async () => {
+        const POSTCODE_MAX_LENGTH = 10;
+        const postcodeString = 'Lorem Ipsum';
+        establishmentRow.POSTCODE = postcodeString;
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1060,
+            errType: 'ADDRESS_ERROR',
+            error: `POSTCODE is longer than ${POSTCODE_MAX_LENGTH} characters`,
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: postcodeString,
+          },
+        ]);
+      });
+
+      it('should return an error if sanitisePostcode returns null', async () => {
+        const postcodeString = 'Lorem Ip';
+        establishmentRow.POSTCODE = postcodeString;
+
+        sandbox.stub(pCodeCheck, 'sanitisePostcode').returns(null);
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1060,
+            errType: 'ADDRESS_ERROR',
+            error: 'POSTCODE is incorrectly formatted',
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: postcodeString,
+          },
+        ]);
+      });
+
+      it('should return an error if status is NEW and POSTCODE does not exist', async () => {
+        const postcodeString = 'Z81 2RD';
+
+        const establishmentRow = buildEstablishmentCSV({
+          overrides: {
+            POSTCODE: postcodeString,
+            STATUS: 'NEW',
+          },
+        });
+
+        sandbox.restore();
+        sandbox.stub(models.pcodedata, 'findAll').returns([]);
+
+        const establishment = await generateEstablishmentFromCsv(establishmentRow);
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            errCode: 1060,
+            errType: 'ADDRESS_ERROR',
+            error: 'The POSTCODE for this workplace cannot be found in our database and must be registered manually.',
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: postcodeString,
+          },
+        ]);
+      });
+
+      it('should return an error if status is UPDATE and POSTCODE does not exist', async () => {
+        const postcodeString = 'Z81 2RD';
+
+        const establishmentRow = buildEstablishmentCSV({
+          overrides: {
+            id: 1,
+            POSTCODE: postcodeString,
+            STATUS: 'UPDATE',
+            LOCALESTID: 'main',
+          },
+        });
+
+        sandbox.restore();
+        sandbox.stub(models.pcodedata, 'findAll').returns([]);
+
+        const establishment = await generateEstablishmentFromCsv(
+          establishmentRow,
+          (lineNumber = 1),
+          (allCurrentEstablishments = [
+            {
+              id: 1,
+              uid: '123-414',
+              key: 'main',
+            },
+          ]),
+        );
+
+        expect(establishment.validationErrors).to.deep.equal([
+          {
+            origin: 'Establishments',
+            lineNumber: establishment.lineNumber,
+            warnCode: 1060,
+            warnType: 'ADDRESS_ERROR',
+            warning: 'The POSTCODE cannot be found in our database and will be ignored.',
+            column: 'POSTCODE',
+            name: establishmentRow.LOCALESTID,
+            source: postcodeString,
+          },
+        ]);
+      });
     });
 
     it('should validate ALLSERVICES if MAINSERVICE is not included ', async () => {
