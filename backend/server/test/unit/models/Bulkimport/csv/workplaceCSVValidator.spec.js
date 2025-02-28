@@ -79,7 +79,10 @@ const crossValidate = async (establishmentRow, workerRow, callback, databaseWork
 };
 
 describe('Bulk Upload - Establishment CSV', () => {
+  let establishmentRow;
+
   beforeEach(() => {
+    establishmentRow = buildEstablishmentCSV();
     sandbox.stub(BUDI, 'initialize');
     sandbox.stub(WorkplaceCSVValidator.prototype, '_validateNoChange').callsFake(() => {
       return true;
@@ -95,14 +98,12 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('toAPI', () => {
     it('should return a correct API format ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
       const apiObject = establishment.toAPI();
       expect(apiObject).to.deep.equal(validateAPIObject(establishmentRow));
     });
     it('should return a correct all services if ; added on the end ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '1';
       establishmentRow.ALLSERVICES = '0;1';
       establishmentRow.SERVICEDESC = '10;';
@@ -119,7 +120,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services if ; is in front ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '1';
       establishmentRow.ALLSERVICES = '0;1';
       establishmentRow.SERVICEDESC = ';10';
@@ -136,7 +136,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services without the need of ; on util/cap/servicedesc ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '1';
       establishmentRow.ALLSERVICES = '0;1';
       establishmentRow.SERVICEDESC = '10';
@@ -153,7 +152,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services when its NO', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;0';
       establishmentRow.SERVICEDESC = '';
@@ -169,7 +167,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services when its YES ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;6';
       establishmentRow.SERVICEDESC = ';';
@@ -186,7 +183,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services when its YES and there are two ALLSERVICES ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;10';
       establishmentRow.SERVICEDESC = ';';
@@ -204,7 +200,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return a correct all services when its null ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8';
       establishmentRow.SERVICEDESC = '';
@@ -221,7 +216,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services when util contains ; ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;0';
       establishmentRow.SERVICEDESC = ';';
@@ -237,7 +231,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       expect(apiObject).to.deep.equal(expectedResult);
     });
     it('should return a correct all services ALLSERVICES doesnt contain ; ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8';
       establishmentRow.SERVICEDESC = ';';
@@ -254,7 +247,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('CQC Regulated', () => {
       it('should return isCQCRegulated as false when set to 0 in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REGTYPE = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -265,7 +257,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should set isCQCRegulated as false when column empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REGTYPE = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -276,7 +267,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should set isCQCRegulated as true when set to 2 in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REGTYPE = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -289,7 +279,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('Address fields', () => {
       it('should return address fields in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADDRESS1 = 'First Address';
         establishmentRow.ADDRESS2 = 'Second Address';
         establishmentRow.ADDRESS3 = 'Third Address';
@@ -304,8 +293,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return town and postcode fields from CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
-
         establishmentRow.POSTTOWN = 'Wonderland';
         establishmentRow.POSTCODE = 'CT11AB';
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -321,7 +308,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('shareWith', () => {
       it('should return cqc and localAuthorities as true when set as 1 in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMCQC = '1';
         establishmentRow.PERMLA = '1';
 
@@ -334,7 +320,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return cqc and localAuthorities as false when set as 0 in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMCQC = '0';
         establishmentRow.PERMLA = '0';
 
@@ -347,7 +332,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return cqc and localAuthorities as null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMCQC = '';
         establishmentRow.PERMLA = '';
 
@@ -362,7 +346,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('advertising', () => {
       it('should return the value when a number in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '120.29';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -373,7 +356,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -384,7 +366,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'None' when 0 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -395,7 +376,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -408,7 +388,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('interviews', () => {
       it('should return the value when a number in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '120';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -419,7 +398,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -430,7 +408,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'None' when 0 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -441,7 +418,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -454,7 +430,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('repeatTraining', () => {
       it("should return 'Yes, always' when 1 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -465,7 +440,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'Yes, very often' when 2 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -476,7 +450,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'Yes, but not very often' when 3 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '3';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -489,7 +462,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'No, never' when 4 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '4';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -500,7 +472,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -513,7 +484,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('acceptCareCert', () => {
       it("should return 'Yes, always' when 1 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -524,7 +494,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'Yes, very often' when 2 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -535,7 +504,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'Yes, but not very often' when 3 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '3';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -546,7 +514,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should return 'No, never' when 4 in CSV", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '4';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -557,7 +524,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should return null when empty in CSV', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -571,7 +537,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('benefit', () => {
     it('should return the value when a number in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '200';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -582,7 +547,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'Yes' when 1; in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '1;';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -593,7 +557,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'Yes' when 1 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '1';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -604,7 +567,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = 'unknown';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -615,7 +577,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'No' when 0 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '0';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -626,7 +587,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return null when empty in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.BENEFITS = '';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -639,7 +599,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('sickPay', () => {
     it("should return 'Yes' when 1 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.SICKPAY = '1';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -650,7 +609,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.SICKPAY = 'unknown';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -661,7 +619,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'No' when 0 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.SICKPAY = '0';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -672,7 +629,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return null when empty in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.SICKPAY = '';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -685,7 +641,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('Pension contribution', () => {
     it("should return 'Yes' when 1 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.PENSION = '1';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -696,7 +651,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return \"Don't know\" when 'unknown' in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.PENSION = 'unknown';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -707,7 +661,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it("should return 'No' when 0 in CSV", async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.PENSION = '0';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -718,7 +671,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return null when empty in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.PENSION = '';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -731,7 +683,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('Holiday Leave', () => {
     it('should return the value when a number in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.HOLIDAY = '35';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -742,7 +693,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should return empty when empty in CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.HOLIDAY = '';
 
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -755,7 +705,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('toJSON', () => {
     it('should return a correct JSON ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       const JSONObject = establishment.toJSON();
       expect(JSONObject).to.deep.equal({
@@ -792,17 +741,11 @@ describe('Bulk Upload - Establishment CSV', () => {
 
   describe('Validations', () => {
     it('should return no errors when given valid CSV', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
       expect(establishment.validationErrors).to.deep.equal([]);
     });
 
     describe('address', () => {
-      let establishmentRow;
-      beforeEach(() => {
-        establishmentRow = buildEstablishmentCSV();
-      });
-
       const MAX_LENGTH = 40;
       const overFortyCharactersText = 'Lorem Ipsum is simply dummy text of the printing and typesetting industry';
 
@@ -1036,7 +979,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should validate ALLSERVICES if MAINSERVICE is not included ', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '12;13';
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1056,7 +998,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should throw an error if ALLSERVICES has a 0 and an other service', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.MAINSERVICE = '8';
       establishmentRow.ALLSERVICES = '8;0;13';
       const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1076,7 +1017,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should validate Starters, Leavers, Vacancies if All Job Roles is blank but S/L/V is not blank', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.ALLJOBROLES = '';
       establishmentRow.STARTERS = '1';
       establishmentRow.LEAVERS = '2';
@@ -1099,7 +1039,6 @@ describe('Bulk Upload - Establishment CSV', () => {
     });
 
     it('should skip validating Starters, Leavers, Vacancies if All Job Roles and S/L/V is blank', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.ALLJOBROLES = '';
       establishmentRow.STARTERS = '';
       establishmentRow.LEAVERS = '';
@@ -1111,7 +1050,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('advertising', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1119,7 +1057,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if a postive whole number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '11';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1127,7 +1064,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if a postive number (2 dp) is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '11.39';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1135,7 +1071,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1143,7 +1078,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1151,7 +1085,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = 'UNKNOWN';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1159,7 +1092,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1179,7 +1111,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1199,7 +1130,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if a decimal number with more than 2 dp is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ADVERTISING = '134.3457890';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1221,7 +1151,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('interviews', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1229,7 +1158,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if a postive whole number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '11';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1237,7 +1165,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1245,7 +1172,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1253,7 +1179,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = 'UNKNOWN';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1261,7 +1186,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1281,7 +1205,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1301,7 +1224,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if a decimal number input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.INTERVIEWS = '134.3';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1323,7 +1245,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('repeatTraining', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1331,7 +1252,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1339,7 +1259,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 2 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1347,7 +1266,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 3 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '3';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1355,7 +1273,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 4 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '4';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1363,7 +1280,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if a number outside of the allowed values is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = '5';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1382,7 +1298,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.REPEATTRAINING = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1403,7 +1318,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('acceptCareCertificate', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1411,7 +1325,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1419,7 +1332,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 2 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '2';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1427,7 +1339,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 3 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '3';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1435,7 +1346,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 4 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '4';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1443,7 +1353,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if a number outside of the allowed values is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = '5';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1462,7 +1371,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return a warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.ACCEPTCARECERT = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1483,7 +1391,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('benefit', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1491,7 +1398,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if a postive whole number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '200';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1499,7 +1405,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if a postive number (2 dp) is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '200.39';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1507,7 +1412,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1515,14 +1419,12 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
         expect(establishment.validationErrors).to.deep.equal([]);
       });
       it('should validate and pass if 1; is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '1;';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1530,7 +1432,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1538,7 +1439,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = 'UNKNOWN';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1546,7 +1446,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1565,7 +1464,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1584,7 +1482,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.BENEFITS = '134.3457890';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1605,7 +1502,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('sickPay', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1613,7 +1509,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1621,7 +1516,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1629,7 +1523,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1637,7 +1530,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = 'UNKNOWN';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1645,7 +1537,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1664,7 +1555,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1683,7 +1573,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a decimal number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '134.3457890';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1704,7 +1593,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('pension', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.SICKPAY = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1712,7 +1600,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 0 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = '0';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1720,7 +1607,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if 1 is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = '1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1728,7 +1614,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'unknown' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = 'unknown';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1736,7 +1621,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it("should validate and pass if 'UNKNOWN' is input", async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = 'UNKNOWN';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1744,7 +1628,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1763,7 +1646,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1782,7 +1664,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a decimal number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PENSION = '134.3457890';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1803,7 +1684,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('holiday', () => {
       it('should validate and pass if there is no input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = '';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1811,7 +1691,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and pass if a postive whole number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = '200';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1819,7 +1698,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an warning if an invalid string is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = 'asdf';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1838,7 +1716,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a negative number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = '-1';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1857,7 +1734,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should validate and return an error if a decimal number is input', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.HOLIDAY = '134.3457890';
 
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
@@ -1878,7 +1754,6 @@ describe('Bulk Upload - Establishment CSV', () => {
 
     describe('shareWith', () => {
       it('should produce error if PERMCQC is a number which is not 0 or 1', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMCQC = '3';
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
@@ -1897,7 +1772,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should produce error if PERMLA contains text', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMLA = 'a';
         const establishment = await generateEstablishmentFromCsv(establishmentRow);
 
@@ -1916,7 +1790,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
 
       it('should not produce error if PERMLA or PERMCQC is an empty string', async () => {
-        const establishmentRow = buildEstablishmentCSV();
         establishmentRow.PERMLA = '';
         establishmentRow.PERMCQC = '';
 
@@ -2259,7 +2132,6 @@ describe('Bulk Upload - Establishment CSV', () => {
       });
     });
     it('should show a warning when number of leavers !== REASONNOS', async () => {
-      const establishmentRow = buildEstablishmentCSV();
       establishmentRow.ALLJOBROLES = '22';
       establishmentRow.LEAVERS = '2';
       establishmentRow.STARTERS = '0';
