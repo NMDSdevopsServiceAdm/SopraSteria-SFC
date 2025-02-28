@@ -691,7 +691,7 @@ const addUser = async (req, res) => {
     });
 
     if (trackingResponse?.completed) {
-      console.error('POST /api/user/add error - add user tracking record is already completed');
+      console.error('POST /api/user/add error - user with the given uuid token has already completed registration');
       return res.status(400).send();
     }
 
