@@ -6,6 +6,8 @@ const cqcLocationUtils = require('../../utils/cqcLocationUtils');
 const OTHER_MAX_LENGTH = 120;
 
 const createEstablishment = async (reqEstablishment, username, transaction) => {
+  console.log('=============== createEstablishment ===============');
+
   if (!reqEstablishment.isRegulated) {
     delete reqEstablishment.locationId;
   }
@@ -25,7 +27,7 @@ const createEstablishment = async (reqEstablishment, username, transaction) => {
 };
 
 const saveEstablishmentToDatabase = async (username, establishmentData, newEstablishment, transaction) => {
-  initialiseEstablishment(newEstablishment, establishmentData);
+  await initialiseEstablishment(newEstablishment, establishmentData);
   await loadEstablishmentData(newEstablishment, establishmentData);
 
   if (!newEstablishment.hasMandatoryProperties || !newEstablishment.isValid) {
