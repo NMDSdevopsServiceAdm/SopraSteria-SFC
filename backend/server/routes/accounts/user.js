@@ -692,7 +692,7 @@ const addUser = async (req, res) => {
 
     if (trackingResponse?.completed) {
       console.error('POST /api/user/add error - user with the given uuid token has already completed registration');
-      return res.status(400).send();
+      return res.status(401).send({ message: 'Activation link expired' });
     }
 
     if (trackingResponse && trackingResponse.uuid && trackingResponse.user.uid) {
