@@ -441,11 +441,12 @@ describe('user.js', () => {
       expect(stubUserSave).to.have.been.calledOnce;
     });
 
-    it('should respond with 400 error and not save the user if the addUserTracking uuid token is already used', async () => {
+    it('should respond with 401 error and not save the user if the addUserTracking uuid token is already used', async () => {
       stubAddUserTrackingFindOne.resolves({ ...addUserTrackingRecord, completed: '2025-01-01 12:00:00:000' });
 
       await addUser(req, res);
-      expect(res.statusCode).to.equal(400);
+      expect(res.statusCode).to.equal(401);
+      expect(res._getData()).to.deep.equal({ message: 'Activation link expired' });
       expect(stubUserSave).not.to.be.called;
     });
   });

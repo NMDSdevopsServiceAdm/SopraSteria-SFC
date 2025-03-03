@@ -1,4 +1,5 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { HttpErrorResponse } from '@angular/common/http';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
@@ -9,6 +10,7 @@ import { MockCreateAccountService } from '@core/test-utils/MockCreateAccountServ
 import { MockRegistrationService } from '@core/test-utils/MockRegistrationService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
+import { throwError } from 'rxjs';
 
 import { ActivateUserAccountModule } from '../activate-user-account.module';
 import { ConfirmAccountDetailsComponent } from './confirm-account-details.component';
@@ -51,14 +53,14 @@ describe('ConfirmAccountDetailsComponent', () => {
     const activateAccountService = injector.inject(CreateAccountService) as CreateAccountService;
     const activateAccountSpy = spyOn(activateAccountService, 'activateAccount');
 
-    const spy = spyOn(router, 'navigate');
-    spy.and.returnValue(Promise.resolve(true));
+    const routerSpy = spyOn(router, 'navigate');
+    routerSpy.and.returnValue(Promise.resolve(true));
 
     return {
       component,
       fixture,
       router,
-      spy,
+      routerSpy,
       activateAccountSpy,
       getByTestId,
       getByText,
@@ -111,5 +113,25 @@ describe('ConfirmAccountDetailsComponent', () => {
 
     expect(fixture.componentInstance.form.invalid).toBeFalsy();
     expect(saveSpy).toHaveBeenCalled();
+  });
+
+  it('should navigate to expired-activation-link page if the token in activation link is expired', async () => {
+    const { getByText, getByTestId, activateAccountSpy, routerSpy } = await setup();
+
+    const termsAndConditionsCheckbox = getByTestId('checkbox');
+    const submitButton = getByText('Submit details');
+
+    const errorResponse = new HttpErrorResponse({
+      error: { message: 'Activation link expired' },
+      status: 401,
+      statusText: 'Unauthorised',
+    });
+
+    activateAccountSpy.and.returnValue(throwError(errorResponse));
+
+    fireEvent.click(termsAndConditionsCheckbox);
+    fireEvent.click(submitButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/activate-account', '/expired-activation-link']);
   });
 });
