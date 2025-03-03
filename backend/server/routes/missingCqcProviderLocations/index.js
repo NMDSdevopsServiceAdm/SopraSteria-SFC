@@ -28,14 +28,9 @@ const missingCqcProviderLocations = async (req, res) => {
     }
 
     if (provId && provId != 'null' && weeksSinceParentApproval) {
-      let CQCProviderData = await CQCDataAPI.getCQCProviderData(provId);
-
       const childWorkplacesLocationIds = await getChildWorkplacesLocationIds(childWorkplaces.rows);
 
-      const missingCqcLocations = await findMissingCqcLocationIds(
-        CQCProviderData?.locationIds,
-        childWorkplacesLocationIds,
-      );
+      const missingCqcLocations = await findMissingCqcLocationIds(provId, childWorkplacesLocationIds);
 
       result.showMissingCqcMessage = hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval(
         weeksSinceParentApproval,
@@ -48,6 +43,7 @@ const missingCqcProviderLocations = async (req, res) => {
       result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
     }
   } catch (error) {
+    console.log(error);
     result.showMissingCqcMessage = false;
     result.missingCqcLocations = { count: 0, missingCqcLocationIds: [] };
   }
@@ -70,12 +66,20 @@ const getChildWorkplacesLocationIds = async (childWorkplaces) => {
   return childWorkplacesLocationIds;
 };
 
-const findMissingCqcLocationIds = async (cqcLocationIds, childWorkplacesLocationIds) => {
+const getActiveCQCLocationsForProvider = async (providerId) => {
+  const CQCProviderLocations = await CQCDataAPI.getCQCProviderData(providerId);
+
+  return (await models.location.findMultipleByLocationID(CQCProviderLocations?.locationIds)).map(x => x.locationid);
+}
+
+const findMissingCqcLocationIds = async (provId, childWorkplacesLocationIds) => {
+  const cqcProviderData = await getActiveCQCLocationsForProvider(provId);
+
   let missingCqcLocations = {};
   missingCqcLocations.count = 0;
   missingCqcLocations.missingCqcLocationIds = [];
 
-  cqcLocationIds.map((cqcLocationId) => {
+  cqcProviderData.map((cqcLocationId) => {
     if (childWorkplacesLocationIds.includes(cqcLocationId)) {
       missingCqcLocations.count;
     } else {
