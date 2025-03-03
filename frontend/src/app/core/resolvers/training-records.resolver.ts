@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { WorkerService } from '@core/services/worker.service';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class TrainingRecordsResolver implements Resolve<any> {
+export class TrainingRecordsResolver  {
   constructor(private router: Router, private workerService: WorkerService) {}
 
   resolve(route: ActivatedRouteSnapshot) {
