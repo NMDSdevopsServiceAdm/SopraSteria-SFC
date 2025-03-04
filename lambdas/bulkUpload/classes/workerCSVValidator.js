@@ -316,20 +316,29 @@ class WorkerCsvValidator {
     return 3380;
   }
 
-  static get QUAL_ACH01_ERROR() {
+  static get QUAL_ACH01_CODE_ERROR() {
     return 5010;
+  }
+  static get QUAL_ACH01_YEAR_ERROR() {
+    return 5015;
   }
   static get QUAL_ACH01_NOTES_ERROR() {
     return 5020;
   }
-  static get QUAL_ACH02_ERROR() {
+  static get QUAL_ACH02_CODE_ERROR() {
     return 5030;
+  }
+  static get QUAL_ACH02_YEAR_ERROR() {
+    return 5035;
   }
   static get QUAL_ACH02_NOTES_ERROR() {
     return 5040;
   }
-  static get QUAL_ACH03_ERROR() {
+  static get QUAL_ACH03_CODE_ERROR() {
     return 5050;
+  }
+  static get QUAL_ACH03_YEAR_ERROR() {
+    return 5055;
   }
   static get QUAL_ACH03_NOTES_ERROR() {
     return 5060;
@@ -2428,17 +2437,16 @@ class WorkerCsvValidator {
     }
   }
 
-  __validateQualification(
-    qualificationIndex,
-    qualificationName,
-    qualificationError,
-    qualificationErrorName,
-    qualification,
-    qualificationDescName,
-    qualificationDescError,
-    qualificationDescErrorName,
-    qualificationDesc,
-  ) {
+  __validateQualification(qualificationIndex) {
+    const qualificationName = `QUALACH${qualificationIndex}`;
+    const qualification = this._currentLine[`QUALACH${qualificationIndex}`];
+    const qualificationYearError = WorkerCsvValidator[`QUAL_ACH${qualificationIndex}_YEAR_ERROR`];
+    const qualificationYearErrorName = `QUAL_ACH${qualificationIndex}_YEAR_ERROR`;
+    const qualificationDescName = `QUALACH${qualificationIndex}NOTES`;
+    const qualificationDescError = WorkerCsvValidator[`QUAL_ACH${qualificationIndex}_NOTES_ERROR`];
+    const qualificationDescErrorName = `QUAL_ACH${qualificationIndex}_NOTES_ERROR`;
+    const qualificationDesc = this._currentLine[`QUALACH${qualificationIndex}NOTES`];
+
     const myQualification = qualification ? qualification.split(';') : null;
 
     // optional
@@ -2452,8 +2460,8 @@ class WorkerCsvValidator {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: qualificationError,
-          errType: qualificationErrorName,
+          errCode: WorkerCsvValidator[`QUAL_ACH${qualificationIndex}_CODE_ERROR`],
+          errType: `QUAL_ACH${qualificationIndex}_CODE_ERROR`,
           error: `The code you have entered for (${qualificationName}) is incorrect`,
           source: qualification,
           column: qualificationName,
@@ -2474,8 +2482,8 @@ class WorkerCsvValidator {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          warnCode: qualificationError,
-          warnType: qualificationErrorName,
+          warnCode: qualificationYearError,
+          warnType: qualificationYearErrorName,
           warning: `Year achieved for ${qualificationName} is blank`,
           source: qualification,
           column: qualificationName,
@@ -2485,8 +2493,8 @@ class WorkerCsvValidator {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: qualificationError,
-          errType: qualificationErrorName,
+          errCode: qualificationYearError,
+          errType: qualificationYearErrorName,
           error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
           column: qualificationName,
@@ -2496,8 +2504,8 @@ class WorkerCsvValidator {
           worker: this._currentLine.UNIQUEWORKERID,
           name: this._currentLine.LOCALESTID,
           lineNumber: this._lineNumber,
-          errCode: qualificationError,
-          errType: qualificationErrorName,
+          errCode: qualificationYearError,
+          errType: qualificationYearErrorName,
           error: `The year in (${qualificationName}) is invalid`,
           source: qualification,
           column: qualificationName,
@@ -2554,17 +2562,7 @@ class WorkerCsvValidator {
       .map((x, i) => {
         const index = padNumber(i + 1);
 
-        return this.__validateQualification(
-          index,
-          `QUALACH${index}`,
-          WorkerCsvValidator[`QUAL_ACH${index}_ERROR`],
-          `QUAL_ACH${index}_ERROR`,
-          this._currentLine[`QUALACH${index}`],
-          `QUALACH${index}NOTES`,
-          WorkerCsvValidator[`QUAL_ACH${index}_NOTES_ERROR`],
-          `QUAL_ACH${index}_NOTES_ERROR`,
-          this._currentLine[`QUALACH${index}NOTES`],
-        );
+        return this.__validateQualification(index);
       });
 
     // remove from the local set of qualifications any false/null entries
@@ -2854,8 +2852,8 @@ class WorkerCsvValidator {
             worker: this._currentLine.UNIQUEWORKERID,
             name: this._currentLine.LOCALESTID,
             lineNumber: this._lineNumber,
-            errCode: WorkerCsvValidator[`QUAL_ACH${thisQualification.column}_ERROR`],
-            errType: `QUAL_ACH${thisQualification.column}_ERROR`,
+            errCode: WorkerCsvValidator[`QUAL_ACH${thisQualification.column}_CODE_ERROR`],
+            errType: `QUAL_ACH${thisQualification.column}_CODE_ERROR`,
             error: `Qualification (QUALACH${thisQualification.column}): ${thisQualification.id} is unknown`,
             source: `${this._currentLine[`QUALACH${thisQualification.column}`]}`,
             column: `QUALACH${thisQualification.column}`,
