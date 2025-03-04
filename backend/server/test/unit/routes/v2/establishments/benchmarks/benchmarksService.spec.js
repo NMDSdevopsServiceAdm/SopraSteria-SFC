@@ -4,7 +4,7 @@ const sinon = require('sinon');
 const models = require('../../../../../../models');
 const { getComparisonGroupRankings } = require('../../../../../../routes/v2/establishments/benchmarks/benchmarksService');
 
-describe.only('getComparisonGroupRankings', async () => {
+describe('getComparisonGroupRankings', async () => {
   it('returns empty array when cssr not provided', async () => {
     testData = {};
 
