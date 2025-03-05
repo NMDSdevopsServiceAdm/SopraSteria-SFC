@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { TabsService } from '@core/services/tabs.service';
+import { Tab, TabsService, UrlPartsRelatedToTabs } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -13,7 +13,7 @@ import { filter } from 'rxjs/operators';
 })
 export class NewTabsComponent implements OnInit, OnDestroy {
   @Output() selectedTabClick = new EventEmitter<{ tabSlug: string }>();
-  @Input() tabs: { title: string; slug: string; active: boolean }[];
+  @Input() tabs: Tab[];
   @Input() dashboardView: boolean;
 
   private currentTab: number;
@@ -42,22 +42,33 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   private trackRouterEventsToSetTab(): void {
     this.subscriptions.add(
-      this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((route: NavigationEnd) => {
-        if (this.isParentViewingSub) {
-          const tabInUrl = this.getTabSlugFromSubsidiaryUrl(route);
-
-          if (tabInUrl) {
-            this.tabsService.selectedTab = tabInUrl.slug;
-          }
-        } else {
-          const tabInUrl = this.getTabSlugFromMainDashboardUrl(route);
-          if (tabInUrl && this.tabs[this.currentTab].slug !== tabInUrl) {
-            this.tabsService.selectedTab = tabInUrl;
-          }
-          this.handleNavigationOfNonDashboardPages(route);
-        }
-      }),
+      this.router.events
+        .pipe(filter((event) => event instanceof NavigationEnd))
+        .subscribe((route: NavigationEnd) => this.handleNavigationEvent(route)),
     );
+  }
+
+  private handleNavigationEvent(route: NavigationEnd): void {
+    let handledDashboardTabChange = false;
+
+    if (this.isParentViewingSub) {
+      handledDashboardTabChange = this.handleSubsidiaryTabChange(route);
+    } else {
+      handledDashboardTabChange = this.handleMainDashboardTabChange(route);
+    }
+
+    if (!handledDashboardTabChange) {
+      this.handleNavigationOfNonDashboardPages(route);
+    }
+  }
+
+  private handleMainDashboardTabChange(route: NavigationEnd): boolean {
+    const tabSlugInUrl = this.getTabSlugFromSubsidiaryUrl(route);
+    if (tabSlugInUrl) {
+      this.tabsService.selectedTab = tabSlugInUrl.slug;
+      return true;
+    }
+    return false;
   }
 
   public getTabSlugFromMainDashboardUrl(route: NavigationEnd): string {
@@ -75,6 +86,15 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     return null;
   }
 
+  private handleSubsidiaryTabChange(route: NavigationEnd): boolean {
+    const tabInUrl = this.getTabSlugFromMainDashboardUrl(route);
+    if (tabInUrl && this.tabs[this.currentTab].slug !== tabInUrl) {
+      this.tabsService.selectedTab = tabInUrl;
+      return true;
+    }
+    return false;
+  }
+
   public getTabSlugFromSubsidiaryUrl(route: NavigationEnd) {
     const urlArray = route.urlAfterRedirects.split('/').filter((section) => section.length > 0);
     if (urlArray.length > 2) {
@@ -84,10 +104,13 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   private handleNavigationOfNonDashboardPages(route: NavigationEnd): void {
     const url = route.urlAfterRedirects;
-    if (url.includes('training-and-qualifications-record')) {
-      this.updateActiveTab('training-and-qualifications');
-    } else if (url.includes('staff-record')) {
-      this.updateActiveTab('staff-records');
+    const urlArray = url.split('/');
+
+    for (const { urlPart, tabSlug } of UrlPartsRelatedToTabs) {
+      if (urlArray.includes(urlPart)) {
+        this.updateActiveTabBySlug(tabSlug);
+        return;
+      }
     }
   }
 
@@ -113,7 +136,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
         this.unselectTabs();
         const tabIndex = this.tabs.findIndex((tab) => tab.slug === selectedTabSlug);
         if (tabIndex > -1) {
-          this.updateActiveTabByIndex(tabIndex);
+          this.updateActiveTab(tabIndex);
 
           if (!this.isParentViewingSub) {
             if (this.dashboardView) {
@@ -184,15 +207,15 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     this.tabs.forEach((t) => (t.active = false));
   }
 
-  private updateActiveTab(tabSlug: string): void {
+  private updateActiveTabBySlug(tabSlug: string): void {
     const selectedTabIndex = this.tabs.findIndex((tab) => tab.slug === tabSlug);
     if (selectedTabIndex < 0) {
       return;
     }
-    this.updateActiveTabByIndex(selectedTabIndex);
+    this.updateActiveTab(selectedTabIndex);
   }
 
-  private updateActiveTabByIndex(tabIndex: number): void {
+  private updateActiveTab(tabIndex: number): void {
     if (tabIndex < 0 || tabIndex >= this.tabs.length) {
       return;
     }

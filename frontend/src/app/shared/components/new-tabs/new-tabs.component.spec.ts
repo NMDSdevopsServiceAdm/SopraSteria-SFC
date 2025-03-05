@@ -4,7 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, NavigationEnd, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { TabsService } from '@core/services/tabs.service';
+import { MainDashboardTabs, Tab, TabsService } from '@core/services/tabs.service';
 import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
@@ -15,13 +15,7 @@ import { NewTabsComponent } from './new-tabs.component';
 import { BehaviorSubject } from 'rxjs';
 
 fdescribe('NewTabsComponent', () => {
-  const allTabs = [
-    { title: 'Home', slug: 'home', active: false },
-    { title: 'Workplace', slug: 'workplace', active: false },
-    { title: 'Staff records', slug: 'staff-records', active: false },
-    { title: 'Training and qualifications', slug: 'training-and-qualifications', active: false },
-    { title: 'Benchmarks', slug: 'benchmarks', active: false },
-  ];
+  const allTabs: Tab[] = Object.values(MainDashboardTabs);
 
   const setup = async (dashboardView = true, urlSegments = [], viewingSubAsParent = false) => {
     const { fixture, getByTestId } = await render(NewTabsComponent, {
@@ -85,7 +79,7 @@ fdescribe('NewTabsComponent', () => {
     };
   };
 
-  const getAllActiveTabSlugs = () => {
+  const getAllActiveTabs = (): string[] => {
     return allTabs
       .map((tab) => tab.slug)
       .filter((tabSlug) => {
@@ -120,7 +114,7 @@ fdescribe('NewTabsComponent', () => {
       fireEvent.click(workplaceTab);
       fixture.detectChanges();
 
-      const activeTabs = getAllActiveTabSlugs();
+      const activeTabs = getAllActiveTabs();
       expect(activeTabs).toEqual(['workplace']);
     });
 
@@ -181,35 +175,73 @@ fdescribe('NewTabsComponent', () => {
     const mockUid1 = 'c9a65ed6-db19-4add-94cb-af200036653c';
     const mockUid2 = 'ba50476b-7f3b-4bab-a36b-6bfcb3c37d62';
 
-    const testCases = [
-      {
-        mockUrl: `/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training`,
-        expectedActiveTab: 'training-and-qualifications',
-      },
-      {
-        mockUrl: `/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training#all-records`,
-        expectedActiveTab: 'training-and-qualifications',
-      },
-      {
-        mockUrl: `/workplace/${mockUid1}/staff-record/${mockUid2}/staff-record-summary`,
-        expectedActiveTab: 'staff-records',
-      },
-    ];
+    describe('in standAloneAccount', () => {
+      const testCases = [
+        {
+          mockUrl: `/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+        {
+          mockUrl: `/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training#all-records`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+        {
+          mockUrl: `/workplace/${mockUid1}/staff-record/${mockUid2}/staff-record-summary`,
+          expectedActiveTab: 'staff-records',
+        },
+        {
+          mockUrl: `/workplace/${mockUid1}/training-and-qualifications/missing-mandatory-training`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+      ];
 
-    testCases.forEach(({ mockUrl, expectedActiveTab }) => {
-      it(`should update active tab to the new section (${expectedActiveTab}) without navigating back to dashboard`, async () => {
-        const { fixture, router, routerSpy } = await setup(false);
-        const navigateEvent = new NavigationEnd(0, mockUrl, mockUrl);
-        (router.events as BehaviorSubject<any>).next(navigateEvent);
-        fixture.detectChanges();
+      testCases.forEach(({ mockUrl, expectedActiveTab }) => {
+        it(`should update active tab to ${expectedActiveTab}`, async () => {
+          const { fixture, router, routerSpy } = await setup(false);
+          const navigateEvent = new NavigationEnd(0, mockUrl, mockUrl);
+          (router.events as BehaviorSubject<any>).next(navigateEvent);
+          fixture.detectChanges();
 
-        const activeTabs = getAllActiveTabSlugs();
-        expect(activeTabs).toEqual([expectedActiveTab]);
+          const activeTabs = getAllActiveTabs();
+          expect(activeTabs).toEqual([expectedActiveTab]);
 
-        expect(routerSpy).not.toHaveBeenCalled();
+          expect(routerSpy).not.toHaveBeenCalled();
+        });
+      });
+    });
+
+    describe('in subsidiaryAccount', () => {
+      const testCases = [
+        {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/staff-record/${mockUid2}/staff-record-summary`,
+          expectedActiveTab: 'staff-records',
+        },
+        {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/staff-record/${mockUid2}/staff-record-summary#all-records`,
+          expectedActiveTab: 'staff-records',
+        },
+        {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+      ];
+
+      testCases.forEach(({ mockUrl, expectedActiveTab }) => {
+        it(`should update active tab to ${expectedActiveTab}`, async () => {
+          const { fixture, router, routerSpy } = await setup(true, [], true);
+          const navigateEvent = new NavigationEnd(0, mockUrl, mockUrl);
+          (router.events as BehaviorSubject<any>).next(navigateEvent);
+          fixture.detectChanges();
+
+          const activeTabs = getAllActiveTabs();
+          expect(activeTabs).toEqual([expectedActiveTab]);
+
+          expect(routerSpy).not.toHaveBeenCalled();
+        });
       });
     });
   });
+
   describe('onKeyUp', () => {
     it('should call onKeyUp and select tab when the left arrow keyboard key is clicked', async () => {
       const { fixture, getByTestId, keyUpSpy, selectTabSpy } = await setup();
