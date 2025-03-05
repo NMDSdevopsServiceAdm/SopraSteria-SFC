@@ -833,8 +833,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_CODE_ERROR,
+            errType: 'QUAL_ACH01_CODE_ERROR',
             error: 'The code you have entered for (QUALACH01) is incorrect',
             source: 'qualification;2020',
             column: 'QUALACH01',
@@ -863,8 +863,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            warnCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            warnType: 'QUAL_ACH01_ERROR',
+            warnCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            warnType: 'QUAL_ACH01_YEAR_ERROR',
             warning: 'Year achieved for QUALACH01 is blank',
             source: '314;',
             column: 'QUALACH01',
@@ -893,8 +893,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
             error: 'The year in (QUALACH01) is invalid',
             source: '314;happy',
             column: 'QUALACH01',
@@ -923,8 +923,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
             error: 'The year in (QUALACH01) is invalid',
             source: '314;happy',
             column: 'QUALACH01',
@@ -953,8 +953,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
             error: 'The year in (QUALACH01) is invalid',
             source: '314;1900',
             column: 'QUALACH01',
@@ -983,10 +983,91 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
             error: 'The year in (QUALACH01) is invalid',
             source: '314;5000',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit errors if the if the qualification year is in the future and the ID is unknown', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '800;5000',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        await validator._transformQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(2);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '800;5000',
+            column: 'QUALACH01',
+          },
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_CODE_ERROR,
+            errType: 'QUAL_ACH01_CODE_ERROR',
+            error: 'Qualification (QUALACH01): 800 is unknown',
+            source: '800;5000',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit errors if the if the qualification year is in the future and the ID is not a number', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: 'qualification;5000',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(2);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_CODE_ERROR,
+            errType: 'QUAL_ACH01_CODE_ERROR',
+            error: 'The code you have entered for (QUALACH01) is incorrect',
+            source: 'qualification;5000',
+            column: 'QUALACH01',
+          },
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: 'qualification;5000',
             column: 'QUALACH01',
           },
         ]);
