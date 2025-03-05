@@ -54,6 +54,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
           if (tabInUrl && this.tabs[this.currentTab].slug !== tabInUrl) {
             this.tabsService.selectedTab = tabInUrl;
           }
+          this.handleNavigationOfNonDashboardPages(route);
         }
       }),
     );
@@ -70,6 +71,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
       const tabSlug = url.substring(hashIndex + 1);
       return this.tabs.find((tab) => tab.slug === tabSlug) ? tabSlug : null;
     }
+
     return null;
   }
 
@@ -77,6 +79,15 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     const urlArray = route.urlAfterRedirects.split('/').filter((section) => section.length > 0);
     if (urlArray.length > 2) {
       return this.tabs.find((tab) => urlArray[2] === tab.slug);
+    }
+  }
+
+  private handleNavigationOfNonDashboardPages(route: NavigationEnd): void {
+    const url = route.urlAfterRedirects;
+    if (url.includes('training-and-qualifications-record')) {
+      this.updateActiveTab('training-and-qualifications');
+    } else if (url.includes('staff-record')) {
+      this.updateActiveTab('staff-records');
     }
   }
 
@@ -98,19 +109,17 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   private selectedTabSubscription(): void {
     this.subscriptions.add(
-      this.tabsService.selectedTab$.subscribe((selectedTab) => {
+      this.tabsService.selectedTab$.subscribe((selectedTabSlug) => {
         this.unselectTabs();
-        const tabIndex = this.tabs.findIndex((tab) => tab.slug === selectedTab);
+        const tabIndex = this.tabs.findIndex((tab) => tab.slug === selectedTabSlug);
         if (tabIndex > -1) {
-          const tab = this.tabs[tabIndex];
-          tab.active = true;
-          this.currentTab = tabIndex;
+          this.updateActiveTabByIndex(tabIndex);
 
           if (!this.isParentViewingSub) {
             if (this.dashboardView) {
-              this.location.replaceState(`/dashboard#${tab.slug}`);
+              this.location.replaceState(`/dashboard#${selectedTabSlug}`);
             } else if (this.clickEvent) {
-              this.router.navigate(['/dashboard'], { fragment: tab.slug });
+              this.router.navigate(['/dashboard'], { fragment: selectedTabSlug });
             }
           }
           if (this.focus) {
@@ -171,8 +180,24 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private unselectTabs() {
+  private unselectTabs(): void {
     this.tabs.forEach((t) => (t.active = false));
+  }
+
+  private updateActiveTab(tabSlug: string): void {
+    const selectedTabIndex = this.tabs.findIndex((tab) => tab.slug === tabSlug);
+    if (selectedTabIndex < 0) {
+      return;
+    }
+    this.updateActiveTabByIndex(selectedTabIndex);
+  }
+
+  private updateActiveTabByIndex(tabIndex: number): void {
+    if (tabIndex < 0 || tabIndex >= this.tabs.length) {
+      return;
+    }
+    this.currentTab = tabIndex;
+    this.tabs.forEach((tab, index) => (tab.active = index === tabIndex));
   }
 
   public getTabSlugInSubView(): string {

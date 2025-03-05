@@ -8,12 +8,21 @@ import { TabsService } from '@core/services/tabs.service';
 import { MockParentSubsidiaryViewService } from '@core/test-utils/MockParentSubsidiaryViewService';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
-import { fireEvent, render } from '@testing-library/angular';
+import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { NewTabsComponent } from './new-tabs.component';
+import { BehaviorSubject } from 'rxjs';
 
-describe('NewTabsComponent', () => {
+fdescribe('NewTabsComponent', () => {
+  const allTabs = [
+    { title: 'Home', slug: 'home', active: false },
+    { title: 'Workplace', slug: 'workplace', active: false },
+    { title: 'Staff records', slug: 'staff-records', active: false },
+    { title: 'Training and qualifications', slug: 'training-and-qualifications', active: false },
+    { title: 'Benchmarks', slug: 'benchmarks', active: false },
+  ];
+
   const setup = async (dashboardView = true, urlSegments = [], viewingSubAsParent = false) => {
     const { fixture, getByTestId } = await render(NewTabsComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -40,13 +49,7 @@ describe('NewTabsComponent', () => {
       ],
       declarations: [],
       componentProperties: {
-        tabs: [
-          { title: 'Home', slug: 'home', active: false },
-          { title: 'Workplace', slug: 'workplace', active: false },
-          { title: 'Staff records', slug: 'staff-records', active: false },
-          { title: 'Training and qualifications', slug: 'training-and-qualifications', active: false },
-          { title: 'Benchmarks', slug: 'benchmarks', active: false },
-        ],
+        tabs: allTabs,
         dashboardView,
       },
     });
@@ -75,10 +78,21 @@ describe('NewTabsComponent', () => {
       keyUpSpy,
       keyDownSpy,
       tabsService,
+      router,
       routerSpy,
       locationSpy,
       parentSubsidiaryViewService,
     };
+  };
+
+  const getAllActiveTabSlugs = () => {
+    return allTabs
+      .map((tab) => tab.slug)
+      .filter((tabSlug) => {
+        const tabElement = screen.getByTestId(`tab_${tabSlug}`);
+        const tabIsActive = tabElement.getAttribute('class').includes('asc-tab--active');
+        return tabIsActive;
+      });
   };
 
   it('should create', async () => {
@@ -102,19 +116,12 @@ describe('NewTabsComponent', () => {
 
       component.ngOnInit();
       const workplaceTab = getByTestId('tab_workplace');
-      const homeTab = getByTestId('tab_home');
-      const staffRecordsTab = getByTestId('tab_staff-records');
-      const tAndQTab = getByTestId('tab_training-and-qualifications');
-      const benchmarksTab = getByTestId('tab_benchmarks');
 
       fireEvent.click(workplaceTab);
       fixture.detectChanges();
 
-      expect(workplaceTab.getAttribute('class')).toContain('asc-tab--active');
-      expect(homeTab.getAttribute('class')).not.toContain('asc-tab--active');
-      expect(staffRecordsTab.getAttribute('class')).not.toContain('asc-tab--active');
-      expect(tAndQTab.getAttribute('class')).not.toContain('asc-tab--active');
-      expect(benchmarksTab.getAttribute('class')).not.toContain('asc-tab--active');
+      const activeTabs = getAllActiveTabSlugs();
+      expect(activeTabs).toEqual(['workplace']);
     });
 
     it('should call selectTab, set the selected tab property in the tabs service and emit the tab selected when a tab is clicked', async () => {
@@ -170,6 +177,39 @@ describe('NewTabsComponent', () => {
     });
   });
 
+  describe('when navigating to a page under another section', () => {
+    const mockUid1 = 'c9a65ed6-db19-4add-94cb-af200036653c';
+    const mockUid2 = 'ba50476b-7f3b-4bab-a36b-6bfcb3c37d62';
+
+    const testCases = [
+      {
+        mockUrl: `/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training`,
+        expectedActiveTab: 'training-and-qualifications',
+      },
+      {
+        mockUrl: `/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training#all-records`,
+        expectedActiveTab: 'training-and-qualifications',
+      },
+      {
+        mockUrl: `/workplace/${mockUid1}/staff-record/${mockUid2}/staff-record-summary`,
+        expectedActiveTab: 'staff-records',
+      },
+    ];
+
+    testCases.forEach(({ mockUrl, expectedActiveTab }) => {
+      it(`should update active tab to the new section (${expectedActiveTab}) without navigating back to dashboard`, async () => {
+        const { fixture, router, routerSpy } = await setup(false);
+        const navigateEvent = new NavigationEnd(0, mockUrl, mockUrl);
+        (router.events as BehaviorSubject<any>).next(navigateEvent);
+        fixture.detectChanges();
+
+        const activeTabs = getAllActiveTabSlugs();
+        expect(activeTabs).toEqual([expectedActiveTab]);
+
+        expect(routerSpy).not.toHaveBeenCalled();
+      });
+    });
+  });
   describe('onKeyUp', () => {
     it('should call onKeyUp and select tab when the left arrow keyboard key is clicked', async () => {
       const { fixture, getByTestId, keyUpSpy, selectTabSpy } = await setup();
