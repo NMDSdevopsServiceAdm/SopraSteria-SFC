@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router, RouterEvent, NavigationEnd } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Injectable({
@@ -15,7 +15,7 @@ export class PreviousRouteService {
     this.previousUrl = null;
 
     this.router.events
-      .pipe(filter((event: RouterEvent) => event instanceof NavigationEnd))
+      .pipe(filter((event): event is NavigationEnd => event instanceof NavigationEnd))
       .subscribe((event: NavigationEnd) => {
         this.previousUrl = this.currentUrl;
 

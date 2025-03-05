@@ -18,14 +18,13 @@ import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { render } from '@testing-library/angular';
-import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
   async function setup(overrides: any = {}) {
-    const { fixture, getByText, queryByTestId } = await render(AppComponent, {
+    const setupTools = await render(AppComponent, {
       imports: [RouterModule, RouterTestingModule, HttpClientTestingModule],
       schemas: [NO_ERRORS_SCHEMA],
       providers: [
@@ -52,14 +51,6 @@ describe('AppComponent', () => {
           provide: ParentSubsidiaryViewService,
           useClass: MockParentSubsidiaryViewService,
         },
-        {
-          provide: Angulartics2GoogleTagManager,
-          useValue: {
-            startTracking() {
-              return null;
-            },
-          },
-        },
         IdleService,
         Title,
         NestedRoutesService,
@@ -72,12 +63,10 @@ describe('AppComponent', () => {
     const navigationUrl = overrides.navigationUrl ?? '/';
     const event = new NavigationEnd(42, navigationUrl, navigationUrl);
     (injector.inject(Router).events as unknown as Subject<RouterEvent>).next(event);
-    const component = fixture.componentInstance;
+
     return {
-      component,
-      fixture,
-      getByText,
-      queryByTestId,
+      ...setupTools,
+      component: setupTools.fixture.componentInstance,
     };
   }
 
@@ -88,6 +77,8 @@ describe('AppComponent', () => {
 
   it('should render subsidiary-account view when subsidiary page is navigated to', async () => {
     const { fixture, queryByTestId } = await setup({ navigationUrl: '/subsidiary/subUid/home' });
+
+    await fixture.whenStable();
     fixture.detectChanges();
 
     const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
@@ -99,6 +90,8 @@ describe('AppComponent', () => {
 
   it('should render standalone view when subsidiary not in url', async () => {
     const { fixture, queryByTestId } = await setup();
+
+    await fixture.whenStable();
     fixture.detectChanges();
 
     const standAloneAccountRendered = queryByTestId('stand-alone-account');
