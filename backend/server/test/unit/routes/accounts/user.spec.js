@@ -394,7 +394,7 @@ describe('user.js', () => {
     });
   });
 
-  describe('addUser, POST /api/user', () => {
+  describe('POST /api/user/add', () => {
     let stubUserSave;
     let stubAddUserTrackingFindOne;
     const requestBody = {
