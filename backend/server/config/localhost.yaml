@@ -28,6 +28,7 @@ log:
   sequelize: false
 
 bulkupload:
+  lambdaRegion: eu-west-2
   region: eu-west-2
   bucketname: sfcbulkuploadfiles
   validation:
