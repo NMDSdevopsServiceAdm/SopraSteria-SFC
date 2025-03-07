@@ -370,6 +370,39 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
+    it('should emit an error if the country of birth is not valid', async () => {
+      const validator = new WorkerCsvValidator(
+        buildWorkerCsv({
+          overrides: {
+            MAINJOBROLE: '3',
+            COUNTRYOFBIRTH: 'z',
+            NATIONALITY: '862',
+            STATUS: 'NEW',
+          },
+        }),
+        2,
+        null,
+        mappings,
+      );
+
+      await validator.validate();
+      await validator.transform();
+
+      expect(validator._validationErrors).to.deep.equal([
+        {
+          worker: '3',
+          name: 'MARMA',
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.COUNTRY_OF_BIRTH_ERROR,
+          errType: 'COUNTRY_OF_BIRTH_ERROR',
+          error: 'Country of Birth (COUNTRYOFBIRTH) must be an integer',
+          source: 'z',
+          column: 'COUNTRYOFBIRTH',
+        },
+      ]);
+      expect(validator._validationErrors.length).to.equal(1);
+    });
+
     const countryCodesToTest = [262, 418, 995];
     countryCodesToTest.forEach((countryCode) => {
       it('should validate for COUNTRYOFBIRTH ' + countryCode, async () => {
@@ -790,6 +823,173 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
           },
         ]);
         expect(validator._validationErrors.length).to.equal(1);
+      });
+    });
+
+    describe('_validateZeroHourContract', () => {
+      // error = ZERO_HRCONT_ERROR
+      //warning = ZERO_HRCONT_WARNING
+      // pass case
+
+      // it('should not emit an error or warning if valid', async () => {
+
+      // });
+
+      it('should emit a warning if contract hours has been entered but there is no answer for zero contract hours', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 27.5,
+              ZEROHRCONT: null,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: WorkerCsvValidator.ZERO_HRCONT_WARNING,
+            warnType: 'ZERO_HRCONT_WARNING',
+            warning: 'You have entered contracted hours but have not said this worker is not on a zero hours contract',
+            source: null,
+            column: 'ZEROHRCONT',
+          },
+        ]);
+      });
+
+      it('should emit a warning if contract hours has been entered but there is no answer for zero contract hours', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 27.5,
+              ZEROHRCONT: 'zero',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.ZERO_HRCONT_ERROR,
+            errType: 'ZEROHRCONT_ERROR',
+            error: 'The code you have entered for ZEROHRCONT is incorrect',
+            source: 'zero',
+            column: 'ZEROHRCONT',
+          },
+        ]);
+      });
+
+      it('should emit an error if contract hours has been entered but zero contract hours is not know', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 27.5,
+              ZEROHRCONT: 999,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.ZERO_HRCONT_ERROR,
+            errType: 'ZEROHRCONT_ERROR',
+            error:
+              'The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks',
+            source: 999,
+            column: 'CONTHOURS/ZEROHRCONT',
+          },
+        ]);
+      });
+
+      it('should emit an error if contract hours has been entered but zero contract hours is "Yes"', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 27.5,
+              ZEROHRCONT: 1,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.ZERO_HRCONT_ERROR,
+            errType: 'ZEROHRCONT_ERROR',
+            error:
+              'The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks',
+            source: 1,
+            column: 'CONTHOURS/ZEROHRCONT',
+          },
+        ]);
+      });
+
+      it('should emit a warning if contract hours has been entered but zero contract hours is "No"', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 0,
+              ZEROHRCONT: 2,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: WorkerCsvValidator.ZERO_HRCONT_WARNING,
+            warnType: 'ZERO_HRCONT_WARNING',
+            warning: 'You have entered “0” in CONTHOURS but not entered “Yes” to the ZEROHRCONT question',
+            source: 2,
+            column: 'CONTHOURS/ZEROHRCONT',
+          },
+        ]);
       });
     });
 

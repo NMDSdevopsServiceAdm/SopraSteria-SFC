@@ -115,7 +115,7 @@ class WorkerCsvValidator {
     return 1120;
   }
   static get COUNTRY_OF_BIRTH_ERROR() {
-    return 1230;
+    return 1130;
   }
   static get YEAR_OF_ENTRY_ERROR() {
     return 1140;
