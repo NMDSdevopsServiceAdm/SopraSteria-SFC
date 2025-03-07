@@ -213,15 +213,19 @@ describe('NewTabsComponent', () => {
     describe('in subsidiaryAccount', () => {
       const testCases = [
         {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+        {
+          mockUrl: `/subsidiary/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training#all-records`,
+          expectedActiveTab: 'training-and-qualifications',
+        },
+        {
           mockUrl: `/subsidiary/workplace/${mockUid1}/staff-record/${mockUid2}/staff-record-summary`,
           expectedActiveTab: 'staff-records',
         },
         {
-          mockUrl: `/subsidiary/workplace/${mockUid1}/staff-record/${mockUid2}/staff-record-summary#all-records`,
-          expectedActiveTab: 'staff-records',
-        },
-        {
-          mockUrl: `/subsidiary/workplace/${mockUid1}/training-and-qualifications-record/${mockUid2}/training`,
+          mockUrl: `/subsidiary/workplace/${mockUid1}/training-and-qualifications/missing-mandatory-training`,
           expectedActiveTab: 'training-and-qualifications',
         },
       ];
