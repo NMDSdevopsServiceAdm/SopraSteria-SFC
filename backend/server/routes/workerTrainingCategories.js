@@ -69,8 +69,6 @@ const getCategoryTraining = async (req, res) => {
 
     const isMandatory = mandatoryTraining.length > 0;
 
-    const jobIds = isMandatory && mandatoryTraining.map((training) => training.jobFK);
-
     const {
       count: trainingCount,
       rows: training,
@@ -82,8 +80,6 @@ const getCategoryTraining = async (req, res) => {
       pageIndex && +pageIndex,
       sortBy,
       searchTerm,
-      isMandatory,
-      jobIds,
     );
 
     return res.status(200).json({ training, trainingCount, category: category.category, isMandatory });

@@ -1,6 +1,5 @@
 const BUDI = require('../classes/BUDI').BUDI;
 const moment = require('moment');
-const get = require('lodash/get');
 
 const STOP_VALIDATING_ON = ['UNCHECKED', 'DELETE', 'NOCHANGE'];
 
@@ -1671,8 +1670,8 @@ class WorkerCsvValidator {
 
     if (
       this._currentWorker &&
-      moment(get(this._currentWorker, 'daysSick.lastSaved')).isBefore(Date.now(), 'day') &&
-      get(this._currentWorker, 'daysSick.currentValue.days') === parseInt(this._currentLine.DAYSSICK)
+      moment(this._currentWorker?.daysSick?.lastSaved).isBefore(Date.now(), 'day') &&
+      this._currentWorker?.daysSick?.currentValue?.days === parseInt(this._currentLine.DAYSSICK)
     ) {
       this._validationErrors.push({
         worker: this._currentLine.UNIQUEWORKERID,

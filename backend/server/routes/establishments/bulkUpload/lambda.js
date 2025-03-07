@@ -1,18 +1,41 @@
-const AWS = require('aws-sdk');
+const { LambdaClient, InvokeCommand } = require('@aws-sdk/client-lambda');
+const { fromContainerMetadata } = require('@aws-sdk/credential-providers');
 const { mappings } = require('../../../../reference/BUDIMappings');
 const config = require('../../../config/config');
+const region = String(config.get('bulkupload.lambdaRegion'));
+const env = String(config.get('env'));
+
+const getLambdaClient = () => {
+  if (env === 'localhost') {
+    return new LambdaClient({
+      region,
+    });
+  }
+
+  return new LambdaClient({
+    credentials: fromContainerMetadata({
+      timeout: 1000,
+      maxRetries: 0,
+    }),
+    region,
+  });
+};
+
+const lambdaClient = getLambdaClient();
 
 const invokeLambda = async (functionName, payload) => {
   const FunctionName = `bulkupload-${config.get('bulkupload.lambda.stage')}-${functionName}`;
   const Payload = JSON.stringify(payload);
-  const lambda = new AWS.Lambda({ region: 'eu-west-2' });
+
   const params = {
     FunctionName,
     Payload,
   };
 
-  const response = await lambda.invoke(params).promise();
-  return JSON.parse(response.Payload);
+  const rawResponse = await lambdaClient.send(new InvokeCommand(params));
+  const response = Buffer.from(rawResponse.Payload).toString();
+
+  return JSON.parse(response);
 };
 
 const validateWorkerLambda = async (thisLine, currentLineNumber, existingWorker) => {
