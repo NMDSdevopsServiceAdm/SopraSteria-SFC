@@ -1,3 +1,4 @@
+import { BehaviorSubject } from 'rxjs';
 import { Location } from '@angular/common';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
@@ -12,9 +13,8 @@ import { fireEvent, render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { NewTabsComponent } from './new-tabs.component';
-import { BehaviorSubject } from 'rxjs';
 
-fdescribe('NewTabsComponent', () => {
+describe('NewTabsComponent', () => {
   const allTabs: Tab[] = Object.values(MainDashboardTabs);
 
   const setup = async (dashboardView = true, urlSegments = [], viewingSubAsParent = false) => {
@@ -334,13 +334,13 @@ fdescribe('NewTabsComponent', () => {
   });
 
   describe('getTabSlugFromSubsidiaryUrl', async () => {
-    it(`should return correct tab when third section of url is the tab slug`, async () => {
+    it(`should return correct tab slug when third section of url is the tab slug`, async () => {
       const { component } = await setup(true, []);
       component.tabs.forEach((tab) => {
         const url = `/subsidiary/test-uid/${tab.slug}`;
         const result = component.getTabSlugFromSubsidiaryUrl(new NavigationEnd(0, url, url));
 
-        expect(result).toEqual(tab);
+        expect(result).toEqual(tab.slug);
       });
     });
 
