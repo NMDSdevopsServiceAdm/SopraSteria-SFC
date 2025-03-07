@@ -62,16 +62,33 @@ export class NewTabsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private handleMainDashboardTabChange(route: NavigationEnd): boolean {
+  private handleSubsidiaryTabChange(route: NavigationEnd): boolean {
     const tabSlugInUrl = this.getTabSlugFromSubsidiaryUrl(route);
     if (tabSlugInUrl) {
-      this.tabsService.selectedTab = tabSlugInUrl.slug;
+      this.tabsService.selectedTab = tabSlugInUrl;
       return true;
     }
     return false;
   }
 
-  public getTabSlugFromMainDashboardUrl(route: NavigationEnd): string {
+  public getTabSlugFromSubsidiaryUrl(route: NavigationEnd): string | null {
+    const urlArray = route.urlAfterRedirects.split('/').filter((section) => section.length > 0);
+    if (urlArray.length > 2) {
+      const tabFound = this.tabs.find((tab) => urlArray[2] === tab.slug);
+      return tabFound ? tabFound.slug : null;
+    }
+  }
+
+  private handleMainDashboardTabChange(route: NavigationEnd): boolean {
+    const tabInUrl = this.getTabSlugFromMainDashboardUrl(route);
+    if (tabInUrl && this.tabs[this.currentTab].slug !== tabInUrl) {
+      this.tabsService.selectedTab = tabInUrl;
+      return true;
+    }
+    return false;
+  }
+
+  public getTabSlugFromMainDashboardUrl(route: NavigationEnd): string | null {
     const url = route.urlAfterRedirects;
 
     const hashIndex = url.indexOf('#');
@@ -82,24 +99,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
       const tabSlug = url.substring(hashIndex + 1);
       return this.tabs.find((tab) => tab.slug === tabSlug) ? tabSlug : null;
     }
-
     return null;
-  }
-
-  private handleSubsidiaryTabChange(route: NavigationEnd): boolean {
-    const tabInUrl = this.getTabSlugFromMainDashboardUrl(route);
-    if (tabInUrl && this.tabs[this.currentTab].slug !== tabInUrl) {
-      this.tabsService.selectedTab = tabInUrl;
-      return true;
-    }
-    return false;
-  }
-
-  public getTabSlugFromSubsidiaryUrl(route: NavigationEnd) {
-    const urlArray = route.urlAfterRedirects.split('/').filter((section) => section.length > 0);
-    if (urlArray.length > 2) {
-      return this.tabs.find((tab) => urlArray[2] === tab.slug);
-    }
   }
 
   private handleNavigationOfNonDashboardPages(route: NavigationEnd): void {
