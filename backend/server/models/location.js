@@ -46,6 +46,10 @@ module.exports = function (sequelize, DataTypes) {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      providerid: {
+        type: DataTypes.TEXT,
+        allowNull: true,
+      },
     },
     {
       tableName: 'location',
@@ -69,6 +73,17 @@ module.exports = function (sequelize, DataTypes) {
         postalcode: postcode,
       },
     });
+  };
+
+  Location.updateProviderID = async function (locationID, providerID) {
+    return this.update(
+      { providerid: providerID, updatedat: new Date() },
+      {
+        where: {
+          locationid: locationID,
+        },
+      },
+    );
   };
 
   return Location;
