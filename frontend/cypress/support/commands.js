@@ -21,6 +21,45 @@ Cypress.Commands.add('loginAsUser', (username, password) => {
   cy.wait('@login');
 });
 
+Cypress.Commands.add('getByLabel', (label) => {
+  cy.contains('label', label)
+    .invoke('attr', 'for')
+    .then((id) => {
+      cy.get('#' + id);
+    });
+});
+
+Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
+  const queryStrings = [
+    `DELETE FROM cqc."AddUserTracking"
+        USING cqc."User"
+        WHERE "AddUserTracking"."UserFK" = "User"."RegistrationID"
+        AND "User"."FullNameValue" = $1;
+      `,
+    `DELETE FROM cqc."UserAudit"
+        USING cqc."User"
+        WHERE "UserAudit"."UserFK" = "User"."RegistrationID"
+        AND "User"."FullNameValue" = $1;`,
+    `DELETE FROM cqc."Login"
+        USING cqc."User"
+        WHERE "Login"."RegistrationID" = "User"."RegistrationID"
+        AND "User"."FullNameValue" = $1;`,
+
+    `DELETE FROM cqc."User" WHERE "FullNameValue" = $1;`,
+  ];
+  const parameters = [userFullName];
+  queryStrings.forEach((queryString) => {
+    cy.task('dbQuery', { queryString, parameters });
+  });
+});
+
+Cypress.Commands.add('getNewUserUuidToken', () => {
+  const queryString =
+    'SELECT "AddUuid" FROM cqc."AddUserTracking" WHERE "Completed" IS NULL ORDER BY "Created" DESC LIMIT 1;';
+
+  return cy.task('dbQuery', { queryString }).its('rows.0.AddUuid');
+});
+
 // Cypress.Commands.add('loginAsUser', (username, password) => {
 //   // logging into application headlessly
 //   const loginCredentials = {
