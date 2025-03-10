@@ -2,7 +2,7 @@ import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
+import { Tab, TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -20,7 +20,7 @@ export class StandAloneAccountComponent implements OnInit, OnDestroy {
   public canViewListOfUsers: boolean;
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
-  public tabs: { title: string; slug: string; active: boolean }[];
+  public tabs: Tab[];
   public workplaceName: string;
 
   constructor(
