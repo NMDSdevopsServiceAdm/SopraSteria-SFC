@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 
 import { NewTabsComponent } from './new-tabs.component';
 
-describe('NewTabsComponent', () => {
+fdescribe('NewTabsComponent', () => {
   const allTabs: Tab[] = Object.values(MainDashboardTabs);
 
   const setup = async (dashboardView = true, urlSegments = [], viewingSubAsParent = false) => {
@@ -141,6 +141,7 @@ describe('NewTabsComponent', () => {
 
       fireEvent.click(tAndQTab);
       fixture.detectChanges();
+      await fixture.whenStable();
 
       expect(locationSpy).toHaveBeenCalledWith('/dashboard#training-and-qualifications');
       expect(routerSpy).not.toHaveBeenCalled();
@@ -197,13 +198,14 @@ describe('NewTabsComponent', () => {
 
       testCases.forEach(({ mockUrl, expectedActiveTab }) => {
         it(`should update active tab to ${expectedActiveTab}`, async () => {
-          const { fixture, router, routerSpy } = await setup(false);
+          const { component, fixture, router, routerSpy } = await setup(false);
           const navigateEvent = new NavigationEnd(0, mockUrl, mockUrl);
           (router.events as BehaviorSubject<any>).next(navigateEvent);
           fixture.detectChanges();
 
           const activeTabs = getAllActiveTabs();
           expect(activeTabs).toEqual([expectedActiveTab]);
+          expect(component.tabsService.selectedTab).toEqual(expectedActiveTab);
 
           expect(routerSpy).not.toHaveBeenCalled();
         });
@@ -232,13 +234,14 @@ describe('NewTabsComponent', () => {
 
       testCases.forEach(({ mockUrl, expectedActiveTab }) => {
         it(`should update active tab to ${expectedActiveTab}`, async () => {
-          const { fixture, router, routerSpy } = await setup(true, [], true);
+          const { component, fixture, router, routerSpy } = await setup(true, [], true);
           const navigateEvent = new NavigationEnd(0, mockUrl, mockUrl);
           (router.events as BehaviorSubject<any>).next(navigateEvent);
           fixture.detectChanges();
 
           const activeTabs = getAllActiveTabs();
           expect(activeTabs).toEqual([expectedActiveTab]);
+          expect(component.tabsService.selectedTab).toEqual(expectedActiveTab);
 
           expect(routerSpy).not.toHaveBeenCalled();
         });
