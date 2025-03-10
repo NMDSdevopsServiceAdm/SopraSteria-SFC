@@ -4,8 +4,6 @@ const sinon = require('sinon');
 const models = require('../../../../models');
 
 const { getChildWorkplaces, formatChildWorkplaces } = require('../../../../routes/establishments/childWorkplaces');
-const { decodePDFRawStream } = require('pdf-lib');
-const exp = require('constants');
 
 describe('server/routes/establishments/childWorkplaces', () => {
   let modelData;
@@ -21,9 +19,9 @@ describe('server/routes/establishments/childWorkplaces', () => {
           uid: 'ca720581-5319-4ae8-b941-a5a4071ab828',
           updated: '2022-01-31T16:40:27.780Z',
           ustatus: null,
-          childWorkplace: {
-            showFlag: true
-          }
+          dataValues: {
+            showFlag: true,
+          },
         },
       ],
       count: 1,
@@ -167,7 +165,6 @@ describe('server/routes/establishments/childWorkplaces', () => {
 
       expect(modelStub.args[0][5]).to.equal(true);
     });
-
   });
 
   describe('formatChildWorkplaces', () => {
@@ -193,7 +190,7 @@ describe('server/routes/establishments/childWorkplaces', () => {
       expect(formattedChildWorkplaces[0].uid).to.equal(modelData.rows[0].uid);
       expect(formattedChildWorkplaces[0].updated).to.equal(modelData.rows[0].updated);
       expect(formattedChildWorkplaces[0].ustatus).to.equal(modelData.rows[0].ustatus);
-      expect(formattedChildWorkplaces[0].showFlag).to.equal(modelData.rows[0].childWorkplace.showFlag)
+      expect(formattedChildWorkplaces[0].showFlag).to.equal(modelData.rows[0].dataValues.showFlag);
     });
   });
 });
