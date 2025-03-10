@@ -21,7 +21,7 @@ export const MainDashboardTabs = {
   benchmarksTab: { title: 'Benchmarks', slug: 'benchmarks', active: false },
 };
 
-export const SubsidiaryAccountTabs = {
+export const SubsidiaryViewTabs = {
   workplaceUsersTab: { title: 'Workplace users', slug: 'workplace-users', active: false },
 };
 
@@ -31,7 +31,7 @@ export const UrlPartsRelatedToTabs = [
   { urlPart: 'training-and-qualifications-record', tabSlug: MainDashboardTabs.tAndQTab.slug },
   { urlPart: 'training-and-qualifications', tabSlug: MainDashboardTabs.tAndQTab.slug },
   { urlPart: 'benchmarks', tabSlug: MainDashboardTabs.benchmarksTab.slug },
-  { urlPart: 'workplace-users', tabSlug: SubsidiaryAccountTabs.workplaceUsersTab.slug },
+  { urlPart: 'workplace-users', tabSlug: SubsidiaryViewTabs.workplaceUsersTab.slug },
 ];
 
 @Injectable({
@@ -43,7 +43,7 @@ export class TabsService {
   public staffRecordsTab: Tab = MainDashboardTabs.staffRecordsTab;
   public tAndQTab: Tab = MainDashboardTabs.tAndQTab;
   public benchmarksTab: Tab = MainDashboardTabs.benchmarksTab;
-  public workplaceUsersTab: Tab = SubsidiaryAccountTabs.workplaceUsersTab;
+  public workplaceUsersTab: Tab = SubsidiaryViewTabs.workplaceUsersTab;
 
   constructor(private previousRouteService: PreviousRouteService) {}
 
