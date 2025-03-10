@@ -8,6 +8,11 @@ export interface Tab {
   active: boolean;
 }
 
+export interface TabChangeEvent {
+  tabSlug: string;
+  shouldNavigate: boolean;
+}
+
 export const MainDashboardTabs = {
   homeTab: { title: 'Home', slug: 'home', active: false },
   workplaceTab: { title: 'Workplace', slug: 'workplace', active: false },
@@ -43,9 +48,14 @@ export class TabsService {
   constructor(private previousRouteService: PreviousRouteService) {}
 
   private _selectedTab$: BehaviorSubject<string> = new BehaviorSubject<string>(null);
+  private _tabChangeEvents$: BehaviorSubject<TabChangeEvent> = new BehaviorSubject<TabChangeEvent>(null);
 
   public get selectedTab$(): Observable<string> {
     return this._selectedTab$.asObservable();
+  }
+
+  public get tabChangeEvents$(): Observable<TabChangeEvent> {
+    return this._tabChangeEvents$.asObservable();
   }
 
   public get selectedTab(): string {
@@ -55,5 +65,13 @@ export class TabsService {
   public set selectedTab(tab: string) {
     this.previousRouteService.setLastSelectedTab(tab);
     this._selectedTab$.next(tab);
+
+    this._tabChangeEvents$.next({ tabSlug: tab, shouldNavigate: true });
+  }
+
+  public changeTabWithoutNavigation(tabSlug: string) {
+    this.previousRouteService.setLastSelectedTab(tabSlug);
+    this._selectedTab$.next(tabSlug);
+    this._tabChangeEvents$.next({ tabSlug: tabSlug, shouldNavigate: false });
   }
 }

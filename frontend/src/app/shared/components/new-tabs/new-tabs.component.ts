@@ -1,7 +1,7 @@
 import { Location } from '@angular/common';
 import { Component, ElementRef, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { Tab, TabsService, UrlPartsRelatedToTabs } from '@core/services/tabs.service';
+import { Tab, TabChangeEvent, TabsService, UrlPartsRelatedToTabs } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
@@ -108,7 +108,7 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
     for (const { urlPart, tabSlug } of UrlPartsRelatedToTabs) {
       if (urlArray.includes(urlPart)) {
-        this.updateActiveTabBySlug(tabSlug);
+        this.tabsService.changeTabWithoutNavigation(tabSlug);
         return;
       }
     }
@@ -132,27 +132,39 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   private selectedTabSubscription(): void {
     this.subscriptions.add(
-      this.tabsService.selectedTab$.subscribe((selectedTabSlug) => {
-        this.unselectTabs();
-        const tabIndex = this.tabs.findIndex((tab) => tab.slug === selectedTabSlug);
-        if (tabIndex > -1) {
-          this.updateActiveTab(tabIndex);
-
-          if (!this.isParentViewingSub) {
-            if (this.dashboardView) {
-              this.location.replaceState(`/dashboard#${selectedTabSlug}`);
-            } else if (this.clickEvent) {
-              this.router.navigate(['/dashboard'], { fragment: selectedTabSlug });
-            }
-          }
-          if (this.focus) {
-            setTimeout(() => {
-              this.tablist.nativeElement.querySelector('.asc-tab--active').focus();
-            });
-          }
+      this.tabsService.tabChangeEvents$.subscribe((tabChangeEvent) => {
+        if (tabChangeEvent) {
+          this.handleTabChangeEvent(tabChangeEvent);
         }
       }),
     );
+  }
+
+  private handleTabChangeEvent(tabChangeEvent: TabChangeEvent): void {
+    const { tabSlug, shouldNavigate } = tabChangeEvent;
+
+    this.unselectTabs();
+    const tabIndex = this.tabs.findIndex((tab) => tab.slug === tabSlug);
+    if (tabIndex > -1) {
+      this.updateActiveTab(tabIndex);
+
+      if (!shouldNavigate) {
+        return;
+      }
+
+      if (!this.isParentViewingSub) {
+        if (this.dashboardView) {
+          this.location.replaceState(`/dashboard#${tabSlug}`);
+        } else if (this.clickEvent) {
+          this.router.navigate(['/dashboard'], { fragment: tabSlug });
+        }
+      }
+      if (this.focus) {
+        setTimeout(() => {
+          this.tablist.nativeElement.querySelector('.asc-tab--active').focus();
+        });
+      }
+    }
   }
 
   public onKeyUp(event: KeyboardEvent): void {
@@ -205,14 +217,6 @@ export class NewTabsComponent implements OnInit, OnDestroy {
 
   private unselectTabs(): void {
     this.tabs.forEach((t) => (t.active = false));
-  }
-
-  private updateActiveTabBySlug(tabSlug: string): void {
-    const selectedTabIndex = this.tabs.findIndex((tab) => tab.slug === tabSlug);
-    if (selectedTabIndex < 0) {
-      return;
-    }
-    this.updateActiveTab(selectedTabIndex);
   }
 
   private updateActiveTab(tabIndex: number): void {

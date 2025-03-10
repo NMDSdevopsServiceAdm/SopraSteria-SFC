@@ -14,7 +14,7 @@ import userEvent from '@testing-library/user-event';
 
 import { NewTabsComponent } from './new-tabs.component';
 
-fdescribe('NewTabsComponent', () => {
+describe('NewTabsComponent', () => {
   const allTabs: Tab[] = Object.values(MainDashboardTabs);
 
   const setup = async (dashboardView = true, urlSegments = [], viewingSubAsParent = false) => {
