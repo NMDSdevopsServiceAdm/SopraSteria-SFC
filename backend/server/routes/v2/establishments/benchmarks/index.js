@@ -212,7 +212,6 @@ const getBenchmarksData = async (establishmentId, mainService) => {
 
   const cssr = await models.cssr.getCSSRFromEstablishmentId(establishmentId);
 
-  if (cssr) {
     data.careWorkerPay = await payBenchmarks(establishmentId, mainService, CARE_WORKER_ID, cssr);
     data.seniorCareWorkerPay = await payBenchmarks(establishmentId, mainService, SENIOR_CARE_WORKER_ID, cssr);
     data.registeredNursePay = await payBenchmarks(establishmentId, mainService, REGISTERED_NURSE_ID, cssr);
@@ -224,7 +223,6 @@ const getBenchmarksData = async (establishmentId, mainService) => {
     data.timeInRole = await timeInRoleBenchmarks(establishmentId, mainService, cssr);
 
     data.meta = await getMetaData(mainService, cssr);
-  }
   return data;
 };
 
