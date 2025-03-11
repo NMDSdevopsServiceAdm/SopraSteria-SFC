@@ -2271,6 +2271,13 @@ module.exports = function (sequelize, DataTypes) {
     return { ...data, pendingCount };
   };
 
+  Establishment.hasChildWorkplaceWhichNeedsAttention = async function (parentId) {
+    return await this.findOne({
+      attributes: ['id'],
+      where: sequelize.and({ parentId }, sequelize.literal(shouldShowFlagOnWorkplace)),
+    });
+  };
+
   Establishment.getRegistrationIdsForArchiving = async function (establishmentIds, transaction) {
     const lastMonth = moment().subtract(1, 'months').endOf('month');
     const twentyFourLastMonths = lastMonth.clone().subtract(24, 'months').format('YYYY-MM-DD');

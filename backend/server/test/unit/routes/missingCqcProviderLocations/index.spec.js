@@ -84,7 +84,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       });
 
       sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
-      sinon.stub(models.childWorkplaces, 'findOneWithNeedsAttentionFlag').returns({ showFlag: null});
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
 
       const expectedResult = {
         showMissingCqcMessage: false,
@@ -94,7 +94,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: cqcLocationIds,
         },
         childWorkplacesCount: 3,
-        showFlag: false
+        showFlag: false,
       };
 
       const req = httpMocks.createRequest(request);
@@ -112,7 +112,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       });
 
       sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
-      sinon.stub(models.childWorkplaces, 'findOneWithNeedsAttentionFlag').returns({ showFlag: null});
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
 
       const expectedResult = {
         showMissingCqcMessage: false,
@@ -122,7 +122,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: [],
         },
         childWorkplacesCount: 3,
-        showFlag: false
+        showFlag: false,
       };
 
       request.query.provId = null;
@@ -144,7 +144,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       });
 
       sinon.stub(CQCDataAPI, 'getCQCProviderData').throws();
-      sinon.stub(models.childWorkplaces, 'findOneWithNeedsAttentionFlag').returns({ showFlag: null});
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
 
       const expectedResult = {
         showMissingCqcMessage: false,
@@ -154,7 +154,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: [],
         },
         childWorkplacesCount: 3,
-        showFlag: false
+        showFlag: false,
       };
 
       const req = httpMocks.createRequest(request);
@@ -171,6 +171,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       sinon.stub(models.establishment, 'getChildWorkplaces').returns({ rows: [], count: 0 });
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns(null);
       sinon.stub(CQCDataAPI, 'getCQCProviderData').returns(null);
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
 
       request.locationId = null;
 
@@ -182,6 +183,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: [],
         },
         childWorkplacesCount: 0,
+        showFlag: false,
       };
 
       const req = httpMocks.createRequest(request);
@@ -209,7 +211,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
         updatedAt: moment(moment().subtract(21, 'days')),
       });
-      sinon.stub(models.childWorkplaces, 'findOneWithNeedsAttentionFlag').returns({ showFlag: null});
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns(null);
       sinon.stub(CQCDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
         return {};
       });
@@ -222,7 +224,7 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
           missingCqcLocationIds: [],
         },
         childWorkplacesCount: 3,
-        showFlag: false
+        showFlag: false,
       };
 
       const req = httpMocks.createRequest(request);
@@ -231,6 +233,26 @@ describe('server/routes/establishments/missingCqcProviderLocations', async () =>
       await missingCqcProviderLocations(req, res);
 
       expect(res._getData()).to.deep.equal(expectedResult);
+      expect(res.statusCode).to.deep.equal(200);
+    });
+
+    it('should return with showFlag set to true if establishment object returned from hasChildWorkplaceWhichNeedsAttention', async () => {
+      sinon.restore();
+      sinon.stub(models.establishment, 'getChildWorkplaces').returns(childWorkplaces);
+      sinon.stub(models.Approvals, 'findbyEstablishmentId').returns({
+        updatedAt: moment(moment().subtract(21, 'days')),
+      });
+      sinon.stub(CQCDataAPI, 'getCQCProviderData').callsFake(async (locationProviderId) => {
+        return {};
+      });
+      sinon.stub(models.establishment, 'hasChildWorkplaceWhichNeedsAttention').returns({ id: 1234 });
+
+      const req = httpMocks.createRequest(request);
+      const res = httpMocks.createResponse();
+
+      await missingCqcProviderLocations(req, res);
+      const response = res._getData();
+      expect(response.showFlag).to.be.true;
       expect(res.statusCode).to.deep.equal(200);
     });
 
