@@ -22,6 +22,7 @@ const { sendCountToSlack } = require('../../../../routes/establishments/bulkUplo
 
 const workplaceCSVValidator = require('../../../../models/BulkImport/csv/workplaceCSVValidator');
 const { Establishment } = require('../../../../models/classes/establishment');
+const models = require('../../../../models');
 const buildEstablishmentCSV = require('../../../../test/factories/establishment/csv');
 
 const errorsBuilder = build('Error', {
@@ -523,6 +524,10 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
 
     it('should remove duplicate error codes', async () => {
       const csvEstablishmentSchemaErrors = [];
+
+      sinon.stub(models.pcodedata, 'findAll').returns([{}]);
+      sinon.stub(models.establishment, 'findAll').returns([{}]);
+
       await validateEstablishmentCsv(
         {
           LOCALESTID: 'omar3',
