@@ -20,10 +20,6 @@ export const publicJourney: JourneyRoute = {
       path: Path.CERTIFICATES,
     },
     {
-      title: 'Help to get you started',
-      path: Path.FIRST_LOGIN_WIZARD,
-    },
-    {
       title: 'Cookie policy',
       path: Path.COOKIE_POLICY,
     },

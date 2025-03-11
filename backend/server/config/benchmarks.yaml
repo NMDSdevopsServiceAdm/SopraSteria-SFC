@@ -24,13 +24,14 @@ jwt:
 
 bulkupload:
     region: eu-west-2
+    lambdaRegion: eu-west-1
     bucketname: sfc-bulkupload-dev
     validation:
         timeout: 300
     completion:
         timeout: 180
     lambda:
-        stage: sfcbenchmarks
+        stage: benchmark
 
 disbursement:
     region: eu-west-2

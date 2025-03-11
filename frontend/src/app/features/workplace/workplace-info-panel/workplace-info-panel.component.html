@@ -1,8 +1,8 @@
 <div class="govuk-grid-row">
-<div class="govuk-grid-column-one-quarter first-column">
+  <div class="govuk-grid-column-one-quarter">
     <p>
       <ng-container *ngIf="canViewEstablishment; else noPermission">
-        <a href="#" (click)="setEmployerType($event)">
+        <a href="#" class="govuk-link" (click)="setEmployerType($event)">
           {{ workplace.name }}
         </a>
       </ng-container>
@@ -11,15 +11,14 @@
       </ng-template>
     </p>
   </div>
-  <div class="data-column-container">
+
+  <div class="govuk-grid-column-three-quarters">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds govuk-!-padding-left-0">
-        <p>
-          {{ workplace.mainService }}
-        </p>
+      <div class="govuk-grid-column-two-thirds">
+        <p>{{ workplace.mainService }}</p>
       </div>
-      <div class="govuk-grid-column-one-third">
-        <ng-container *ngIf="workplace.showFlag; else moveWorkplace" >
+      <div class="govuk-grid-column-one-third govuk-!-text-align-right">
+        <ng-container *ngIf="workplace.showFlag; else moveWorkplace">
           <span class="govuk-util__float-right">
             <img
               src="/assets/images/flag-red.svg"
@@ -27,7 +26,13 @@
               class="govuk-!-margin-right-2"
               data-testid="red-flag"
             />
-            <a *ngIf="!(workplace.dataPermissions === 'None' && workplace.dataOwner == 'Workplace'); else linkedOnly" href="#" (click)="setEmployerType($event)" class="govuk-util__float-right">Check this workplace</a>
+            <a
+              *ngIf="!(workplace.dataPermissions === 'None' && workplace.dataOwner == 'Workplace'); else linkedOnly"
+              href="#"
+              (click)="setEmployerType($event)"
+              class="govuk-util__float-right"
+              >Check this workplace</a
+            >
             <ng-template #linkedOnly>
               <p class="govuk-util__float-right">Check this workplace</p>
             </ng-template>
@@ -44,61 +49,57 @@
     </div>
   </div>
 </div>
-<div class="govuk-grid-row">
-  <div class="first-column">
+
+<div class="govuk-grid-row govuk-!-margin-top-1">
+  <div class="govuk-grid-column-one-quarter">
     <p class="govuk-!-margin-bottom-1"><strong>Last update</strong></p>
     <p class="govuk-!-margin-bottom-0">{{ workplace.updated | date: 'd MMMM y' }}</p>
   </div>
 
-  <div class="data-column-container">
+  <div class="govuk-grid-column-three-quarters">
     <div class="govuk-grid-row">
-      <div class="data-owner-column">
-        <p class="govuk-!-margin-bottom-1">
-          <strong>Data owner</strong>
-        </p>
-        <p class="govuk-!-margin-bottom-0">
-          {{ workplace.dataOwner }}
-        </p>
-        </div>
-      <div class="permissions-column">
+      <div class="govuk-grid-column-one-quarter" style="width: 20%">
+        <p class="govuk-!-margin-bottom-1"><strong>Data owner</strong></p>
+        <p class="govuk-!-margin-bottom-0">{{ workplace.dataOwner }}</p>
+      </div>
+
+      <div class="govuk-grid-column-one-half" style="width: 45%">
         <p class="govuk-!-margin-bottom-1">
           <strong>{{ workplace.dataOwner | workplacePermissionsBearer }} view only permissions</strong>
         </p>
-        <p class="govuk-!-margin-bottom-0">
-          {{ workplace.dataPermissions | dataViewPermissions }}
-        </p>
+        <p class="govuk-!-margin-bottom-0">{{ workplace.dataPermissions | dataViewPermissions }}</p>
       </div>
-      <div class="change-data-permissions-column">
-        <p class="govuk-!-margin-bottom-1">&nbsp;</p>
-        <span class="govuk-util__float-right govuk_util-float-bottom" *ngIf="canChangePermissionsForSubsidiary">
+
+      <div class="govuk-grid-column-one-quarter govuk-!-text-align-right govuk-!-padding-top-6" style="width: 35%">
+        <ng-container *ngIf="canChangePermissionsForSubsidiary">
           <ng-container *ngIf="workplace.dataOwnershipRequested; else dataPermissions">
-              <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
+            <a (click)="cancelChangeDataOwnerRequest($event)" href="#" class="govuk-link">Data request pending</a>
+          </ng-container>
+          <ng-template #dataPermissions>
+            <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
+              <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
+                <a (click)="setDataPermissions($event)" href="#" class="govuk-link">Change data permissions</a>
+              </ng-container>
+              <ng-template #notParent>
+                <a (click)="onChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
+              </ng-template>
             </ng-container>
-            <ng-template #dataPermissions>
-              <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
-                <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                  <a (click)="setDataPermissions($event)" href="#">Change data permissions</a>
+            <ng-template #workplaceIsDataOwner>
+              <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
+                <ng-container *ngIf="newHomeDesignParentFlag; else dialogChangeDataOwner">
+                  <a (click)="navigateToChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
                 </ng-container>
-                <ng-template #notParent>
-                  <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>
+                <ng-template #dialogChangeDataOwner>
+                  <a (click)="onChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
                 </ng-template>
               </ng-container>
-              <ng-template #workplaceIsDataOwner>
-                <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                  <ng-container *ngIf="newHomeDesignParentFlag; else dialogChangeDataOwner">
-                    <a class="govuk-link" (click)="navigateToChangeDataOwner($event)" href="#">Change data owner</a>
-                  </ng-container>
-                  <ng-template #dialogChangeDataOwner
-                    ><a (click)="onChangeDataOwner($event)" href="#">Change data owner</a></ng-template
-                  >
-                </ng-container>
-                <ng-template #notParent>
-                  <a href="#">Data permissions</a>
-                </ng-template>
+              <ng-template #notParent>
+                <a href="#" class="govuk-link">Data permissions</a>
               </ng-template>
             </ng-template>
-          </span>
-        </div>
+          </ng-template>
+        </ng-container>
+      </div>
     </div>
   </div>
 </div>
