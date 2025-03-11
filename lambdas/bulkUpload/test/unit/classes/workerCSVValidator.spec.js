@@ -1780,4 +1780,52 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
   });
+
+  it('should remove duplicate error codes', async () => {
+    const validator = new WorkerCsvValidator(
+      buildWorkerCsv({
+        overrides: {
+          STATUS: 'NEW',
+          QUALACH01: 'qa;2020',
+          SALARYINT: 'z',
+        },
+      }),
+      2,
+      null,
+      mappings,
+    );
+
+    validator.validate();
+    validator.transform();
+
+    const validationErrors = await validator._validationErrors;
+    const uniqueValidationErrors = await validator.validationErrors;
+
+    expect(validationErrors.length).to.equal(4);
+    expect(uniqueValidationErrors.length).to.equal(2);
+    expect(uniqueValidationErrors).to.deep.equal([
+      {
+        origin: 'Workers',
+        worker: '3',
+        name: 'MARMA',
+        lineNumber: 2,
+        errCode: WorkerCsvValidator.SALARY_ERROR,
+        errType: 'SALARYINT_ERROR',
+        error: 'Salary Int (SALARYINT) must be an integer',
+        source: 'z',
+        column: 'SALARYINT',
+      },
+      {
+        origin: 'Workers',
+        worker: '3',
+        name: 'MARMA',
+        lineNumber: 2,
+        errCode: WorkerCsvValidator.QUAL_ACH01_CODE_ERROR,
+        errType: 'QUAL_ACH01_CODE_ERROR',
+        error: 'The code you have entered for (QUALACH01) is incorrect',
+        source: 'qa;2020',
+        column: 'QUALACH01',
+      },
+    ]);
+  });
 });

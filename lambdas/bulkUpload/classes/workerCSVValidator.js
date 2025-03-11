@@ -3266,13 +3266,22 @@ class WorkerCsvValidator {
   }
 
   get validationErrors() {
-    // include the "origin" of validation error
-    return this._validationErrors.map((thisValidation) => {
-      return {
-        origin: 'Workers',
-        ...thisValidation,
-      };
+    let codes = [];
+    let uniqueValidationErrors = [];
+
+    this._validationErrors.forEach((thisValidation) => {
+      if (thisValidation.warnCode && !codes.includes(thisValidation.warnCode)) {
+        codes.push(thisValidation.warnCode);
+        uniqueValidationErrors.push({ origin: 'Workers', ...thisValidation });
+      }
+
+      if (thisValidation.errCode && !codes.includes(thisValidation.errCode)) {
+        codes.push(thisValidation.errCode);
+        uniqueValidationErrors.push({ origin: 'Workers', ...thisValidation });
+      }
     });
+
+    return uniqueValidationErrors;
   }
 }
 
