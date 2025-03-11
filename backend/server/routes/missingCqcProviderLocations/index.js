@@ -79,16 +79,9 @@ const findMissingCqcLocationIds = async (provId, childWorkplacesLocationIds) => 
   missingCqcLocations.count = 0;
   missingCqcLocations.missingCqcLocationIds = [];
 
-  cqcProviderData.map((cqcLocationId) => {
-    if (childWorkplacesLocationIds.includes(cqcLocationId)) {
-      missingCqcLocations.count;
-    } else {
-      missingCqcLocations.count = missingCqcLocations.count + 1;
-      missingCqcLocations.missingCqcLocationIds.push(cqcLocationId);
-    }
-  });
+  const missingLocationIds = cqcProviderData.filter((locationId) => !childWorkplacesLocationIds.includes(locationId));
 
-  return missingCqcLocations;
+  return { missingCqcLocationIds: missingLocationIds, count: missingLocationIds.length };
 };
 
 const hasOver5MissingCqcLocationsAndOver8WeeksSinceApproval = (weeksSinceParentApproval, missingCqcLocationsCount) => {
