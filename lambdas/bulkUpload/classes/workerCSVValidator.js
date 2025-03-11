@@ -3268,18 +3268,19 @@ class WorkerCsvValidator {
   get validationErrors() {
     let codes = [];
     let uniqueValidationErrors = [];
+    if (this._validationErrors.length > 0) {
+      this._validationErrors.forEach((thisValidation) => {
+        if (thisValidation.warnCode && !codes.includes(thisValidation.warnCode)) {
+          codes.push(thisValidation.warnCode);
+          uniqueValidationErrors.push({ origin: 'Workers', ...thisValidation });
+        }
 
-    this._validationErrors.forEach((thisValidation) => {
-      if (thisValidation.warnCode && !codes.includes(thisValidation.warnCode)) {
-        codes.push(thisValidation.warnCode);
-        uniqueValidationErrors.push({ origin: 'Workers', ...thisValidation });
-      }
-
-      if (thisValidation.errCode && !codes.includes(thisValidation.errCode)) {
-        codes.push(thisValidation.errCode);
-        uniqueValidationErrors.push({ origin: 'Workers', ...thisValidation });
-      }
-    });
+        if (thisValidation.errCode && !codes.includes(thisValidation.errCode)) {
+          codes.push(thisValidation.errCode);
+          uniqueValidationErrors.push({ origin: 'Workers', ...thisValidation });
+        }
+      });
+    }
 
     return uniqueValidationErrors;
   }
