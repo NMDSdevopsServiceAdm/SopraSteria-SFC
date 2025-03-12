@@ -827,14 +827,6 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
     });
 
     describe('_validateZeroHourContract', () => {
-      // error = ZERO_HRCONT_ERROR
-      //warning = ZERO_HRCONT_WARNING
-      // pass case
-
-      // it('should not emit an error or warning if valid', async () => {
-
-      // });
-
       it('should emit a warning if contract hours has been entered but there is no answer for zero contract hours', async () => {
         const validator = new WorkerCsvValidator(
           buildWorkerCsv({
