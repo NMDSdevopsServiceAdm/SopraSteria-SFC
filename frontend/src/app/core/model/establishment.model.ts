@@ -197,13 +197,6 @@ export enum StaffBenefitEnum {
   DONT_KNOW = "Don't know",
 }
 
-export interface StaffRecruitmentDataRequest {
-  amountSpent?: string;
-  numberOfInterviews?: string;
-  trainingRequired?: string;
-  acceptCareCertificatesFromPreviousEmployment?: string;
-}
-
 export interface LocalIdentifiersRequest {
   localIdentifiers: LocalIdentifier[];
 }

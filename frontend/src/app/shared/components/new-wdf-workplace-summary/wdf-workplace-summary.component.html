@@ -453,27 +453,6 @@
       <dd class="govuk-summary-list__value"></dd>
       <dd class="govuk-summary-list__actions"></dd>
     </div>
-    <div class="govuk-summary-list__row" data-testid="people-interviewed">
-      <dt class="govuk-summary-list__key">People interviewed</dt>
-      <dd class="govuk-summary-list__value">
-        <ng-container
-          *ngIf="!workplace.peopleInterviewedInTheLastFourWeeks; else peopleInterviewedInTheLastFourWeeksType"
-        >
-          -
-        </ng-container>
-        <ng-template #peopleInterviewedInTheLastFourWeeksType>
-          {{ workplace.peopleInterviewedInTheLastFourWeeks }}
-        </ng-template>
-      </dd>
-      <dd *ngIf="canEditEstablishment" class="govuk-summary-list__actions">
-        <app-summary-record-change
-          [explanationText]="' people interviewed'"
-          [link]="['/workplace', workplace.uid, 'number-of-interviews']"
-          [hasData]="workplace.peopleInterviewedInTheLastFourWeeks"
-          (setReturnClicked)="this.setReturn()"
-        ></app-summary-record-change>
-      </dd>
-    </div>
 
     <div class="govuk-summary-list__row" data-testid="repeat-training">
       <dt class="govuk-summary-list__key">Repeat training</dt>
