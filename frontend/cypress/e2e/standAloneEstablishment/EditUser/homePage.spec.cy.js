@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { StandAloneEstablishment } from '../../../support/establishmentData';
+import { StandAloneEstablishment } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Standalone home page as edit user', () => {

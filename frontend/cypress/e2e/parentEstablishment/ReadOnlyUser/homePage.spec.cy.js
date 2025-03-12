@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { ParentEstablishment } from '../../../support/establishmentData';
+import { ParentEstablishment } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Parent home page as read only user', () => {

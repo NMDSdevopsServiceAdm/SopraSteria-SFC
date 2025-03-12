@@ -1,7 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
-import { SubEstablishmentNotDataOwner } from '../../../support/establishmentData';
+import { SubEstablishmentNotDataOwner } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub home page as read only user', () => {

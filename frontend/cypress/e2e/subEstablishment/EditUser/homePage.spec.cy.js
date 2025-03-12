@@ -1,6 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
-import { SubEstablishment } from '../../../support/establishmentData';
+import { SubEstablishment } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub home page as edit user', () => {

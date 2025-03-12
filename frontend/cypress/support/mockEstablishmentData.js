@@ -23,3 +23,15 @@ export const SubEstablishmentNotDataOwner = {
   nmdsId: 'G1001749',
   parentName: ParentEstablishment.name,
 };
+
+export const MockNewEstablishment = {
+  name: 'Test workplace for cypress',
+  address: {
+    address1: 'Unit 1A, Sunset House',
+    address2: 'Sunset Lane',
+    address3: 'Sunset District',
+    townOrCity: 'Leeds',
+    county: 'Leeds',
+    postcode: 'LS1 1AA',
+  },
+};
