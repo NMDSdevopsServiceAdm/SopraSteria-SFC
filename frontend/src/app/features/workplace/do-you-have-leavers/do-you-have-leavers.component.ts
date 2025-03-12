@@ -17,7 +17,7 @@ export class DoYouHaveLeaversComponent extends DoYouHaveStartersLeaversVacancies
   public requiredWarningMessage = "Select yes if you've had any staff leave in the last 12 months";
 
   protected setupRoutes(): void {
-    this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'recruitment-advertising-cost'];
+    this.skipRoute = ['/workplace', `${this.establishment?.uid}`, 'staff-recruitment-capture-training-requirement'];
     this.startersLeaversOrVacanciesPageTwo = 'select-leaver-job-roles';
     this.previousRoute = this.getPreviousRoute('starters');
   }
