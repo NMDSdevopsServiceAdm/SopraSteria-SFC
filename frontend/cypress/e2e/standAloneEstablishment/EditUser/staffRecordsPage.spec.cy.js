@@ -3,9 +3,15 @@
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Standalone staff records page as edit user', () => {
+  const testWorkerNames = ['Mr Cool', 'Mr Smith', 'Bob'];
+
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     onHomePage.clickTab('Staff records');
+  });
+
+  afterEach(() => {
+    testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
   });
 
   it('should show the staff records page', () => {
@@ -35,6 +41,9 @@ describe('Standalone staff records page as edit user', () => {
       cy.contains('.govuk-summary-list__row', name).find('.govuk-summary-list__actions a').click();
 
       inputNameAndContractType(updatedName, updatedContractType, 'Save and return');
+
+      cy.contains('Add a staff record').should('be.visible');
+      cy.contains('.govuk-summary-list__value', name).should('not.exist');
       cy.contains('.govuk-summary-list__value', updatedName).should('be.visible');
       cy.contains('.govuk-summary-list__value', updatedContractType).should('be.visible');
     });
@@ -106,7 +115,7 @@ describe('Standalone staff records page as edit user', () => {
   };
 
   const inputNameAndContractType = (name = 'Bob', contractType = 'Permanent', buttonText = 'Continue') => {
-    cy.getByLabel('Name or ID number').type(name);
+    cy.getByLabel('Name or ID number').clear().type(name);
     cy.getByLabel(contractType).click();
     cy.contains('button', buttonText).click();
   };

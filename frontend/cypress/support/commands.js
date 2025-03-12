@@ -39,7 +39,8 @@ Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
     `DELETE FROM cqc."UserAudit"
         USING cqc."User"
         WHERE "UserAudit"."UserFK" = "User"."RegistrationID"
-        AND "User"."FullNameValue" = $1;`,
+        AND "User"."FullNameValue" = $1
+        AND "When" >= CURRENT_DATE;`,
     `DELETE FROM cqc."Login"
         USING cqc."User"
         WHERE "Login"."RegistrationID" = "User"."RegistrationID"
@@ -58,7 +59,8 @@ Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
     `DELETE FROM cqc."EstablishmentAudit"
     USING cqc."Establishment"
     WHERE "Establishment"."EstablishmentID" = "EstablishmentAudit"."EstablishmentFK"
-    AND "Establishment"."NameValue" = $1;`,
+    AND "Establishment"."NameValue" = $1
+    AND "When" >= CURRENT_DATE;`,
 
     `DELETE FROM "cqc"."Establishment"
     WHERE "NameValue" = $1;`,
@@ -75,6 +77,24 @@ Cypress.Commands.add('getNewUserUuidToken', () => {
     'SELECT "AddUuid" FROM cqc."AddUserTracking" WHERE "Completed" IS NULL ORDER BY "Created" DESC LIMIT 1;';
 
   return cy.task('dbQuery', { queryString }).its('rows.0.AddUuid');
+});
+
+Cypress.Commands.add('deleteTestWorkerFromDb', (workerName) => {
+  const queryStrings = [
+    `DELETE FROM cqc."WorkerAudit"
+      USING cqc."Worker"
+        WHERE "Worker"."NameOrIdValue" = $1
+        AND "WorkerAudit"."WorkerFK" = "Worker"."ID"
+        AND "When" >= CURRENT_DATE;`,
+    `DELETE FROM cqc."Worker"
+        WHERE "NameOrIdValue" = $1
+        AND "created" >= CURRENT_DATE;`,
+  ];
+
+  const parameters = [workerName];
+  queryStrings.forEach((queryString) => {
+    cy.task('dbQuery', { queryString, parameters });
+  });
 });
 
 // Cypress.Commands.add('loginAsUser', (username, password) => {
