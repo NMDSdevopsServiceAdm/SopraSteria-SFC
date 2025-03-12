@@ -900,11 +900,6 @@ module.exports = function (sequelize, DataTypes) {
       sourceKey: 'id',
       as: 'MandatoryTraining',
     });
-    Establishment.hasOne(models.childWorkplaces, {
-      as: 'childWorkplace',
-      foreignKey: 'id',
-      targetKey: 'id',
-    });
   };
 
   Establishment.turnoverAndVacanciesData = function (establishmentId) {
@@ -2224,14 +2219,6 @@ module.exports = function (sequelize, DataTypes) {
       };
     }
 
-    includedModels = [
-      {
-        model: sequelize.models.services,
-        as: 'mainService',
-        attributes: ['name'],
-      },
-    ];
-
     const data = await this.findAndCountAll({
       attributes: [
         'uid',
@@ -2245,7 +2232,13 @@ module.exports = function (sequelize, DataTypes) {
         'locationId',
         ...(getAttentionFlags ? [[sequelize.literal(shouldShowFlagOnWorkplace), 'showFlag']] : []),
       ],
-      include: includedModels,
+      include: [
+        {
+          model: sequelize.models.services,
+          as: 'mainService',
+          attributes: ['name'],
+        },
+      ],
       where: {
         ParentUID: establishmentUid,
         ustatus,
