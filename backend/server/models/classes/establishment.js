@@ -90,9 +90,7 @@ class Establishment extends EntityValidator {
     this._showSharingPermissionsBanner = null;
     this._expiresSoonAlertDate = null;
     this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment = null;
-    this._moneySpentOnAdvertisingInTheLastFourWeeks = null;
     this._wouldYouAcceptCareCertificatesFromPreviousEmployment = null;
-    this._peopleInterviewedInTheLastFourWeeks = null;
     this._showAddWorkplaceDetailsBanner = true;
     this._careWorkersLeaveDaysPerYear = null;
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
@@ -361,16 +359,8 @@ class Establishment extends EntityValidator {
     return this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
   }
 
-  get moneySpentOnAdvertisingInTheLastFourWeeks() {
-    return this._moneySpentOnAdvertisingInTheLastFourWeeks;
-  }
-
   get wouldYouAcceptCareCertificatesFromPreviousEmployment() {
     return this._wouldYouAcceptCareCertificatesFromPreviousEmployment;
-  }
-
-  get peopleInterviewedInTheLastFourWeeks() {
-    return this._peopleInterviewedInTheLastFourWeeks;
   }
 
   get showAddWorkplaceDetailsBanner() {
@@ -578,14 +568,6 @@ class Establishment extends EntityValidator {
 
         if (document.expiresSoonAlertDate) {
           this._expiresSoonAlertDate = document.expiresSoonAlertDate;
-        }
-
-        if ('moneySpentOnAdvertisingInTheLastFourWeeks' in document) {
-          this._moneySpentOnAdvertisingInTheLastFourWeeks = document.moneySpentOnAdvertisingInTheLastFourWeeks;
-        }
-
-        if ('peopleInterviewedInTheLastFourWeeks' in document) {
-          this._peopleInterviewedInTheLastFourWeeks = document.peopleInterviewedInTheLastFourWeeks;
         }
 
         if ('doNewStartersRepeatMandatoryTrainingFromPreviousEmployment' in document) {
@@ -841,8 +823,6 @@ class Establishment extends EntityValidator {
           attributes: ['id', 'created', 'updated'],
           ustatus: this._ustatus,
           expiresSoonAlertDate: '90',
-          moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
-          peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
           doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
             this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
           wouldYouAcceptCareCertificatesFromPreviousEmployment:
@@ -1044,8 +1024,6 @@ class Establishment extends EntityValidator {
             updatedBy: savedBy.toLowerCase(),
             ustatus: this._ustatus,
             showSharingPermissionsBanner: bulkUploaded ? false : this._showSharingPermissionsBanner,
-            moneySpentOnAdvertisingInTheLastFourWeeks: this._moneySpentOnAdvertisingInTheLastFourWeeks,
-            peopleInterviewedInTheLastFourWeeks: this._peopleInterviewedInTheLastFourWeeks,
             doNewStartersRepeatMandatoryTrainingFromPreviousEmployment:
               this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment,
             wouldYouAcceptCareCertificatesFromPreviousEmployment:
@@ -1364,10 +1342,8 @@ class Establishment extends EntityValidator {
         this._recruitmentJourneyExistingUserBanner = fetchResults.recruitmentJourneyExistingUserBanner;
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        this._moneySpentOnAdvertisingInTheLastFourWeeks = fetchResults.moneySpentOnAdvertisingInTheLastFourWeeks;
         this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
           fetchResults.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-        this._peopleInterviewedInTheLastFourWeeks = fetchResults.peopleInterviewedInTheLastFourWeeks;
         this._showAddWorkplaceDetailsBanner = fetchResults.showAddWorkplaceDetailsBanner;
         this._careWorkersCashLoyaltyForFirstTwoYears = fetchResults.careWorkersCashLoyaltyForFirstTwoYears;
         this._sickPay = fetchResults.sickPay;
@@ -1804,11 +1780,9 @@ class Establishment extends EntityValidator {
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
         myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        myDefaultJSON.moneySpentOnAdvertisingInTheLastFourWeeks = this.moneySpentOnAdvertisingInTheLastFourWeeks;
         myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
         myDefaultJSON.wouldYouAcceptCareCertificatesFromPreviousEmployment =
           this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
-        myDefaultJSON.peopleInterviewedInTheLastFourWeeks = this.peopleInterviewedInTheLastFourWeeks;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
         myDefaultJSON.careWorkersCashLoyaltyForFirstTwoYears = this.careWorkersCashLoyaltyForFirstTwoYears;
         myDefaultJSON.sickPay = this.sickPay;
