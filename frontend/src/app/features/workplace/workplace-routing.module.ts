@@ -45,7 +45,6 @@ import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existin
 import { HowManyLeaversComponent } from './how-many-leavers/how-many-leavers.component';
 import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
-import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { PensionsComponent } from './pensions/pensions.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
@@ -349,15 +348,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'How many leavers',
-        },
-      },
-      {
-        path: 'number-of-interviews',
-        component: NumberOfInterviewsComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Number Of Interviews',
         },
       },
       {
