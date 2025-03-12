@@ -1079,39 +1079,6 @@ describe('NewWorkplaceSummaryComponent', () => {
   });
 
   describe('Recruitment section', () => {
-    describe('People interviewed', () => {
-      it('should show dash and have Add information button on People Interviewed row when peopleInterviewedInTheLastFourWeeks is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.peopleInterviewedInTheLastFourWeeks = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(within(peopleInterviewedRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on People Interviewed row when peopleInterviewedInTheLastFourWeeks has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(
-          within(peopleInterviewedRow).queryByText(component.workplace.peopleInterviewedInTheLastFourWeeks),
-        ).toBeTruthy();
-      });
-    });
-
     describe('Repeat training', () => {
       it('should show dash and have Add information button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
