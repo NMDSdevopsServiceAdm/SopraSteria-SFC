@@ -18,8 +18,30 @@
         <p>{{ workplace.mainService }}</p>
       </div>
       <div class="govuk-grid-column-one-third govuk-!-text-align-right">
+        <ng-container *ngIf="workplace.showFlag">
+          <span class="govuk-util__float-right">
+            <img
+              src="/assets/images/flag-red.svg"
+              alt="action-required-red-flag"
+              class="govuk-!-margin-right-2"
+              data-testid="red-flag"
+            />
+            <a
+              *ngIf="!(workplace.dataPermissions === 'None' && workplace.dataOwner == 'Workplace'); else linkedOnly"
+              href="#"
+              (click)="setEmployerType($event)"
+              class="govuk-util__float-right"
+              >Check this workplace</a
+            >
+            <ng-template #linkedOnly>
+              <p class="govuk-util__float-right">Check this workplace</p>
+            </ng-template>
+          </span>
+        </ng-container>
         <ng-container *ngIf="isAdminUser() && isLoggedIn()">
-          <a (click)="moveWorkplaceAdmin($event)" href="#" class="govuk-link">Move workplace</a>
+          <span class="govuk-util__float-right">
+            <a (click)="moveWorkplaceAdmin($event)" href="#">Move workplace</a>
+          </span>
         </ng-container>
       </div>
     </div>

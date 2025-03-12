@@ -10,6 +10,7 @@ export interface GetChildWorkplacesResponse {
   childWorkplaces: Workplace[];
   count: number;
   activeWorkplaceCount: number;
+  showFlag: boolean;
 }
 
 export interface Workplace {
@@ -28,6 +29,7 @@ export interface Workplace {
   ustatus?: string;
   linkToParentRequested?: string;
   postCode?: string;
+  showFlag?: boolean;
   nameAndPostCode?: string;
   id?: number;
   wdf?: {
