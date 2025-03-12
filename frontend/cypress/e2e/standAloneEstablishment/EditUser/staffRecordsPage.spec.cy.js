@@ -6,7 +6,7 @@ import { onHomePage } from '../../../support/page_objects/onHomePage';
 describe('Standalone staff records page as edit user', () => {
   const testWorkerNames = ['Mr Cool', 'Mr Warm', 'Mr Smith', 'Bob'];
 
-  beforeAll(() => {
+  before(() => {
     testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
   });
 
