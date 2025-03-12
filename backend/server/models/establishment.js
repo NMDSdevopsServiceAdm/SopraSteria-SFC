@@ -699,16 +699,6 @@ module.exports = function (sequelize, DataTypes) {
         defaultValue: false,
         field: 'IsNationalOrg',
       },
-      peopleInterviewedInTheLastFourWeeks: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"PeopleInterviewedInTheLastFourWeeks"',
-      },
-      moneySpentOnAdvertisingInTheLastFourWeeks: {
-        type: DataTypes.TEXT,
-        allowNull: true,
-        field: '"MoneySpentOnAdvertisingInTheLastFourWeeks"',
-      },
       doNewStartersRepeatMandatoryTrainingFromPreviousEmployment: {
         type: DataTypes.ENUM,
         allowNull: true,
@@ -1368,8 +1358,6 @@ module.exports = function (sequelize, DataTypes) {
         'StartersValue',
         'LeaversValue',
         'reasonsForLeaving',
-        'moneySpentOnAdvertisingInTheLastFourWeeks',
-        'peopleInterviewedInTheLastFourWeeks',
         'doNewStartersRepeatMandatoryTrainingFromPreviousEmployment',
         'wouldYouAcceptCareCertificatesFromPreviousEmployment',
         'careWorkersLeaveDaysPerYear',
