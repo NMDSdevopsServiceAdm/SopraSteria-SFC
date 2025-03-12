@@ -53,6 +53,23 @@ Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
   });
 });
 
+Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
+  const queryStrings = [
+    `DELETE FROM cqc."EstablishmentAudit"
+    USING cqc."Establishment"
+    WHERE "Establishment"."EstablishmentID" = "EstablishmentAudit"."EstablishmentFK"
+    AND "Establishment"."NameValue" = $1;`,
+
+    `DELETE FROM "cqc"."Establishment"
+    WHERE "NameValue" = $1;`,
+  ];
+
+  const parameters = [workplaceName];
+  queryStrings.forEach((queryString) => {
+    cy.task('dbQuery', { queryString, parameters });
+  });
+});
+
 Cypress.Commands.add('getNewUserUuidToken', () => {
   const queryString =
     'SELECT "AddUuid" FROM cqc."AddUserTracking" WHERE "Completed" IS NULL ORDER BY "Created" DESC LIMIT 1;';

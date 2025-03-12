@@ -1,9 +1,10 @@
 /// <reference types="cypress" />
+import { fillUserRegistrationForm } from './fillUserRegistrationForm';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 
-describe('As an admin I want to register a new user', () => {
+describe('As a workplace primary user I want to register a new user', () => {
   const userFullName = 'Test new user for cypress';
-  const loginId = 'cypress-test-user-0001';
+  const loginId = 'cypress-test-user-0002';
   const mockPassword = 'Some-very-super-strong-p@ssw0rd';
 
   before(() => {
@@ -17,6 +18,16 @@ describe('As an admin I want to register a new user', () => {
 
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
+
+    // get pass the vacancies and turnover login message if necessary
+    cy.get('h1').should('not.contain', 'Sign in');
+    cy.get('h1')
+      .invoke('text')
+      .then((headingText) => {
+        if (headingText.includes('Your Workplace vacancies and turnover information')) {
+          cy.get('a').contains('Continue').click();
+        }
+      });
   });
 
   it('should be able to create a new user for the workplace', () => {
@@ -42,18 +53,7 @@ describe('As an admin I want to register a new user', () => {
       cy.visit(registrationUrl);
     });
 
-    cy.get('h1').should('contain.text', 'Create your username and password');
-
-    cy.getByLabel('Username').type(loginId);
-    cy.getByLabel('Password').type(mockPassword);
-    cy.getByLabel('Confirm password').type(mockPassword);
-    cy.get('button').contains('Continue').click();
-
-    cy.get('h1').should('contain.text', 'Create and answer your security question');
-
-    cy.getByLabel('Security question').type('What is the colour of a green orange?');
-    cy.getByLabel('Answer').type('green');
-    cy.get('button').contains('Continue').click();
+    fillUserRegistrationForm({ username: loginId, password: mockPassword });
 
     cy.get('h1').should('contain.text', 'Confirm your account details');
     cy.get('input#termsAndConditions').check();
