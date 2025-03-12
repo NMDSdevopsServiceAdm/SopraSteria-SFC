@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { StandAloneEstablishment } from '../../../support/establishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Standalone home page as read only user', () => {
@@ -12,7 +13,7 @@ describe('Standalone home page as read only user', () => {
   });
 
   it('should see the standalone establishment home page', () => {
-    cy.contains('df');
+    cy.contains(StandAloneEstablishment.name);
   });
 
   it('should show all tabs', () => {

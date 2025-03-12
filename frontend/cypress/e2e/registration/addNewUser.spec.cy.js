@@ -1,6 +1,7 @@
 /// <reference types="cypress" />
 import { fillUserRegistrationForm } from './fillUserRegistrationForm';
 import { onHomePage } from '../../support/page_objects/onHomePage';
+import { StandAloneEstablishment } from '../../support/establishmentData';
 
 describe('As a workplace primary user I want to register a new user', () => {
   const userFullName = 'Test new user for cypress';
@@ -74,7 +75,7 @@ describe('As a workplace primary user I want to register a new user', () => {
         getPassVacanciesAndTurnoverLoginMessage();
       }
 
-      cy.get('h1').contains('df').should('be.visible');
+      cy.get('h1').contains(StandAloneEstablishment.name).should('be.visible');
       onHomePage.allTabs(userType);
     });
   });

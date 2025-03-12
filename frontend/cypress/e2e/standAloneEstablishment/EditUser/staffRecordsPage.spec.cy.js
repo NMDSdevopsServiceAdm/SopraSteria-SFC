@@ -1,9 +1,14 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { StandAloneEstablishment } from '../../../support/establishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Standalone staff records page as edit user', () => {
-  const testWorkerNames = ['Mr Cool', 'Mr Smith', 'Bob'];
+  const testWorkerNames = ['Mr Cool', 'Mr Warm', 'Mr Smith', 'Bob'];
+
+  beforeAll(() => {
+    testWorkerNames.forEach((workerName) => cy.deleteTestWorkerFromDb(workerName));
+  });
 
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
@@ -15,7 +20,7 @@ describe('Standalone staff records page as edit user', () => {
   });
 
   it('should show the staff records page', () => {
-    cy.get('[data-cy="dashboard-header"]').should('contain', 'df');
+    cy.get('[data-cy="dashboard-header"]').should('contain', StandAloneEstablishment.name);
     cy.get('[data-cy="dashboard-header"]').find('[data-testid="lastUpdatedDate"]').should('exist');
     cy.get('[data-cy="dashboard-header"]').should('contain', 'Add a staff record');
     cy.get('[data-testid="staff-records"]').should('exist');
@@ -98,6 +103,29 @@ describe('Standalone staff records page as edit user', () => {
       cy.go('back');
       cy.getByLabel('Name or ID number').should('have.value', 'Mr Cool');
       cy.getByLabel('Permanent').should('be.checked');
+    });
+  });
+
+  describe('Delete a staff record', () => {
+    it('should delete a staff record successfully', () => {
+      const workerName = 'Mr Warm';
+      cy.intercept('DELETE', '/api/establishment/*/worker/*').as('deleteWorker');
+
+      cy.insertTestWorker({ establishmentID: StandAloneEstablishment.id, workerName });
+      cy.reload();
+
+      cy.get('a').contains(workerName).click();
+
+      cy.get('h1').invoke('text').should('eq', 'Staff record');
+      cy.contains('a', 'Delete staff record').click();
+      cy.getByLabel('Reason not known').check();
+      cy.get('input#confirmDelete').check();
+
+      cy.get('button').contains('Delete this staff record').click();
+      cy.wait('@deleteWorker');
+
+      cy.contains(`Staff record deleted (${workerName})`).should('be.visible');
+      cy.get('a').contains(workerName).should('not.exist');
     });
   });
 
