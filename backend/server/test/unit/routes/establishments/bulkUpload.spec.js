@@ -531,7 +531,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       sinon.stub(models.establishment, 'findAll').returns([{}]);
 
       expect(csvEstablishmentSchemaErrors.length).equals(2);
-      expect(csvEstablishmentSchemaErrors).to.eql([
+      expect(csvEstablishmentSchemaErrors).to.equal([
         {
           origin: 'Establishments',
           lineNumber: 2,
