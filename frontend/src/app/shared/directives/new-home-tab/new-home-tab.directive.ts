@@ -85,7 +85,7 @@ export class NewHomeTabDirective implements OnInit, OnDestroy, OnChanges {
   public isParentSubsidiaryView: boolean;
   public article: Article;
   public noOfWorkersWhoRequireInternationalRecruitment: number;
-  workplacesNeedAttention: any;
+  public workplacesNeedAttention: boolean;
 
   constructor(
     private userService: UserService,

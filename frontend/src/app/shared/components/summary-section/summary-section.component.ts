@@ -204,16 +204,14 @@ export class SummarySectionComponent implements OnInit, OnChanges {
       this.otherWorkplacesSection.link = true;
       this.otherWorkplacesSection.orangeFlag = true;
     } else if (this.workplacesNeedAttention) {
-      this.otherWorkplacesSection.message = "You need to check your other workplaces";
+      this.otherWorkplacesSection.message = 'You need to check your other workplaces';
       this.otherWorkplacesSection.link = true;
-      this.otherWorkplacesSection.redFlag = true
-    }
-    else {
+      this.otherWorkplacesSection.redFlag = true;
+    } else {
       this.otherWorkplacesSection.message = 'Check and update your other workplaces often';
       this.otherWorkplacesSection.link = false;
       this.otherWorkplacesSection.orangeFlag = false;
     }
-
   }
 
   public showViewSummaryLinks(linkText: string): void {
