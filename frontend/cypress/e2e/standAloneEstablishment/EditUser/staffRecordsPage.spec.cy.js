@@ -46,7 +46,7 @@ describe('Standalone staff records page as edit user', () => {
 
       cy.contains('.govuk-summary-list__row', mainJobRole).find('.govuk-summary-list__actions a').click();
 
-      cy.get('label').contains(updatedJobRole).parent().find('input').click();
+      cy.getByLabel(updatedJobRole).click();
       cy.contains('button', 'Save and return').click();
       cy.contains('.govuk-summary-list__value', updatedJobRole).should('be.visible');
     });
@@ -59,7 +59,7 @@ describe('Standalone staff records page as edit user', () => {
 
     it('should show validation error if no contract type selected', () => {
       cy.get('a[role="button"]').contains('Add a staff record').click();
-      cy.get('label').contains('Name or ID number').parent().find('input').type('Mr Cool');
+      cy.getByLabel('Name or ID number').type('Mr Cool');
       cy.contains('button', 'Continue').click();
 
       cy.contains('.govuk-error-message', 'Select the type of contract they have').should('be.visible');
@@ -69,8 +69,8 @@ describe('Standalone staff records page as edit user', () => {
       cy.get('a[role="button"]').contains('Add a staff record').click();
 
       // staff-details
-      cy.get('label').contains('Name or ID number').parent().find('input').type('Mr Cool');
-      cy.get('label').contains('Permanent').parent().find('input').click();
+      cy.getByLabel('Name or ID number').type('Mr Cool');
+      cy.getByLabel('Permanent').click();
       cy.contains('button', 'Continue').click();
 
       // main-job-role
@@ -82,13 +82,13 @@ describe('Standalone staff records page as edit user', () => {
       cy.get('a[role="button"]').contains('Add a staff record').click();
 
       // staff-details
-      cy.get('label').contains('Name or ID number').parent().find('input').type('Mr Cool');
-      cy.get('label').contains('Permanent').parent().find('input').click();
+      cy.getByLabel('Name or ID number').type('Mr Cool');
+      cy.getByLabel('Permanent').click();
       cy.contains('button', 'Continue').click();
 
       cy.go('back');
-      cy.get('label').contains('Name or ID number').parent().find('input').should('have.value', 'Mr Cool');
-      cy.get('label').contains('Permanent').parent().find('input').should('be.checked');
+      cy.getByLabel('Name or ID number').should('have.value', 'Mr Cool');
+      cy.getByLabel('Permanent').should('be.checked');
     });
   });
 
@@ -106,14 +106,14 @@ describe('Standalone staff records page as edit user', () => {
   };
 
   const inputNameAndContractType = (name = 'Bob', contractType = 'Permanent', buttonText = 'Continue') => {
-    cy.get('label').contains('Name or ID number').parent().find('input').type(name);
-    cy.get('label').contains(contractType).parent().find('input').click();
+    cy.getByLabel('Name or ID number').type(name);
+    cy.getByLabel(contractType).click();
     cy.contains('button', buttonText).click();
   };
 
   const inputMainJobRole = (mainJobRole, buttonText = 'Save this staff record') => {
     cy.get('button').contains('span', 'Care providing roles').click();
-    cy.get('label').contains(mainJobRole).parent().find('input').click();
+    cy.getByLabel(mainJobRole).click();
     cy.contains('button', buttonText).click();
   };
 
