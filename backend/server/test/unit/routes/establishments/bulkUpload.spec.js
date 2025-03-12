@@ -234,59 +234,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
   });
 
   describe('validateEstablishmentCsv()', () => {
-    it('should validate each line of the establishments CSV', async () => {
-      const workplace = {
-        address1: 'First Line',
-        address2: 'Second Line',
-        address3: '',
-        town: 'My Town',
-        postcode: 'LN11 9JG',
-        locationId: '1-12345678',
-        provId: '1-12345678',
-        isCQCRegulated: true,
-        reasonsForLeaving: '',
-        status: null,
-        name: 'WOZiTech, with even more care',
-        localIdentifier: 'omar3',
-        isRegulated: false,
-        employerType: { value: null, other: undefined },
-        localAuthorities: [],
-        mainService: null,
-        services: [],
-        serviceUsers: [],
-        numberOfStaff: null,
-        vacancies: 'None',
-        starters: 'None',
-        leavers: 'None',
-        share: { enabled: false },
-        capacities: [],
-      };
-      sinon.stub(workplaceCSVValidator.WorkplaceCSVValidator.prototype, 'validate').resolves();
-      sinon.stub(workplaceCSVValidator.WorkplaceCSVValidator.prototype, 'transform').resolves({});
-      sinon
-        .stub(Establishment.prototype, 'initialise')
-        .callsFake((address1, address2, address3, town, test, locationId, provId, postcode, isCQCRegulated) => {
-          expect(address1).to.deep.equal(workplace.address1);
-          expect(address2).to.deep.equal(workplace.address2);
-          expect(address3).to.deep.equal(workplace.address3);
-          expect(town).to.deep.equal(workplace.town);
-          expect(test).to.deep.equal(null);
-          expect(locationId).to.deep.equal(workplace.locationId);
-          expect(provId).to.deep.equal(workplace.provId);
-          expect(postcode).to.deep.equal(workplace.postcode);
-          expect(isCQCRegulated).to.deep.equal(workplace.isCQCRegulated);
-        });
-      sinon.stub(workplaceCSVValidator.WorkplaceCSVValidator.prototype, 'toAPI').callsFake(() => {
-        return workplace;
-      });
-      sinon.stub(Establishment.prototype, 'load').callsFake((args) => {
-        expect(args).to.deep.equal(workplace);
-      });
-      sinon.stub(Establishment.prototype, 'validate').resolves({});
-      sinon.stub(Establishment.prototype, 'key').get(() => {
-        return 'omar3';
-      });
-
+    beforeEach(async () => {
       await validateEstablishmentCsv(
         {
           LOCALESTID: 'omar3',
@@ -522,253 +470,65 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       );
     });
 
+    it('should validate each line of the establishments CSV', async () => {
+      const workplace = {
+        address1: 'First Line',
+        address2: 'Second Line',
+        address3: '',
+        town: 'My Town',
+        postcode: 'LN11 9JG',
+        locationId: '1-12345678',
+        provId: '1-12345678',
+        isCQCRegulated: true,
+        reasonsForLeaving: '',
+        status: null,
+        name: 'WOZiTech, with even more care',
+        localIdentifier: 'omar3',
+        isRegulated: false,
+        employerType: { value: null, other: undefined },
+        localAuthorities: [],
+        mainService: null,
+        services: [],
+        serviceUsers: [],
+        numberOfStaff: null,
+        vacancies: 'None',
+        starters: 'None',
+        leavers: 'None',
+        share: { enabled: false },
+        capacities: [],
+      };
+      sinon.stub(workplaceCSVValidator.WorkplaceCSVValidator.prototype, 'validate').resolves();
+      sinon.stub(workplaceCSVValidator.WorkplaceCSVValidator.prototype, 'transform').resolves({});
+      sinon
+        .stub(Establishment.prototype, 'initialise')
+        .callsFake((address1, address2, address3, town, test, locationId, provId, postcode, isCQCRegulated) => {
+          expect(address1).to.deep.equal(workplace.address1);
+          expect(address2).to.deep.equal(workplace.address2);
+          expect(address3).to.deep.equal(workplace.address3);
+          expect(town).to.deep.equal(workplace.town);
+          expect(test).to.deep.equal(null);
+          expect(locationId).to.deep.equal(workplace.locationId);
+          expect(provId).to.deep.equal(workplace.provId);
+          expect(postcode).to.deep.equal(workplace.postcode);
+          expect(isCQCRegulated).to.deep.equal(workplace.isCQCRegulated);
+        });
+      sinon.stub(workplaceCSVValidator.WorkplaceCSVValidator.prototype, 'toAPI').callsFake(() => {
+        return workplace;
+      });
+      sinon.stub(Establishment.prototype, 'load').callsFake((args) => {
+        expect(args).to.deep.equal(workplace);
+      });
+      sinon.stub(Establishment.prototype, 'validate').resolves({});
+      sinon.stub(Establishment.prototype, 'key').get(() => {
+        return 'omar3';
+      });
+    });
+
     it('should remove duplicate error codes', async () => {
       const csvEstablishmentSchemaErrors = [];
 
       sinon.stub(models.pcodedata, 'findAll').returns([{}]);
       sinon.stub(models.establishment, 'findAll').returns([{}]);
-
-      await validateEstablishmentCsv(
-        {
-          LOCALESTID: 'omar3',
-          STATUS: 'NEW',
-          ESTNAME: 'WOZiTech, with even more care',
-          ADDRESS1: 'First Line',
-          ADDRESS2: 'Second Line',
-          ADDRESS3: '',
-          POSTTOWN: 'My Town',
-          POSTCODE: 'LN11 9JG',
-          ESTTYPE: '6',
-          OTHERTYPE: '',
-          PERMCQC: '1',
-          PERMLA: '1',
-          SHARELA: '708;721;720',
-          REGTYPE: '0',
-          PROVNUM: '',
-          LOCATIONID: '',
-          MAINSERVICE: 'a',
-          ALLSERVICES: 'b',
-          CAPACITY: '0;0',
-          UTILISATION: '0;0',
-          SERVICEDESC: '1;1',
-          SERVICEUSERS: '',
-          OTHERUSERDESC: '',
-          TOTALPERMTEMP: '1',
-          ALLJOBROLES: '',
-          STARTERS: '0',
-          LEAVERS: '0',
-          VACANCIES: '0',
-          REASONS: '',
-          REASONNOS: '',
-          ADVERTISING: '',
-          INTERVIEWS: '',
-          REPEATTRAINING: '',
-          ACCEPTCARECERT: '',
-          BENEFITS: '',
-          SICKPAY: '',
-          PENSION: '',
-          HOLIDAY: '',
-        },
-        2,
-        csvEstablishmentSchemaErrors,
-        [],
-        [
-          {
-            _validations: [],
-            _username: 'aylingw',
-            _id: 479,
-            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-            _ustatus: null,
-            _created: '2019-03-15T09:54:10.562Z',
-            _updated: '2019-10-04T15:46:16.158Z',
-            _updatedBy: 'aylingw',
-            _auditEvents: null,
-            _name: 'WOZiTech, with even more care',
-            _address1: 'First Line',
-            _address2: 'Second Line',
-            _address3: '',
-            _town: 'My Town',
-            _county: '',
-            _locationId: null,
-            _provId: null,
-            _postcode: 'LN11 9JG',
-            _isRegulated: false,
-            _mainService: { id: 16, name: 'Head office services' },
-            _nmdsId: 'G1001114',
-            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-            _establishmentWdfEligibility: null,
-            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-            _isParent: true,
-            _parentUid: null,
-            _parentId: null,
-            _parentName: null,
-            _dataOwner: 'Workplace',
-            _dataPermissions: 'None',
-            _archived: false,
-            _dataOwnershipRequested: null,
-            _reasonsForLeaving: '',
-            _properties: {
-              _properties: [Object],
-              _propertyTypes: [Array],
-              _auditEvents: null,
-              _modifiedProperties: [],
-              _additionalModels: null,
-            },
-            _isNew: false,
-            _workerEntities: {},
-            _readyForDeletionWorkers: null,
-            _status: 'NEW',
-            _logLevel: 300,
-          },
-          {
-            _validations: [],
-            _username: 'aylingw',
-            _id: 1446,
-            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-            _ustatus: null,
-            _created: '2019-07-31T15:09:57.405Z',
-            _updated: '2019-10-04T15:46:16.797Z',
-            _updatedBy: 'aylingw',
-            _auditEvents: null,
-            _name: 'WOZiTech Cares Sub 100',
-            _address1: 'Number 1',
-            _address2: 'My street',
-            _address3: '',
-            _town: 'My Town',
-            _county: '',
-            _locationId: '1-888777666',
-            _provId: '1-999888777',
-            _postcode: 'LN11 9JG',
-            _isRegulated: true,
-            _mainService: { id: 1, name: 'Carers support' },
-            _nmdsId: 'G1002110',
-            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-            _overallWdfEligibility: null,
-            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-            _staffWdfEligibility: null,
-            _isParent: false,
-            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-            _parentId: 479,
-            _parentName: null,
-            _dataOwner: 'Parent',
-            _dataPermissions: 'None',
-            _archived: false,
-            _dataOwnershipRequested: null,
-            _reasonsForLeaving: '',
-            _properties: {
-              _properties: [Object],
-              _propertyTypes: [Array],
-              _auditEvents: null,
-              _modifiedProperties: [],
-              _additionalModels: null,
-            },
-            _isNew: false,
-            _workerEntities: {},
-            _readyForDeletionWorkers: null,
-            _status: 'COMPLETE',
-            _logLevel: 300,
-          },
-        ],
-        [
-          {
-            _validations: [],
-            _username: 'aylingw',
-            _id: 479,
-            _uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-            _ustatus: null,
-            _created: '2019-03-15T09:54:10.562Z',
-            _updated: '2019-10-04T15:46:16.158Z',
-            _updatedBy: 'aylingw',
-            _auditEvents: null,
-            _name: 'WOZiTech, with even more care',
-            _address1: 'First Line',
-            _address2: 'Second Line',
-            _address3: '',
-            _town: 'My Town',
-            _county: '',
-            _locationId: null,
-            _provId: null,
-            _postcode: 'LN11 9JG',
-            _isRegulated: false,
-            _mainService: { id: 16, name: 'Head office services' },
-            _nmdsId: 'G1001114',
-            _lastWdfEligibility: '2019-08-16T07:17:38.014Z',
-            _overallWdfEligibility: '2019-08-16T07:17:38.340Z',
-            _establishmentWdfEligibility: null,
-            _staffWdfEligibility: '2019-08-13T12:41:24.836Z',
-            _isParent: true,
-            _parentUid: null,
-            _parentId: null,
-            _parentName: null,
-            _dataOwner: 'Workplace',
-            _dataPermissions: 'None',
-            _archived: false,
-            _dataOwnershipRequested: null,
-            _reasonsForLeaving: '',
-            _properties: {
-              _properties: [Object],
-              _propertyTypes: [Array],
-              _auditEvents: null,
-              _modifiedProperties: [],
-              _additionalModels: null,
-            },
-            _isNew: false,
-            _workerEntities: {},
-            _readyForDeletionWorkers: null,
-            _status: 'NEW',
-            _logLevel: 300,
-          },
-          {
-            _validations: [],
-            _username: 'aylingw',
-            _id: 1446,
-            _uid: 'a415435f-40f2-4de5-abf7-bff611e85591',
-            _ustatus: null,
-            _created: '2019-07-31T15:09:57.405Z',
-            _updated: '2019-10-04T15:46:16.797Z',
-            _updatedBy: 'aylingw',
-            _auditEvents: null,
-            _name: 'WOZiTech Cares Sub 100',
-            _address1: 'Number 1',
-            _address2: 'My street',
-            _address3: '',
-            _town: 'My Town',
-            _county: '',
-            _locationId: '1-888777666',
-            _provId: '1-999888777',
-            _postcode: 'LN11 9JG',
-            _isRegulated: true,
-            _mainService: { id: 1, name: 'Carers support' },
-            _nmdsId: 'G1002110',
-            _lastWdfEligibility: '2019-10-04T15:46:16.797Z',
-            _overallWdfEligibility: null,
-            _establishmentWdfEligibility: '2019-10-04T14:46:16.797Z',
-            _staffWdfEligibility: null,
-            _isParent: false,
-            _parentUid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd',
-            _parentId: 479,
-            _parentName: null,
-            _dataOwner: 'Parent',
-            _dataPermissions: 'None',
-            _archived: false,
-            _dataOwnershipRequested: null,
-            _reasonsForLeaving: '',
-            _properties: {
-              _properties: [Object],
-              _propertyTypes: [Array],
-              _auditEvents: null,
-              _modifiedProperties: [],
-              _additionalModels: null,
-            },
-            _isNew: false,
-            _workerEntities: {},
-            _readyForDeletionWorkers: null,
-            _status: 'COMPLETE',
-            _logLevel: 300,
-          },
-        ],
-      );
 
       expect(csvEstablishmentSchemaErrors.length).equals(2);
       expect(csvEstablishmentSchemaErrors).to.eql([
@@ -795,6 +555,7 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
       ]);
     });
   });
+
   describe('sendCountToSlack()', () => {
     it('should send notification to slack with over 500 workers', async () => {
       const differenceReport = {
