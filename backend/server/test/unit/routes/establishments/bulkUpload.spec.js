@@ -235,6 +235,9 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
 
   describe('validateEstablishmentCsv()', () => {
     beforeEach(async () => {
+      sinon.stub(models.pcodedata, 'findAll').returns([{}]);
+      sinon.stub(models.establishment, 'findAll').returns([{}]);
+
       await validateEstablishmentCsv(
         {
           LOCALESTID: 'omar3',
@@ -526,9 +529,6 @@ describe('/server/routes/establishment/bulkUpload.js', () => {
 
     it('should remove duplicate error codes', async () => {
       const csvEstablishmentSchemaErrors = [];
-
-      sinon.stub(models.pcodedata, 'findAll').returns([{}]);
-      sinon.stub(models.establishment, 'findAll').returns([{}]);
 
       expect(csvEstablishmentSchemaErrors.length).equals(2);
       expect(csvEstablishmentSchemaErrors).to.equal([
