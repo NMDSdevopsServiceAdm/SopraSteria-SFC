@@ -53,7 +53,7 @@ describe('As a workplace primary user I want to register a new user', () => {
 
       cy.get('a').contains('Sign in').should('be.visible');
 
-      // register username and password
+      // mimic visiting the registration link from email
       cy.getNewUserUuidToken().then((uuidToken) => {
         const registrationUrl = `/activate-account/${uuidToken}/create-username`;
         cy.visit(registrationUrl);
