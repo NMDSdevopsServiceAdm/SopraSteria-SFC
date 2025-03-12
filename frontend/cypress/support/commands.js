@@ -1,3 +1,5 @@
+import { v4 as uuidv4 } from 'uuid';
+
 /* eslint-disable no-undef */
 Cypress.Commands.add('openLoginPage', () => {
   cy.visit('/');
@@ -77,6 +79,22 @@ Cypress.Commands.add('getNewUserUuidToken', () => {
     'SELECT "AddUuid" FROM cqc."AddUserTracking" WHERE "Completed" IS NULL ORDER BY "Created" DESC LIMIT 1;';
 
   return cy.task('dbQuery', { queryString }).its('rows.0.AddUuid');
+});
+
+Cypress.Commands.add('insertTestWorker', (args) => {
+  const {
+    establishmentID = '180',
+    workerName = 'Cypress test worker',
+    contractType = 'Permanent',
+    mainJobFKValue = '10',
+    completed = true,
+  } = args;
+  const queryString = `INSERT INTO cqc."Worker"
+    ("WorkerUID", "EstablishmentFK", "NameOrIdValue", "ContractValue", "MainJobFKValue", "CompletedValue", "updatedby")
+    VALUES ($1, $2, $3, $4, $5, $6, 'admin1')`;
+  const parameters = [uuidv4(), establishmentID, workerName, contractType, mainJobFKValue, completed];
+
+  cy.task('dbQuery', { queryString, parameters });
 });
 
 Cypress.Commands.add('deleteTestWorkerFromDb', (workerName) => {
