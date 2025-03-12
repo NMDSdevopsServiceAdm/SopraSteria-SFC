@@ -1,5 +1,11 @@
 import { fillUserRegistrationForm } from './fillUserRegistrationForm';
 import { onHomePage } from '../../support/page_objects/onHomePage';
+import { MockNewEstablishment } from '../../support/mockEstablishmentData';
+import {
+  inputLocationOrPostcode,
+  fillInAddress,
+  approveRegistrationRequestAsAdmin,
+} from '../../support/page_objects/createNewWorkplace';
 
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
@@ -52,36 +58,36 @@ describe('Create account', () => {
       'contain',
       'Select yes if the main service you provide is regulated by the Care Quality Commission',
     );
-    cy.get('#regulatedByCQC-1').check();
+  });
 
-    cy.get('[data-testid="continueButton"]').click();
-
-    cy.getByLabel('CQC location ID or postcode').type('LS1 1AA');
-    cy.get('button').contains('Find workplace').click();
-
-    cy.getByLabel("No, I'll enter our workplace details myself").check();
+  it('should be able to create a new account', () => {
+    cy.contains('Create an account').click();
+    cy.contains('Start now').click();
     cy.get('button').contains('Continue').click();
 
-    cy.getByLabel('Workplace name').type('Test workplace for cypress');
-    cy.get('input#address1').type('Unit 1A, Sunset House');
-    cy.get('input#address2').type('Sunset Lane');
-    cy.get('input#townOrCity').type('Leeds');
-    cy.get('input#county').type('Leeds');
-    cy.get('input#postcode').type('LS1 1AA');
-
+    // regulated by cqc
+    cy.getByLabel('Yes').check();
     cy.get('button').contains('Continue').click();
 
+    inputLocationOrPostcode(MockNewEstablishment.address.postcode);
+
+    fillInAddress(MockNewEstablishment.name, MockNewEstablishment.address);
+
+    // Employer type
     cy.getByLabel('Voluntary, charity, not for profit').check();
     cy.get('button').contains('Continue').click();
 
+    // Main service
     cy.getByLabel('Domiciliary care services').check();
     cy.get('button').contains('Continue').click();
 
+    // Number of staff
     cy.getByLabel('Number of staff').type(5);
     cy.get('button').contains('Continue').click();
 
+    // Main user info
     cy.getByLabel('Full name').type(userFullName);
-    cy.getByLabel('Job title ').type('Manager');
+    cy.getByLabel('Job title').type('Manager');
     cy.getByLabel('Email address').type('test@example.com');
     cy.getByLabel('Phone number').type('0123456789');
     cy.get('button').contains('Continue').click();
@@ -99,13 +105,7 @@ describe('Create account', () => {
     cy.contains('Your registration request is awaiting approval').should('be.visible');
 
     // approve the registration request
-    cy.loginAsAdmin();
-    cy.get('a').contains('Registration requests').click();
-    cy.get('a').contains(workplaceName).click();
-    cy.contains(`Registration request: ${workplaceName}`).should('be.visible');
-    cy.get('button').contains('Approve').click();
-    cy.get('button').contains('Approve this request').click();
-    cy.get('a').contains('Sign out').click();
+    approveRegistrationRequestAsAdmin(workplaceName);
 
     // try login again as the new user
     cy.loginAsUser(loginId, mockPassword);
