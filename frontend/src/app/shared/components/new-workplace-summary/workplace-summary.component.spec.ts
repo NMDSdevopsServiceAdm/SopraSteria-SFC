@@ -1079,41 +1079,6 @@ describe('NewWorkplaceSummaryComponent', () => {
   });
 
   describe('Recruitment section', () => {
-    describe('Advertising spend', () => {
-      it('should show dash and have Add information button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks = null;
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(within(advertisingSpendRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.canEditEstablishment = true;
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(
-          within(advertisingSpendRow).getByText(
-            `£${component.formatMonetaryValue(component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks)}`,
-          ),
-        ).toBeTruthy();
-      });
-    });
-
     describe('People interviewed', () => {
       it('should show dash and have Add information button on People Interviewed row when peopleInterviewedInTheLastFourWeeks is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
