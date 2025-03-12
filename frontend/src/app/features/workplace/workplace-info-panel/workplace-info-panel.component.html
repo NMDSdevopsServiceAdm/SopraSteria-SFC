@@ -18,7 +18,7 @@
         <p>{{ workplace.mainService }}</p>
       </div>
       <div class="govuk-grid-column-one-third govuk-!-text-align-right">
-        <ng-container *ngIf="workplace.showFlag; else moveWorkplace">
+        <ng-container *ngIf="workplace.showFlag">
           <span class="govuk-util__float-right">
             <img
               src="/assets/images/flag-red.svg"
@@ -38,13 +38,11 @@
             </ng-template>
           </span>
         </ng-container>
-        <ng-template #moveWorkplace>
-          <ng-container *ngIf="isAdminUser() && isLoggedIn()">
-            <span class="govuk-util__float-right">
-              <a (click)="moveWorkplaceAdmin($event)" href="#">Move workplace</a>
-            </span>
-          </ng-container>
-        </ng-template>
+        <ng-container *ngIf="isAdminUser() && isLoggedIn()">
+          <span class="govuk-util__float-right">
+            <a (click)="moveWorkplaceAdmin($event)" href="#">Move workplace</a>
+          </span>
+        </ng-container>
       </div>
     </div>
   </div>
