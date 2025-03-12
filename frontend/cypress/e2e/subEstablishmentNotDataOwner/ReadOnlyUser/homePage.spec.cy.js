@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
+import { SubEstablishmentNotDataOwner } from '../../../support/establishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub home page as read only user', () => {
@@ -13,8 +14,8 @@ describe('Sub home page as read only user', () => {
   });
 
   it('should see the admin page', () => {
-    cy.contains('Aster House');
-    cy.contains('Workplace test 1');
+    cy.contains(SubEstablishmentNotDataOwner.parentName);
+    cy.contains(SubEstablishmentNotDataOwner.name);
   });
 
   // waiting for permission fix to be available on test branch

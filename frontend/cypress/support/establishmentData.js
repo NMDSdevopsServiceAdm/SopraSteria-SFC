@@ -14,10 +14,12 @@ export const SubEstablishment = {
   name: 'Training',
   id: 915,
   nmdsId: 'J1001811',
+  parentName: 'Buckden Court',
 };
 
 export const SubEstablishmentNotDataOwner = {
   name: 'Workplace test 1',
   id: 853,
   nmdsId: 'G1001749',
+  parentName: ParentEstablishment.name,
 };

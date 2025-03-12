@@ -1,5 +1,6 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { SubEstablishmentNotDataOwner } from '../../../support/establishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub home page as edit user where parent owns the data', () => {
@@ -12,8 +13,8 @@ describe('Sub home page as edit user where parent owns the data', () => {
   });
 
   it('should see the admin page', () => {
-    cy.contains('Aster House');
-    cy.contains('Workplace test 1');
+    cy.contains(SubEstablishmentNotDataOwner.parentName);
+    cy.contains(SubEstablishmentNotDataOwner.name);
   });
 
   it('should show all tabs when sub has view workplace and staff records permissions', () => {
