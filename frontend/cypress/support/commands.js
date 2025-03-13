@@ -50,10 +50,12 @@ Cypress.Commands.add('deleteTestUserFromDb', (userFullName) => {
 
     `DELETE FROM cqc."User" WHERE "FullNameValue" = $1;`,
   ];
+
   const parameters = [userFullName];
-  queryStrings.forEach((queryString) => {
-    cy.task('dbQuery', { queryString, parameters });
-  });
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
 });
 
 Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
@@ -67,11 +69,11 @@ Cypress.Commands.add('deleteTestWorkplaceFromDb', (workplaceName) => {
     `DELETE FROM "cqc"."Establishment"
     WHERE "NameValue" = $1;`,
   ];
-
   const parameters = [workplaceName];
-  queryStrings.forEach((queryString) => {
-    cy.task('dbQuery', { queryString, parameters });
-  });
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
 });
 
 Cypress.Commands.add('getNewUserUuidToken', () => {
@@ -110,9 +112,10 @@ Cypress.Commands.add('deleteTestWorkerFromDb', (workerName) => {
   ];
 
   const parameters = [workerName];
-  queryStrings.forEach((queryString) => {
-    cy.task('dbQuery', { queryString, parameters });
-  });
+
+  const dbQueries = queryStrings.map((queryString) => ({ queryString, parameters }));
+
+  cy.task('multipleDbQueries', dbQueries);
 });
 
 // Cypress.Commands.add('loginAsUser', (username, password) => {

@@ -50,6 +50,16 @@ export default defineConfig({
           await client.end();
           return res;
         },
+
+        async multipleDbQueries(dbQueries: DbQueryType[]) {
+          const client = new Client(dbConfig);
+          await client.connect();
+          for (const { queryString, parameters } of dbQueries) {
+            await client.query(queryString, parameters);
+          }
+          await client.end();
+          return null;
+        },
       });
       // implement node event listeners here
     },
