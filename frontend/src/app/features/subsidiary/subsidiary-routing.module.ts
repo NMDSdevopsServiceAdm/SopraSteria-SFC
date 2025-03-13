@@ -26,7 +26,6 @@ import { AcceptPreviousCareCertificateComponent } from '@features/workplace/acce
 import { BenefitsStatutorySickPayComponent } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { ChangeExpiresSoonAlertsComponent } from '@features/workplace/change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from '@features/workplace/check-answers/check-answers.component';
-import { ConfirmStaffRecruitmentAndBenefitsComponent } from '@features/workplace/confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { CreateUserAccountComponent } from '@features/workplace/create-user-account/create-user-account.component';
 import { DataSharingComponent } from '@features/workplace/data-sharing/data-sharing.component';
 import { DeleteUserAccountComponent } from '@features/workplace/delete-user-account/delete-user-account.component';
@@ -454,15 +453,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Staff Recruitment Capture Training Requirement',
-        },
-      },
-      {
-        path: 'confirm-staff-recruitment-and-benefits',
-        component: ConfirmStaffRecruitmentAndBenefitsComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: {
-          permissions: ['canEditEstablishment'],
-          title: 'Confirm Staff Recruitment And Benefits',
         },
       },
       {
