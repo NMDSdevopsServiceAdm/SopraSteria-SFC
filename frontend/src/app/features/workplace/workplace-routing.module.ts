@@ -60,7 +60,6 @@ import { ServicesCapacityComponent } from './services-capacity/services-capacity
 import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
-import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from './start/start.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
@@ -137,13 +136,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Start',
-        },
-      },
-      {
-        path: 'staff-recruitment-start',
-        component: StaffRecruitmentStartComponent,
-        data: {
-          title: 'Staff Recruitment Start',
         },
       },
       {

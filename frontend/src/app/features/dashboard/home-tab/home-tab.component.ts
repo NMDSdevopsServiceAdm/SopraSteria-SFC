@@ -392,18 +392,6 @@ export class HomeTabComponent implements OnInit, OnDestroy {
     return new Date(dateString);
   }
 
-  public setRecuritmentBannerToTrue(event: Event): void {
-    event.preventDefault();
-    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
-    if (this.canEditEstablishment) {
-      this.subscriptions.add(
-        this.establishmentService
-          .updateSingleEstablishmentField(this.workplace.uid, data)
-          .subscribe(() => this.router.navigate(['/workplace', this.workplace.uid, 'staff-recruitment-start'])),
-      );
-    }
-  }
-
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
