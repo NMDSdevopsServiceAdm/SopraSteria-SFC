@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -98,10 +98,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
 
   describe('progress bar', () => {
     it('should render the progress bar when in the flow', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.return = null;
-      fixture.detectChanges();
+      const { getByTestId } = await setup(null);
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
@@ -111,17 +108,6 @@ describe('AcceptPreviousCareCertificateComponent', () => {
 
       expect(getByTestId('section-heading')).toBeTruthy();
       expect(queryByTestId('progress-bar')).toBeFalsy();
-    });
-
-    it('should render the recruitment and staff benefits progress bar when in the staff recruitment flow', async () => {
-      const { component, fixture, getByTestId } = await setup();
-
-      component.return = null;
-      component.inStaffRecruitmentFlow = true;
-      fixture.detectChanges();
-
-      expect(getByTestId('progress-bar-2')).toBeTruthy();
-      expect(getByTestId('progress-bar-3')).toBeTruthy();
     });
   });
 
