@@ -67,6 +67,7 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
+import { TotalNumberOfStaffComponent } from './update-affected-workplace-fields/total-number-of-staff/total-number-of-staff.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
@@ -126,6 +127,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     Level2AdultSocialCareCertificateComponent,
     MainJobRoleComponent,
     DeleteStaffRecordComponent,
+    TotalNumberOfStaffComponent,
   ],
   providers: [
     DialogService,
