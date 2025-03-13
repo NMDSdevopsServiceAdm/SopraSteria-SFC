@@ -56,7 +56,6 @@ import { ServicesCapacityComponent } from '@features/workplace/services-capacity
 import { StaffBenefitCashLoyaltyComponent } from '@features/workplace/staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffBenefitHolidayLeaveComponent } from '@features/workplace/staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from '@features/workplace/staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
-import { StaffRecruitmentStartComponent } from '@features/workplace/staff-recruitment/staff-recruitment-start.component';
 import { StartComponent } from '@features/workplace/start/start.component';
 import { TotalStaffQuestionComponent } from '@features/workplace/total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from '@features/workplace/type-of-employer/type-of-employer.component';
@@ -225,13 +224,6 @@ const routes: Routes = [
         data: {
           permissions: ['canEditEstablishment'],
           title: 'Start',
-        },
-      },
-      {
-        path: 'staff-recruitment-start',
-        component: StaffRecruitmentStartComponent,
-        data: {
-          title: 'Staff Recruitment Start',
         },
       },
       {
