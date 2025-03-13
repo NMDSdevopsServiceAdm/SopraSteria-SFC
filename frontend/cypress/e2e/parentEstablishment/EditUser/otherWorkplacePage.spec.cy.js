@@ -3,7 +3,7 @@ import {
   approveRegistrationRequestAsAdmin,
   fillInAddress,
   inputLocationOrPostcode,
-} from '../../../support/page_objects/createNewWorkplace';
+} from '../../../support/page_objects/createNewWorkplaceForms';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Parent "Your other workplaces" page as edit user', () => {

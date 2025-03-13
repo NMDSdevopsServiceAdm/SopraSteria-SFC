@@ -1,11 +1,11 @@
-import { fillUserRegistrationForm } from './fillUserRegistrationForm';
+import { fillUserRegistrationForm } from '../../support/page_objects/userRegistrationForms';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 import { MockNewEstablishment } from '../../support/mockEstablishmentData';
 import {
   inputLocationOrPostcode,
   fillInAddress,
   approveRegistrationRequestAsAdmin,
-} from '../../support/page_objects/createNewWorkplace';
+} from '../../support/page_objects/createNewWorkplaceForms';
 
 /* eslint-disable no-undef */
 /// <reference types="cypress" />

@@ -1,7 +1,7 @@
 /// <reference types="cypress" />
-import { fillUserRegistrationForm } from './fillUserRegistrationForm';
 import { onHomePage } from '../../support/page_objects/onHomePage';
 import { StandAloneEstablishment } from '../../support/mockEstablishmentData';
+import { fillUserRegistrationForm } from '../../support/page_objects/userRegistrationForms';
 
 describe('As a workplace primary user I want to register a new user', () => {
   const userFullName = 'Test new user for cypress';
