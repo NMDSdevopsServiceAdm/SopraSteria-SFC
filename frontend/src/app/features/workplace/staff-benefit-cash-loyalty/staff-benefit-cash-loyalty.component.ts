@@ -30,7 +30,6 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   ];
 
   public showTextBox = false;
-  public inStaffRecruitmentFlow: boolean;
   public section: string;
 
   constructor(
@@ -51,8 +50,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   protected init(): void {
     this.prefill();
     this.setPreviousRoute();
-    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
-    this.section = this.inStaffRecruitmentFlow ? 'Loyalty bonus' : 'Staff benefits';
+    this.section = 'Staff benefits';
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
   }
 
