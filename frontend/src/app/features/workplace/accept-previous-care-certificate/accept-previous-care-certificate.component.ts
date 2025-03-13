@@ -33,8 +33,6 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     },
   ];
 
-  public inStaffRecruitmentFlow: boolean;
-
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
@@ -48,14 +46,13 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
   protected init(): void {
     this.setupForm();
     this.setPreviousRoute();
-    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.prefill();
-    this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'cash-loyalty'];
-    this.section = this.inStaffRecruitmentFlow ? 'Care Certificates' : 'Recruitment';
+    this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
+    this.section = 'Recruitment';
   }
 
   private setPreviousRoute(): void {
-    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'staff-recruitment-capture-training-requirement'];
+    this.previousRoute = ['/workplace', this.establishment.uid, 'staff-recruitment-capture-training-requirement'];
   }
 
   private setupForm(): void {
