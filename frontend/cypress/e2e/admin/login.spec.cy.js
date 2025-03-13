@@ -5,7 +5,6 @@ import { onLoginPage } from '../../support/page_objects/onLoginPage';
 describe('As an admin I want to login', () => {
   before(() => {
     // to allow page to load after saving
-    cy.wait(2000);
   });
 
   beforeEach(() => {

@@ -5,10 +5,6 @@ import { SubEstablishmentNotDataOwner } from '../../../support/mockEstablishment
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub home page as read only user', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('readOnlySubUserNonDataOwner'), Cypress.env('userPassword'));
   });

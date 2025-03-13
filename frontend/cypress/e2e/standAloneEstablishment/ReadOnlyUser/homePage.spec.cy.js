@@ -4,10 +4,6 @@ import { StandAloneEstablishment } from '../../../support/mockEstablishmentData'
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Standalone home page as read only user', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('readOnlyStandAloneUser'), Cypress.env('userPassword'));
   });
