@@ -1,11 +1,14 @@
 import { defineConfig } from 'cypress';
+import * as dotenv from 'dotenv';
 import { Client } from 'pg';
+
+dotenv.config({ path: '../.env' });
 
 export const dbConfig = {
   host: process.env.DB_TEST_HOSTNAME ?? '127.0.0.1',
-  user: process.env.DB_TEST_USER ?? 'sfc-test-user',
-  password: process.env.DB_TEST_NAME ?? 'sfc-test-pass',
-  database: process.env.DB_TEST_NAME ?? 'sfc-test-db',
+  user: process.env.DB_TEST_USER ?? process.env.POSTGRES_USER,
+  password: process.env.DB_TEST_PASS ?? process.env.POSTGRES_PASSWORD,
+  database: process.env.DB_TEST_NAME ?? process.env.POSTGRES_DB,
   port: process.env.DB_TEST_PORT ? parseInt(process.env.DB_TEST_PORT) : 90,
   ssl: false,
 };
