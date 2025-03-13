@@ -48,8 +48,14 @@ fdescribe('AddAnotherStaffRecordComponent', () => {
     expect(noRadioButton).toBeTruthy();
   });
 
-  it('displays a "Continue" button', async () => {
-    const { getByText } = await setup();
-    expect(getByText('Continue')).toBeTruthy();
+
+
+  describe('continue button', () => {
+    it('is rendered', async () => {
+      const { getByText } = await setup();
+      expect(getByText('Continue')).toBeTruthy();
+    });
+
+
   });
 })
