@@ -29,7 +29,6 @@ import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
-import { ConfirmStaffRecruitmentAndBenefitsComponent } from './confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
@@ -116,7 +115,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     UsersComponent,
     StaffRecruitmentCaptureTrainingRequirementComponent,
     AcceptPreviousCareCertificateComponent,
-    ConfirmStaffRecruitmentAndBenefitsComponent,
     StaffBenefitHolidayLeaveComponent,
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,
