@@ -3,10 +3,6 @@ import { onLoginPage } from '../../support/page_objects/onLoginPage';
 
 /* eslint-disable no-undef */
 describe('As an admin I want to login', () => {
-  before(() => {
-    // to allow page to load after saving
-  });
-
   beforeEach(() => {
     cy.openLoginPage();
   });

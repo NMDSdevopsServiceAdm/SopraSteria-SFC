@@ -17,7 +17,6 @@ describe('Create account', () => {
   const workplaceName = 'Test workplace for cypress';
 
   before(() => {
-    // to allow page to load after saving
     cy.deleteTestUserFromDb(userFullName);
     cy.deleteTestWorkplaceFromDb(workplaceName);
   });
