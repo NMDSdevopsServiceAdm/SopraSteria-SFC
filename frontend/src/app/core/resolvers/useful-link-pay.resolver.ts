@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 
 import { UsefulLinksService } from '@core/services/useful-links.service';
 import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class UsefulLinkPayResolver implements Resolve<any> {
+export class UsefulLinkPayResolver  {
   constructor(private usefulLinksService: UsefulLinksService) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<any> {

@@ -127,6 +127,9 @@ export class TrainingService {
   }
 }
 
+@Injectable({
+  providedIn: 'root',
+})
 export class MandatoryTrainingService extends TrainingService {
   _onlySelectedJobRoles: boolean = null;
   _mandatoryTrainingBeingEdited: mandatoryTraining = null;

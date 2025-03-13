@@ -1,12 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import {
-  DataPermissions,
-  GetChildWorkplacesResponse,
-  Workplace,
-  WorkplaceDataOwner,
-} from '@core/model/my-workplaces.model';
+import { DataPermissions, GetChildWorkplacesResponse, Workplace, WorkplaceDataOwner } from '@core/model/my-workplaces.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TabsService } from '@core/services/tabs.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';

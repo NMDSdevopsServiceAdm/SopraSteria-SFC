@@ -445,7 +445,7 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
 
     describe('Other services', () => {
-      it('should show dash and have Add information button on when otherServices is null', async () => {
+      it('should show dash and have Add information button on when otherServices value is null', async () => {
         const { component, fixture } = await setup();
         component.workplace.otherServices = { value: null, services: [] };
 
