@@ -9,7 +9,6 @@ describe('As a workplace primary user I want to register a new user', () => {
   const mockPassword = 'Some-very-super-strong-p@ssw0rd';
 
   before(() => {
-    cy.wait(2000);
     cy.deleteTestUserFromDb(userFullName);
   });
 

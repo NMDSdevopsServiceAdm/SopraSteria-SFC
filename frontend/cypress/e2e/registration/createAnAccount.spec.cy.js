@@ -18,7 +18,6 @@ describe('Create account', () => {
 
   before(() => {
     // to allow page to load after saving
-    cy.wait(2000);
     cy.deleteTestUserFromDb(userFullName);
     cy.deleteTestWorkplaceFromDb(workplaceName);
   });
