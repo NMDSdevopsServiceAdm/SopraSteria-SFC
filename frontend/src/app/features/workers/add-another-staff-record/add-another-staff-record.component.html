@@ -1,7 +1,39 @@
 
 
-
+<form>
 <legend class="govuk-fieldset__legend govuk-fieldset__legend--l">
   <span class="govuk-caption-l" data-testid="section-heading">Staff records</span>
   <h1 class="govuk-fieldset__heading">Do you want to add another staff record?</h1>
 </legend>
+
+<div class="govuk-radios" data-module="govuk-radios">
+  <div class="govuk-radios__item">
+    <input
+      class="govuk-radios__input"
+      id="dataPermission-0"
+      name="dataPermission"
+      [formControlName]="'addAnotherStaffRecord'"
+      type="radio"
+      value="YES"
+    />
+    <label class="govuk-label govuk-radios__label" for="dataPermission-0">
+      Yes
+    </label>
+  </div>
+  <div class="govuk-radios__item">
+    <input
+      class="govuk-radios__input"
+      id="dataPermission-1"
+      name="dataPermission"
+      [formControlName]="'addAnotherStaffRecord'"
+      type="radio"
+      value="NO"
+    />
+    <label class="govuk-label govuk-radios__label" for="dataPermission-1">
+      No
+    </label>
+  </div>
+</div>
+
+<button type="submit">Continue</button>
+</form>

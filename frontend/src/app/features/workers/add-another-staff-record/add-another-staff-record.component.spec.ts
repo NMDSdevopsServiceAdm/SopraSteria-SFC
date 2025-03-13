@@ -1,10 +1,10 @@
-import { render, getByText } from '@testing-library/angular';
+import { render, getByText, getByLabelText } from '@testing-library/angular';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record.component'
 
 
 fdescribe('AddAnotherStaffRecordComponent', () => {
   async function setup() {
-    const { fixture, getByText } = await render(
+    const { fixture, getByLabelText, getByText } = await render(
       AddAnotherStaffRecordComponent
     );
 
@@ -13,6 +13,7 @@ fdescribe('AddAnotherStaffRecordComponent', () => {
     return {
       component,
       fixture,
+      getByLabelText,
       getByText,
     };
   }
@@ -33,5 +34,22 @@ fdescribe('AddAnotherStaffRecordComponent', () => {
     const { component, getByText } = await setup();
 
     expect(getByText('Staff records')).toBeTruthy();
-  })
+  });
+
+  it('displays the yes/no radio buttons', async () => {
+    const { component, fixture, getByLabelText } = await setup();
+
+    const yesRadioButton = getByLabelText('Yes');
+    const noRadioButton = getByLabelText('No');
+
+    console.log(yesRadioButton);
+
+    expect(yesRadioButton).toBeTruthy();
+    expect(noRadioButton).toBeTruthy();
+  });
+
+  it('displays a "Continue" button', async () => {
+    const { getByText } = await setup();
+    expect(getByText('Continue')).toBeTruthy();
+  });
 })
