@@ -152,7 +152,6 @@ export interface Establishment {
   lastBulkUploaded?: string;
   eightWeeksFromFirstLogin?: string;
   showSharingPermissionsBanner?: boolean;
-  recruitmentJourneyExistingUserBanner?: boolean;
   doNewStartersRepeatMandatoryTrainingFromPreviousEmployment?: string;
   moneySpentOnAdvertisingInTheLastFourWeeks?: string;
   wouldYouAcceptCareCertificatesFromPreviousEmployment?: string;
