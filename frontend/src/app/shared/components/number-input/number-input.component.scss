@@ -5,10 +5,19 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 0.5em;
 
-    button:first-of-type {
-      margin-left: -5.75em;
+    // when both + and - button shows up
+    button:first-of-type:nth-last-child(2) {
+      margin-left: -5em;
+    }
+
+    button:nth-of-type(2):nth-last-child(1) {
+      margin-left: 0.5em;
+    }
+
+    // when only one button
+    button:first-of-type:nth-last-child(1) {
+      margin-left: -2.5em;
     }
   }
 
@@ -17,6 +26,12 @@
   }
 
   button {
+    img {
+      width: 100%;
+      height: 100%;
+    }
+
+    // below borrowed from govuk-button
     line-height: 1.1875;
     box-sizing: border-box;
     display: inline-block;
@@ -32,11 +47,6 @@
     -webkit-appearance: none;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-
-    img {
-      width: 100%;
-      height: 100%;
-    }
 
     &:active {
       top: 1px;
