@@ -1,6 +1,7 @@
 import { Directive, ElementRef, OnDestroy, OnInit, QueryList, ViewChildren } from '@angular/core';
 import { UntypedFormArray, Validators } from '@angular/forms';
 import { Leaver, Starter, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { sum } from 'lodash';
 
 import { Question } from '../question/question.component';
@@ -14,7 +15,7 @@ export class HowManyStartersLeaversVacanciesDirective extends Question implement
   public jobRoleType: string;
   public fieldName: string;
   public fieldJobRoles: string;
-  public section: string = 'Vacancies and turnover';
+  public section: string = WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
   public totalNumber = 0;
 
   protected selectedJobRoles: Array<Starter | Leaver | Vacancy> = [];
