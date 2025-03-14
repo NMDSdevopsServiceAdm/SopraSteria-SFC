@@ -29,7 +29,7 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
     },
   ];
 
-  public section: string;
+  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -45,7 +45,6 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
     this.setupForm();
     this.setRoutes();
     this.prefill();
-    this.section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
   }
 
   private setRoutes(): void {
