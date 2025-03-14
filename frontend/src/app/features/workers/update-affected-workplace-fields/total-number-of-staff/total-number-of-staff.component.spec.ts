@@ -54,6 +54,11 @@ fdescribe('TotalNumberOfStaffComponent', () => {
       expect(cancelLink).toBeTruthy();
     });
 
-    it('should show an input for number of staff', async () => {});
+    it('should show an input box for number of staff', async () => {
+      const { getByLabelText, getByText } = await setup();
+
+      expect(getByText('Number of staff')).toBeTruthy();
+      expect(getByLabelText('Number of staff')).toBeTruthy();
+    });
   });
 });

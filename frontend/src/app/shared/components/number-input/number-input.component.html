@@ -1,0 +1,12 @@
+<div class="govuk-form-group asc-number-input--with-buttons">
+  <label class="govuk-label" [for]="id"> {{ labelText }} </label>
+  <div class="asc-number-input--button-wrapper">
+    <input class="govuk-input" [id]="id" [name]="id" />
+    <button type="button" id="minus">
+      <img src="/assets/images/minus-sign.svg" alt="decrease" />
+    </button>
+    <button type="button" id="add">
+      <img src="/assets/images/plus-sign.svg" alt="increase" />
+    </button>
+  </div>
+</div>
