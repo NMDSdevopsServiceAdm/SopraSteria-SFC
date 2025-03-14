@@ -29,7 +29,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     },
   ];
 
-  public section: string;
+  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -47,7 +47,6 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     this.setPreviousRoute();
 
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
-    this.section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
   }
 
   private setPreviousRoute(): void {

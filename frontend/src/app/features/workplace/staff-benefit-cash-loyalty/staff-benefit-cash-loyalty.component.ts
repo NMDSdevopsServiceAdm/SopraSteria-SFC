@@ -31,7 +31,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   ];
 
   public showTextBox = false;
-  public section: string;
+  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -51,7 +51,6 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   protected init(): void {
     this.prefill();
     this.setPreviousRoute();
-    this.section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
   }
 

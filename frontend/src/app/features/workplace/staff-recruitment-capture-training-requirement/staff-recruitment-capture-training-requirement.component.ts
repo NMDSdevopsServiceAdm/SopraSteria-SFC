@@ -33,7 +33,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     },
   ];
 
-  public section: string;
+  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -50,7 +50,6 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     this.setPreviousRoute();
     this.prefill();
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
-    this.section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
   }
 
   private setPreviousRoute(): void {

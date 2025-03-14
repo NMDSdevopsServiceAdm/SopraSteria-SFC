@@ -14,7 +14,7 @@ import { Question } from '../question/question.component';
   templateUrl: './accept-previous-care-certificate.component.html',
 })
 export class AcceptPreviousCareCertificateComponent extends Question implements OnInit, OnDestroy {
-  public section: string;
+  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
   public previousCareCertificateOptions = [
     {
       label: 'Yes, always',
@@ -49,7 +49,6 @@ export class AcceptPreviousCareCertificateComponent extends Question implements 
     this.setPreviousRoute();
     this.prefill();
     this.skipRoute = ['/workplace', this.establishment.uid, 'cash-loyalty'];
-    this.section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
   }
 
   private setPreviousRoute(): void {
