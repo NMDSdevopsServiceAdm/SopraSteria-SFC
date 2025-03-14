@@ -96,7 +96,6 @@ class Establishment extends EntityValidator {
     this._careWorkersCashLoyaltyForFirstTwoYears = null;
     this._pensionContribution = null;
     this._sickPay = null;
-    this._recruitmentJourneyExistingUserBanner = false;
     this._isParentApprovedBannerViewed = null;
     this._primaryAuthorityCssr = null;
 
@@ -383,10 +382,6 @@ class Establishment extends EntityValidator {
     return this._sickPay;
   }
 
-  get recruitmentJourneyExistingUserBanner() {
-    return this._recruitmentJourneyExistingUserBanner;
-  }
-
   get isParentApprovedBannerViewed() {
     return this._isParentApprovedBannerViewed;
   }
@@ -598,10 +593,6 @@ class Establishment extends EntityValidator {
 
         if ('sickPay' in document) {
           this._sickPay = document.sickPay;
-        }
-
-        if ('recruitmentJourneyExistingUserBanner' in document) {
-          this._recruitmentJourneyExistingUserBanner = document.recruitmentJourneyExistingUserBanner;
         }
 
         if ('isParentApprovedBannerViewed' in document) {
@@ -832,7 +823,6 @@ class Establishment extends EntityValidator {
           sickPay: this._sickPay,
           pensionContribution: this._pensionContribution,
           careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
-          recruitmentJourneyExistingUserBanner: this._recruitmentJourneyExistingUserBanner,
           isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
           primaryAuthorityCssr: this._primaryAuthorityCssr,
         };
@@ -1033,7 +1023,6 @@ class Establishment extends EntityValidator {
             sickPay: this._sickPay,
             pensionContribution: this._pensionContribution,
             careWorkersLeaveDaysPerYear: this._careWorkersLeaveDaysPerYear,
-            recruitmentJourneyExistingUserBanner: bulkUploaded ? true : this._recruitmentJourneyExistingUserBanner,
             isParentApprovedBannerViewed: this._isParentApprovedBannerViewed,
             primaryAuthorityCssr: this._primaryAuthorityCssr,
           };
@@ -1339,7 +1328,6 @@ class Establishment extends EntityValidator {
         this._lastBulkUploaded = fetchResults.lastBulkUploaded;
         this._eightWeeksFromFirstLogin = fetchResults.eightWeeksFromFirstLogin;
         this._showSharingPermissionsBanner = fetchResults.showSharingPermissionsBanner;
-        this._recruitmentJourneyExistingUserBanner = fetchResults.recruitmentJourneyExistingUserBanner;
         this._doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           fetchResults.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
         this._wouldYouAcceptCareCertificatesFromPreviousEmployment =
@@ -1780,7 +1768,6 @@ class Establishment extends EntityValidator {
         myDefaultJSON.eightWeeksFromFirstLogin = this.eightWeeksFromFirstLogin;
         myDefaultJSON.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment =
           this.doNewStartersRepeatMandatoryTrainingFromPreviousEmployment;
-        myDefaultJSON.recruitmentJourneyExistingUserBanner = this.recruitmentJourneyExistingUserBanner;
         myDefaultJSON.wouldYouAcceptCareCertificatesFromPreviousEmployment =
           this.wouldYouAcceptCareCertificatesFromPreviousEmployment;
         myDefaultJSON.showAddWorkplaceDetailsBanner = this.showAddWorkplaceDetailsBanner;
