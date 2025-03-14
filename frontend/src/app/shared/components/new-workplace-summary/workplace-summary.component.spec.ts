@@ -81,9 +81,8 @@ describe('NewWorkplaceSummaryComponent', () => {
     expect(getByTestId('employerType')).toBeTruthy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('staff-recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
   describe('workplace-section', () => {
@@ -1078,7 +1077,7 @@ describe('NewWorkplaceSummaryComponent', () => {
     });
   });
 
-  describe('Recruitment section', () => {
+  describe('Staff recruitment and benefits section', () => {
     describe('Repeat training', () => {
       it('should show dash and have Add information button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
@@ -1158,9 +1157,7 @@ describe('NewWorkplaceSummaryComponent', () => {
         ).toBeTruthy();
       });
     });
-  });
 
-  describe('Staff benefits section', () => {
     describe('Cash loyalty bonus', () => {
       it('should show dash and have Add information button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
