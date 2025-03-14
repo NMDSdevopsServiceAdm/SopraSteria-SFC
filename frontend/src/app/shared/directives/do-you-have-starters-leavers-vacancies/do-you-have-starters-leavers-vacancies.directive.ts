@@ -5,11 +5,12 @@ import { jobOptionsEnum, UpdateJobsRequest } from '@core/model/establishment.mod
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '@features/workplace/question/question.component';
 
 @Directive({})
 export class DoYouHaveStartersLeaversVacanciesDirective extends Question implements OnDestroy {
-  public section = 'Vacancies and turnover';
+  public section = WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
   public heading: string;
   public hintText: string;
   public revealText: string;
