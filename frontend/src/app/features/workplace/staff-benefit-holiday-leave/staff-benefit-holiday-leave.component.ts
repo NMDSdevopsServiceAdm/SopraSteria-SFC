@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { Question } from '../question/question.component';
 
@@ -31,7 +32,7 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
     this.prefill();
     this.setPreviousRoute();
 
-    this.section = 'Staff benefits';
+    this.section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 

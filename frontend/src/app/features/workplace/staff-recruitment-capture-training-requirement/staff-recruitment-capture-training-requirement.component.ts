@@ -5,6 +5,7 @@ import { staffRecruitmentOptionsEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { Question } from '../question/question.component';
 
@@ -49,7 +50,7 @@ export class StaffRecruitmentCaptureTrainingRequirementComponent extends Questio
     this.setPreviousRoute();
     this.prefill();
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'accept-previous-care-certificate'];
-    this.section = 'Recruitment';
+    this.section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
   }
 
   private setPreviousRoute(): void {
