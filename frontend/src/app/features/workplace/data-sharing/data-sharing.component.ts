@@ -5,6 +5,7 @@ import { ShareWithRequest } from '@core/model/data-sharing.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { Question } from '../question/question.component';
 
@@ -13,7 +14,7 @@ import { Question } from '../question/question.component';
   templateUrl: './data-sharing.component.html',
 })
 export class DataSharingComponent extends Question {
-  public section = 'Permissions';
+  public section = WorkplaceFlowSections.PERMISSIONS;
   constructor(
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
