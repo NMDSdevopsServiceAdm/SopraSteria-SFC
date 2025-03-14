@@ -1,20 +1,17 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
 
+import { SubEstablishmentNotDataOwner } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub home page as read only user', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('readOnlySubUserNonDataOwner'), Cypress.env('userPassword'));
   });
 
   it('should see the admin page', () => {
-    cy.contains('Aster House');
-    cy.contains('Workplace test 1');
+    cy.contains(SubEstablishmentNotDataOwner.parentName);
+    cy.contains(SubEstablishmentNotDataOwner.name);
   });
 
   // waiting for permission fix to be available on test branch
