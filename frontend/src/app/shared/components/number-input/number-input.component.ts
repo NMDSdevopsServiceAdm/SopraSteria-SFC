@@ -8,26 +8,50 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 export class NumberInputComponent {
   @Input() initialValue: number = null;
   @Input() min: number = 1;
-  @Input() max: number = null;
+  @Input() max: number = Infinity;
   @Input() labelText: string = '';
   @Input() id: string = 'number-input';
-  @Output() change = new EventEmitter<number>();
+  @Output() onChange = new EventEmitter<number>();
 
-  public value: number;
+  private _state: number;
 
   ngOnInit() {
-    this.value = this.initialValue;
+    this.state = this.initialValue === null ? null : Number(this.initialValue);
+    this.min = Number(this.min);
+    this.max = Number(this.max);
+  }
+
+  get state(): number {
+    return this._state;
+  }
+
+  set state(newValue: number) {
+    this._state = newValue;
+    this.onChange.emit(this._state);
+  }
+
+  onInput(event: Event) {
+    event.preventDefault();
+    const parsedValue = parseInt((event.target as HTMLInputElement).value);
+
+    this.state = isNaN(parsedValue) ? null : parsedValue;
   }
 
   increase() {
-    if (!this.value) {
-      this.value = this.min;
+    if (!Number(this.state)) {
+      this.state = Number(this.min);
+      return;
     }
+
+    this.state = Math.min(this.max, this.state + 1);
   }
 
   decrease() {
-    if (!this.value) {
-      this.value = this.min;
+    if (!Number(this.state)) {
+      this.state = Number(this.min);
+      return;
     }
+
+    this.state = Math.max(this.min, this.state - 1);
   }
 }

@@ -1,11 +1,32 @@
 <div class="govuk-form-group asc-number-input--with-buttons">
   <label class="govuk-label" [for]="id"> {{ labelText }} </label>
   <div class="asc-number-input--button-wrapper">
-    <input class="govuk-input" [id]="id" [name]="id" [value]="value ?? ''" />
-    <button type="button" id="minus" data-testid="minus-sign-button" (click)="decrease()">
+    <input
+      class="govuk-input"
+      [id]="id"
+      [name]="id"
+      [value]="state ?? ''"
+      (input)="onInput($event)"
+      aria-live="polite"
+    />
+    <button
+      *ngIf="state !== null && state > min"
+      class="asc-number-input--toggle-button"
+      id="minus-sign-button"
+      type="button"
+      data-testid="minus-sign-button"
+      (click)="decrease()"
+    >
       <img src="/assets/images/minus-sign.svg" alt="decrease by 1" />
     </button>
-    <button type="button" id="plus" data-testid="plus-sign-button" (click)="increase()">
+    <button
+      *ngIf="state === null || state < max"
+      class="asc-number-input--toggle-button"
+      type="button"
+      id="plus-sign-button"
+      data-testid="plus-sign-button"
+      (click)="increase()"
+    >
       <img src="/assets/images/plus-sign.svg" alt="increase by 1" />
     </button>
   </div>
