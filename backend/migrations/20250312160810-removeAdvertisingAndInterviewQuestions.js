@@ -9,11 +9,12 @@ module.exports = {
       return Promise.all([
         queryInterface.removeColumn(establishmentTable, 'MoneySpentOnAdvertisingInTheLastFourWeeks', { transaction }),
         queryInterface.removeColumn(establishmentTable, 'PeopleInterviewedInTheLastFourWeeks', { transaction }),
+        queryInterface.removeColumn(establishmentTable, 'RecruitmentJourneyExistingUserBanner', { transaction }),
       ]);
     });
   },
 
-  down: async (queryInterface) => {
+  down: async (queryInterface, Sequelize) => {
     return queryInterface.sequelize.transaction((transaction) => {
       return Promise.all([
         queryInterface.addColumn(
@@ -26,11 +27,21 @@ module.exports = {
           { transaction },
         ),
         queryInterface.addColumn(
-          table,
+          establishmentTable,
           'PeopleInterviewedInTheLastFourWeeks',
           {
             type: Sequelize.DataTypes.TEXT,
             allowNull: true,
+          },
+          { transaction },
+        ),
+        queryInterface.addColumn(
+          establishmentTable,
+          'RecruitmentJourneyExistingUserBanner',
+          {
+            type: Sequelize.DataTypes.BOOLEAN,
+            allowNull: false,
+            defaultValue: false,
           },
           { transaction },
         ),
