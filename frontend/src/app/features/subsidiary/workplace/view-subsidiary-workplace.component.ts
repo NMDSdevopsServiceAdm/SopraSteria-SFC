@@ -31,7 +31,6 @@ export class ViewSubsidiaryWorkplaceComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    this.establishmentService.setInStaffRecruitmentFlow(false);
     this.breadcrumbService.show(JourneyType.SUBSIDIARY);
     this.workplace = this.route.snapshot.data.establishment;
     this.workerCount = this.route.snapshot.data.workers?.workerCount;

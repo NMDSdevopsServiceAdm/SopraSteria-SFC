@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -265,16 +265,13 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
 
       expect(getByTestId('progress-bar')).toBeTruthy();
     });
+  });
 
-    it('should render the recruitment and staff benefits progress bar when in the staff recruitment flow', async () => {
-      const { component, fixture, getByTestId } = await setup();
+  describe('Back button', () => {
+    it('should set the back link to service-users', async () => {
+      const { component } = await setup(false);
 
-      component.return = null;
-      component.inStaffRecruitmentFlow = true;
-      fixture.detectChanges();
-
-      expect(getByTestId('progress-bar-2')).toBeTruthy();
-      expect(getByTestId('progress-bar-3')).toBeTruthy();
+      expect(component.previousRoute).toEqual(['/workplace', component.establishment.uid, 'service-users']);
     });
   });
 });

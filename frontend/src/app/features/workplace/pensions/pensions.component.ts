@@ -28,7 +28,6 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
     },
   ];
 
-  public inStaffRecruitmentFlow: boolean;
   public section: string;
 
   constructor(
@@ -43,16 +42,13 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
 
   protected init(): void {
     this.setupForm();
-    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
     this.setRoutes();
     this.prefill();
-    this.section = this.inStaffRecruitmentFlow ? 'Pensions' : 'Staff benefits';
+    this.section = 'Staff benefits';
   }
 
   private setRoutes(): void {
-    this.previousRoute = this.inStaffRecruitmentFlow
-      ? ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay']
-      : ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
+    this.previousRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'staff-benefit-holiday-leave'];
   }
 

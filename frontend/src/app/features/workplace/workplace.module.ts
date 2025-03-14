@@ -29,7 +29,6 @@ import { ChangeDataOwnerComponent } from './change-data-owner/change-data-owner.
 import { ChangeExpiresSoonAlertsComponent } from './change-expires-soon-alerts/change-expires-soon-alerts.component';
 import { CheckAnswersComponent } from './check-answers/check-answers.component';
 import { ConfirmLeaversComponent } from './confirm-leavers/confirm-leavers.component';
-import { ConfirmStaffRecruitmentAndBenefitsComponent } from './confirm-staff-recruitment/confirm-staff-recruitment-and-benefits.component';
 import { ConfirmStartersComponent } from './confirm-starters/confirm-starters.component';
 import { ConfirmVacanciesComponent } from './confirm-vacancies/confirm-vacancies.component';
 import { DataSharingComponent } from './data-sharing/data-sharing.component';
@@ -43,10 +42,8 @@ import { HealthAndCareVisaExistingWorkers } from './health-and-care-visa-existin
 import { HowManyLeaversComponent } from './how-many-leavers/how-many-leavers.component';
 import { HowManyStartersComponent } from './how-many-starters/how-many-starters.component';
 import { HowManyVacanciesComponent } from './how-many-vacancies/how-many-vacancies.component';
-import { NumberOfInterviewsComponent } from './number-of-interviews/number-of-interviews.component';
 import { OtherServicesComponent } from './other-services/other-services.component';
 import { PensionsComponent } from './pensions/pensions.component';
-import { RecruitmentAdvertisingCostComponent } from './recruitment-advertising-cost/recruitment-advertising-cost.component';
 import { RegulatedByCqcComponent } from './regulated-by-cqc/regulated-by-cqc.component';
 import { SelectLeaverJobRolesComponent } from './select-leaver-job-roles/select-leaver-job-roles.component';
 import { SelectMainServiceComponent } from './select-main-service/select-main-service.component';
@@ -59,7 +56,6 @@ import { ServicesCapacityComponent } from './services-capacity/services-capacity
 import { StaffBenefitCashLoyaltyComponent } from './staff-benefit-cash-loyalty/staff-benefit-cash-loyalty.component';
 import { StaffBenefitHolidayLeaveComponent } from './staff-benefit-holiday-leave/staff-benefit-holiday-leave.component';
 import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement/staff-recruitment-capture-training-requirement.component';
-import { StaffRecruitmentStartComponent } from './staff-recruitment/staff-recruitment-start.component';
 import { TotalStaffQuestionComponent } from './total-staff-question/total-staff-question.component';
 import { TypeOfEmployerComponent } from './type-of-employer/type-of-employer.component';
 import { UserAccountDeleteDialogComponent } from './user-account-delete-dialog/user-account-delete-dialog.component';
@@ -95,7 +91,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     ServicesCapacityComponent,
     ServiceUsersComponent,
     StartComponent,
-    StaffRecruitmentStartComponent,
     TypeOfEmployerComponent,
     UserAccountDeleteDialogComponent,
     UserAccountEditPermissionsComponent,
@@ -120,9 +115,6 @@ import { WorkplaceRoutingModule } from './workplace-routing.module';
     UsersComponent,
     StaffRecruitmentCaptureTrainingRequirementComponent,
     AcceptPreviousCareCertificateComponent,
-    RecruitmentAdvertisingCostComponent,
-    NumberOfInterviewsComponent,
-    ConfirmStaffRecruitmentAndBenefitsComponent,
     StaffBenefitHolidayLeaveComponent,
     StaffBenefitCashLoyaltyComponent,
     BenefitsStatutorySickPayComponent,

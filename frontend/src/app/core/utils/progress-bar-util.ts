@@ -11,14 +11,6 @@ export class ProgressBarUtil {
     return ['Services', 'Vacancies and turnover', 'Recruitment', 'Staff benefits', 'Permissions'];
   };
 
-  public static recruitmentMiniFlowProgressBarSections = (): string[] => {
-    return ['Advertising spend', 'People interviewed', 'Training', 'Care Certificates'];
-  };
-
-  public static staffBenefitsMiniFlowProgressBarSections = (): string[] => {
-    return ['Loyalty bonus', 'Statutory Sick Pay', 'Pensions', 'Holiday leave'];
-  };
-
   public static staffRecordProgressBarSections = (): string[] => {
     return ['Mandatory information', 'Personal details', 'Employment details', 'Training and qualifications'];
   };

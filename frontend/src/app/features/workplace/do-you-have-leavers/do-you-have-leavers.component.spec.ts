@@ -172,7 +172,7 @@ describe('DoYouHaveLeaversComponent', () => {
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'select-leaver-job-roles']);
     });
 
-    it("should navigate to the recruitment-advertising-cost page when submitting 'None'", async () => {
+    it("should navigate to the staff-recruitment-capture-training-requirement page when submitting 'None'", async () => {
       const overrides = { returnUrl: false };
       const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
@@ -182,10 +182,14 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'recruitment-advertising-cost']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
     });
 
-    it("should navigate to the recruitment-advertising-cost page when submitting 'I do not know'", async () => {
+    it("should navigate to the staff-recruitment-capture-training-requirement page when submitting 'I do not know'", async () => {
       const overrides = { returnUrl: false };
       const { component, fixture, getByText, routerSpy } = await setup(overrides);
 
@@ -195,17 +199,25 @@ describe('DoYouHaveLeaversComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'recruitment-advertising-cost']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
     });
 
-    it('should navigate to the recruitment-advertising-cost page when clicking Skip this question link', async () => {
+    it('should navigate to the staff-recruitment-capture-training-requirement page when clicking Skip this question link', async () => {
       const overrides = { returnUrl: false };
       const { getByText, routerSpy } = await setup(overrides);
 
       const link = getByText('Skip this question');
       fireEvent.click(link);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'recruitment-advertising-cost']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        '/workplace',
+        'mocked-uid',
+        'staff-recruitment-capture-training-requirement',
+      ]);
     });
 
     it(`should call the setSubmitAction function with an action of skip and save as false when clicking 'Skip this question' link`, async () => {
