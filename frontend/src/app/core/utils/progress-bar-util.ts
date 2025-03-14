@@ -8,10 +8,22 @@ export class ProgressBarUtil {
   };
 
   public static workplaceFlowProgressBarSections = (): string[] => {
-    return ['Services', 'Vacancies and turnover', 'Recruitment', 'Staff benefits', 'Permissions'];
+    return [
+      WorkplaceFlowSections.SERVICES,
+      WorkplaceFlowSections.VACANCIES_AND_TURNOVER,
+      WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS,
+      WorkplaceFlowSections.PERMISSIONS,
+    ];
   };
 
   public static staffRecordProgressBarSections = (): string[] => {
     return ['Mandatory information', 'Personal details', 'Employment details', 'Training and qualifications'];
   };
+}
+
+export enum WorkplaceFlowSections {
+  SERVICES = 'Services',
+  VACANCIES_AND_TURNOVER = 'Vacancies and turnover',
+  STAFF_RECRUITMENT_AND_BENEFITS = 'Staff recruitment and benefits',
+  PERMISSIONS = 'Permissions',
 }
