@@ -15,7 +15,19 @@ export class NumberInputComponent {
 
   public value: number;
 
-  increase() {}
+  ngOnInit() {
+    this.value = this.initialValue;
+  }
 
-  decrease() {}
+  increase() {
+    if (!this.value) {
+      this.value = this.min;
+    }
+  }
+
+  decrease() {
+    if (!this.value) {
+      this.value = this.min;
+    }
+  }
 }
