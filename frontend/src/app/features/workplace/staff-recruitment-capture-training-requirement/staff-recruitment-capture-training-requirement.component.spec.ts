@@ -9,7 +9,9 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
-import { StaffRecruitmentCaptureTrainingRequirementComponent } from './staff-recruitment-capture-training-requirement.component';
+import {
+  StaffRecruitmentCaptureTrainingRequirementComponent,
+} from './staff-recruitment-capture-training-requirement.component';
 
 describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   async function setup(returnUrl = true, repeatTraining = undefined) {
@@ -58,8 +60,10 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   it('should render the heading, input and radio buttons', async () => {
     const { getByText, getByLabelText } = await setup();
     const heading = `Do new care workers have to repeat training they've done with previous employers?`;
+    const sectionCaption = 'Staff recruitment and benefits';
 
     expect(getByText(heading)).toBeTruthy;
+    expect(getByText(sectionCaption)).toBeTruthy;
     expect(getByLabelText('Yes, always')).toBeTruthy();
     expect(getByLabelText('Yes, very often')).toBeTruthy();
     expect(getByLabelText('Yes, but not very often')).toBeTruthy();

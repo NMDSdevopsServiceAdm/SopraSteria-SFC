@@ -60,8 +60,10 @@ describe('StaffBenefitCashLoyaltyComponent', () => {
     const { getByText } = await setup();
     const heading = 'Do you pay care workers a cash loyalty bonus within their first 2 years of employment?';
     const helpText = 'We only want to know about bonuses given for staying in a role, not for things like performance.';
+    const sectionCaption = 'Staff recruitment and benefits';
 
     expect(getByText(heading)).toBeTruthy;
+    expect(getByText(sectionCaption)).toBeTruthy;
     expect(getByText(helpText)).toBeTruthy;
   });
 
