@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 
@@ -7,7 +8,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
   templateUrl: './update-workplace-details-after-staff-changes.component.html',
 })
 export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
-  constructor(private establishmentService: EstablishmentService) {}
+  constructor(private establishmentService: EstablishmentService, private router: Router) {}
 
   public workplace: Establishment;
 
@@ -17,5 +18,10 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
 
   public isArray(variable: any): boolean {
     return Array.isArray(variable);
+  }
+
+  public clickContinue(event: Event): void {
+    event.preventDefault();
+    this.router.navigate(['/dashboard'], { fragment: 'staff-records' });
   }
 }

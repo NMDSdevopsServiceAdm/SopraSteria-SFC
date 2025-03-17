@@ -1,11 +1,13 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
 
@@ -25,10 +27,15 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
     const component = setupTools.fixture.componentInstance;
 
+    const injector = getTestBed();
+    const router = injector.inject(Router) as Router;
+    const routerSpy = spyOn(router, 'navigate');
+
     return {
       ...setupTools,
       component,
       workplace,
+      routerSpy,
     };
   }
 
@@ -207,6 +214,17 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
       expect(within(startersRow).queryByText('2 Nursing')).toBeTruthy();
       expect(within(startersRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+    });
+  });
+
+  it('should navigate to the staff records tab on click of Continue', async () => {
+    const { getByText, routerSpy } = await setup();
+
+    const continueButton = getByText('Continue');
+    userEvent.click(continueButton);
+
+    expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
+      fragment: 'staff-records',
     });
   });
 });
