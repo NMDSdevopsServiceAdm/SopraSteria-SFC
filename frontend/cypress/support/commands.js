@@ -117,25 +117,3 @@ Cypress.Commands.add('deleteTestWorkerFromDb', (workerName) => {
 
   cy.task('multipleDbQueries', dbQueries);
 });
-
-// Cypress.Commands.add('loginAsUser', (username, password) => {
-//   // logging into application headlessly
-//   const loginCredentials = {
-//     username,
-//     password,
-//   };
-
-//   cy.request('POST', Cypress.env('apiUrl') + 'api/login/', loginCredentials).then((response) => {
-//     const token = response.headers.authorization;
-//     const establishmentId = response.body.establishment.uid;
-//     const agreedUpdatedTerms = response.body.agreedUpdatedTerms;
-
-//     cy.visit('/', {
-//       onBeforeLoad(window) {
-//         window.localStorage.setItem('auth-token', token);
-//         window.localStorage.setItem('establishmentId', establishmentId);
-//         window.localStorage.setItem('agreedUpdatedTermsStatus', agreedUpdatedTerms);
-//       },
-//     });
-//   });
-// });
