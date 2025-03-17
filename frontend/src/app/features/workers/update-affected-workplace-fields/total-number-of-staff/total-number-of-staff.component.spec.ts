@@ -1,13 +1,15 @@
-import { TotalNumberOfStaffComponent } from './total-number-of-staff.component';
-import { render } from '@testing-library/angular';
-import { SharedModule } from '@shared/shared.module';
+import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { SharedModule } from '@shared/shared.module';
+import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
+
+import { TotalNumberOfStaffComponent } from './total-number-of-staff.component';
 
 fdescribe('TotalNumberOfStaffComponent', () => {
   const setup = async () => {
     const setupTools = await render(TotalNumberOfStaffComponent, {
-      imports: [SharedModule, RouterModule],
+      imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [],
     });
 

@@ -23,7 +23,9 @@ export class TotalNumberOfStaffComponent {
     protected errorSummaryService: ErrorSummaryService,
   ) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.setupForm();
+  }
 
   protected setupForm(): void {
     this.form = this.formBuilder.group({

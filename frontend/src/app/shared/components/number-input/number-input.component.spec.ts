@@ -1,4 +1,4 @@
-import * as lodash from 'lodash';
+import lodash from 'lodash';
 
 import { SharedModule } from '@shared/shared.module';
 import { render, screen } from '@testing-library/angular';
@@ -20,7 +20,8 @@ fdescribe('NumberInputComponent', () => {
     });
 
     const component = setupTools.fixture.componentInstance;
-    const onChangeSpy = spyOn(component.onChange, 'emit');
+    const onChangeSpy = jasmine.createSpy();
+    component.registerOnChange(onChangeSpy);
 
     return {
       ...setupTools,
@@ -146,11 +147,12 @@ fdescribe('NumberInputComponent', () => {
         expect(onChangeSpy).toHaveBeenCalledWith(13);
       });
 
-      it('should not appear when value reached maximum', async () => {
+      it('should not show the plus button when value reached maximum', async () => {
         const { fixture, getByRole, queryByTestId } = await setup({ labelText: 'Number of staff', max: 10 });
         fixture.autoDetectChanges();
 
         const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        expect(queryByTestId('plus-sign-button')).toBeTruthy();
 
         userEvent.type(inputBox, '10');
 
@@ -180,22 +182,26 @@ fdescribe('NumberInputComponent', () => {
         expect(onChangeSpy).toHaveBeenCalledWith(7);
       });
 
-      it('should not appear when value reached minimum', async () => {
+      it('should hide the minus button when value reached minimum', async () => {
         const { fixture, getByRole, queryByTestId } = await setup({ labelText: 'Number of staff', min: 1 });
         fixture.autoDetectChanges();
 
         const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
 
-        userEvent.type(inputBox, '1');
+        userEvent.type(inputBox, '2');
+        expect(queryByTestId('plus-sign-button')).toBeTruthy();
+
+        await clickMinusButton();
 
         expect(queryByTestId('minus-sign-button')).toBeFalsy();
       });
 
-      it('should not appear when input box is empty', async () => {
+      it('should not show the minus button when input box is empty', async () => {
         const { fixture, getByRole, queryByTestId } = await setup({ labelText: 'Number of staff' });
         fixture.autoDetectChanges();
 
         const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        expect(queryByTestId('minus-sign-button')).toBeFalsy();
 
         userEvent.type(inputBox, '10');
         expect(queryByTestId('minus-sign-button')).toBeTruthy();
