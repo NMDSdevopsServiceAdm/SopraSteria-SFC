@@ -5,11 +5,12 @@ import { Establishment } from '@core/model/establishment.model';
 
 import { EstablishmentService } from './establishment.service';
 
+export const TotalStaffConstraints = { min: 1, max: 999 };
+
 @Injectable({
   providedIn: 'root',
 })
 export class TotalStaffFormService {
-  private totalStaffConstraints = { min: 0, max: 999 };
   public isParent: boolean;
   public workplace: Establishment;
 
@@ -26,8 +27,8 @@ export class TotalStaffFormService {
           [
             Validators.required,
             this.nonIntegerValidator(new RegExp('d*[.]d*')),
-            Validators.min(this.totalStaffConstraints.min),
-            Validators.max(this.totalStaffConstraints.max),
+            Validators.min(TotalStaffConstraints.min),
+            Validators.max(TotalStaffConstraints.max),
             Validators.pattern('^[0-9]+$'),
           ],
         ],
@@ -54,15 +55,15 @@ export class TotalStaffFormService {
           },
           {
             name: 'nonInteger',
-            message: `Number of staff must be a whole number between  ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
+            message: `Number of staff must be a whole number between  ${TotalStaffConstraints.min} and ${TotalStaffConstraints.max}`,
           },
           {
             name: 'min',
-            message: `Number of staff must be a whole number between  ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
+            message: `Number of staff must be a whole number between  ${TotalStaffConstraints.min} and ${TotalStaffConstraints.max}`,
           },
           {
             name: 'max',
-            message: `Number of staff must be a whole number between  ${this.totalStaffConstraints.min} and ${this.totalStaffConstraints.max}`,
+            message: `Number of staff must be a whole number between  ${TotalStaffConstraints.min} and ${TotalStaffConstraints.max}`,
           },
           {
             name: 'pattern',

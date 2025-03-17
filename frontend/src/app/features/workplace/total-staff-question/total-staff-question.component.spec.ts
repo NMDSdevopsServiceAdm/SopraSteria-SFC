@@ -184,7 +184,7 @@ describe('TotalStaffQuestionComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      const errorMsgs = getAllByText('Number of staff must be a whole number between 0 and 999');
+      const errorMsgs = getAllByText('Number of staff must be a whole number between 1 and 999');
 
       expect(form.valid).toBeFalsy();
       expect(errorMsgs).toBeTruthy();
@@ -202,7 +202,25 @@ describe('TotalStaffQuestionComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      const errorMsgs = getAllByText('Number of staff must be a whole number between 0 and 999');
+      const errorMsgs = getAllByText('Number of staff must be a whole number between 1 and 999');
+
+      expect(form.valid).toBeFalsy();
+      expect(errorMsgs).toBeTruthy();
+      expect(errorMsgs.length).toEqual(2);
+    });
+
+    it('shows the correct error message when 0 is inputted in the total staff input', async () => {
+      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup();
+      const form = component.form;
+
+      const input = getByLabelText('Number of staff');
+      userEvent.type(input, '0');
+
+      const button = getByText('Save and return');
+      fireEvent.click(button);
+      fixture.detectChanges();
+
+      const errorMsgs = getAllByText('Number of staff must be a whole number between 1 and 999');
 
       expect(form.valid).toBeFalsy();
       expect(errorMsgs).toBeTruthy();
@@ -220,17 +238,17 @@ describe('TotalStaffQuestionComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      const errorMsgs = getAllByText('Number of staff must be a whole number between 0 and 999');
+      const errorMsgs = getAllByText('Number of staff must be a whole number between 1 and 999');
 
       expect(form.valid).toBeFalsy();
       expect(errorMsgs).toBeTruthy();
       expect(errorMsgs.length).toEqual(2);
     });
 
-    it('validates input is greater than or equal to 0', async () => {
+    it('validates input is greater than or equal to 1', async () => {
       const { component } = await setup();
       const form = component.form;
-      form.controls.totalStaff.setValue('0');
+      form.controls.totalStaff.setValue('1');
       expect(form.valid).toBeTruthy();
     });
 
