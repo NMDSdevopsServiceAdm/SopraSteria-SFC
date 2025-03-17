@@ -27,7 +27,13 @@
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
         </span>
         <label class="govuk-label" for="totalNumberOfStaff"> Number of staff </label>
-        <app-number-input min="1" inputId="totalNumberOfStaff" formControlName="totalStaff"></app-number-input>
+        <app-number-input
+          [min]="min"
+          [max]="max"
+          inputId="totalNumberOfStaff"
+          formControlName="totalStaff"
+          [hasError]="submitted && form.get('totalStaff').invalid"
+        ></app-number-input>
       </div>
 
       <div class="govuk-button-group">

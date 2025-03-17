@@ -5,8 +5,9 @@
     [id]="inputId"
     [name]="inputId"
     (input)="onInput($event)"
-    aria-live="polite"
     [disabled]="disabled"
+    [class.govuk-input--error]="hasError"
+    aria-live="polite"
   />
   <button
     *ngIf="showMinusButton"

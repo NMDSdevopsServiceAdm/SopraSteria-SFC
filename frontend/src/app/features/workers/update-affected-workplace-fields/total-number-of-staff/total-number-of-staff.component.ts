@@ -5,11 +5,10 @@ import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
-import { BackService } from '@core/services/back.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { TotalStaffFormService } from '@core/services/total-staff-form.service';
+import { TotalStaffConstraints, TotalStaffFormService } from '@core/services/total-staff-form.service';
 
 @Component({
   selector: 'app-total-number-of-staff',
@@ -24,6 +23,8 @@ export class TotalNumberOfStaffComponent {
 
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
+  public min = TotalStaffConstraints.min;
+  public max = TotalStaffConstraints.max;
 
   constructor(
     private formBuilder: UntypedFormBuilder,
@@ -31,7 +32,6 @@ export class TotalNumberOfStaffComponent {
     private route: ActivatedRoute,
     private router: Router,
     private establishmentService: EstablishmentService,
-    private backService: BackService,
     private backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
   ) {}
@@ -56,7 +56,7 @@ export class TotalNumberOfStaffComponent {
     this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();
   }
 
-  onSubmit(): void {
+  onSubmit() {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 

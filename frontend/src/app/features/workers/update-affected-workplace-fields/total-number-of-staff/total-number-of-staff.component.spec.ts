@@ -13,7 +13,7 @@ import userEvent from '@testing-library/user-event';
 import { TotalNumberOfStaffComponent } from './total-number-of-staff.component';
 import { of } from 'rxjs';
 
-fdescribe('TotalNumberOfStaffComponent', () => {
+describe('TotalNumberOfStaffComponent', () => {
   const setup = async () => {
     const mockWorkplace = establishmentBuilder() as Establishment;
     const setupTools = await render(TotalNumberOfStaffComponent, {
@@ -95,13 +95,6 @@ fdescribe('TotalNumberOfStaffComponent', () => {
   });
 
   describe('on submit', () => {
-    const fillInNumberAndSubmitForm = async (inputString: string) => {
-      const numberInput = screen.getByLabelText('Number of staff');
-      userEvent.clear(numberInput);
-      userEvent.type(numberInput, inputString);
-      userEvent.click(screen.getByRole('button', { name: 'Save and return' }));
-    };
-
     it('should call establishment service postStaff() with the updated number of staff', async () => {
       const { fixture, postStaffSpy, mockWorkplace } = await setup();
 
@@ -112,30 +105,52 @@ fdescribe('TotalNumberOfStaffComponent', () => {
     });
 
     it('should show an error when user input is empty', async () => {
-      const { fixture, getByText, postStaffSpy, getByRole } = await setup();
+      const { fixture, postStaffSpy, getByRole } = await setup();
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
 
       fixture.detectChanges();
 
-      const expectedErrorMessage = 'Enter how many members of staff your workplace has';
-
-      const errorBoxTitle = getByText('There is a problem');
-      expect(errorBoxTitle).toBeTruthy();
-      const errorSummaryBox = errorBoxTitle.parentElement;
-      expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
-
+      expectErrorMessageAppears('Enter how many members of staff your workplace has');
       expect(postStaffSpy).not.toHaveBeenCalled();
     });
 
     it('should show an error when user input is not a valid number', async () => {
-      const { fixture, getByText, postStaffSpy } = await setup();
+      const { fixture, postStaffSpy } = await setup();
 
       await fillInNumberAndSubmitForm('banana');
       fixture.detectChanges();
 
+      expectErrorMessageAppears('Enter the number of staff as a digit, like 7');
       expect(postStaffSpy).not.toHaveBeenCalled();
-      expect(getByText('There is a problem')).toBeTruthy();
     });
+
+    it('should show an error when user input is out of allowed range', async () => {
+      const { fixture, postStaffSpy } = await setup();
+
+      await fillInNumberAndSubmitForm('0');
+      fixture.detectChanges();
+
+      expectErrorMessageAppears('Number of staff must be a whole number between 1 and 999');
+      expect(postStaffSpy).not.toHaveBeenCalled();
+    });
+
+    const fillInNumberAndSubmitForm = async (inputString: string) => {
+      const numberInput = screen.getByLabelText('Number of staff');
+      userEvent.clear(numberInput);
+      userEvent.type(numberInput, inputString);
+      userEvent.click(screen.getByRole('button', { name: 'Save and return' }));
+    };
+
+    const expectErrorMessageAppears = (errorMessage: string) => {
+      const errorBoxTitle = screen.getByText('There is a problem');
+      expect(errorBoxTitle).toBeTruthy();
+
+      const errorSummaryBox = errorBoxTitle.parentElement;
+      expect(within(errorSummaryBox).getByText(errorMessage)).toBeTruthy();
+
+      const inlineErrorMessage = within(screen.getByText('Number of staff').parentElement).getByText(errorMessage);
+      expect(inlineErrorMessage).toBeTruthy();
+    };
   });
 });

@@ -18,6 +18,7 @@ export class NumberInputComponent implements ControlValueAccessor {
   @Input() min: number = 1;
   @Input() max: number = Infinity;
   @Input() inputId: string = 'number-input';
+  @Input() hasError: boolean = false;
 
   @ViewChild('inputEl', { static: true }) inputEl: ElementRef<HTMLInputElement>;
 

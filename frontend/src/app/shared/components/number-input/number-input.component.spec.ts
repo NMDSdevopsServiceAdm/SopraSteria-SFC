@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 
 import { NumberInputComponent } from './number-input.component';
 
-fdescribe('NumberInputComponent', () => {
+describe('NumberInputComponent', () => {
   const setup = async (override: any = {}) => {
     const inputPropertiesName = ['initialValue', 'min', 'max', 'inputId'];
     const inputProps = lodash.pickBy(override, (value, key) => {
