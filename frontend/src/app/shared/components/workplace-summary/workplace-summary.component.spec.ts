@@ -77,9 +77,8 @@ describe('WorkplaceSummaryComponent', () => {
     expect(getByTestId('employerType')).toBeTruthy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('staff-recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
   it('should render the certain sections when on the check-answers page', async () => {
@@ -94,9 +93,8 @@ describe('WorkplaceSummaryComponent', () => {
     expect(queryByTestId('employerType')).toBeFalsy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('staff-recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
   it('should render the services section with top margin when removeServiceSectionMargin is false, and without margin when true', async () => {
