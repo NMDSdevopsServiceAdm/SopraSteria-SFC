@@ -1,2 +1,26 @@
-<h1 class="govuk-heading-l">Check this information and make any changes before you continue</h1>
-<h2 class="govuk-heading-m">Total number of staff, vacancies and starters</h2>
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <h1 class="govuk-heading-l">Check this information and make any changes before you continue</h1>
+    <h2 class="govuk-heading-m">Total number of staff, vacancies and starters</h2>
+  </div>
+</div>
+
+<div data-testid="numberOfStaff">
+  <dl class="govuk-summary-list govuk-summary-list--top-border govuk-summary-list--medium govuk-!-margin-bottom-0">
+    <div class="govuk-summary-list__row">
+      <dt class="govuk-summary-list__key">Total number of staff</dt>
+      <dd class="govuk-summary-list__value">
+        <app-summary-record-value>
+          {{ workplace.numberOfStaff | numericAnswer }}
+        </app-summary-record-value>
+      </dd>
+      <dd class="govuk-summary-list__actions">
+        <app-summary-record-change
+          [explanationText]="' total number of staff'"
+          [link]="['/workplace', workplace.uid, 'update-total-staff']"
+          [hasData]="workplace.numberOfStaff"
+        ></app-summary-record-change>
+      </dd>
+    </div>
+  </dl>
+</div>
