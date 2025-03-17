@@ -14,4 +14,8 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
   ngOnInit(): void {
     this.workplace = this.establishmentService.establishment;
   }
+
+  public isArray(variable: any): boolean {
+    return Array.isArray(variable);
+  }
 }
