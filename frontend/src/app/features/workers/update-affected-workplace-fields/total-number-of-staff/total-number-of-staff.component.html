@@ -22,8 +22,12 @@
           the sector is growing.
         </p>
       </app-details>
-      <div>
-        <app-number-input min="1" labelText="Number of staff" formControlName="numberOfStaff"></app-number-input>
+      <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && form.get('totalStaff').invalid">
+        <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
+          <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
+        </span>
+        <label class="govuk-label" for="totalNumberOfStaff"> Number of staff </label>
+        <app-number-input min="1" inputId="totalNumberOfStaff" formControlName="totalStaff"></app-number-input>
       </div>
 
       <div class="govuk-button-group">

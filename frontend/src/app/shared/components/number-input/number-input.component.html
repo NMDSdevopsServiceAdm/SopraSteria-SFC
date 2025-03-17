@@ -1,33 +1,31 @@
-<div class="govuk-form-group asc-number-input">
-  <label class="govuk-label" [for]="id"> {{ labelText }} </label>
-  <div class="asc-number-input--button-wrapper">
-    <input
-      class="govuk-input"
-      [id]="id"
-      [name]="id"
-      [value]="state ?? ''"
-      (input)="onInput($event)"
-      aria-live="polite"
-    />
-    <button
-      *ngIf="state !== null && state > min"
-      class="asc-number-input--toggle-button"
-      id="minus-sign-button"
-      type="button"
-      data-testid="minus-sign-button"
-      (click)="decrease()"
-    >
-      <img src="/assets/images/minus-sign.svg" alt="decrease by 1" />
-    </button>
-    <button
-      *ngIf="state === null || state < max"
-      class="asc-number-input--toggle-button"
-      type="button"
-      id="plus-sign-button"
-      data-testid="plus-sign-button"
-      (click)="increase()"
-    >
-      <img src="/assets/images/plus-sign.svg" alt="increase by 1" />
-    </button>
-  </div>
+<div class="asc-number-input">
+  <input
+    #inputEl
+    class="govuk-input"
+    [id]="inputId"
+    [name]="inputId"
+    (input)="onInput($event)"
+    aria-live="polite"
+    [disabled]="disabled"
+  />
+  <button
+    *ngIf="showMinusButton"
+    class="asc-number-input--toggle-button"
+    id="minus-sign-button"
+    type="button"
+    data-testid="minus-sign-button"
+    (click)="decrease()"
+  >
+    <img src="/assets/images/minus-sign.svg" alt="decrease by 1" />
+  </button>
+  <button
+    *ngIf="showPlusButton"
+    class="asc-number-input--toggle-button"
+    type="button"
+    id="plus-sign-button"
+    data-testid="plus-sign-button"
+    (click)="increase()"
+  >
+    <img src="/assets/images/plus-sign.svg" alt="increase by 1" />
+  </button>
 </div>

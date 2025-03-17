@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
@@ -17,73 +17,86 @@ export class NumberInputComponent implements ControlValueAccessor {
   @Input() initialValue: number = null;
   @Input() min: number = 1;
   @Input() max: number = Infinity;
-  @Input() labelText: string = '';
-  @Input() id: string = 'number-input';
+  @Input() inputId: string = 'number-input';
 
-  touched = false;
-  disabled = false;
-  onTouched = () => {};
-  onChange = (_newValue: number) => {};
+  @ViewChild('inputEl', { static: true }) inputEl: ElementRef<HTMLInputElement>;
 
-  private _state: number;
+  public touched = false;
+  public disabled = false;
+  private onTouched = () => {};
+  private onChange = (_newValue: number | string) => {};
+  public showPlusButton: boolean = true;
+  public showMinusButton: boolean = false;
 
   ngOnInit() {
-    this.state = this.initialValue === null ? null : Number(this.initialValue);
     this.min = Number(this.min);
     this.max = Number(this.max);
+    this.writeValue(this.initialValue);
+    this.checkButtonsShowup();
   }
 
-  get state(): number {
-    return this._state;
+  get numberInput() {
+    return this.inputEl.nativeElement;
   }
 
-  set state(newValue: number) {
-    this._state = newValue;
-    this.onChange(this._state);
+  get currentNumber(): number {
+    const currentValue = this.numberInput.value;
+    return parseInt(currentValue);
+  }
+
+  public writeValue(newValue: any): void {
+    this.numberInput.value = newValue;
+    this.checkButtonsShowup();
+    this.onChange(newValue);
+  }
+
+  private checkButtonsShowup(): void {
+    this.showPlusButton = isNaN(this.currentNumber) || this.currentNumber < this.max;
+    this.showMinusButton = !isNaN(this.currentNumber) && this.currentNumber > this.min;
   }
 
   onInput(event: Event) {
     event.preventDefault();
     this.markAsTouched();
 
-    this.writeValue((event.target as HTMLInputElement).value);
+    if (isNaN(this.currentNumber)) {
+      this.writeValue(this.numberInput.value); // if not a valid number, emit as string
+    } else {
+      this.writeValue(this.currentNumber);
+    }
   }
 
   increase() {
     this.markAsTouched();
-    if (!Number(this.state)) {
-      this.state = Number(this.min);
+    if (isNaN(this.currentNumber)) {
+      this.writeValue(this.min);
       return;
     }
 
-    this.state = Math.min(this.max, this.state + 1);
+    const newValue = Math.min(this.max, this.currentNumber + 1);
+    this.writeValue(newValue);
   }
 
   decrease() {
     this.markAsTouched();
-    if (!Number(this.state)) {
-      this.state = Number(this.min);
+    if (isNaN(this.currentNumber)) {
+      this.writeValue(this.min);
       return;
     }
 
-    this.state = Math.max(this.min, this.state - 1);
+    const newValue = Math.max(this.min, this.currentNumber - 1);
+    this.writeValue(newValue);
   }
 
-  writeValue(value: any) {
-    const parsedValue = parseInt(value);
-
-    this.state = isNaN(parsedValue) ? null : parsedValue;
-  }
-
-  registerOnChange(fn: (newValue: number) => void) {
+  public registerOnChange(fn: (newValue: number) => void): void {
     this.onChange = fn;
   }
 
-  registerOnTouched(fn: any) {
+  public registerOnTouched(fn: any): void {
     this.onTouched = fn;
   }
 
-  markAsTouched() {
+  public markAsTouched(): void {
     if (!this.touched) {
       this.onTouched();
       this.touched = true;

@@ -8,7 +8,7 @@ import { NumberInputComponent } from './number-input.component';
 
 fdescribe('NumberInputComponent', () => {
   const setup = async (override: any = {}) => {
-    const inputPropertiesName = ['initialValue', 'min', 'max', 'labelText', 'id'];
+    const inputPropertiesName = ['initialValue', 'min', 'max', 'inputId'];
     const inputProps = lodash.pickBy(override, (value, key) => {
       return value && inputPropertiesName.includes(key);
     });
@@ -36,34 +36,35 @@ fdescribe('NumberInputComponent', () => {
   });
 
   describe('rendering', () => {
-    it('should show the provided label text', async () => {
-      const { getByText } = await setup({ labelText: 'Number of staff' });
+    it('should show an input box', async () => {
+      const { getByRole } = await setup();
 
-      expect(getByText('Number of staff')).toBeTruthy();
+      expect(getByRole('textbox')).toBeTruthy();
     });
 
-    it('should show a number input', async () => {
-      const { getByRole } = await setup({ labelText: 'Number of staff' });
+    it('should show the input box as blank if no initial value given', async () => {
+      const { getByRole } = await setup();
 
-      expect(getByRole('textbox', { name: 'Number of staff' })).toBeTruthy();
-    });
-
-    it('should show the number input as blank if no initial value given', async () => {
-      const { getByRole } = await setup({ labelText: 'Number of staff' });
-
-      const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+      const inputBox = getByRole('textbox') as HTMLInputElement;
       expect(inputBox.value).toEqual('');
     });
 
-    it('should show the given initial value in the number input box', async () => {
-      const { getByRole } = await setup({ labelText: 'Number of staff', initialValue: 10 });
+    it('should show the given initial value in the input box', async () => {
+      const { getByRole } = await setup({ initialValue: 10 });
 
-      const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+      const inputBox = getByRole('textbox') as HTMLInputElement;
       expect(inputBox.value).toEqual('10');
     });
 
+    it('should assign the inputId as the id of input box', async () => {
+      const { getByRole } = await setup({ inputId: 'numberOfStaff' });
+
+      const inputBox = getByRole('textbox') as HTMLInputElement;
+      expect(inputBox.id).toEqual('numberOfStaff');
+    });
+
     it('should show a plus sign and a minus sign button', async () => {
-      const { getByTestId } = await setup({ labelText: 'Number of staff', initialValue: 10 });
+      const { getByTestId } = await setup({ initialValue: 10 });
 
       expect(getByTestId('plus-sign-button')).toBeTruthy();
       expect(getByTestId('minus-sign-button')).toBeTruthy();
@@ -81,56 +82,56 @@ fdescribe('NumberInputComponent', () => {
 
     describe('number input', async () => {
       it('should update the value and emit onChange event when entered a number', async () => {
-        const { fixture, getByRole, onChangeSpy } = await setup({ labelText: 'Number of staff' });
+        const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        const inputBox = getByRole('textbox') as HTMLInputElement;
         userEvent.type(inputBox, '10');
 
         expect(inputBox.value).toEqual('10');
         expect(onChangeSpy).toHaveBeenCalledWith(10);
       });
 
-      it('should emit onChange event with null when the input is not a valid number', async () => {
-        const { fixture, getByRole, onChangeSpy } = await setup({ labelText: 'Number of staff' });
+      it('should emit onChange event with the input string if the input is not a valid number', async () => {
+        const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        const inputBox = getByRole('textbox') as HTMLInputElement;
         userEvent.type(inputBox, 'a1b2c3');
 
-        expect(onChangeSpy).toHaveBeenCalledWith(null);
+        expect(onChangeSpy).toHaveBeenCalledWith('a1b2c3');
       });
 
-      it('should emit onChange event with null when the input box is cleared', async () => {
-        const { fixture, getByRole, onChangeSpy } = await setup({ labelText: 'Number of staff' });
+      it('should emit onChange event with empty string when the input box is cleared', async () => {
+        const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        const inputBox = getByRole('textbox') as HTMLInputElement;
         userEvent.type(inputBox, '10');
         userEvent.clear(inputBox);
 
         expect(onChangeSpy).toHaveBeenCalledWith(10);
-        expect(onChangeSpy).toHaveBeenCalledWith(null);
+        expect(onChangeSpy).toHaveBeenCalledWith('');
       });
     });
 
     describe('plus button', async () => {
       it('should set the value to 1 (default min value) when clicked, if the input box is empty', async () => {
-        const { fixture, getByRole, onChangeSpy } = await setup({ labelText: 'Number of staff' });
+        const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
         await clickPlusButton();
 
-        const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        const inputBox = getByRole('textbox') as HTMLInputElement;
         expect(inputBox.value).toEqual('1');
         expect(onChangeSpy).toHaveBeenCalledOnceWith(1);
       });
 
       it('should increase the value by 1 on every click', async () => {
-        const { fixture, getByRole, onChangeSpy } = await setup({ labelText: 'Number of staff' });
+        const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        const inputBox = getByRole('textbox') as HTMLInputElement;
 
         userEvent.type(inputBox, '10');
 
@@ -148,10 +149,10 @@ fdescribe('NumberInputComponent', () => {
       });
 
       it('should not show the plus button when value reached maximum', async () => {
-        const { fixture, getByRole, queryByTestId } = await setup({ labelText: 'Number of staff', max: 10 });
+        const { fixture, getByRole, queryByTestId } = await setup({ max: 10 });
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        const inputBox = getByRole('textbox') as HTMLInputElement;
         expect(queryByTestId('plus-sign-button')).toBeTruthy();
 
         userEvent.type(inputBox, '10');
@@ -162,10 +163,10 @@ fdescribe('NumberInputComponent', () => {
 
     describe('minus button', async () => {
       it('should decrease the value by 1 on every click', async () => {
-        const { fixture, getByRole, onChangeSpy } = await setup({ labelText: 'Number of staff' });
+        const { fixture, getByRole, onChangeSpy } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        const inputBox = getByRole('textbox') as HTMLInputElement;
 
         userEvent.type(inputBox, '10');
 
@@ -183,10 +184,10 @@ fdescribe('NumberInputComponent', () => {
       });
 
       it('should hide the minus button when value reached minimum', async () => {
-        const { fixture, getByRole, queryByTestId } = await setup({ labelText: 'Number of staff', min: 1 });
+        const { fixture, getByRole, queryByTestId } = await setup({ min: 1 });
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        const inputBox = getByRole('textbox') as HTMLInputElement;
 
         userEvent.type(inputBox, '2');
         expect(queryByTestId('plus-sign-button')).toBeTruthy();
@@ -197,10 +198,10 @@ fdescribe('NumberInputComponent', () => {
       });
 
       it('should not show the minus button when input box is empty', async () => {
-        const { fixture, getByRole, queryByTestId } = await setup({ labelText: 'Number of staff' });
+        const { fixture, getByRole, queryByTestId } = await setup();
         fixture.autoDetectChanges();
 
-        const inputBox = getByRole('textbox', { name: 'Number of staff' }) as HTMLInputElement;
+        const inputBox = getByRole('textbox') as HTMLInputElement;
         expect(queryByTestId('minus-sign-button')).toBeFalsy();
 
         userEvent.type(inputBox, '10');

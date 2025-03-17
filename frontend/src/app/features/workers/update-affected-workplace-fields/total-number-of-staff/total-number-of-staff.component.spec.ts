@@ -7,7 +7,7 @@ import { EstablishmentService } from '@core/services/establishment.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TotalNumberOfStaffComponent } from './total-number-of-staff.component';
@@ -95,16 +95,47 @@ fdescribe('TotalNumberOfStaffComponent', () => {
   });
 
   describe('on submit', () => {
-    it('should call establishment service postStaff() with the updated number of staff', async () => {
-      const { getByLabelText, getByRole, postStaffSpy, mockWorkplace } = await setup();
-
-      const numberInput = getByLabelText('Number of staff');
+    const fillInNumberAndSubmitForm = async (inputString: string) => {
+      const numberInput = screen.getByLabelText('Number of staff');
       userEvent.clear(numberInput);
-      userEvent.type(numberInput, '10');
+      userEvent.type(numberInput, inputString);
+      userEvent.click(screen.getByRole('button', { name: 'Save and return' }));
+    };
+
+    it('should call establishment service postStaff() with the updated number of staff', async () => {
+      const { fixture, postStaffSpy, mockWorkplace } = await setup();
+
+      await fillInNumberAndSubmitForm('10');
+      fixture.detectChanges();
+
+      expect(postStaffSpy).toHaveBeenCalledWith(mockWorkplace.uid, 10);
+    });
+
+    it('should show an error when user input is empty', async () => {
+      const { fixture, getByText, postStaffSpy, getByRole } = await setup();
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
 
-      expect(postStaffSpy).toHaveBeenCalledWith(mockWorkplace.uid, 10);
+      fixture.detectChanges();
+
+      const expectedErrorMessage = 'Enter how many members of staff your workplace has';
+
+      const errorBoxTitle = getByText('There is a problem');
+      expect(errorBoxTitle).toBeTruthy();
+      const errorSummaryBox = errorBoxTitle.parentElement;
+      expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
+
+      expect(postStaffSpy).not.toHaveBeenCalled();
+    });
+
+    it('should show an error when user input is not a valid number', async () => {
+      const { fixture, getByText, postStaffSpy } = await setup();
+
+      await fillInNumberAndSubmitForm('banana');
+      fixture.detectChanges();
+
+      expect(postStaffSpy).not.toHaveBeenCalled();
+      expect(getByText('There is a problem')).toBeTruthy();
     });
   });
 });
