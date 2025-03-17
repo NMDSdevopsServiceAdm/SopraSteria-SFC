@@ -1,5 +1,6 @@
 import { Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { inRange } from 'lodash';
 
 @Component({
   selector: 'app-number-input',
@@ -74,8 +75,13 @@ export class NumberInputComponent implements ControlValueAccessor {
       return;
     }
 
-    const newValue = Math.min(this.max, this.currentNumber + 1);
-    this.writeValue(newValue);
+    const newValue = this.currentNumber + 1;
+
+    if (inRange(newValue, this.min - 1, this.max + 1)) {
+      this.writeValue(newValue);
+    } else {
+      this.writeValue(this.min);
+    }
   }
 
   decrease() {
@@ -85,8 +91,13 @@ export class NumberInputComponent implements ControlValueAccessor {
       return;
     }
 
-    const newValue = Math.max(this.min, this.currentNumber - 1);
-    this.writeValue(newValue);
+    const newValue = this.currentNumber - 1;
+
+    if (inRange(newValue, this.min - 1, this.max + 1)) {
+      this.writeValue(newValue);
+    } else {
+      this.writeValue(this.max);
+    }
   }
 
   public registerOnChange(fn: (newValue: number) => void): void {

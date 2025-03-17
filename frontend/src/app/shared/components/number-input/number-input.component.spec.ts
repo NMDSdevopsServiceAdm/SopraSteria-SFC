@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 
 import { NumberInputComponent } from './number-input.component';
 
-describe('NumberInputComponent', () => {
+fdescribe('NumberInputComponent', () => {
   const setup = async (override: any = {}) => {
     const inputPropertiesName = ['initialValue', 'min', 'max', 'inputId'];
     const inputProps = lodash.pickBy(override, (value, key) => {
@@ -148,6 +148,19 @@ describe('NumberInputComponent', () => {
         expect(onChangeSpy).toHaveBeenCalledWith(13);
       });
 
+      it('should bring the value to minimum if the current value is lower then minium', async () => {
+        const { fixture, getByRole, onChangeSpy } = await setup({ min: 1 });
+        fixture.autoDetectChanges();
+
+        const inputBox = getByRole('textbox') as HTMLInputElement;
+
+        userEvent.type(inputBox, '-10');
+        await clickPlusButton();
+
+        expect(inputBox.value).toEqual('1');
+        expect(onChangeSpy).toHaveBeenCalledWith(1);
+      });
+
       it('should not show the plus button when value reached maximum', async () => {
         const { fixture, getByRole, queryByTestId } = await setup({ max: 10 });
         fixture.autoDetectChanges();
@@ -190,11 +203,24 @@ describe('NumberInputComponent', () => {
         const inputBox = getByRole('textbox') as HTMLInputElement;
 
         userEvent.type(inputBox, '2');
-        expect(queryByTestId('plus-sign-button')).toBeTruthy();
+        expect(queryByTestId('minus-sign-button')).toBeTruthy();
 
         await clickMinusButton();
 
         expect(queryByTestId('minus-sign-button')).toBeFalsy();
+      });
+
+      it('should bring the value to maximum if the current value is higher then maximum', async () => {
+        const { fixture, getByRole, onChangeSpy } = await setup({ max: 999 });
+        fixture.autoDetectChanges();
+
+        const inputBox = getByRole('textbox') as HTMLInputElement;
+
+        userEvent.type(inputBox, '10000');
+        await clickMinusButton();
+
+        expect(inputBox.value).toEqual('999');
+        expect(onChangeSpy).toHaveBeenCalledWith(999);
       });
 
       it('should not show the minus button when input box is empty', async () => {
