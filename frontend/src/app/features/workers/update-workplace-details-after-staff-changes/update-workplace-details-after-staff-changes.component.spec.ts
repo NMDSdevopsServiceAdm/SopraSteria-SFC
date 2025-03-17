@@ -45,6 +45,14 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   });
 
   describe('Number of staff', () => {
+    it('should show the correct wording', async () => {
+      const { getByTestId } = await setup();
+
+      const numberOfStaffRow = getByTestId('numberOfStaff');
+
+      expect(within(numberOfStaffRow).getByText('Total number of staff')).toBeTruthy();
+    });
+
     it('should display the number of staff and a Change link when question answered', async () => {
       const { queryByTestId, workplace } = await setup({ workplace: { numberOfStaff: 4 } });
 
@@ -67,6 +75,14 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   });
 
   describe('Current staff vacancies', () => {
+    it('should show the correct wording', async () => {
+      const { getByTestId } = await setup();
+
+      const vacanciesRow = getByTestId('vacancies');
+
+      expect(within(vacanciesRow).getByText('Current staff vacancies')).toBeTruthy();
+    });
+
     it('should display dash and Add link when null', async () => {
       const { workplace, getByTestId } = await setup({ workplace: { vacancies: null } });
 
@@ -123,6 +139,74 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
       expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
       expect(within(vacanciesRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+    });
+  });
+
+  describe('New starters in the last 12 months', () => {
+    it('should show the correct wording', async () => {
+      const { getByTestId } = await setup();
+
+      const startersRow = getByTestId('starters');
+
+      expect(within(startersRow).getByText('New starters in the last 12 months')).toBeTruthy();
+    });
+
+    it('should show dash and have Add link when starters is null', async () => {
+      const { workplace, getByTestId } = await setup({ workplace: { starters: null } });
+
+      const startersRow = getByTestId('starters');
+      const link = within(startersRow).queryByText('Add');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-starters`);
+      expect(within(startersRow).queryByText('-')).toBeTruthy();
+    });
+
+    it("should show Don't know and a Change link when starters is set to Don't know", async () => {
+      const { workplace, getByTestId } = await setup({ workplace: { starters: "Don't know" } });
+
+      const startersRow = getByTestId('starters');
+      const link = within(startersRow).queryByText('Change');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-starters`);
+      expect(within(startersRow).queryByText("Don't know")).toBeTruthy();
+    });
+
+    it('should show None and a Change link when starters is set to None', async () => {
+      const { workplace, getByTestId } = await setup({ workplace: { starters: 'None' } });
+
+      const startersRow = getByTestId('starters');
+      const link = within(startersRow).queryByText('Change');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-starters`);
+      expect(within(startersRow).queryByText(`None`)).toBeTruthy();
+    });
+
+    it('should show one job with number of starters and a Change link when there is one job with starters', async () => {
+      const starters = [{ jobId: 1, title: 'Administrative', total: 3 }];
+      const { workplace, getByTestId } = await setup({ workplace: { starters } });
+
+      const startersRow = getByTestId('starters');
+      const link = within(startersRow).queryByText('Change');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-starters`);
+      expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
+    });
+
+    it('should show jobs with number of starters for each job and a Change link when multiple jobs have starters', async () => {
+      const starters = [
+        { jobId: 1, title: 'Administrative', total: 3 },
+        { jobId: 2, title: 'Nursing', total: 2 },
+        { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
+      ];
+      const { workplace, getByTestId } = await setup({ workplace: { starters } });
+
+      const startersRow = getByTestId('starters');
+      const link = within(startersRow).queryByText('Change');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-starters`);
+      expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
+      expect(within(startersRow).queryByText('2 Nursing')).toBeTruthy();
+      expect(within(startersRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
     });
   });
 });
