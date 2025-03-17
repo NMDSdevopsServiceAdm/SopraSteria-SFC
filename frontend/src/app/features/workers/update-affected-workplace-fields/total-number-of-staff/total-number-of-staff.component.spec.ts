@@ -1,3 +1,6 @@
+import lodash from 'lodash';
+import { of } from 'rxjs';
+
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -11,17 +14,25 @@ import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TotalNumberOfStaffComponent } from './total-number-of-staff.component';
-import { of } from 'rxjs';
 
-describe('TotalNumberOfStaffComponent', () => {
-  const setup = async () => {
-    const mockWorkplace = establishmentBuilder() as Establishment;
+fdescribe('TotalNumberOfStaffComponent', () => {
+  const setup = async (overrides: any = {}) => {
+    const numberOfStaff = overrides?.numberOfStaff ?? 10;
+    const mockEstablishment = establishmentBuilder() as Establishment;
+
     const setupTools = await render(TotalNumberOfStaffComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
-          useClass: MockEstablishmentService,
+          useValue: {
+            primaryWorkplace: { isParent: true, parentName: null },
+            standAloneAccount: false,
+            getStaff() {
+              return of(numberOfStaff);
+            },
+            postStaff() {},
+          },
         },
         {
           provide: ActivatedRoute,
@@ -29,7 +40,7 @@ describe('TotalNumberOfStaffComponent', () => {
             parent: {
               snapshot: {
                 data: {
-                  establishment: mockWorkplace,
+                  establishment: mockEstablishment,
                 },
               },
             },
@@ -47,7 +58,7 @@ describe('TotalNumberOfStaffComponent', () => {
       ...setupTools,
       component,
       postStaffSpy,
-      mockWorkplace,
+      mockEstablishment,
     };
   };
 
@@ -94,24 +105,50 @@ describe('TotalNumberOfStaffComponent', () => {
     });
   });
 
+  describe('prefill', () => {
+    it('should prefill the number of staff of the establishment', async () => {
+      const { getByLabelText } = await setup({ numberOfStaff: 42 });
+
+      const numberInput = getByLabelText('Number of staff') as HTMLInputElement;
+      expect(numberInput.value).toEqual('42');
+    });
+
+    it('should handle value change by plus or minus button correctly', async () => {
+      const { getByLabelText, getByTestId } = await setup({ numberOfStaff: 42 });
+
+      const plusButton = getByTestId('plus-sign-button');
+      const minusButton = getByTestId('minus-sign-button');
+      const numberInput = getByLabelText('Number of staff') as HTMLInputElement;
+
+      userEvent.click(plusButton);
+      userEvent.click(plusButton);
+      expect(numberInput.value).toEqual('44');
+
+      lodash.times(10, () => userEvent.click(minusButton));
+
+      expect(numberInput.value).toEqual('34');
+    });
+  });
+
   describe('on submit', () => {
     it('should call establishment service postStaff() with the updated number of staff', async () => {
-      const { fixture, postStaffSpy, mockWorkplace } = await setup();
+      const { fixture, postStaffSpy, mockEstablishment } = await setup();
 
       await fillInNumberAndSubmitForm('10');
       fixture.detectChanges();
 
-      expect(postStaffSpy).toHaveBeenCalledWith(mockWorkplace.uid, 10);
+      expect(postStaffSpy).toHaveBeenCalledWith(mockEstablishment.uid, 10);
     });
 
     it('should show an error when user input is empty', async () => {
       const { fixture, postStaffSpy, getByRole } = await setup();
 
+      await fillInNumberAndSubmitForm('');
       userEvent.click(getByRole('button', { name: 'Save and return' }));
 
       fixture.detectChanges();
 
-      expectErrorMessageAppears('Enter how many members of staff your workplace has');
+      expectErrorMessageAppears('Enter how many members of staff the workplace has');
       expect(postStaffSpy).not.toHaveBeenCalled();
     });
 

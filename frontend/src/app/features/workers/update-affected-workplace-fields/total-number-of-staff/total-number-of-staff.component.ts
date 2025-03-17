@@ -37,11 +37,12 @@ export class TotalNumberOfStaffComponent {
   ) {}
 
   ngOnInit(): void {
+    this.workplace = this.route.parent.snapshot.data.establishment;
+
     this.setupForm();
     this.setupFormError();
     this.setBackLink();
-
-    this.workplace = this.route.parent.snapshot.data.establishment;
+    this.prefill();
   }
 
   private setupForm(): void {
@@ -54,6 +55,14 @@ export class TotalNumberOfStaffComponent {
 
   private setupFormError(): void {
     this.formErrorsMap = this.totalStaffFormService.createFormErrorsMap();
+  }
+
+  private prefill(): void {
+    this.subscriptions.add(
+      this.establishmentService.getStaff(this.workplace.uid).subscribe((staff) => {
+        this.form.patchValue({ totalStaff: staff });
+      }),
+    );
   }
 
   onSubmit() {

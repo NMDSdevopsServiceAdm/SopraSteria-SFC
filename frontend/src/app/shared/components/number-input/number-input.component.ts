@@ -34,7 +34,7 @@ export class NumberInputComponent implements ControlValueAccessor {
     this.min = Number(this.min);
     this.max = Number(this.max);
     this.writeValue(this.initialValue);
-    this.checkButtonsShowup();
+    this.checkWhetherButtonsShowup();
   }
 
   get numberInput() {
@@ -48,11 +48,11 @@ export class NumberInputComponent implements ControlValueAccessor {
 
   public writeValue(newValue: any): void {
     this.numberInput.value = newValue;
-    this.checkButtonsShowup();
+    this.checkWhetherButtonsShowup();
     this.onChange(newValue);
   }
 
-  private checkButtonsShowup(): void {
+  private checkWhetherButtonsShowup(): void {
     this.showPlusButton = isNaN(this.currentNumber) || this.currentNumber < this.max;
     this.showMinusButton = !isNaN(this.currentNumber) && this.currentNumber > this.min;
   }
