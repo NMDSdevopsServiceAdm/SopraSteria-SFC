@@ -1,23 +1,53 @@
+import { HttpClientTestingModule } from '@angular/common/http/testing';
+import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
+import { Establishment } from '@core/model/establishment.model';
+import { EstablishmentService } from '@core/services/establishment.service';
+import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
+import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TotalNumberOfStaffComponent } from './total-number-of-staff.component';
+import { of } from 'rxjs';
 
 fdescribe('TotalNumberOfStaffComponent', () => {
   const setup = async () => {
+    const mockWorkplace = establishmentBuilder() as Establishment;
     const setupTools = await render(TotalNumberOfStaffComponent, {
-      imports: [SharedModule, RouterModule, ReactiveFormsModule],
-      providers: [],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
+      providers: [
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: new MockActivatedRoute({
+            parent: {
+              snapshot: {
+                data: {
+                  establishment: mockWorkplace,
+                },
+              },
+            },
+          }),
+        },
+      ],
     });
 
     const component = setupTools.fixture.componentInstance;
+    const injector = getTestBed();
+    const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const postStaffSpy = spyOn(establishmentService, 'postStaff').and.returnValue(of(null));
 
     return {
       ...setupTools,
       component,
+      postStaffSpy,
+      mockWorkplace,
     };
   };
 
@@ -61,6 +91,20 @@ fdescribe('TotalNumberOfStaffComponent', () => {
 
       expect(getByText('Number of staff')).toBeTruthy();
       expect(getByLabelText('Number of staff')).toBeTruthy();
+    });
+  });
+
+  describe('on submit', () => {
+    it('should call establishment service postStaff() with the updated number of staff', async () => {
+      const { getByLabelText, getByRole, postStaffSpy, mockWorkplace } = await setup();
+
+      const numberInput = getByLabelText('Number of staff');
+      userEvent.clear(numberInput);
+      userEvent.type(numberInput, '10');
+
+      userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+      expect(postStaffSpy).toHaveBeenCalledWith(mockWorkplace.uid, 10);
     });
   });
 });

@@ -35,7 +35,7 @@
     width: 2em;
     padding: 2px;
     position: relative;
-    background-color: #e6e5e3;
+    background-color: #e6e5e3; // custom colour from design prototype
 
     // below borrowed from .govuk-button
     line-height: 1.1875;
@@ -69,7 +69,7 @@
     }
 
     &:hover {
-      background-color: #dbdad9;
+      background-color: #dbdad9; // $govuk-secondary-button-hover-colour
     }
   }
 }
