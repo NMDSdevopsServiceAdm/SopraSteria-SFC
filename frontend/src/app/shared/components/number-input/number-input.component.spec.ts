@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 
 import { NumberInputComponent } from './number-input.component';
 
-fdescribe('NumberInputComponent', () => {
+describe('NumberInputComponent', () => {
   const setup = async (override: any = {}) => {
     const inputPropertiesName = ['initialValue', 'min', 'max', 'inputId'];
     const inputProps = lodash.pickBy(override, (value, key) => {
@@ -56,7 +56,7 @@ fdescribe('NumberInputComponent', () => {
       expect(inputBox.value).toEqual('10');
     });
 
-    it('should assign the inputId as the id of input box', async () => {
+    it('should assign the given inputId as the id of input box', async () => {
       const { getByRole } = await setup({ inputId: 'number-of-staff' });
 
       const inputBox = getByRole('textbox') as HTMLInputElement;
@@ -72,14 +72,6 @@ fdescribe('NumberInputComponent', () => {
   });
 
   describe('behaviour', () => {
-    const clickPlusButton = async () => {
-      screen.getByTestId('plus-button-number-input').click();
-    };
-
-    const clickMinusButton = async () => {
-      screen.getByTestId('minus-button-number-input').click();
-    };
-
     describe('number input', async () => {
       it('should update the value and emit onChange event when entered a number', async () => {
         const { fixture, getByRole, onChangeSpy } = await setup();
@@ -148,13 +140,26 @@ fdescribe('NumberInputComponent', () => {
         expect(onChangeSpy).toHaveBeenCalledWith(13);
       });
 
-      it('should bring the value to minimum if the current value is lower then minium', async () => {
+      it('should set the value to minimum if the current value is lower then minium', async () => {
         const { fixture, getByRole, onChangeSpy } = await setup({ min: 1 });
         fixture.autoDetectChanges();
 
         const inputBox = getByRole('textbox') as HTMLInputElement;
 
         userEvent.type(inputBox, '-10');
+        await clickPlusButton();
+
+        expect(inputBox.value).toEqual('1');
+        expect(onChangeSpy).toHaveBeenCalledWith(1);
+      });
+
+      it('should set the value to minimum if the current value is not a valid number', async () => {
+        const { fixture, getByRole, onChangeSpy } = await setup({ min: 1 });
+        fixture.autoDetectChanges();
+
+        const inputBox = getByRole('textbox') as HTMLInputElement;
+
+        userEvent.type(inputBox, 'apple banana orange');
         await clickPlusButton();
 
         expect(inputBox.value).toEqual('1');
@@ -210,7 +215,7 @@ fdescribe('NumberInputComponent', () => {
         expect(queryByTestId('minus-button-number-input')).toBeFalsy();
       });
 
-      it('should bring the value to maximum if the current value is higher then maximum', async () => {
+      it('should set the value to maximum if the current value is higher then maximum', async () => {
         const { fixture, getByRole, onChangeSpy } = await setup({ max: 999 });
         fixture.autoDetectChanges();
 
@@ -237,5 +242,13 @@ fdescribe('NumberInputComponent', () => {
         expect(queryByTestId('minus-button-number-input')).toBeFalsy();
       });
     });
+
+    const clickPlusButton = async () => {
+      screen.getByTestId('plus-button-number-input').click();
+    };
+
+    const clickMinusButton = async () => {
+      screen.getByTestId('minus-button-number-input').click();
+    };
   });
 });

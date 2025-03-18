@@ -17,18 +17,18 @@ import { inRange } from 'lodash';
 export class NumberInputComponent implements ControlValueAccessor {
   @Input() initialValue: number = null;
   @Input() min: number = 1;
-  @Input() max: number = Infinity;
+  @Input() max: number = 999;
   @Input() inputId: string = 'number-input';
   @Input() hasError: boolean = false;
 
   @ViewChild('inputEl', { static: true }) inputEl: ElementRef<HTMLInputElement>;
 
+  public showPlusButton: boolean = true;
+  public showMinusButton: boolean = false;
   public touched = false;
   public disabled = false;
   private onTouched = () => {};
   private onChange = (_newValue: number | string) => {};
-  public showPlusButton: boolean = true;
-  public showMinusButton: boolean = false;
 
   ngOnInit() {
     this.min = Number(this.min);
@@ -77,10 +77,10 @@ export class NumberInputComponent implements ControlValueAccessor {
 
     const newValue = this.currentNumber + 1;
 
-    if (inRange(newValue, this.min - 1, this.max + 1)) {
-      this.writeValue(newValue);
-    } else {
+    if (this.outOfRange(newValue)) {
       this.writeValue(this.min);
+    } else {
+      this.writeValue(newValue);
     }
   }
 
@@ -93,11 +93,15 @@ export class NumberInputComponent implements ControlValueAccessor {
 
     const newValue = this.currentNumber - 1;
 
-    if (inRange(newValue, this.min - 1, this.max + 1)) {
-      this.writeValue(newValue);
-    } else {
+    if (this.outOfRange(newValue)) {
       this.writeValue(this.max);
+    } else {
+      this.writeValue(newValue);
     }
+  }
+
+  private outOfRange(newValue: number): boolean {
+    return !inRange(newValue, this.min - 1, this.max + 1);
   }
 
   public registerOnChange(fn: (newValue: number) => void): void {

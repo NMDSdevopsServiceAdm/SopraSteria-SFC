@@ -17,7 +17,7 @@
     [attr.data-testid]="'minus-button-' + inputId"
     (click)="decrease()"
   >
-    <img src="/assets/images/minus-sign.svg" alt="decrease by 1" />
+    <img src="/assets/images/minus-sign.svg" alt="decrease by 1" draggable="false" />
   </button>
   <button
     *ngIf="showPlusButton"
@@ -27,6 +27,6 @@
     [attr.data-testid]="'plus-button-' + inputId"
     (click)="increase()"
   >
-    <img src="/assets/images/plus-sign.svg" alt="increase by 1" />
+    <img src="/assets/images/plus-sign.svg" alt="increase by 1" draggable="false" />
   </button>
 </div>

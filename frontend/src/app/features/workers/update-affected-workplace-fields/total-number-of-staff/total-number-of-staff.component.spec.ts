@@ -15,12 +15,12 @@ import userEvent from '@testing-library/user-event';
 
 import { TotalNumberOfStaffComponent } from './total-number-of-staff.component';
 
-fdescribe('TotalNumberOfStaffComponent', () => {
+describe('TotalNumberOfStaffComponent', () => {
   const mockEstablishment = establishmentBuilder() as Establishment;
 
   const setup = async (overrides: any = {}) => {
     const numberOfStaff = overrides?.numberOfStaff ?? 10;
-    const returnTo = { url: ['workplace', mockEstablishment.uid, 'check-this-information'] };
+    const returnTo = { url: ['workplace', mockEstablishment.uid, 'update-workplace-details'] };
 
     const setupTools = await render(TotalNumberOfStaffComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -187,14 +187,14 @@ fdescribe('TotalNumberOfStaffComponent', () => {
       fixture.detectChanges();
 
       expect(postStaffSpy).toHaveBeenCalled();
-      expect(routerSpy).toHaveBeenCalledWith(['workplace', mockEstablishment.uid, 'check-this-information']);
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', mockEstablishment.uid, 'update-workplace-details']);
     });
 
     it('should return to the previous page if cancel link is clicked', async () => {
       const { getByText, routerSpy } = await setup();
 
       userEvent.click(getByText('Cancel'));
-      expect(routerSpy).toHaveBeenCalledWith(['workplace', mockEstablishment.uid, 'check-this-information']);
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', mockEstablishment.uid, 'update-workplace-details']);
     });
 
     const fillInNumberAndSubmitForm = async (inputString: string) => {
