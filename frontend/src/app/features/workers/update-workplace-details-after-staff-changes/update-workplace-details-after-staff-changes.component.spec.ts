@@ -5,7 +5,9 @@ import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { UpdateWorkplaceService } from '@core/services/update-workplace.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
+import { MockUpdateWorkplaceService } from '@core/test-utils/MockUpdateWorkplaceService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -22,6 +24,10 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
         {
           provide: EstablishmentService,
           useValue: { establishment: workplace },
+        },
+        {
+          provide: UpdateWorkplaceService,
+          useFactory: MockUpdateWorkplaceService.factory(overrides?.updateWorkplaceService),
         },
         BackLinkService,
       ],
@@ -53,13 +59,24 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     expect(getByText('Total number of staff, vacancies and starters')).toBeTruthy();
   });
 
-  it('should display warning text when user has not visited all of the update question pages', async () => {
-    const { getByText } = await setup();
+  describe('Views when user has visited pages', () => {
+    it('should display warning text when user has not visited all of the update question pages', async () => {
+      const { getByText } = await setup({ updateWorkplaceService: { allUpdatePagesVisitedForAdd: () => false } });
 
-    expect(
-      getByText('This data does not update automatically when you add staff records.', { exact: false }),
-    ).toBeTruthy();
-    expect(getByText('You need to check and change these yourself.', { exact: false })).toBeTruthy();
+      expect(
+        getByText('This data does not update automatically when you add staff records.', { exact: false }),
+      ).toBeTruthy();
+      expect(getByText('You need to check and change these yourself.', { exact: false })).toBeTruthy();
+    });
+
+    it('should not display warning text when user has visited all of the update question pages', async () => {
+      const { queryByText } = await setup({ updateWorkplaceService: { allUpdatePagesVisitedForAdd: () => true } });
+
+      expect(
+        queryByText('This data does not update automatically when you add staff records.', { exact: false }),
+      ).toBeFalsy();
+      expect(queryByText('You need to check and change these yourself.', { exact: false })).toBeFalsy();
+    });
   });
 
   describe('Number of staff', () => {

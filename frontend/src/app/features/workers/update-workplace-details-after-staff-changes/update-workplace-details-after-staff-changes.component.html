@@ -7,9 +7,9 @@
 
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-full">
-      <div [class.govuk-summary-list__warning]="true">
+      <div [class.govuk-summary-list__warning]="!allPagesVisited">
         <h2 class="govuk-heading-m">Total number of staff, vacancies and starters</h2>
-        <span class="govuk-error-message govuk-summary-list__warning-message">
+        <span *ngIf="!allPagesVisited" class="govuk-error-message govuk-summary-list__warning-message">
           This data does not update automatically when you add staff records.
           <br />
           You need to check and change these yourself.

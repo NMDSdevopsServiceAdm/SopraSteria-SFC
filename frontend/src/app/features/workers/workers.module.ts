@@ -16,6 +16,7 @@ import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { DialogService } from '@core/services/dialog.service';
+import { UpdateWorkplaceService } from '@core/services/update-workplace.service';
 import {
   DownloadPdfTrainingAndQualificationComponent,
 } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
@@ -164,6 +165,7 @@ import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.compon
     AvailableQualificationsResolver,
     TrainingCertificateService,
     QualificationCertificateService,
+    UpdateWorkplaceService,
     WorkerReasonsForLeavingResolver,
   ],
 })
