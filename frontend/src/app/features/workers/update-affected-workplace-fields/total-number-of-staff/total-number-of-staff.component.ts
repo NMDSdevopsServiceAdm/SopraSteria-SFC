@@ -9,6 +9,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffConstraints, TotalStaffFormService } from '@core/services/total-staff-form.service';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-total-number-of-staff',
@@ -31,6 +32,7 @@ export class TotalNumberOfStaffComponent {
     private totalStaffFormService: TotalStaffFormService,
     private route: ActivatedRoute,
     private router: Router,
+    private location: Location,
     private establishmentService: EstablishmentService,
     private backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
@@ -78,7 +80,7 @@ export class TotalNumberOfStaffComponent {
 
     this.subscriptions.add(
       this.establishmentService.postStaff(this.workplace.uid, totalStaffNumber).subscribe(
-        (data) => this.onSuccess(),
+        () => this.onSuccess(),
         (error) => this.onError(error),
       ),
     );
@@ -86,15 +88,27 @@ export class TotalNumberOfStaffComponent {
 
   onCancel(event: Event): void {
     event.preventDefault();
+    this.returnToPreviousPage();
   }
 
-  onSuccess(): void {}
+  onSuccess(): void {
+    this.returnToPreviousPage();
+  }
 
-  onError(error): void {}
+  onError(_error: Error): void {}
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  public returnToPreviousPage() {
+    const returnToUrl = this.establishmentService.returnTo?.url;
+    if (returnToUrl) {
+      this.router.navigate(returnToUrl);
+    } else {
+      this.location.back();
+    }
   }
 
   ngOnDestroy(): void {

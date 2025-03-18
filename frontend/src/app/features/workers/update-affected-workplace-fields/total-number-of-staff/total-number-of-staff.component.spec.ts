@@ -4,11 +4,11 @@ import { of } from 'rxjs';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockActivatedRoute } from '@core/test-utils/MockActivatedRoute';
-import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
+import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -16,9 +16,11 @@ import userEvent from '@testing-library/user-event';
 import { TotalNumberOfStaffComponent } from './total-number-of-staff.component';
 
 fdescribe('TotalNumberOfStaffComponent', () => {
+  const mockEstablishment = establishmentBuilder() as Establishment;
+
   const setup = async (overrides: any = {}) => {
     const numberOfStaff = overrides?.numberOfStaff ?? 10;
-    const mockEstablishment = establishmentBuilder() as Establishment;
+    const returnTo = { url: ['workplace', mockEstablishment.uid, 'check-this-information'] };
 
     const setupTools = await render(TotalNumberOfStaffComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -32,6 +34,7 @@ fdescribe('TotalNumberOfStaffComponent', () => {
               return of(numberOfStaff);
             },
             postStaff() {},
+            returnTo,
           },
         },
         {
@@ -52,12 +55,15 @@ fdescribe('TotalNumberOfStaffComponent', () => {
     const component = setupTools.fixture.componentInstance;
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
+    const router = injector.inject(Router) as Router;
     const postStaffSpy = spyOn(establishmentService, 'postStaff').and.returnValue(of(null));
+    const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
       ...setupTools,
       component,
       postStaffSpy,
+      routerSpy,
       mockEstablishment,
     };
   };
@@ -170,6 +176,23 @@ fdescribe('TotalNumberOfStaffComponent', () => {
 
       expectErrorMessageAppears('Number of staff must be a whole number between 1 and 999');
       expect(postStaffSpy).not.toHaveBeenCalled();
+    });
+
+    it('should return to the previous page after updating staff record', async () => {
+      const { fixture, postStaffSpy, routerSpy } = await setup();
+
+      await fillInNumberAndSubmitForm('10');
+      fixture.detectChanges();
+
+      expect(postStaffSpy).toHaveBeenCalled();
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', mockEstablishment.uid, 'check-this-information']);
+    });
+
+    it('should return to the previous page if cancel link is clicked', async () => {
+      const { getByText, routerSpy } = await setup();
+
+      userEvent.click(getByText('Cancel'));
+      expect(routerSpy).toHaveBeenCalledWith(['workplace', mockEstablishment.uid, 'check-this-information']);
     });
 
     const fillInNumberAndSubmitForm = async (inputString: string) => {
