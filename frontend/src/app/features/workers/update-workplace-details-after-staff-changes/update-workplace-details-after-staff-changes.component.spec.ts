@@ -3,6 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UpdateWorkplaceService } from '@core/services/update-workplace.service';
@@ -17,6 +18,7 @@ import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workp
 describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   async function setup(overrides: any = {}) {
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
+    const alertSpy = jasmine.createSpy('addAlert').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(UpdateWorkplaceDetailsAfterStaffChangesComponent, {
       imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -28,6 +30,10 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
         {
           provide: UpdateWorkplaceService,
           useFactory: MockUpdateWorkplaceService.factory(overrides?.updateWorkplaceService),
+        },
+        {
+          provide: AlertService,
+          useValue: { addAlert: alertSpy },
         },
         BackLinkService,
       ],
@@ -44,6 +50,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       component,
       workplace,
       routerSpy,
+      alertSpy,
     };
   }
 
@@ -76,6 +83,15 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
         queryByText('This data does not update automatically when you add staff records.', { exact: false }),
       ).toBeFalsy();
       expect(queryByText('You need to check and change these yourself.', { exact: false })).toBeFalsy();
+    });
+
+    it('should add alert when user has visited all of the update question pages', async () => {
+      const { alertSpy } = await setup({ updateWorkplaceService: { allUpdatePagesVisitedForAdd: () => true } });
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Total number of staff, vacancies and starters information saved',
+      });
     });
   });
 

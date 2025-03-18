@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UpdateWorkplaceService } from '@core/services/update-workplace.service';
@@ -15,6 +16,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
     private router: Router,
     private backLinkService: BackLinkService,
     private updateWorkplaceService: UpdateWorkplaceService,
+    private alertService: AlertService,
   ) {}
 
   public workplace: Establishment;
@@ -24,6 +26,13 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
     this.workplace = this.establishmentService.establishment;
     this.allPagesVisited = this.updateWorkplaceService.allUpdatePagesVisitedForAdd();
     this.backLinkService.showBackLink();
+
+    if (this.allPagesVisited) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Total number of staff, vacancies and starters information saved',
+      });
+    }
   }
 
   public isArray(variable: any): boolean {
