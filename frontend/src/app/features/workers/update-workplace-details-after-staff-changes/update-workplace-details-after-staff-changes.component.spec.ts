@@ -3,6 +3,7 @@ import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { SharedModule } from '@shared/shared.module';
@@ -22,6 +23,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
           provide: EstablishmentService,
           useValue: { establishment: workplace },
         },
+        BackLinkService,
       ],
     });
 
