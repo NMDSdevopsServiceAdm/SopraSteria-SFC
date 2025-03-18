@@ -12,11 +12,11 @@ import { TotalStaffConstraints, TotalStaffFormService } from '@core/services/tot
 import { Location } from '@angular/common';
 
 @Component({
-  selector: 'app-total-number-of-staff',
-  templateUrl: './total-number-of-staff.component.html',
-  styleUrls: ['./total-number-of-staff.component.scss'],
+  selector: 'app-update-total-number-of-staff',
+  templateUrl: './update-total-number-of-staff.component.html',
+  styleUrls: ['./update-total-number-of-staff.component.scss'],
 })
-export class TotalNumberOfStaffComponent {
+export class UpdateTotalNumberOfStaffComponent {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;

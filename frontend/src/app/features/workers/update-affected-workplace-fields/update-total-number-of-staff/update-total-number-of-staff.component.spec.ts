@@ -13,7 +13,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { TotalNumberOfStaffComponent } from './total-number-of-staff.component';
+import { UpdateTotalNumberOfStaffComponent } from './update-total-number-of-staff.component';
 
 describe('TotalNumberOfStaffComponent', () => {
   const mockEstablishment = establishmentBuilder() as Establishment;
@@ -22,7 +22,7 @@ describe('TotalNumberOfStaffComponent', () => {
     const numberOfStaff = overrides?.numberOfStaff ?? 10;
     const returnTo = { url: ['workplace', mockEstablishment.uid, 'update-workplace-details'] };
 
-    const setupTools = await render(TotalNumberOfStaffComponent, {
+    const setupTools = await render(UpdateTotalNumberOfStaffComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {

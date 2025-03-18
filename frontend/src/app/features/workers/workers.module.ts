@@ -69,7 +69,7 @@ import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
-import { TotalNumberOfStaffComponent } from './update-affected-workplace-fields/total-number-of-staff/total-number-of-staff.component';
+import { UpdateTotalNumberOfStaffComponent } from './update-affected-workplace-fields/update-total-number-of-staff/update-total-number-of-staff.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
@@ -132,7 +132,7 @@ import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-a
     MainJobRoleComponent,
     DeleteStaffRecordComponent,
     UpdateWorkplaceDetailsAfterStaffChangesComponent,
-    TotalNumberOfStaffComponent,
+    UpdateTotalNumberOfStaffComponent,
   ],
   providers: [
     DialogService,

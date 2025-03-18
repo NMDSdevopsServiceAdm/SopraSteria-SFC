@@ -22,7 +22,7 @@ import { WorkplaceResolver } from '@core/resolvers/workplace.resolver';
 import { AscWdsCertificateComponent } from '@features/dashboard/asc-wds-certificate/asc-wds-certificate.component';
 import { DeleteWorkplaceComponent } from '@features/new-dashboard/delete-workplace/delete-workplace.component';
 import { StaffBasicRecord } from '@features/new-dashboard/staff-tab/staff-basic-record/staff-basic-record.component';
-import { TotalNumberOfStaffComponent } from '@features/workers/update-affected-workplace-fields/total-number-of-staff/total-number-of-staff.component';
+import { UpdateTotalNumberOfStaffComponent } from '@features/workers/update-affected-workplace-fields/update-total-number-of-staff/update-total-number-of-staff.component';
 import { AcceptPreviousCareCertificateComponent } from '@features/workplace/accept-previous-care-certificate/accept-previous-care-certificate.component';
 import { BenefitsStatutorySickPayComponent } from '@features/workplace/benefits-statutory-sick-pay/benefits-statutory-sick-pay.component';
 import { ChangeExpiresSoonAlertsComponent } from '@features/workplace/change-expires-soon-alerts/change-expires-soon-alerts.component';
@@ -677,7 +677,7 @@ const routes: Routes = [
       },
       {
         path: 'update-total-number-of-staff',
-        component: TotalNumberOfStaffComponent,
+        component: UpdateTotalNumberOfStaffComponent,
         canActivate: [CheckPermissionsGuard],
         data: { permissions: ['canEditEstablishment'], title: 'Update total number of staff' },
       },
