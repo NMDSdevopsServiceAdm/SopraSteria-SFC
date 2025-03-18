@@ -11,7 +11,7 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 
 
-fdescribe('AddAnotherStaffRecordComponent', () => {
+describe('AddAnotherStaffRecordComponent', () => {
   async function setup() {
     const { fixture, getByLabelText, getByText } = await render(
       AddAnotherStaffRecordComponent,

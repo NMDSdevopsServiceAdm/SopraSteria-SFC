@@ -100,7 +100,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
         (data) => {
           this.workerService.setState({ ...this.worker, ...data });
-          this.returnToHomeTab();
+          this.navigateToNextPage();
         },
         (error) => {
           console.log(error);
@@ -109,8 +109,8 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     );
   }
 
-  public returnToHomeTab() {
-    this.router.navigate(['/dashboard'], { fragment: 'staff-records', state: { showBanner: true } }).then(() => {
+  public navigateToNextPage() {
+    this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record']).then(() => {
       this.alertService.addAlert({
         type: 'success',
         message: 'Staff record saved',
