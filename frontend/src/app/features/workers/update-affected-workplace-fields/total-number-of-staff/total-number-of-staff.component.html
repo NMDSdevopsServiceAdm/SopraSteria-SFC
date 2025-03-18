@@ -26,11 +26,11 @@
         <span *ngIf="submitted && form.get('totalStaff').invalid" id="totalStaff-error" class="govuk-error-message">
           <span class="govuk-visually-hidden">Error:</span> {{ getFirstErrorMessage('totalStaff') }}
         </span>
-        <label class="govuk-label" for="totalNumberOfStaff"> Number of staff </label>
+        <label class="govuk-label" for="total-number-of-staff"> Number of staff </label>
         <app-number-input
           [min]="min"
           [max]="max"
-          inputId="totalNumberOfStaff"
+          inputId="total-number-of-staff"
           formControlName="totalStaff"
           [hasError]="submitted && form.get('totalStaff').invalid"
         ></app-number-input>

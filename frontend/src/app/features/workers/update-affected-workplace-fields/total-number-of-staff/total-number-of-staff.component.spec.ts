@@ -103,11 +103,29 @@ fdescribe('TotalNumberOfStaffComponent', () => {
       expect(cancelLink).toBeTruthy();
     });
 
-    it('should show an input box for number of staff', async () => {
-      const { getByLabelText, getByText } = await setup();
+    it('should show an input box with buttons for number of staff', async () => {
+      const { getByText, getByTestId, getByRole } = await setup();
 
       expect(getByText('Number of staff')).toBeTruthy();
-      expect(getByLabelText('Number of staff')).toBeTruthy();
+      expect(getByRole('textbox', { name: 'Number of staff' })).toBeTruthy();
+      expect(getByTestId('plus-button-total-number-of-staff')).toBeTruthy();
+      expect(getByTestId('minus-button-total-number-of-staff')).toBeTruthy();
+    });
+
+    it('should handle value change by plus or minus button correctly', async () => {
+      const { getByLabelText, getByTestId } = await setup({ numberOfStaff: 10 });
+
+      const plusButton = getByTestId('plus-button-total-number-of-staff');
+      const minusButton = getByTestId('minus-button-total-number-of-staff');
+      const numberInput = getByLabelText('Number of staff') as HTMLInputElement;
+
+      lodash.times(5, () => userEvent.click(plusButton));
+
+      expect(numberInput.value).toEqual('15');
+
+      lodash.times(10, () => userEvent.click(minusButton));
+
+      expect(numberInput.value).toEqual('5');
     });
   });
 
@@ -118,27 +136,11 @@ fdescribe('TotalNumberOfStaffComponent', () => {
       const numberInput = getByLabelText('Number of staff') as HTMLInputElement;
       expect(numberInput.value).toEqual('42');
     });
-
-    it('should handle value change by plus or minus button correctly', async () => {
-      const { getByLabelText, getByTestId } = await setup({ numberOfStaff: 42 });
-
-      const plusButton = getByTestId('plus-sign-button');
-      const minusButton = getByTestId('minus-sign-button');
-      const numberInput = getByLabelText('Number of staff') as HTMLInputElement;
-
-      userEvent.click(plusButton);
-      userEvent.click(plusButton);
-      expect(numberInput.value).toEqual('44');
-
-      lodash.times(10, () => userEvent.click(minusButton));
-
-      expect(numberInput.value).toEqual('34');
-    });
   });
 
   describe('on submit', () => {
     it('should call establishment service postStaff() with the updated number of staff', async () => {
-      const { fixture, postStaffSpy, mockEstablishment } = await setup();
+      const { fixture, postStaffSpy, mockEstablishment } = await setup({ numberOfStaff: 20 });
 
       await fillInNumberAndSubmitForm('10');
       fixture.detectChanges();

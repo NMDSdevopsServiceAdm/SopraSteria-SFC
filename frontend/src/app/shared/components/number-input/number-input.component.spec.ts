@@ -57,27 +57,27 @@ fdescribe('NumberInputComponent', () => {
     });
 
     it('should assign the inputId as the id of input box', async () => {
-      const { getByRole } = await setup({ inputId: 'numberOfStaff' });
+      const { getByRole } = await setup({ inputId: 'number-of-staff' });
 
       const inputBox = getByRole('textbox') as HTMLInputElement;
-      expect(inputBox.id).toEqual('numberOfStaff');
+      expect(inputBox.id).toEqual('number-of-staff');
     });
 
     it('should show a plus sign and a minus sign button', async () => {
       const { getByTestId } = await setup({ initialValue: 10 });
 
-      expect(getByTestId('plus-sign-button')).toBeTruthy();
-      expect(getByTestId('minus-sign-button')).toBeTruthy();
+      expect(getByTestId('plus-button-number-input')).toBeTruthy();
+      expect(getByTestId('minus-button-number-input')).toBeTruthy();
     });
   });
 
   describe('behaviour', () => {
     const clickPlusButton = async () => {
-      screen.getByTestId('plus-sign-button').click();
+      screen.getByTestId('plus-button-number-input').click();
     };
 
     const clickMinusButton = async () => {
-      screen.getByTestId('minus-sign-button').click();
+      screen.getByTestId('minus-button-number-input').click();
     };
 
     describe('number input', async () => {
@@ -166,11 +166,11 @@ fdescribe('NumberInputComponent', () => {
         fixture.autoDetectChanges();
 
         const inputBox = getByRole('textbox') as HTMLInputElement;
-        expect(queryByTestId('plus-sign-button')).toBeTruthy();
+        expect(queryByTestId('plus-button-number-input')).toBeTruthy();
 
         userEvent.type(inputBox, '10');
 
-        expect(queryByTestId('plus-sign-button')).toBeFalsy();
+        expect(queryByTestId('plus-button-number-input')).toBeFalsy();
       });
     });
 
@@ -203,11 +203,11 @@ fdescribe('NumberInputComponent', () => {
         const inputBox = getByRole('textbox') as HTMLInputElement;
 
         userEvent.type(inputBox, '2');
-        expect(queryByTestId('minus-sign-button')).toBeTruthy();
+        expect(queryByTestId('minus-button-number-input')).toBeTruthy();
 
         await clickMinusButton();
 
-        expect(queryByTestId('minus-sign-button')).toBeFalsy();
+        expect(queryByTestId('minus-button-number-input')).toBeFalsy();
       });
 
       it('should bring the value to maximum if the current value is higher then maximum', async () => {
@@ -228,13 +228,13 @@ fdescribe('NumberInputComponent', () => {
         fixture.autoDetectChanges();
 
         const inputBox = getByRole('textbox') as HTMLInputElement;
-        expect(queryByTestId('minus-sign-button')).toBeFalsy();
+        expect(queryByTestId('minus-button-number-input')).toBeFalsy();
 
         userEvent.type(inputBox, '10');
-        expect(queryByTestId('minus-sign-button')).toBeTruthy();
+        expect(queryByTestId('minus-button-number-input')).toBeTruthy();
 
         userEvent.clear(inputBox);
-        expect(queryByTestId('minus-sign-button')).toBeFalsy();
+        expect(queryByTestId('minus-button-number-input')).toBeFalsy();
       });
     });
   });
