@@ -51,6 +51,15 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     expect(getByText('Total number of staff, vacancies and starters')).toBeTruthy();
   });
 
+  it('should display warning text when user has not visited all of the update question pages', async () => {
+    const { getByText } = await setup();
+
+    expect(
+      getByText('This data does not update automatically when you add staff records.', { exact: false }),
+    ).toBeTruthy();
+    expect(getByText('You need to check and change these yourself.', { exact: false })).toBeTruthy();
+  });
+
   describe('Number of staff', () => {
     it('should show the correct wording', async () => {
       const { getByTestId } = await setup();
