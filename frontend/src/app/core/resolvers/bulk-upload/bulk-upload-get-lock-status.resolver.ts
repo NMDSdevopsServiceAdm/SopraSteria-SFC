@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Resolve, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { BulkUploadStatus } from '@core/model/bulk-upload.model';
 import { BulkUploadService } from '@core/services/bulk-upload.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -7,7 +7,7 @@ import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class BulkUploadGetLockStatusResolver implements Resolve<BulkUploadStatus> {
+export class BulkUploadGetLockStatusResolver  {
   constructor(
     private router: Router,
     private establishmentService: EstablishmentService,

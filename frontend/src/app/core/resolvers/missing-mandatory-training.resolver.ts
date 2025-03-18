@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TrainingService } from '@core/services/training.service';
 import { of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
-export class MissingMandatoryTrainingResolver implements Resolve<any> {
+export class MissingMandatoryTrainingResolver  {
   constructor(
     private router: Router,
     private trainingService: TrainingService,
