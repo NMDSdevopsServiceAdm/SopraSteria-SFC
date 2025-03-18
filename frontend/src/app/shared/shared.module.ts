@@ -136,7 +136,7 @@ import { ServiceNamePipe } from './pipes/service-name.pipe';
 import { WorkerDaysPipe } from './pipes/worker-days.pipe';
 import { WorkerPayPipe } from './pipes/worker-pay.pipe';
 import { WorkplacePermissionsBearerPipe } from './pipes/workplace-permissions-bearer.pipe';
-import { NumberInputComponent } from './components/number-input/number-input.component';
+import { NumberInputWithButtonsComponent } from './components/number-input-with-buttons/number-input-with-buttons.component';
 
 @NgModule({
   imports: [CommonModule, FormsModule, ReactiveFormsModule, RouterModule, OverlayModule],
@@ -273,7 +273,7 @@ import { NumberInputComponent } from './components/number-input/number-input.com
     WorkplaceNameAddress,
     RemoveTrailingWhitespacePipe,
     HelpContentComponent,
-    NumberInputComponent,
+    NumberInputWithButtonsComponent,
   ],
   exports: [
     AbsoluteNumberPipe,
@@ -406,7 +406,7 @@ import { NumberInputComponent } from './components/number-input/number-input.com
     RemoveTrailingWhitespacePipe,
     HelpContentComponent,
     FormatStartersLeaversVacanciesPipe,
-    NumberInputComponent,
+    NumberInputWithButtonsComponent,
   ],
   providers: [DialogService, TotalStaffComponent, ArticleListResolver, PageResolver, QuestionsAndAnswersResolver],
 })

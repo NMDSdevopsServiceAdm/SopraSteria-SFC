@@ -4,7 +4,7 @@ import { SharedModule } from '@shared/shared.module';
 import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
-import { NumberInputComponent } from './number-input.component';
+import { NumberInputWithButtonsComponent } from './number-input-with-buttons.component';
 
 describe('NumberInputComponent', () => {
   const setup = async (override: any = {}) => {
@@ -13,7 +13,7 @@ describe('NumberInputComponent', () => {
       return value && inputPropertiesName.includes(key);
     });
 
-    const setupTools = await render(NumberInputComponent, {
+    const setupTools = await render(NumberInputWithButtonsComponent, {
       imports: [SharedModule],
       providers: [],
       componentProperties: inputProps,

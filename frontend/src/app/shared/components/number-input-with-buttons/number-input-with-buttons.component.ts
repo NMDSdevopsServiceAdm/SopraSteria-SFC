@@ -3,18 +3,18 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { inRange } from 'lodash';
 
 @Component({
-  selector: 'app-number-input',
-  templateUrl: './number-input.component.html',
-  styleUrls: ['./number-input.component.scss'],
+  selector: 'app-number-input-with-buttons',
+  templateUrl: './number-input-with-buttons.component.html',
+  styleUrls: ['./number-input-with-buttons.component.scss'],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       multi: true,
-      useExisting: NumberInputComponent,
+      useExisting: NumberInputWithButtonsComponent,
     },
   ],
 })
-export class NumberInputComponent implements ControlValueAccessor {
+export class NumberInputWithButtonsComponent implements ControlValueAccessor {
   @Input() initialValue: number = null;
   @Input() min: number = 1;
   @Input() max: number = 999;
