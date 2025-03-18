@@ -92,6 +92,13 @@ const routes: Routes = [
     },
   },
   {
+    path: 'update-workplace-details-after-staff-changes',
+    component: UpdateWorkplaceDetailsAfterStaffChangesComponent,
+    data: {
+      title: 'Update workplace details',
+    },
+  },
+  {
     path: 'create-staff-record',
     resolve: { jobs: JobsResolver },
     canActivate: [CheckPermissionsGuard],
@@ -134,7 +141,6 @@ const routes: Routes = [
     resolve: { training: TrainingRecordsForCategoryResolver },
     data: { title: 'View Training Categories' },
   },
-
   {
     path: ':id',
     canActivate: [CheckPermissionsGuard],
@@ -720,13 +726,6 @@ const routes: Routes = [
         data: {
           permissions: ['canDeleteWorker'],
           title: 'Delete staff record',
-        },
-      },
-      {
-        path: 'update-workplace-details',
-        component: UpdateWorkplaceDetailsAfterStaffChangesComponent,
-        data: {
-          title: 'Update workplace details',
         },
       },
     ],
