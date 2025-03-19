@@ -6,23 +6,25 @@ import { Injectable } from '@angular/core';
 export class UpdateWorkplaceAfterStaffChangesService {
   constructor() {}
 
-  private visitedPages: Array<string> = [];
+  private visitedPages: Set<AddStaffWorkplaceUpdatePage> = new Set();
 
-  public addToVisitedPages(page: string): void {
-    this.visitedPages.push(page);
-  }
-
-  public getVisitedPages(): Array<string> {
-    return this.visitedPages;
+  public addToVisitedPages(page: AddStaffWorkplaceUpdatePage): void {
+    this.visitedPages.add(page);
   }
 
   public resetVisitedPages(): void {
-    this.visitedPages = [];
+    this.visitedPages.clear();
   }
 
   public allUpdatePagesVisitedForAdd(): boolean {
-    return ['update-total-staff', 'update-vacancies', 'update-starters'].every((page) => {
-      return this.visitedPages.includes(page);
+    return Object.values(AddStaffWorkplaceUpdatePage).every((page) => {
+      return this.visitedPages.has(page);
     });
   }
+}
+
+export enum AddStaffWorkplaceUpdatePage {
+  TOTAL_STAFF = 'update-total-staff',
+  UPDATE_VACANCIES = 'update-vacancies',
+  UPDATE_STARTERS = 'update-starters',
 }

@@ -1,7 +1,10 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { UpdateWorkplaceAfterStaffChangesService } from './update-workplace-after-staff-changes.service';
+import {
+  AddStaffWorkplaceUpdatePage,
+  UpdateWorkplaceAfterStaffChangesService,
+} from './update-workplace-after-staff-changes.service';
 
 describe('UpdateWorkplaceAfterStaffChangesService', () => {
   let service: UpdateWorkplaceAfterStaffChangesService;
@@ -19,7 +22,11 @@ describe('UpdateWorkplaceAfterStaffChangesService', () => {
   });
 
   describe('allUpdatePagesVisitedForAdd', () => {
-    [[], ['update-total-staff'], ['update-total-staff', 'update-vacancies']].forEach((visitedPages) => {
+    [
+      [],
+      [AddStaffWorkplaceUpdatePage.TOTAL_STAFF],
+      [AddStaffWorkplaceUpdatePage.TOTAL_STAFF, AddStaffWorkplaceUpdatePage.UPDATE_VACANCIES],
+    ].forEach((visitedPages) => {
       it(`should return false when not all pages in visitedPages (${visitedPages})`, async () => {
         visitedPages.forEach((page) => {
           service.addToVisitedPages(page);
@@ -30,7 +37,11 @@ describe('UpdateWorkplaceAfterStaffChangesService', () => {
     });
 
     it('should return true when all pages in visitedPages', async () => {
-      ['update-total-staff', 'update-vacancies', 'update-starters'].forEach((page) => {
+      [
+        AddStaffWorkplaceUpdatePage.TOTAL_STAFF,
+        AddStaffWorkplaceUpdatePage.UPDATE_VACANCIES,
+        AddStaffWorkplaceUpdatePage.UPDATE_STARTERS,
+      ].forEach((page) => {
         service.addToVisitedPages(page);
       });
 
