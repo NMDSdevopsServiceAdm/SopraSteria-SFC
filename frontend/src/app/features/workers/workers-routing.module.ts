@@ -61,6 +61,7 @@ import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 
 const routes: Routes = [
   {
@@ -99,6 +100,10 @@ const routes: Routes = [
         },
       },
     ],
+  },
+  {
+    path: 'add-another-staff-record',
+    component: AddAnotherStaffRecordComponent,
   },
   {
     path: 'basic-records-save-success',

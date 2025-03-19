@@ -70,12 +70,14 @@ import { TotalStaffChangeComponent } from './total-staff-change/total-staff-chan
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
   declarations: [
     AddEditQualificationComponent,
     AddEditTrainingComponent,
+    AddAnotherStaffRecordComponent,
     AdultSocialCareStartedComponent,
     ApprenticeshipTrainingComponent,
     AverageWeeklyHoursComponent,

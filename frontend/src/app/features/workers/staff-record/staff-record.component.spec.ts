@@ -270,7 +270,7 @@ describe('StaffRecordComponent', () => {
       expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
     });
 
-    it('should redirect back to the dashboard when worker is confirmed if workplace and establishment are the same', async () => {
+    it('should navigate to the "Add another workplace" page when worker is confirmed if workplace and establishment are the same', async () => {
       const { component, fixture, routerSpy, getByText } = await setup();
 
       component.canEditWorker = true;
@@ -281,30 +281,9 @@ describe('StaffRecordComponent', () => {
       const button = getByText('Confirm record details');
       fireEvent.click(button);
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], {
-        fragment: 'staff-records',
-        state: { showBanner: true },
-      });
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mock-uid', 'staff-record', 'add-another-staff-record']);
     });
 
-    it('should display a confirmation alert when the confirm record details button has been clicked', async () => {
-      const { getByText, alertSpy, fixture, component } = await setup();
-
-      component.canEditWorker = true;
-      component.workplace.uid = 'mock-uid';
-      component.worker.completed = false;
-      fixture.detectChanges();
-
-      const button = getByText('Confirm record details');
-      fireEvent.click(button);
-
-      fixture.whenStable().then(() => {
-        expect(alertSpy).toHaveBeenCalledWith({
-          type: 'success',
-          message: 'Staff record saved',
-        });
-      });
-    });
   });
 
   describe('transfer staff record link', () => {
