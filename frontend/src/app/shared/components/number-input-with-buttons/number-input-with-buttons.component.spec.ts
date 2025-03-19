@@ -6,7 +6,8 @@ import userEvent from '@testing-library/user-event';
 
 import { NumberInputWithButtonsComponent } from './number-input-with-buttons.component';
 
-describe('NumberInputComponent', () => {
+describe('NumberInputWithButtonsComponent', () => {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const setup = async (override: any = {}) => {
     const inputPropertiesName = ['initialValue', 'min', 'max', 'inputId'];
     const inputProps = lodash.pickBy(override, (value, key) => {

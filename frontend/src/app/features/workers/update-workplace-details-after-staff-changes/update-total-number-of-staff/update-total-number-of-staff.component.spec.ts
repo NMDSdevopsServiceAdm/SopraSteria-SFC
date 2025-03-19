@@ -15,7 +15,7 @@ import userEvent from '@testing-library/user-event';
 
 import { UpdateTotalNumberOfStaffComponent } from './update-total-number-of-staff.component';
 
-describe('TotalNumberOfStaffComponent', () => {
+describe('UpdateTotalNumberOfStaffComponent', () => {
   const mockEstablishment = establishmentBuilder() as Establishment;
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
