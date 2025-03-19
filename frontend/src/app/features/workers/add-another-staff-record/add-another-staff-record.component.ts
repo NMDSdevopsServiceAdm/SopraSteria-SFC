@@ -27,9 +27,9 @@ export class AddAnotherStaffRecordComponent implements OnInit{
 
   public onSubmit() {
     if (this.form.controls['addAnotherStaffRecord'].value === 'YES') {
-      this.router.navigate(['/workplace', this.establishmentService.primaryWorkplace.uid, 'staff-record', 'create-staff-record', 'staff-details']);
+      this.router.navigate(['/workplace', this.establishmentService.establishment.uid, 'staff-record', 'create-staff-record', 'staff-details']);
     } else {
-      this.router.navigate(['/workplace', this.establishmentService.primaryWorkplace.uid, 'staff-record', 'update-workplace-details-after-staff-changes']);
+      this.router.navigate(['/workplace', this.establishmentService.establishment.uid, 'staff-record', 'update-workplace-details-after-staff-changes']);
     }
   }
 

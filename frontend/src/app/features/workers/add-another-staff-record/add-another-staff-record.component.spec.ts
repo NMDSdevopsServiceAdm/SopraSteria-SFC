@@ -13,7 +13,7 @@ import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 
 describe('AddAnotherStaffRecordComponent', () => {
   async function setup() {
-    const { fixture, getByLabelText, getByText } = await render(
+    const setupTools = await render(
       AddAnotherStaffRecordComponent,
       {
         imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -27,17 +27,15 @@ describe('AddAnotherStaffRecordComponent', () => {
       }
     );
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const navigateSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByLabelText,
-      getByText,
       navigateSpy
     };
   }
