@@ -1,6 +1,6 @@
 import { Subscription } from 'rxjs';
 
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, ViewChild, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -14,9 +14,8 @@ import { Location } from '@angular/common';
 @Component({
   selector: 'app-update-total-number-of-staff',
   templateUrl: './update-total-number-of-staff.component.html',
-  styleUrls: ['./update-total-number-of-staff.component.scss'],
 })
-export class UpdateTotalNumberOfStaffComponent {
+export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
