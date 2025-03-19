@@ -1,4 +1,4 @@
-import { render, getByText, getByLabelText } from '@testing-library/angular';
+import { render } from '@testing-library/angular';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record.component'
 import userEvent from '@testing-library/user-event';
 import { getTestBed } from '@angular/core/testing';
@@ -6,7 +6,6 @@ import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { WorkplaceService } from '@core/services/workplace.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 
