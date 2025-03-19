@@ -11,8 +11,7 @@
   />
   <button
     *ngIf="showMinusButton"
-    class="asc-number-input--toggle-button"
-    id="minus-button"
+    class="asc-number-input--toggle-button asc-number-input--minus-button"
     type="button"
     [attr.data-testid]="'minus-button-' + inputId"
     (click)="decrease()"
@@ -21,8 +20,7 @@
   </button>
   <button
     *ngIf="showPlusButton"
-    class="asc-number-input--toggle-button"
-    id="plus-button"
+    class="asc-number-input--toggle-button asc-number-input--plus-button"
     type="button"
     [attr.data-testid]="'plus-button-' + inputId"
     (click)="increase()"
