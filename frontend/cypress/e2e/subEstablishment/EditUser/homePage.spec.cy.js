@@ -1,19 +1,16 @@
 /* eslint-disable no-undef */
 /// <reference types="cypress" />
+import { SubEstablishment } from '../../../support/mockEstablishmentData';
 import { onHomePage } from '../../../support/page_objects/onHomePage';
 
 describe('Sub home page as edit user', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editSubUser'), Cypress.env('userPassword'));
   });
 
   it('should see the sub establishment home page', () => {
-    cy.contains('Buckden Court');
-    cy.contains('Training');
+    cy.contains(SubEstablishment.parentName);
+    cy.contains(SubEstablishment.name);
   });
 
   it('should show all tabs', () => {

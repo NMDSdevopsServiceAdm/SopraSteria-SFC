@@ -228,10 +228,11 @@ export class NewTabsComponent implements OnInit, OnDestroy {
   }
 
   public getTabSlugInSubView(): string {
-    const urlSegmentGroup = this.route.snapshot['_urlSegment'];
-    const urlSegments = urlSegmentGroup.children?.primary?.segments;
+    const urlAsString = this.router.routerState?.snapshot?.url;
+    const urlSegments = urlAsString?.split('/').filter((section) => section != '');
+
     if (urlSegments?.length == 3) {
-      const tabSlug = urlSegments[2].path;
+      const tabSlug = urlSegments[2];
       return this.tabs.find((tab) => tab.slug === tabSlug) ? tabSlug : null;
     }
     return null;
