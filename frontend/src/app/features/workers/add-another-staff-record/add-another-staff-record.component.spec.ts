@@ -87,7 +87,7 @@ describe('AddAnotherStaffRecordComponent', () => {
 
       expect(navigateSpy).toHaveBeenCalledWith([
         '/workplace',
-        '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
+        'mocked-uid',
         'staff-record',
         'create-staff-record',
         'staff-details'
@@ -103,7 +103,7 @@ describe('AddAnotherStaffRecordComponent', () => {
 
       expect(navigateSpy).toHaveBeenCalledWith([
         '/workplace',
-        '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
+        'mocked-uid',
         'staff-record',
         'update-workplace-details-after-staff-changes'
       ]);
@@ -117,7 +117,7 @@ describe('AddAnotherStaffRecordComponent', () => {
 
       expect(navigateSpy).toHaveBeenCalledWith([
         '/workplace',
-        '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
+        'mocked-uid',
         'staff-record',
         'update-workplace-details-after-staff-changes'
       ]);
