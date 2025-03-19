@@ -198,10 +198,13 @@ describe('TotalNumberOfStaffComponent', () => {
       ]);
     });
 
-    it('should return to the previous page if cancel link is clicked', async () => {
-      const { getByText, routerSpy } = await setup();
+    it('should return to the previous page without changing staff number if cancel link is clicked', async () => {
+      const { fixture, getByText, routerSpy, postStaffSpy } = await setup();
 
       userEvent.click(getByText('Cancel'));
+      fixture.detectChanges();
+
+      expect(postStaffSpy).not.toHaveBeenCalled();
       expect(routerSpy).toHaveBeenCalledWith([
         'workplace',
         mockEstablishment.uid,
