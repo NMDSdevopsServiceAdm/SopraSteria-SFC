@@ -611,7 +611,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-vacancies`);
-        expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
+        expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
       it(`should show multiple job vacancies with the number of vacancies for each job and a Change link when multiple jobs have vacancies`, async () => {
@@ -628,9 +628,9 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const vacanciesRow = within(document.body).queryByTestId('vacancies');
 
         expect(within(vacanciesRow).queryByText('Change')).toBeTruthy();
-        expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
-        expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
-        expect(within(vacanciesRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+        expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('2 x nursing')).toBeTruthy();
+        expect(within(vacanciesRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
     });
 
@@ -700,7 +700,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-starters`);
-        expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
+        expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
       it(`should show multiple jobs with the number of starters for each job and a Change link when multiple jobs have starters`, async () => {
@@ -717,9 +717,9 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const startersRow = within(document.body).queryByTestId('starters');
 
         expect(within(startersRow).queryByText('Change')).toBeTruthy();
-        expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
-        expect(within(startersRow).queryByText('2 Nursing')).toBeTruthy();
-        expect(within(startersRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+        expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
+        expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
+        expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
     });
 
@@ -788,7 +788,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
 
         expect(link).toBeTruthy();
         expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/do-you-have-leavers`);
-        expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
+        expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
       });
 
       it(`should show multiple jobs with the number of leavers for each job and a Change link when multiple jobs have leavers`, async () => {
@@ -804,9 +804,9 @@ describe('WDFWorkplaceSummaryComponent', () => {
         const leaversRow = within(document.body).queryByTestId('leavers');
 
         expect(within(leaversRow).queryByText('Change')).toBeTruthy();
-        expect(within(leaversRow).queryByText(`3 Administrative`)).toBeTruthy();
-        expect(within(leaversRow).queryByText('2 Nursing')).toBeTruthy();
-        expect(within(leaversRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+        expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
+        expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
+        expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
       });
     });
   });

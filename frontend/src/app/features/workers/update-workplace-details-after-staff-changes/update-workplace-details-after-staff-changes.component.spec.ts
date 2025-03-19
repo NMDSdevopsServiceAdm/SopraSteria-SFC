@@ -172,7 +172,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const link = within(vacanciesRow).queryByText('Change');
 
       expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-vacancies`);
-      expect(within(vacanciesRow).queryByText('3 Administrative')).toBeTruthy();
+      expect(within(vacanciesRow).queryByText('3 x administrative')).toBeTruthy();
     });
 
     it('should show multiple job vacancies with the number of vacancies for each job and a Change link when multiple jobs have vacancies', async () => {
@@ -187,9 +187,9 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const link = within(vacanciesRow).queryByText('Change');
 
       expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-vacancies`);
-      expect(within(vacanciesRow).queryByText(`3 Administrative`)).toBeTruthy();
-      expect(within(vacanciesRow).queryByText('2 Nursing')).toBeTruthy();
-      expect(within(vacanciesRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+      expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
+      expect(within(vacanciesRow).queryByText('2 x nursing')).toBeTruthy();
+      expect(within(vacanciesRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
     });
   });
 
@@ -240,7 +240,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const link = within(startersRow).queryByText('Change');
 
       expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-starters`);
-      expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
+      expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
     });
 
     it('should show jobs with number of starters for each job and a Change link when multiple jobs have starters', async () => {
@@ -255,9 +255,9 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const link = within(startersRow).queryByText('Change');
 
       expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-starters`);
-      expect(within(startersRow).queryByText(`3 Administrative`)).toBeTruthy();
-      expect(within(startersRow).queryByText('2 Nursing')).toBeTruthy();
-      expect(within(startersRow).queryByText('4 Other care providing role: Special care worker')).toBeTruthy();
+      expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
+      expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
+      expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
     });
   });
 
