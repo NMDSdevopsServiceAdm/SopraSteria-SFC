@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
-import { AbstractControl, UntypedFormBuilder, UntypedFormGroup, ValidatorFn, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  UntypedFormBuilder,
+  UntypedFormGroup,
+  ValidationErrors,
+  ValidatorFn,
+  Validators,
+} from '@angular/forms';
 import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Establishment } from '@core/model/establishment.model';
 
 import { EstablishmentService } from './establishment.service';
 
-export const TotalStaffConstraints = { min: 1, max: 999 };
+export const TotalStaffConstraints = { min: 0, max: 999 };
 
 @Injectable({
   providedIn: 'root',
@@ -38,7 +45,7 @@ export class TotalStaffFormService {
   }
 
   private nonIntegerValidator(nameRe: RegExp): ValidatorFn {
-    return (control: AbstractControl): { [key: string]: any } | null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       const forbidden = nameRe.test(control.value);
       return forbidden ? { nonInteger: { value: control.value } } : null;
     };

@@ -1,7 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
-import { UntypedFormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { Contracts } from '@core/model/contracts.enum';
@@ -18,13 +18,12 @@ import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentServ
 import { MockJobService } from '@core/test-utils/MockJobService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockUserService } from '@core/test-utils/MockUserService';
+import { build, fake, sequence } from '@jackfranklin/test-data-bot';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { TotalStaffQuestionComponent } from './total-staff-question.component';
-
-const { build, fake, sequence } = require('@jackfranklin/test-data-bot');
 
 describe('TotalStaffQuestionComponent', () => {
   const establishmentBuilder = build('Establishment', {
@@ -35,7 +34,7 @@ describe('TotalStaffQuestionComponent', () => {
     },
   });
 
-  async function setup(shareWith: any = null) {
+  async function setup(shareWith = null) {
     const establishment = establishmentBuilder() as Establishment;
 
     const { fixture, getByText, getByLabelText, getAllByText } = await render(TotalStaffQuestionComponent, {
@@ -184,7 +183,7 @@ describe('TotalStaffQuestionComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      const errorMsgs = getAllByText('Number of staff must be a whole number between 1 and 999');
+      const errorMsgs = getAllByText('Number of staff must be a whole number between 0 and 999');
 
       expect(form.valid).toBeFalsy();
       expect(errorMsgs).toBeTruthy();
@@ -202,25 +201,7 @@ describe('TotalStaffQuestionComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      const errorMsgs = getAllByText('Number of staff must be a whole number between 1 and 999');
-
-      expect(form.valid).toBeFalsy();
-      expect(errorMsgs).toBeTruthy();
-      expect(errorMsgs.length).toEqual(2);
-    });
-
-    it('shows the correct error message when 0 is inputted in the total staff input', async () => {
-      const { component, fixture, getByText, getAllByText, getByLabelText } = await setup();
-      const form = component.form;
-
-      const input = getByLabelText('Number of staff');
-      userEvent.type(input, '0');
-
-      const button = getByText('Save and return');
-      fireEvent.click(button);
-      fixture.detectChanges();
-
-      const errorMsgs = getAllByText('Number of staff must be a whole number between 1 and 999');
+      const errorMsgs = getAllByText('Number of staff must be a whole number between 0 and 999');
 
       expect(form.valid).toBeFalsy();
       expect(errorMsgs).toBeTruthy();
@@ -238,7 +219,7 @@ describe('TotalStaffQuestionComponent', () => {
       fireEvent.click(button);
       fixture.detectChanges();
 
-      const errorMsgs = getAllByText('Number of staff must be a whole number between 1 and 999');
+      const errorMsgs = getAllByText('Number of staff must be a whole number between 0 and 999');
 
       expect(form.valid).toBeFalsy();
       expect(errorMsgs).toBeTruthy();
@@ -261,7 +242,7 @@ describe('TotalStaffQuestionComponent', () => {
   });
 
   it('should return to data sharing page when you click on the back link', async () => {
-    const shareWith: any = { cqc: false, localAuthorities: false };
+    const shareWith = { cqc: false, localAuthorities: false };
     const { component } = await setup(shareWith);
     expect(component.previousRoute).toEqual(['/workplace', `${component.establishment.uid}`, 'sharing-data']);
   });

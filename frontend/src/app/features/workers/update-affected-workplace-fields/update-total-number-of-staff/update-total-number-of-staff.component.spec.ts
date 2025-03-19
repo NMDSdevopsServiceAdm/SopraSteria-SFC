@@ -18,6 +18,7 @@ import { UpdateTotalNumberOfStaffComponent } from './update-total-number-of-staf
 describe('TotalNumberOfStaffComponent', () => {
   const mockEstablishment = establishmentBuilder() as Establishment;
 
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const setup = async (overrides: any = {}) => {
     const numberOfStaff = overrides?.numberOfStaff ?? 10;
     const returnTo = { url: ['workplace', mockEstablishment.uid, 'update-workplace-details'] };
@@ -173,10 +174,10 @@ describe('TotalNumberOfStaffComponent', () => {
     it('should show an error when user input is out of allowed range', async () => {
       const { fixture, postStaffSpy } = await setup();
 
-      await fillInNumberAndSubmitForm('0');
+      await fillInNumberAndSubmitForm('-1');
       fixture.detectChanges();
 
-      expectErrorMessageAppears('Number of staff must be a whole number between 1 and 999');
+      expectErrorMessageAppears('Number of staff must be a whole number between 0 and 999');
       expect(postStaffSpy).not.toHaveBeenCalled();
     });
 
