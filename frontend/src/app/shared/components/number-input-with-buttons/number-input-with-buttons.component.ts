@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, ViewChild, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { inRange } from 'lodash';
 
@@ -14,7 +14,7 @@ import { inRange } from 'lodash';
     },
   ],
 })
-export class NumberInputWithButtonsComponent implements ControlValueAccessor {
+export class NumberInputWithButtonsComponent implements ControlValueAccessor, OnInit {
   @Input() initialValue: number = null;
   @Input() min: number = 1;
   @Input() max: number = 999;
@@ -42,12 +42,11 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor {
   }
 
   get currentNumber(): number {
-    const currentValue = this.numberInput.value;
-    return parseInt(currentValue);
+    return parseInt(this.numberInput.value);
   }
 
-  public writeValue(newValue: any): void {
-    this.numberInput.value = newValue;
+  public writeValue(newValue: number | string | null): void {
+    this.numberInput.value = newValue as string;
     this.checkWhetherButtonsShowup();
     this.onChange(newValue);
   }
@@ -108,7 +107,7 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor {
     this.onChange = fn;
   }
 
-  public registerOnTouched(fn: any): void {
+  public registerOnTouched(fn: () => void): void {
     this.onTouched = fn;
   }
 
