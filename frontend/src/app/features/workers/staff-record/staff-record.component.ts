@@ -100,22 +100,13 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
         (data) => {
           this.workerService.setState({ ...this.worker, ...data });
-          this.navigateToNextPage();
+          this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record']);
         },
         (error) => {
           console.log(error);
         },
       ),
     );
-  }
-
-  public navigateToNextPage() {
-    this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record']).then(() => {
-      this.alertService.addAlert({
-        type: 'success',
-        message: 'Staff record saved',
-      });
-    });
   }
 
   public setReturnTo(): void {
