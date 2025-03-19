@@ -70,7 +70,6 @@ import { UserAccountEditPermissionsComponent } from './user-account-edit-permiss
 import { UsersComponent } from './users/users.component';
 import { WorkplaceNameAddressComponent } from './workplace-name-address/workplace-name-address.component';
 import { WorkplaceNotFoundComponent } from './workplace-not-found/workplace-not-found.component';
-import { UpdateTotalNumberOfStaffComponent } from '@features/workers/update-affected-workplace-fields/update-total-number-of-staff/update-total-number-of-staff.component';
 
 // eslint-disable-next-line max-len
 const routes: Routes = [
@@ -621,12 +620,6 @@ const routes: Routes = [
           expiresSoonAlertDate: ExpiresSoonAlertDatesResolver,
         },
         data: { permissions: ['canEditEstablishment'], title: 'Change expires soon alerts' },
-      },
-      {
-        path: 'update-total-number-of-staff',
-        component: UpdateTotalNumberOfStaffComponent,
-        canActivate: [CheckPermissionsGuard],
-        data: { permissions: ['canEditEstablishment'], title: 'Update total number of staff' },
       },
     ],
   },
