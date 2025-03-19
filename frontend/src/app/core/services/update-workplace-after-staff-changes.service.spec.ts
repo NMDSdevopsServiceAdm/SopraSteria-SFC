@@ -1,17 +1,17 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 
-import { UpdateWorkplaceService } from './update-workplace.service';
+import { UpdateWorkplaceAfterStaffChangesService } from './update-workplace-after-staff-changes.service';
 
-describe('UpdateWorkplaceService', () => {
-  let service: UpdateWorkplaceService;
+describe('UpdateWorkplaceAfterStaffChangesService', () => {
+  let service: UpdateWorkplaceAfterStaffChangesService;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [HttpClientTestingModule],
-      providers: [UpdateWorkplaceService],
+      providers: [UpdateWorkplaceAfterStaffChangesService],
     });
-    service = TestBed.inject(UpdateWorkplaceService);
+    service = TestBed.inject(UpdateWorkplaceAfterStaffChangesService);
   });
 
   it('should create the service', () => {

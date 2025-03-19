@@ -3,7 +3,7 @@ import { Injectable } from '@angular/core';
 @Injectable({
   providedIn: 'root',
 })
-export class UpdateWorkplaceService {
+export class UpdateWorkplaceAfterStaffChangesService {
   constructor() {}
 
   private visitedPages: Array<string> = [];

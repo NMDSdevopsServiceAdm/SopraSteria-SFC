@@ -6,9 +6,9 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceService } from '@core/services/update-workplace.service';
+import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
-import { MockUpdateWorkplaceService } from '@core/test-utils/MockUpdateWorkplaceService';
+import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
@@ -28,8 +28,10 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
           useValue: { establishment: workplace },
         },
         {
-          provide: UpdateWorkplaceService,
-          useFactory: MockUpdateWorkplaceService.factory(overrides?.updateWorkplaceService),
+          provide: UpdateWorkplaceAfterStaffChangesService,
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory(
+            overrides?.updateWorkplaceAfterStaffChangesService,
+          ),
         },
         {
           provide: AlertService,
@@ -68,7 +70,9 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
   describe('Views when user has visited pages', () => {
     it('should display warning text when user has not visited all of the update question pages', async () => {
-      const { getByText } = await setup({ updateWorkplaceService: { allUpdatePagesVisitedForAdd: () => false } });
+      const { getByText } = await setup({
+        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisitedForAdd: () => false },
+      });
 
       expect(
         getByText('This data does not update automatically when you add staff records.', { exact: false }),
@@ -77,7 +81,9 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
 
     it('should not display warning text when user has visited all of the update question pages', async () => {
-      const { queryByText } = await setup({ updateWorkplaceService: { allUpdatePagesVisitedForAdd: () => true } });
+      const { queryByText } = await setup({
+        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisitedForAdd: () => true },
+      });
 
       expect(
         queryByText('This data does not update automatically when you add staff records.', { exact: false }),
@@ -86,7 +92,9 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
 
     it('should add alert when user has visited all of the update question pages', async () => {
-      const { alertSpy } = await setup({ updateWorkplaceService: { allUpdatePagesVisitedForAdd: () => true } });
+      const { alertSpy } = await setup({
+        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisitedForAdd: () => true },
+      });
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',

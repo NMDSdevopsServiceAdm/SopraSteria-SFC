@@ -4,7 +4,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceService } from '@core/services/update-workplace.service';
+import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 
 @Component({
   selector: 'app-update-workplace-details-after-staff-changes',
@@ -15,7 +15,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
     private establishmentService: EstablishmentService,
     private router: Router,
     private backLinkService: BackLinkService,
-    private updateWorkplaceService: UpdateWorkplaceService,
+    private updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
     private alertService: AlertService,
   ) {}
 
@@ -24,7 +24,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
 
   ngOnInit(): void {
     this.workplace = this.establishmentService.establishment;
-    this.allPagesVisited = this.updateWorkplaceService.allUpdatePagesVisitedForAdd();
+    this.allPagesVisited = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesVisitedForAdd();
     this.backLinkService.showBackLink();
 
     if (this.allPagesVisited) {
