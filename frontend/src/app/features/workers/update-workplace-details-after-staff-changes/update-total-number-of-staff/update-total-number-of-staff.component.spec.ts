@@ -21,7 +21,9 @@ describe('TotalNumberOfStaffComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const setup = async (overrides: any = {}) => {
     const numberOfStaff = overrides?.numberOfStaff ?? 10;
-    const returnTo = { url: ['workplace', mockEstablishment.uid, 'update-workplace-details'] };
+    const returnTo = {
+      url: ['workplace', mockEstablishment.uid, 'staff-record', 'update-workplace-details-after-staff-changes'],
+    };
 
     const setupTools = await render(UpdateTotalNumberOfStaffComponent, {
       imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
@@ -188,14 +190,24 @@ describe('TotalNumberOfStaffComponent', () => {
       fixture.detectChanges();
 
       expect(postStaffSpy).toHaveBeenCalled();
-      expect(routerSpy).toHaveBeenCalledWith(['workplace', mockEstablishment.uid, 'update-workplace-details']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        'workplace',
+        mockEstablishment.uid,
+        'staff-record',
+        'update-workplace-details-after-staff-changes',
+      ]);
     });
 
     it('should return to the previous page if cancel link is clicked', async () => {
       const { getByText, routerSpy } = await setup();
 
       userEvent.click(getByText('Cancel'));
-      expect(routerSpy).toHaveBeenCalledWith(['workplace', mockEstablishment.uid, 'update-workplace-details']);
+      expect(routerSpy).toHaveBeenCalledWith([
+        'workplace',
+        mockEstablishment.uid,
+        'staff-record',
+        'update-workplace-details-after-staff-changes',
+      ]);
     });
 
     const fillInNumberAndSubmitForm = async (inputString: string) => {
