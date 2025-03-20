@@ -139,9 +139,7 @@ export class DeleteStaffRecordComponent implements OnInit, AfterViewInit, OnDest
 
   private onSuccess(): void {
     this.router
-      .navigate(['/dashboard'], {
-        fragment: 'staff-records',
-      })
+      .navigate(['/workplace', this.workplace.uid, 'staff-record', 'delete-another-staff-record'])
       .then(() =>
         this.alertService.addAlert({
           type: 'success',
