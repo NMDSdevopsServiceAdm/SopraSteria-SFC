@@ -7,6 +7,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 import { UpdateWorkplaceAfterStaffChangesService } from '../../../../core/services/update-workplace-after-staff-changes.service';
+import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 
 @Component({
   selector: 'app-update-vacancy-job-role',
@@ -20,7 +21,9 @@ export class UpdateVacancyJobRoleComponent implements OnInit {
   public submitted = false;
   public jobGroups: JobGroup[] = [];
   public jobsAvailable: Job[] = [];
-  public preselectedJobIds: number[] = [];
+  public disabledJobIds: number[] = [];
+  protected prefillData: Array<Vacancy | Starter | Leaver>;
+  protected selectedJobIds: number[] = [];
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -34,7 +37,7 @@ export class UpdateVacancyJobRoleComponent implements OnInit {
   ngOnInit() {
     this.getJobs();
     this.setupForm();
-    this.getPreselectedJobIds();
+    this.prefill();
   }
 
   private getJobs(): void {
@@ -42,11 +45,9 @@ export class UpdateVacancyJobRoleComponent implements OnInit {
     this.jobGroups = JobService.sortJobsByJobGroup(this.jobsAvailable);
   }
 
-  protected getPreselectedJobIds(): void {
-    const jobIdsFromService = this.updateWorkplaceAfterStaffChangesService.selectedVacancies?.map(
-      (vacancy) => vacancy.jobId,
-    );
-    this.preselectedJobIds = jobIdsFromService ?? [];
+  protected prefill(): void {
+    this.prefillData = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
+    this.disabledJobIds = this.prefillData.map((vacancy) => vacancy.jobId) ?? [];
   }
 
   private setupForm(): void {
@@ -55,5 +56,37 @@ export class UpdateVacancyJobRoleComponent implements OnInit {
     });
   }
 
-  public onSubmit(): void {}
+  public onCheckboxClick(target: HTMLInputElement) {
+    const jobId = Number(target.value);
+
+    if (this.selectedJobIds.includes(jobId)) {
+      this.selectedJobIds = this.selectedJobIds.filter((id) => id !== jobId);
+    } else {
+      this.selectedJobIds = [...this.selectedJobIds, jobId];
+    }
+  }
+
+  public onSubmit(): void {
+    this.form.patchValue({ selectedJobRoles: this.selectedJobIds });
+    this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
+
+    const jobIdsToAdd = this.form.get('selectedJobRoles').value;
+    const jobRolesToAdd: Vacancy[] = this.jobsAvailable
+      .filter((job) => jobIdsToAdd.includes(job.id))
+      .map((job) => {
+        return { jobId: job.id, title: job.title, total: 1 };
+      });
+    const preselectedJobs = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
+    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = [...preselectedJobs, ...jobRolesToAdd];
+  }
+
+  public onCancel(event: Event): void {
+    event.preventDefault();
+  }
 }

@@ -41,10 +41,10 @@ fdescribe('UpdateVacancyJobRoleComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setup = async (override: any = {}) => {
     const returnToUrl = override.returnToUrl ? override.returnToUrl : null;
-    const selectedVacancies: Vacancy[] = override.selectedVacancies ?? [];
+    const preselectedVacancies: Vacancy[] = override.preselectedVacancies ?? [];
     const availableJobs = override.availableJobs ?? mockAvailableJobs;
 
-    const renderResults = await render(UpdateVacancyJobRoleComponent, {
+    const setupTools = await render(UpdateVacancyJobRoleComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
@@ -61,21 +61,25 @@ fdescribe('UpdateVacancyJobRoleComponent', () => {
         },
         {
           provide: UpdateWorkplaceAfterStaffChangesService,
-          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedVacancies }),
+          useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory({ selectedVacancies: preselectedVacancies }),
         },
       ],
     });
 
-    const component = renderResults.fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+    const updateWorkplaceAfterStaffChangesService = injector.inject(
+      UpdateWorkplaceAfterStaffChangesService,
+    ) as UpdateWorkplaceAfterStaffChangesService;
 
     return {
       component,
       routerSpy,
-      ...renderResults,
+      updateWorkplaceAfterStaffChangesService,
+      ...setupTools,
     };
   };
 
@@ -125,7 +129,7 @@ fdescribe('UpdateVacancyJobRoleComponent', () => {
       });
 
       it('should render the checkbox as disabled if the job role is already selected before', async () => {
-        const selectedVacancies = [
+        const preselectedVacancies = [
           {
             jobId: 10,
             title: 'Care worker',
@@ -133,7 +137,7 @@ fdescribe('UpdateVacancyJobRoleComponent', () => {
           },
         ];
         const { getByLabelText } = await setup({
-          selectedVacancies,
+          preselectedVacancies,
         });
 
         const careWorkerCheckbox = getByLabelText('Care worker (role already added)') as HTMLInputElement;
@@ -148,8 +152,44 @@ fdescribe('UpdateVacancyJobRoleComponent', () => {
     });
   });
 
-  // describe('form submit and validation', () => {
-  //   describe('on Success', () => {
+  describe('form submit and validation', () => {
+    const preselectedVacancies = [
+      {
+        jobId: 10,
+        title: 'Care worker',
+        total: 3,
+      },
+    ];
+
+    describe('on Success', () => {
+      it('should update the selected vacancies in service', async () => {
+        const { component, getByRole, getByText, updateWorkplaceAfterStaffChangesService } = await setup({
+          preselectedVacancies,
+        });
+        userEvent.click(getByText('Show all job roles'));
+        userEvent.click(getByText('Registered nurse'));
+        userEvent.click(getByText('Social worker'));
+
+        userEvent.click(getByText('Continue'));
+
+        const expectedUpdatedVacancies = [
+          ...preselectedVacancies,
+          {
+            jobId: 23,
+            title: 'Registered nurse',
+            total: 1,
+          },
+          {
+            jobId: 27,
+            title: 'Social worker',
+            total: 1,
+          },
+        ];
+
+        expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(expectedUpdatedVacancies);
+      });
+    });
+  });
   //     it('should store the user input data in localStorage', async () => {
   //       const { component, getByText, getByRole, setLocalStorageSpy } = await setup();
 
