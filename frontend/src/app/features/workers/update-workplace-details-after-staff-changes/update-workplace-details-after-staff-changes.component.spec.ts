@@ -1,12 +1,15 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
-import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
+import {
+  UpdateWorkplaceAfterStaffChangesService,
+  WorkplaceUpdateFlowType,
+} from '@core/services/update-workplace-after-staff-changes.service';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { SharedModule } from '@shared/shared.module';
@@ -18,6 +21,7 @@ import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workp
 describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   async function setup(overrides: any = {}) {
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
+    const flowType = overrides?.flowType || WorkplaceUpdateFlowType.ADD;
     const alertSpy = jasmine.createSpy('addAlert').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(UpdateWorkplaceDetailsAfterStaffChangesComponent, {
@@ -36,6 +40,14 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
         {
           provide: AlertService,
           useValue: { addAlert: alertSpy },
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { flowType },
+            },
+          },
         },
         BackLinkService,
       ],
@@ -100,6 +112,20 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
         type: 'success',
         message: 'Total number of staff, vacancies and starters information saved',
       });
+    });
+  });
+
+  describe('Subtitle', () => {
+    it('should include starters in subtitle when on added staff version of page', async () => {
+      const { getByText } = await setup();
+
+      expect(getByText('Total number of staff, vacancies and starters')).toBeTruthy();
+    });
+
+    it('should include leavers in subtitle when on deleted staff version of page', async () => {
+      const { getByText } = await setup({ flowType: WorkplaceUpdateFlowType.DELETE });
+
+      expect(getByText('Total number of staff, vacancies and leavers')).toBeTruthy();
     });
   });
 

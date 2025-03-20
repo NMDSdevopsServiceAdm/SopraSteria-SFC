@@ -28,3 +28,8 @@ export enum AddStaffWorkplaceUpdatePage {
   UPDATE_VACANCIES = 'update-vacancies',
   UPDATE_STARTERS = 'update-starters',
 }
+
+export enum WorkplaceUpdateFlowType {
+  ADD = 'ADD',
+  DELETE = 'DELETE',
+}
