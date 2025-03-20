@@ -94,7 +94,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
     it('should not display warning text when user has visited all of the update question pages', async () => {
       const { queryByText } = await setup({
-        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisitedForAdd: () => true },
+        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisited: () => true },
       });
 
       expect(
@@ -103,14 +103,26 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       expect(queryByText('You need to check and change these yourself.', { exact: false })).toBeFalsy();
     });
 
-    it('should add alert when user has visited all of the update question pages', async () => {
+    it('should add alert with starters in message when user has visited all update question pages from add version', async () => {
       const { alertSpy } = await setup({
-        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisitedForAdd: () => true },
+        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisited: () => true },
       });
 
       expect(alertSpy).toHaveBeenCalledWith({
         type: 'success',
         message: 'Total number of staff, vacancies and starters information saved',
+      });
+    });
+
+    it('should add alert with leavers in message when user has visited all update question pages from delete version', async () => {
+      const { alertSpy } = await setup({
+        flowType: WorkplaceUpdateFlowType.DELETE,
+        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisited: () => true },
+      });
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Total number of staff, vacancies and leavers information saved',
       });
     });
   });

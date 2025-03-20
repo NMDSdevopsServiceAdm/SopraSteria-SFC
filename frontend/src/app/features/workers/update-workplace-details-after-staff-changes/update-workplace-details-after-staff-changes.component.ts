@@ -31,13 +31,15 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
   ngOnInit(): void {
     this.flowType = this.route.snapshot?.data?.flowType;
     this.workplace = this.establishmentService.establishment;
-    this.allPagesVisited = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesVisitedForAdd();
+    this.allPagesVisited = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesVisited(this.flowType);
     this.backLinkService.showBackLink();
 
     if (this.allPagesVisited) {
       this.alertService.addAlert({
         type: 'success',
-        message: 'Total number of staff, vacancies and starters information saved',
+        message: `Total number of staff, vacancies and ${
+          this.flowType === WorkplaceUpdateFlowType.ADD ? 'starters' : 'leavers'
+        } information saved`,
       });
     }
   }
