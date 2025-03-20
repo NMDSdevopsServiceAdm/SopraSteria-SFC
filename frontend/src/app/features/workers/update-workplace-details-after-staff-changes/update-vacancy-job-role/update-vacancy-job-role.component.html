@@ -1,0 +1,60 @@
+<!-- <app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+>
+</app-error-summary> -->
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+      <fieldset class="govuk-fieldset">
+        <h1 class="govuk-heading-l">{{ heading }}</h1>
+        <p class="govuk-body-m">You can review the number of vacancies for each role after you click Continue.</p>
+
+        <div [class.govuk-form-group--error]="submitted && form.invalid">
+          <app-accordion-group #accordion data-testid="selectJobRolesAccordion" contentName="job roles">
+            <p *ngIf="submitted && form.invalid" id="selectedJobRoles-error" class="govuk-error-message">
+              <span class="govuk-visually-hidden">Error:</span> {{ errorMessageOnEmptyInput }}
+            </p>
+            <app-accordion-section
+              *ngFor="let group of jobGroups"
+              [title]="group.title"
+              [description]="group.descriptionText"
+            >
+              <ng-container *ngFor="let job of group.items">
+                <div
+                  class="govuk-checkboxes__item"
+                  [class.asc-checkboxes__item--disabled]="preselectedJobIds.includes(job.id)"
+                >
+                  <input
+                    type="checkbox"
+                    class="govuk-checkboxes__input"
+                    [id]="'job-' + job.id"
+                    [name]="job.label"
+                    [value]="job.id"
+                    [checked]="form.get('selectedJobRoles').value.includes(job.id)"
+                    (change)="onCheckboxClick($event.target)"
+                    [disabled]="preselectedJobIds.includes(job.id)"
+                  />
+                  <label class="govuk-label govuk-checkboxes__label" [for]="'job-' + job.id">
+                    {{ job.label }} {{ preselectedJobIds.includes(job.id) ? '(role already added)' : '' }}
+                  </label>
+                </div>
+              </ng-container>
+            </app-accordion-section>
+          </app-accordion-group>
+        </div>
+      </fieldset>
+
+      <!-- <app-workplace-submit-button
+      [return]="!!return"
+      [continue]="true"
+      (clicked)="setSubmitAction($event)"
+      [callToAction]="return ? 'Continue' : 'Save and continue'"
+      [recordSummary]="false"
+    ></app-workplace-submit-button> -->
+    </form>
+  </div>
+</div>
