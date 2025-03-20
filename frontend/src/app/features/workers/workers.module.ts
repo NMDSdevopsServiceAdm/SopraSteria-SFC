@@ -71,6 +71,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
+import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -88,6 +89,7 @@ import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-a
     CountryOfBirthComponent,
     DateOfBirthComponent,
     DaysOfSicknessComponent,
+    DeleteAnotherStaffRecordComponent,
     DeleteQualificationDialogComponent,
     DeleteTrainingDialogComponent,
     DeleteRecordComponent,
