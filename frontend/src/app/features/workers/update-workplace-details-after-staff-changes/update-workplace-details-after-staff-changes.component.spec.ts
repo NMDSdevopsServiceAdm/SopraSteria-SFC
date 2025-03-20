@@ -19,6 +19,7 @@ import userEvent from '@testing-library/user-event';
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
 
 describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   async function setup(overrides: any = {}) {
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
     const flowType = overrides?.flowType || WorkplaceUpdateFlowType.ADD;
@@ -311,6 +312,96 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
 
       const startersRow = queryByTestId('starters');
       expect(startersRow).toBeFalsy();
+    });
+  });
+
+  describe('Leavers in the last 12 months', () => {
+    it('should show the correct wording', async () => {
+      const { getByTestId } = await setup({ flowType: WorkplaceUpdateFlowType.DELETE });
+
+      const startersRow = getByTestId('leavers');
+
+      expect(within(startersRow).getByText('Leavers in the last 12 months')).toBeTruthy();
+    });
+
+    it('should show dash and have Add link when leavers is null', async () => {
+      const { workplace, getByTestId } = await setup({
+        flowType: WorkplaceUpdateFlowType.DELETE,
+        workplace: { leavers: null },
+      });
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Add');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(within(leaversRow).queryByText('-')).toBeTruthy();
+    });
+
+    it("should show Don't know and a Change link when leavers is set to Don't know", async () => {
+      const { workplace, getByTestId } = await setup({
+        flowType: WorkplaceUpdateFlowType.DELETE,
+        workplace: { leavers: "Don't know" },
+      });
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Change');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(within(leaversRow).queryByText("Don't know")).toBeTruthy();
+    });
+
+    it('should show None and a Change link when leavers is set to None', async () => {
+      const { workplace, getByTestId } = await setup({
+        flowType: WorkplaceUpdateFlowType.DELETE,
+        workplace: { leavers: 'None' },
+      });
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Change');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(within(leaversRow).queryByText(`None`)).toBeTruthy();
+    });
+
+    it('should show one job with number of leavers and a Change link when there is one job with leavers', async () => {
+      const leavers = [{ jobId: 1, title: 'Administrative', total: 3 }];
+      const { workplace, getByTestId } = await setup({
+        flowType: WorkplaceUpdateFlowType.DELETE,
+        workplace: { leavers },
+      });
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Change');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
+    });
+
+    it('should show jobs with number of leavers for each job and a Change link when multiple jobs have leavers', async () => {
+      const leavers = [
+        { jobId: 1, title: 'Administrative', total: 3 },
+        { jobId: 2, title: 'Nursing', total: 2 },
+        { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
+      ];
+      const { workplace, getByTestId } = await setup({
+        flowType: WorkplaceUpdateFlowType.DELETE,
+        workplace: { leavers },
+      });
+
+      const leaversRow = getByTestId('leavers');
+      const link = within(leaversRow).queryByText('Change');
+
+      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
+      expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
+      expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
+    });
+
+    it('should not display leavers section if on the staff deleted version of page', async () => {
+      const { queryByTestId } = await setup({ flowType: WorkplaceUpdateFlowType.ADD });
+
+      const leaversRow = queryByTestId('leavers');
+      expect(leaversRow).toBeFalsy();
     });
   });
 

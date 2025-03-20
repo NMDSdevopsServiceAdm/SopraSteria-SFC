@@ -83,6 +83,36 @@
               ></app-summary-record-change>
             </dd>
           </div>
+
+          <div
+            *ngIf="flowType === WorkplaceUpdateFlowType.DELETE"
+            class="govuk-summary-list__row"
+            data-testid="leavers"
+          >
+            <dt class="govuk-summary-list__key">Leavers in the last 12 months</dt>
+            <dd class="govuk-summary-list__value">
+              <app-summary-record-value>
+                <ng-container *ngIf="!workplace.leavers?.length; else leavers"> - </ng-container>
+                <ng-template #leavers>
+                  <ng-container *ngIf="isArray(workplace.leavers)">
+                    <ul class="govuk-list govuk-!-margin-bottom-0">
+                      <li *ngFor="let leaver of workplace.leavers">{{ leaver | formatSLV }}</li>
+                    </ul>
+                  </ng-container>
+                  <ng-container *ngIf="!isArray(workplace.leavers)">
+                    {{ workplace.leavers }}
+                  </ng-container>
+                </ng-template>
+              </app-summary-record-value>
+            </dd>
+            <dd class="govuk-summary-list__actions">
+              <app-summary-record-change
+                [explanationText]="' new leavers'"
+                [link]="['/workplace', workplace.uid, 'update-leavers']"
+                [hasData]="workplace.leavers?.length"
+              ></app-summary-record-change>
+            </dd>
+          </div>
         </dl>
       </div>
 
