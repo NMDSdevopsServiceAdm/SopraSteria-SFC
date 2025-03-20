@@ -1,6 +1,8 @@
 import { Subscription } from 'rxjs';
 
-import { Component, ElementRef, ViewChild, OnInit, OnDestroy, AfterViewInit } from '@angular/core';
+import { Location } from '@angular/common';
+import { HttpErrorResponse } from '@angular/common/http';
+import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -9,7 +11,6 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { TotalStaffConstraints, TotalStaffFormService } from '@core/services/total-staff-form.service';
-import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-update-total-number-of-staff',
@@ -20,6 +21,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails>;
   public submitted: boolean;
+  public serverError: string;
 
   private workplace: Establishment;
   private subscriptions: Subscription = new Subscription();
@@ -100,8 +102,9 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     this.establishmentService.setState(updatedWorkplace);
   }
 
-  onError(_error: Error): void {
-    console.log(_error);
+  onError(_error: HttpErrorResponse): void {
+    this.form.setErrors({ serverError: true });
+    this.serverError = 'Failed to update total number of staff';
   }
 
   public getFirstErrorMessage(item: string): string {

@@ -1,6 +1,7 @@
 import lodash from 'lodash';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
+import { HttpErrorResponse } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
@@ -167,6 +168,21 @@ fdescribe('UpdateTotalNumberOfStaffComponent', () => {
       expect(setStateSpy).toHaveBeenCalledWith({ numberOfStaff: 10 });
     });
 
+    fit('should show an error if failed to update total staff number', async () => {
+      const { fixture, postStaffSpy, establishmentService } = await setup({ numberOfStaff: 20 });
+
+      postStaffSpy.and.callFake((_uid, _numberOfStaff) => {
+        return throwError(new HttpErrorResponse({ error: 'Internal server error', status: 500 }));
+      });
+      const setStateSpy = spyOn(establishmentService, 'setState');
+
+      await fillInNumberAndSubmitForm('10');
+      fixture.detectChanges();
+
+      expectErrorMessageAppears('Failed to update total number of staff', false);
+      expect(setStateSpy).not.toHaveBeenCalled();
+    });
+
     it('should show an error when user input is empty', async () => {
       const { fixture, postStaffSpy, getByRole } = await setup();
 
@@ -236,15 +252,17 @@ fdescribe('UpdateTotalNumberOfStaffComponent', () => {
       userEvent.click(screen.getByRole('button', { name: 'Save and return' }));
     };
 
-    const expectErrorMessageAppears = (errorMessage: string) => {
+    const expectErrorMessageAppears = (errorMessage: string, shouldShowInlineError: boolean = true) => {
       const errorBoxTitle = screen.getByText('There is a problem');
       expect(errorBoxTitle).toBeTruthy();
 
       const errorSummaryBox = errorBoxTitle.parentElement;
       expect(within(errorSummaryBox).getByText(errorMessage)).toBeTruthy();
 
-      const inlineErrorMessage = within(screen.getByText('Number of staff').parentElement).getByText(errorMessage);
-      expect(inlineErrorMessage).toBeTruthy();
+      if (shouldShowInlineError) {
+        const inlineErrorMessage = within(screen.getByText('Number of staff').parentElement).getByText(errorMessage);
+        expect(inlineErrorMessage).toBeTruthy();
+      }
     };
   });
 });
