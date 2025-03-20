@@ -1,6 +1,5 @@
 import { Subscription } from 'rxjs';
 
-import { Location } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { AfterViewInit, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
@@ -33,7 +32,6 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     private totalStaffFormService: TotalStaffFormService,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location,
     private establishmentService: EstablishmentService,
     private backLinkService: BackLinkService,
     private errorSummaryService: ErrorSummaryService,
@@ -68,7 +66,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     );
   }
 
-  onSubmit() {
+  onSubmit(): void {
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
@@ -97,7 +95,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     this.returnToPreviousPage();
   }
 
-  private updateWorkplaceState(numberOfStaff: number) {
+  private updateWorkplaceState(numberOfStaff: number): void {
     const updatedWorkplace = { ...this.establishmentService.establishment, numberOfStaff: numberOfStaff };
     this.establishmentService.setState(updatedWorkplace);
   }
@@ -113,12 +111,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
   }
 
   public returnToPreviousPage(): void {
-    const returnToUrl = this.establishmentService.returnTo?.url;
-    if (returnToUrl) {
-      this.router.navigate(returnToUrl);
-    } else {
-      this.location.back();
-    }
+    this.router.navigate(['../'], { relativeTo: this.route });
   }
 
   ngOnDestroy(): void {

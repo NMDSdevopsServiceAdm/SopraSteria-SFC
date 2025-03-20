@@ -15,8 +15,9 @@ import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UpdateTotalNumberOfStaffComponent } from './update-total-number-of-staff.component';
+import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 
-fdescribe('UpdateTotalNumberOfStaffComponent', () => {
+describe('UpdateTotalNumberOfStaffComponent', () => {
   const mockEstablishment = establishmentBuilder() as Establishment;
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -39,7 +40,6 @@ fdescribe('UpdateTotalNumberOfStaffComponent', () => {
             },
             postStaff() {},
             setState() {},
-            returnTo,
           },
         },
         {
@@ -54,6 +54,10 @@ fdescribe('UpdateTotalNumberOfStaffComponent', () => {
             },
           }),
         },
+        {
+          provide: UpdateWorkplaceAfterStaffChangesService,
+          useValue: { returnTo },
+        },
       ],
     });
 
@@ -61,7 +65,9 @@ fdescribe('UpdateTotalNumberOfStaffComponent', () => {
     const injector = getTestBed();
     const establishmentService = injector.inject(EstablishmentService) as EstablishmentService;
     const router = injector.inject(Router) as Router;
-    const postStaffSpy = spyOn(establishmentService, 'postStaff').and.returnValue(of(null));
+    const postStaffSpy = spyOn(establishmentService, 'postStaff').and.callFake((_uid, numberOfStaff) => {
+      return of({ ...mockEstablishment, numberOfStaff });
+    });
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
@@ -154,12 +160,9 @@ fdescribe('UpdateTotalNumberOfStaffComponent', () => {
       expect(postStaffSpy).toHaveBeenCalledWith(mockEstablishment.uid, 10);
     });
 
-    fit('should update numberOfStaff in establishment service if backend call is successful', async () => {
-      const { fixture, postStaffSpy, mockEstablishment, establishmentService } = await setup({ numberOfStaff: 20 });
+    it('should update numberOfStaff in establishment service if backend call is successful', async () => {
+      const { fixture, establishmentService } = await setup({ numberOfStaff: 20 });
 
-      postStaffSpy.and.callFake((_uid, numberOfStaff) => {
-        return of({ ...mockEstablishment, numberOfStaff });
-      });
       const setStateSpy = spyOn(establishmentService, 'setState');
 
       await fillInNumberAndSubmitForm('10');
@@ -168,7 +171,7 @@ fdescribe('UpdateTotalNumberOfStaffComponent', () => {
       expect(setStateSpy).toHaveBeenCalledWith({ numberOfStaff: 10 });
     });
 
-    fit('should show an error if failed to update total staff number', async () => {
+    it('should show an error if failed to update total staff number', async () => {
       const { fixture, postStaffSpy, establishmentService } = await setup({ numberOfStaff: 20 });
 
       postStaffSpy.and.callFake((_uid, _numberOfStaff) => {
@@ -216,33 +219,25 @@ fdescribe('UpdateTotalNumberOfStaffComponent', () => {
     });
 
     it('should return to the previous page after updating staff record', async () => {
-      const { fixture, postStaffSpy, routerSpy } = await setup();
+      const { component, fixture, postStaffSpy, routerSpy } = await setup();
 
       await fillInNumberAndSubmitForm('10');
       fixture.detectChanges();
 
       expect(postStaffSpy).toHaveBeenCalled();
-      expect(routerSpy).toHaveBeenCalledWith([
-        'workplace',
-        mockEstablishment.uid,
-        'staff-record',
-        'update-workplace-details-after-staff-changes',
-      ]);
+      // @ts-expect-error: TS2341: Property 'route' is private
+      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
     });
 
     it('should return to the previous page without changing staff number if cancel link is clicked', async () => {
-      const { fixture, getByText, routerSpy, postStaffSpy } = await setup();
+      const { component, fixture, getByText, routerSpy, postStaffSpy } = await setup();
 
       userEvent.click(getByText('Cancel'));
       fixture.detectChanges();
 
       expect(postStaffSpy).not.toHaveBeenCalled();
-      expect(routerSpy).toHaveBeenCalledWith([
-        'workplace',
-        mockEstablishment.uid,
-        'staff-record',
-        'update-workplace-details-after-staff-changes',
-      ]);
+      // @ts-expect-error: TS2341: Property 'route' is private
+      expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
     });
 
     const fillInNumberAndSubmitForm = async (inputString: string) => {

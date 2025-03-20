@@ -30,14 +30,14 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor, On
   private onTouched = () => {};
   private onChange = (_newValue: number | string) => {};
 
-  ngOnInit() {
+  ngOnInit(): void {
     this.min = Number(this.min);
     this.max = Number(this.max);
     this.writeValue(this.initialValue);
     this.checkWhetherButtonsShowup();
   }
 
-  get numberInput() {
+  get numberInput(): HTMLInputElement {
     return this.inputEl.nativeElement;
   }
 
@@ -56,7 +56,7 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor, On
     this.showMinusButton = !isNaN(this.currentNumber) && this.currentNumber > this.min;
   }
 
-  onInput(event: Event) {
+  onInput(event: Event): void {
     event.preventDefault();
     this.markAsTouched();
 
@@ -67,7 +67,7 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor, On
     }
   }
 
-  increase() {
+  increase(): void {
     this.markAsTouched();
     if (isNaN(this.currentNumber)) {
       this.writeValue(this.min);
@@ -83,7 +83,7 @@ export class NumberInputWithButtonsComponent implements ControlValueAccessor, On
     }
   }
 
-  decrease() {
+  decrease(): void {
     this.markAsTouched();
     if (isNaN(this.currentNumber)) {
       this.writeValue(this.min);

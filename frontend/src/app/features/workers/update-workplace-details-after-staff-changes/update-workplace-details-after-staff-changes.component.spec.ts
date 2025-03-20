@@ -15,7 +15,7 @@ import userEvent from '@testing-library/user-event';
 
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
 
-fdescribe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
+describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   async function setup(overrides: any = {}) {
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
     const alertSpy = jasmine.createSpy('addAlert').and.returnValue(Promise.resolve(true));
