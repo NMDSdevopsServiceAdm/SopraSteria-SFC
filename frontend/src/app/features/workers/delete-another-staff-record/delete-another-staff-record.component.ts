@@ -5,7 +5,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 
 @Component({
-  selector: 'delete-add-another-staff-record',
+  selector: 'app-delete-add-another-staff-record',
   templateUrl: './delete-another-staff-record.component.html',
 })
 export class DeleteAnotherStaffRecordComponent implements OnInit{
@@ -31,7 +31,7 @@ export class DeleteAnotherStaffRecordComponent implements OnInit{
     if (this.form.controls['deleteAnotherStaffRecord'].value === 'YES') {
       this.router.navigate(['/dashboard'], {fragment: 'staff-records'});
     } else {
-      this.router.navigate(['/workplace', this.workplaceUid, 'staff-record', 'update-workplace-details-after-staff-changes']);
+      this.router.navigate(['/workplace', this.workplaceUid, 'staff-record', 'update-workplace-details-after-deleting-staff']);
     }
   }
 

@@ -98,7 +98,7 @@ describe('DeleteAnotherStaffRecordComponent', () => {
         '/workplace',
         'mocked-uid',
         'staff-record',
-        'update-workplace-details-after-staff-changes'
+        'update-workplace-details-after-deleting-staff'
       ]);
     });
 
@@ -112,7 +112,7 @@ describe('DeleteAnotherStaffRecordComponent', () => {
         '/workplace',
         'mocked-uid',
         'staff-record',
-        'update-workplace-details-after-staff-changes'
+        'update-workplace-details-after-deleting-staff'
       ]);
     });
   });
