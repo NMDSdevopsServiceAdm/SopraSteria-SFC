@@ -77,16 +77,21 @@ const routes: Routes = [
   },
   {
     path: 'update-workplace-details-after-staff-changes',
-    component: UpdateWorkplaceDetailsAfterStaffChangesComponent,
-    data: {
-      title: 'Update workplace details',
-    },
-  },
-  {
-    path: 'update-total-number-of-staff',
-    component: UpdateTotalNumberOfStaffComponent,
-    canActivate: [CheckPermissionsGuard],
-    data: { permissions: ['canEditEstablishment'], title: 'Update total number of staff' },
+    children: [
+      {
+        path: '',
+        component: UpdateWorkplaceDetailsAfterStaffChangesComponent,
+        data: {
+          title: 'Update workplace details',
+        },
+      },
+      {
+        path: 'update-total-staff',
+        component: UpdateTotalNumberOfStaffComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: { permissions: ['canEditEstablishment'], title: 'Update total number of staff' },
+      },
+    ],
   },
   {
     path: 'create-staff-record',
