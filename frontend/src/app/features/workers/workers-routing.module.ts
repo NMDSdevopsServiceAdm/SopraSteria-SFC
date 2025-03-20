@@ -64,6 +64,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
+import { UpdateVacancyJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancy-job-role/update-vacancy-job-role.component';
 
 const routes: Routes = [
   {
@@ -92,6 +93,16 @@ const routes: Routes = [
         data: { permissions: ['canEditEstablishment'], title: 'Update total number of staff' },
       },
     ],
+  },
+  {
+    path: 'update-vacancy-job-roles',
+    component: UpdateVacancyJobRoleComponent,
+    // canActivate: [CheckPermissionsGuard],
+    resolve: { jobs: JobsResolver },
+    data: {
+      permissions: ['canEditEstablishment'],
+      title: 'Vacancies job role selection',
+    },
   },
   {
     path: 'create-staff-record',
