@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Vacancy } from '@core/model/establishment.model';
 
 @Injectable({
   providedIn: 'root',
@@ -7,6 +8,7 @@ export class UpdateWorkplaceAfterStaffChangesService {
   constructor() {}
 
   private visitedPages: Set<WorkplaceUpdatePage> = new Set();
+  public selectedVacancies: Vacancy[] = [];
 
   public addToVisitedPages(page: WorkplaceUpdatePage): void {
     this.visitedPages.add(page);
