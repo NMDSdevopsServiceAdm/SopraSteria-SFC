@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -26,7 +25,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     const alertSpy = jasmine.createSpy('addAlert').and.returnValue(Promise.resolve(true));
 
     const setupTools = await render(UpdateWorkplaceDetailsAfterStaffChangesComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, ReactiveFormsModule],
       providers: [
         {
           provide: EstablishmentService,
@@ -157,7 +156,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const numberOfStaffRow = queryByTestId('numberOfStaff');
       const changeLink = within(numberOfStaffRow).queryByText('Change');
 
-      expect(changeLink.getAttribute('href')).toEqual(`/update-total-staff`);
+      expect(changeLink.getAttribute('ng-reflect-router-link')).toEqual('update-total-staff');
       expect(within(numberOfStaffRow).queryByText('4')).toBeTruthy();
     });
 
@@ -167,7 +166,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const numberOfStaffRow = queryByTestId('numberOfStaff');
       const addLink = within(numberOfStaffRow).queryByText('Add');
 
-      expect(addLink.getAttribute('href')).toEqual(`/update-total-staff`);
+      expect(addLink.getAttribute('ng-reflect-router-link')).toEqual('update-total-staff');
       expect(within(numberOfStaffRow).queryByText('-')).toBeTruthy();
     });
   });
@@ -187,7 +186,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Add');
 
-      expect(link.getAttribute('href')).toEqual(`/update-vacancies`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
       expect(within(vacanciesRow).queryByText('-')).toBeTruthy();
     });
 
@@ -197,7 +196,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/update-vacancies`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
       expect(within(vacanciesRow).queryByText("Don't know")).toBeTruthy();
     });
 
@@ -207,7 +206,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/update-vacancies`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
       expect(within(vacanciesRow).queryByText('None')).toBeTruthy();
     });
 
@@ -218,7 +217,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/update-vacancies`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
       expect(within(vacanciesRow).queryByText('3 x administrative')).toBeTruthy();
     });
 
@@ -233,7 +232,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const vacanciesRow = getByTestId('vacancies');
       const link = within(vacanciesRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/update-vacancies`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-vacancies');
       expect(within(vacanciesRow).queryByText(`3 x administrative`)).toBeTruthy();
       expect(within(vacanciesRow).queryByText('2 x nursing')).toBeTruthy();
       expect(within(vacanciesRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
@@ -255,7 +254,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Add');
 
-      expect(link.getAttribute('href')).toEqual(`/update-starters`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
       expect(within(startersRow).queryByText('-')).toBeTruthy();
     });
 
@@ -265,7 +264,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/update-starters`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
       expect(within(startersRow).queryByText("Don't know")).toBeTruthy();
     });
 
@@ -275,7 +274,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/update-starters`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
       expect(within(startersRow).queryByText(`None`)).toBeTruthy();
     });
 
@@ -286,7 +285,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/update-starters`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
       expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
     });
 
@@ -301,7 +300,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const startersRow = getByTestId('starters');
       const link = within(startersRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/update-starters`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-starters');
       expect(within(startersRow).queryByText(`3 x administrative`)).toBeTruthy();
       expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
       expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
@@ -325,7 +324,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
 
     it('should show dash and have Add link when leavers is null', async () => {
-      const { workplace, getByTestId } = await setup({
+      const { getByTestId } = await setup({
         flowType: WorkplaceUpdateFlowType.DELETE,
         workplace: { leavers: null },
       });
@@ -333,12 +332,12 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Add');
 
-      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
       expect(within(leaversRow).queryByText('-')).toBeTruthy();
     });
 
     it("should show Don't know and a Change link when leavers is set to Don't know", async () => {
-      const { workplace, getByTestId } = await setup({
+      const { getByTestId } = await setup({
         flowType: WorkplaceUpdateFlowType.DELETE,
         workplace: { leavers: "Don't know" },
       });
@@ -346,12 +345,12 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
       expect(within(leaversRow).queryByText("Don't know")).toBeTruthy();
     });
 
     it('should show None and a Change link when leavers is set to None', async () => {
-      const { workplace, getByTestId } = await setup({
+      const { getByTestId } = await setup({
         flowType: WorkplaceUpdateFlowType.DELETE,
         workplace: { leavers: 'None' },
       });
@@ -359,13 +358,13 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
       expect(within(leaversRow).queryByText(`None`)).toBeTruthy();
     });
 
     it('should show one job with number of leavers and a Change link when there is one job with leavers', async () => {
       const leavers = [{ jobId: 1, title: 'Administrative', total: 3 }];
-      const { workplace, getByTestId } = await setup({
+      const { getByTestId } = await setup({
         flowType: WorkplaceUpdateFlowType.DELETE,
         workplace: { leavers },
       });
@@ -373,7 +372,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
       expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
     });
 
@@ -383,7 +382,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
         { jobId: 2, title: 'Nursing', total: 2 },
         { jobId: 3, title: 'Other care providing role', total: 4, other: 'Special care worker' },
       ];
-      const { workplace, getByTestId } = await setup({
+      const { getByTestId } = await setup({
         flowType: WorkplaceUpdateFlowType.DELETE,
         workplace: { leavers },
       });
@@ -391,7 +390,7 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       const leaversRow = getByTestId('leavers');
       const link = within(leaversRow).queryByText('Change');
 
-      expect(link.getAttribute('href')).toEqual(`/workplace/${workplace.uid}/update-leavers`);
+      expect(link.getAttribute('ng-reflect-router-link')).toEqual('update-leavers');
       expect(within(leaversRow).queryByText(`3 x administrative`)).toBeTruthy();
       expect(within(leaversRow).queryByText('2 x nursing')).toBeTruthy();
       expect(within(leaversRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
