@@ -79,7 +79,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
 
     this.subscriptions.add(
       this.establishmentService.postStaff(this.workplace.uid, totalStaffNumber).subscribe(
-        () => this.onSuccess(),
+        (data) => this.onSuccess(data),
         (error) => this.onError(error),
       ),
     );
@@ -90,18 +90,26 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     this.returnToPreviousPage();
   }
 
-  onSuccess(): void {
+  onSuccess(data: { numberOfStaff: number }): void {
+    this.updateWorkplaceState(data.numberOfStaff);
     this.returnToPreviousPage();
   }
 
-  onError(_error: Error): void {}
+  private updateWorkplaceState(numberOfStaff: number) {
+    const updatedWorkplace = { ...this.establishmentService.establishment, numberOfStaff: numberOfStaff };
+    this.establishmentService.setState(updatedWorkplace);
+  }
+
+  onError(_error: Error): void {
+    console.log(_error);
+  }
 
   public getFirstErrorMessage(item: string): string {
     const errorType = Object.keys(this.form.get(item).errors)[0];
     return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
   }
 
-  public returnToPreviousPage() {
+  public returnToPreviousPage(): void {
     const returnToUrl = this.establishmentService.returnTo?.url;
     if (returnToUrl) {
       this.router.navigate(returnToUrl);
@@ -114,7 +122,7 @@ export class UpdateTotalNumberOfStaffComponent implements OnInit, OnDestroy, Aft
     this.subscriptions.unsubscribe();
   }
 
-  ngAfterViewInit() {
+  ngAfterViewInit(): void {
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 }

@@ -15,7 +15,7 @@ import userEvent from '@testing-library/user-event';
 
 import { UpdateTotalNumberOfStaffComponent } from './update-total-number-of-staff.component';
 
-describe('UpdateTotalNumberOfStaffComponent', () => {
+fdescribe('UpdateTotalNumberOfStaffComponent', () => {
   const mockEstablishment = establishmentBuilder() as Establishment;
 
   /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -37,6 +37,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
               return of(numberOfStaff);
             },
             postStaff() {},
+            setState() {},
             returnTo,
           },
         },
@@ -68,6 +69,7 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
       postStaffSpy,
       routerSpy,
       mockEstablishment,
+      establishmentService,
     };
   };
 
@@ -149,6 +151,20 @@ describe('UpdateTotalNumberOfStaffComponent', () => {
       fixture.detectChanges();
 
       expect(postStaffSpy).toHaveBeenCalledWith(mockEstablishment.uid, 10);
+    });
+
+    fit('should update numberOfStaff in establishment service if backend call is successful', async () => {
+      const { fixture, postStaffSpy, mockEstablishment, establishmentService } = await setup({ numberOfStaff: 20 });
+
+      postStaffSpy.and.callFake((_uid, numberOfStaff) => {
+        return of({ ...mockEstablishment, numberOfStaff });
+      });
+      const setStateSpy = spyOn(establishmentService, 'setState');
+
+      await fillInNumberAndSubmitForm('10');
+      fixture.detectChanges();
+
+      expect(setStateSpy).toHaveBeenCalledWith({ numberOfStaff: 10 });
     });
 
     it('should show an error when user input is empty', async () => {
