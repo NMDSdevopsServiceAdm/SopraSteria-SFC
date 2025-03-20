@@ -58,7 +58,7 @@
             </dd>
           </div>
 
-          <div class="govuk-summary-list__row" data-testid="starters">
+          <div *ngIf="flowType === WorkplaceUpdateFlowType.ADD" class="govuk-summary-list__row" data-testid="starters">
             <dt class="govuk-summary-list__key">New starters in the last 12 months</dt>
             <dd class="govuk-summary-list__value">
               <app-summary-record-value>

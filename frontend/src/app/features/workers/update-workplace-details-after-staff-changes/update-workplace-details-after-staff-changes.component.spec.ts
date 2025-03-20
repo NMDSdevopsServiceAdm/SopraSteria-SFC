@@ -293,6 +293,13 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
       expect(within(startersRow).queryByText('2 x nursing')).toBeTruthy();
       expect(within(startersRow).queryByText('4 x other care providing role: special care worker')).toBeTruthy();
     });
+
+    it('should not display starters section if on the staff deleted version of page', async () => {
+      const { queryByTestId } = await setup({ flowType: WorkplaceUpdateFlowType.DELETE });
+
+      const startersRow = queryByTestId('starters');
+      expect(startersRow).toBeFalsy();
+    });
   });
 
   it('should navigate to the staff records tab on click of Continue', async () => {
