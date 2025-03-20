@@ -1,10 +1,10 @@
-<!-- <app-error-summary
+<app-error-summary
   *ngIf="submitted && form.invalid"
   [formErrorsMap]="formErrorsMap"
   [serverError]="serverError"
   [form]="form"
 >
-</app-error-summary> -->
+</app-error-summary>
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-two-thirds">
@@ -26,7 +26,7 @@
               <ng-container *ngFor="let job of group.items">
                 <div
                   class="govuk-checkboxes__item"
-                  [class.asc-checkboxes__item--disabled]="preselectedJobIds.includes(job.id)"
+                  [class.asc-checkboxes__item--disabled]="disabledJobIds.includes(job.id)"
                 >
                   <input
                     type="checkbox"
@@ -34,12 +34,11 @@
                     [id]="'job-' + job.id"
                     [name]="job.label"
                     [value]="job.id"
-                    [checked]="form.get('selectedJobRoles').value.includes(job.id)"
                     (change)="onCheckboxClick($event.target)"
-                    [disabled]="preselectedJobIds.includes(job.id)"
+                    [disabled]="disabledJobIds.includes(job.id)"
                   />
                   <label class="govuk-label govuk-checkboxes__label" [for]="'job-' + job.id">
-                    {{ job.label }} {{ preselectedJobIds.includes(job.id) ? '(role already added)' : '' }}
+                    {{ job.label }} {{ disabledJobIds.includes(job.id) ? '(role already added)' : '' }}
                   </label>
                 </div>
               </ng-container>
@@ -48,13 +47,19 @@
         </div>
       </fieldset>
 
-      <!-- <app-workplace-submit-button
-      [return]="!!return"
-      [continue]="true"
-      (clicked)="setSubmitAction($event)"
-      [callToAction]="return ? 'Continue' : 'Save and continue'"
-      [recordSummary]="false"
-    ></app-workplace-submit-button> -->
+      <div class="govuk-button-group govuk-!-margin-top-12">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Continue</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          (click)="onCancel($event)"
+          href="#"
+        >
+          Cancel
+        </a>
+      </div>
     </form>
   </div>
 </div>
