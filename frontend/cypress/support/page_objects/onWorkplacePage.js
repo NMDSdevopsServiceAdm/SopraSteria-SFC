@@ -103,26 +103,6 @@ export class WorkplacePage {
     }
 
     if (
-      cy.get('[data-testid="advertising-spend"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="advertising-spend"]').contains('Change');
-    } else {
-      cy.get('[data-testid="advertising-spend"]').contains('Add');
-    }
-
-    if (
-      cy.get('[data-testid="people-interviewed"]').within(() => {
-        cy.get('.govuk-summary-list__value').invoke('text').length;
-      })
-    ) {
-      cy.get('[data-testid="people-interviewed"]').contains('Change');
-    } else {
-      cy.get('[data-testid="people-interviewed"]').contains('Add');
-    }
-
-    if (
       cy.get('[data-testid="repeat-training"]').within(() => {
         cy.get('.govuk-summary-list__value').invoke('text').length;
       })

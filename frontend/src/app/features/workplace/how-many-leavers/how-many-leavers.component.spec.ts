@@ -230,7 +230,7 @@ describe('HowManyLeaversComponent', () => {
         });
       });
 
-      it('should navigate to the recruitment-advertising-cost page if in the flow', async () => {
+      it('should navigate to the staff-recruitment-capture-training-requirement page if in the flow', async () => {
         const { component, getByRole, routerSpy } = await setup();
 
         userEvent.type(getInputBoxForJobRole('Care worker'), '2');
@@ -240,7 +240,7 @@ describe('HowManyLeaversComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith([
           '/workplace',
           component.establishment.uid,
-          'recruitment-advertising-cost',
+          'staff-recruitment-capture-training-requirement',
         ]);
       });
 

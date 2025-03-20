@@ -35,7 +35,6 @@ export class StartComponent implements OnInit, OnDestroy {
 
     this.fragment = history.state?.navigatedFromFragment;
     this.setBackLink();
-    this.setRecuritmentBannerToTrue();
   }
 
   ngOnDestroy(): void {
@@ -56,12 +55,5 @@ export class StartComponent implements OnInit, OnDestroy {
       this.establishmentService.setState(this.establishment);
     });
     this.router.navigate(['workplace', this.establishment.uid, 'other-services']);
-  }
-
-  public setRecuritmentBannerToTrue(): void {
-    const data = { property: 'recruitmentJourneyExistingUserBanner', value: true };
-    this.subscriptions.add(
-      this.establishmentService.updateSingleEstablishmentField(this.establishment.uid, data).subscribe(),
-    );
   }
 }

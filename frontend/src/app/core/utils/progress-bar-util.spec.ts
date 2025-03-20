@@ -56,44 +56,6 @@ describe('ProgressBarUtil', () => {
     });
   });
 
-  describe('recruitmentMiniFlowProgressBarSections', () => {
-    it('should return an array with a length of 3', () => {
-      const recruitmentMiniFlowProgressBarSections = ProgressBarUtil.recruitmentMiniFlowProgressBarSections();
-
-      expect(recruitmentMiniFlowProgressBarSections.length).toEqual(4);
-    });
-
-    it('should return the correct values', () => {
-      const recruitmentMiniFlowProgressBarSections = ProgressBarUtil.recruitmentMiniFlowProgressBarSections();
-
-      expect(recruitmentMiniFlowProgressBarSections).toEqual([
-        'Advertising spend',
-        'People interviewed',
-        'Training',
-        'Care Certificates',
-      ]);
-    });
-  });
-
-  describe('staffBenefitsMiniFlowProgressBarSections', () => {
-    it('should return an array with a length of 3', () => {
-      const staffBenefitsMiniFlowProgressBarSections = ProgressBarUtil.staffBenefitsMiniFlowProgressBarSections();
-
-      expect(staffBenefitsMiniFlowProgressBarSections.length).toEqual(4);
-    });
-
-    it('should return the correct values', () => {
-      const staffBenefitsMiniFlowProgressBarSections = ProgressBarUtil.staffBenefitsMiniFlowProgressBarSections();
-
-      expect(staffBenefitsMiniFlowProgressBarSections).toEqual([
-        'Loyalty bonus',
-        'Statutory Sick Pay',
-        'Pensions',
-        'Holiday leave',
-      ]);
-    });
-  });
-
   describe('staffRecordProgressBarSections', () => {
     it('should return an array with a length of 4', () => {
       const staffRecordProgressBarSections = ProgressBarUtil.staffRecordProgressBarSections();
