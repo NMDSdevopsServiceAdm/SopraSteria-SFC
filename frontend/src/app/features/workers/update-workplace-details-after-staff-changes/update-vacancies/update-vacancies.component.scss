@@ -1,0 +1,43 @@
+@import 'govuk-frontend/govuk/base';
+
+.add-job-roles-button-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  button {
+    align-self: flex-end;
+    margin: 0;
+    color: $govuk-brand-colour;
+  }
+
+  h2 {
+    margin: 0;
+  }
+}
+
+.asc-total-number-tile {
+  background-color: govuk-colour('light-grey');
+  width: 290px;
+  height: 110px;
+
+  &--wrapper {
+    padding: 1em;
+  }
+
+  &--total-number {
+    font-size: 3rem;
+    font-weight: bold;
+    color: govuk-colour('turquoise');
+    line-height: 1.1;
+
+    margin-bottom: 0;
+  }
+
+  &--description {
+    font-size: 19px;
+    font-weight: bold;
+
+    margin-bottom: 0;
+  }
+}
