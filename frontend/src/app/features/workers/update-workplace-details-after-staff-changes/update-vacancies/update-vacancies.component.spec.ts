@@ -50,14 +50,14 @@ fdescribe('UpdateVacanciesComponent', () => {
   });
 
   describe('rendering', () => {
-    it('should display a page heading', async () => {
+    it('should show a page heading', async () => {
       const { getByRole } = await setup();
       const heading = getByRole('heading', { level: 1 });
 
       expect(heading.textContent).toEqual('Update your current staff vacancies');
     });
 
-    it('should display a reveal text for "Why we ask for this information"', async () => {
+    it('should show a reveal text for "Why we ask for this information"', async () => {
       const { getByText } = await setup();
 
       const reveal = getByText('Why we ask for this information');
@@ -69,12 +69,19 @@ fdescribe('UpdateVacanciesComponent', () => {
       expect(revealText).toBeTruthy();
     });
 
-    it('should display a warning text to remind about subtract or remove vacancies', async () => {
+    it('should show a warning text to remind about subtract or remove vacancies', async () => {
       const { getByTestId } = await setup();
       const warningText = getByTestId('warning-text');
       const expectedTextContent = 'Remember to SUBTRACT or REMOVE any that are no longer vacancies.';
 
       expect(warningText.textContent).toContain(expectedTextContent);
+    });
+
+    it('should show an "Add more job roles" button', async () => {
+      const { getByRole } = await setup();
+      const addButton = getByRole('button', { name: 'Add more job roles' });
+
+      expect(addButton).toBeTruthy();
     });
   });
 });

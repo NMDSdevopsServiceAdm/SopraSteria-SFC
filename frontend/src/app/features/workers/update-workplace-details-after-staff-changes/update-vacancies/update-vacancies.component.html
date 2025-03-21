@@ -11,13 +11,15 @@
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
         <h1 class="govuk-heading-l">{{ heading }}</h1>
+
         <app-details title="Why we ask for this information">
           <p class="govuk-body-m">
             To show DHSC and others how the level of staff vacancies and the number employed affects the sector over
             time.
           </p>
         </app-details>
-        <div class="govuk-warning-text" data-testid="warning-text">
+
+        <div class="govuk-warning-text govuk-!-margin-bottom-3" data-testid="warning-text">
           <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
           <span class="govuk-warning-text__text">
             <span class="govuk-visually-hidden">Warning</span>
@@ -26,6 +28,30 @@
               <strong>no longer vacancies</strong>.
             </p>
           </span>
+        </div>
+
+        <div>
+          <div class="add-job-roles-button-row">
+            <h2>Current staff vacancies</h2>
+            <button type="button" class="govuk-button govuk-button--secondary">Add more job roles</button>
+          </div>
+          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
+          <div>
+            <!-- form controls here -->
+          </div>
+          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
+          <div class="govuk__flex govuk__justify-content-end">
+            <div class="asc-total-number-tile">
+              <div class="asc-total-number-tile--wrapper">
+                <p class="asc-total-number-tile--total-number">3</p>
+                <p class="asc-total-number-tile--description">Total number of vacancies</p>
+              </div>
+            </div>
+          </div>
+
+          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
         </div>
       </fieldset>
     </form>
