@@ -11,7 +11,6 @@ import { DialogService } from '@core/services/dialog.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WorkerService } from '@core/services/worker.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { Subscription } from 'rxjs';
 import { take } from 'rxjs/operators';
 
@@ -41,7 +40,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     private workerService: WorkerService,
     protected backLinkService: BackLinkService,
     public breadcrumbService: BreadcrumbService,
-    private parentSubsidiaryViewService: ParentSubsidiaryViewService,
   ) {}
 
   ngOnInit(): void {

@@ -17,7 +17,6 @@ import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
 import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
-import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -89,8 +88,6 @@ describe('StaffRecordComponent', () => {
     const alert = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alert, 'addAlert').and.callThrough();
 
-    const parentSubsidiaryViewService = injector.inject(ParentSubsidiaryViewService) as ParentSubsidiaryViewService;
-
     return {
       ...setupTools,
       component,
@@ -100,7 +97,6 @@ describe('StaffRecordComponent', () => {
       workplaceUid,
       workerUid,
       alertSpy,
-      parentSubsidiaryViewService,
     };
   }
 
