@@ -64,7 +64,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
-import { UpdateVacancyJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancy-job-role/update-vacancy-job-role.component';
+import { UpdateVacanciesSelectJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancies-select-job-role/update-vacancies-select-job-role.component';
 
 const routes: Routes = [
   {
@@ -94,7 +94,7 @@ const routes: Routes = [
       },
       {
         path: 'update-vacancy-job-roles',
-        component: UpdateVacancyJobRoleComponent,
+        component: UpdateVacanciesSelectJobRoleComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
         data: {
