@@ -165,7 +165,7 @@ describe('DeleteStaffRecordComponent', () => {
       userEvent.click(getByRole('checkbox', { name: /I know that/ }));
       userEvent.click(getByRole('button', { name: 'Delete this staff record' }));
 
-      expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'staff-records' });
+      expect(routerSpy).toHaveBeenCalledWith(['/workplace', 'mocked-uid', 'staff-record', 'delete-another-staff-record']);
 
       await routerSpy.calls.mostRecent().returnValue;
       expect(alertServiceSpy).toHaveBeenCalledWith({
