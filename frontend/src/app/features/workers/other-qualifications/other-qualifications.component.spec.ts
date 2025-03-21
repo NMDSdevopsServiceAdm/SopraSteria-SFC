@@ -120,36 +120,41 @@ describe('OtherQualificationsComponent', () => {
       ]);
     });
 
-    it(`should navigate with the 'confirm-staff-record' url when 'Skip this question' is clicked and in the flow`, async () => {
-      const { component, getByText, routerSpy } = await setup(true, 'Yes');
+    describe('Navigation in add worker details flow', () => {
+      ['Skip this question', 'View this staff record'].forEach((link) => {
+        it(`should navigate with the 'confirm-staff-record' url when '${link}' is clicked and in the flow`, async () => {
+          const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
-      const button = getByText('Skip this question');
-      fireEvent.click(button);
+          fireEvent.click(getByText(link));
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        'mocked-uid',
-        'staff-record',
-        component.worker.uid,
-        'confirm-staff-record',
-      ]);
-    });
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'staff-record',
+            component.worker.uid,
+            'staff-record-summary',
+          ]);
+        });
+      });
 
-    it('should navigate to staff-record when View this staff record link is clicked', async () => {
-      const { component, routerSpy, getByText } = await setup();
+      ['No', 'I do not know'].forEach((answer) => {
+        it(`should navigate to 'staff-record-summary' url when '${answer}' is selected and in the flow`, async () => {
+          const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
-      const workplaceUid = component.workplace.uid;
-      const workerUid = component.worker.uid;
-      const viewRecordLink = getByText('View this staff record');
-      fireEvent.click(viewRecordLink);
+          const button = getByText(answer);
+          fireEvent.click(button);
 
-      expect(routerSpy).toHaveBeenCalledWith([
-        '/workplace',
-        workplaceUid,
-        'staff-record',
-        workerUid,
-        'staff-record-summary',
-      ]);
+          fireEvent.click(getByText('Save'));
+
+          expect(routerSpy).toHaveBeenCalledWith([
+            '/workplace',
+            'mocked-uid',
+            'staff-record',
+            component.worker.uid,
+            'staff-record-summary',
+          ]);
+        });
+      });
     });
 
     it('should navigate to staff-summary-page page when pressing save and not know is entered', async () => {
