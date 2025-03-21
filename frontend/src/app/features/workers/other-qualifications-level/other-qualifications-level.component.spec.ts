@@ -6,7 +6,10 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { QualificationService } from '@core/services/qualification.service';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import {
+  MockWorkerServiceWithoutReturnUrl,
+  MockWorkerServiceWithUpdateWorker,
+} from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -82,13 +85,13 @@ describe('OtherQualificationsLevelComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it('should render the page with a save and continue button when there return value is null', async () => {
+    it('should render the page with a save button when the return value is null', async () => {
       const { component, fixture, getByText } = await setup(false);
 
       component.return = null;
       fixture.detectChanges();
 
-      const button = getByText('Save and continue');
+      const button = getByText('Save');
       const viewRecordLink = getByText('View this staff record');
 
       expect(button).toBeTruthy();
@@ -130,7 +133,7 @@ describe('OtherQualificationsLevelComponent', () => {
       const select = getByLabelText('Qualification level', { exact: false });
       fireEvent.change(select, { target: { value: '1' } });
 
-      const saveButton = getByText('Save and continue');
+      const saveButton = getByText('Save');
       fireEvent.click(saveButton);
       fixture.detectChanges();
 

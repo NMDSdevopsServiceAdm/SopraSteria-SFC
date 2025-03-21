@@ -17,7 +17,6 @@ import { QuestionComponent } from '../question/question.component';
 export class OtherQualificationsLevelComponent extends QuestionComponent {
   public qualifications: QualificationLevel[];
   public section = 'Training and qualifications';
-  public insideOtherQualificationsLevelSummaryFlow: boolean;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

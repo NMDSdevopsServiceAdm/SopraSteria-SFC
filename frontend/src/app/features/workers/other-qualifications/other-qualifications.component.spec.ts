@@ -89,10 +89,10 @@ describe('OtherQualificationsComponent', () => {
   });
 
   describe('submit buttons', () => {
-    it('should render the page with a save and continue button and view this staff record and Skip this question link', async () => {
+    it('should render the page with a save button, view this staff record and Skip this question link when in flow', async () => {
       const { getByText } = await setup();
 
-      expect(getByText('Save and continue')).toBeTruthy();
+      expect(getByText('Save')).toBeTruthy();
       expect(getByText('View this staff record')).toBeTruthy();
       expect(getByText('Skip this question')).toBeTruthy();
     });
@@ -107,7 +107,7 @@ describe('OtherQualificationsComponent', () => {
     it(`should run getRoutePath with a other-qualifications-level string when otherQualification is yes and in the flow`, async () => {
       const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
-      const button = getByText('Save and continue');
+      const button = getByText('Save');
 
       fireEvent.click(button);
 
