@@ -57,7 +57,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     );
 
     if (!this.insideFlow) {
-      this.breadcrumbService.show(this.getBreadcrumbsJourney());
+      this.breadcrumbService.show(JourneyType.MY_WORKPLACE);
     } else {
       this.backLinkService.showBackLink();
     }
@@ -115,12 +115,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       fragment: 'staff-record',
     };
     this.workerService.setReturnTo(this.returnToRecord);
-  }
-
-  public getBreadcrumbsJourney(): JourneyType {
-    return this.parentSubsidiaryViewService.getViewingSubAsParent() || this.establishmentService.isOwnWorkplace()
-      ? JourneyType.MY_WORKPLACE
-      : JourneyType.ALL_WORKPLACES;
   }
 
   ngOnDestroy(): void {
