@@ -37,7 +37,7 @@
           </div>
           <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
 
-          <div>
+          <div formArrayName="jobRoleNumbers">
             <div *ngFor="let jobRole of selectedJobRoles; index as index">
               <div class="govuk-grid-row">
                 <div class="asc-grid-column-three-fifth">
@@ -45,10 +45,12 @@
                 </div>
                 <div class="asc-grid-column-one-fifth">
                   <app-number-input-with-buttons
+                    #numberInputRef
                     [min]="minNumberPerJobRole"
                     [max]="maxNumberPerJobRole"
                     [initialValue]="jobRole.total"
                     [inputId]="'job-' + index"
+                    [formControlName]="index"
                   >
                   </app-number-input-with-buttons>
                 </div>

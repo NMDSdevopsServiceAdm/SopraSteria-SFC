@@ -130,8 +130,9 @@ fdescribe('UpdateVacanciesComponent', () => {
 
     it('should show the total number of vacancies', async () => {
       const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
-      const { getByTestId } = await setup({ workplace: mockWorkplace });
+      const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
 
+      fixture.detectChanges();
       const totalNumber = getByTestId('total-number');
       expect(totalNumber.textContent).toEqual('10');
     });

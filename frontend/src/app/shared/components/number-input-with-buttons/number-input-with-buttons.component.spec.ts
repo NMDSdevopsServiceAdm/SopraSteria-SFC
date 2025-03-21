@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event';
 
 import { NumberInputWithButtonsComponent } from './number-input-with-buttons.component';
 
-describe('NumberInputWithButtonsComponent', () => {
+fdescribe('NumberInputWithButtonsComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   const setup = async (override: any = {}) => {
     const inputPropertiesName = ['initialValue', 'min', 'max', 'inputId'];
@@ -83,6 +83,20 @@ describe('NumberInputWithButtonsComponent', () => {
 
         expect(inputBox.value).toEqual('10');
         expect(onChangeSpy).toHaveBeenCalledWith(10);
+      });
+
+      it('should be able to register more than one onChange function', async () => {
+        const { component, fixture, getByRole, onChangeSpy } = await setup();
+        const anotherOnChangeSpy = jasmine.createSpy();
+        component.registerOnChange(anotherOnChangeSpy);
+
+        fixture.autoDetectChanges();
+
+        const inputBox = getByRole('textbox') as HTMLInputElement;
+        userEvent.type(inputBox, '10');
+
+        expect(onChangeSpy).toHaveBeenCalledWith(10);
+        expect(anotherOnChangeSpy).toHaveBeenCalledWith(10);
       });
 
       it('should emit onChange event with the input string if the input is not a valid number', async () => {
