@@ -5,6 +5,7 @@ import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { Question } from '../question/question.component';
 
@@ -28,7 +29,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     },
   ];
 
-  public section: string;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -46,7 +47,6 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     this.setPreviousRoute();
 
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'pensions'];
-    this.section = 'Staff benefits';
   }
 
   private setPreviousRoute(): void {

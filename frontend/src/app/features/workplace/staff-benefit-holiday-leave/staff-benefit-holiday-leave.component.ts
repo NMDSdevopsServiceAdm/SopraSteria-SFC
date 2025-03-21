@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { Question } from '../question/question.component';
 
@@ -12,7 +13,7 @@ import { Question } from '../question/question.component';
   templateUrl: './staff-benefit-holiday-leave.component.html',
 })
 export class StaffBenefitHolidayLeaveComponent extends Question implements OnInit, OnDestroy {
-  public section: string;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
   private numberCheckRegex = /^-?\d*(\.\d*)?$/;
   private wholeNumberCheckRegex = /^-?[A-Za-z0-9]*$/;
   private positiveNumberCheckRegex = /^[A-Za-z\d*(.\d*)]*$/;
@@ -31,7 +32,6 @@ export class StaffBenefitHolidayLeaveComponent extends Question implements OnIni
     this.prefill();
     this.setPreviousRoute();
 
-    this.section = 'Staff benefits';
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'sharing-data'];
   }
 

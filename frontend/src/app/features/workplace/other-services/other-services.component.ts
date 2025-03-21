@@ -6,6 +6,7 @@ import { Service, ServiceGroup } from '@core/model/services.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import filter from 'lodash/filter';
 
 import { Question } from '../question/question.component';
@@ -19,7 +20,7 @@ export class OtherServicesComponent extends Question {
   private allServices: Array<Service> = [];
   private allOtherServices: Array<Service> = [];
   public serviceGroups: Array<ServiceGroup>;
-  public section = 'Services';
+  public section = WorkplaceFlowSections.SERVICES;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

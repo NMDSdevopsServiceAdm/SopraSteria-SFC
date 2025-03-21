@@ -1,5 +1,5 @@
 import { Directive, ViewChild } from '@angular/core';
-import { UntypedFormBuilder, Validators } from '@angular/forms';
+import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
@@ -7,6 +7,7 @@ import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { JobService } from '@core/services/job.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 import { Question } from '@features/workplace/question/question.component';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
 import { CustomValidators } from '@shared/validators/custom-form-validators';
@@ -14,7 +15,7 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
 @Directive()
 export class SelectJobRolesDirective extends Question {
   @ViewChild('accordion') accordion: AccordionGroupComponent;
-  public section = 'Vacancies and turnover';
+  public section = WorkplaceFlowSections.VACANCIES_AND_TURNOVER;
   public heading: string;
   public errorMessageOnEmptyInput: string;
   public jobGroupsToOpenAtStart: string[] = [];
