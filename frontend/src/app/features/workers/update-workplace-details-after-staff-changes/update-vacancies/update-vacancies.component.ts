@@ -1,4 +1,6 @@
-import { Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import lodash from 'lodash';
+
+import { ChangeDetectorRef, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -7,7 +9,7 @@ import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
-import lodash from 'lodash';
+import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
 
 @Component({
   selector: 'app-update-vacancies',
@@ -15,6 +17,7 @@ import lodash from 'lodash';
   styleUrl: './update-vacancies.component.scss',
 })
 export class UpdateVacanciesComponent {
+  @ViewChildren('numberInputRef') numberInputs: QueryList<NumberInputWithButtonsComponent>;
   @ViewChild('formEl') formEl: ElementRef;
 
   public heading: string;
@@ -46,6 +49,7 @@ export class UpdateVacanciesComponent {
     protected establishmentService: EstablishmentService,
     protected updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
     protected route: ActivatedRoute,
+    protected cd: ChangeDetectorRef,
   ) {}
 
   ngOnInit() {
@@ -57,6 +61,13 @@ export class UpdateVacanciesComponent {
     this.setBackLink();
   }
 
+  ngAfterViewInit() {
+    this.updateTotalNumber();
+    this.cd.detectChanges();
+
+    this.numberInputs.forEach((input) => input.registerOnChange(() => this.updateTotalNumber()));
+  }
+
   public setupTexts() {
     this.heading = 'Update your current staff vacancies';
   }
@@ -66,26 +77,26 @@ export class UpdateVacanciesComponent {
       jobRoleNumbers: this.formBuilder.array([]),
     });
 
-    this.selectedJobRoles.forEach((jobRole) => {
-      const initialValue = jobRole.total ?? '';
-      this.jobRoleNumbers.push(
-        this.formBuilder.control(initialValue, {
-          validators: [
-            Validators.required,
-            Validators.min(this.minNumberPerJobRole),
-            Validators.max(this.maxNumberPerJobRole),
-          ],
-          updateOn: 'submit',
-        }),
-      );
-    });
+    this.selectedJobRoles.forEach((jobRole) => this.addJobRoleInput(jobRole));
   }
+
+  private addJobRoleInput = (jobRole: Vacancy) => {
+    const initialValue = jobRole.total ?? '';
+    this.jobRoleNumbers.push(
+      this.formBuilder.control(initialValue, {
+        validators: [
+          Validators.required,
+          Validators.min(this.minNumberPerJobRole),
+          Validators.max(this.maxNumberPerJobRole),
+        ],
+        updateOn: 'submit',
+      }),
+    );
+  };
 
   get jobRoleNumbers(): UntypedFormArray {
     return this.form.get('jobRoleNumbers') as UntypedFormArray;
   }
-
-  public handleNumberChange(event: Event) {}
 
   public setupFormErrorsMap() {}
 
@@ -97,12 +108,13 @@ export class UpdateVacanciesComponent {
     const vacanciesFromBackend = this.establishmentService.establishment.vacancies;
     if (Array.isArray(vacanciesFromBackend)) {
       this.selectedJobRoles = vacanciesFromBackend;
-      this.updateTotalNumber();
     }
   }
 
   protected updateTotalNumber(): void {
-    this.totalNumber = lodash.sumBy(this.selectedJobRoles, 'total');
+    const allJobRoleNumbers =
+      this.numberInputs?.map((input) => input.currentNumber).filter((number) => !isNaN(number)) ?? [];
+    this.totalNumber = lodash.sum(allJobRoleNumbers);
   }
 
   public onSubmit() {}
