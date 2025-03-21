@@ -38,22 +38,75 @@
           <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
 
           <div>
-            <!-- form controls here -->
+            <div *ngFor="let jobRole of selectedJobRoles; index as index">
+              <div class="govuk-grid-row">
+                <div class="asc-grid-column-three-fifth">
+                  <label class="govuk-label" [for]="'job-' + index"> {{ jobRole.title }} </label>
+                </div>
+                <div class="asc-grid-column-one-fifth">
+                  <app-number-input-with-buttons
+                    [min]="minNumberPerJobRole"
+                    [max]="maxNumberPerJobRole"
+                    [initialValue]="jobRole.total"
+                    [inputId]="'job-' + index"
+                  >
+                  </app-number-input-with-buttons>
+                </div>
+                <div class="asc-grid-column-one-fifth">
+                  <button
+                    [attr.data-testid]="'remove-button-' + jobRole.title"
+                    type="button"
+                    class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+              <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+            </div>
           </div>
-          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
 
           <div class="govuk__flex govuk__justify-content-end">
             <div class="asc-total-number-tile">
               <div class="asc-total-number-tile--wrapper">
-                <p class="asc-total-number-tile--total-number">3</p>
+                <p class="asc-total-number-tile--total-number" data-testid="total-number">{{ totalNumber }}</p>
                 <p class="asc-total-number-tile--description">Total number of vacancies</p>
               </div>
             </div>
           </div>
 
           <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+
+          <div class="govuk-radios">
+            <div class="govuk-radios__item" *ngFor="let option of knownOptions; let i = index">
+              <input
+                class="govuk-radios__input"
+                id="startersLeaversVacanciesKnown-{{ i }}"
+                name="startersLeaversVacanciesKnown"
+                type="radio"
+                [value]="option.value"
+              />
+              <label class="govuk-label govuk-radios__label" for="startersLeaversVacanciesKnown-{{ i }}">
+                {{ option.label }}
+              </label>
+            </div>
+          </div>
         </div>
       </fieldset>
+
+      <div class="govuk-button-group govuk-!-margin-top-12">
+        <button type="submit" class="govuk-button govuk-!-margin-right-9">Save and return</button>
+
+        <a
+          class="govuk-button govuk-button--link govuk-!-margin-left-9"
+          role="button"
+          draggable="false"
+          (click)="onCancel($event)"
+          href="#"
+        >
+          Cancel
+        </a>
+      </div>
     </form>
   </div>
 </div>
