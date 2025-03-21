@@ -3,6 +3,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockWorkerServiceWithoutReturnUrl } from '@core/test-utils/MockWorkerService';
 import { build, fake } from '@jackfranklin/test-data-bot';
@@ -62,6 +64,8 @@ describe('OtherQualificationsComponent', () => {
           useFactory: MockWorkerServiceWithoutReturnUrl.factory(qualification),
           deps: [HttpClient],
         },
+        AlertService,
+        WindowRef,
       ],
     });
 
@@ -69,8 +73,10 @@ describe('OtherQualificationsComponent', () => {
 
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
-
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
     return {
       component,
@@ -80,6 +86,7 @@ describe('OtherQualificationsComponent', () => {
       getByText,
       getByTestId,
       queryByTestId,
+      alertSpy,
     };
   }
 
@@ -120,9 +127,9 @@ describe('OtherQualificationsComponent', () => {
       ]);
     });
 
-    describe('Navigation in add worker details flow', () => {
+    describe('Add worker details flow', () => {
       ['Skip this question', 'View this staff record'].forEach((link) => {
-        it(`should navigate with the 'confirm-staff-record' url when '${link}' is clicked and in the flow`, async () => {
+        it(`should navigate to 'staff-record-summary' url when '${link}' is clicked`, async () => {
           const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
           fireEvent.click(getByText(link));
@@ -138,7 +145,7 @@ describe('OtherQualificationsComponent', () => {
       });
 
       ['No', 'I do not know'].forEach((answer) => {
-        it(`should navigate to 'staff-record-summary' url when '${answer}' is selected and in the flow`, async () => {
+        it(`should navigate to 'staff-record-summary' url when '${answer}' is selected`, async () => {
           const { component, getByText, routerSpy } = await setup(true, 'Yes');
 
           const button = getByText(answer);
@@ -153,6 +160,20 @@ describe('OtherQualificationsComponent', () => {
             component.worker.uid,
             'staff-record-summary',
           ]);
+        });
+
+        it(`should add Staff record added alert when '${answer}' is selected`, async () => {
+          const { getByText, alertSpy } = await setup(true, 'Yes');
+
+          const button = getByText(answer);
+          fireEvent.click(button);
+
+          fireEvent.click(getByText('Save'));
+
+          expect(alertSpy).toHaveBeenCalledWith({
+            type: 'success',
+            message: 'Staff record saved',
+          });
         });
       });
     });
@@ -201,6 +222,22 @@ describe('OtherQualificationsComponent', () => {
         workerId,
         'staff-record-summary',
       ]);
+    });
+
+    ['No', 'I do not know'].forEach((answer) => {
+      it(`should not add Staff record added alert when '${answer}' is selected but not in flow`, async () => {
+        const { getByText, alertSpy } = await setup(false);
+
+        const button = getByText(answer);
+        fireEvent.click(button);
+
+        fireEvent.click(getByText('Save'));
+
+        expect(alertSpy).not.toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Staff record saved',
+        });
+      });
     });
 
     it('should navigate to other-qualifications-level page when pressing save and Yes is entered', async () => {
