@@ -16,6 +16,22 @@
   }
 }
 
+.asc-grid-column-three-fifth {
+  box-sizing: border-box;
+  padding: 0 15px;
+
+  width: 60%;
+  float: left;
+}
+
+.asc-grid-column-one-fifth {
+  box-sizing: border-box;
+  padding: 0 15px;
+
+  width: 20%;
+  float: left;
+}
+
 .asc-total-number-tile {
   background-color: govuk-colour('light-grey');
   width: 290px;
