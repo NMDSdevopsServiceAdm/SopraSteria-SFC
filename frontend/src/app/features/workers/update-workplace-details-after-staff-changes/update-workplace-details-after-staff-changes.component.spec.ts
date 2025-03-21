@@ -73,21 +73,28 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the Check information title and sub heading', async () => {
-    const { getByText } = await setup();
-
-    expect(getByText('Check this information and make any changes before you continue')).toBeTruthy();
-    expect(getByText('Total number of staff, vacancies and starters')).toBeTruthy();
-  });
-
   describe('Views when user has visited pages', () => {
-    it('should display warning text when user has not visited all of the update question pages', async () => {
+    it('should display warning text when user has not visited all of the update question pages in add view', async () => {
       const { getByText } = await setup({
-        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisitedForAdd: () => false },
+        updateWorkplaceAfterStaffChangesService: { allUpdatePagesVisited: () => false },
       });
 
       expect(
         getByText('This data does not update automatically when you add staff records.', { exact: false }),
+      ).toBeTruthy();
+      expect(getByText('You need to check and change these yourself.', { exact: false })).toBeTruthy();
+    });
+
+    it('should display warning text when user has not visited all of the update question pages in delete view', async () => {
+      const { getByText } = await setup({
+        flowType: WorkplaceUpdateFlowType.DELETE,
+        updateWorkplaceAfterStaffChangesService: {
+          allUpdatePagesVisited: () => false,
+        },
+      });
+
+      expect(
+        getByText('This data does not update automatically when you delete staff records.', { exact: false }),
       ).toBeTruthy();
       expect(getByText('You need to check and change these yourself.', { exact: false })).toBeTruthy();
     });
@@ -127,14 +134,14 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
   });
 
-  describe('Subtitle', () => {
-    it('should include starters in subtitle when on added staff version of page', async () => {
+  describe('Sub heading', () => {
+    it('should include starters in sub heading when on added staff version of page', async () => {
       const { getByText } = await setup();
 
       expect(getByText('Total number of staff, vacancies and starters')).toBeTruthy();
     });
 
-    it('should include leavers in subtitle when on deleted staff version of page', async () => {
+    it('should include leavers in sub heading when on deleted staff version of page', async () => {
       const { getByText } = await setup({ flowType: WorkplaceUpdateFlowType.DELETE });
 
       expect(getByText('Total number of staff, vacancies and leavers')).toBeTruthy();

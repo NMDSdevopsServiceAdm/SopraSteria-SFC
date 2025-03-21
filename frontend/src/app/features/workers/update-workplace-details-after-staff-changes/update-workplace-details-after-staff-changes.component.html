@@ -12,7 +12,8 @@
           Total number of staff, vacancies and {{ flowType === WorkplaceUpdateFlowType.ADD ? 'starters' : 'leavers' }}
         </h2>
         <span *ngIf="!allPagesVisited" class="govuk-error-message govuk-summary-list__warning-message">
-          This data does not update automatically when you add staff records.
+          This data does not update automatically when you
+          {{ flowType === WorkplaceUpdateFlowType.ADD ? 'add' : 'delete' }} staff records.
           <br />
           You need to check and change these yourself.
         </span>
