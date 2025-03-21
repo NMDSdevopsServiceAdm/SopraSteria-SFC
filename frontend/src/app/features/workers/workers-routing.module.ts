@@ -66,6 +66,7 @@ import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workp
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { UpdateVacanciesSelectJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancies-select-job-role/update-vacancies-select-job-role.component';
+import { UpdateVacanciesComponent } from './update-workplace-details-after-staff-changes/update-vacancies/update-vacancies.component';
 
 const routes: Routes = [
   {
@@ -114,13 +115,19 @@ const routes: Routes = [
         data: { permissions: ['canEditEstablishment'], title: 'Update total number of staff' },
       },
       {
-        path: 'update-vacancy-job-roles',
+        path: 'update-vacancies',
+        component: UpdateVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies' },
+      },
+      {
+        path: 'update-vacancies-job-roles',
         component: UpdateVacanciesSelectJobRoleComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
-          title: 'Vacancies job role selection',
+          title: 'Select job roles to add',
         },
       },
     ],
