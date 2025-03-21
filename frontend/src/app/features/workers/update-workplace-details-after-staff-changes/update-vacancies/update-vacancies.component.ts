@@ -42,9 +42,18 @@ export class UpdateVacanciesComponent {
   public setupForm() {
     this.form = this.formBuilder.group({});
   }
+
   public setupFormErrorsMap() {}
-  public setBackLink() {}
+
+  public setBackLink() {
+    this.backlinkService.showBackLink();
+  }
+
   public prefill() {}
 
   public onSubmit() {}
+
+  public onCancel(event: Event) {
+    event.preventDefault();
+  }
 }
