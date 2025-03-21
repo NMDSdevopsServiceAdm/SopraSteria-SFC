@@ -60,7 +60,7 @@ describe('StaffRecruitmentCaptureTrainingRequirement', () => {
   it('should render the heading, input and radio buttons', async () => {
     const { getByText, getByLabelText } = await setup();
     const heading = `Do new care workers have to repeat training they've done with previous employers?`;
-    const sectionCaption = 'Staff recruitment and benefits';
+    const sectionCaption = 'Recruitment and benefits';
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByText(sectionCaption)).toBeTruthy;

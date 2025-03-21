@@ -31,7 +31,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   ];
 
   public showTextBox = false;
-  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

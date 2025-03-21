@@ -11,7 +11,7 @@ export class ProgressBarUtil {
     return [
       WorkplaceFlowSections.SERVICES,
       WorkplaceFlowSections.VACANCIES_AND_TURNOVER,
-      WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS,
+      WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS,
       WorkplaceFlowSections.PERMISSIONS,
     ];
   };
@@ -24,6 +24,6 @@ export class ProgressBarUtil {
 export enum WorkplaceFlowSections {
   SERVICES = 'Services',
   VACANCIES_AND_TURNOVER = 'Vacancies and turnover',
-  STAFF_RECRUITMENT_AND_BENEFITS = 'Staff recruitment and benefits',
+  RECRUITMENT_AND_BENEFITS = 'Recruitment and benefits',
   PERMISSIONS = 'Permissions',
 }

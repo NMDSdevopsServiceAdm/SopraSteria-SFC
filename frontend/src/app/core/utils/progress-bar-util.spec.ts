@@ -49,7 +49,7 @@ describe('ProgressBarUtil', () => {
       expect(workplaceFlowProgressBarSections).toEqual([
         'Services',
         'Vacancies and turnover',
-        'Staff recruitment and benefits',
+        'Recruitment and benefits',
         'Permissions',
       ]);
     });

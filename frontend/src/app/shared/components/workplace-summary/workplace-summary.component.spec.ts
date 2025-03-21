@@ -77,7 +77,7 @@ describe('WorkplaceSummaryComponent', () => {
     expect(getByTestId('employerType')).toBeTruthy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('staff-recruitment-and-benefits-section')).toBeTruthy();
+    expect(getByTestId('recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
   });
 
@@ -93,7 +93,7 @@ describe('WorkplaceSummaryComponent', () => {
     expect(queryByTestId('employerType')).toBeFalsy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('staff-recruitment-and-benefits-section')).toBeTruthy();
+    expect(getByTestId('recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
   });
 
