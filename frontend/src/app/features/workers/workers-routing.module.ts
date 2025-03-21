@@ -65,7 +65,7 @@ import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-af
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
-import { UpdateVacancyJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancy-job-role/update-vacancy-job-role.component';
+import { UpdateVacanciesSelectJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancies-select-job-role/update-vacancies-select-job-role.component';
 
 const routes: Routes = [
   {
@@ -115,7 +115,7 @@ const routes: Routes = [
       },
       {
         path: 'update-vacancy-job-roles',
-        component: UpdateVacancyJobRoleComponent,
+        component: UpdateVacanciesSelectJobRoleComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
         data: {

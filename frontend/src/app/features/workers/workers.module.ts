@@ -74,7 +74,7 @@ import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
-import { UpdateVacancyJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancy-job-role/update-vacancy-job-role.component';
+import { UpdateVacanciesSelectJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancies-select-job-role/update-vacancies-select-job-role.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -134,7 +134,7 @@ import { UpdateVacancyJobRoleComponent } from './update-workplace-details-after-
     DeleteStaffRecordComponent,
     UpdateWorkplaceDetailsAfterStaffChangesComponent,
     UpdateTotalNumberOfStaffComponent,
-    UpdateVacancyJobRoleComponent,
+    UpdateVacanciesSelectJobRoleComponent,
   ],
   providers: [
     DialogService,
