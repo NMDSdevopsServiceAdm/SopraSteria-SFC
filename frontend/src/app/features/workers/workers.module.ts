@@ -75,6 +75,7 @@ import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 import { UpdateVacanciesSelectJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancies-select-job-role/update-vacancies-select-job-role.component';
+import { UpdateVacanciesComponent } from './update-workplace-details-after-staff-changes/update-vacancies/update-vacancies.component';
 
 @NgModule({
   imports: [CommonModule, OverlayModule, FormsModule, ReactiveFormsModule, SharedModule, WorkersRoutingModule],
@@ -134,6 +135,7 @@ import { UpdateVacanciesSelectJobRoleComponent } from './update-workplace-detail
     DeleteStaffRecordComponent,
     UpdateWorkplaceDetailsAfterStaffChangesComponent,
     UpdateTotalNumberOfStaffComponent,
+    UpdateVacanciesComponent,
     UpdateVacanciesSelectJobRoleComponent,
   ],
   providers: [
