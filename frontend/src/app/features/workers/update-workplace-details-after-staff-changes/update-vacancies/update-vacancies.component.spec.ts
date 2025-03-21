@@ -1,6 +1,6 @@
 import { getTestBed } from '@angular/core/testing';
 import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { SharedModule } from '@shared/shared.module';
@@ -17,6 +17,12 @@ fdescribe('UpdateVacanciesComponent', () => {
         {
           provide: UpdateWorkplaceAfterStaffChangesService,
           useFactory: MockUpdateWorkplaceAfterStaffChangesService.factory(),
+        },
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {},
+          },
         },
       ],
     });
@@ -41,5 +47,34 @@ fdescribe('UpdateVacanciesComponent', () => {
   it('should create', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
+  });
+
+  describe('rendering', () => {
+    it('should display a page heading', async () => {
+      const { getByRole } = await setup();
+      const heading = getByRole('heading', { level: 1 });
+
+      expect(heading.textContent).toEqual('Update your current staff vacancies');
+    });
+
+    it('should display a reveal text for "Why we ask for this information"', async () => {
+      const { getByText } = await setup();
+
+      const reveal = getByText('Why we ask for this information');
+      const revealText = getByText(
+        'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.',
+      );
+
+      expect(reveal).toBeTruthy();
+      expect(revealText).toBeTruthy();
+    });
+
+    it('should display a warning text to remind about subtract or remove vacancies', async () => {
+      const { getByTestId } = await setup();
+      const warningText = getByTestId('warning-text');
+      const expectedTextContent = 'Remember to SUBTRACT or REMOVE any that are no longer vacancies.';
+
+      expect(warningText.textContent).toContain(expectedTextContent);
+    });
   });
 });

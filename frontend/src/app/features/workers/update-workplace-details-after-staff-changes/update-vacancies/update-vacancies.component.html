@@ -1,1 +1,33 @@
-<p>update-staff-vacancies works!</p>
+<!-- <app-error-summary
+  *ngIf="submitted && form.invalid"
+  [formErrorsMap]="formErrorsMap"
+  [serverError]="serverError"
+  [form]="form"
+>
+</app-error-summary> -->
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
+      <fieldset class="govuk-fieldset">
+        <h1 class="govuk-heading-l">{{ heading }}</h1>
+        <app-details title="Why we ask for this information">
+          <p class="govuk-body-m">
+            To show DHSC and others how the level of staff vacancies and the number employed affects the sector over
+            time.
+          </p>
+        </app-details>
+        <div class="govuk-warning-text" data-testid="warning-text">
+          <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
+          <span class="govuk-warning-text__text">
+            <span class="govuk-visually-hidden">Warning</span>
+            <p class="govuk-body-m">
+              Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are
+              <strong>no longer vacancies</strong>.
+            </p>
+          </span>
+        </div>
+      </fieldset>
+    </form>
+  </div>
+</div>
