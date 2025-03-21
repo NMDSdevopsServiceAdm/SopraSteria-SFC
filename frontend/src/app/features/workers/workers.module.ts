@@ -16,6 +16,7 @@ import { WorkerReasonsForLeavingResolver } from '@core/resolvers/worker-reasons-
 import { WorkerResolver } from '@core/resolvers/worker.resolver';
 import { QualificationCertificateService, TrainingCertificateService } from '@core/services/certificate.service';
 import { DialogService } from '@core/services/dialog.service';
+import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { DownloadPdfTrainingAndQualificationComponent } from '@features/training-and-qualifications/new-training-qualifications-record/download-pdf/download-pdf-training-and-qualification.component';
 import { HealthAndCareVisaComponent } from '@features/workers/health-and-care-visa/health-and-care-visa.component';
 import { SharedModule } from '@shared/shared.module';
@@ -67,6 +68,8 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
+import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
+import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
@@ -130,6 +133,8 @@ import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record
     Level2AdultSocialCareCertificateComponent,
     MainJobRoleComponent,
     DeleteStaffRecordComponent,
+    UpdateWorkplaceDetailsAfterStaffChangesComponent,
+    UpdateTotalNumberOfStaffComponent,
   ],
   providers: [
     DialogService,
@@ -146,6 +151,7 @@ import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record
     AvailableQualificationsResolver,
     TrainingCertificateService,
     QualificationCertificateService,
+    UpdateWorkplaceAfterStaffChangesService,
     WorkerReasonsForLeavingResolver,
   ],
 })

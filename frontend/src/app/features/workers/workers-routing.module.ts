@@ -59,9 +59,11 @@ import { SocialCareQualificationComponent } from './social-care-qualification/so
 import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
+import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
+import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
 import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
 
 const routes: Routes = [
@@ -73,6 +75,24 @@ const routes: Routes = [
       permissions: ['canAddWorker'],
       title: 'Total Staff',
     },
+  },
+  {
+    path: 'update-workplace-details-after-staff-changes',
+    children: [
+      {
+        path: '',
+        component: UpdateWorkplaceDetailsAfterStaffChangesComponent,
+        data: {
+          title: 'Update workplace details',
+        },
+      },
+      {
+        path: 'update-total-staff',
+        component: UpdateTotalNumberOfStaffComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: { permissions: ['canEditEstablishment'], title: 'Update total number of staff' },
+      },
+    ],
   },
   {
     path: 'create-staff-record',
@@ -125,7 +145,6 @@ const routes: Routes = [
     resolve: { training: TrainingRecordsForCategoryResolver },
     data: { title: 'View Training Categories' },
   },
-
   {
     path: ':id',
     canActivate: [CheckPermissionsGuard],
