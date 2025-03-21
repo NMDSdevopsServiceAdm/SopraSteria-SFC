@@ -29,7 +29,7 @@ export class PensionsComponent extends Question implements OnInit, OnDestroy {
     },
   ];
 
-  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

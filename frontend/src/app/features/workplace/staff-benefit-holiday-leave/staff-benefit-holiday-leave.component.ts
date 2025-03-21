@@ -13,7 +13,7 @@ import { Question } from '../question/question.component';
   templateUrl: './staff-benefit-holiday-leave.component.html',
 })
 export class StaffBenefitHolidayLeaveComponent extends Question implements OnInit, OnDestroy {
-  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
   private numberCheckRegex = /^-?\d*(\.\d*)?$/;
   private wholeNumberCheckRegex = /^-?[A-Za-z0-9]*$/;
   private positiveNumberCheckRegex = /^[A-Za-z\d*(.\d*)]*$/;

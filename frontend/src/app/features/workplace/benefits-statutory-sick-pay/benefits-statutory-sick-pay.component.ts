@@ -29,7 +29,7 @@ export class BenefitsStatutorySickPayComponent extends Question implements OnIni
     },
   ];
 
-  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,

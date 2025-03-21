@@ -57,7 +57,7 @@ describe('AcceptPreviousCareCertificateComponent', () => {
   it('should render the heading, input and radio buttons', async () => {
     const { getByText, getByLabelText } = await setup();
     const heading = `Would you accept a Care Certificate from a worker's previous employer?`;
-    const sectionCaption = 'Staff recruitment and benefits';
+    const sectionCaption = 'Recruitment and benefits';
 
     expect(getByText(heading)).toBeTruthy;
     expect(getByText(sectionCaption)).toBeTruthy;

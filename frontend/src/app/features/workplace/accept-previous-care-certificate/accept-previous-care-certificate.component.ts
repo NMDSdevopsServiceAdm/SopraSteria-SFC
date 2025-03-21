@@ -14,7 +14,7 @@ import { Question } from '../question/question.component';
   templateUrl: './accept-previous-care-certificate.component.html',
 })
 export class AcceptPreviousCareCertificateComponent extends Question implements OnInit, OnDestroy {
-  public section = WorkplaceFlowSections.STAFF_RECRUITMENT_AND_BENEFITS;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
   public previousCareCertificateOptions = [
     {
       label: 'Yes, always',
