@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { AlertService } from '@core/services/alert.service';
 import { QualificationService } from '@core/services/qualification.service';
 import { WindowRef } from '@core/services/window.ref';
@@ -20,45 +19,41 @@ import { OtherQualificationsLevelComponent } from './other-qualifications-level.
 
 describe('OtherQualificationsLevelComponent', () => {
   async function setup(returnUrl = true) {
-    const { fixture, getByText, queryByTestId, getByLabelText, getByTestId } = await render(
-      OtherQualificationsLevelComponent,
-      {
-        imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule, WorkersModule],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              parent: {
-                snapshot: {
-                  url: [{ path: returnUrl ? 'staff-record-summary' : 'staff-uid' }],
-                  data: {
-                    establishment: { uid: 'mocked-uid' },
-                    primaryWorkplace: {},
-                  },
+    const setupTools = await render(OtherQualificationsLevelComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule, WorkersModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            parent: {
+              snapshot: {
+                url: [{ path: returnUrl ? 'staff-record-summary' : 'staff-uid' }],
+                data: {
+                  establishment: { uid: 'mocked-uid' },
+                  primaryWorkplace: {},
                 },
               },
-              snapshot: {
-                params: {},
-              },
+            },
+            snapshot: {
+              params: {},
             },
           },
-          {
-            provide: WorkerService,
-            useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
-          },
-          {
-            provide: QualificationService,
-            useClass: MockQualificationService,
-          },
-          AlertService,
-          WindowRef,
-        ],
-      },
-    );
+        },
+        {
+          provide: WorkerService,
+          useClass: returnUrl ? MockWorkerServiceWithUpdateWorker : MockWorkerServiceWithoutReturnUrl,
+        },
+        {
+          provide: QualificationService,
+          useClass: MockQualificationService,
+        },
+        AlertService,
+        WindowRef,
+      ],
+    });
     const injector = getTestBed();
 
-    const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
@@ -66,14 +61,10 @@ describe('OtherQualificationsLevelComponent', () => {
     const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
     return {
-      component,
-      fixture,
+      ...setupTools,
+      component: setupTools.fixture.componentInstance,
       router,
       routerSpy,
-      getByText,
-      queryByTestId,
-      getByLabelText,
-      getByTestId,
       alertSpy,
     };
   }
@@ -93,10 +84,7 @@ describe('OtherQualificationsLevelComponent', () => {
 
   describe('submit buttons', () => {
     it('should render the page with a save button when the return value is null', async () => {
-      const { component, fixture, getByText } = await setup(false);
-
-      component.return = null;
-      fixture.detectChanges();
+      const { getByText } = await setup(false);
 
       const button = getByText('Save');
       const viewRecordLink = getByText('View this staff record');
