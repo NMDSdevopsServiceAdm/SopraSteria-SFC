@@ -200,7 +200,7 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
         userEvent.click(getByText('Continue'));
 
         // @ts-expect-error: TS2445: Property 'route' is protected
-        expect(routerSpy).toHaveBeenCalledWith(['../update-staff-vacancy'], { relativeTo: component.route });
+        expect(routerSpy).toHaveBeenCalledWith(['../update-vacancies'], { relativeTo: component.route });
       });
     });
 
@@ -209,7 +209,7 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
       userEvent.click(getByText('Cancel'));
 
       // @ts-expect-error: TS2445: Property 'route' is protected
-      expect(routerSpy).toHaveBeenCalledWith(['../update-staff-vacancy'], { relativeTo: component.route });
+      expect(routerSpy).toHaveBeenCalledWith(['../update-vacancies'], { relativeTo: component.route });
     });
 
     describe('errors', () => {

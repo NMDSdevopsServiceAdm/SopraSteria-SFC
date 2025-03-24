@@ -132,6 +132,6 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit {
   }
 
   public returnToPreviousPage(): void {
-    this.router.navigate(['../update-staff-vacancy'], { relativeTo: this.route });
+    this.router.navigate(['../update-vacancies'], { relativeTo: this.route });
   }
 }

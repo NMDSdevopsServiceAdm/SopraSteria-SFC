@@ -77,10 +77,10 @@ export class UpdateVacanciesComponent {
       jobRoleNumbers: this.formBuilder.array([]),
     });
 
-    this.selectedJobRoles.forEach((jobRole) => this.addJobRoleInput(jobRole));
+    this.selectedJobRoles.forEach((jobRole) => this.createJobRoleFormControl(jobRole));
   }
 
-  private addJobRoleInput = (jobRole: Vacancy) => {
+  private createJobRoleFormControl = (jobRole: Vacancy) => {
     const initialValue = jobRole.total ?? '';
     this.jobRoleNumbers.push(
       this.formBuilder.control(initialValue, {
@@ -94,6 +94,10 @@ export class UpdateVacanciesComponent {
     );
   };
 
+  get jobRoleNumbers(): UntypedFormArray {
+    return this.form.get('jobRoleNumbers') as UntypedFormArray;
+  }
+
   public removeJobRoleInput = (jobRoleIndex: number) => {
     if (jobRoleIndex < 0 || jobRoleIndex >= this.selectedJobRoles.length) {
       return;
@@ -103,9 +107,18 @@ export class UpdateVacanciesComponent {
     this.jobRoleNumbers.removeAt(jobRoleIndex);
   };
 
-  get jobRoleNumbers(): UntypedFormArray {
-    return this.form.get('jobRoleNumbers') as UntypedFormArray;
-  }
+  private updateSelectedJobRolesNumber = () => {
+    this.numberInputs.forEach((numberInput, index) => {
+      this.selectedJobRoles[index].total = numberInput.currentNumber;
+    });
+  };
+
+  public handleAddJobRole = () => {
+    this.updateSelectedJobRolesNumber();
+    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = this.selectedJobRoles;
+
+    this.router.navigate(['../update-vacancies-job-roles'], { relativeTo: this.route });
+  };
 
   public setupFormErrorsMap() {}
 
@@ -114,6 +127,12 @@ export class UpdateVacanciesComponent {
   }
 
   public prefill() {
+    const vacanciesFromJobRoleSelectionPage = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
+    if (vacanciesFromJobRoleSelectionPage?.length) {
+      this.selectedJobRoles = vacanciesFromJobRoleSelectionPage;
+      return;
+    }
+
     const vacanciesFromBackend = this.establishmentService.establishment.vacancies;
     if (Array.isArray(vacanciesFromBackend)) {
       this.selectedJobRoles = vacanciesFromBackend;
