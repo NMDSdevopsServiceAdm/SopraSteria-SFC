@@ -35,40 +35,34 @@
             <h2>Current staff vacancies</h2>
             <button type="button" class="govuk-button govuk-button--secondary">Add more job roles</button>
           </div>
-          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+          <hr class="govuk-section-break govuk-section-break--visible" />
 
           <div formArrayName="jobRoleNumbers">
             <div *ngFor="let jobRole of selectedJobRoles; index as index">
-              <div class="govuk-grid-row">
-                <div class="asc-grid-column-three-fifth">
-                  <label class="govuk-label" [for]="'job-' + index"> {{ jobRole.title }} </label>
-                </div>
-                <div class="asc-grid-column-one-fifth">
-                  <app-number-input-with-buttons
-                    #numberInputRef
-                    [min]="minNumberPerJobRole"
-                    [max]="maxNumberPerJobRole"
-                    [initialValue]="jobRole.total"
-                    [inputId]="'job-' + index"
-                    [formControlName]="index"
-                  >
-                  </app-number-input-with-buttons>
-                </div>
-                <div class="asc-grid-column-one-fifth">
-                  <button
-                    [attr.data-testid]="'remove-button-' + jobRole.title"
-                    type="button"
-                    class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
-                  >
-                    Remove
-                  </button>
-                </div>
+              <div class="asc-grid-row">
+                <label class="govuk-label" [for]="'job-' + index"> {{ jobRole.title }} </label>
+                <app-number-input-with-buttons
+                  #numberInputRef
+                  [min]="minNumberPerJobRole"
+                  [max]="maxNumberPerJobRole"
+                  [initialValue]="jobRole.total"
+                  [inputId]="'job-' + index"
+                  [formControlName]="index"
+                >
+                </app-number-input-with-buttons>
+                <button
+                  [attr.data-testid]="'remove-button-' + jobRole.title"
+                  type="button"
+                  class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+                >
+                  Remove
+                </button>
               </div>
-              <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+              <hr class="govuk-section-break govuk-section-break--visible" />
             </div>
           </div>
 
-          <div class="govuk__flex govuk__justify-content-end">
+          <div class="govuk__grid govuk__justify-content-end">
             <div class="asc-total-number-tile">
               <div class="asc-total-number-tile--wrapper">
                 <p class="asc-total-number-tile--total-number" data-testid="total-number">{{ totalNumber }}</p>
@@ -77,9 +71,9 @@
             </div>
           </div>
 
-          <hr class="govuk-section-break govuk-section-break--m govuk-section-break--visible" />
+          <hr class="govuk-section-break govuk-section-break--visible" />
 
-          <div class="govuk-radios">
+          <div class="govuk-radios govuk-!-margin-top-6">
             <div class="govuk-radios__item" *ngFor="let option of knownOptions; let i = index">
               <input
                 class="govuk-radios__input"
