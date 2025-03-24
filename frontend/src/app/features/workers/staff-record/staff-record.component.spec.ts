@@ -111,49 +111,45 @@ describe('StaffRecordComponent', () => {
     expect(getAllByText(component.worker.nameOrId).length).toBe(2);
   });
 
-  it('should render the Complete record button and correct text when worker.completed is false and canEditWorker is true', async () => {
-    const { getByText } = await setup({ worker: { completed: false } });
+  it('should render a Continue button at top and bottom of page when worker.completed is false and canEditWorker is true', async () => {
+    const { getAllByText } = await setup({ worker: { completed: false } });
 
-    const button = getByText('Confirm record details');
-    const text = getByText(`Check these details before you confirm them.`);
+    const continueButtons = getAllByText('Continue');
 
-    expect(button).toBeTruthy();
-    expect(text).toBeTruthy();
+    expect(continueButtons.length).toEqual(2);
   });
 
-  it('should not render the Complete record button when worker.completed is false and canEditWorker is false', async () => {
+  it('should not render the Continue record button when worker.completed is false and canEditWorker is false', async () => {
     const { queryByText } = await setup({ worker: { completed: false }, permissions: [] });
 
-    const button = queryByText('Confirm record details');
-    const text = queryByText(`Check these details before you confirm them.`);
+    const button = queryByText('Continue');
     const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
     const deleteRecordLink = queryByText('Delete staff record');
 
     expect(button).toBeFalsy();
-    expect(text).toBeFalsy();
     expect(flagLongTermAbsenceLink).toBeFalsy();
     expect(deleteRecordLink).toBeFalsy();
   });
 
-  it('should render the delete record link, add training link and flag long term absence link, and not correct text when worker.completed is true', async () => {
-    const { queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid } = await setup({
-      worker: { completed: true, longTermAbsence: null },
+  [true, false].forEach((completedValue) => {
+    it(`should render the delete record link, add training link and flag long term absence link, when worker.completed is ${completedValue}`, async () => {
+      const { queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid } = await setup({
+        worker: { completed: completedValue, longTermAbsence: null },
+      });
+
+      const button = queryByText('Confirm record details');
+      const flagLongTermAbsenceLink = getByText('Flag long-term absence');
+      const deleteRecordLink = getByRole('button', { name: 'Delete staff record' });
+      const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
+
+      expect(button).toBeFalsy();
+      expect(flagLongTermAbsenceLink).toBeTruthy();
+      expect(deleteRecordLink).toBeTruthy();
+      expect(deleteRecordLink.getAttribute('href')).toEqual(
+        `/workplace/${workplaceUid}/staff-record/${workerUid}/delete-staff-record`,
+      );
+      expect(trainingAndQualsLink).toBeTruthy();
     });
-
-    const button = queryByText('Confirm record details');
-    const text = queryByText(`Check the record details you've added are correct.`);
-    const flagLongTermAbsenceLink = getByText('Flag long-term absence');
-    const deleteRecordLink = getByRole('button', { name: 'Delete staff record' });
-    const trainingAndQualsLink = getByTestId('training-and-qualifications-link');
-
-    expect(button).toBeFalsy();
-    expect(text).toBeFalsy();
-    expect(flagLongTermAbsenceLink).toBeTruthy();
-    expect(deleteRecordLink).toBeTruthy();
-    expect(deleteRecordLink.getAttribute('href')).toEqual(
-      `/workplace/${workplaceUid}/staff-record/${workerUid}/delete-staff-record`,
-    );
-    expect(trainingAndQualsLink).toBeTruthy();
   });
 
   it('should set returnTo$ in the worker service to the staff record page on init', async () => {
@@ -216,22 +212,22 @@ describe('StaffRecordComponent', () => {
   });
 
   describe('saveAndComplete', () => {
-    it('should call updateWorker on the worker service when button is clicked', async () => {
-      const { workerService, getByText, workplaceUid, workerUid } = await setup({ worker: { completed: false } });
+    it('should call updateWorker on the worker service when Continue button is clicked', async () => {
+      const { workerService, getAllByText, workplaceUid, workerUid } = await setup({ worker: { completed: false } });
 
       const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
-      const button = getByText('Confirm record details');
-      fireEvent.click(button);
+      const continueButtons = getAllByText('Continue');
+      fireEvent.click(continueButtons[0]);
 
       expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
     });
 
-    it('should navigate to the "Add another staff record" page when worker is confirmed', async () => {
-      const { routerSpy, getByText, workplaceUid } = await setup({ worker: { completed: false } });
+    it('should navigate to the "Add another staff record" page when Continue button is clicked', async () => {
+      const { routerSpy, getAllByText, workplaceUid } = await setup({ worker: { completed: false } });
 
-      const button = getByText('Confirm record details');
-      fireEvent.click(button);
+      const continueButtons = getAllByText('Continue');
+      fireEvent.click(continueButtons[0]);
 
       expect(routerSpy).toHaveBeenCalledWith(['/workplace', workplaceUid, 'staff-record', 'add-another-staff-record']);
     });
