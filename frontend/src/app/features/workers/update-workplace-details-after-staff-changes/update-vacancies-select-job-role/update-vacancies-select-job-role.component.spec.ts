@@ -9,7 +9,7 @@ import { UpdateVacanciesSelectJobRoleComponent } from './update-vacancies-select
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 
-fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
+describe('UpdateVacanciesSelectJobRoleComponent', () => {
   const mockAvailableJobs = [
     {
       id: 4,
