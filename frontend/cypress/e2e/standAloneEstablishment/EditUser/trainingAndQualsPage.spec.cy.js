@@ -3,10 +3,6 @@
 import { onTrainingAndQualsPage } from '../../../support/page_objects/onTrainingAndQualsPage';
 
 describe('Standalone training and qualifications page as edit user', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editStandAloneUser'), Cypress.env('userPassword'));
     cy.get('[data-cy="tab-list"]').contains('Training and qualifications').click();
@@ -20,7 +16,6 @@ describe('Standalone training and qualifications page as edit user', () => {
   });
 
   it('should show all sections', () => {
-   onTrainingAndQualsPage.sectionsAreVisible();
+    onTrainingAndQualsPage.sectionsAreVisible();
   });
-
 });

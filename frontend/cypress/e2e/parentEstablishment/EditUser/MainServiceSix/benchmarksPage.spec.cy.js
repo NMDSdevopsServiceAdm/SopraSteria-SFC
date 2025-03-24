@@ -5,10 +5,6 @@ import { onBenchmarksPage } from '../../../../support/page_objects/onBenchmarksP
 import { onHomePage } from '../../../../support/page_objects/onHomePage';
 
 xdescribe('Parent benchmark page, main service 6, as edit user', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsUser(Cypress.env('editParentMainServiceSix'), Cypress.env('userPassword'));
     onHomePage.clickTab('Benchmarks');

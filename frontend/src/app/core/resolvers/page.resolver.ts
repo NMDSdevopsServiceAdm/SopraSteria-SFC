@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Page } from '@core/model/page.model';
 import { PagesService } from '@core/services/pages.service';
 import { Observable, of } from 'rxjs';
 import { catchError, take } from 'rxjs/operators';
 
 @Injectable()
-export class PageResolver implements Resolve<any> {
+export class PageResolver  {
   constructor(private router: Router, private pagesService: PagesService) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<null | Page[]> {

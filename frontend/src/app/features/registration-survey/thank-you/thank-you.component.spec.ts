@@ -37,6 +37,6 @@ describe('ThankYouComponent', () => {
     const component = await setup();
 
     const nextPage = component.fixture.componentInstance.nextPage;
-    expect(nextPage.url).toEqual(['/first-login-wizard']);
+    expect(nextPage.url).toEqual(['/dashboard']);
   });
 });

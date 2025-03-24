@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { of } from 'rxjs';
 import { catchError, tap } from 'rxjs/operators';
 
 @Injectable()
-export class CqcStatusCheckResolver implements Resolve<any> {
+export class CqcStatusCheckResolver  {
   constructor(private establishmentService: EstablishmentService) {}
 
   resolve(route: ActivatedRouteSnapshot) {

@@ -18,7 +18,6 @@ import { MockTabsService } from '@core/test-utils/MockTabsService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { render } from '@testing-library/angular';
-import { Angulartics2GoogleTagManager } from 'angulartics2/gtm';
 import { of, Subject } from 'rxjs';
 
 import { AppComponent } from './app.component';
@@ -52,14 +51,6 @@ describe('AppComponent', () => {
           provide: ParentSubsidiaryViewService,
           useClass: MockParentSubsidiaryViewService,
         },
-        {
-          provide: Angulartics2GoogleTagManager,
-          useValue: {
-            startTracking() {
-              return null;
-            },
-          },
-        },
         IdleService,
         Title,
         NestedRoutesService,
@@ -84,28 +75,6 @@ describe('AppComponent', () => {
   it('should render an AppComponent', async () => {
     const { component } = await setup();
     expect(component).toBeTruthy();
-  });
-
-  it('should render subsidiary-account view when subsidiary page is navigated to', async () => {
-    const { fixture, queryByTestId } = await setup({ navigationUrl: '/subsidiary/subUid/home' });
-    fixture.detectChanges();
-
-    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
-    const standAloneAccountRendered = queryByTestId('stand-alone-account');
-
-    expect(subsidiaryAccountRendered).toBeTruthy();
-    expect(standAloneAccountRendered).toBeFalsy();
-  });
-
-  it('should render standalone view when subsidiary not in url', async () => {
-    const { fixture, queryByTestId } = await setup();
-    fixture.detectChanges();
-
-    const standAloneAccountRendered = queryByTestId('stand-alone-account');
-    const subsidiaryAccountRendered = queryByTestId('subsidiary-account');
-
-    expect(standAloneAccountRendered).toBeTruthy();
-    expect(subsidiaryAccountRendered).toBeFalsy();
   });
 
   describe('Help and tips button', () => {

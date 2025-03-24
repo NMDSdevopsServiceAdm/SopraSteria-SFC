@@ -130,6 +130,8 @@ export class ConfirmAccountDetailsComponent extends ConfirmAccountDetailsDirecti
   private _onError(error) {
     if (error.status === 403 || error.status === 404) {
       this.router.navigate(['/problem-with-the-service']);
+    } else if (error.status === 401 && error?.error?.message === 'Activation link expired') {
+      this.router.navigate(['/activate-account', '/expired-activation-link']);
     } else {
       this.onError(error);
     }

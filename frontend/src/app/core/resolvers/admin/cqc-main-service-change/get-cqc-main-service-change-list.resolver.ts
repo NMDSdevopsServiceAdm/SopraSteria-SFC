@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve, Router } from '@angular/router';
+import { ActivatedRouteSnapshot, Router } from '@angular/router';
 import { CqcStatusChangeService } from '@core/services/cqc-status-change.service';
 import { EMPTY, Observable } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class GetCQCStatusChangeResolver implements Resolve<any> {
+export class GetCQCStatusChangeResolver  {
   constructor(private router: Router, private cqcStatusChangeService: CqcStatusChangeService) {}
 
   resolve(route: ActivatedRouteSnapshot): Observable<any[]> {

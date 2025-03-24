@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterState, RouterStateSnapshot } from '@angular/router';
 
 @Injectable()
 export class MockRouter extends Router {
@@ -15,3 +15,11 @@ export class MockRouter extends Router {
     };
   }
 }
+
+export const setUpRouterState = (url: string, router: Router) => {
+  const mockRouterState: Partial<RouterState> = {
+    snapshot: { url, root: { url: [] } } as RouterStateSnapshot,
+  };
+
+  return spyOnProperty(router, 'routerState', 'get').and.returnValue(mockRouterState as RouterState);
+};

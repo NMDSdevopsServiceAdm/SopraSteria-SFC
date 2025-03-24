@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Router, RouterEvent, NavigationEnd } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { filter } from 'rxjs/operators';
 
 @Injectable({
@@ -14,17 +14,15 @@ export class PreviousRouteService {
     this.currentUrl = this.router.url;
     this.previousUrl = null;
 
-    this.router.events
-      .pipe(filter((event: RouterEvent) => event instanceof NavigationEnd))
-      .subscribe((event: NavigationEnd) => {
-        this.previousUrl = this.currentUrl;
+    this.router.events.pipe(filter((event) => event instanceof NavigationEnd)).subscribe((event: NavigationEnd) => {
+      this.previousUrl = this.currentUrl;
 
-        if (this.previousUrl.includes('dashboard')) {
-          this.previousUrl = this.lastSelectedTab;
-        }
+      if (this.previousUrl.includes('dashboard')) {
+        this.previousUrl = this.lastSelectedTab;
+      }
 
-        this.currentUrl = event.urlAfterRedirects;
-      });
+      this.currentUrl = event.urlAfterRedirects;
+    });
   }
 
   public setLastSelectedTab(tab: string) {

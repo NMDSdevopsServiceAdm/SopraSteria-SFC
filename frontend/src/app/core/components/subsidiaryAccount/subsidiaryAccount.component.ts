@@ -3,7 +3,7 @@ import { Establishment } from '@core/model/establishment.model';
 import { BenchmarksServiceBase } from '@core/services/benchmarks-base.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
-import { TabsService } from '@core/services/tabs.service';
+import { Tab, TabsService } from '@core/services/tabs.service';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -20,7 +20,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
   public canViewListOfUsers: boolean;
   public canViewListOfWorkers: boolean;
   public canViewBenchmarks: boolean;
-  public tabs: { title: string; slug: string; active: boolean }[];
+  public tabs: Tab[];
   public parentWorkplaceName: string;
   public subId: number;
   public subUid: string;
@@ -81,7 +81,7 @@ export class SubsidiaryAccountComponent implements OnInit, OnDestroy {
     const tabs = [this.tabsService.homeTab];
     this.canViewEstablishment && tabs.push(this.tabsService.workplaceTab);
     this.canViewListOfWorkers && tabs.push(this.tabsService.staffRecordsTab, this.tabsService.tAndQTab);
-    tabs.push(this.tabsService.benchmarksTab, this.tabsService.workplaceUsers);
+    tabs.push(this.tabsService.benchmarksTab, this.tabsService.workplaceUsersTab);
 
     this.tabs = tabs;
   }
