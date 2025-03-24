@@ -4,6 +4,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 2em;
 
   button {
     align-self: flex-end;
@@ -16,26 +17,21 @@
   }
 }
 
-.asc-grid-column-three-fifth {
-  box-sizing: border-box;
-  padding: 0 15px;
+.asc-grid-row {
+  display: grid;
+  grid-template-columns: 1fr 125px 145px;
+  gap: 20px;
+  align-items: baseline;
+  justify-items: start;
 
-  width: 60%;
-  float: left;
-}
-
-.asc-grid-column-one-fifth {
-  box-sizing: border-box;
-  padding: 0 15px;
-
-  width: 20%;
-  float: left;
+  margin: 0.5em 0;
 }
 
 .asc-total-number-tile {
   background-color: govuk-colour('light-grey');
   width: 290px;
   height: 110px;
+  margin: 1em 0;
 
   &--wrapper {
     padding: 1em;
