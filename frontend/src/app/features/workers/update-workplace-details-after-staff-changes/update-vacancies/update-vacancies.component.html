@@ -56,7 +56,7 @@
                   [attr.data-testid]="'remove-button-' + jobRole.title"
                   type="button"
                   class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
-                  (click)="removeJobRoleInput(index)"
+                  (click)="removeJobRole(index)"
                 >
                   Remove
                   <span class="govuk-visually-hidden">{{ jobRole.title }}</span>
@@ -85,6 +85,7 @@
                 name="startersLeaversVacanciesKnown"
                 type="radio"
                 [value]="option.value"
+                (click)="removeAllSelectedJobRoles()"
               />
               <label class="govuk-label govuk-radios__label" for="startersLeaversVacanciesKnown-{{ i }}">
                 {{ option.label }}

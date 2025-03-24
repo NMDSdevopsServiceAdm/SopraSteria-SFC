@@ -271,5 +271,35 @@ fdescribe('UpdateVacanciesComponent', () => {
         expect(totalNumber.textContent).toEqual('0');
       });
     });
+
+    describe('radio buttons for "No" and "Do not know"', () => {
+      const radioButtonLabels = {
+        No: 'There are no current staff vacancies',
+        'Do not know': 'I do not know if there are any current staff vacancies',
+      };
+
+      Object.entries(radioButtonLabels).forEach(([option, label]) => {
+        it(`should remove all selected job roles when user clicked the radio button for "${option}"`, async () => {
+          const mockWorkplace = establishmentBuilder({
+            overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+          });
+          const { fixture, queryByText, queryByLabelText, getByLabelText, getByTestId } = await setup({
+            workplace: mockWorkplace,
+          });
+
+          userEvent.click(getByLabelText(label));
+
+          fixture.detectChanges();
+
+          expect(queryByText('Registered nurse')).toBeFalsy();
+          expect(queryByLabelText('Registered nurse')).toBeFalsy();
+
+          expect(queryByText('Social worker')).toBeFalsy();
+          expect(queryByLabelText('Social worker')).toBeFalsy();
+
+          expect(getByTestId('total-number').textContent).toEqual('0');
+        });
+      });
+    });
   });
 });
