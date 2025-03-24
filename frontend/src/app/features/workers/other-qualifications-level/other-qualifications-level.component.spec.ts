@@ -3,7 +3,9 @@ import { getTestBed } from '@angular/core/testing';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
+import { AlertService } from '@core/services/alert.service';
 import { QualificationService } from '@core/services/qualification.service';
+import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
 import {
@@ -49,6 +51,8 @@ describe('OtherQualificationsLevelComponent', () => {
             provide: QualificationService,
             useClass: MockQualificationService,
           },
+          AlertService,
+          WindowRef,
         ],
       },
     );
@@ -56,8 +60,10 @@ describe('OtherQualificationsLevelComponent', () => {
 
     const component = fixture.componentInstance;
     const router = injector.inject(Router) as Router;
-
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
+
+    const alertService = injector.inject(AlertService) as AlertService;
+    const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
     return {
       component,
@@ -68,6 +74,7 @@ describe('OtherQualificationsLevelComponent', () => {
       queryByTestId,
       getByLabelText,
       getByTestId,
+      alertSpy,
     };
   }
 
@@ -234,6 +241,35 @@ describe('OtherQualificationsLevelComponent', () => {
       fireEvent.click(skipButton);
 
       expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+    });
+  });
+
+  describe('Displaying Staff record added banner', () => {
+    it('should add Staff record added alert when submitting from flow', async () => {
+      const { getByText, getByLabelText, alertSpy } = await setup(false);
+
+      const select = getByLabelText('Qualification level', { exact: false });
+      fireEvent.change(select, { target: { value: '1' } });
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(alertSpy).toHaveBeenCalledWith({
+        type: 'success',
+        message: 'Staff record saved',
+      });
+    });
+
+    it('should not add Staff record added alert when user submits but not in flow', async () => {
+      const { getByText, getByLabelText, alertSpy } = await setup();
+
+      const select = getByLabelText('Qualification level', { exact: false });
+      fireEvent.change(select, { target: { value: '1' } });
+
+      const saveButton = getByText('Save and return');
+      fireEvent.click(saveButton);
+
+      expect(alertSpy).not.toHaveBeenCalled();
     });
   });
 });

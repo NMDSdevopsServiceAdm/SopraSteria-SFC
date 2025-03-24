@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UntypedFormBuilder } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QualificationLevel } from '@core/model/qualification.model';
+import { AlertService } from '@core/services/alert.service';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -27,6 +28,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     protected workerService: WorkerService,
     protected establishmentService: EstablishmentService,
     private qualificationService: QualificationService,
+    private alertService: AlertService,
   ) {
     super(formBuilder, router, route, backLinkService, errorSummaryService, workerService, establishmentService);
 
@@ -67,5 +69,14 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
       },
     };
     return props;
+  }
+
+  addAlert(): void {
+    if (this.insideFlow) {
+      this.alertService.addAlert({
+        type: 'success',
+        message: 'Staff record saved',
+      });
+    }
   }
 }
