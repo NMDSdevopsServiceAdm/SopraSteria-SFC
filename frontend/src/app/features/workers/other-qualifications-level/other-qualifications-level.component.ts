@@ -71,7 +71,9 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
     return props;
   }
 
-  addAlert(): void {
+  onSubmit(): void {
+    super.onSubmit();
+
     if (this.insideFlow) {
       this.workerService.hasCompletedStaffRecordFlow = true;
       this.alertService.addAlert({

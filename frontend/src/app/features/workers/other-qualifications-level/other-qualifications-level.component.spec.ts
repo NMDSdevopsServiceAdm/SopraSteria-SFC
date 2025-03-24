@@ -7,7 +7,10 @@ import { QualificationService } from '@core/services/qualification.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
+import {
+  MockWorkerServiceWithoutReturnUrl,
+  MockWorkerServiceWithUpdateWorker,
+} from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -259,6 +262,27 @@ describe('OtherQualificationsLevelComponent', () => {
       fireEvent.click(saveButton);
 
       expect(hasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
+    });
+
+    ['Skip this question', 'View this staff record'].forEach((link) => {
+      it(`should add Staff record added alert when '${link}' is clicked`, async () => {
+        const { getByText, alertSpy } = await setup(false);
+
+        fireEvent.click(getByText(link));
+
+        expect(alertSpy).toHaveBeenCalledWith({
+          type: 'success',
+          message: 'Staff record saved',
+        });
+      });
+
+      it(`should set hasCompletedStaffRecordFlow in worker service when '${link}' is clicked`, async () => {
+        const { getByText, hasCompletedStaffRecordFlowSpy } = await setup(false);
+
+        fireEvent.click(getByText(link));
+
+        expect(hasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
+      });
     });
 
     it('should not add Staff record added alert when user submits but not in flow', async () => {
