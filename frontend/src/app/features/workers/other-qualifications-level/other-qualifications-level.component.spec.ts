@@ -7,10 +7,7 @@ import { QualificationService } from '@core/services/qualification.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
 import { MockQualificationService } from '@core/test-utils/MockQualificationsService';
-import {
-  MockWorkerServiceWithoutReturnUrl,
-  MockWorkerServiceWithUpdateWorker,
-} from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithoutReturnUrl, MockWorkerServiceWithUpdateWorker } from '@core/test-utils/MockWorkerService';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
 
@@ -60,12 +57,16 @@ describe('OtherQualificationsLevelComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const hasCompletedStaffRecordFlowSpy = spyOnProperty(workerService, 'hasCompletedStaffRecordFlow', 'set');
+
     return {
       ...setupTools,
       component: setupTools.fixture.componentInstance,
       router,
       routerSpy,
       alertSpy,
+      hasCompletedStaffRecordFlowSpy,
     };
   }
 
@@ -232,7 +233,7 @@ describe('OtherQualificationsLevelComponent', () => {
     });
   });
 
-  describe('Displaying Staff record added banner', () => {
+  describe('Completing Add details to staff record flow', () => {
     it('should add Staff record added alert when submitting from flow', async () => {
       const { getByText, getByLabelText, alertSpy } = await setup(false);
 
@@ -246,6 +247,18 @@ describe('OtherQualificationsLevelComponent', () => {
         type: 'success',
         message: 'Staff record saved',
       });
+    });
+
+    it('should set hasCompletedStaffRecordFlow in worker service when submitting in flow', async () => {
+      const { getByText, getByLabelText, hasCompletedStaffRecordFlowSpy } = await setup(false);
+
+      const select = getByLabelText('Qualification level', { exact: false });
+      fireEvent.change(select, { target: { value: '1' } });
+
+      const saveButton = getByText('Save');
+      fireEvent.click(saveButton);
+
+      expect(hasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
     });
 
     it('should not add Staff record added alert when user submits but not in flow', async () => {

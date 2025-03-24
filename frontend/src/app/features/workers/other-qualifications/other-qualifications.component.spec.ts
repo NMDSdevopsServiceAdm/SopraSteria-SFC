@@ -78,6 +78,9 @@ describe('OtherQualificationsComponent', () => {
     const alertService = injector.inject(AlertService) as AlertService;
     const alertSpy = spyOn(alertService, 'addAlert').and.stub();
 
+    const workerService = injector.inject(WorkerService) as WorkerService;
+    const hasCompletedStaffRecordFlowSpy = spyOnProperty(workerService, 'hasCompletedStaffRecordFlow', 'set');
+
     return {
       component,
       fixture,
@@ -87,6 +90,7 @@ describe('OtherQualificationsComponent', () => {
       getByTestId,
       queryByTestId,
       alertSpy,
+      hasCompletedStaffRecordFlowSpy,
     };
   }
 
@@ -174,6 +178,17 @@ describe('OtherQualificationsComponent', () => {
             type: 'success',
             message: 'Staff record saved',
           });
+        });
+
+        it(`should set hasCompletedStaffRecordFlow in worker service when '${answer}' is selected`, async () => {
+          const { getByText, hasCompletedStaffRecordFlowSpy } = await setup(true, 'Yes');
+
+          const button = getByText(answer);
+          fireEvent.click(button);
+
+          fireEvent.click(getByText('Save'));
+
+          expect(hasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
         });
       });
     });

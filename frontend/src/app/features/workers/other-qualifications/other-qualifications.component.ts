@@ -79,6 +79,7 @@ export class OtherQualificationsComponent extends QuestionComponent {
   addAlert(): void {
     const { otherQualification } = this.form.value;
     if (otherQualification !== 'Yes' && this.insideFlow) {
+      this.workerService.hasCompletedStaffRecordFlow = true;
       this.alertService.addAlert({
         type: 'success',
         message: 'Staff record saved',

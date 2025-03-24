@@ -73,6 +73,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
 
   addAlert(): void {
     if (this.insideFlow) {
+      this.workerService.hasCompletedStaffRecordFlow = true;
       this.alertService.addAlert({
         type: 'success',
         message: 'Staff record saved',
