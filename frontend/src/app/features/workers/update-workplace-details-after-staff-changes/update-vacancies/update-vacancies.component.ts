@@ -4,7 +4,7 @@ import { ChangeDetectorRef, Component, ElementRef, QueryList, ViewChild, ViewChi
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
-import { jobOptionsEnum, Vacancy } from '@core/model/establishment.model';
+import { jobOptionsEnum, UpdateJobsRequest, Vacancy } from '@core/model/establishment.model';
 import { BackLinkService } from '@core/services/backLink.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
@@ -54,9 +54,9 @@ export class UpdateVacanciesComponent {
 
   ngOnInit() {
     this.setupTexts();
-    this.prefill();
-
     this.setupForm();
+
+    this.prefill();
     this.setupFormErrorsMap();
     this.setBackLink();
   }
@@ -75,9 +75,8 @@ export class UpdateVacanciesComponent {
   public setupForm() {
     this.form = this.formBuilder.group({
       jobRoleNumbers: this.formBuilder.array([]),
+      startersLeaversVacanciesKnown: this.formBuilder.control(null),
     });
-
-    this.selectedJobRoles.forEach((jobRole) => this.createJobRoleFormControl(jobRole));
   }
 
   private createJobRoleFormControl = (jobRole: Vacancy) => {
@@ -106,14 +105,25 @@ export class UpdateVacanciesComponent {
 
   public prefill() {
     const vacanciesFromJobRoleSelectionPage = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
-    if (vacanciesFromJobRoleSelectionPage?.length) {
+
+    if (vacanciesFromJobRoleSelectionPage === null) {
+      this.prefillFromBackendData();
+    } else {
       this.selectedJobRoles = vacanciesFromJobRoleSelectionPage;
-      return;
     }
 
+    this.selectedJobRoles.forEach((jobRole) => this.createJobRoleFormControl(jobRole));
+  }
+
+  private prefillFromBackendData() {
     const vacanciesFromBackend = this.establishmentService.establishment.vacancies;
     if (Array.isArray(vacanciesFromBackend)) {
       this.selectedJobRoles = vacanciesFromBackend;
+      return;
+    }
+
+    if ([jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW].includes(vacanciesFromBackend as jobOptionsEnum)) {
+      this.form.patchValue({ startersLeaversVacanciesKnown: vacanciesFromBackend });
     }
   }
 
@@ -152,9 +162,55 @@ export class UpdateVacanciesComponent {
     this.cd.detectChanges();
   }
 
-  public onSubmit() {}
+  protected generateUpdateProps(): UpdateJobsRequest {
+    const userSelectedNoneOrDoNotKnow = this.form.get('startersLeaversVacanciesKnown').value !== null;
+    if (userSelectedNoneOrDoNotKnow) {
+      return { vacancies: this.form.get('startersLeaversVacanciesKnown').value };
+    }
+
+    const updatedVacancies = this.selectedJobRoles.map((job, index) => {
+      const fieldsToUpdate: Vacancy = {
+        jobId: Number(job.jobId),
+        total: parseInt(this.jobRoleNumbers.value[index]),
+      };
+      return fieldsToUpdate;
+    });
+
+    return { vacancies: updatedVacancies };
+  }
+
+  public onSubmit() {
+    this.submitted = true;
+
+    const establishmentUid = this.establishmentService.establishment.uid;
+    const updateProps = this.generateUpdateProps();
+
+    this.establishmentService.updateJobs(establishmentUid, updateProps).subscribe(
+      () => {
+        this.onSuccess();
+      },
+      (error) => {
+        this.onError(error);
+      },
+    );
+  }
+
+  private onSuccess() {
+    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = null;
+    this.returnToPreviousPage();
+  }
+
+  private onError(error: Error) {
+    console.log(error);
+  }
+
+  private returnToPreviousPage() {
+    this.router.navigate(['../'], { relativeTo: this.route });
+  }
 
   public onCancel(event: Event) {
     event.preventDefault();
+    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = null;
+    this.returnToPreviousPage();
   }
 }

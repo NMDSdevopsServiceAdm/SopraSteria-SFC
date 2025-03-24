@@ -86,6 +86,7 @@
                 type="radio"
                 [value]="option.value"
                 (click)="removeAllSelectedJobRoles()"
+                [formControlName]="'startersLeaversVacanciesKnown'"
               />
               <label class="govuk-label govuk-radios__label" for="startersLeaversVacanciesKnown-{{ i }}">
                 {{ option.label }}
