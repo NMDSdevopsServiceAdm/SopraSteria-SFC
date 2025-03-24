@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, Resolve } from '@angular/router';
+import { ActivatedRouteSnapshot } from '@angular/router';
 import { ParentSubsidiaryViewService } from '@shared/services/parent-subsidiary-view.service';
 import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class SubsidiaryResolver implements Resolve<any> {
+export class SubsidiaryResolver  {
   constructor(private parentSubsidiaryViewService: ParentSubsidiaryViewService) {}
 
   resolve(route: ActivatedRouteSnapshot) {

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
 import { PermissionType } from '@core/model/permissions.model';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
@@ -9,7 +9,7 @@ import { isAdminRole } from '@core/utils/check-role-util';
 @Injectable({
   providedIn: 'root',
 })
-export class CheckPermissionsGuard implements CanActivate {
+export class CheckPermissionsGuard  {
   constructor(
     private permissionsService: PermissionsService,
     private establishmentService: EstablishmentService,

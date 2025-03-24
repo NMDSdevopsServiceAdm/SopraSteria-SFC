@@ -127,8 +127,20 @@ class WorkplaceCSVValidator {
   static get NAME_ERROR() {
     return 1030;
   }
-  static get ADDRESS_ERROR() {
+  static get ADDRESS1_ERROR() {
     return 1040;
+  }
+  static get ADDRESS2_ERROR() {
+    return 1045;
+  }
+  static get ADDRESS3_ERROR() {
+    return 1050;
+  }
+  static get POSTTOWN_ERROR() {
+    return 1055;
+  }
+  static get POSTCODE_ERROR() {
+    return 1060;
   }
   static get ESTABLISHMENT_TYPE_ERROR() {
     return 1070;
@@ -635,7 +647,7 @@ class WorkplaceCSVValidator {
     if (!myAddress1 || myAddress1.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS1_ERROR,
         errType: 'ADDRESS_ERROR',
         error: 'ADDRESS1 is blank',
         column: 'ADDRESS1',
@@ -644,7 +656,7 @@ class WorkplaceCSVValidator {
     } else if (myAddress1.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS1_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `ADDRESS1 is longer than ${MAX_LENGTH} characters`,
         source: myAddress1,
@@ -656,7 +668,7 @@ class WorkplaceCSVValidator {
     if (myAddress2 && myAddress2.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS2_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `ADDRESS2 is longer than ${MAX_LENGTH} characters`,
         source: myAddress2,
@@ -668,7 +680,7 @@ class WorkplaceCSVValidator {
     if (myAddress3 && myAddress3.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.ADDRESS3_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `ADDRESS3 is longer than ${MAX_LENGTH} characters`,
         source: myAddress3,
@@ -680,7 +692,7 @@ class WorkplaceCSVValidator {
     if (myTown && myTown.length > MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.POSTTOWN_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `POSTTOWN is longer than ${MAX_LENGTH} characters`,
         source: myTown,
@@ -693,7 +705,7 @@ class WorkplaceCSVValidator {
     if (!myPostcode || myPostcode.length === 0) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.POSTCODE_ERROR,
         errType: 'ADDRESS_ERROR',
         error: 'POSTCODE has not been supplied',
         source: myPostcode,
@@ -703,7 +715,7 @@ class WorkplaceCSVValidator {
     } else if (myPostcode.length > POSTCODE_MAX_LENGTH) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.POSTCODE_ERROR,
         errType: 'ADDRESS_ERROR',
         error: `POSTCODE is longer than ${POSTCODE_MAX_LENGTH} characters`,
         source: myPostcode,
@@ -713,7 +725,7 @@ class WorkplaceCSVValidator {
     } else if (sanitisePostcode(myPostcode) === null) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.POSTCODE_ERROR,
         errType: 'ADDRESS_ERROR',
         error: 'POSTCODE is incorrectly formatted',
         source: myPostcode,
@@ -723,7 +735,7 @@ class WorkplaceCSVValidator {
     } else if (this._status === 'NEW' && !postcodeExists.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        errCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        errCode: WorkplaceCSVValidator.POSTCODE_ERROR,
         errType: 'ADDRESS_ERROR',
         error: 'The POSTCODE for this workplace cannot be found in our database and must be registered manually.',
         source: myPostcode,
@@ -734,7 +746,7 @@ class WorkplaceCSVValidator {
     } else if (this._status === 'UPDATE' && !postcodeExists.length) {
       localValidationErrors.push({
         lineNumber: this._lineNumber,
-        warnCode: WorkplaceCSVValidator.ADDRESS_ERROR,
+        warnCode: WorkplaceCSVValidator.POSTCODE_ERROR,
         warnType: 'ADDRESS_ERROR',
         warning: 'The POSTCODE cannot be found in our database and will be ignored.',
         source: myPostcode,

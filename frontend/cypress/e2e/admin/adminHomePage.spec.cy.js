@@ -2,10 +2,6 @@
 /// <reference types="cypress" />
 
 describe('Admin home page', () => {
-  before(() => {
-    cy.wait(2000);
-  });
-
   beforeEach(() => {
     cy.loginAsAdmin();
   });

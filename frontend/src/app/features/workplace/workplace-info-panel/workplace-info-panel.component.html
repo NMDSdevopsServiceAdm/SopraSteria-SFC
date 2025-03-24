@@ -1,8 +1,8 @@
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-one-third">
+  <div class="govuk-grid-column-one-quarter">
     <p>
       <ng-container *ngIf="canViewEstablishment; else noPermission">
-        <a href="#" (click)="setEmployerType($event)">
+        <a href="#" class="govuk-link" (click)="setEmployerType($event)">
           {{ workplace.name }}
         </a>
       </ng-container>
@@ -10,69 +10,71 @@
         {{ workplace.name }}
       </ng-template>
     </p>
-    <p class="govuk-!-margin-bottom-1"><strong>Last updated</strong></p>
+  </div>
+
+  <div class="govuk-grid-column-three-quarters">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-two-thirds">
+        <p>{{ workplace.mainService }}</p>
+      </div>
+      <div class="govuk-grid-column-one-third govuk-!-text-align-right">
+        <ng-container *ngIf="isAdminUser() && isLoggedIn()">
+          <a (click)="moveWorkplaceAdmin($event)" href="#" class="govuk-link">Move workplace</a>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="govuk-grid-row govuk-!-margin-top-1">
+  <div class="govuk-grid-column-one-quarter">
+    <p class="govuk-!-margin-bottom-1"><strong>Last update</strong></p>
     <p class="govuk-!-margin-bottom-0">{{ workplace.updated | date: 'd MMMM y' }}</p>
   </div>
 
-  <div class="govuk-grid-column-two-thirds">
+  <div class="govuk-grid-column-three-quarters">
     <div class="govuk-grid-row">
-      <div class="govuk-grid-column-two-thirds">
-        <p>
-          {{ workplace.mainService }}
-        </p>
-      </div>
-      <div class="govuk-grid-column-one-third" *ngIf="isAdminUser() && isLoggedIn()">
-        <span class="govuk-util__float-right">
-          <a (click)="moveWorkplaceAdmin($event)" href="#">Move workplace</a>
-        </span>
-      </div>
-    </div>
-
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-one-quarter">
-        <p class="govuk-!-margin-bottom-1">
-          <strong>Data owner</strong>
-        </p>
-        <p class="govuk-!-margin-bottom-0">
-          {{ workplace.dataOwner }}
-        </p>
+      <div class="govuk-grid-column-one-quarter" style="width: 20%">
+        <p class="govuk-!-margin-bottom-1"><strong>Data owner</strong></p>
+        <p class="govuk-!-margin-bottom-0">{{ workplace.dataOwner }}</p>
       </div>
 
-      <div class="govuk-grid-column-three-quarters">
+      <div class="govuk-grid-column-one-half" style="width: 45%">
         <p class="govuk-!-margin-bottom-1">
           <strong>{{ workplace.dataOwner | workplacePermissionsBearer }} view only permissions</strong>
         </p>
-        <p class="govuk-!-margin-bottom-0">
-          {{ workplace.dataPermissions | dataViewPermissions }}
-          <span class="govuk-util__float-right" *ngIf="canChangePermissionsForSubsidiary">
-            <ng-container *ngIf="workplace.dataOwnershipRequested; else dataPermissions">
-              <a (click)="cancelChangeDataOwnerRequest($event)" href="#">Data request pending</a>
+        <p class="govuk-!-margin-bottom-0">{{ workplace.dataPermissions | dataViewPermissions }}</p>
+      </div>
+
+      <div class="govuk-grid-column-one-quarter govuk-!-text-align-right govuk-!-padding-top-6" style="width: 35%">
+        <ng-container *ngIf="canChangePermissionsForSubsidiary">
+          <ng-container *ngIf="workplace.dataOwnershipRequested; else dataPermissions">
+            <a (click)="cancelChangeDataOwnerRequest($event)" href="#" class="govuk-link">Data request pending</a>
+          </ng-container>
+          <ng-template #dataPermissions>
+            <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
+              <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
+                <a (click)="setDataPermissions($event)" href="#" class="govuk-link">Change data permissions</a>
+              </ng-container>
+              <ng-template #notParent>
+                <a (click)="onChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
+              </ng-template>
             </ng-container>
-            <ng-template #dataPermissions>
-              <ng-container *ngIf="workplace.dataOwner === dataOwner.Parent; else workplaceIsDataOwner">
-                <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                  <a (click)="setDataPermissions($event)" href="#">Set data permissions</a>
+            <ng-template #workplaceIsDataOwner>
+              <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
+                <ng-container *ngIf="newHomeDesignParentFlag; else dialogChangeDataOwner">
+                  <a (click)="navigateToChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
                 </ng-container>
-                <ng-template #notParent>
-                  <a (click)="onChangeDataOwner($event)" href="#">Change data owner</a>
+                <ng-template #dialogChangeDataOwner>
+                  <a (click)="onChangeDataOwner($event)" href="#" class="govuk-link">Change data owner</a>
                 </ng-template>
               </ng-container>
-              <ng-template #workplaceIsDataOwner>
-                <ng-container *ngIf="primaryWorkplace.isParent; else notParent">
-                  <ng-container *ngIf="newHomeDesignParentFlag; else dialogChangeDataOwner">
-                    <a class="govuk-link" (click)="navigateToChangeDataOwner($event)" href="#">Change data owner</a>
-                  </ng-container>
-                  <ng-template #dialogChangeDataOwner
-                    ><a (click)="onChangeDataOwner($event)" href="#">Change data owner</a></ng-template
-                  >
-                </ng-container>
-                <ng-template #notParent>
-                  <a href="#">Data permissions</a>
-                </ng-template>
+              <ng-template #notParent>
+                <a href="#" class="govuk-link">Data permissions</a>
               </ng-template>
             </ng-template>
-          </span>
-        </p>
+          </ng-template>
+        </ng-container>
       </div>
     </div>
   </div>

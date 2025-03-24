@@ -87,9 +87,10 @@ describe('WdfOverviewComponent', () => {
 
       const workplaceName = component.workplace.name;
       const nmdsId = component.workplace.nmdsId;
-      const expectedTitleCaption = `${workplaceName} (Workplace ID: ${nmdsId})`;
+      const workplaceIdCaption = `(Workplace ID: ${nmdsId})`;
 
-      expect(getByText(expectedTitleCaption)).toBeTruthy();
+      expect(getByText(workplaceName, { selector: '.govuk-caption-xl' })).toBeTruthy();
+      expect(getByText(workplaceIdCaption)).toBeTruthy();
     });
 
     it('should display the page with title the correct timeframe ', async () => {

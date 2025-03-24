@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { Resolve } from '@angular/router';
+
 import { EstablishmentService } from '@core/services/establishment.service';
 import { of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
 @Injectable()
-export class GetMissingCqcLocationsResolver implements Resolve<any> {
+export class GetMissingCqcLocationsResolver  {
   constructor(private establishmentService: EstablishmentService) {}
 
   resolve() {

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { RegistrationService } from '@core/services/registration.service';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RegisterGuard implements CanActivate {
+export class RegisterGuard  {
   private registrationInProgress: boolean;
 
   constructor(private registrationService: RegistrationService, private router: Router) {}

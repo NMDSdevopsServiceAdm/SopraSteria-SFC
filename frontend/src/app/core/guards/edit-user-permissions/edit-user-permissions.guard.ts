@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Roles } from '@core/model/roles.enum';
 import { UserService } from '@core/services/user.service';
 import { Observable, of } from 'rxjs';
@@ -8,7 +8,7 @@ import { catchError, map } from 'rxjs/operators';
 @Injectable({
   providedIn: 'root',
 })
-export class EditUserPermissionsGuard implements CanActivate {
+export class EditUserPermissionsGuard  {
   private workplaceUid: string;
   private userUid: string;
 

@@ -209,41 +209,47 @@ export class MockEstablishmentService extends EstablishmentService {
     return '98a83eef-e1e1-49f3-89c5-b1287a3cc8dd';
   }
 
+  public _primaryWorkplace: Establishment = {
+    address: '',
+    capacities: [],
+    created: undefined,
+    dataOwner: undefined,
+    dataOwnershipRequested: '',
+    dataPermissions: undefined,
+    employerType: { value: 'Private Sector' },
+    id: 0,
+    isRegulated: false,
+    isParent: false,
+    leavers: undefined,
+    localAuthorities: [],
+    mainService: { name: 'Care', id: 123, isCQC: true },
+    name: 'Test Workplace',
+    nmdsId: 'AB12345',
+    numberOfStaff: 0,
+    otherServices: { value: null, services: [] },
+    postcode: 'AB1 2CD',
+    primaryAuthority: undefined,
+    serviceUsers: [],
+    shareWith: this.shareWith,
+    starters: undefined,
+    totalLeavers: 0,
+    totalStarters: 0,
+    totalVacancies: 0,
+    totalWorkers: 0,
+    uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
+    updated: undefined,
+    updatedBy: '',
+    vacancies: undefined,
+    locationId: '1-11111111',
+    provId: '1-21232433',
+  };
+
   get primaryWorkplace(): Establishment {
-    return {
-      address: '',
-      capacities: [],
-      created: undefined,
-      dataOwner: undefined,
-      dataOwnershipRequested: '',
-      dataPermissions: undefined,
-      employerType: { value: 'Private Sector' },
-      id: 0,
-      isRegulated: false,
-      isParent: false,
-      leavers: undefined,
-      localAuthorities: [],
-      mainService: { name: 'Care', id: 123, isCQC: true },
-      name: 'Test Workplace',
-      nmdsId: 'AB12345',
-      numberOfStaff: 0,
-      otherServices: { value: null, services: [] },
-      postcode: 'AB1 2CD',
-      primaryAuthority: undefined,
-      serviceUsers: [],
-      shareWith: this.shareWith,
-      starters: undefined,
-      totalLeavers: 0,
-      totalStarters: 0,
-      totalVacancies: 0,
-      totalWorkers: 0,
-      uid: '98a83eef-e1e1-49f3-89c5-b1287a3cc8de',
-      updated: undefined,
-      updatedBy: '',
-      vacancies: undefined,
-      locationId: '1-11111111',
-      provId: '1-21232433',
-    };
+    return this._primaryWorkplace;
+  }
+
+  set primaryWorkplace(value: Establishment) {
+    this._primaryWorkplace = value;
   }
 
   public updateTypeOfEmployer(establishmentId, data: EmployerTypeRequest): Observable<any> {
@@ -432,5 +438,20 @@ export class MockEstablishmentServiceWithNoCapacities extends MockEstablishmentS
     return of({
       allServiceCapacities: [],
     });
+  }
+}
+
+@Injectable()
+export class MockEstablishmentServiceWithOverrides extends MockEstablishmentService {
+  public static factory(overrides: any = {}) {
+    return (httpClient: HttpClient) => {
+      const service = new MockEstablishmentService(httpClient);
+
+      Object.keys(overrides).forEach((overrideName) => {
+        service[overrideName] = overrides[overrideName];
+      });
+
+      return service;
+    };
   }
 }

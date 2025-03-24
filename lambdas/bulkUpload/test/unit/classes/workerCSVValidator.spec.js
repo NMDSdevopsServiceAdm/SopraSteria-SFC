@@ -370,6 +370,39 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
+    it('should emit an error if the country of birth is not valid', async () => {
+      const validator = new WorkerCsvValidator(
+        buildWorkerCsv({
+          overrides: {
+            MAINJOBROLE: '3',
+            COUNTRYOFBIRTH: 'z',
+            NATIONALITY: '862',
+            STATUS: 'NEW',
+          },
+        }),
+        2,
+        null,
+        mappings,
+      );
+
+      await validator.validate();
+      await validator.transform();
+
+      expect(validator._validationErrors).to.deep.equal([
+        {
+          worker: '3',
+          name: 'MARMA',
+          lineNumber: 2,
+          errCode: WorkerCsvValidator.COUNTRY_OF_BIRTH_ERROR,
+          errType: 'COUNTRY_OF_BIRTH_ERROR',
+          error: 'Country of Birth (COUNTRYOFBIRTH) must be an integer',
+          source: 'z',
+          column: 'COUNTRYOFBIRTH',
+        },
+      ]);
+      expect(validator._validationErrors.length).to.equal(1);
+    });
+
     const countryCodesToTest = [262, 418, 995];
     countryCodesToTest.forEach((countryCode) => {
       it('should validate for COUNTRYOFBIRTH ' + countryCode, async () => {
@@ -793,6 +826,165 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
       });
     });
 
+    describe('_validateZeroHourContract', () => {
+      it('should emit a warning if contract hours has been entered but there is no answer for zero contract hours', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 27.5,
+              ZEROHRCONT: null,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: WorkerCsvValidator.ZERO_HRCONT_WARNING,
+            warnType: 'ZERO_HRCONT_WARNING',
+            warning: 'You have entered contracted hours but have not said this worker is not on a zero hours contract',
+            source: null,
+            column: 'ZEROHRCONT',
+          },
+        ]);
+      });
+
+      it('should emit a warning if contract hours has been entered but there is no answer for zero contract hours', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 27.5,
+              ZEROHRCONT: 'zero',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.ZERO_HRCONT_ERROR,
+            errType: 'ZEROHRCONT_ERROR',
+            error: 'The code you have entered for ZEROHRCONT is incorrect',
+            source: 'zero',
+            column: 'ZEROHRCONT',
+          },
+        ]);
+      });
+
+      it('should emit an error if contract hours has been entered but zero contract hours is not know', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 27.5,
+              ZEROHRCONT: 999,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.ZERO_HRCONT_ERROR,
+            errType: 'ZEROHRCONT_ERROR',
+            error:
+              'The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks',
+            source: 999,
+            column: 'CONTHOURS/ZEROHRCONT',
+          },
+        ]);
+      });
+
+      it('should emit an error if contract hours has been entered but zero contract hours is "Yes"', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 27.5,
+              ZEROHRCONT: 1,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.ZERO_HRCONT_ERROR,
+            errType: 'ZEROHRCONT_ERROR',
+            error:
+              'The value entered for CONTHOURS in conjunction with the value for ZEROHRCONT fails our validation checks',
+            source: 1,
+            column: 'CONTHOURS/ZEROHRCONT',
+          },
+        ]);
+      });
+
+      it('should emit a warning if contract hours has been entered but zero contract hours is "No"', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              CONTHOURS: 0,
+              ZEROHRCONT: 2,
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validateZeroHourContract();
+        const validationErrors = validator._validationErrors;
+
+        expect(validator._validationErrors.length).to.equal(1);
+        expect(validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            warnCode: WorkerCsvValidator.ZERO_HRCONT_WARNING,
+            warnType: 'ZERO_HRCONT_WARNING',
+            warning: 'You have entered “0” in CONTHOURS but not entered “Yes” to the ZEROHRCONT question',
+            source: 2,
+            column: 'CONTHOURS/ZEROHRCONT',
+          },
+        ]);
+      });
+    });
+
     describe('_validationQualificationRecords', () => {
       it('should not emit a warning if the qualification year and ID are valid', async () => {
         const validator = new WorkerCsvValidator(
@@ -833,8 +1025,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_CODE_ERROR,
+            errType: 'QUAL_ACH01_CODE_ERROR',
             error: 'The code you have entered for (QUALACH01) is incorrect',
             source: 'qualification;2020',
             column: 'QUALACH01',
@@ -863,8 +1055,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            warnCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            warnType: 'QUAL_ACH01_ERROR',
+            warnCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            warnType: 'QUAL_ACH01_YEAR_ERROR',
             warning: 'Year achieved for QUALACH01 is blank',
             source: '314;',
             column: 'QUALACH01',
@@ -893,8 +1085,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
             error: 'The year in (QUALACH01) is invalid',
             source: '314;happy',
             column: 'QUALACH01',
@@ -923,8 +1115,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
             error: 'The year in (QUALACH01) is invalid',
             source: '314;happy',
             column: 'QUALACH01',
@@ -953,8 +1145,8 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
             error: 'The year in (QUALACH01) is invalid',
             source: '314;1900',
             column: 'QUALACH01',
@@ -983,10 +1175,91 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
             worker: '3',
             name: 'MARMA',
             lineNumber: 2,
-            errCode: WorkerCsvValidator.QUAL_ACH01_ERROR,
-            errType: 'QUAL_ACH01_ERROR',
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
             error: 'The year in (QUALACH01) is invalid',
             source: '314;5000',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit errors if the if the qualification year is in the future and the ID is unknown', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: '800;5000',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        await validator._transformQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(2);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: '800;5000',
+            column: 'QUALACH01',
+          },
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_CODE_ERROR,
+            errType: 'QUAL_ACH01_CODE_ERROR',
+            error: 'Qualification (QUALACH01): 800 is unknown',
+            source: '800;5000',
+            column: 'QUALACH01',
+          },
+        ]);
+      });
+
+      it('should emit errors if the if the qualification year is in the future and the ID is not a number', async () => {
+        const validator = new WorkerCsvValidator(
+          buildWorkerCsv({
+            overrides: {
+              QUALACH01: 'qualification;5000',
+            },
+          }),
+          2,
+          null,
+          mappings,
+        );
+
+        await validator._validationQualificationRecords();
+        const validationErrors = validator._validationErrors;
+
+        expect(validationErrors.length).to.equal(2);
+        expect(validator._validationErrors).to.deep.equal([
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_CODE_ERROR,
+            errType: 'QUAL_ACH01_CODE_ERROR',
+            error: 'The code you have entered for (QUALACH01) is incorrect',
+            source: 'qualification;5000',
+            column: 'QUALACH01',
+          },
+          {
+            worker: '3',
+            name: 'MARMA',
+            lineNumber: 2,
+            errCode: WorkerCsvValidator.QUAL_ACH01_YEAR_ERROR,
+            errType: 'QUAL_ACH01_YEAR_ERROR',
+            error: 'The year in (QUALACH01) is invalid',
+            source: 'qualification;5000',
             column: 'QUALACH01',
           },
         ]);
@@ -1498,5 +1771,53 @@ describe('/lambdas/bulkUpload/classes/workerCSVValidator', async () => {
         expect(validator._validationErrors.length).to.equal(1);
       });
     });
+  });
+
+  it('should remove duplicate error codes', async () => {
+    const validator = new WorkerCsvValidator(
+      buildWorkerCsv({
+        overrides: {
+          STATUS: 'NEW',
+          QUALACH01: 'qa;2020',
+          SALARYINT: 'z',
+        },
+      }),
+      2,
+      null,
+      mappings,
+    );
+
+    validator.validate();
+    validator.transform();
+
+    const validationErrors = await validator._validationErrors;
+    const uniqueValidationErrors = await validator.validationErrors;
+
+    expect(validationErrors.length).to.equal(4);
+    expect(uniqueValidationErrors.length).to.equal(2);
+    expect(uniqueValidationErrors).to.deep.equal([
+      {
+        origin: 'Workers',
+        worker: '3',
+        name: 'MARMA',
+        lineNumber: 2,
+        errCode: WorkerCsvValidator.SALARY_ERROR,
+        errType: 'SALARYINT_ERROR',
+        error: 'Salary Int (SALARYINT) must be an integer',
+        source: 'z',
+        column: 'SALARYINT',
+      },
+      {
+        origin: 'Workers',
+        worker: '3',
+        name: 'MARMA',
+        lineNumber: 2,
+        errCode: WorkerCsvValidator.QUAL_ACH01_CODE_ERROR,
+        errType: 'QUAL_ACH01_CODE_ERROR',
+        error: 'The code you have entered for (QUALACH01) is incorrect',
+        source: 'qa;2020',
+        column: 'QUALACH01',
+      },
+    ]);
   });
 });
