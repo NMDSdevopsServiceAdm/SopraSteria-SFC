@@ -98,28 +98,6 @@ export class UpdateVacanciesComponent {
     return this.form.get('jobRoleNumbers') as UntypedFormArray;
   }
 
-  public removeJobRoleInput = (jobRoleIndex: number) => {
-    if (jobRoleIndex < 0 || jobRoleIndex >= this.selectedJobRoles.length) {
-      return;
-    }
-
-    this.selectedJobRoles = this.selectedJobRoles.filter((_, index) => index !== jobRoleIndex);
-    this.jobRoleNumbers.removeAt(jobRoleIndex);
-  };
-
-  private updateSelectedJobRolesNumber = () => {
-    this.numberInputs.forEach((numberInput, index) => {
-      this.selectedJobRoles[index].total = numberInput.currentNumber;
-    });
-  };
-
-  public handleAddJobRole = () => {
-    this.updateSelectedJobRolesNumber();
-    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = this.selectedJobRoles;
-
-    this.router.navigate(['../update-vacancies-job-roles'], { relativeTo: this.route });
-  };
-
   public setupFormErrorsMap() {}
 
   public setBackLink() {
@@ -139,7 +117,35 @@ export class UpdateVacanciesComponent {
     }
   }
 
-  protected updateTotalNumber(): void {
+  public removeJobRole = (jobRoleIndex: number) => {
+    if (jobRoleIndex < 0 || jobRoleIndex >= this.selectedJobRoles.length) {
+      return;
+    }
+
+    this.selectedJobRoles = this.selectedJobRoles.filter((_, index) => index !== jobRoleIndex);
+    this.jobRoleNumbers.removeAt(jobRoleIndex);
+  };
+
+  public removeAllSelectedJobRoles = () => {
+    this.selectedJobRoles = [];
+    this.jobRoleNumbers.clear();
+  };
+
+  private updateSelectedJobRolesNumber = () => {
+    this.numberInputs.forEach((numberInput, index) => {
+      const currentNumber = isNaN(numberInput.currentNumber) ? 0 : numberInput.currentNumber;
+      this.selectedJobRoles[index].total = currentNumber;
+    });
+  };
+
+  public handleAddJobRole = () => {
+    this.updateSelectedJobRolesNumber();
+    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = this.selectedJobRoles;
+
+    this.router.navigate(['../update-vacancies-job-roles'], { relativeTo: this.route });
+  };
+
+  private updateTotalNumber(): void {
     const allJobRoleNumbers =
       this.numberInputs?.map((input) => input.currentNumber).filter((number) => !isNaN(number)) ?? [];
     this.totalNumber = lodash.sum(allJobRoleNumbers);
