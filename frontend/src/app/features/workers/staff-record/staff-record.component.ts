@@ -54,11 +54,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       }),
     );
 
-    if (!this.insideFlow) {
-      this.breadcrumbService.show(JourneyType.MY_WORKPLACE);
-    } else {
-      this.backLinkService.showBackLink();
-    }
+    this.breadcrumbService.show(JourneyType.STAFF_RECORDS_TAB);
 
     this.subscriptions.add(
       this.workerService.alert$.subscribe((alert) => {

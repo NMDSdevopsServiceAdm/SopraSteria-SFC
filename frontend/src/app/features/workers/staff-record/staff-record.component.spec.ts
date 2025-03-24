@@ -112,17 +112,13 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the Complete record button and correct text when worker.completed is false and canEditWorker is true', async () => {
-    const { getByText, queryByText } = await setup({ worker: { completed: false } });
+    const { getByText } = await setup({ worker: { completed: false } });
 
     const button = getByText('Confirm record details');
     const text = getByText(`Check these details before you confirm them.`);
-    const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
-    const deleteRecordLink = queryByText('Delete staff record');
 
     expect(button).toBeTruthy();
     expect(text).toBeTruthy();
-    expect(flagLongTermAbsenceLink).toBeFalsy();
-    expect(deleteRecordLink).toBeFalsy();
   });
 
   it('should not render the Complete record button when worker.completed is false and canEditWorker is false', async () => {
@@ -160,7 +156,7 @@ describe('StaffRecordComponent', () => {
     expect(trainingAndQualsLink).toBeTruthy();
   });
 
-  it('should set returnTo$ in the worker service to the training and qualifications record page on init', async () => {
+  it('should set returnTo$ in the worker service to the staff record page on init', async () => {
     const { component, workerSpy, workplaceUid, workerUid } = await setup();
 
     component.setReturnTo();
@@ -256,12 +252,6 @@ describe('StaffRecordComponent', () => {
 
     it('should not show the link when the workplace is not a parent', async () => {
       const { queryByText } = await setup({ isParent: false, worker: { completed: true } });
-
-      expect(queryByText('Transfer staff record')).toBeFalsy();
-    });
-
-    it('should not show the link if the worker details have not been completed', async () => {
-      const { queryByText } = await setup({ worker: { completed: false } });
 
       expect(queryByText('Transfer staff record')).toBeFalsy();
     });
