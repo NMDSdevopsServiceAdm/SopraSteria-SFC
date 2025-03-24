@@ -27,7 +27,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public returnToRecord: URLStructure;
   public worker: Worker;
   public workplace: Establishment;
-  public insideFlow: boolean;
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -43,8 +42,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.insideFlow = this.route.parent.snapshot.url[0].path !== 'staff-record-summary';
-
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
 
