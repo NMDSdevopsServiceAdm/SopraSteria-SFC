@@ -72,18 +72,21 @@ export class OtherQualificationsComponent extends QuestionComponent {
     return nextRoute;
   }
 
-  onSuccess(): void {
-    this.next = this.determineConditionalRouting();
-  }
+  onSubmit(): void {
+    super.onSubmit();
 
-  addAlert(): void {
     const { otherQualification } = this.form.value;
-    if (otherQualification !== 'Yes' && this.insideFlow) {
+
+    if ((otherQualification !== 'Yes' || !this.submitted) && this.insideFlow) {
       this.workerService.hasCompletedStaffRecordFlow = true;
       this.alertService.addAlert({
         type: 'success',
         message: 'Staff record saved',
       });
     }
+  }
+
+  onSuccess(): void {
+    this.next = this.determineConditionalRouting();
   }
 }

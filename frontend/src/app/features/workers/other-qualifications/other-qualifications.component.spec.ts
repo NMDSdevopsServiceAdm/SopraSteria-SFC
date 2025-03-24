@@ -146,6 +146,25 @@ describe('OtherQualificationsComponent', () => {
             'staff-record-summary',
           ]);
         });
+
+        it(`should add Staff record added alert when '${link}' is clicked`, async () => {
+          const { getByText, alertSpy } = await setup(true, 'Yes');
+
+          fireEvent.click(getByText(link));
+
+          expect(alertSpy).toHaveBeenCalledWith({
+            type: 'success',
+            message: 'Staff record saved',
+          });
+        });
+
+        it(`should set hasCompletedStaffRecordFlow in worker service when '${link}' is clicked`, async () => {
+          const { getByText, hasCompletedStaffRecordFlowSpy } = await setup(true, 'Yes');
+
+          fireEvent.click(getByText(link));
+
+          expect(hasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
+        });
       });
 
       ['No', 'I do not know'].forEach((answer) => {
