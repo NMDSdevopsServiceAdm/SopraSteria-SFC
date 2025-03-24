@@ -166,5 +166,23 @@ fdescribe('UpdateVacanciesComponent', () => {
       const totalNumber = getByTestId('total-number');
       expect(totalNumber.textContent).toEqual('14');
     });
+
+    describe('remove button', () => {
+      it('should remove a job role from the list when remove button is clicked', async () => {
+        const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
+        const { fixture, queryByText, queryByLabelText, getByTestId } = await setup({ workplace: mockWorkplace });
+
+        const removeButtonForNurse = getByTestId('remove-button-Registered nurse');
+        userEvent.click(removeButtonForNurse);
+
+        fixture.detectChanges();
+
+        expect(queryByText('Registered nurse')).toBeFalsy();
+        expect(queryByLabelText('Registered nurse')).toBeFalsy();
+
+        const totalNumber = getByTestId('total-number');
+        expect(totalNumber.textContent).toEqual('4');
+      });
+    });
   });
 });

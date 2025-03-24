@@ -63,9 +63,9 @@ export class UpdateVacanciesComponent {
 
   ngAfterViewInit() {
     this.updateTotalNumber();
-    this.cd.detectChanges();
 
     this.numberInputs.forEach((input) => input.registerOnChange(() => this.updateTotalNumber()));
+    this.numberInputs.changes.subscribe(() => this.updateTotalNumber());
   }
 
   public setupTexts() {
@@ -94,6 +94,15 @@ export class UpdateVacanciesComponent {
     );
   };
 
+  public removeJobRoleInput = (jobRoleIndex: number) => {
+    if (jobRoleIndex < 0 || jobRoleIndex >= this.selectedJobRoles.length) {
+      return;
+    }
+
+    this.selectedJobRoles = this.selectedJobRoles.filter((_, index) => index !== jobRoleIndex);
+    this.jobRoleNumbers.removeAt(jobRoleIndex);
+  };
+
   get jobRoleNumbers(): UntypedFormArray {
     return this.form.get('jobRoleNumbers') as UntypedFormArray;
   }
@@ -115,6 +124,7 @@ export class UpdateVacanciesComponent {
     const allJobRoleNumbers =
       this.numberInputs?.map((input) => input.currentNumber).filter((number) => !isNaN(number)) ?? [];
     this.totalNumber = lodash.sum(allJobRoleNumbers);
+    this.cd.detectChanges();
   }
 
   public onSubmit() {}
