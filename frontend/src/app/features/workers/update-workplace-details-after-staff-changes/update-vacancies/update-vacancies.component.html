@@ -15,27 +15,23 @@
 
         <app-details title="Why we ask for this information">
           <p class="govuk-body-m">
-            To show DHSC and others how the level of staff vacancies and the number employed affects the sector over
-            time.
+            {{ revealText }}
           </p>
         </app-details>
 
-        <div class="govuk-warning-text govuk-!-margin-bottom-3" data-testid="warning-text">
+        <div *ngIf="!isAFreshWorkplace" class="govuk-warning-text govuk-!-margin-bottom-3" data-testid="warning-text">
           <span class="govuk-warning-text__icon" aria-hidden="true">!</span>
           <span class="govuk-warning-text__text">
             <span class="govuk-visually-hidden">Warning</span>
-            <p class="govuk-body-m">
-              Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are
-              <strong>no longer vacancies</strong>.
-            </p>
+            <p class="govuk-body-m" [innerHTML]="reminderText"></p>
           </span>
         </div>
 
         <div>
           <div class="add-job-roles-button-row">
-            <h2>Current staff vacancies</h2>
+            <h2>{{ jobRoleTitle }}</h2>
             <button type="button" class="govuk-button govuk-button--secondary" (click)="handleAddJobRole()">
-              Add more job roles
+              {{ addJobRoleButtonText }}
             </button>
           </div>
           <hr class="govuk-section-break govuk-section-break--visible" />
@@ -99,7 +95,7 @@
             <div class="asc-total-number-tile">
               <div class="asc-total-number-tile--wrapper">
                 <p class="asc-total-number-tile--total-number" data-testid="total-number">{{ totalNumber }}</p>
-                <p class="asc-total-number-tile--description">Total number of vacancies</p>
+                <p class="asc-total-number-tile--description">{{ totalNumberDescription }}</p>
               </div>
             </div>
           </div>
@@ -120,7 +116,7 @@
             </p>
 
             <div class="govuk-radios">
-              <div class="govuk-radios__item" *ngFor="let option of knownOptions; let index = index">
+              <div class="govuk-radios__item" *ngFor="let option of radioButtonOptions; let index = index">
                 <input
                   class="govuk-radios__input"
                   id="noOrDoNotKnow-{{ index }}"
