@@ -9,7 +9,7 @@ import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-w
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { SharedModule } from '@shared/shared.module';
-import { render } from '@testing-library/angular';
+import { render, screen } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UpdateVacanciesComponent } from './update-vacancies.component';
@@ -161,16 +161,13 @@ fdescribe('UpdateVacanciesComponent', () => {
           const mockWorkplace = establishmentBuilder({
             overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
           });
-          const { getByLabelText, getByTestId } = await setup({ workplace: mockWorkplace });
+          const { getByTestId } = await setup({ workplace: mockWorkplace });
 
-          const numberInputForNurse = getByLabelText('Registered nurse') as HTMLInputElement;
-          expect(numberInputForNurse).toBeTruthy();
-          expect(numberInputForNurse.value).toEqual('6');
+          await expectJobRoleToHaveValue('Registered nurse', '6');
           expect(getByTestId('remove-button-Registered nurse')).toBeTruthy();
 
-          const numberInputForSocialWorkers = getByLabelText('Social worker') as HTMLInputElement;
-          expect(numberInputForSocialWorkers).toBeTruthy();
-          expect(numberInputForSocialWorkers.value).toEqual('4');
+          await expectJobRoleToHaveValue('Social worker', '4');
+          expect(getByTestId('remove-button-Social worker')).toBeTruthy();
         });
 
         it('should select the "No" radio button and display no job roles if user previously selected "No"', async () => {
@@ -191,13 +188,8 @@ fdescribe('UpdateVacanciesComponent', () => {
             ],
           });
 
-          const numberInputForCareWorker = getByLabelText('Care worker') as HTMLInputElement;
-          expect(numberInputForCareWorker).toBeTruthy();
-          expect(numberInputForCareWorker.value).toEqual('1');
-
-          const numberInputForNurse = getByLabelText('Registered nurse') as HTMLInputElement;
-          expect(numberInputForNurse).toBeTruthy();
-          expect(numberInputForNurse.value).toEqual('1');
+          await expectJobRoleToHaveValue('Care worker', '1');
+          await expectJobRoleToHaveValue('Registered nurse', '1');
         });
 
         it('should show no job role selected instead of prefill from backend data, if user did not select any job roles in accordion page', async () => {
@@ -224,16 +216,13 @@ fdescribe('UpdateVacanciesComponent', () => {
   describe('interaction', () => {
     it('should update the total number when the vacancy number of a job role is changed', async () => {
       const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
-      const { fixture, getByLabelText, getByTestId } = await setup({ workplace: mockWorkplace });
+      const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
 
-      const numberInputForNurse = getByLabelText('Registered nurse') as HTMLInputElement;
-      userEvent.clear(numberInputForNurse);
-      userEvent.type(numberInputForNurse, '10');
+      await fillInValueForJobRole('Registered nurse', '10');
 
       fixture.detectChanges();
 
-      const totalNumber = getByTestId('total-number');
-      expect(totalNumber.textContent).toEqual('14');
+      expect(getByTestId('total-number').textContent).toEqual('14');
     });
 
     describe('add job role button', () => {
@@ -267,17 +256,12 @@ fdescribe('UpdateVacanciesComponent', () => {
 
       it('should bring along any changes made by user in current page', async () => {
         const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
-        const { fixture, getByRole, getByTestId, getByLabelText, updateWorkplaceAfterStaffChangesService } =
-          await setup({
-            workplace: mockWorkplace,
-          });
+        const { fixture, getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
+          workplace: mockWorkplace,
+        });
 
-        const removeButtonForNurse = getByTestId('remove-button-Registered nurse');
-        userEvent.click(removeButtonForNurse);
-
-        const numberInputForSocialWorker = getByLabelText('Social worker') as HTMLInputElement;
-        userEvent.clear(numberInputForSocialWorker);
-        userEvent.type(numberInputForSocialWorker, '5');
+        await clickRemoveButtonForJobRole('Registered nurse');
+        await fillInValueForJobRole('Social worker', '5');
 
         const addButton = getByRole('button', { name: 'Add more job roles' });
         userEvent.click(addButton);
@@ -297,10 +281,9 @@ fdescribe('UpdateVacanciesComponent', () => {
     describe('remove button', () => {
       it('should remove a job role from the list when remove button is clicked', async () => {
         const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
-        const { fixture, queryByText, queryByLabelText, getByTestId } = await setup({ workplace: mockWorkplace });
+        const { fixture, queryByText, queryByLabelText } = await setup({ workplace: mockWorkplace });
 
-        const removeButtonForNurse = getByTestId('remove-button-Registered nurse');
-        userEvent.click(removeButtonForNurse);
+        await clickRemoveButtonForJobRole('Registered nurse');
 
         fixture.detectChanges();
 
@@ -312,15 +295,13 @@ fdescribe('UpdateVacanciesComponent', () => {
         const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
         const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
 
-        const removeButtonForNurse = getByTestId('remove-button-Registered nurse');
-        const removeButtonForSocialWorker = getByTestId('remove-button-Social worker');
         const totalNumber = getByTestId('total-number');
 
-        userEvent.click(removeButtonForNurse);
+        await clickRemoveButtonForJobRole('Registered nurse');
         fixture.detectChanges();
         expect(totalNumber.textContent).toEqual('4');
 
-        userEvent.click(removeButtonForSocialWorker);
+        await clickRemoveButtonForJobRole('Social worker');
         fixture.detectChanges();
         expect(totalNumber.textContent).toEqual('0');
       });
@@ -403,19 +384,37 @@ fdescribe('UpdateVacanciesComponent', () => {
     });
 
     it('should clear the selectedVacancies value in UpdateWorkplaceAfterStaffChangesService', async () => {
-      const { getByRole, getByLabelText, updateWorkplaceAfterStaffChangesService } = await setup({
+      const { getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
         vacanciesFromSelectJobRolePages: [
           { jobId: 10, title: 'Care worker', total: 1 },
           { jobId: 27, title: 'Registered nurse', total: 1 },
         ],
       });
 
-      const numberInputForCareWorker = getByLabelText('Care worker') as HTMLInputElement;
-      userEvent.clear(numberInputForCareWorker);
-      userEvent.type(numberInputForCareWorker, '10');
+      await fillInValueForJobRole('Care worker', '10');
 
       userEvent.click(getByRole('button', { name: 'Save and return' }));
       expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(null);
+    });
+
+    describe('validation', () => {
+      it('should show an error when user input "0" for a job role number', async () => {
+        const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup({
+          vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
+        });
+
+        await fillInValueForJobRole('Care worker', '0');
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        fixture.detectChanges();
+
+        const expectedErrorMsg = 'Enter the number of current staff vacancies or remove care worker';
+
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        expect(updateJobsSpy).not.toHaveBeenCalled();
+      });
     });
   });
 
@@ -434,4 +433,21 @@ fdescribe('UpdateVacanciesComponent', () => {
     expect(routerSpy).toHaveBeenCalledWith(['../'], { relativeTo: component.route });
     expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(null);
   });
+
+  const fillInValueForJobRole = async (jobRoleTitle: string, inputText: string) => {
+    const numberInputForJobRole = screen.getByLabelText(jobRoleTitle) as HTMLInputElement;
+    userEvent.clear(numberInputForJobRole);
+    userEvent.type(numberInputForJobRole, inputText);
+  };
+
+  const clickRemoveButtonForJobRole = async (jobRoleTitle: string) => {
+    const removeButtonForJobRole = screen.getByTestId(`remove-button-${jobRoleTitle}`);
+    userEvent.click(removeButtonForJobRole);
+  };
+
+  const expectJobRoleToHaveValue = async (jobRoleTitle: string, expectedText: string) => {
+    const numberInputForJobRole = screen.getByLabelText(jobRoleTitle) as HTMLInputElement;
+    expect(numberInputForJobRole).toBeTruthy();
+    expect(numberInputForJobRole.value).toEqual(expectedText);
+  };
 });
