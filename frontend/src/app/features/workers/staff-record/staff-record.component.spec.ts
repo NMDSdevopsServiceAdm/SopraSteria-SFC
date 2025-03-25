@@ -109,24 +109,25 @@ describe('StaffRecordComponent', () => {
     expect(getAllByText(component.worker.nameOrId).length).toBe(2);
   });
 
-  it('should render a Continue button at top and bottom of page when worker.completed is false and canEditWorker is true', async () => {
-    const { getAllByText } = await setup({ workerService: { worker: { completed: false } } });
+  it('should render a Continue button at top and bottom of page when hasCompletedStaffRecordFlow is true', async () => {
+    const { getAllByText } = await setup({
+      workerService: { worker: { completed: false }, hasCompletedStaffRecordFlow: true },
+    });
 
     const continueButtons = getAllByText('Continue');
 
     expect(continueButtons.length).toEqual(2);
   });
 
-  it('should not render the Continue record button when worker.completed is false and canEditWorker is false', async () => {
-    const { queryByText } = await setup({ workerService: { worker: { completed: false } }, permissions: [] });
+  it('should not render the Continue record button when hasCompletedStaffRecordFlow is false', async () => {
+    const { queryByText } = await setup({
+      workerService: { worker: { completed: false } },
+      hasCompletedStaffRecordFlow: false,
+    });
 
     const button = queryByText('Continue');
-    const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
-    const deleteRecordLink = queryByText('Delete staff record');
 
     expect(button).toBeFalsy();
-    expect(flagLongTermAbsenceLink).toBeFalsy();
-    expect(deleteRecordLink).toBeFalsy();
   });
 
   [true, false].forEach((completedValue) => {
@@ -162,7 +163,7 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the training and qualifications link with the correct href', async () => {
-    const { getByTestId, workplaceUid, workerUid } = await setup({ workerService: { worker: { completed: true } } });
+    const { getByTestId, workplaceUid, workerUid } = await setup();
 
     const link = getByTestId('training-and-qualifications-link');
     expect(link.getAttribute('href')).toEqual(
@@ -214,7 +215,7 @@ describe('StaffRecordComponent', () => {
   describe('saveAndComplete', () => {
     it('should call updateWorker on the worker service when Continue button is clicked', async () => {
       const { workerService, getAllByText, workplaceUid, workerUid } = await setup({
-        workerService: { worker: { completed: false } },
+        workerService: { hasCompletedStaffRecordFlow: true, worker: { completed: false } },
       });
 
       const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
@@ -227,7 +228,7 @@ describe('StaffRecordComponent', () => {
 
     it('should navigate to the "Add another staff record" page when Continue button is clicked', async () => {
       const { routerSpy, getAllByText, workplaceUid } = await setup({
-        workerService: { worker: { completed: false } },
+        workerService: { hasCompletedStaffRecordFlow: true, worker: { completed: false } },
       });
 
       const continueButtons = getAllByText('Continue');
@@ -239,19 +240,19 @@ describe('StaffRecordComponent', () => {
 
   describe('transfer staff record link', () => {
     it('should show the link when the primary workplace is a parent and has canEdit permissions', async () => {
-      const { getByText } = await setup({ workerService: { worker: { completed: true } } });
+      const { getByText } = await setup({ isParent: true });
 
       expect(getByText('Transfer staff record')).toBeTruthy();
     });
 
     it('should not show the link when there are no canEditWorker permissions', async () => {
-      const { queryByText } = await setup({ worker: { completed: true }, permissions: [] });
+      const { queryByText } = await setup({ permissions: [] });
 
       expect(queryByText('Transfer staff record')).toBeFalsy();
     });
 
     it('should not show the link when the workplace is not a parent', async () => {
-      const { queryByText } = await setup({ isParent: false, workerService: { worker: { completed: true } } });
+      const { queryByText } = await setup({ isParent: false });
 
       expect(queryByText('Transfer staff record')).toBeFalsy();
     });
