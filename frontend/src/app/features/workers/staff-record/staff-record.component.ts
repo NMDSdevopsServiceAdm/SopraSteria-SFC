@@ -50,6 +50,9 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
+        if (!this.worker?.completed) {
+          this.updateCompleted();
+        }
       }),
     );
 
@@ -84,7 +87,11 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     });
   }
 
-  public saveAndComplete(): void {
+  public navigateToAddAnotherStaffRecordPage(): void {
+    this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record']);
+  }
+
+  private updateCompleted(): void {
     const props = {
       completed: true,
     };
@@ -93,7 +100,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
       this.workerService.updateWorker(this.workplace.uid, this.worker.uid, props).subscribe(
         (data) => {
           this.workerService.setState({ ...this.worker, ...data });
-          this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record']);
         },
         (error) => {
           console.log(error);
