@@ -75,15 +75,25 @@ export class OtherQualificationsComponent extends QuestionComponent {
   onSubmit(): void {
     super.onSubmit();
 
+    if (!this.submitted && this.insideFlow) {
+      this.setCompletedStaffFlowAndAddAlert();
+    }
+  }
+
+  addAlert(): void {
     const { otherQualification } = this.form.value;
 
-    if ((otherQualification !== 'Yes' || !this.submitted) && this.insideFlow) {
-      this.workerService.hasCompletedStaffRecordFlow = true;
-      this.alertService.addAlert({
-        type: 'success',
-        message: 'Staff record saved',
-      });
+    if (otherQualification !== 'Yes' && this.insideFlow) {
+      this.setCompletedStaffFlowAndAddAlert();
     }
+  }
+
+  setCompletedStaffFlowAndAddAlert(): void {
+    this.workerService.hasCompletedStaffRecordFlow = true;
+    this.alertService.addAlert({
+      type: 'success',
+      message: 'Staff record saved',
+    });
   }
 
   onSuccess(): void {
