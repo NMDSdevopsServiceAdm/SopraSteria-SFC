@@ -155,7 +155,7 @@ fdescribe('UpdateVacanciesComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
-    describe('prefill', () => {
+    describe('job roles', () => {
       describe('before adding new job roles', () => {
         it('should show a number input and a remove button for every vacancy job role from database', async () => {
           const mockWorkplace = establishmentBuilder({
@@ -170,44 +170,64 @@ fdescribe('UpdateVacanciesComponent', () => {
           expect(getByTestId('remove-button-Social worker')).toBeTruthy();
         });
 
-        it('should select the "No" radio button and display no job roles if user previously selected "No"', async () => {
-          const { getByLabelText, getByTestId } = await setup({ workplace: mockWorkplaceWithNoVacancies });
+        it(`should show a message "You've not added any current staff vacancies." if no job role were selected`, async () => {
+          const { getByText } = await setup({ workplace: mockFreshWorkplace });
+
+          expect(getByText("You've not added any current staff vacancies.")).toBeTruthy();
+        });
+
+        it('should select the "No" radio button and display a message if user previously selected "No"', async () => {
+          const { getByLabelText, getByTestId, getByText } = await setup({ workplace: mockWorkplaceWithNoVacancies });
 
           const radioButton = getByLabelText(radioButtonLabels.No) as HTMLInputElement;
           expect(radioButton.checked).toBe(true);
           expect(getByTestId('total-number').textContent).toEqual('0');
-        });
-      });
 
-      describe('after adding new add roles', () => {
-        it('should show every vacancy job role that user selected in accordion page', async () => {
-          const { getByLabelText } = await setup({
-            vacanciesFromSelectJobRolePages: [
-              { jobId: 10, title: 'Care worker', total: 1 },
-              { jobId: 27, title: 'Registered nurse', total: 1 },
-            ],
-          });
-
-          await expectJobRoleToHaveValue('Care worker', '1');
-          await expectJobRoleToHaveValue('Registered nurse', '1');
+          expect(getByText('You have no current staff vacancies.')).toBeTruthy();
         });
 
-        it('should show no job role selected instead of prefill from backend data, if user did not select any job roles in accordion page', async () => {
-          const mockWorkplace = establishmentBuilder({
-            overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
-          });
-          const { queryByText, queryByLabelText, getByTestId } = await setup({
-            vacanciesFromSelectJobRolePages: [],
-            workplace: mockWorkplace,
+        it('should select the "No" radio button and display a message if user previously selected "Do not know"', async () => {
+          const { getByLabelText, getByTestId, getByText } = await setup({
+            workplace: mockWorkplaceWithVacanciesNotKnown,
           });
 
-          expect(queryByText('Registered nurse')).toBeFalsy();
-          expect(queryByLabelText('Registered nurse')).toBeFalsy();
-
-          expect(queryByText('Social worker')).toBeFalsy();
-          expect(queryByLabelText('Social worker')).toBeFalsy();
-
+          const radioButton = getByLabelText(radioButtonLabels['Do not know']) as HTMLInputElement;
+          expect(radioButton.checked).toBe(true);
           expect(getByTestId('total-number').textContent).toEqual('0');
+
+          expect(getByText('You do not know if there are any current staff vacancies.')).toBeTruthy();
+        });
+
+        describe('after adding new add roles', () => {
+          it('should show every vacancy job role that user selected in accordion page', async () => {
+            await setup({
+              vacanciesFromSelectJobRolePages: [
+                { jobId: 10, title: 'Care worker', total: 1 },
+                { jobId: 27, title: 'Registered nurse', total: 1 },
+              ],
+            });
+
+            await expectJobRoleToHaveValue('Care worker', '1');
+            await expectJobRoleToHaveValue('Registered nurse', '1');
+          });
+
+          it('should show no job role selected instead of prefill from backend data, if user did not select any job roles in accordion page', async () => {
+            const mockWorkplace = establishmentBuilder({
+              overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+            });
+            const { queryByText, queryByLabelText, getByTestId } = await setup({
+              vacanciesFromSelectJobRolePages: [],
+              workplace: mockWorkplace,
+            });
+
+            expect(queryByText('Registered nurse')).toBeFalsy();
+            expect(queryByLabelText('Registered nurse')).toBeFalsy();
+
+            expect(queryByText('Social worker')).toBeFalsy();
+            expect(queryByLabelText('Social worker')).toBeFalsy();
+
+            expect(getByTestId('total-number').textContent).toEqual('0');
+          });
         });
       });
     });
@@ -293,7 +313,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
       it('should update the total number', async () => {
         const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
-        const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
+        const { fixture, getByTestId, getByText } = await setup({ workplace: mockWorkplace });
 
         const totalNumber = getByTestId('total-number');
 
@@ -304,31 +324,55 @@ fdescribe('UpdateVacanciesComponent', () => {
         await clickRemoveButtonForJobRole('Social worker');
         fixture.detectChanges();
         expect(totalNumber.textContent).toEqual('0');
+        expect(getByText("You've not added any current staff vacancies.")).toBeTruthy();
       });
     });
 
     describe('radio buttons for "No" and "Do not know"', () => {
-      Object.entries(radioButtonLabels).forEach(([option, label]) => {
-        it(`should remove all selected job roles when user clicked the radio button for "${option}"`, async () => {
-          const mockWorkplace = establishmentBuilder({
-            overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
-          });
-          const { fixture, queryByText, queryByLabelText, getByLabelText, getByTestId } = await setup({
-            workplace: mockWorkplace,
-          });
-
-          userEvent.click(getByLabelText(label));
-
-          fixture.detectChanges();
-
-          expect(queryByText('Registered nurse')).toBeFalsy();
-          expect(queryByLabelText('Registered nurse')).toBeFalsy();
-
-          expect(queryByText('Social worker')).toBeFalsy();
-          expect(queryByLabelText('Social worker')).toBeFalsy();
-
-          expect(getByTestId('total-number').textContent).toEqual('0');
+      it(`should remove all selected job roles when user clicked the radio button for "No"`, async () => {
+        const mockWorkplace = establishmentBuilder({
+          overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
         });
+        const { fixture, queryByText, queryByLabelText, getByText, getByLabelText, getByTestId } = await setup({
+          workplace: mockWorkplace,
+        });
+
+        userEvent.click(getByLabelText(radioButtonLabels.No));
+
+        fixture.detectChanges();
+
+        expect(queryByText('Registered nurse')).toBeFalsy();
+        expect(queryByLabelText('Registered nurse')).toBeFalsy();
+
+        expect(queryByText('Social worker')).toBeFalsy();
+        expect(queryByLabelText('Social worker')).toBeFalsy();
+
+        expect(getByTestId('total-number').textContent).toEqual('0');
+
+        expect(getByText('You have no current staff vacancies.')).toBeTruthy();
+      });
+
+      it(`should remove all selected job roles when user clicked the radio button for "Do not know"`, async () => {
+        const mockWorkplace = establishmentBuilder({
+          overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+        });
+        const { fixture, queryByText, queryByLabelText, getByText, getByLabelText, getByTestId } = await setup({
+          workplace: mockWorkplace,
+        });
+
+        userEvent.click(getByLabelText(radioButtonLabels['Do not know']));
+
+        fixture.detectChanges();
+
+        expect(queryByText('Registered nurse')).toBeFalsy();
+        expect(queryByLabelText('Registered nurse')).toBeFalsy();
+
+        expect(queryByText('Social worker')).toBeFalsy();
+        expect(queryByLabelText('Social worker')).toBeFalsy();
+
+        expect(getByTestId('total-number').textContent).toEqual('0');
+
+        expect(getByText('You do not know if there are any current staff vacancies.')).toBeTruthy();
       });
     });
   });

@@ -41,6 +41,22 @@
           <hr class="govuk-section-break govuk-section-break--visible" />
 
           <div formArrayName="jobRoleNumbers">
+            <div *ngIf="selectedJobRoles?.length === 0">
+              <p class="govuk-body-m asc-no-job-roles-msg">
+                <ng-container [ngSwitch]="selectedNoOrDoNotKnow">
+                  <ng-container *ngSwitchCase="'None'">
+                    {{ messageWhenNoJobRoleSelected.None }}
+                  </ng-container>
+                  <ng-container *ngSwitchCase="'Don\'t know'">
+                    {{ messageWhenNoJobRoleSelected.DoNotKnow }}
+                  </ng-container>
+                  <ng-container *ngSwitchDefault>
+                    {{ messageWhenNoJobRoleSelected.Default }}
+                  </ng-container>
+                </ng-container>
+              </p>
+              <hr class="govuk-section-break govuk-section-break--visible" />
+            </div>
             <div *ngFor="let jobRole of selectedJobRoles; index as index">
               <div
                 class="asc-grid-row govuk-form-group"
@@ -111,7 +127,7 @@
                   name="noOrDoNotKnow"
                   type="radio"
                   [value]="option.value"
-                  (click)="removeAllSelectedJobRoles()"
+                  (change)="handleClickedNoOrDoNotKnow(option.value)"
                   [formControlName]="'noOrDoNotKnow'"
                 />
                 <label class="govuk-label govuk-radios__label" for="noOrDoNotKnow-{{ index }}">
