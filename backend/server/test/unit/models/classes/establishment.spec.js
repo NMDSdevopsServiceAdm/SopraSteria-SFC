@@ -47,12 +47,9 @@ describe('Establishment Class', () => {
   });
 
   describe('save()', () => {
-    let transaction = {};
-    const timestamp = new Date();
-    const theLoggedInUser = '';
     const postCode = 'CA1 1AA';
 
-    function updateEstablishmentProperties() {
+    const updateEstablishmentProperties = () => {
       sinon
         .stub(establishment._properties, 'get')
         .withArgs('Name')
@@ -64,7 +61,36 @@ describe('Establishment Class', () => {
       establishment._postcode = postCode;
       establishment._isRegulated = false;
       establishment._workerEntities = null;
-    }
+    };
+
+    const theLoggedInUser = 'admin';
+
+    const createNewEstablishment = (overrides) => {
+      let bulkUploadStatus = overrides.bulkUploadStatus ? overrides.bulkUploadStatus : null;
+
+      establishment = new Establishment(theLoggedInUser, bulkUploadStatus);
+    };
+
+    let isWdfEligibleSpy;
+
+    const setupTests = async (overrides = {}) => {
+      createNewEstablishment(overrides);
+      updateEstablishmentProperties();
+
+      isWdfEligibleSpy = sinon.stub(establishment, 'isWdfEligible').returns({
+        currentEligibility: overrides.currentEligibility,
+      });
+
+      await establishment.save(
+        theLoggedInUser,
+        (bulkUploaded = overrides.bulkUploaded),
+        (transaction = {}),
+        (associatedEntities = true),
+      );
+    };
+
+    let updateFundingEligibilitySpy;
+    let establishmentAuditSpy;
 
     beforeEach(() => {
       const la = {
@@ -83,10 +109,8 @@ describe('Establishment Class', () => {
       sinon.stub(models.pcodedata, 'getLinkedCssrRecordsCompleteMatch').callsFake(async () => {
         return postCodeResponse;
       });
-      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').resolves([postCodeResponse]);
-      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsLooseMatch').callsFake(async () => {
-        console.log('This should not be hit');
-      });
+
+      const timestamp = new Date();
 
       const createdEstablishment = {
         get() {
@@ -95,55 +119,34 @@ describe('Establishment Class', () => {
       };
 
       sinon.stub(models.establishment, 'create').returns(createdEstablishment);
-      sinon.stub(models.establishmentAudit, 'bulkCreate').returns([]);
+
+      updateFundingEligibilitySpy = sinon.stub(models.establishment, 'update');
+      establishmentAuditSpy = sinon.stub(models.establishmentAudit, 'create');
     });
 
     describe('new establishment', () => {
       it('should call the database to update currentEligibility if created via bulk upload and eligible', async () => {
-        establishment = new Establishment('admin', 'NEW');
-        updateEstablishmentProperties();
+        await setupTests({ bulkUploadStatus: 'NEW', currentEligibility: true, bulkUploaded: true });
 
-        sinon.stub(establishment, 'isWdfEligible').returns({
-          currentEligibility: true,
-        });
-
-        const updateFundingEligibilitySpy = sinon.stub(models.establishment, 'update');
-        const establishmentAuditSpy = sinon.stub(models.establishmentAudit, 'create').resolves(true);
-
-        await establishment.save(theLoggedInUser, true, transaction, true);
+        establishmentAuditSpy.resolves(true);
 
         expect(updateFundingEligibilitySpy).to.have.been.called;
         expect(establishmentAuditSpy).to.have.been.called;
       });
 
       it('should not call the database to update currentEligibility if created via bulk upload and not eligible', async () => {
-        establishment = new Establishment('admin', 'NEW');
-        updateEstablishmentProperties();
+        setupTests({ bulkUploadStatus: 'NEW', currentEligibility: false, bulkUploaded: true });
 
-        sinon.stub(establishment, 'isWdfEligible').returns({
-          currentEligibility: false,
-        });
-
-        const updateFundingEligibilitySpy = sinon.stub(models.establishment, 'update');
-        const establishmentAuditSpy = sinon.stub(models.establishmentAudit, 'create').resolves(true);
-
-        await establishment.save(theLoggedInUser, true, transaction, true);
+        establishmentAuditSpy.resolves(true);
 
         expect(updateFundingEligibilitySpy).not.to.have.been.called;
         expect(establishmentAuditSpy).not.to.have.been.called;
       });
 
       it('should not call the database to update currentEligibility if not created via bulk upload', async () => {
-        establishment = new Establishment('admin', null);
-        updateEstablishmentProperties();
+        setupTests({ bulkUploadStatus: null, bulkUploaded: false });
 
         sinon.stub(WdfCalculator, 'calculate').resolves();
-
-        const isWdfEligibleSpy = sinon.stub(establishment, 'isWdfEligible');
-        const updateFundingEligibilitySpy = sinon.stub(models.establishment, 'update');
-        const establishmentAuditSpy = sinon.stub(models.establishmentAudit, 'create');
-
-        await establishment.save(theLoggedInUser, false, transaction, true);
 
         expect(isWdfEligibleSpy).not.to.have.been.called;
         expect(updateFundingEligibilitySpy).not.to.have.been.called;
