@@ -20,11 +20,19 @@
 .asc-grid-row {
   display: grid;
   grid-template-columns: 1fr 125px calc(290px - 125px - 1.5em);
-  gap: 1.5em;
+  column-gap: 1.5em;
   align-items: baseline;
   justify-items: start;
 
   margin: 0.5em 0;
+
+  &.govuk-form-group:after {
+    display: none;
+  }
+
+  .govuk-error-message {
+    grid-column: 1 / span 3;
+  }
 }
 
 .asc-total-number-tile {

@@ -66,6 +66,8 @@ export class UpdateVacanciesComponent {
 
     this.numberInputs.forEach((input) => input.registerOnChange(() => this.updateTotalNumber()));
     this.numberInputs.changes.subscribe(() => this.updateTotalNumber());
+
+    this.errorSummaryService.formEl$.next(this.formEl);
   }
 
   public setupTexts() {
@@ -97,7 +99,50 @@ export class UpdateVacanciesComponent {
     return this.form.get('jobRoleNumbers') as UntypedFormArray;
   }
 
-  public setupFormErrorsMap() {}
+  public setupFormErrorsMap() {
+    const errorMapForJobRoles = this.selectedJobRoles.map((jobRole, index) =>
+      this.buildErrorsMapForJobRole(jobRole, index),
+    );
+
+    this.formErrorsMap = [...errorMapForJobRoles];
+  }
+
+  private buildErrorsMapForJobRole(jobRole: Vacancy, index: number): ErrorDetails {
+    const errorTypes = ['required', 'min', 'max'];
+
+    const errorMap = {
+      item: `jobRoleNumbers.${index}`,
+      type: errorTypes.map((errorType) => ({
+        name: errorType,
+        message: this.getErrorMessageForJobRole(jobRole, errorType),
+      })),
+    };
+
+    return errorMap;
+  }
+
+  protected getErrorMessageForJobRole(jobRole: Vacancy, errorType: string, inline: boolean = false) {
+    const jobRoleTitleInLowerCase = jobRole.title.toLowerCase();
+
+    switch (errorType) {
+      case 'required':
+      case 'min': {
+        return `Enter the number of current staff vacancies or remove ${jobRoleTitleInLowerCase}`;
+      }
+      case 'max': {
+        if (inline) {
+          return `Number of vacancies must be between 1 and 999`;
+        }
+
+        return `Number of vacancies must be between 1 and 999 (${jobRoleTitleInLowerCase})`;
+      }
+    }
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
 
   public setBackLink() {
     this.backlinkService.showBackLink();
@@ -181,6 +226,12 @@ export class UpdateVacanciesComponent {
 
   public onSubmit() {
     this.submitted = true;
+    this.errorSummaryService.syncFormErrorsEvent.next(true);
+
+    if (!this.form.valid) {
+      this.errorSummaryService.scrollToErrorSummary();
+      return;
+    }
 
     const establishmentUid = this.establishmentService.establishment.uid;
     const updateProps = this.generateUpdateProps();
