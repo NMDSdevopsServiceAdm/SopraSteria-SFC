@@ -42,7 +42,7 @@ fdescribe('UpdateVacanciesComponent', () => {
   const mockFreshWorkplace = establishmentBuilder({ overrides: { vacancies: null } });
 
   const setup = async (override: any = {}) => {
-    const workplace = override.workplace ?? {};
+    const workplace = override.workplace ?? mockWorkplaceWithNoVacancies;
     const selectedVacancies = override.vacanciesFromSelectJobRolePages ?? null;
 
     const setupTools = await render(UpdateVacanciesComponent, {
@@ -155,6 +155,31 @@ fdescribe('UpdateVacanciesComponent', () => {
       expect(getByText('Cancel')).toBeTruthy();
     });
 
+    describe('in case of a fresh workplace', () => {
+      it('should show a different page heading', async () => {
+        const { getByRole } = await setup({ workplace: mockFreshWorkplace });
+        const heading = getByRole('heading', { level: 1 });
+
+        expect(heading.textContent).toEqual('Add your current staff vacancies');
+      });
+
+      it('should not show the reminder text for subtract or remove vacancies', async () => {
+        const { queryByTestId, queryByText } = await setup({ workplace: mockFreshWorkplace });
+
+        const warningText = queryByTestId('warning-text');
+        expect(warningText).toBeFalsy();
+        expect(queryByText('Remember to SUBTRACT or REMOVE any that are no longer vacancies.')).toBeFalsy();
+      });
+
+      it('should show "Add job roles" as the text of add job role button', async () => {
+        const { getByRole } = await setup({ workplace: mockFreshWorkplace });
+
+        const addButton = getByRole('button', { name: 'Add job roles' });
+
+        expect(addButton).toBeTruthy();
+      });
+    });
+
     describe('job roles', () => {
       describe('before adding new job roles', () => {
         it('should show a number input and a remove button for every vacancy job role from database', async () => {
@@ -170,7 +195,7 @@ fdescribe('UpdateVacanciesComponent', () => {
           expect(getByTestId('remove-button-Social worker')).toBeTruthy();
         });
 
-        it(`should show a message "You've not added any current staff vacancies." if no job role were selected`, async () => {
+        it(`should show a message "You've not added any current staff vacancies." if for a fresh workplace`, async () => {
           const { getByText } = await setup({ workplace: mockFreshWorkplace });
 
           expect(getByText("You've not added any current staff vacancies.")).toBeTruthy();
@@ -447,11 +472,11 @@ fdescribe('UpdateVacanciesComponent', () => {
         { inputValue: '', expectedErrorMessage: 'Enter the number of current staff vacancies or remove care worker' },
         {
           inputValue: 'apple',
-          expectedErrorMessage: 'Number of current staff vacancies must be between 1 and 999 (care worker)',
+          expectedErrorMessage: 'Number of vacancies must be between 1 and 999 (care worker)',
         },
         {
           inputValue: '9999',
-          expectedErrorMessage: 'Number of current staff vacancies must be between 1 and 999 (care worker)',
+          expectedErrorMessage: 'Number of vacancies must be between 1 and 999 (care worker)',
         },
       ];
 

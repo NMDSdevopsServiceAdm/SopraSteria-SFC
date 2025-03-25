@@ -30,10 +30,11 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   @ViewChildren('numberInputRef') numberInputs: QueryList<NumberInputWithButtonsComponent>;
   @ViewChild('formEl') formEl: ElementRef;
 
-  public heading: string;
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
   public submitted = false;
+
+  public isAFreshWorkplace: boolean = false;
   public selectedJobRoles: Array<Vacancy> = [];
   public selectedNoOrDoNotKnow: jobOptionsEnum = null;
   public totalNumber: number = 0;
@@ -41,7 +42,14 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   public minNumberPerJobRole = 1;
   public maxNumberPerJobRole = 999;
 
-  public knownOptions = [
+  public heading: string;
+  public addJobRoleButtonText: string;
+  public jobRoleTitle = 'Current staff vacancies';
+  public totalNumberDescription = 'Total number of vacancies';
+  public revealText =
+    'To show DHSC and others how the level of staff vacancies and the number employed affects the sector over time.';
+  public reminderText = `Remember to <strong>SUBTRACT</strong> or <strong>REMOVE</strong> any that are <strong>no longer vacancies</strong>.`;
+  public radioButtonOptions = [
     {
       label: 'There are no current staff vacancies',
       value: jobOptionsEnum.NONE,
@@ -51,11 +59,10 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
-
   public messageWhenNoJobRoleSelected = {
     None: 'You have no current staff vacancies.',
     DoNotKnow: 'You do not know if there are any current staff vacancies.',
-    Default: "You've not added any current staff vacancies. ",
+    Default: "You've not added any current staff vacancies.",
   };
 
   constructor(
@@ -70,11 +77,10 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   ) {}
 
   ngOnInit() {
-    this.setupTexts();
     this.setupForm();
-
     this.prefill();
     this.setupFormErrorsMap();
+    this.setupTexts();
     this.setBackLink();
   }
 
@@ -88,7 +94,13 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   }
 
   public setupTexts() {
-    this.heading = 'Update your current staff vacancies';
+    if (this.isAFreshWorkplace) {
+      this.heading = 'Add your current staff vacancies';
+      this.addJobRoleButtonText = 'Add job roles';
+    } else {
+      this.heading = 'Update your current staff vacancies';
+      this.addJobRoleButtonText = 'Add more job roles';
+    }
   }
 
   public setupForm() {
@@ -102,27 +114,26 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   }
 
   public prefill() {
-    const vacanciesFromJobRoleSelectionPage = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
+    const dataFromJobRoleSelectionPage = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
+    const dataFromDatabase = this.establishmentService.establishment.vacancies;
 
-    if (vacanciesFromJobRoleSelectionPage === null) {
-      this.prefillFromBackendData();
-    } else {
-      this.selectedJobRoles = vacanciesFromJobRoleSelectionPage;
-    }
+    const dataToPrefillFrom = dataFromJobRoleSelectionPage === null ? dataFromDatabase : dataFromJobRoleSelectionPage;
 
+    this.prefillFromData(dataToPrefillFrom);
     this.selectedJobRoles.forEach((jobRole) => this.createJobRoleFormControl(jobRole));
+
+    this.isAFreshWorkplace = dataFromDatabase === null;
   }
 
-  private prefillFromBackendData() {
-    const vacanciesFromBackend = this.establishmentService.establishment.vacancies;
-    if (Array.isArray(vacanciesFromBackend)) {
-      this.selectedJobRoles = vacanciesFromBackend;
+  private prefillFromData(data: string | Vacancy[]) {
+    if (Array.isArray(data)) {
+      this.selectedJobRoles = data;
       return;
     }
 
-    if ([jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW].includes(vacanciesFromBackend as jobOptionsEnum)) {
-      this.selectedNoOrDoNotKnow = vacanciesFromBackend as jobOptionsEnum;
-      this.form.patchValue({ noOrDoNotKnow: vacanciesFromBackend });
+    if ([jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW].includes(data as jobOptionsEnum)) {
+      this.selectedNoOrDoNotKnow = data as jobOptionsEnum;
+      this.form.patchValue({ noOrDoNotKnow: data });
     }
   }
 
@@ -188,7 +199,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
       }
       case 'max':
       case 'pattern': {
-        return `Number of current staff vacancies must be between 1 and 999 (${jobRoleTitleInLowerCase})`;
+        return `Number of vacancies must be between 1 and 999 (${jobRoleTitleInLowerCase})`;
       }
     }
   }
@@ -243,8 +254,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
-    const userSelectedNoneOrDoNotKnow = this.form.get('noOrDoNotKnow').value !== null;
-    if (userSelectedNoneOrDoNotKnow) {
+    if (this.selectedNoOrDoNotKnow) {
       return { vacancies: this.form.get('noOrDoNotKnow').value };
     }
 
@@ -259,9 +269,14 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     return { vacancies: updatedVacancies };
   }
 
-  public onSubmit() {
+  private forceTriggerValidatorOfRadioButtons() {
     this.form.controls['noOrDoNotKnow'].updateValueAndValidity();
+  }
+
+  public onSubmit() {
     this.submitted = true;
+    this.forceTriggerValidatorOfRadioButtons();
+
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
     if (!this.form.valid) {
