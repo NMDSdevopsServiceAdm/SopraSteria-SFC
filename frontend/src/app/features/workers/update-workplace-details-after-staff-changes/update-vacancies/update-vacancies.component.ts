@@ -19,6 +19,7 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { NumberInputWithButtonsComponent } from '@shared/components/number-input-with-buttons/number-input-with-buttons.component';
+import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-update-vacancies',
@@ -86,7 +87,10 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   public setupForm() {
     this.form = this.formBuilder.group({
       jobRoleNumbers: this.formBuilder.array([]),
-      noOrDoNotKnow: this.formBuilder.control(null),
+      noOrDoNotKnow: this.formBuilder.control(null, {
+        validators: [CustomValidators.validateJobRoleAddedOrUserChoseNoOrDoNotKnow()],
+        updateOn: 'submit',
+      }),
     });
   }
 
@@ -122,6 +126,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
           Validators.required,
           Validators.min(this.minNumberPerJobRole),
           Validators.max(this.maxNumberPerJobRole),
+          Validators.pattern('^[0-9]+$'),
         ],
         updateOn: 'submit',
       }),
@@ -136,12 +141,23 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     const errorMapForJobRoles = this.selectedJobRoles.map((jobRole, index) =>
       this.buildErrorMapForJobRole(jobRole, index),
     );
+    const errorMapForNoOrDoNotKnow = [
+      {
+        item: 'noOrDoNotKnow',
+        type: [
+          {
+            name: 'required',
+            message: 'Select there are no current staff vacancies or do not know',
+          },
+        ],
+      },
+    ];
 
-    this.formErrorsMap = [...errorMapForJobRoles];
+    this.formErrorsMap = [...errorMapForJobRoles, ...errorMapForNoOrDoNotKnow];
   }
 
   private buildErrorMapForJobRole(jobRole: Vacancy, index: number): ErrorDetails {
-    const errorTypes = ['required', 'min', 'max'];
+    const errorTypes = ['required', 'min', 'max', 'pattern'];
 
     const errorMap = {
       item: `jobRoleNumbers.${index}`,
@@ -162,8 +178,9 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
       case 'min': {
         return `Enter the number of current staff vacancies or remove ${jobRoleTitleInLowerCase}`;
       }
-      case 'max': {
-        return `Number of vacancies must be between 1 and 999 (${jobRoleTitleInLowerCase})`;
+      case 'max':
+      case 'pattern': {
+        return `Number of current staff vacancies must be between 1 and 999 (${jobRoleTitleInLowerCase})`;
       }
     }
   }
@@ -230,6 +247,8 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   }
 
   public onSubmit() {
+    // this.form.controls['noOrDoNotKnow'].markAsTouched();
+    this.form.controls['noOrDoNotKnow'].updateValueAndValidity();
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 
