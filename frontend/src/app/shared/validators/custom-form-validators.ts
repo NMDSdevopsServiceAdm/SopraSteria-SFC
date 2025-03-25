@@ -1,5 +1,6 @@
 import { AbstractControl, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { FILE_UPLOAD_TYPES } from '@core/constants/constants';
+import { jobOptionsEnum } from '@core/model/establishment.model';
 
 export class CustomValidators extends Validators {
   static maxWords(limit: number): ValidatorFn {
@@ -152,6 +153,31 @@ export class CustomValidators extends Validators {
       } else {
         return { selectedNone: true };
       }
+    };
+
+    return validatorFunction;
+  }
+
+  static validateJobRoleAddedOrUserChoseNoOrDoNotKnow(): ValidatorFn {
+    const validatorFunction = (formControl: AbstractControl) => {
+      const wholeForm = formControl.parent;
+      const jobRoleNumbers = wholeForm?.value?.jobRoleNumbers ?? [];
+      const noOrDoNotKnow = formControl.value;
+
+      if ([jobOptionsEnum.DONT_KNOW, jobOptionsEnum.NONE].includes(noOrDoNotKnow)) {
+        return null;
+      }
+
+      const atLeastOneJobRoleAdded = jobRoleNumbers.length > 0;
+      const jobRoleNumberIsValid = (jobRoleNumber: number | string) => {
+        return Number(jobRoleNumber) > 0;
+      };
+
+      if (atLeastOneJobRoleAdded && jobRoleNumbers.every(jobRoleNumberIsValid)) {
+        return null;
+      }
+
+      return { required: true };
     };
 
     return validatorFunction;

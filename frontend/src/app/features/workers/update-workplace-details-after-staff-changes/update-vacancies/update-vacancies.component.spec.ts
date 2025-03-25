@@ -398,21 +398,64 @@ fdescribe('UpdateVacanciesComponent', () => {
     });
 
     describe('validation', () => {
-      it('should show an error when user input "0" for a job role number', async () => {
+      const testCases = [
+        { inputValue: '0', expectedErrorMessage: 'Enter the number of current staff vacancies or remove care worker' },
+        { inputValue: '', expectedErrorMessage: 'Enter the number of current staff vacancies or remove care worker' },
+        {
+          inputValue: 'apple',
+          expectedErrorMessage: 'Number of current staff vacancies must be between 1 and 999 (care worker)',
+        },
+        {
+          inputValue: '9999',
+          expectedErrorMessage: 'Number of current staff vacancies must be between 1 and 999 (care worker)',
+        },
+      ];
+
+      testCases.forEach(({ inputValue, expectedErrorMessage }) => {
+        it(`should show an error when user input "${inputValue}" for a job role`, async () => {
+          const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup({
+            vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
+          });
+
+          await fillInValueForJobRole('Care worker', inputValue);
+
+          userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+          fixture.detectChanges();
+
+          expect(getByText('There is a problem')).toBeTruthy();
+          expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+          expect(updateJobsSpy).not.toHaveBeenCalled();
+        });
+      });
+
+      it('should show an error when no job roles were added and user did not chose "No" or "Do not know"', async () => {
+        const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup({
+          workplace: mockFreshWorkplace,
+        });
+        const expectedErrorMessage = 'Select there are no current staff vacancies or do not know';
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        fixture.detectChanges();
+        expect(getByText('There is a problem')).toBeTruthy();
+        expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+        expect(updateJobsSpy).not.toHaveBeenCalled();
+      });
+
+      it('should show an error when user entered "0" for a job role and did not chose "No" or "Do not know"', async () => {
         const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup({
           vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
         });
 
         await fillInValueForJobRole('Care worker', '0');
-
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
         fixture.detectChanges();
 
-        const expectedErrorMsg = 'Enter the number of current staff vacancies or remove care worker';
-
+        const expectedErrorMessage = 'Select there are no current staff vacancies or do not know';
         expect(getByText('There is a problem')).toBeTruthy();
-        expect(getAllByText(expectedErrorMsg)).toHaveSize(2);
+        expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
     });
