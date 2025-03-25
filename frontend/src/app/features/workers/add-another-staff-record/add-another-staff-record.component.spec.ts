@@ -1,30 +1,27 @@
-import { render } from '@testing-library/angular';
-import { AddAnotherStaffRecordComponent } from './add-another-staff-record.component'
-import userEvent from '@testing-library/user-event';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
+import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
-import { ReactiveFormsModule, UntypedFormBuilder } from '@angular/forms';
+import { render } from '@testing-library/angular';
+import userEvent from '@testing-library/user-event';
 
+import { AddAnotherStaffRecordComponent } from './add-another-staff-record.component';
 
 describe('AddAnotherStaffRecordComponent', () => {
   async function setup() {
-    const setupTools = await render(
-      AddAnotherStaffRecordComponent,
-      {
-        imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
-        providers: [
-          UntypedFormBuilder,
-          {
-            provide: EstablishmentService,
-            useClass: MockEstablishmentService
-          },
-        ]
-      }
-    );
+    const setupTools = await render(AddAnotherStaffRecordComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, ReactiveFormsModule],
+      providers: [
+        UntypedFormBuilder,
+        {
+          provide: EstablishmentService,
+          useClass: MockEstablishmentService,
+        },
+      ],
+    });
 
     const component = setupTools.fixture.componentInstance;
 
@@ -35,10 +32,9 @@ describe('AddAnotherStaffRecordComponent', () => {
     return {
       ...setupTools,
       component,
-      navigateSpy
+      navigateSpy,
     };
   }
-
 
   it('renders a component', async () => {
     const { component } = await setup();
@@ -46,19 +42,19 @@ describe('AddAnotherStaffRecordComponent', () => {
   });
 
   it('displays the header text', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
 
     expect(getByText('Do you want to add another staff record?')).toBeTruthy();
   });
 
   it('displays the section text', async () => {
-    const { component, getByText } = await setup();
+    const { getByText } = await setup();
 
     expect(getByText('Staff records')).toBeTruthy();
   });
 
   it('displays the yes/no radio buttons', async () => {
-    const { component, fixture, getByLabelText } = await setup();
+    const { getByLabelText } = await setup();
 
     const yesRadioButton = getByLabelText('Yes');
     const noRadioButton = getByLabelText('No');
@@ -68,8 +64,6 @@ describe('AddAnotherStaffRecordComponent', () => {
     expect(yesRadioButton).toBeTruthy();
     expect(noRadioButton).toBeTruthy();
   });
-
-
 
   describe('continue button', () => {
     it('is rendered', async () => {
@@ -89,7 +83,7 @@ describe('AddAnotherStaffRecordComponent', () => {
         'mocked-uid',
         'staff-record',
         'create-staff-record',
-        'staff-details'
+        'staff-details',
       ]);
     });
 
@@ -104,7 +98,7 @@ describe('AddAnotherStaffRecordComponent', () => {
         '/workplace',
         'mocked-uid',
         'staff-record',
-        'update-workplace-details-after-staff-changes'
+        'update-workplace-details-after-adding-staff',
       ]);
     });
 
@@ -118,8 +112,8 @@ describe('AddAnotherStaffRecordComponent', () => {
         '/workplace',
         'mocked-uid',
         'staff-record',
-        'update-workplace-details-after-staff-changes'
+        'update-workplace-details-after-adding-staff',
       ]);
     });
   });
-})
+});
