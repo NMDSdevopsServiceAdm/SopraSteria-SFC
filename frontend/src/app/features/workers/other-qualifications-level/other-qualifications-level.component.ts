@@ -74,12 +74,22 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
   onSubmit(): void {
     super.onSubmit();
 
-    if (this.insideFlow) {
-      this.workerService.hasCompletedStaffRecordFlow = true;
-      this.alertService.addAlert({
-        type: 'success',
-        message: 'Staff record saved',
-      });
+    if (!this.submitted && this.insideFlow) {
+      this.setCompletedStaffFlowAndAddAlert();
     }
+  }
+
+  addAlert(): void {
+    if (this.insideFlow) {
+      this.setCompletedStaffFlowAndAddAlert();
+    }
+  }
+
+  setCompletedStaffFlowAndAddAlert(): void {
+    this.workerService.hasCompletedStaffRecordFlow = true;
+    this.alertService.addAlert({
+      type: 'success',
+      message: 'Staff record saved',
+    });
   }
 }
