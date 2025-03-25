@@ -1,14 +1,14 @@
 import lodash from 'lodash';
 
 import {
+  AfterViewInit,
   ChangeDetectorRef,
   Component,
   ElementRef,
+  OnInit,
   QueryList,
   ViewChild,
   ViewChildren,
-  OnInit,
-  AfterViewInit,
 } from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -35,6 +35,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   public formErrorsMap: Array<ErrorDetails> = [];
   public submitted = false;
   public selectedJobRoles: Array<Vacancy> = [];
+  public selectedNoOrDoNotKnow: jobOptionsEnum = null;
   public totalNumber: number = 0;
 
   public minNumberPerJobRole = 1;
@@ -50,6 +51,12 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
       value: jobOptionsEnum.DONT_KNOW,
     },
   ];
+
+  public messageWhenNoJobRoleSelected = {
+    None: 'You have no current staff vacancies.',
+    DoNotKnow: 'You do not know if there are any current staff vacancies.',
+    Default: "You've not added any current staff vacancies. ",
+  };
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -114,8 +121,13 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     }
 
     if ([jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW].includes(vacanciesFromBackend as jobOptionsEnum)) {
+      this.selectedNoOrDoNotKnow = vacanciesFromBackend as jobOptionsEnum;
       this.form.patchValue({ noOrDoNotKnow: vacanciesFromBackend });
     }
+  }
+
+  get jobRoleNumbers(): UntypedFormArray {
+    return this.form.get('jobRoleNumbers') as UntypedFormArray;
   }
 
   private createJobRoleFormControl = (jobRole: Vacancy) => {
@@ -132,10 +144,6 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
       }),
     );
   };
-
-  get jobRoleNumbers(): UntypedFormArray {
-    return this.form.get('jobRoleNumbers') as UntypedFormArray;
-  }
 
   public setupFormErrorsMap() {
     const errorMapForJobRoles = this.selectedJobRoles.map((jobRole, index) =>
@@ -222,6 +230,11 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     this.router.navigate(['../update-vacancies-job-roles'], { relativeTo: this.route });
   };
 
+  public handleClickedNoOrDoNotKnow = (value: jobOptionsEnum) => {
+    this.selectedNoOrDoNotKnow = value;
+    this.removeAllSelectedJobRoles();
+  };
+
   private updateTotalNumber(): void {
     const allJobRoleNumbers =
       this.numberInputs?.map((input) => input.currentNumber).filter((number) => !isNaN(number)) ?? [];
@@ -247,7 +260,6 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   }
 
   public onSubmit() {
-    // this.form.controls['noOrDoNotKnow'].markAsTouched();
     this.form.controls['noOrDoNotKnow'].updateValueAndValidity();
     this.submitted = true;
     this.errorSummaryService.syncFormErrorsEvent.next(true);

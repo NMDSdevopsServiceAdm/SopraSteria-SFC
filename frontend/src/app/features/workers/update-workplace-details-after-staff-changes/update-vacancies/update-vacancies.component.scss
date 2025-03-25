@@ -17,6 +17,11 @@
   }
 }
 
+.asc-no-job-roles-msg {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
 .asc-grid-row {
   display: grid;
   grid-template-columns: 1fr 125px calc(290px - 125px - 1.5em);
