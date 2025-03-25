@@ -81,6 +81,8 @@ describe('StaffRecordComponent', () => {
     const workerSpy = spyOn(workerService, 'setReturnTo');
     workerSpy.and.callThrough();
 
+    const clearHasCompletedStaffRecordFlowSpy = spyOn(workerService, 'clearHasCompletedStaffRecordFlow');
+
     const workplaceUid = component.workplace.uid;
     const workerUid = component.worker.uid;
 
@@ -96,6 +98,7 @@ describe('StaffRecordComponent', () => {
       workplaceUid,
       workerUid,
       alertSpy,
+      clearHasCompletedStaffRecordFlowSpy,
     };
   }
 
@@ -264,6 +267,50 @@ describe('StaffRecordComponent', () => {
         });
 
         expect(updateWorkerSpy).not.toHaveBeenCalled();
+      });
+    });
+
+    describe('Clearing hasCompletedStaffRecordFlow', () => {
+      it('should clear hasCompletedStaffRecordFlow when user clicks on link outside of Add/Change buttons', async () => {
+        const { getByText, clearHasCompletedStaffRecordFlowSpy } = await setup({
+          workerService: {
+            hasCompletedStaffRecordFlow: true,
+            worker: { completed: false },
+          },
+        });
+
+        const flagLongTermAbsenceLink = getByText('Flag long-term absence');
+        fireEvent.click(flagLongTermAbsenceLink);
+
+        expect(clearHasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
+      });
+
+      it('should not clear hasCompletedStaffRecordFlow page when user clicks on an Add/Change button', async () => {
+        const { getAllByText, clearHasCompletedStaffRecordFlowSpy } = await setup({
+          workerService: {
+            hasCompletedStaffRecordFlow: true,
+            worker: { completed: false },
+          },
+        });
+
+        const changeLinks = getAllByText('Change', { selector: 'a' });
+        fireEvent.click(changeLinks[0]);
+
+        expect(clearHasCompletedStaffRecordFlowSpy).not.toHaveBeenCalled();
+      });
+
+      it('should not clear hasCompletedStaffRecordFlow page when user clicks on Continue button', async () => {
+        const { getAllByText, clearHasCompletedStaffRecordFlowSpy } = await setup({
+          workerService: {
+            hasCompletedStaffRecordFlow: true,
+            worker: { completed: false },
+          },
+        });
+
+        const continueButtons = getAllByText('Continue');
+        fireEvent.click(continueButtons[0]);
+
+        expect(clearHasCompletedStaffRecordFlowSpy).not.toHaveBeenCalled();
       });
     });
   });

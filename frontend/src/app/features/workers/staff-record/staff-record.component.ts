@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, NavigationStart, Router } from '@angular/router';
 import { JourneyType } from '@core/breadcrumb/breadcrumb.model';
 import { Establishment } from '@core/model/establishment.model';
 import { URLStructure } from '@core/model/url.model';
@@ -46,6 +46,10 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.hasCompletedStaffRecordFlow = this.workerService.hasCompletedStaffRecordFlow;
     this.workplace = this.route.parent.snapshot.data.establishment;
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
+
+    if (this.hasCompletedStaffRecordFlow) {
+      this.trackNavigationToClearHasCompletedStaffRecordFlow();
+    }
 
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
@@ -105,6 +109,18 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
           console.log(error);
         },
       ),
+    );
+  }
+
+  private trackNavigationToClearHasCompletedStaffRecordFlow(): void {
+    this.subscriptions.add(
+      this.router.events.subscribe((event) => {
+        if (event instanceof NavigationStart) {
+          if (!event.url?.includes('staff-record-summary') || event.url?.includes('add-another-staff-record')) {
+            this.workerService.clearHasCompletedStaffRecordFlow();
+          }
+        }
+      }),
     );
   }
 
