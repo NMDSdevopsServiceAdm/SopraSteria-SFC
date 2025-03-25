@@ -91,17 +91,17 @@
           <hr class="govuk-section-break govuk-section-break--visible" />
 
           <div class="govuk-radios govuk-!-margin-top-6">
-            <div class="govuk-radios__item" *ngFor="let option of knownOptions; let i = index">
+            <div class="govuk-radios__item" *ngFor="let option of knownOptions; let index = index">
               <input
                 class="govuk-radios__input"
-                id="startersLeaversVacanciesKnown-{{ i }}"
-                name="startersLeaversVacanciesKnown"
+                id="noOrDoNotKnow-{{ index }}"
+                name="noOrDoNotKnow"
                 type="radio"
                 [value]="option.value"
                 (click)="removeAllSelectedJobRoles()"
-                [formControlName]="'startersLeaversVacanciesKnown'"
+                [formControlName]="'noOrDoNotKnow'"
               />
-              <label class="govuk-label govuk-radios__label" for="startersLeaversVacanciesKnown-{{ i }}">
+              <label class="govuk-label govuk-radios__label" for="noOrDoNotKnow-{{ index }}">
                 {{ option.label }}
               </label>
             </div>

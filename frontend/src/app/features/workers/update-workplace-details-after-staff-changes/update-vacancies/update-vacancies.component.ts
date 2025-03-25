@@ -1,6 +1,15 @@
 import lodash from 'lodash';
 
-import { ChangeDetectorRef, Component, ElementRef, QueryList, ViewChild, ViewChildren } from '@angular/core';
+import {
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  QueryList,
+  ViewChild,
+  ViewChildren,
+  OnInit,
+  AfterViewInit,
+} from '@angular/core';
 import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -16,7 +25,7 @@ import { NumberInputWithButtonsComponent } from '@shared/components/number-input
   templateUrl: './update-vacancies.component.html',
   styleUrl: './update-vacancies.component.scss',
 })
-export class UpdateVacanciesComponent {
+export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   @ViewChildren('numberInputRef') numberInputs: QueryList<NumberInputWithButtonsComponent>;
   @ViewChild('formEl') formEl: ElementRef;
 
@@ -77,75 +86,8 @@ export class UpdateVacanciesComponent {
   public setupForm() {
     this.form = this.formBuilder.group({
       jobRoleNumbers: this.formBuilder.array([]),
-      startersLeaversVacanciesKnown: this.formBuilder.control(null),
+      noOrDoNotKnow: this.formBuilder.control(null),
     });
-  }
-
-  private createJobRoleFormControl = (jobRole: Vacancy) => {
-    const initialValue = jobRole.total ?? '';
-    this.jobRoleNumbers.push(
-      this.formBuilder.control(initialValue, {
-        validators: [
-          Validators.required,
-          Validators.min(this.minNumberPerJobRole),
-          Validators.max(this.maxNumberPerJobRole),
-        ],
-        updateOn: 'submit',
-      }),
-    );
-  };
-
-  get jobRoleNumbers(): UntypedFormArray {
-    return this.form.get('jobRoleNumbers') as UntypedFormArray;
-  }
-
-  public setupFormErrorsMap() {
-    const errorMapForJobRoles = this.selectedJobRoles.map((jobRole, index) =>
-      this.buildErrorsMapForJobRole(jobRole, index),
-    );
-
-    this.formErrorsMap = [...errorMapForJobRoles];
-  }
-
-  private buildErrorsMapForJobRole(jobRole: Vacancy, index: number): ErrorDetails {
-    const errorTypes = ['required', 'min', 'max'];
-
-    const errorMap = {
-      item: `jobRoleNumbers.${index}`,
-      type: errorTypes.map((errorType) => ({
-        name: errorType,
-        message: this.getErrorMessageForJobRole(jobRole, errorType),
-      })),
-    };
-
-    return errorMap;
-  }
-
-  protected getErrorMessageForJobRole(jobRole: Vacancy, errorType: string, inline: boolean = false) {
-    const jobRoleTitleInLowerCase = jobRole.title.toLowerCase();
-
-    switch (errorType) {
-      case 'required':
-      case 'min': {
-        return `Enter the number of current staff vacancies or remove ${jobRoleTitleInLowerCase}`;
-      }
-      case 'max': {
-        if (inline) {
-          return `Number of vacancies must be between 1 and 999`;
-        }
-
-        return `Number of vacancies must be between 1 and 999 (${jobRoleTitleInLowerCase})`;
-      }
-    }
-  }
-
-  public getFirstErrorMessage(item: string): string {
-    const errorType = Object.keys(this.form.get(item).errors)[0];
-    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
-  }
-
-  public setBackLink() {
-    this.backlinkService.showBackLink();
   }
 
   public prefill() {
@@ -168,8 +110,71 @@ export class UpdateVacanciesComponent {
     }
 
     if ([jobOptionsEnum.NONE, jobOptionsEnum.DONT_KNOW].includes(vacanciesFromBackend as jobOptionsEnum)) {
-      this.form.patchValue({ startersLeaversVacanciesKnown: vacanciesFromBackend });
+      this.form.patchValue({ noOrDoNotKnow: vacanciesFromBackend });
     }
+  }
+
+  private createJobRoleFormControl = (jobRole: Vacancy) => {
+    const initialValue = jobRole.total ?? '';
+    this.jobRoleNumbers.push(
+      this.formBuilder.control(initialValue, {
+        validators: [
+          Validators.required,
+          Validators.min(this.minNumberPerJobRole),
+          Validators.max(this.maxNumberPerJobRole),
+        ],
+        updateOn: 'submit',
+      }),
+    );
+  };
+
+  get jobRoleNumbers(): UntypedFormArray {
+    return this.form.get('jobRoleNumbers') as UntypedFormArray;
+  }
+
+  public setupFormErrorsMap() {
+    const errorMapForJobRoles = this.selectedJobRoles.map((jobRole, index) =>
+      this.buildErrorMapForJobRole(jobRole, index),
+    );
+
+    this.formErrorsMap = [...errorMapForJobRoles];
+  }
+
+  private buildErrorMapForJobRole(jobRole: Vacancy, index: number): ErrorDetails {
+    const errorTypes = ['required', 'min', 'max'];
+
+    const errorMap = {
+      item: `jobRoleNumbers.${index}`,
+      type: errorTypes.map((errorType) => ({
+        name: errorType,
+        message: this.getErrorMessageForJobRole(jobRole, errorType),
+      })),
+    };
+
+    return errorMap;
+  }
+
+  protected getErrorMessageForJobRole(jobRole: Vacancy, errorType: string) {
+    const jobRoleTitleInLowerCase = jobRole.title.toLowerCase();
+
+    switch (errorType) {
+      case 'required':
+      case 'min': {
+        return `Enter the number of current staff vacancies or remove ${jobRoleTitleInLowerCase}`;
+      }
+      case 'max': {
+        return `Number of vacancies must be between 1 and 999 (${jobRoleTitleInLowerCase})`;
+      }
+    }
+  }
+
+  public getFirstErrorMessage(item: string): string {
+    const errorType = Object.keys(this.form.get(item).errors)[0];
+    return this.errorSummaryService.getFormErrorMessage(item, errorType, this.formErrorsMap);
+  }
+
+  public setBackLink() {
+    this.backlinkService.showBackLink();
   }
 
   public removeJobRole = (jobRoleIndex: number) => {
@@ -186,7 +191,7 @@ export class UpdateVacanciesComponent {
     this.jobRoleNumbers.clear();
   };
 
-  private updateSelectedJobRolesNumber = () => {
+  private syncSelectedJobRolesNumberWithFormInput = () => {
     this.numberInputs.forEach((numberInput, index) => {
       const currentNumber = isNaN(numberInput.currentNumber) ? 0 : numberInput.currentNumber;
       this.selectedJobRoles[index].total = currentNumber;
@@ -194,7 +199,7 @@ export class UpdateVacanciesComponent {
   };
 
   public handleAddJobRole = () => {
-    this.updateSelectedJobRolesNumber();
+    this.syncSelectedJobRolesNumberWithFormInput();
     this.updateWorkplaceAfterStaffChangesService.selectedVacancies = this.selectedJobRoles;
 
     this.router.navigate(['../update-vacancies-job-roles'], { relativeTo: this.route });
@@ -208,9 +213,9 @@ export class UpdateVacanciesComponent {
   }
 
   protected generateUpdateProps(): UpdateJobsRequest {
-    const userSelectedNoneOrDoNotKnow = this.form.get('startersLeaversVacanciesKnown').value !== null;
+    const userSelectedNoneOrDoNotKnow = this.form.get('noOrDoNotKnow').value !== null;
     if (userSelectedNoneOrDoNotKnow) {
-      return { vacancies: this.form.get('startersLeaversVacanciesKnown').value };
+      return { vacancies: this.form.get('noOrDoNotKnow').value };
     }
 
     const updatedVacancies = this.selectedJobRoles.map((job, index) => {
