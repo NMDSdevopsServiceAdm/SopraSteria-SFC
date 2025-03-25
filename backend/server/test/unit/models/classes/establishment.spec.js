@@ -1,12 +1,12 @@
-const expect = require('chai').expect;
-const sinon = require('sinon');
 const models = require('../../../../models');
+const sinon = require('sinon');
+const expect = require('chai').expect;
 const Establishment = require('../../../../models/classes/establishment').Establishment;
 const WdfCalculator = require('../../../../models/classes/wdfCalculator').WdfCalculator;
 
-describe('Establishment Class', () => {
-  let establishment;
+let establishment;
 
+describe('Establishment Class', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -46,10 +46,11 @@ describe('Establishment Class', () => {
     });
   });
 
-  describe('save', () => {
+  describe('save()', () => {
     let transaction = {};
     const timestamp = new Date();
     const theLoggedInUser = '';
+    const postCode = 'CA1 1AA';
 
     function updateEstablishmentProperties() {
       sinon
@@ -60,7 +61,7 @@ describe('Establishment Class', () => {
         .returns({ property: { id: 16, name: 'Head office services' } });
 
       establishment._address1 = 'address 1';
-      establishment._postcode = 'LS1 5AA';
+      establishment._postcode = postCode;
       establishment._isRegulated = false;
       establishment._workerEntities = null;
     }
@@ -68,13 +69,24 @@ describe('Establishment Class', () => {
     beforeEach(() => {
       const la = {
         cssrRecord: {
-          id: 123,
-          name: 'Kirklees',
-          nmdsIdLetter: 'J',
+          id: 102,
+          name: 'Cumbria',
+          nmdsIdLetter: 'F',
         },
       };
 
-      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').resolves([{ postcode: 'HD1 1DA', ...la }]);
+      sinon.stub(models.sequelize, 'query').resolves([{ nextval: 1005126 }]);
+      sinon.stub(models.sequelize, 'transaction').callsFake((dbOperations) => dbOperations());
+
+      let postCodeResponse = { postcode: postCode, ...la };
+
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsCompleteMatch').callsFake(async () => {
+        return postCodeResponse;
+      });
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsFromPostcode').resolves([postCodeResponse]);
+      sinon.stub(models.pcodedata, 'getLinkedCssrRecordsLooseMatch').callsFake(async () => {
+        console.log('This should not be hit');
+      });
 
       const createdEstablishment = {
         get() {
@@ -90,9 +102,11 @@ describe('Establishment Class', () => {
       it('should call the database to update currentEligibility if created via bulk upload and eligible', async () => {
         establishment = new Establishment('admin', 'NEW');
         updateEstablishmentProperties();
+
         sinon.stub(establishment, 'isWdfEligible').returns({
           currentEligibility: true,
         });
+
         const updateFundingEligibilitySpy = sinon.stub(models.establishment, 'update');
         const establishmentAuditSpy = sinon.stub(models.establishmentAudit, 'create').resolves(true);
 
@@ -105,9 +119,11 @@ describe('Establishment Class', () => {
       it('should not call the database to update currentEligibility if created via bulk upload and not eligible', async () => {
         establishment = new Establishment('admin', 'NEW');
         updateEstablishmentProperties();
+
         sinon.stub(establishment, 'isWdfEligible').returns({
           currentEligibility: false,
         });
+
         const updateFundingEligibilitySpy = sinon.stub(models.establishment, 'update');
         const establishmentAuditSpy = sinon.stub(models.establishmentAudit, 'create').resolves(true);
 
@@ -121,7 +137,7 @@ describe('Establishment Class', () => {
         establishment = new Establishment('admin', null);
         updateEstablishmentProperties();
 
-        sinon.stub(WdfCalculator, 'calculate');
+        sinon.stub(WdfCalculator, 'calculate').resolves();
 
         const isWdfEligibleSpy = sinon.stub(establishment, 'isWdfEligible');
         const updateFundingEligibilitySpy = sinon.stub(models.establishment, 'update');
