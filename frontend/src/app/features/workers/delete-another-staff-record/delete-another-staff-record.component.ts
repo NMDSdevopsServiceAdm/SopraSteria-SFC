@@ -27,7 +27,7 @@ export class DeleteAnotherStaffRecordComponent implements OnInit{
     this.workplaceUid = this.establishmentService.establishment.uid;
   }
 
-  public onSubmit() {
+  public onSubmit(): void {
     if (this.form.controls['deleteAnotherStaffRecord'].value === 'YES') {
       this.router.navigate(['/dashboard'], {fragment: 'staff-records'});
     } else {
