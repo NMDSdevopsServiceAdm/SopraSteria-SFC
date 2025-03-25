@@ -2,7 +2,6 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Establishment } from '@core/model/establishment.model';
-import { Worker } from '@core/model/worker.model';
 import { AlertService } from '@core/services/alert.service';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { DialogService } from '@core/services/dialog.service';
@@ -15,7 +14,7 @@ import { MockBreadcrumbService } from '@core/test-utils/MockBreadcrumbService';
 import { establishmentBuilder } from '@core/test-utils/MockEstablishmentService';
 import { MockFeatureFlagsService } from '@core/test-utils/MockFeatureFlagService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerServiceWithUpdateWorker, workerBuilder } from '@core/test-utils/MockWorkerService';
+import { MockWorkerServiceWithOverrides } from '@core/test-utils/MockWorkerService';
 import { FeatureFlagsService } from '@shared/services/feature-flags.service';
 import { SharedModule } from '@shared/shared.module';
 import { fireEvent, render } from '@testing-library/angular';
@@ -27,7 +26,6 @@ describe('StaffRecordComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   async function setup(overrides: any = {}) {
     const isParent = overrides.isParent ?? true;
-    const worker = { ...workerBuilder(), ...overrides.worker } as Worker;
     const permissions = overrides.permissions ?? ['canEditWorker', 'canDeleteWorker'];
 
     const workplace = establishmentBuilder() as Establishment;
@@ -54,7 +52,7 @@ describe('StaffRecordComponent', () => {
         },
         {
           provide: WorkerService,
-          useFactory: MockWorkerServiceWithUpdateWorker.factory(worker),
+          useFactory: MockWorkerServiceWithOverrides.factory(overrides.workerService),
         },
         {
           provide: EstablishmentService,
@@ -112,7 +110,7 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render a Continue button at top and bottom of page when worker.completed is false and canEditWorker is true', async () => {
-    const { getAllByText } = await setup({ worker: { completed: false } });
+    const { getAllByText } = await setup({ workerService: { worker: { completed: false } } });
 
     const continueButtons = getAllByText('Continue');
 
@@ -120,7 +118,7 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should not render the Continue record button when worker.completed is false and canEditWorker is false', async () => {
-    const { queryByText } = await setup({ worker: { completed: false }, permissions: [] });
+    const { queryByText } = await setup({ workerService: { worker: { completed: false } }, permissions: [] });
 
     const button = queryByText('Continue');
     const flagLongTermAbsenceLink = queryByText('Flag long-term absence');
@@ -134,7 +132,7 @@ describe('StaffRecordComponent', () => {
   [true, false].forEach((completedValue) => {
     it(`should render the delete record link, add training link and flag long term absence link, when worker.completed is ${completedValue}`, async () => {
       const { queryByText, getByText, getByTestId, getByRole, workplaceUid, workerUid } = await setup({
-        worker: { completed: completedValue, longTermAbsence: null },
+        workerService: { worker: { completed: completedValue, longTermAbsence: null } },
       });
 
       const button = queryByText('Confirm record details');
@@ -164,7 +162,7 @@ describe('StaffRecordComponent', () => {
   });
 
   it('should render the training and qualifications link with the correct href', async () => {
-    const { getByTestId, workplaceUid, workerUid } = await setup({ worker: { completed: true } });
+    const { getByTestId, workplaceUid, workerUid } = await setup({ workerService: { worker: { completed: true } } });
 
     const link = getByTestId('training-and-qualifications-link');
     expect(link.getAttribute('href')).toEqual(
@@ -174,7 +172,9 @@ describe('StaffRecordComponent', () => {
 
   describe('Long-Term Absence', () => {
     it('should display the Long-Term Absence if the worker is currently flagged as long term absent', async () => {
-      const { getByText, queryByText } = await setup({ worker: { completed: true, longTermAbsence: 'Illness' } });
+      const { getByText, queryByText } = await setup({
+        workerService: { worker: { completed: true, longTermAbsence: 'Illness' } },
+      });
 
       expect(getByText('Long-term absent')).toBeTruthy();
       expect(queryByText('Flag long-term absence')).toBeFalsy();
@@ -182,7 +182,7 @@ describe('StaffRecordComponent', () => {
 
     it('should navigate to `long-term-absence` when pressing the "view" button', async () => {
       const { getByTestId, workplaceUid, workerUid } = await setup({
-        worker: { completed: true, longTermAbsence: 'Illness' },
+        workerService: { worker: { completed: true, longTermAbsence: 'Illness' } },
       });
 
       const longTermAbsenceLink = getByTestId('longTermAbsence');
@@ -194,14 +194,14 @@ describe('StaffRecordComponent', () => {
 
   describe('Flag long-term absence', () => {
     it('should display the "Flag long-term absence" link if the worker is not currently flagged as long term absent', async () => {
-      const { getByText } = await setup({ worker: { completed: true, longTermAbsence: null } });
+      const { getByText } = await setup({ workerService: { worker: { completed: true, longTermAbsence: null } } });
 
       expect(getByText('Flag long-term absence')).toBeTruthy();
     });
 
     it('should navigate to `./long-term-absence` when pressing the "Flag long-term absence" button', async () => {
       const { getByTestId, workplaceUid, workerUid } = await setup({
-        worker: { completed: true, longTermAbsence: null },
+        workerService: { worker: { completed: true, longTermAbsence: null } },
       });
 
       const flagLongTermAbsenceLink = getByTestId('flagLongTermAbsence');
@@ -213,7 +213,9 @@ describe('StaffRecordComponent', () => {
 
   describe('saveAndComplete', () => {
     it('should call updateWorker on the worker service when Continue button is clicked', async () => {
-      const { workerService, getAllByText, workplaceUid, workerUid } = await setup({ worker: { completed: false } });
+      const { workerService, getAllByText, workplaceUid, workerUid } = await setup({
+        workerService: { worker: { completed: false } },
+      });
 
       const updateWorkerSpy = spyOn(workerService, 'updateWorker').and.callThrough();
 
@@ -224,7 +226,9 @@ describe('StaffRecordComponent', () => {
     });
 
     it('should navigate to the "Add another staff record" page when Continue button is clicked', async () => {
-      const { routerSpy, getAllByText, workplaceUid } = await setup({ worker: { completed: false } });
+      const { routerSpy, getAllByText, workplaceUid } = await setup({
+        workerService: { worker: { completed: false } },
+      });
 
       const continueButtons = getAllByText('Continue');
       fireEvent.click(continueButtons[0]);
@@ -235,7 +239,7 @@ describe('StaffRecordComponent', () => {
 
   describe('transfer staff record link', () => {
     it('should show the link when the primary workplace is a parent and has canEdit permissions', async () => {
-      const { getByText } = await setup({ worker: { completed: true } });
+      const { getByText } = await setup({ workerService: { worker: { completed: true } } });
 
       expect(getByText('Transfer staff record')).toBeTruthy();
     });
@@ -247,7 +251,7 @@ describe('StaffRecordComponent', () => {
     });
 
     it('should not show the link when the workplace is not a parent', async () => {
-      const { queryByText } = await setup({ isParent: false, worker: { completed: true } });
+      const { queryByText } = await setup({ isParent: false, workerService: { worker: { completed: true } } });
 
       expect(queryByText('Transfer staff record')).toBeFalsy();
     });
