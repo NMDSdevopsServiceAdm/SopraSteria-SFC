@@ -173,7 +173,7 @@ export class CustomValidators extends Validators {
         return Number(jobRoleNumber) > 0;
       };
 
-      if (atLeastOneJobRoleAdded && jobRoleNumbers.every(jobRoleNumberIsValid)) {
+      if (atLeastOneJobRoleAdded && jobRoleNumbers.some(jobRoleNumberIsValid)) {
         return null;
       }
 
