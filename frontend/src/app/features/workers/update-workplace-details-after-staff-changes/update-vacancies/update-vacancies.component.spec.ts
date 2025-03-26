@@ -598,6 +598,25 @@ fdescribe('UpdateVacanciesComponent', () => {
         expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
+
+      it('should not show the above error if at least one job role is added with a valid number', async () => {
+        const { fixture, getByRole, queryByText, updateJobsSpy } = await setup({
+          vacanciesFromSelectJobRolePages: [
+            { jobId: 10, title: 'Care worker', total: 1 },
+            { jobId: 23, title: 'Registered nurse', total: 1 },
+            { jobId: 27, title: 'Social worker', total: 1 },
+          ],
+        });
+
+        await fillInValueForJobRole('Care worker', '0');
+        await fillInValueForJobRole('Social worker', '0');
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        fixture.detectChanges();
+
+        expect(queryByText('Select there are no current staff vacancies or do not know')).toBeFalsy();
+        expect(updateJobsSpy).not.toHaveBeenCalled();
+      });
     });
   });
 
