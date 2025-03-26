@@ -53,7 +53,7 @@
               </p>
               <hr class="govuk-section-break govuk-section-break--visible" />
             </div>
-            <div *ngFor="let jobRole of selectedJobRoles; index as index">
+            <ng-container *ngFor="let jobRole of selectedJobRoles; index as index">
               <div
                 class="asc-grid-row govuk-form-group"
                 [class.govuk-form-group--error]="submitted && jobRoleNumbers.at(index).errors"
@@ -64,7 +64,7 @@
                   class="govuk-error-message"
                 >
                   <span class="govuk-visually-hidden">Error:</span>
-                  {{ getFirstErrorMessage('jobRoleNumbers.' + index) }}
+                  {{ getInlineErrorMessageForJobRole(jobRole, index) }}
                 </p>
                 <label class="govuk-label" [for]="'job-' + index"> {{ jobRole.title }} </label>
                 <app-number-input-with-buttons
@@ -88,7 +88,7 @@
                 </button>
               </div>
               <hr class="govuk-section-break govuk-section-break--visible" />
-            </div>
+            </ng-container>
           </div>
 
           <div class="govuk__grid govuk__justify-content-end">
