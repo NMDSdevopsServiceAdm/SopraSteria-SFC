@@ -9,14 +9,14 @@ import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-w
 import { establishmentBuilder, MockEstablishmentService } from '@core/test-utils/MockEstablishmentService';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 import { SharedModule } from '@shared/shared.module';
-import { render, screen } from '@testing-library/angular';
+import { render, screen, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { UpdateVacanciesComponent } from './update-vacancies.component';
 import { of } from 'rxjs';
 
 fdescribe('UpdateVacanciesComponent', () => {
-  const sixRegisterNursesAndFourSocialWorkers: Vacancy[] = [
+  const sixRegisteredNursesAndFourSocialWorkers: Vacancy[] = [
     {
       jobId: 23,
       title: 'Registered nurse',
@@ -31,7 +31,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
   const radioButtonLabels = {
     No: 'There are no current staff vacancies',
-    'Do not know': 'I do not know if there are any current staff vacancies',
+    DoNotKnow: 'I do not know if there are any current staff vacancies',
   };
 
   const mockWorkplaceWithNoVacancies = establishmentBuilder({ overrides: { vacancies: jobOptionsEnum.NONE } });
@@ -133,7 +133,7 @@ fdescribe('UpdateVacanciesComponent', () => {
     });
 
     it('should show the total number of vacancies', async () => {
-      const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
+      const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers } });
       const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
 
       fixture.detectChanges();
@@ -184,7 +184,7 @@ fdescribe('UpdateVacanciesComponent', () => {
       describe('before adding new job roles', () => {
         it('should show a number input and a remove button for every vacancy job role from database', async () => {
           const mockWorkplace = establishmentBuilder({
-            overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+            overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
           });
           const { getByTestId } = await setup({ workplace: mockWorkplace });
 
@@ -216,7 +216,7 @@ fdescribe('UpdateVacanciesComponent', () => {
             workplace: mockWorkplaceWithVacanciesNotKnown,
           });
 
-          const radioButton = getByLabelText(radioButtonLabels['Do not know']) as HTMLInputElement;
+          const radioButton = getByLabelText(radioButtonLabels.DoNotKnow) as HTMLInputElement;
           expect(radioButton.checked).toBe(true);
           expect(getByTestId('total-number').textContent).toEqual('0');
 
@@ -238,7 +238,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
           it('should show no job role selected instead of prefill from backend data, if user did not select any job roles in accordion page', async () => {
             const mockWorkplace = establishmentBuilder({
-              overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+              overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
             });
             const { queryByText, queryByLabelText, getByTestId } = await setup({
               vacanciesFromSelectJobRolePages: [],
@@ -260,7 +260,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
   describe('interaction', () => {
     it('should update the total number when the vacancy number of a job role is changed', async () => {
-      const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
+      const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers } });
       const { fixture, getByTestId } = await setup({ workplace: mockWorkplace });
 
       await fillInValueForJobRole('Registered nurse', '10');
@@ -284,7 +284,9 @@ fdescribe('UpdateVacanciesComponent', () => {
       });
 
       it('should store the current job role selections in service', async () => {
-        const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
+        const mockWorkplace = establishmentBuilder({
+          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+        });
         const { fixture, getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
           workplace: mockWorkplace,
         });
@@ -295,12 +297,14 @@ fdescribe('UpdateVacanciesComponent', () => {
         fixture.detectChanges();
 
         expect(updateWorkplaceAfterStaffChangesService.selectedVacancies).toEqual(
-          sixRegisterNursesAndFourSocialWorkers,
+          sixRegisteredNursesAndFourSocialWorkers,
         );
       });
 
       it('should bring along any changes made by user in current page', async () => {
-        const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
+        const mockWorkplace = establishmentBuilder({
+          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+        });
         const { fixture, getByRole, updateWorkplaceAfterStaffChangesService } = await setup({
           workplace: mockWorkplace,
         });
@@ -325,7 +329,9 @@ fdescribe('UpdateVacanciesComponent', () => {
 
     describe('remove button', () => {
       it('should remove a job role from the list when remove button is clicked', async () => {
-        const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
+        const mockWorkplace = establishmentBuilder({
+          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+        });
         const { fixture, queryByText, queryByLabelText } = await setup({ workplace: mockWorkplace });
 
         await clickRemoveButtonForJobRole('Registered nurse');
@@ -337,7 +343,9 @@ fdescribe('UpdateVacanciesComponent', () => {
       });
 
       it('should update the total number', async () => {
-        const mockWorkplace = establishmentBuilder({ overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers } });
+        const mockWorkplace = establishmentBuilder({
+          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
+        });
         const { fixture, getByTestId, getByText } = await setup({ workplace: mockWorkplace });
 
         const totalNumber = getByTestId('total-number');
@@ -356,7 +364,7 @@ fdescribe('UpdateVacanciesComponent', () => {
     describe('radio buttons for "No" and "Do not know"', () => {
       it(`should remove all selected job roles when user clicked the radio button for "No"`, async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
         });
         const { fixture, queryByText, queryByLabelText, getByText, getByLabelText, getByTestId } = await setup({
           workplace: mockWorkplace,
@@ -379,13 +387,13 @@ fdescribe('UpdateVacanciesComponent', () => {
 
       it(`should remove all selected job roles when user clicked the radio button for "Do not know"`, async () => {
         const mockWorkplace = establishmentBuilder({
-          overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+          overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
         });
         const { fixture, queryByText, queryByLabelText, getByText, getByLabelText, getByTestId } = await setup({
           workplace: mockWorkplace,
         });
 
-        userEvent.click(getByLabelText(radioButtonLabels['Do not know']));
+        userEvent.click(getByLabelText(radioButtonLabels.DoNotKnow));
 
         fixture.detectChanges();
 
@@ -405,7 +413,7 @@ fdescribe('UpdateVacanciesComponent', () => {
   describe('submit form and validation', () => {
     it('should save the changes in job role selection and number', async () => {
       const mockWorkplace = establishmentBuilder({
-        overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+        overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
       });
       const { getByLabelText, getByRole, getByTestId, updateJobsSpy } = await setup({
         workplace: mockWorkplace,
@@ -425,7 +433,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
     it('should save the vacancy as None if user selected None', async () => {
       const mockWorkplace = establishmentBuilder({
-        overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+        overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
       });
       const { getByLabelText, getByRole, updateJobsSpy } = await setup({
         workplace: mockWorkplace,
@@ -440,7 +448,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
     it('should navigate to the update-workplace-details page', async () => {
       const mockWorkplace = establishmentBuilder({
-        overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+        overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
       });
       const { component, routerSpy, getByRole } = await setup({
         workplace: mockWorkplace,
@@ -468,21 +476,39 @@ fdescribe('UpdateVacanciesComponent', () => {
 
     describe('validation', () => {
       const testCases = [
-        { inputValue: '0', expectedErrorMessage: 'Enter the number of current staff vacancies or remove care worker' },
-        { inputValue: '', expectedErrorMessage: 'Enter the number of current staff vacancies or remove care worker' },
+        {
+          inputValue: '0',
+          expectedErrorMessage: {
+            summaryBox: 'Enter the number of current staff vacancies or remove care worker',
+            inline: 'Enter the number of current staff vacancies or remove care worker',
+          },
+        },
+        {
+          inputValue: '',
+          expectedErrorMessage: {
+            summaryBox: 'Enter the number of current staff vacancies or remove care worker',
+            inline: 'Enter the number of current staff vacancies or remove care worker',
+          },
+        },
         {
           inputValue: 'apple',
-          expectedErrorMessage: 'Number of vacancies must be between 1 and 999 (care worker)',
+          expectedErrorMessage: {
+            summaryBox: 'Number of vacancies must be between 1 and 999 (care worker)',
+            inline: 'Number of vacancies must be between 1 and 999',
+          },
         },
         {
           inputValue: '9999',
-          expectedErrorMessage: 'Number of vacancies must be between 1 and 999 (care worker)',
+          expectedErrorMessage: {
+            summaryBox: 'Number of vacancies must be between 1 and 999 (care worker)',
+            inline: 'Number of vacancies must be between 1 and 999',
+          },
         },
       ];
 
       testCases.forEach(({ inputValue, expectedErrorMessage }) => {
         it(`should show an error when user input "${inputValue}" for a job role`, async () => {
-          const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup({
+          const { fixture, getByRole, updateJobsSpy } = await setup({
             vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
           });
 
@@ -492,14 +518,59 @@ fdescribe('UpdateVacanciesComponent', () => {
 
           fixture.detectChanges();
 
-          expect(getByText('There is a problem')).toBeTruthy();
-          expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+          expectErrorMessageAppears(expectedErrorMessage.summaryBox, expectedErrorMessage.inline);
           expect(updateJobsSpy).not.toHaveBeenCalled();
         });
       });
 
+      it('should show the correct error messages even if some job roles were removed before submit', async () => {
+        const { fixture, getByRole } = await setup({
+          vacanciesFromSelectJobRolePages: [
+            { jobId: 10, title: 'Care worker', total: 3 },
+            ...sixRegisteredNursesAndFourSocialWorkers,
+          ],
+        });
+
+        await fillInValueForJobRole('Registered nurse', '9999');
+        await fillInValueForJobRole('Social worker', '');
+        await clickRemoveButtonForJobRole('Care worker');
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+
+        fixture.detectChanges();
+
+        expectErrorMessageAppears(
+          'Number of vacancies must be between 1 and 999 (registered nurse)',
+          'Number of vacancies must be between 1 and 999',
+        );
+        expectErrorMessageAppears('Enter the number of current staff vacancies or remove social worker');
+      });
+
+      it('should show the correct error messages even if some job roles were removed after submit', async () => {
+        const { fixture, getByRole } = await setup({
+          vacanciesFromSelectJobRolePages: [
+            { jobId: 10, title: 'Care worker', total: 3 },
+            ...sixRegisteredNursesAndFourSocialWorkers,
+          ],
+        });
+
+        await fillInValueForJobRole('Registered nurse', '9999');
+        await fillInValueForJobRole('Social worker', '');
+
+        userEvent.click(getByRole('button', { name: 'Save and return' }));
+        await clickRemoveButtonForJobRole('Care worker');
+
+        fixture.detectChanges();
+
+        expectErrorMessageAppears(
+          'Number of vacancies must be between 1 and 999 (registered nurse)',
+          'Number of vacancies must be between 1 and 999',
+        );
+        expectErrorMessageAppears('Enter the number of current staff vacancies or remove social worker');
+      });
+
       it('should show an error when no job roles were added and user did not chose "No" or "Do not know"', async () => {
-        const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup({
+        const { fixture, getByRole, updateJobsSpy } = await setup({
           workplace: mockFreshWorkplace,
         });
         const expectedErrorMessage = 'Select there are no current staff vacancies or do not know';
@@ -507,8 +578,8 @@ fdescribe('UpdateVacanciesComponent', () => {
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
         fixture.detectChanges();
-        expect(getByText('There is a problem')).toBeTruthy();
-        expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+
+        expectErrorMessageAppears(expectedErrorMessage);
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
 
@@ -532,7 +603,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
   it('should return to Check this information page when user clicked the cancel button', async () => {
     const mockWorkplace = establishmentBuilder({
-      overrides: { vacancies: sixRegisterNursesAndFourSocialWorkers },
+      overrides: { vacancies: sixRegisteredNursesAndFourSocialWorkers },
     });
     const { component, getByText, updateJobsSpy, routerSpy, updateWorkplaceAfterStaffChangesService } = await setup({
       workplace: mockWorkplace,
@@ -561,5 +632,19 @@ fdescribe('UpdateVacanciesComponent', () => {
     const numberInputForJobRole = screen.getByLabelText(jobRoleTitle) as HTMLInputElement;
     expect(numberInputForJobRole).toBeTruthy();
     expect(numberInputForJobRole.value).toEqual(expectedText);
+  };
+
+  const expectErrorMessageAppears = (errorMessage: string, inlineErrorMessage: boolean | string = true) => {
+    const errorBoxTitle = screen.getByText('There is a problem');
+    expect(errorBoxTitle).toBeTruthy();
+
+    const errorSummaryBox = errorBoxTitle.parentElement;
+    expect(within(errorSummaryBox).getByText(errorMessage)).toBeTruthy();
+
+    if (inlineErrorMessage === true || errorMessage === inlineErrorMessage) {
+      expect(screen.getAllByText(errorMessage)).toHaveSize(2);
+    } else if (typeof inlineErrorMessage === 'string') {
+      expect(screen.getByText(inlineErrorMessage)).toBeTruthy();
+    }
   };
 });
