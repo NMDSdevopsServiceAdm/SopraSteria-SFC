@@ -85,6 +85,7 @@ import {
 } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
+import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
 
 const routes: Routes = [
   {
@@ -165,6 +166,10 @@ const routes: Routes = [
   {
     path: 'add-another-staff-record',
     component: AddAnotherStaffRecordComponent,
+  },
+    {
+    path: 'delete-another-staff-record',
+    component: DeleteAnotherStaffRecordComponent,
   },
   {
     path: 'basic-records-save-success',
