@@ -73,6 +73,15 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  it('should clear any previous job roles selection stored in local service when page is loaded', async () => {
+    const clearJobRolesSpy = jasmine.createSpy();
+    await setup({
+      updateWorkplaceAfterStaffChangesService: { clearAllSelectedJobRoles: clearJobRolesSpy },
+    });
+
+    expect(clearJobRolesSpy).toHaveBeenCalled();
+  });
+
   describe('Views when user has visited pages', () => {
     it('should display warning text when user has not visited all of the update question pages in add view', async () => {
       const { getByText } = await setup({
