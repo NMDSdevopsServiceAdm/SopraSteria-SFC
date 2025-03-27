@@ -60,7 +60,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     },
   ];
   public messageWhenNoJobRoleSelected = {
-    None: 'You have no current staff vacancies.',
+    None: 'There are no current staff vacancies.',
     DoNotKnow: 'You do not know if there are any current staff vacancies.',
     Default: "You've not added any current staff vacancies.",
   };
@@ -196,10 +196,10 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     const jobRoleTitleInLowerCase = jobRole.title.toLowerCase();
 
     switch (errorType) {
-      case 'required':
-      case 'min': {
+      case 'required': {
         return `Enter the number of current staff vacancies or remove ${jobRoleTitleInLowerCase}`;
       }
+      case 'min':
       case 'max':
       case 'pattern': {
         if (inline) {

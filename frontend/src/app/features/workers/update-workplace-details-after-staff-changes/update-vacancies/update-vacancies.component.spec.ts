@@ -208,7 +208,7 @@ fdescribe('UpdateVacanciesComponent', () => {
           expect(radioButton.checked).toBe(true);
           expect(getByTestId('total-number').textContent).toEqual('0');
 
-          expect(getByText('You have no current staff vacancies.')).toBeTruthy();
+          expect(getByText('There are no current staff vacancies.')).toBeTruthy();
         });
 
         it('should select the "No" radio button and display a message if user previously selected "Do not know"', async () => {
@@ -382,7 +382,7 @@ fdescribe('UpdateVacanciesComponent', () => {
 
         expect(getByTestId('total-number').textContent).toEqual('0');
 
-        expect(getByText('You have no current staff vacancies.')).toBeTruthy();
+        expect(getByText('There are no current staff vacancies.')).toBeTruthy();
       });
 
       it(`should remove all selected job roles when user clicked the radio button for "Do not know"`, async () => {
@@ -477,17 +477,17 @@ fdescribe('UpdateVacanciesComponent', () => {
     describe('validation', () => {
       const testCases = [
         {
-          inputValue: '0',
+          inputValue: '',
           expectedErrorMessage: {
             summaryBox: 'Enter the number of current staff vacancies or remove care worker',
             inline: 'Enter the number of current staff vacancies or remove care worker',
           },
         },
         {
-          inputValue: '',
+          inputValue: '0',
           expectedErrorMessage: {
-            summaryBox: 'Enter the number of current staff vacancies or remove care worker',
-            inline: 'Enter the number of current staff vacancies or remove care worker',
+            summaryBox: 'Number of vacancies must be between 1 and 999 (care worker)',
+            inline: 'Number of vacancies must be between 1 and 999',
           },
         },
         {
