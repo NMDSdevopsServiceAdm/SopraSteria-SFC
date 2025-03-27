@@ -8,7 +8,6 @@ import { CqcStatusChangeService } from '@core/services/cqc-status-change.service
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { UserService } from '@core/services/user.service';
-import { WorkerService } from '@core/services/worker.service';
 import { MockCqcStatusChangeService } from '@core/test-utils/MockCqcStatusChangeService';
 import {
   establishmentWithShareWith,
@@ -16,7 +15,6 @@ import {
   MockEstablishmentService,
 } from '@core/test-utils/MockEstablishmentService';
 import { MockPermissionsService } from '@core/test-utils/MockPermissionsService';
-import { MockWorkerService } from '@core/test-utils/MockWorkerService';
 import { WdfModule } from '@features/wdf/wdf-data-change/wdf.module';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
@@ -39,10 +37,6 @@ describe('WDFWorkplaceSummaryComponent', () => {
         {
           provide: EstablishmentService,
           useClass: MockEstablishmentService,
-        },
-        {
-          provide: WorkerService,
-          useClass: MockWorkerService,
         },
         {
           provide: CqcStatusChangeService,
@@ -87,9 +81,8 @@ describe('WDFWorkplaceSummaryComponent', () => {
     expect(getByTestId('employerType')).toBeTruthy();
     expect(getByTestId('services-section')).toBeTruthy();
     expect(getByTestId('vacancies-and-turnover-section')).toBeTruthy();
-    expect(getByTestId('recruitment-section')).toBeTruthy();
+    expect(getByTestId('recruitment-and-benefits-section')).toBeTruthy();
     expect(getByTestId('permissions-section')).toBeTruthy();
-    expect(getByTestId('staff-benefits-section')).toBeTruthy();
   });
 
   it('should render the services section with top margin when removeServiceSectionMargin is false, and without margin when true', async () => {
@@ -811,69 +804,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
     });
   });
 
-  describe('Recruitment section', () => {
-    describe('Advertising spend', () => {
-      it('should show dash and have Add information button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks = null;
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(within(advertisingSpendRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on Advertising spend row when moneySpentOnAdvertisingInTheLastFourWeeksType has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        fixture.detectChanges();
-
-        const advertisingSpendRow = within(document.body).queryByTestId('advertising-spend');
-        const link = within(advertisingSpendRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/recruitment-advertising-cost`);
-        expect(
-          within(advertisingSpendRow).getByText(
-            `£${component.formatMonetaryValue(component.workplace.moneySpentOnAdvertisingInTheLastFourWeeks)}`,
-          ),
-        ).toBeTruthy();
-      });
-    });
-
-    describe('People interviewed', () => {
-      it('should show dash and have Add information button on People Interviewed row when peopleInterviewedInTheLastFourWeeks is set to null (not answered)', async () => {
-        const { component, fixture } = await setup();
-
-        component.workplace.peopleInterviewedInTheLastFourWeeks = null;
-        fixture.detectChanges();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Add');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(within(peopleInterviewedRow).queryByText('-')).toBeTruthy();
-      });
-
-      it('should show Change button on People Interviewed row when peopleInterviewedInTheLastFourWeeks has a value (answered)', async () => {
-        const { component, fixture } = await setup();
-
-        const peopleInterviewedRow = within(document.body).queryByTestId('people-interviewed');
-        const link = within(peopleInterviewedRow).queryByText('Change');
-
-        expect(link).toBeTruthy();
-        expect(link.getAttribute('href')).toEqual(`/workplace/${component.workplace.uid}/number-of-interviews`);
-        expect(
-          within(peopleInterviewedRow).queryByText(component.workplace.peopleInterviewedInTheLastFourWeeks),
-        ).toBeTruthy();
-      });
-    });
-
+  describe('Recruitment and benefits section', () => {
     describe('Repeat training', () => {
       it('should show dash and have Add information button on  Repeat Training row when doNewStartersRepeatMandatoryTrainingFromPreviousEmployment is set to null (not answered)', async () => {
         const { component, fixture } = await setup();
@@ -945,9 +876,7 @@ describe('WDFWorkplaceSummaryComponent', () => {
         ).toBeTruthy();
       });
     });
-  });
 
-  describe('Staff benefits section', () => {
     describe('Cash loyalty bonus', () => {
       it('should show dash and have Add information button on Cash loyalty bonus row when careWorkersCashLoyaltyForFirstTwoYears is set to null (not answered)', async () => {
         const { component, fixture } = await setup();

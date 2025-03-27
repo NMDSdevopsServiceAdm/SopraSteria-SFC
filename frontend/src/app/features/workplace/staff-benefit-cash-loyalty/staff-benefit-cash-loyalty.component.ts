@@ -6,6 +6,7 @@ import { StaffBenefitEnum } from '@core/model/establishment.model';
 import { BackService } from '@core/services/back.service';
 import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { WorkplaceFlowSections } from '@core/utils/progress-bar-util';
 
 import { Question } from '../question/question.component';
 
@@ -30,8 +31,7 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   ];
 
   public showTextBox = false;
-  public inStaffRecruitmentFlow: boolean;
-  public section: string;
+  public section = WorkplaceFlowSections.RECRUITMENT_AND_BENEFITS;
 
   constructor(
     protected formBuilder: UntypedFormBuilder,
@@ -51,8 +51,6 @@ export class StaffBenefitCashLoyaltyComponent extends Question implements OnInit
   protected init(): void {
     this.prefill();
     this.setPreviousRoute();
-    this.inStaffRecruitmentFlow = this.establishmentService.inStaffRecruitmentFlow;
-    this.section = this.inStaffRecruitmentFlow ? 'Loyalty bonus' : 'Staff benefits';
     this.skipRoute = ['/workplace', `${this.establishment.uid}`, 'benefits-statutory-sick-pay'];
   }
 
