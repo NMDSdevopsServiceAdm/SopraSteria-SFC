@@ -54,7 +54,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.workerService.worker$.pipe(take(1)).subscribe((worker) => {
         this.worker = worker;
-        if (!this.worker?.completed) {
+        if (!this.worker?.completed && this.hasCompletedStaffRecordFlow) {
           this.updateCompleted();
         }
       }),
@@ -116,7 +116,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.subscriptions.add(
       this.router.events.subscribe((event) => {
         if (event instanceof NavigationStart) {
-          if (!event.url?.includes('staff-record-summary') || event.url?.includes('add-another-staff-record')) {
+          if (!event.url?.includes('staff-record-summary') && !event.url?.includes('add-another-staff-record')) {
             this.workerService.clearHasCompletedStaffRecordFlow();
           }
         }

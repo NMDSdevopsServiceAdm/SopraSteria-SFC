@@ -255,6 +255,20 @@ describe('StaffRecordComponent', () => {
         expect(updateWorkerSpy).toHaveBeenCalledWith(workplaceUid, workerUid, { completed: true });
       });
 
+      it('should not call updateWorker when completed is false for worker but hasCompletedStaffRecordFlow is not true', async () => {
+        const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
+
+        await setup({
+          workerService: {
+            hasCompletedStaffRecordFlow: null,
+            updateWorker: updateWorkerSpy,
+            worker: { completed: false },
+          },
+        });
+
+        expect(updateWorkerSpy).not.toHaveBeenCalled();
+      });
+
       it('should not call updateWorker when hasCompletedStaffRecordFlow but completed is true for worker', async () => {
         const updateWorkerSpy = jasmine.createSpy('updateWorker').and.returnValue(of(true));
 
