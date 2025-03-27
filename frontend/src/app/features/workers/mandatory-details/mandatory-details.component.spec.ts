@@ -77,14 +77,10 @@ describe('MandatoryDetailsComponent', () => {
     const router = TestBed.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
-    const workerService = TestBed.inject(WorkerService) as WorkerService;
-    const clearHasCompletedStaffRecordFlowSpy = spyOn(workerService, 'clearHasCompletedStaffRecordFlow');
-
     return {
       ...setupTools,
       component,
       routerSpy,
-      clearHasCompletedStaffRecordFlowSpy,
     };
   };
 
@@ -160,14 +156,6 @@ describe('MandatoryDetailsComponent', () => {
     const detailsButton = getByText('Add details to this record');
     detailsButton.click();
     expect(routerSpy).toHaveBeenCalledWith(['', 'date-of-birth']);
-  });
-
-  it('should clear hasCompletedStaffRecordFlow when add details button clicked', async () => {
-    const { getByText, clearHasCompletedStaffRecordFlowSpy } = await setup();
-
-    const detailsButton = getByText('Add details to this record');
-    detailsButton.click();
-    expect(clearHasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
   });
 
   it('should take you to to dashboard if adding a staff record to own establishment', async () => {

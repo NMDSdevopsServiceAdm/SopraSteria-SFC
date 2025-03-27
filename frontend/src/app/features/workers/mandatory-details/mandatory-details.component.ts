@@ -40,12 +40,6 @@ export class MandatoryDetailsComponent implements OnInit, OnDestroy {
         this.worker = worker;
       }),
     );
-
-    this.setBackLink();
-  }
-
-  public setBackLink(): void {
-    this.backLinkService.showBackLink();
   }
 
   navigateToDashboard(event: Event): void {
