@@ -10,8 +10,10 @@
   <div class="govuk-grid-column-two-thirds">
     <form #formEl (ngSubmit)="onSubmit()" [formGroup]="form">
       <fieldset class="govuk-fieldset">
-        <h1 class="govuk-heading-l">{{ heading }}</h1>
-        <p class="govuk-body-m">You can review the number of vacancies for each role after you click Continue.</p>
+        <h1 class="govuk-heading-l">Select job roles for the {{ jobRoleType }} you want to add</h1>
+        <p class="govuk-body-m">
+          You can review the number of {{ jobRoleType }} for each role after you click Continue.
+        </p>
 
         <div [class.govuk-form-group--error]="submitted && form.invalid">
           <app-accordion-group #accordion data-testid="selectJobRolesAccordion" contentName="job roles">
