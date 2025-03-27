@@ -27,6 +27,10 @@ export class UpdateWorkplaceAfterStaffChangesService {
     });
   }
 
+  public clearAllSelectedJobRoles() {
+    this.selectedVacancies = null;
+  }
+
   get selectedVacancies(): Vacancy[] {
     return this._selectedVacancies;
   }

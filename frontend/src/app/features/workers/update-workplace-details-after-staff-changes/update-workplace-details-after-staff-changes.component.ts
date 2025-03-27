@@ -32,6 +32,7 @@ export class UpdateWorkplaceDetailsAfterStaffChangesComponent {
     this.flowType = this.route.snapshot?.data?.flowType;
     this.workplace = this.establishmentService.establishment;
     this.allPagesVisited = this.updateWorkplaceAfterStaffChangesService.allUpdatePagesVisited(this.flowType);
+    this.updateWorkplaceAfterStaffChangesService.clearAllSelectedJobRoles();
     this.backLinkService.showBackLink();
 
     if (this.allPagesVisited) {
