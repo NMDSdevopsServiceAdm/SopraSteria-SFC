@@ -1,4 +1,4 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ErrorDetails } from '@core/model/errorSummary.model';
@@ -15,11 +15,13 @@ import { CustomValidators } from '@shared/validators/custom-form-validators';
   selector: 'app-update-vacancies-select-job-role',
   templateUrl: './update-vacancies-select-job-role.component.html',
 })
-export class UpdateVacanciesSelectJobRoleComponent implements OnInit {
+export class UpdateVacanciesSelectJobRoleComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('accordion') accordion: AccordionGroupComponent;
-  public heading = 'Select job roles for the vacancies you want to add';
-  public errorMessageOnEmptyInput = 'Select job roles for the vacancies you want to add';
+
+  public jobRoleType = 'vacancies';
+  public errorMessageOnEmptyInput = `Select job roles for the ${this.jobRoleType} you want to add`;
+
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
   public submitted = false;
@@ -27,7 +29,7 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit {
   public jobGroups: JobGroup[] = [];
   public jobsAvailable: Job[] = [];
   public disabledJobIds: number[] = [];
-  protected prefillData: Array<Vacancy | Starter | Leaver>;
+  protected prefillData: Array<Vacancy | Starter | Leaver> = [];
   protected selectedJobIds: number[] = [];
 
   constructor(
@@ -78,7 +80,7 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit {
 
   protected prefill(): void {
     this.prefillData = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
-    this.disabledJobIds = this.prefillData.map((vacancy) => vacancy.jobId) ?? [];
+    this.disabledJobIds = this.prefillData.map((jobRole) => jobRole.jobId) ?? [];
   }
 
   ngAfterViewInit() {
@@ -110,7 +112,7 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit {
     this.onSuccess();
   }
 
-  public onSuccess(): void {
+  private onSuccess(): void {
     this.storeUpdatedJobRoles();
     this.returnToPreviousPage();
   }
@@ -120,18 +122,23 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit {
     this.returnToPreviousPage();
   }
 
-  public storeUpdatedJobRoles(): void {
+  protected storeUpdatedJobRoles(): void {
+    const updatedJobRoles = this.getUpdatedJobRoles();
+    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = updatedJobRoles;
+  }
+
+  private getUpdatedJobRoles(): Array<Vacancy | Starter | Leaver> {
     const selectedJobIds = this.form.get('selectedJobRoles').value;
     const jobRolesToAdd: Vacancy[] = this.jobsAvailable
       .filter((job) => selectedJobIds.includes(job.id))
       .map((job) => {
         return { jobId: job.id, title: job.title, total: 1 };
       });
-    const preselectedJobs = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
-    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = [...preselectedJobs, ...jobRolesToAdd];
+    const jobRolesSelectedBefore = this.prefillData;
+    return [...jobRolesSelectedBefore, ...jobRolesToAdd];
   }
 
-  public returnToPreviousPage(): void {
+  protected returnToPreviousPage(): void {
     this.router.navigate(['../update-vacancies'], { relativeTo: this.route });
   }
 }
