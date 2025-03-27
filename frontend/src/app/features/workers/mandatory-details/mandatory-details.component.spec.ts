@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { PermissionType } from '@core/model/permissions.model';
 import { EstablishmentService } from '@core/services/establishment.service';
+import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 import { PermissionsService } from '@core/services/permissions/permissions.service';
 import { WindowRef } from '@core/services/window.ref';
 import { WorkerService } from '@core/services/worker.service';
@@ -22,13 +22,12 @@ import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
 
 import { MandatoryDetailsComponent } from './mandatory-details.component';
-import { InternationalRecruitmentService } from '@core/services/international-recruitment.service';
 
 describe('MandatoryDetailsComponent', () => {
   const setup = async (canEditWorker = true, primaryUid = 123) => {
     const permissions = canEditWorker ? ['canEditWorker'] : [];
-    const { fixture, getByText, queryByText, getByTestId, queryByTestId } = await render(MandatoryDetailsComponent, {
-      imports: [SharedModule, RouterModule, RouterTestingModule, HttpClientTestingModule],
+    const setupTools = await render(MandatoryDetailsComponent, {
+      imports: [SharedModule, RouterModule, HttpClientTestingModule],
       declarations: [
         InsetTextComponent,
         BasicRecordComponent,
@@ -74,18 +73,18 @@ describe('MandatoryDetailsComponent', () => {
       ],
     });
 
-    const component = fixture.componentInstance;
+    const component = setupTools.fixture.componentInstance;
     const router = TestBed.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
+    const workerService = TestBed.inject(WorkerService) as WorkerService;
+    const clearHasCompletedStaffRecordFlowSpy = spyOn(workerService, 'clearHasCompletedStaffRecordFlow');
+
     return {
+      ...setupTools,
       component,
-      fixture,
-      getByText,
-      queryByText,
-      getByTestId,
-      queryByTestId,
       routerSpy,
+      clearHasCompletedStaffRecordFlowSpy,
     };
   };
 
@@ -113,7 +112,7 @@ describe('MandatoryDetailsComponent', () => {
 
   describe('edit name/id and contract', () => {
     it('should take you to the staff-details page when change link is clicked', async () => {
-      const { component, getByText, getByTestId } = await setup();
+      const { component, getByTestId } = await setup();
 
       const worker = component.worker;
 
@@ -126,7 +125,7 @@ describe('MandatoryDetailsComponent', () => {
     });
 
     it('should not show the change link if the user does not have edit permissions', async () => {
-      const { queryByText, getByTestId } = await setup(false);
+      const { getByTestId } = await setup(false);
 
       const nameSection = within(getByTestId('name-and-contract-section'));
       expect(nameSection.queryByText('Change')).toBeFalsy();
@@ -135,7 +134,7 @@ describe('MandatoryDetailsComponent', () => {
 
   describe('main job role', () => {
     it('should take you to the main-job-role page when change link is clicked', async () => {
-      const { component, getByText, getByTestId } = await setup();
+      const { component, getByTestId } = await setup();
 
       const worker = component.worker;
 
@@ -148,7 +147,7 @@ describe('MandatoryDetailsComponent', () => {
     });
 
     it('should not show the change link if the user does not have edit permissions', async () => {
-      const { queryByText, getByTestId } = await setup(false);
+      const { getByTestId } = await setup(false);
 
       const mainJobRoleSection = within(getByTestId('main-job-role-section'));
       expect(mainJobRoleSection.queryByText('Change')).toBeFalsy();
@@ -156,13 +155,19 @@ describe('MandatoryDetailsComponent', () => {
   });
 
   it('should submit and navigate to date of birth page when add details button clicked', async () => {
-    const { getByTestId, component, routerSpy } = await setup();
+    const { getByText, routerSpy } = await setup();
 
-    const submission = spyOn(component, 'onSubmit').and.callThrough();
-    const detailsButton = getByTestId('add-details-button');
+    const detailsButton = getByText('Add details to this record');
     detailsButton.click();
-    expect(submission).toHaveBeenCalled();
     expect(routerSpy).toHaveBeenCalledWith(['', 'date-of-birth']);
+  });
+
+  it('should clear hasCompletedStaffRecordFlow when add details button clicked', async () => {
+    const { getByText, clearHasCompletedStaffRecordFlowSpy } = await setup();
+
+    const detailsButton = getByText('Add details to this record');
+    detailsButton.click();
+    expect(clearHasCompletedStaffRecordFlowSpy).toHaveBeenCalled();
   });
 
   it('should take you to to dashboard if adding a staff record to own establishment', async () => {
