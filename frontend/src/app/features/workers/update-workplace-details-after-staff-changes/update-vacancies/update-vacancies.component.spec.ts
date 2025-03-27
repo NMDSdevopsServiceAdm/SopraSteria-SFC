@@ -15,7 +15,7 @@ import userEvent from '@testing-library/user-event';
 import { UpdateVacanciesComponent } from './update-vacancies.component';
 import { of } from 'rxjs';
 
-fdescribe('UpdateVacanciesComponent', () => {
+describe('UpdateVacanciesComponent', () => {
   const sixRegisteredNursesAndFourSocialWorkers: Vacancy[] = [
     {
       jobId: 23,

@@ -5,11 +5,11 @@ import { Vacancy } from '@core/model/establishment.model';
 import { SharedModule } from '@shared/shared.module';
 import { render, within } from '@testing-library/angular';
 import userEvent from '@testing-library/user-event';
-import { UpdateVacanciesSelectJobRoleComponent } from './update-vacancies-select-job-role.component';
+import { JobRoleType, SelectJobRolesToAddComponent } from './select-job-roles-to-add.component';
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 
-fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
+describe('SelectJobRolesToAddComponent', () => {
   const mockAvailableJobs = [
     {
       id: 4,
@@ -41,9 +41,8 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setup = async (override: any = {}) => {
     const preselectedVacancies: Vacancy[] = override.preselectedVacancies ?? [];
-    const availableJobs = override.availableJobs ?? mockAvailableJobs;
 
-    const setupTools = await render(UpdateVacanciesSelectJobRoleComponent, {
+    const setupTools = await render(SelectJobRolesToAddComponent, {
       imports: [SharedModule, RouterModule, ReactiveFormsModule],
       providers: [
         UntypedFormBuilder,
@@ -53,7 +52,8 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
             snapshot: {
               params: {},
               data: {
-                jobs: availableJobs,
+                jobs: mockAvailableJobs,
+                jobRoleType: override.jobRoleType,
               },
             },
           },
@@ -87,16 +87,17 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
     expect(component).toBeTruthy();
   });
 
+  const jobRoleType = JobRoleType.Vacancies;
   describe('rendering', () => {
     it('should display a page heading', async () => {
-      const { getByRole } = await setup();
+      const { getByRole } = await setup({ jobRoleType });
       const heading = getByRole('heading', { level: 1 });
 
       expect(heading.textContent).toEqual('Select job roles for the vacancies you want to add');
     });
 
     it('should display a text description', async () => {
-      const { getByText } = await setup();
+      const { getByText } = await setup({ jobRoleType });
 
       const expectedText = 'You can review the number of vacancies for each role after you click Continue.';
 
@@ -105,21 +106,21 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
 
     describe('accordion', () => {
       it('should render an accordion for job role selection', async () => {
-        const { getByTestId, getByText } = await setup();
+        const { getByTestId, getByText } = await setup({ jobRoleType });
 
         expect(getByTestId('selectJobRolesAccordion')).toBeTruthy();
         expect(getByText('Show all job roles')).toBeTruthy();
       });
 
       it('should render an accordion section for each job role group', async () => {
-        const { getByText } = await setup();
+        const { getByText } = await setup({ jobRoleType });
 
         expect(getByText('Care providing roles')).toBeTruthy();
         expect(getByText('Professional and related roles')).toBeTruthy();
       });
 
       it('should render a checkbox for each job role', async () => {
-        const { getByRole } = await setup();
+        const { getByRole } = await setup({ jobRoleType });
 
         mockAvailableJobs.forEach((job) => {
           const checkbox = getByRole('checkbox', { name: job.title });
@@ -136,6 +137,7 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
           },
         ];
         const { getByLabelText } = await setup({
+          jobRoleType,
           preselectedVacancies,
         });
 
@@ -145,7 +147,7 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
     });
 
     it('should render a "Continue" CTA button and a cancel button', async () => {
-      const { getByRole, getByText } = await setup();
+      const { getByRole, getByText } = await setup({ jobRoleType });
       expect(getByRole('button', { name: 'Continue' })).toBeTruthy();
       expect(getByText('Cancel')).toBeTruthy();
     });
@@ -163,6 +165,7 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
     describe('on Success', () => {
       it('should update the selected vacancies stored in service', async () => {
         const { getByText, updateWorkplaceAfterStaffChangesService } = await setup({
+          jobRoleType,
           preselectedVacancies,
         });
         userEvent.click(getByText('Show all job roles'));
@@ -193,7 +196,7 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
       });
 
       it('should navigate to update staff vacancy page after submit', async () => {
-        const { component, getByText, routerSpy } = await setup();
+        const { component, getByText, routerSpy } = await setup({ jobRoleType });
         userEvent.click(getByText('Show all job roles'));
         userEvent.click(getByText('Registered nurse'));
 
@@ -205,7 +208,7 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
     });
 
     it('should return to the update staff vacancy page when cancel button is clicked', async () => {
-      const { component, getByText, routerSpy } = await setup();
+      const { component, getByText, routerSpy } = await setup({ jobRoleType });
       userEvent.click(getByText('Cancel'));
 
       // @ts-expect-error: TS2445: Property 'route' is protected
@@ -214,7 +217,7 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
 
     describe('errors', () => {
       it('should display an error message on submit if no job roles are selected', async () => {
-        const { fixture, getByRole, getByText, getByTestId } = await setup();
+        const { fixture, getByRole, getByText, getByTestId } = await setup({ jobRoleType });
 
         userEvent.click(getByRole('button', { name: 'Continue' }));
         fixture.detectChanges();
@@ -227,12 +230,10 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
         expect(getByText('There is a problem')).toBeTruthy();
         const errorSummaryBox = getByText('There is a problem').parentElement;
         expect(within(errorSummaryBox).getByText(expectedErrorMessage)).toBeTruthy();
-
-        // expect(setLocalStorageSpy).not.toHaveBeenCalled();
       });
 
       it('should expand the whole accordion on error', async () => {
-        const { fixture, getByRole, getByText } = await setup();
+        const { fixture, getByRole, getByText } = await setup({ jobRoleType });
         userEvent.click(getByRole('button', { name: 'Continue' }));
 
         fixture.detectChanges();
@@ -240,8 +241,8 @@ fdescribe('UpdateVacanciesSelectJobRoleComponent', () => {
         expect(getByText('Hide all job roles')).toBeTruthy();
       });
 
-      it('should continue to display error messages after empty submit and then user selects job roles', async () => {
-        const { fixture, getByRole, getByText } = await setup();
+      it('should continue to display error messages after empty submit and user selects job roles', async () => {
+        const { fixture, getByRole, getByText } = await setup({ jobRoleType });
         userEvent.click(getByRole('button', { name: 'Continue' }));
         fixture.detectChanges();
 
