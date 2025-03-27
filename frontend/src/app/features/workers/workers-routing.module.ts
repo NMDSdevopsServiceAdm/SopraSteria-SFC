@@ -62,12 +62,15 @@ import { StaffDetailsComponent } from './staff-details/staff-details.component';
 import { StaffRecordComponent } from './staff-record/staff-record.component';
 import { TotalStaffChangeComponent } from './total-staff-change/total-staff-change.component';
 import { UpdateTotalNumberOfStaffComponent } from './update-workplace-details-after-staff-changes/update-total-number-of-staff/update-total-number-of-staff.component';
+import {
+  SelectJobRolesToAddComponent,
+  JobRoleType,
+} from './update-workplace-details-after-staff-changes/select-job-roles-to-add/select-job-roles-to-add.component';
+import { UpdateVacanciesComponent } from './update-workplace-details-after-staff-changes/update-vacancies/update-vacancies.component';
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes/update-workplace-details-after-staff-changes.component';
 import { WeeklyContractedHoursComponent } from './weekly-contracted-hours/weekly-contracted-hours.component';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
-import { UpdateVacanciesSelectJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancies-select-job-role/update-vacancies-select-job-role.component';
-import { UpdateVacanciesComponent } from './update-workplace-details-after-staff-changes/update-vacancies/update-vacancies.component';
 
 const routes: Routes = [
   {
@@ -104,11 +107,12 @@ const routes: Routes = [
       },
       {
         path: 'update-vacancies-job-roles',
-        component: UpdateVacanciesSelectJobRoleComponent,
+        component: SelectJobRolesToAddComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Vacancies,
           title: 'Select job roles to add',
         },
       },
@@ -139,11 +143,12 @@ const routes: Routes = [
       },
       {
         path: 'update-vacancies-job-roles',
-        component: UpdateVacanciesSelectJobRoleComponent,
+        component: SelectJobRolesToAddComponent,
         canActivate: [CheckPermissionsGuard],
         resolve: { jobs: JobsResolver },
         data: {
           permissions: ['canEditEstablishment'],
+          jobRoleType: JobRoleType.Vacancies,
           title: 'Select job roles to add',
         },
       },

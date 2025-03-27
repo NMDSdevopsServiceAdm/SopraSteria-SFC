@@ -75,7 +75,7 @@ import { WorkersRoutingModule } from './workers-routing.module';
 import { YearArrivedUkComponent } from './year-arrived-uk/year-arrived-uk.component';
 import { AddAnotherStaffRecordComponent } from './add-another-staff-record/add-another-staff-record.component';
 import { DeleteAnotherStaffRecordComponent } from './delete-another-staff-record/delete-another-staff-record.component';
-import { UpdateVacanciesSelectJobRoleComponent } from './update-workplace-details-after-staff-changes/update-vacancies-select-job-role/update-vacancies-select-job-role.component';
+import { SelectJobRolesToAddComponent } from './update-workplace-details-after-staff-changes/select-job-roles-to-add/select-job-roles-to-add.component';
 import { UpdateVacanciesComponent } from './update-workplace-details-after-staff-changes/update-vacancies/update-vacancies.component';
 
 @NgModule({
@@ -138,7 +138,7 @@ import { UpdateVacanciesComponent } from './update-workplace-details-after-staff
     UpdateWorkplaceDetailsAfterStaffChangesComponent,
     UpdateTotalNumberOfStaffComponent,
     UpdateVacanciesComponent,
-    UpdateVacanciesSelectJobRoleComponent,
+    SelectJobRolesToAddComponent,
   ],
   providers: [
     DialogService,

@@ -12,15 +12,15 @@ import { AccordionGroupComponent } from '@shared/components/accordions/generic-a
 import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
-  selector: 'app-update-vacancies-select-job-role',
-  templateUrl: './update-vacancies-select-job-role.component.html',
+  selector: 'app-select-job-roles-to-add',
+  templateUrl: './select-job-roles-to-add.component.html',
 })
-export class UpdateVacanciesSelectJobRoleComponent implements OnInit, AfterViewInit {
+export class SelectJobRolesToAddComponent implements OnInit, AfterViewInit {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('accordion') accordion: AccordionGroupComponent;
 
-  public jobRoleType = 'vacancies';
-  public errorMessageOnEmptyInput = `Select job roles for the ${this.jobRoleType} you want to add`;
+  public jobRoleType: JobRoleType;
+  public errorMessageOnEmptyInput: string;
 
   public form: UntypedFormGroup;
   public formErrorsMap: Array<ErrorDetails> = [];
@@ -43,6 +43,7 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit, AfterViewI
 
   ngOnInit() {
     this.getJobs();
+    this.setupJobRoleType();
     this.setupForm();
     this.setupFormErrorsMap();
     this.setBackLink();
@@ -54,13 +55,18 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit, AfterViewI
     this.jobGroups = JobService.sortJobsByJobGroup(this.jobsAvailable);
   }
 
-  protected setupForm(): void {
+  private setupJobRoleType(): void {
+    this.jobRoleType = this.route.snapshot?.data?.jobRoleType;
+    this.errorMessageOnEmptyInput = `Select job roles for the ${this.jobRoleType} you want to add`;
+  }
+
+  private setupForm(): void {
     this.form = this.formBuilder.group({
       selectedJobRoles: [[], { validators: CustomValidators.validateArrayNotEmpty(), updateOn: 'submit' }],
     });
   }
 
-  protected setupFormErrorsMap(): void {
+  private setupFormErrorsMap(): void {
     this.formErrorsMap = [
       {
         item: 'selectedJobRoles',
@@ -74,12 +80,17 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit, AfterViewI
     ];
   }
 
-  protected setBackLink() {
+  private setBackLink(): void {
     this.backlinkService.showBackLink();
   }
 
-  protected prefill(): void {
-    this.prefillData = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
+  private prefill(): void {
+    switch (this.jobRoleType) {
+      case JobRoleType.Vacancies: {
+        this.prefillData = this.updateWorkplaceAfterStaffChangesService.selectedVacancies;
+      }
+    }
+
     this.disabledJobIds = this.prefillData.map((jobRole) => jobRole.jobId) ?? [];
   }
 
@@ -87,7 +98,7 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit, AfterViewI
     this.errorSummaryService.formEl$.next(this.formEl);
   }
 
-  public onCheckboxClick(target: HTMLInputElement) {
+  public onCheckboxClick(target: HTMLInputElement): void {
     const jobId = Number(target.value);
 
     if (this.selectedJobIds.includes(jobId)) {
@@ -122,14 +133,19 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit, AfterViewI
     this.returnToPreviousPage();
   }
 
-  protected storeUpdatedJobRoles(): void {
+  private storeUpdatedJobRoles(): void {
     const updatedJobRoles = this.getUpdatedJobRoles();
-    this.updateWorkplaceAfterStaffChangesService.selectedVacancies = updatedJobRoles;
+
+    switch (this.jobRoleType) {
+      case JobRoleType.Vacancies: {
+        this.updateWorkplaceAfterStaffChangesService.selectedVacancies = updatedJobRoles;
+      }
+    }
   }
 
   private getUpdatedJobRoles(): Array<Vacancy | Starter | Leaver> {
     const selectedJobIds = this.form.get('selectedJobRoles').value;
-    const jobRolesToAdd: Vacancy[] = this.jobsAvailable
+    const jobRolesToAdd = this.jobsAvailable
       .filter((job) => selectedJobIds.includes(job.id))
       .map((job) => {
         return { jobId: job.id, title: job.title, total: 1 };
@@ -138,7 +154,17 @@ export class UpdateVacanciesSelectJobRoleComponent implements OnInit, AfterViewI
     return [...jobRolesSelectedBefore, ...jobRolesToAdd];
   }
 
-  protected returnToPreviousPage(): void {
-    this.router.navigate(['../update-vacancies'], { relativeTo: this.route });
+  private returnToPreviousPage(): void {
+    switch (this.jobRoleType) {
+      case JobRoleType.Vacancies: {
+        this.router.navigate(['../update-vacancies'], { relativeTo: this.route });
+      }
+    }
   }
+}
+
+export enum JobRoleType {
+  Vacancies = 'vacancies',
+  Starters = 'starters',
+  Leavers = 'leavers',
 }
