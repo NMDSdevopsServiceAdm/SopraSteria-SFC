@@ -96,6 +96,22 @@ const routes: Routes = [
         canActivate: [CheckPermissionsGuard],
         data: { permissions: ['canEditEstablishment'], title: 'Update total number of staff' },
       },
+      {
+        path: 'update-vacancies',
+        component: UpdateVacanciesComponent,
+        canActivate: [CheckPermissionsGuard],
+        data: { permissions: ['canEditEstablishment'], title: 'Update staff vacancies' },
+      },
+      {
+        path: 'update-vacancies-job-roles',
+        component: UpdateVacanciesSelectJobRoleComponent,
+        canActivate: [CheckPermissionsGuard],
+        resolve: { jobs: JobsResolver },
+        data: {
+          permissions: ['canEditEstablishment'],
+          title: 'Select job roles to add',
+        },
+      },
     ],
   },
   {
