@@ -44,7 +44,7 @@ export class OtherQualificationsLevelComponent extends QuestionComponent {
       this.prefill();
     }
 
-    this.next = this.getRoutePath('confirm-staff-record');
+    this.next = this.getRoutePath('staff-record-summary');
   }
 
   private prefill(): void {
