@@ -9,7 +9,7 @@ import { JobRoleType, SelectJobRolesToAddComponent } from './select-job-roles-to
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { MockUpdateWorkplaceAfterStaffChangesService } from '@core/test-utils/MockUpdateWorkplaceAfterStaffChangesService';
 
-fdescribe('SelectJobRolesToAddComponent', () => {
+describe('SelectJobRolesToAddComponent', () => {
   const mockAvailableJobs = [
     {
       id: 4,

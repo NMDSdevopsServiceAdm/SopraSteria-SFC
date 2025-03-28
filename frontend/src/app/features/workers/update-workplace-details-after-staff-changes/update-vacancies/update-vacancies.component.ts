@@ -107,13 +107,16 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
   }
 
   private setupForm() {
-    this.form = this.formBuilder.group({
-      jobRoleNumbers: this.formBuilder.array([]),
-      noOrDoNotKnow: this.formBuilder.control(null, {
-        validators: [CustomValidators.validateJobRoleAddedOrUserChoseNoOrDoNotKnow()],
+    this.form = this.formBuilder.group(
+      {
+        jobRoleNumbers: this.formBuilder.array([], { updateOn: 'submit', validators: [] }),
+        noOrDoNotKnow: this.formBuilder.control(null, { updateOn: 'submit', validators: [] }),
+      },
+      {
+        validators: [CustomValidators.crossCheckJobRoleOptions()],
         updateOn: 'submit',
-      }),
-    });
+      },
+    );
   }
 
   private prefill() {
@@ -163,7 +166,16 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     const errorMapForJobRoles = this.selectedJobRoles.map((jobRole, index) =>
       this.buildErrorMapForJobRole(jobRole, index),
     );
-    const errorMapForNoOrDoNotKnow = [
+    const otherErrorMap = [
+      {
+        item: 'jobRoleNumbers',
+        type: [
+          {
+            name: 'required',
+            message: 'Add a job role',
+          },
+        ],
+      },
       {
         item: 'noOrDoNotKnow',
         type: [
@@ -175,7 +187,7 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
       },
     ];
 
-    this.formErrorsMap = [...errorMapForJobRoles, ...errorMapForNoOrDoNotKnow];
+    this.formErrorsMap = [...errorMapForJobRoles, ...otherErrorMap];
   }
 
   private buildErrorMapForJobRole(jobRole: Vacancy, index: number): ErrorDetails {
@@ -280,13 +292,13 @@ export class UpdateVacanciesComponent implements OnInit, AfterViewInit {
     return { vacancies: updatedVacancies };
   }
 
-  private forceTriggerValidatorOfRadioButtons() {
-    this.form.controls['noOrDoNotKnow'].updateValueAndValidity();
-  }
+  // private forceTriggerValidatorOfRadioButtons() {
+  //   this.form.controls['noOrDoNotKnow'].updateValueAndValidity();
+  // }
 
   public onSubmit() {
     this.submitted = true;
-    this.forceTriggerValidatorOfRadioButtons();
+    // this.forceTriggerValidatorOfRadioButtons();
 
     this.errorSummaryService.syncFormErrorsEvent.next(true);
 

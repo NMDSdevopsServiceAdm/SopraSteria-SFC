@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
 
-fdescribe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
+describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   async function setup(overrides: any = {}) {
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
