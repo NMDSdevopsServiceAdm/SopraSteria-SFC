@@ -132,7 +132,7 @@ export class CustomValidators extends Validators {
   }
 
   static validateUploadCertificates(files: File[]): string[] | null {
-    let errors = [];
+    const errors = [];
     const maxFileSize = 5 * 1024 * 1024;
 
     if (files.some((file) => !file.name.toLowerCase().endsWith('.pdf'))) {
@@ -158,28 +158,40 @@ export class CustomValidators extends Validators {
     return validatorFunction;
   }
 
-  static validateJobRoleAddedOrUserChoseNoOrDoNotKnow(): ValidatorFn {
-    const validatorFunction = (formControl: AbstractControl) => {
-      const wholeForm = formControl.parent;
-      const jobRoleNumbers = wholeForm?.value?.jobRoleNumbers ?? [];
-      const noOrDoNotKnow = formControl.value;
+  static crossCheckJobRoleOptions(): ValidatorFn {
+    const validatorFunction = (rootFormControl: AbstractControl) => {
+      const jobRoleNumbers: AbstractControl<Array<number | string>> = rootFormControl.get('jobRoleNumbers');
+      const noOrDoNotKnow: AbstractControl<jobOptionsEnum> = rootFormControl.get('noOrDoNotKnow');
 
-      if ([jobOptionsEnum.DONT_KNOW, jobOptionsEnum.NONE].includes(noOrDoNotKnow)) {
+      const userSelectedNoOrDoNotKnow = [jobOptionsEnum.DONT_KNOW, jobOptionsEnum.NONE].includes(noOrDoNotKnow.value);
+      if (userSelectedNoOrDoNotKnow) {
+        jobRoleNumbers.setErrors(null);
+        noOrDoNotKnow.setErrors(null);
         return null;
       }
 
-      const atLeastOneJobRoleAdded = jobRoleNumbers.length > 0;
-      const jobRoleNumberIsValid = (jobRoleNumber: number | string) => {
-        return Number(jobRoleNumber) > 0;
+      const noJobRolesAdded = !jobRoleNumbers.value || jobRoleNumbers.value?.length === 0;
+
+      if (noJobRolesAdded) {
+        jobRoleNumbers.setErrors({ required: true });
+        noOrDoNotKnow.setErrors({ required: true });
+        return null;
+      }
+
+      jobRoleNumbers.setErrors(null); // at least one job role is added, so "required" should be false;
+
+      const jobRoleNumberIsInvalid = (jobRoleNumber: number | string) => {
+        const parsedNumber = Number(jobRoleNumber);
+        return !Number.isInteger(parsedNumber) || parsedNumber <= 0;
       };
 
-      if (atLeastOneJobRoleAdded && jobRoleNumbers.some(jobRoleNumberIsValid)) {
+      const allJobRoleNumbersAreInvalid = jobRoleNumbers.value.every(jobRoleNumberIsInvalid);
+
+      if (allJobRoleNumbersAreInvalid) {
+        noOrDoNotKnow.setErrors({ required: true });
         return null;
       }
-
-      return { required: true };
     };
-
     return validatorFunction;
   }
 }

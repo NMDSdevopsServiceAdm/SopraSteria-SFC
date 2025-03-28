@@ -41,6 +41,7 @@ describe('UpdateVacanciesComponent', () => {
 
   const mockFreshWorkplace = establishmentBuilder({ overrides: { vacancies: null } });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const setup = async (override: any = {}) => {
     const workplace = override.workplace ?? mockWorkplaceWithNoVacancies;
     const selectedVacancies = override.vacanciesFromSelectJobRolePages ?? null;
@@ -523,7 +524,7 @@ describe('UpdateVacanciesComponent', () => {
         });
       });
 
-      it('should show the correct error messages even if some job roles were removed before submit', async () => {
+      it('should still show the correct error messages even if some job roles were removed before submit', async () => {
         const { fixture, getByRole } = await setup({
           vacanciesFromSelectJobRolePages: [
             { jobId: 10, title: 'Care worker', total: 3 },
@@ -546,7 +547,7 @@ describe('UpdateVacanciesComponent', () => {
         expectErrorMessageAppears('Enter the number of current staff vacancies or remove social worker');
       });
 
-      it('should show the correct error messages even if some job roles were removed after submit', async () => {
+      it('should still show the correct error messages even if some job roles were removed after submit', async () => {
         const { fixture, getByRole } = await setup({
           vacanciesFromSelectJobRolePages: [
             { jobId: 10, title: 'Care worker', total: 3 },
@@ -569,22 +570,33 @@ describe('UpdateVacanciesComponent', () => {
         expectErrorMessageAppears('Enter the number of current staff vacancies or remove social worker');
       });
 
-      it('should show an error when no job roles were added and user did not chose "No" or "Do not know"', async () => {
-        const { fixture, getByRole, updateJobsSpy } = await setup({
+      it('should show error messages when no job roles were added and user did not chose "No" or "Do not know"', async () => {
+        const { fixture, getByRole, updateJobsSpy, getAllByText } = await setup({
           workplace: mockFreshWorkplace,
         });
-        const expectedErrorMessage = 'Select there are no current staff vacancies or do not know';
+        const expectedErrorMessage1 = 'Add a job role';
+        const expectedErrorMessage2 = 'Select there are no current staff vacancies or do not know';
 
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
         fixture.detectChanges();
 
-        expectErrorMessageAppears(expectedErrorMessage);
+        expectErrorMessageAppears(expectedErrorMessage1);
+        expectErrorMessageAppears(expectedErrorMessage2);
         expect(updateJobsSpy).not.toHaveBeenCalled();
+
+        const addJobRoleButton = getByRole('button', { name: 'Add job roles' });
+        const buttonFocusSpy = spyOn(addJobRoleButton, 'focus');
+
+        userEvent.click(getAllByText('Add a job role')[0]);
+
+        await fixture.whenStable();
+
+        expect(buttonFocusSpy).toHaveBeenCalled();
       });
 
-      it('should show an error when user entered "0" for a job role and did not chose "No" or "Do not know"', async () => {
-        const { fixture, getByRole, getByText, getAllByText, updateJobsSpy } = await setup({
+      it('should show error messages user entered "0" for a job role and did not chose "No" or "Do not know"', async () => {
+        const { fixture, getByRole, updateJobsSpy, queryByText } = await setup({
           vacanciesFromSelectJobRolePages: [{ jobId: 10, title: 'Care worker', total: 1 }],
         });
 
@@ -593,13 +605,17 @@ describe('UpdateVacanciesComponent', () => {
 
         fixture.detectChanges();
 
-        const expectedErrorMessage = 'Select there are no current staff vacancies or do not know';
-        expect(getByText('There is a problem')).toBeTruthy();
-        expect(getAllByText(expectedErrorMessage)).toHaveSize(2);
+        expectErrorMessageAppears(
+          'Number of vacancies must be between 1 and 999 (care worker)',
+          'Number of vacancies must be between 1 and 999',
+        );
+        expectErrorMessageAppears('Select there are no current staff vacancies or do not know');
+        expect(queryByText('Add a job role')).toBeFalsy();
+
         expect(updateJobsSpy).not.toHaveBeenCalled();
       });
 
-      it('should not show the above error if at least one job role is added with a valid number', async () => {
+      it('should not show the "Select there are no ..." error message if at least one job role is added with a valid number', async () => {
         const { fixture, getByRole, queryByText, updateJobsSpy } = await setup({
           vacanciesFromSelectJobRolePages: [
             { jobId: 10, title: 'Care worker', total: 1 },
@@ -609,7 +625,9 @@ describe('UpdateVacanciesComponent', () => {
         });
 
         await fillInValueForJobRole('Care worker', '0');
+        await fillInValueForJobRole('Registered nurse', '2');
         await fillInValueForJobRole('Social worker', '0');
+
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
         fixture.detectChanges();
