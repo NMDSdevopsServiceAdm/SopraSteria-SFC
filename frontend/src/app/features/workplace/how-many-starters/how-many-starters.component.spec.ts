@@ -253,15 +253,15 @@ describe('HowManyStartersComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
       });
 
-      it('should navigate to wdf summary page if not in the flow and visited from wdf page', async () => {
+      it('should navigate to funding summary page if not in the flow and visited from funding page', async () => {
         const { component, getByRole, routerSpy } = await setup({ returnToUrl: true });
-        component.return = { url: ['/wdf', 'workplaces', 'mock-uid'] };
+        component.return = { url: ['/funding', 'workplaces', 'mock-uid'] };
 
         userEvent.type(getInputBoxForJobRole('Care worker'), '2');
         userEvent.type(getInputBoxForJobRole('Registered nurse'), '4');
         userEvent.click(getByRole('button', { name: 'Save and return' }));
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'workplaces', 'mock-uid'], jasmine.anything());
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'workplaces', 'mock-uid'], jasmine.anything());
       });
 
       it('should clear the cache data in local storage after submit', async () => {
@@ -352,16 +352,16 @@ describe('HowManyStartersComponent', () => {
         expect(routerSpy).toHaveBeenCalledWith(['/dashboard'], { fragment: 'workplace', queryParams: undefined });
       });
 
-      it('should return to the wdf workplace summary page when visited from wdf and cancel button is clicked', async () => {
+      it('should return to the funding workplace summary page when visited from funding and cancel button is clicked', async () => {
         const { component, getByText, routerSpy } = await setup({
           returnToUrl: true,
         });
-        component.return = { url: ['/wdf', 'workplaces', 'mock-uid'] };
+        component.return = { url: ['/funding', 'workplaces', 'mock-uid'] };
 
         const cancelButton = getByText('Cancel');
 
         userEvent.click(cancelButton);
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'workplaces', 'mock-uid'], jasmine.anything());
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'workplaces', 'mock-uid'], jasmine.anything());
       });
 
       it('should clear the cache data in local storage on cancel', async () => {

@@ -127,8 +127,8 @@ describe('QualificationsAndTrainingComponent', () => {
       expect(changeLink).toBeFalsy();
     });
 
-    describe('wdf version', () => {
-      it('should render Add link to the wdf question page in wdf version of summary page when level 2 care certificate is not answered', async () => {
+    describe('funding version', () => {
+      it('should render Add link to the funding question page in funding version of summary page when level 2 care certificate is not answered', async () => {
         const { fixture, component, getByText } = await setup(true);
 
         component.worker.level2CareCertificate = null;
@@ -137,10 +137,12 @@ describe('QualificationsAndTrainingComponent', () => {
         const level2CareCertificateSection = getByText('Level 2 Adult Social Care Certificate').parentElement;
         const addLink = within(level2CareCertificateSection).getByText('Add');
 
-        expect(addLink.getAttribute('href')).toBe(`/wdf/staff-record/${component.worker.uid}/level-2-care-certificate`);
+        expect(addLink.getAttribute('href')).toBe(
+          `/funding/staff-record/${component.worker.uid}/level-2-care-certificate`,
+        );
       });
 
-      it('should render Change link to the wdf question page in wdf version of summary page when level 2 care certificate is answered', async () => {
+      it('should render Change link to the funding question page in funding version of summary page when level 2 care certificate is answered', async () => {
         const { fixture, component, getByText } = await setup(true);
 
         component.worker.level2CareCertificate.value = 'Yes, started';
@@ -149,7 +151,9 @@ describe('QualificationsAndTrainingComponent', () => {
         const level2CareCertificateSection = getByText('Level 2 Adult Social Care Certificate').parentElement;
         const addLink = within(level2CareCertificateSection).getByText('Change');
 
-        expect(addLink.getAttribute('href')).toBe(`/wdf/staff-record/${component.worker.uid}/level-2-care-certificate`);
+        expect(addLink.getAttribute('href')).toBe(
+          `/funding/staff-record/${component.worker.uid}/level-2-care-certificate`,
+        );
       });
     });
   });

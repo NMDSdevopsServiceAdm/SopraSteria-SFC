@@ -142,8 +142,8 @@ export class StaffRecordSummaryComponent implements OnInit, OnDestroy {
   public getRoutePath(name: string, isWdf: boolean = false): Array<string> {
     if (isWdf) {
       return this.route.snapshot.params.establishmentuid
-        ? ['/wdf', 'workplaces', this.workplaceUid, 'staff-record', this.worker.uid, name]
-        : ['/wdf', 'staff-record', this.worker.uid, name];
+        ? ['/funding', 'workplaces', this.workplaceUid, 'staff-record', this.worker.uid, name]
+        : ['/funding', 'staff-record', this.worker.uid, name];
     } else {
       return ['/workplace', this.workplaceUid, 'staff-record', this.worker.uid, 'staff-record-summary', name];
     }

@@ -269,11 +269,11 @@ describe('HealthAndCareVisaComponent', () => {
       });
     });
 
-    describe('Wdf view', () => {
+    describe('funding view', () => {
       const setupForWdfView = async () => {
         const { component, fixture, routerSpy, getByText, getByLabelText, router } = await setup(false);
 
-        spyOnProperty(router, 'url').and.returnValue('/wdf/staff-record');
+        spyOnProperty(router, 'url').and.returnValue('/funding/staff-record');
         component.returnUrl = undefined;
         component.ngOnInit();
         fixture.detectChanges();
@@ -282,7 +282,7 @@ describe('HealthAndCareVisaComponent', () => {
         return { component, fixture, routerSpy, getByText, getByLabelText, router, workerId };
       };
 
-      it('should navigate to wdf staff-summary-page page when pressing save and no is entered', async () => {
+      it('should navigate to funding staff-summary-page page when pressing save and no is entered', async () => {
         const { fixture, routerSpy, getByText, getByLabelText, workerId } = await setupForWdfView();
 
         const radioButtonNo = getByLabelText('No');
@@ -293,10 +293,10 @@ describe('HealthAndCareVisaComponent', () => {
         const saveButton = getByText('Save');
         fireEvent.click(saveButton);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
       });
 
-      it('should navigate to wdf staff-summary-page page when pressing save and I do not know is entered', async () => {
+      it('should navigate to funding staff-summary-page page when pressing save and I do not know is entered', async () => {
         const { fixture, routerSpy, getByText, getByLabelText, workerId } = await setupForWdfView();
 
         const radioButtonDontKnow = getByLabelText('I do not know');
@@ -309,10 +309,10 @@ describe('HealthAndCareVisaComponent', () => {
 
         expect(getByText('Save')).toBeTruthy();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
       });
 
-      it('should navigate to wdf inside-or-outside-of-uk page when pressing save and Yes is entered', async () => {
+      it('should navigate to funding inside-or-outside-of-uk page when pressing save and Yes is entered', async () => {
         const { fixture, routerSpy, getByText, getByLabelText, workerId } = await setupForWdfView();
 
         const radioButtonNo = getByLabelText('Yes');
@@ -325,16 +325,16 @@ describe('HealthAndCareVisaComponent', () => {
 
         expect(getByText('Save')).toBeTruthy();
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId, 'inside-or-outside-of-uk']);
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId, 'inside-or-outside-of-uk']);
       });
 
-      it('should navigate to wdf staff-summary-page page when pressing cancel in wdf version of page', async () => {
+      it('should navigate to funding staff-summary-page page when pressing cancel in funding version of page', async () => {
         const { routerSpy, getByText, workerId } = await setupForWdfView();
 
         const cancelButton = getByText('Cancel');
         fireEvent.click(cancelButton);
 
-        expect(routerSpy).toHaveBeenCalledWith(['/wdf', 'staff-record', workerId]);
+        expect(routerSpy).toHaveBeenCalledWith(['/funding', 'staff-record', workerId]);
       });
     });
   });

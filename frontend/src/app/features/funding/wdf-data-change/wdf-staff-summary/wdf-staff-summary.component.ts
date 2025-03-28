@@ -31,10 +31,10 @@ export class WdfStaffSummaryComponent extends StaffSummaryDirective {
   public getWorkerRecordPath(worker) {
     if (this.route.snapshot.params.establishmentuid) {
       this.workplaceUid = this.route.snapshot.params.establishmentuid;
-      return ['/wdf', 'workplaces', this.workplaceUid, 'staff-record', worker.uid];
+      return ['/funding', 'workplaces', this.workplaceUid, 'staff-record', worker.uid];
     } else {
       this.workplaceUid = this.establishmentService.primaryWorkplace.uid;
-      return ['/wdf', 'staff-record', worker.uid];
+      return ['/funding', 'staff-record', worker.uid];
     }
   }
 

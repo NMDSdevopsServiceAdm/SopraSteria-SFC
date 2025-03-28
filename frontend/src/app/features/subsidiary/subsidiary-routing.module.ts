@@ -91,9 +91,9 @@ const routes: Routes = [
     loadChildren: () => import('@features/pages/pages.module').then((m) => m.PagesModule),
   },
   {
-    path: 'wdf',
-    loadChildren: () => import('@features/wdf/wdf-data-change/wdf.module').then((m) => m.WdfModule),
-    data: { title: 'Workforce Development Fund Data' },
+    path: 'funding',
+    loadChildren: () => import('@features/funding/wdf-data-change/funding.module').then((m) => m.FundingModule),
+    data: { title: 'Funding Data' },
   },
 
   {

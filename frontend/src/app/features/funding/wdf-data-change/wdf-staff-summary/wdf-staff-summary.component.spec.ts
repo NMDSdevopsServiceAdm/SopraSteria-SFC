@@ -22,7 +22,7 @@ import userEvent from '@testing-library/user-event';
 import { of } from 'rxjs';
 import sinon from 'sinon';
 
-import { WdfModule } from '../wdf.module';
+import { FundingModule } from '../funding.module';
 import { WdfStaffSummaryComponent } from './wdf-staff-summary.component';
 
 describe('WdfStaffSummaryComponent', () => {
@@ -31,7 +31,7 @@ describe('WdfStaffSummaryComponent', () => {
     const workers = [workerBuilder(), workerBuilder(), workerBuilder()] as Worker[];
 
     const setupTools = await render(WdfStaffSummaryComponent, {
-      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, WdfModule, RouterModule],
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule, FundingModule, RouterModule],
       declarations: [PaginationComponent, TablePaginationWrapperComponent, SearchInputComponent],
       providers: [
         {

@@ -4,7 +4,7 @@ import { getTestBed } from '@angular/core/testing';
 import { BrowserModule, By } from '@angular/platform-browser';
 import { ActivatedRoute, NavigationEnd, Router, RouterEvent } from '@angular/router';
 import { RouterTestingModule } from '@angular/router/testing';
-import { WdfPaginationComponent } from '@features/wdf/wdf-data-change/wdf-staff-record/wdf-pagination/wdf-pagination.component';
+import { WdfPaginationComponent } from '@features/funding/wdf-data-change/wdf-staff-record/wdf-pagination/wdf-pagination.component';
 import { SharedModule } from '@shared/shared.module';
 import { render } from '@testing-library/angular';
 import { Observable, Subject } from 'rxjs';
@@ -34,7 +34,7 @@ describe('WdfPagination', () => {
       ],
       componentProperties: {
         workerList: ['1', '2', '3', '4'],
-        exitUrl: overrides.exitUrl ?? { url: 'wdf/test/url', fragment: 'staff-records' },
+        exitUrl: overrides.exitUrl ?? { url: 'funding/test/url', fragment: 'staff-records' },
       },
     });
 
@@ -62,8 +62,8 @@ describe('WdfPagination', () => {
 
     expect(component.previousID).toEqual('1');
     expect(component.nextID).toEqual('3');
-    expect(previousHref).toEqual('/wdf,staff-record,1');
-    expect(nextHref).toEqual('/wdf,staff-record,3');
+    expect(previousHref).toEqual('/funding,staff-record,1');
+    expect(nextHref).toEqual('/funding,staff-record,3');
   });
 
   it('should only show Next staff record when current staff record is first ID in list', async () => {
@@ -83,7 +83,7 @@ describe('WdfPagination', () => {
   });
 
   it('should show a Close this staff record link with refs passed in', async () => {
-    const exitUrl = { url: 'wdf/test/url', fragment: 'staff-records' };
+    const exitUrl = { url: 'funding/test/url', fragment: 'staff-records' };
 
     const { component, fixture, getByText } = await setup({ exitUrl });
 
