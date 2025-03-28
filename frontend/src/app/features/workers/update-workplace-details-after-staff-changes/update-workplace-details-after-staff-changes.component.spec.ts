@@ -17,7 +17,7 @@ import userEvent from '@testing-library/user-event';
 
 import { UpdateWorkplaceDetailsAfterStaffChangesComponent } from './update-workplace-details-after-staff-changes.component';
 
-describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
+fdescribe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
   /* eslint-disable @typescript-eslint/no-explicit-any */
   async function setup(overrides: any = {}) {
     const workplace = { ...establishmentBuilder(), ...overrides.workplace };
@@ -255,13 +255,13 @@ describe('UpdateWorkplaceDetailsAfterStaffChangesComponent', () => {
     });
   });
 
-  describe('New starters in the last 12 months', () => {
+  describe('Starters in the last 12 months', () => {
     it('should show the correct wording', async () => {
       const { getByTestId } = await setup();
 
       const startersRow = getByTestId('starters');
 
-      expect(within(startersRow).getByText('New starters in the last 12 months')).toBeTruthy();
+      expect(within(startersRow).getByText('Starters in the last 12 months')).toBeTruthy();
     });
 
     it('should show dash and have Add link when starters is null', async () => {
