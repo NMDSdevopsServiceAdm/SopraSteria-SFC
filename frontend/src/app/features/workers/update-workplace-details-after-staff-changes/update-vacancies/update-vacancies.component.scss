@@ -72,9 +72,8 @@
 .asc-total-number-tile {
   background-color: govuk-colour('light-grey');
   height: 110px;
-  margin: 0.5em 0;
-
-  grid-column: 2 / span 2;
+  width: 290px;
+  margin: 1em 0 1em auto;
 
   div:has(> &) {
     border-bottom: 1px solid $govuk-border-colour;
