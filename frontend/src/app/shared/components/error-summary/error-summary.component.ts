@@ -6,6 +6,8 @@ import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { combineLatest, Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 
+const DefaultQuerySelector = 'input,select,textarea';
+
 @Component({
   selector: 'app-error-summary',
   templateUrl: './error-summary.component.html',
@@ -17,6 +19,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
   @Input() public customErrors?: Array<ErrorDefinition>;
   @Input() addIndexKeyToFormArrayErrors: boolean = false;
   @Input() showServerErrorAsLink: boolean = true;
+  @Input() querySelectorForOnClickFocus: string = DefaultQuerySelector;
   @ViewChild('errorSummary', { static: true }) private errorSummaryElement: ElementRef;
   private subscriptions: Subscription = new Subscription();
   public errors: Array<ErrorSummary>;
@@ -41,7 +44,7 @@ export class ErrorSummaryComponent implements OnInit, OnDestroy {
           const errorMessage = formEl.nativeElement.querySelector(`#${this.getErrorId(errorId)}`);
           if (errorMessage) {
             const errorWrapper = errorMessage.closest('div');
-            const errorElement = errorWrapper ? errorWrapper.querySelector('input,select,textarea') : null;
+            const errorElement = errorWrapper ? errorWrapper.querySelector(this.querySelectorForOnClickFocus) : null;
             if (errorElement) {
               setTimeout(() => {
                 errorElement.focus();
