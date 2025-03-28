@@ -281,7 +281,7 @@ describe('MainJobRoleComponent', () => {
         expect(setAddStaffRecordInProgressSpy).toHaveBeenCalledWith(true);
       });
 
-      it('should call setAddStaffRecordInProgress when clicking save this staff record', async () => {
+      it('should call clearHasCompletedStaffRecordFlow when clicking save this staff record', async () => {
         const { getByText, clearHasCompletedStaffRecordFlowSpy } = await setup(true, false, true);
 
         userEvent.click(getByText('Care providing roles'));
