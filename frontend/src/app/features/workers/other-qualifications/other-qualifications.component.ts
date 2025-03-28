@@ -74,8 +74,9 @@ export class OtherQualificationsComponent extends QuestionComponent {
 
   onSubmit(): void {
     super.onSubmit();
+    const { otherQualification } = this.form.value;
 
-    if (!this.submitted && this.insideFlow) {
+    if ((!this.submitted || !otherQualification) && this.insideFlow) {
       this.setCompletedStaffFlowAndAddAlert();
     }
   }
