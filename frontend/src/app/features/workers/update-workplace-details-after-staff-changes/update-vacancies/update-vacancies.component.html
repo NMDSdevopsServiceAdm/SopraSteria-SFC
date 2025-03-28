@@ -29,7 +29,10 @@
         </div>
 
         <div>
-          <div class="govuk-form-group" [class.govuk-form-group--error]="submitted && jobRoleNumbers.errors">
+          <div
+            class="govuk-form-group govuk-!-margin-bottom-0"
+            [class.govuk-form-group--error]="submitted && jobRoleNumbers.errors"
+          >
             <p
               *ngIf="submitted && jobRoleNumbers.errors"
               id="jobRoleNumbers-error"
@@ -44,7 +47,6 @@
                 {{ addJobRoleButtonText }}
               </button>
             </div>
-            <hr class="govuk-section-break govuk-section-break--visible" />
 
             <div formArrayName="jobRoleNumbers">
               <div *ngIf="selectedJobRoles?.length === 0">
@@ -61,48 +63,48 @@
                     </ng-container>
                   </ng-container>
                 </p>
-                <hr class="govuk-section-break govuk-section-break--visible" />
               </div>
               <ng-container *ngFor="let jobRole of selectedJobRoles; index as index">
                 <div
-                  class="asc-grid-row govuk-form-group"
+                  class="govuk-form-group govuk-!-margin-bottom-0"
                   [class.govuk-form-group--error]="submitted && jobRoleNumbers.at(index).errors"
                 >
-                  <p
-                    *ngIf="submitted && jobRoleNumbers.at(index).errors"
-                    id="jobRoleNumbers-{{ index }}-error"
-                    class="govuk-error-message"
-                  >
-                    <span class="govuk-visually-hidden">Error:</span>
-                    {{ getInlineErrorMessageForJobRole(jobRole, index) }}
-                  </p>
-                  <label class="govuk-label" [for]="'job-' + index"> {{ jobRole.title }} </label>
-                  <app-number-input-with-buttons
-                    #numberInputRef
-                    [min]="minNumberPerJobRole"
-                    [max]="maxNumberPerJobRole"
-                    [initialValue]="jobRole.total"
-                    [inputId]="'job-' + index"
-                    [formControlName]="index"
-                    [hasError]="submitted && jobRoleNumbers.at(index).errors"
-                  >
-                  </app-number-input-with-buttons>
-                  <button
-                    [attr.data-testid]="'remove-button-' + jobRole.title"
-                    type="button"
-                    class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
-                    (click)="removeJobRole(index)"
-                  >
-                    Remove
-                    <span class="govuk-visually-hidden">{{ jobRole.title }}</span>
-                  </button>
+                  <div class="asc-grid-row asc-right-shift-border-on-error">
+                    <p
+                      *ngIf="submitted && jobRoleNumbers.at(index).errors"
+                      id="jobRoleNumbers-{{ index }}-error"
+                      class="govuk-error-message"
+                    >
+                      <span class="govuk-visually-hidden">Error:</span>
+                      {{ getInlineErrorMessageForJobRole(jobRole, index) }}
+                    </p>
+                    <label class="govuk-label" [for]="'job-' + index"> {{ jobRole.title }} </label>
+                    <app-number-input-with-buttons
+                      #numberInputRef
+                      [min]="minNumberPerJobRole"
+                      [max]="maxNumberPerJobRole"
+                      [initialValue]="jobRole.total"
+                      [inputId]="'job-' + index"
+                      [formControlName]="index"
+                      [hasError]="submitted && jobRoleNumbers.at(index).errors"
+                    >
+                    </app-number-input-with-buttons>
+                    <button
+                      [attr.data-testid]="'remove-button-' + jobRole.title"
+                      type="button"
+                      class="govuk-button govuk-button--link govuk-!-margin-bottom-0"
+                      (click)="removeJobRole(index)"
+                    >
+                      Remove
+                      <span class="govuk-visually-hidden">{{ jobRole.title }}</span>
+                    </button>
+                  </div>
                 </div>
-                <hr class="govuk-section-break govuk-section-break--visible" />
               </ng-container>
             </div>
           </div>
 
-          <div class="govuk__grid govuk__justify-content-end">
+          <div class="asc-grid-row">
             <div class="asc-total-number-tile">
               <div class="asc-total-number-tile--wrapper">
                 <p class="asc-total-number-tile--total-number" data-testid="total-number">{{ totalNumber }}</p>
@@ -110,8 +112,6 @@
               </div>
             </div>
           </div>
-
-          <hr class="govuk-section-break govuk-section-break--visible" />
 
           <div
             class="govuk-form-group govuk-!-margin-top-6"
