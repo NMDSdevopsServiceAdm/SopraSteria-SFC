@@ -43,7 +43,7 @@
           <a [routerLink]="['data']" [relativeTo]="route">Keep your data current</a>, it might save you time next year.
         </p>
         <p class="govuk-!-margin-bottom-6">
-          <a [routerLink]="['funding-requirements']" [relativeTo]="route">
+          <a class="govuk-link" [routerLink]="['funding-requirements']" [relativeTo]="route">
             View the ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to
             {{ wdfEndDate | date: 'yyyy' }}</a
           >
@@ -52,12 +52,12 @@
     </ng-container>
 
     <ng-template #notEligible>
-      <div class="govuk-inset-text thin-border govuk-!-margin-top-0" data-testid="fundingInsetText">
-        <a [routerLink]="['funding-requirements']" [relativeTo]="route">
-          The ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}</a
-        >
-        are exactly the same for both the Workforce Development Fund (WDF) and the Learning and Development Support
-        Scheme (LDSS).
+      <div>
+        <p class="govuk-!-margin-bottom-7">
+          <a class="govuk-link govuk-!-margin-bottom-4" [routerLink]="['funding-requirements']" [relativeTo]="route">
+            The ASC-WDS funding requirements for {{ wdfStartDate | date: 'yyyy' }} to {{ wdfEndDate | date: 'yyyy' }}</a
+          >
+        </p>
       </div>
     </ng-template>
 
