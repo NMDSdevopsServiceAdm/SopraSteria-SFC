@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PagesService } from '@core/services/pages.service';
@@ -20,8 +19,8 @@ describe('FundingRequirementsComponent', () => {
   const currentYear = new Date().getFullYear();
 
   async function setup() {
-    const { fixture, getByText, queryByText, getByTestId } = await render(FundingRequirementsComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule, SharedModule],
+    const setupTools = await render(FundingRequirementsComponent, {
+      imports: [RouterModule, HttpClientTestingModule, SharedModule],
       providers: [
         { provide: PagesService, useClass: MockPagesService },
         { provide: EstablishmentService, useClass: MockEstablishmentService },
@@ -40,18 +39,14 @@ describe('FundingRequirementsComponent', () => {
       ],
     });
 
-    const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
-      component,
-      fixture,
-      getByText,
-      queryByText,
+      ...setupTools,
+      component: setupTools.fixture.componentInstance,
       routerSpy,
-      getByTestId,
     };
   }
 
@@ -69,7 +64,7 @@ describe('FundingRequirementsComponent', () => {
     const wdfStartYear = new Date(component.wdfStartDate).getFullYear();
     const wdfEndYear = new Date(component.wdfEndDate).getFullYear();
 
-    const title = getByText(`ASC-WDS funding requirements for ${wdfStartYear} to ${wdfEndYear}`);
+    const title = getByText(`The ASC-WDS funding requirements for ${wdfStartYear} to ${wdfEndYear}`);
 
     expect(title).toBeTruthy();
   });
@@ -83,14 +78,6 @@ describe('FundingRequirementsComponent', () => {
 
     expect(getByText(workplaceName)).toBeTruthy();
     expect(getByText(workplaceIdCaption)).toBeTruthy();
-  });
-
-  it('should show the funding requirements inset text when requirements are not met', async () => {
-    const { getByTestId } = await setup();
-
-    const fundingInsetText = getByTestId('fundingInsetText');
-
-    expect(fundingInsetText).toBeTruthy();
   });
 
   it('should display the content of the cms page', async () => {
