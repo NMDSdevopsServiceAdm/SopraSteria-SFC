@@ -1,7 +1,6 @@
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { getTestBed } from '@angular/core/testing';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
-import { RouterTestingModule } from '@angular/router/testing';
 import { BreadcrumbService } from '@core/services/breadcrumb.service';
 import { EstablishmentService } from '@core/services/establishment.service';
 import { PagesService } from '@core/services/pages.service';
@@ -18,8 +17,8 @@ describe('LearnMoreAboutFundingComponent', () => {
   const pages = MockPagesService.pagesFactory();
 
   async function setup() {
-    const { fixture, getByText, queryByText } = await render(LearnMoreAboutFundingComponent, {
-      imports: [RouterModule, RouterTestingModule, HttpClientTestingModule, SharedModule],
+    const setupTools = await render(LearnMoreAboutFundingComponent, {
+      imports: [RouterModule, HttpClientTestingModule, SharedModule],
       declarations: [],
       providers: [
         { provide: PagesService, useClass: MockPagesService },
@@ -38,16 +37,13 @@ describe('LearnMoreAboutFundingComponent', () => {
       ],
     });
 
-    const component = fixture.componentInstance;
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
-      component,
-      fixture,
-      getByText,
-      queryByText,
+      ...setupTools,
+      component: setupTools.fixture.componentInstance,
       routerSpy,
     };
   }
@@ -59,7 +55,7 @@ describe('LearnMoreAboutFundingComponent', () => {
 
   it('should display the title', async () => {
     const { getByText } = await setup();
-    const title = getByText(`Learn more about the funds that you can claim from`);
+    const title = getByText('The Learning and Development Support Scheme');
 
     expect(title).toBeTruthy();
   });

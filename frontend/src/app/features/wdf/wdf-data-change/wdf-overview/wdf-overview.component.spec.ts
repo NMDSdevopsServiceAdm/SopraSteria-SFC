@@ -16,63 +16,56 @@ import { of } from 'rxjs';
 import { WdfOverviewComponent } from './wdf-overview.component';
 
 describe('WdfOverviewComponent', () => {
-  const currentYear = new Date().getFullYear();
-
   const setup = async (overrides: any = {}) => {
-    const { fixture, getByText, getAllByText, getByTestId, queryByText, queryByTestId } = await render(
-      WdfOverviewComponent,
-      {
-        imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
-        providers: [
-          { provide: BreadcrumbService, useClass: MockBreadcrumbService },
-          {
-            provide: EstablishmentService,
-            useValue: {
-              primaryWorkplace: {
-                uid: 'some-uid',
-                name: 'mock establishment name',
-                nmdsId: 'mock nmdsId',
-                isParent: overrides?.isParent,
-              },
+    const currentYear = new Date().getFullYear();
+
+    const setupTools = await render(WdfOverviewComponent, {
+      imports: [RouterTestingModule, HttpClientTestingModule, BrowserModule, SharedModule],
+      providers: [
+        { provide: BreadcrumbService, useClass: MockBreadcrumbService },
+        {
+          provide: EstablishmentService,
+          useValue: {
+            primaryWorkplace: {
+              uid: 'some-uid',
+              name: 'mock establishment name',
+              nmdsId: 'mock nmdsId',
+              isParent: overrides?.isParent,
             },
           },
-          {
-            provide: ActivatedRoute,
-            useValue: {
-              snapshot: {
-                data: { report: createMockWdfReport(overrides) },
-              },
-            },
-          },
-          {
-            provide: UserService,
-            useValue: {
-              getEstablishments: () => of(overrides.getParentAndSubs ?? null),
-            },
-          },
-        ],
-        componentProperties: {
-          wdfStartDate: `1 April ${currentYear}`,
-          wdfEndDate: `31 March ${currentYear + 1}`,
-          parentOverallWdfEligibility: overrides?.parentOverallWdfEligibility,
         },
-        declarations: [WdfSummaryPanel],
+        {
+          provide: ActivatedRoute,
+          useValue: {
+            snapshot: {
+              data: { report: createMockWdfReport(overrides) },
+            },
+          },
+        },
+        {
+          provide: UserService,
+          useValue: {
+            getEstablishments: () => of(overrides.getParentAndSubs ?? null),
+          },
+        },
+      ],
+      componentProperties: {
+        wdfStartDate: `1 April ${currentYear}`,
+        wdfEndDate: `31 March ${currentYear + 1}`,
+        parentOverallWdfEligibility: overrides?.parentOverallWdfEligibility,
       },
-    );
-    const component = fixture.componentInstance;
+      declarations: [WdfSummaryPanel],
+    });
+
     const injector = getTestBed();
     const router = injector.inject(Router) as Router;
     const routerSpy = spyOn(router, 'navigate').and.returnValue(Promise.resolve(true));
 
     return {
-      component,
-      fixture,
-      getByText,
-      getAllByText,
-      getByTestId,
-      queryByText,
-      queryByTestId,
+      ...setupTools,
+      component: setupTools.fixture.componentInstance,
       routerSpy,
+      currentYear,
     };
   };
 
@@ -94,7 +87,7 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should display the page with title the correct timeframe ', async () => {
-      const { getByText } = await setup();
+      const { getByText, currentYear } = await setup();
 
       const pageTitle = `Does your data meet funding requirements for ${currentYear} to ${currentYear + 1}?`;
 
@@ -128,22 +121,6 @@ describe('WdfOverviewComponent', () => {
       expect(workplaceRow).toBeTruthy();
       expect(staffRow).toBeTruthy();
       expect(workplacesRow).toBeFalsy();
-    });
-
-    it('should not display the funding requirements inset text when requirements are met', async () => {
-      const overrides = {
-        wdf: {
-          overall: true,
-          workplace: true,
-          staff: true,
-        },
-      };
-
-      const { queryByTestId } = await setup(overrides);
-
-      const fundingInsetText = queryByTestId('fundingInsetText');
-
-      expect(fundingInsetText).toBeFalsy();
     });
 
     it('should display data has met paragraph', async () => {
@@ -185,15 +162,12 @@ describe('WdfOverviewComponent', () => {
     });
 
     it('should show the funding requirements link', async () => {
-      const { component, getByTestId } = await setup();
-
-      const wdfStartYear = new Date(component.wdfStartDate).getFullYear();
-      const wdfEndYear = new Date(component.wdfEndDate).getFullYear();
+      const { getByTestId, currentYear } = await setup();
 
       const dataMetFundingParagraph = getByTestId('dataMetFunding');
 
       const fundingRequirementsLink = within(dataMetFundingParagraph).getByText(
-        `View the ASC-WDS funding requirements for ${wdfStartYear} to ${wdfEndYear}`,
+        `View the ASC-WDS funding requirements for ${currentYear} to ${currentYear + 1}`,
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
@@ -202,23 +176,6 @@ describe('WdfOverviewComponent', () => {
   });
 
   describe('Unhappy path', async () => {
-    it('should show the funding requirements inset text when requirements are not met', async () => {
-      const overrides = {
-        wdf: {
-          overall: false,
-          workplace: false,
-          staff: false,
-        },
-        isParent: false,
-        parentOverallWdfEligibility: false,
-      };
-      const { getByTestId } = await setup(overrides);
-
-      const fundingInsetText = getByTestId('fundingInsetText');
-
-      expect(fundingInsetText).toBeTruthy();
-    });
-
     it('should show the funding requirements link', async () => {
       const overrides = {
         wdf: {
@@ -230,15 +187,11 @@ describe('WdfOverviewComponent', () => {
         parentOverallWdfEligibility: false,
       };
 
-      const { component, getByTestId } = await setup(overrides);
+      const { getByText, currentYear } = await setup(overrides);
 
-      const wdfStartYear = new Date(component.wdfStartDate).getFullYear();
-      const wdfEndYear = new Date(component.wdfEndDate).getFullYear();
-
-      const fundingInsetText = getByTestId('fundingInsetText');
-
-      const fundingRequirementsLink = within(fundingInsetText).getByText(
-        `The ASC-WDS funding requirements for ${wdfStartYear} to ${wdfEndYear}`,
+      const fundingRequirementsLink = getByText(
+        `The ASC-WDS funding requirements for ${currentYear} to ${currentYear + 1}`,
+        { selector: 'a' },
       );
 
       expect(fundingRequirementsLink).toBeTruthy();
@@ -277,20 +230,6 @@ describe('WdfOverviewComponent', () => {
       expect(workplaceRow).toBeTruthy();
       expect(staffRow).toBeTruthy();
       expect(workplacesRow).toBeTruthy();
-    });
-
-    it('should not display the funding requirements inset text when requirements are met', async () => {
-      const overrides = {
-        wdf: { overall: true, workplace: true, staff: true },
-        isParent: true,
-        parentOverallWdfEligibility: true,
-      };
-
-      const { queryByTestId } = await setup(overrides);
-
-      const fundingInsetText = queryByTestId('fundingInsetText');
-
-      expect(fundingInsetText).toBeFalsy();
     });
 
     describe('Data has met paragraph', () => {
@@ -377,7 +316,7 @@ describe('WdfOverviewComponent', () => {
       expect(keepYourDataCurrentLink).toBeFalsy();
     });
 
-    it('should display the funding requirements inset text when requirements are not met', async () => {
+    it('should display the funding requirements link when requirements are not met', async () => {
       const overrides = {
         wdf: { overall: false, workplace: false, staff: true },
         isParent: true,
@@ -392,11 +331,15 @@ describe('WdfOverviewComponent', () => {
         },
       };
 
-      const { queryByTestId } = await setup(overrides);
+      const { getByText, currentYear } = await setup(overrides);
 
-      const fundingInsetText = queryByTestId('fundingInsetText');
+      const fundingRequirementsLink = getByText(
+        `The ASC-WDS funding requirements for ${currentYear} to ${currentYear + 1}`,
+        { selector: 'a' },
+      );
 
-      expect(fundingInsetText).toBeTruthy();
+      expect(fundingRequirementsLink).toBeTruthy();
+      expect(fundingRequirementsLink.getAttribute('ng-reflect-router-link')).toEqual('funding-requirements');
     });
 
     it('should display some data not meeting message when not eligible overall but some sub workplaces are eligible', async () => {
@@ -413,7 +356,7 @@ describe('WdfOverviewComponent', () => {
         },
       };
 
-      const { getByText } = await setup(overrides);
+      const { getByText, currentYear } = await setup(overrides);
 
       expect(
         getByText(`Some data does not meet the funding requirements for ${currentYear} to ${currentYear + 1}`),
@@ -435,7 +378,7 @@ describe('WdfOverviewComponent', () => {
         },
       };
 
-      const { getByText } = await setup(overrides);
+      const { getByText, currentYear } = await setup(overrides);
 
       expect(
         getByText(`Your data has met the funding requirements for ${currentYear} to ${currentYear + 1}`),
