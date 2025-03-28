@@ -1,34 +1,31 @@
-import { Component, ElementRef, OnInit, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ErrorDetails } from '@core/model/errorSummary.model';
 import { Leaver, Starter, Vacancy } from '@core/model/establishment.model';
 import { Job, JobGroup } from '@core/model/job.model';
 import { BackLinkService } from '@core/services/backLink.service';
-import { ErrorSummaryService } from '@core/services/error-summary.service';
 import { JobService } from '@core/services/job.service';
 import { UpdateWorkplaceAfterStaffChangesService } from '@core/services/update-workplace-after-staff-changes.service';
 import { AccordionGroupComponent } from '@shared/components/accordions/generic-accordion/accordion-group/accordion-group.component';
-import { CustomValidators } from '@shared/validators/custom-form-validators';
 
 @Component({
   selector: 'app-select-job-roles-to-add',
   templateUrl: './select-job-roles-to-add.component.html',
 })
-export class SelectJobRolesToAddComponent implements OnInit, AfterViewInit {
+export class SelectJobRolesToAddComponent implements OnInit {
   @ViewChild('formEl') formEl: ElementRef;
   @ViewChild('accordion') accordion: AccordionGroupComponent;
 
   public jobRoleType: JobRoleType;
-  public errorMessageOnEmptyInput: string;
 
   public form: UntypedFormGroup;
-  public formErrorsMap: Array<ErrorDetails> = [];
   public submitted = false;
 
   public jobGroups: JobGroup[] = [];
   public jobsAvailable: Job[] = [];
   public disabledJobIds: number[] = [];
+  public jobGroupsToOpenAtStart: string[] = [];
+
   protected prefillData: Array<Vacancy | Starter | Leaver> = [];
   protected selectedJobIds: number[] = [];
 
@@ -36,7 +33,6 @@ export class SelectJobRolesToAddComponent implements OnInit, AfterViewInit {
     protected formBuilder: UntypedFormBuilder,
     protected router: Router,
     protected backlinkService: BackLinkService,
-    protected errorSummaryService: ErrorSummaryService,
     protected updateWorkplaceAfterStaffChangesService: UpdateWorkplaceAfterStaffChangesService,
     protected route: ActivatedRoute,
   ) {}
@@ -45,7 +41,6 @@ export class SelectJobRolesToAddComponent implements OnInit, AfterViewInit {
     this.getJobs();
     this.setupJobRoleType();
     this.setupForm();
-    this.setupFormErrorsMap();
     this.setBackLink();
     this.prefill();
   }
@@ -57,27 +52,12 @@ export class SelectJobRolesToAddComponent implements OnInit, AfterViewInit {
 
   private setupJobRoleType(): void {
     this.jobRoleType = this.route.snapshot?.data?.jobRoleType;
-    this.errorMessageOnEmptyInput = `Select job roles for the ${this.jobRoleType} you want to add`;
   }
 
   private setupForm(): void {
     this.form = this.formBuilder.group({
-      selectedJobRoles: [[], { validators: CustomValidators.validateArrayNotEmpty(), updateOn: 'submit' }],
+      selectedJobRoles: [[]],
     });
-  }
-
-  private setupFormErrorsMap(): void {
-    this.formErrorsMap = [
-      {
-        item: 'selectedJobRoles',
-        type: [
-          {
-            name: 'selectedNone',
-            message: this.errorMessageOnEmptyInput,
-          },
-        ],
-      },
-    ];
   }
 
   private setBackLink(): void {
@@ -92,10 +72,11 @@ export class SelectJobRolesToAddComponent implements OnInit, AfterViewInit {
     }
 
     this.disabledJobIds = this.prefillData.map((jobRole) => jobRole.jobId) ?? [];
-  }
-
-  ngAfterViewInit() {
-    this.errorSummaryService.formEl$.next(this.formEl);
+    this.jobGroupsToOpenAtStart = this.jobGroups
+      .filter((group) => {
+        return group.items.some((job) => this.disabledJobIds.includes(job.id));
+      })
+      .map((group) => group.title);
   }
 
   public onCheckboxClick(target: HTMLInputElement): void {
@@ -110,15 +91,7 @@ export class SelectJobRolesToAddComponent implements OnInit, AfterViewInit {
 
   public onSubmit(): void {
     this.form.patchValue({ selectedJobRoles: this.selectedJobIds });
-
     this.submitted = true;
-    this.errorSummaryService.syncFormErrorsEvent.next(true);
-
-    if (!this.form.valid) {
-      this.accordion.showAll();
-      this.errorSummaryService.scrollToErrorSummary();
-      return;
-    }
 
     this.onSuccess();
   }
