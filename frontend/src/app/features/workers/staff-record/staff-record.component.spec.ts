@@ -222,20 +222,17 @@ describe('StaffRecordComponent', () => {
         { index: 0, position: 'top' },
         { index: 1, position: 'bottom' },
       ].forEach((scenario) => {
-        it(`should navigate to the "Add another staff record" page when Continue button at ${scenario.position} of page is clicked`, async () => {
-          const { routerSpy, getAllByText, workplaceUid } = await setup({
+        it(`should have "Add another staff record" href on Continue button at ${scenario.position} of page`, async () => {
+          const { getAllByText, workplaceUid } = await setup({
             workerService: { hasCompletedStaffRecordFlow: true, worker: { completed: false } },
           });
 
           const continueButtons = getAllByText('Continue');
           fireEvent.click(continueButtons[scenario.index]);
 
-          expect(routerSpy).toHaveBeenCalledWith([
-            '/workplace',
-            workplaceUid,
-            'staff-record',
-            'add-another-staff-record',
-          ]);
+          expect(continueButtons[scenario.index].getAttribute('href')).toEqual(
+            `/workplace/${workplaceUid}/staff-record/add-another-staff-record`,
+          );
         });
       });
     });

@@ -28,6 +28,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
   public worker: Worker;
   public workplace: Establishment;
   public hasCompletedStaffRecordFlow: boolean;
+  public continueRoute: string[];
   private subscriptions: Subscription = new Subscription();
 
   constructor(
@@ -48,6 +49,7 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
     this.isParent = this.establishmentService.primaryWorkplace.isParent;
 
     if (this.hasCompletedStaffRecordFlow) {
+      this.continueRoute = ['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record'];
       this.trackNavigationToClearHasCompletedStaffRecordFlow();
     }
 
@@ -89,10 +91,6 @@ export class StaffRecordComponent implements OnInit, OnDestroy {
         ? this.route.parent.snapshot.data.primaryWorkplace.uid
         : null,
     });
-  }
-
-  public navigateToAddAnotherStaffRecordPage(): void {
-    this.router.navigate(['/workplace', this.workplace.uid, 'staff-record', 'add-another-staff-record']);
   }
 
   private updateCompleted(): void {
