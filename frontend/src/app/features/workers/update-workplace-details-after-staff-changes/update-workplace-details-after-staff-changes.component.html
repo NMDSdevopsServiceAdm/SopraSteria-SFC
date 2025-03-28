@@ -60,7 +60,7 @@
           </div>
 
           <div *ngIf="flowType === WorkplaceUpdateFlowType.ADD" class="govuk-summary-list__row" data-testid="starters">
-            <dt class="govuk-summary-list__key">New starters in the last 12 months</dt>
+            <dt class="govuk-summary-list__key">Starters in the last 12 months</dt>
             <dd class="govuk-summary-list__value">
               <app-summary-record-value>
                 <ng-container *ngIf="!workplace.starters?.length; else starters"> - </ng-container>
@@ -78,7 +78,7 @@
             </dd>
             <dd class="govuk-summary-list__actions">
               <app-summary-record-change
-                [explanationText]="' new starters'"
+                [explanationText]="' starters'"
                 [link]="['update-starters']"
                 [hasData]="workplace.starters?.length"
               ></app-summary-record-change>
